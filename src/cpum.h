@@ -1,0 +1,39 @@
+#ifndef CPUM_H_INCLUDED
+#define CPUM_H_INCLUDED
+
+#include "typedef.h"
+#include "ini.h"
+#include "p6device.h"
+#include "device/z80.h"
+
+
+////////////////////////////////////////////////////////////////
+// クラス定義
+////////////////////////////////////////////////////////////////
+class CPU6 : public P6DEVICE, public cZ80, public IDoko {
+private:
+	BYTE Fetch( WORD, int * );		// フェッチ(M1)
+	
+	BYTE ReadMemNW( WORD );			// メモリアクセス(ウェイトなし)
+	
+	BYTE ReadMem( WORD );			// メモリアクセス(ウェイトあり) Read
+	void WriteMem( WORD, BYTE );	// メモリアクセス(ウェイトあり) Write
+	
+	BYTE ReadIO( int );				// I/Oポートアクセス Read
+	void WriteIO( int, BYTE );		// I/Oポートアクセス Write
+	
+	int GetIntrVector();			// 割込みベクタ取得
+	
+public:
+	CPU6( VM6 *, const P6ID& );		// コンストラクタ
+	~CPU6();						// デストラクタ
+	
+	BOOL IsBUSREQ();				// BUSREQ取得
+	
+	// ------------------------------------------
+	BOOL DokoSave( cIni * );	// どこでもSAVE
+	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	// ------------------------------------------
+};
+
+#endif		// CPUM_H_INCLUDED

@@ -109,10 +109,11 @@ Q_DECLARE_METATYPE(MenuCommand)
 
 #define MENUIDPROPERTY "MenuID"
 
-QAction* addCommand(QMenu* menu, QString label, MenuCommand id)
+QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable = false)
 {
     QAction* action = menu->addAction(label);
     action->setProperty(MENUIDPROPERTY, qVariantFromValue<MenuCommand>(id));
+    action->setCheckable(checkable);
     return action;
 }
 
@@ -175,9 +176,33 @@ void VM6::ShowPopupMenu( int x, int y )
 
     // 拡張ROMメニュー
     QMenu* extRomMenu = menu.addMenu("拡張ROM");
+    addCommand(extRomMenu, "挿入...", ID_ROMINSERT);
+    QAction* romEject = addCommand(extRomMenu, "取出", ID_ROMEJECT);
+    if(!*mem->GetFile()) romEject->setEnabled(false);
 
     // ジョイスティックメニュー
     QMenu* joystickMenu = menu.addMenu("ジョイスティック");
+    //------
+    QMenu* joyMenu1 = joystickMenu->addMenu("1");
+    QMenu* joyMenu2 = joystickMenu->addMenu("2");
+    QActionGroup* joyGroup1 = new QActionGroup(&menu);
+    QActionGroup* joyGroup2 = new QActionGroup(&menu);
+   for( int i = 0; i < 5; i++ ){
+        if( i < OSD_GetJoyNum() ){
+            QAction* joyAction1 = addCommand(joyMenu1, OSD_GetJoyName( i ), MenuCommand(ID_JOY101 + i), true);
+            QAction* joyAction2 = addCommand(joyMenu2, OSD_GetJoyName( i ), MenuCommand(ID_JOY201 + i), true);
+            joyGroup1->addAction(joyAction1);
+            joyGroup2->addAction(joyAction2);
+            if(joy->GetID(0) == i) joyAction1->setChecked(true);
+            if(joy->GetID(1) == i) joyAction2->setChecked(true);
+        }
+    }
+    QAction* noJoy1 = addCommand(joyMenu1, "なし", ID_JOY199, true);
+    QAction* noJoy2 = addCommand(joyMenu2, "なし", ID_JOY299, true);
+    joyGroup1->addAction(noJoy1);
+    joyGroup2->addAction(noJoy2);
+    if (joy->GetID(0) < 0) noJoy1->setChecked(true);
+    if (joy->GetID(1) < 0) noJoy2->setChecked(true);
 
     // 設定メニュー
     QMenu* settingsMenu = menu.addMenu("設定");
@@ -298,7 +323,7 @@ void VM6::ShowPopupMenu( int x, int y )
 	
 //	// MODE4カラー
 //	CheckMenuRadioItem( hsm, ID_M4MONO, ID_M4GRPK, ID_M4MONO + vdg->GetMode4Color(), MF_BYCOMMAND );
-	
+
 //	// フレームスキップ
 //	CheckMenuRadioItem( hsm, ID_FSKP0, ID_FSKP5, ID_FSKP0 + cfg->GetFrameSkip(), MF_BYCOMMAND );
 	

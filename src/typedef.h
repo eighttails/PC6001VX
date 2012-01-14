@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-#include <stdint.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // 型,定数定義
@@ -12,6 +11,7 @@
 #ifdef WIN32
 #include <windows.h>
 #else
+#include <stdint.h>
 typedef int BOOL;
 typedef uint8_t BYTE;
 typedef uint16_t WORD;

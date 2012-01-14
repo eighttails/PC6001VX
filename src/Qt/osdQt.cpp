@@ -537,8 +537,22 @@ BOOL OSD_FileExist( const char *fullpath )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_FileExist]\n" );
 
-    QFile file(QString::fromLocal8Bit(fullpath));
-    return file.exists();
+    QString pathString = QString::fromLocal8Bit(fullpath);
+
+    //ワイルドカードを含む場合
+    if (pathString.contains("*")){
+        QFileInfo info(pathString);
+
+        QDir dir = info.absoluteDir();
+        QFile file(pathString);
+        QString wildcard = info.fileName();
+
+        QFileInfoList list = dir.entryInfoList(QStringList(wildcard), QDir::Files);
+        return !list.empty();
+    } else {
+        QFile file(pathString);
+        return file.exists();
+    }
 }
 
 

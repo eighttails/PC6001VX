@@ -213,8 +213,21 @@ void VM6::ShowPopupMenu( int x, int y )
     QAction* scanLine = addCommand(settingsMenu, "スキャンライン", ID_SCANLINE, true);
     if (cfg->GetScanLine()) scanLine->setChecked(true);
 
-    QMenu* fpsMenu = menu.addMenu("フレームスキップ");
-    QActionGroup* fpsGroup1 = new QActionGroup(&menu);
+    QMenu* colorMenu = settingsMenu->addMenu("MODE4 カラー");
+    QActionGroup* colorGroup = new QActionGroup(&menu);
+    QStringList colorList = (QStringList()
+                           << "モノクロ"
+                           << "赤/青"
+                           << "青/赤"
+                           << "桃/緑"
+                           << "緑/桃");
+    for( int i = 0; i < 5; i++ ){
+        QAction* color = addCommand(colorMenu, colorList[i], MenuCommand(ID_M4MONO + i), true);
+        if (vdg->GetMode4Color() == i) color->setChecked(true);
+    }
+
+    QMenu* fpsMenu = settingsMenu->addMenu("フレームスキップ");
+    QActionGroup* fpsGroup = new QActionGroup(&menu);
     QStringList fpsList = (QStringList()
                            << "0 (60fps)"
                            << "1 (30fps)"
@@ -226,6 +239,7 @@ void VM6::ShowPopupMenu( int x, int y )
         QAction* fps = addCommand(fpsMenu, fpsList[i], MenuCommand(ID_FSKP0 + i), true);
         if (cfg->GetFrameSkip() == i) fps->setChecked(true);
     }
+    settingsMenu->addSeparator();
 
     QAction* noWait = addCommand(settingsMenu, "ウェイト無効", ID_NOWAIT, true);
     if (!sche->GetWaitEnable()) noWait->setChecked(true);

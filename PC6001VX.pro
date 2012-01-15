@@ -53,7 +53,6 @@ SOURCES += \
     src/voice.cpp \
     src/vsurface.cpp \
     src/semaphore.cpp \
-    src/thread.cpp \
     src/device/ay8910.cpp \
     src/device/mc6847.cpp \
     src/device/pd7752.cpp \
@@ -62,7 +61,8 @@ SOURCES += \
     src/device/z80-dbg.cpp \
     src/Qt/guiQt.cpp \
     src/Qt/osdQt.cpp \
-    src/Qt/pc6001v.cpp
+    src/Qt/pc6001v.cpp \
+    src/Qt/thread.cpp
 
 HEADERS  += \
     src/breakpoint.h \

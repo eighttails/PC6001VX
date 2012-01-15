@@ -5,6 +5,7 @@
 // Official HP URL. http://ast.qt-space.com/
 
 #include "thread.h"
+#include <QThreadStorage>
 
 #ifdef USESDLTHREAD
 #include <SDL.h>
@@ -113,12 +114,17 @@ BOOL cThread::IsCancel()
 // Default thread procedure. Don't call this method in direct!
 void cThread::ThreadProc(void *lpVoid)
 {
-	static __thread cThread *lpThis;
-	
-	if( !lpThis ) lpThis = (cThread *)lpVoid;		// 自分自身のオブジェクトポインタ取得
-	lpThis->OnThread( lpThis->m_BeginTheadParam );	// virtual Procedure 
-	lpThis->m_hThread = NULL;
-	#ifndef USESDLTHREAD
-	::_endthread();
-	#endif
+    // 呼び元のthisポインタをスレッド局所記憶(TLS)として利用する。
+    // TLSを利用するためのコードはコンパイラ依存のため、Qtにその差異を吸収させる。
+    // QThreadStorageはスレッド終了時に指しているポインタをdeleteする仕様のため、
+    // このユースケースでは都合が悪い。
+    // ここではダブルポインタを格納することで逃げる。
+    static QThreadStorage<cThread **> tlsThis;
+    cThread** ptr = new cThread*((cThread*)lpVoid);
+    tlsThis.setLocalData(ptr);
+    (*tlsThis.localData())->OnThread( (*tlsThis.localData())->m_BeginTheadParam );	// virtual Procedure
+    (*tlsThis.localData())->m_hThread = NULL;
+#ifndef USESDLTHREAD
+    ::_endthread();
+#endif
 }

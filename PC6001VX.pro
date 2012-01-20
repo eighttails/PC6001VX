@@ -9,6 +9,8 @@ QT       += core gui
 TARGET = PC6001VX
 TEMPLATE = app
 
+INCLUDEPATH += ./src/Qt
+
 DEFINES += USESDLTHREAD USESDLCS USESDLCRIT USESDLSEMAPHORE USESDLTIMER
 QMAKE_CXXFLAGS += `sdl-config --cflags` `directfb-config --cflags`
 
@@ -62,7 +64,9 @@ SOURCES += \
     src/Qt/guiQt.cpp \
     src/Qt/osdQt.cpp \
     src/Qt/pc6001v.cpp \
-    src/Qt/thread.cpp
+    src/Qt/thread.cpp \
+    src/Qt/configdialog.cpp \
+    src/Qt/colorbutton.cpp
 
 HEADERS  += \
     src/breakpoint.h \
@@ -116,6 +120,9 @@ HEADERS  += \
     src/device/z80-cdXC.h \
     src/device/z80-cdXX.h \
     src/device/z80-code.h \
-    src/device/z80-tbl.h
+    src/device/z80-tbl.h \
+    src/Qt/configdialog.h \
+    src/Qt/colorbutton.h
 
-FORMS    +=
+FORMS    += \
+    src/Qt/configdialog.ui

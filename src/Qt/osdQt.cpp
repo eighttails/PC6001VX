@@ -13,7 +13,6 @@
 #include "../common.h"
 #include "../pc6001v.h"
 
-
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define	AUDIOFORMAT	AUDIO_S16MSB	// 16ビット符号あり
 #else

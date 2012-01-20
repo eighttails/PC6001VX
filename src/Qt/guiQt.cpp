@@ -20,6 +20,8 @@
 #include "../usrevent.h"
 #include "../vdg.h"
 
+#include "configdialog.h"
+
 ///////////////////////////////////////////////////////////
 // ローカル関数定義
 ///////////////////////////////////////////////////////////
@@ -531,25 +533,26 @@ void VM6::ShowPopupMenu( int x, int y )
 ///////////////////////////////////////////////////////////
 static int ShowConfig()
 {
+    // INIファイルを開く
+    try{
+        ecfg = new cConfig();
+        if( !ecfg->Init() ) throw Error::IniReadFailed;
+    }
+    // new に失敗した場合
+    catch( std::bad_alloc ){
+        return -1;
+    }
+    // 例外発生
+    catch( Error::Errno i ){
+        delete ecfg;
+        ecfg = NULL;
+        return -1;
+    }
+
     //#PENDING
+    ConfigDialog dialog(ecfg);
+    dialog.exec();
     return 0;
-//        // INIファイルを開く
-//        try{
-//                ecfg = new cConfig();
-//                if( !ecfg->Init() ) throw Error::IniReadFailed;
-//        }
-//	// new に失敗した場合
-//	catch( std::bad_alloc ){
-//		return -1;
-//	}
-//	// 例外発生
-//	catch( Error::Errno i ){
-//		delete ecfg;
-//		ecfg = NULL;
-//		return -1;
-//	}
-	
-	
 //	// ページ毎の設定を行なう
 //	PROPSHEETPAGE psp[9];
 //	PROPSHEETHEADER psh;
@@ -669,7 +672,8 @@ static int ShowConfig()
 }
 
 
-//enum { PP_BASE, PP_DISP, PP_SOUND, PP_FILE, PP_FOLDER, PP_COL, PP_ETC, PP_INPUT };
+enum ConfPage{ PP_BASE, PP_DISP, PP_SOUND, PP_FILE, PP_FOLDER, PP_COL, PP_ETC, PP_INPUT };
+Q_DECLARE_METATYPE(ConfPage)
 
 ///////////////////////////////////////////////////////////
 // 設定を読込む

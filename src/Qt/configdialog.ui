@@ -1,0 +1,2784 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ConfigDialog</class>
+ <widget class="QDialog" name="ConfigDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>621</width>
+    <height>453</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1677215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="5" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>6</number>
+     </property>
+     <widget class="QWidget" name="tabBasic">
+      <attribute name="title">
+       <string>基本(&amp;B)</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBoxModel">
+         <property name="title">
+          <string>機種(&amp;M)</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QRadioButton" name="radioButtonModel6001">
+            <property name="text">
+             <string>PC-6001</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonModel6001mk2">
+            <property name="text">
+             <string>PC-6001mk2</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonModel6601">
+            <property name="text">
+             <string>PC-6601</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonModel6001mk2SR">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>PC-6001mk2SR</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonModel6601SR">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>PC-6601SR</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="checkBoxExtRam">
+         <property name="text">
+          <string>拡張RAMを使う(&amp;X)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="checkBoxUseSoldier">
+         <property name="text">
+          <string>戦士のカートリッジを使う(&amp;R)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="7">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="4">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QGroupBox" name="groupBoxFDD">
+           <property name="title">
+            <string>FDD接続数(&amp;N)</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QRadioButton" name="radioButtonFDD0">
+              <property name="text">
+               <string>なし</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButtonFDD1">
+              <property name="text">
+               <string>1</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButtonFDD2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>2</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabScreen">
+      <attribute name="title">
+       <string>画面(&amp;S)</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0" rowspan="2">
+        <widget class="QGroupBox" name="groupBoxColorMode">
+         <property name="title">
+          <string>カラーモード(&amp;C)</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QRadioButton" name="radioButtonColor8Bit">
+            <property name="text">
+             <string>8bit</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColor16Bit">
+            <property name="text">
+             <string>16bit</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColor24Bit">
+            <property name="text">
+             <string>24bit</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="groupBoxMode4Color">
+         <property name="title">
+          <string>モード4カラー(&amp;4)</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorBW">
+            <property name="text">
+             <string>モノクロ</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorRB">
+            <property name="text">
+             <string>赤/青</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorBR">
+            <property name="text">
+             <string>青/赤</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorPG">
+            <property name="text">
+             <string>桃/緑</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorGP">
+            <property name="text">
+             <string>緑/桃</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0" colspan="4">
+          <widget class="QCheckBox" name="checkBoxScanline">
+           <property name="text">
+            <string>スキャンラインを表示する(&amp;N)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>スキャンライン輝度(&amp;R):</string>
+           </property>
+           <property name="buddy">
+            <cstring>lineEditScanLineBr</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="lineEditScanLineBr">
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>％</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="0" colspan="4">
+          <widget class="QCheckBox" name="checkBoxDispNTSC">
+           <property name="text">
+            <string>4:3表示有効(&amp;3)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="4">
+          <widget class="QCheckBox" name="checkBox">
+           <property name="text">
+            <string>フルスクリーン(&amp;U)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="4">
+          <widget class="QCheckBox" name="checkBox_2">
+           <property name="text">
+            <string>ステータスバーを表示する(&amp;T)</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="2">
+        <widget class="QGroupBox" name="groupBoxfps">
+         <property name="title">
+          <string>フレームスキップ(&amp;K)</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QSlider" name="horizontalSlider">
+            <property name="maximum">
+             <number>5</number>
+            </property>
+            <property name="pageStep">
+             <number>1</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TicksBelow</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelFps">
+            <property name="text">
+             <string>フレームスキップ</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabSound">
+      <attribute name="title">
+       <string>サウンド(&amp;D)</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="groupBoxSamplingRate">
+           <property name="title">
+            <string>サンプリングレート(&amp;R)</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QRadioButton" name="radioButtonSample441">
+              <property name="text">
+               <string>44100 Hz</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButtonSample225">
+              <property name="text">
+               <string>22050 Hz</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButtonSample110">
+              <property name="text">
+               <string>11025 Hz</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="1" rowspan="3">
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QGroupBox" name="groupBoxMasterVol">
+             <property name="title">
+              <string>マスター音量(&amp;M)</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSliderMasterVol">
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>100</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxPSGVol">
+             <property name="title">
+              <string>PSG音量(&amp;P)</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSliderPSGVol">
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>100</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxVoiceVol">
+             <property name="title">
+              <string>音声合成音量(&amp;V)</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_9">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSliderVolceVol">
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_10">
+                <property name="text">
+                 <string>100</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxTapeVol">
+             <property name="title">
+              <string>TAPEモニタ音量(&amp;T)</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QLabel" name="label_11">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSliderTapeVol">
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_12">
+                <property name="text">
+                 <string>100</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <widget class="QGroupBox" name="groupBoxSndBufferSize">
+           <property name="title">
+            <string>バッファサイズ(&amp;Z)</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>1</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="horizontalSliderSndBufferSize">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>5</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>5</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>PSGローパスフィルタ カットオフ周波数(&amp;Q):</string>
+           </property>
+           <property name="buddy">
+            <cstring>lineEditPSGLPF</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditPSGLPF">
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Hz</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabInput">
+      <attribute name="title">
+       <string>入力(&amp;I)</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>キーリピート間隔(&amp;K):</string>
+           </property>
+           <property name="buddy">
+            <cstring>lineEditKeyRepeat</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditKeyRepeat">
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_16">
+           <property name="text">
+            <string>ms</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabFile">
+      <attribute name="title">
+       <string>ファイル(&amp;F)</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="1" colspan="2">
+        <widget class="QLabel" name="label_17">
+         <property name="text">
+          <string>拡張ROM(&amp;R):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditExtRom</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>プリンタ(&amp;P):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditPrinter</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>DISK(&amp;K):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditDisk</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>TAPE(SAVE)(&amp;V):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditSaveTape</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>TAPE(LOAD)(&amp;A):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditLoadTape</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>全角フォント(&amp;Z):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditZenFont</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLabel" name="label_23">
+         <property name="text">
+          <string>半角フォント(&amp;H):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditHanFont</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="lineEditLoadTape"/>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="lineEditExtRom"/>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLineEdit" name="lineEditSaveTape"/>
+       </item>
+       <item row="5" column="3">
+        <widget class="QLineEdit" name="lineEditDisk"/>
+       </item>
+       <item row="6" column="3">
+        <widget class="QLineEdit" name="lineEditPrinter"/>
+       </item>
+       <item row="7" column="3">
+        <widget class="QLineEdit" name="lineEditZenFont"/>
+       </item>
+       <item row="8" column="3">
+        <widget class="QLineEdit" name="lineEditHanFont"/>
+       </item>
+       <item row="9" column="1">
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="4">
+        <widget class="QPushButton" name="pushButtonRefExtRom">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QPushButton" name="pushButtonRefLoadTape">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="QPushButton" name="pushButtonRefSaveTape">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="4">
+        <widget class="QPushButton" name="pushButtonRefDisk">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="4">
+        <widget class="QPushButton" name="pushButtonRefPrinter">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="4">
+        <widget class="QPushButton" name="pushButtonRefZenFont">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="4">
+        <widget class="QPushButton" name="pushButtonRefHanFont">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabFolder">
+      <attribute name="title">
+       <string>フォルダ(&amp;L)</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_12">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_50">
+         <property name="text">
+          <string>ROM(&amp;R):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditExtRom</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lineEditFolderRom"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="pushButtonRefFolderExtRom">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_51">
+         <property name="text">
+          <string>TAPE(&amp;T):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditLoadTape</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEditFolderTape"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="pushButtonRefFolderTape">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_48">
+         <property name="text">
+          <string>DISK(&amp;K):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditDisk</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEditFolderDisk"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pushButtonRefFolderDisk">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_52">
+         <property name="text">
+          <string>SnapShot(&amp;H):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditPrinter</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="lineEditFolderSnapShot"/>
+       </item>
+       <item row="6" column="2">
+        <widget class="QPushButton" name="pushButtonRefFolderSnapShot">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_49">
+         <property name="text">
+          <string>WAVE(&amp;W)</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditZenFont</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLineEdit" name="lineEditFolderWave"/>
+       </item>
+       <item row="7" column="2">
+        <widget class="QPushButton" name="pushButtonRefFolderWave">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_47">
+         <property name="text">
+          <string>フォント(&amp;N):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditHanFont</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLineEdit" name="lineEditFolderFont"/>
+       </item>
+       <item row="8" column="2">
+        <widget class="QPushButton" name="pushButtonRefFolderFont">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <spacer name="verticalSpacer_13">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_53">
+         <property name="text">
+          <string>拡張ROM(&amp;X):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditExtRom</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="lineEditFolderExtRom"/>
+       </item>
+       <item row="4" column="2">
+        <widget class="QPushButton" name="pushButtonRefFolderExtRom_2">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabColor1">
+      <attribute name="title">
+       <string>色(&amp;1)</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="2">
+        <widget class="QGroupBox" name="groupBoxColorMode2">
+         <property name="title">
+          <string>MODE2(&amp;2)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="2" column="0">
+           <widget class="ColorButton" name="pushButtonColor22">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="ColorButton" name="pushButtonColor23">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="ColorButton" name="pushButtonColor24">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="ColorButton" name="pushButtonColor25">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="ColorButton" name="pushButtonColor26">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="ColorButton" name="pushButtonColor27">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="ColorButton" name="pushButtonColor28">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_28">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_29">
+            <property name="text">
+             <string>黄</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_30">
+            <property name="text">
+             <string>青</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_31">
+            <property name="text">
+             <string>赤</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLabel" name="label_32">
+            <property name="text">
+             <string>白</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="label_33">
+            <property name="text">
+             <string>シアン</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLabel" name="label_34">
+            <property name="text">
+             <string>マゼンタ</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLabel" name="label_35">
+            <property name="text">
+             <string>橙</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="ColorButton" name="pushButtonColor21">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="7">
+        <widget class="QLabel" name="label_27">
+         <property name="text">
+          <string>変更したい色をクリックしてください</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QGroupBox" name="groupBoxColorMode4">
+         <property name="title">
+          <string>MODE4(&amp;4)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_10">
+          <item row="0" column="0" colspan="2">
+           <widget class="QLabel" name="label_46">
+            <property name="text">
+             <string>Set1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" colspan="2">
+           <widget class="QLabel" name="label_63">
+            <property name="text">
+             <string>Set2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="ColorButton" name="pushButtonColor37">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="ColorButton" name="pushButtonColor38">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="ColorButton" name="pushButtonColor39">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="ColorButton" name="pushButtonColor40">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_64">
+            <property name="text">
+             <string>深緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_65">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="label_66">
+            <property name="text">
+             <string>黒</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QLabel" name="label_67">
+            <property name="text">
+             <string>白</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QLabel" name="label_68">
+            <property name="text">
+             <string>にじみ1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2" colspan="2">
+           <widget class="QLabel" name="label_69">
+            <property name="text">
+             <string>にじみ1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="ColorButton" name="pushButtonColor41">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="ColorButton" name="pushButtonColor42">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="ColorButton" name="pushButtonColor43">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="ColorButton" name="pushButtonColor44">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0">
+           <widget class="ColorButton" name="pushButtonColor46">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="ColorButton" name="pushButtonColor45">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="2">
+           <widget class="QLabel" name="label_71">
+            <property name="text">
+             <string>にじみ2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2" colspan="2">
+           <widget class="QLabel" name="label_70">
+            <property name="text">
+             <string>にじみ2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="2">
+           <widget class="ColorButton" name="pushButtonColor47">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="2">
+           <widget class="ColorButton" name="pushButtonColor48">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_72">
+            <property name="text">
+             <string>赤</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLabel" name="label_73">
+            <property name="text">
+             <string>黄</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QLabel" name="label_74">
+            <property name="text">
+             <string>赤</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3">
+           <widget class="QLabel" name="label_75">
+            <property name="text">
+             <string>青</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="3">
+           <widget class="QLabel" name="label_76">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="3">
+           <widget class="QLabel" name="label_77">
+            <property name="text">
+             <string>桃</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLabel" name="label_78">
+            <property name="text">
+             <string>―</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="1">
+           <widget class="QLabel" name="label_79">
+            <property name="text">
+             <string>―</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QGroupBox" name="groupBoxColorMode3">
+         <property name="title">
+          <string>MODE3(&amp;3)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <item row="1" column="0">
+           <widget class="ColorButton" name="pushButtonColor29">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="ColorButton" name="pushButtonColor30">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="ColorButton" name="pushButtonColor31">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="ColorButton" name="pushButtonColor32">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="QLabel" name="label_36">
+            <property name="text">
+             <string>Set1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QLabel" name="label_37">
+            <property name="text">
+             <string>Set2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="ColorButton" name="pushButtonColor33">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="ColorButton" name="pushButtonColor34">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="ColorButton" name="pushButtonColor35">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="ColorButton" name="pushButtonColor36">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_38">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_39">
+            <property name="text">
+             <string>黄</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_40">
+            <property name="text">
+             <string>青</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_41">
+            <property name="text">
+             <string>赤</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="label_42">
+            <property name="text">
+             <string>白</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLabel" name="label_43">
+            <property name="text">
+             <string>シアン</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLabel" name="label_44">
+            <property name="text">
+             <string>マゼンタ</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QLabel" name="label_45">
+            <property name="text">
+             <string>橙</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="6">
+        <spacer name="verticalSpacer_7">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="6">
+        <spacer name="horizontalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBoxColorMode1">
+         <property name="title">
+          <string>MODE1(&amp;1)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_13">
+          <item row="0" column="0">
+           <widget class="ColorButton" name="pushButtonColor16">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="ColorButton" name="pushButtonColor17">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="ColorButton" name="pushButtonColor18">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="ColorButton" name="pushButtonColor19">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="ColorButton" name="pushButtonColor20">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_59">
+            <property name="text">
+             <string>黒</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QLabel" name="label_60">
+            <property name="text">
+             <string>Set1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0" colspan="2">
+           <widget class="QLabel" name="label_61">
+            <property name="text">
+             <string>Set2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_62">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_97">
+            <property name="text">
+             <string>深緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLabel" name="label_98">
+            <property name="text">
+             <string>橙</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QLabel" name="label_99">
+            <property name="text">
+             <string>深緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <spacer name="verticalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="6" column="0">
+           <spacer name="verticalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabColor2">
+      <attribute name="title">
+       <string>色(&amp;2)</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_11">
+       <item row="2" column="0" colspan="4">
+        <widget class="QLabel" name="label_80">
+         <property name="text">
+          <string>変更したい色をクリックしてください</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <spacer name="horizontalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="3" column="0">
+        <spacer name="verticalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>mk2〜(&amp;M)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_14">
+          <item row="0" column="0">
+           <widget class="ColorButton" name="pushButtonColor49">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="ColorButton" name="pushButtonColor50">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="ColorButton" name="pushButtonColor51">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="ColorButton" name="pushButtonColor52">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="ColorButton" name="pushButtonColor53">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="ColorButton" name="pushButtonColor54">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="ColorButton" name="pushButtonColor55">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="ColorButton" name="pushButtonColor56">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_81">
+            <property name="text">
+             <string>透明(黒)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_82">
+            <property name="text">
+             <string>橙</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_83">
+            <property name="text">
+             <string>青緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_84">
+            <property name="text">
+             <string>黄緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QLabel" name="label_87">
+            <property name="text">
+             <string>灰色</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLabel" name="label_86">
+            <property name="text">
+             <string>空色</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="label_85">
+            <property name="text">
+             <string>赤紫</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLabel" name="label_88">
+            <property name="text">
+             <string>青紫</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="ColorButton" name="pushButtonColor57">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="ColorButton" name="pushButtonColor58">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="ColorButton" name="pushButtonColor59">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="ColorButton" name="pushButtonColor60">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="ColorButton" name="pushButtonColor61">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="ColorButton" name="pushButtonColor62">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="2">
+           <widget class="ColorButton" name="pushButtonColor63">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="2">
+           <widget class="ColorButton" name="pushButtonColor64">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_89">
+            <property name="text">
+             <string>黒</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QLabel" name="label_90">
+            <property name="text">
+             <string>赤</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QLabel" name="label_91">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QLabel" name="label_92">
+            <property name="text">
+             <string>黄</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3">
+           <widget class="QLabel" name="label_93">
+            <property name="text">
+             <string>青</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3">
+           <widget class="QLabel" name="label_94">
+            <property name="text">
+             <string>マゼンタ</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="3">
+           <widget class="QLabel" name="label_96">
+            <property name="text">
+             <string>白</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="3">
+           <widget class="QLabel" name="label_95">
+            <property name="text">
+             <string>シアン</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabMisc">
+      <attribute name="title">
+       <string>その他(&amp;O)</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_21">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_15">
+         <item>
+          <widget class="QLabel" name="label_54">
+           <property name="text">
+            <string>オーバークロック率(&amp;V):</string>
+           </property>
+           <property name="buddy">
+            <cstring>lineEditClockRatio</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditClockRatio">
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_55">
+           <property name="text">
+            <string>% (1-1000)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_9">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxRomCRC">
+         <property name="text">
+          <string>システムROMのCRCチェック有効(&amp;C)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxRomPatch">
+         <property name="text">
+          <string>ROMにパッチを当てる(バグ修正)(&amp;P)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxTurboTape">
+         <property name="text">
+          <string>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Boost Up (TAPE最速化)(&amp;U)</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_16">
+          <item>
+           <widget class="QLabel" name="label_56">
+            <property name="text">
+             <string>最大倍率</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_12">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_58">
+            <property name="text">
+             <string>N60</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineEditTurbo60">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_11">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_57">
+            <property name="text">
+             <string>N60m/N66</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineEditTurbo66">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_8">
+         <property name="text">
+          <string>ビデオキャプチャ時 RLE有効(8bit時のみ)(&amp;R)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_9">
+         <property name="text">
+          <string>終了時に確認する(&amp;F)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox_10">
+         <property name="text">
+          <string>終了時にINIファイルを保存する(&amp;Q)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_14">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ColorButton</class>
+   <extends>QPushButton</extends>
+   <header>colorbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>lineEditHanFont</tabstop>
+  <tabstop>pushButtonRefHanFont</tabstop>
+  <tabstop>lineEditFolderRom</tabstop>
+  <tabstop>pushButtonRefFolderExtRom</tabstop>
+  <tabstop>lineEditFolderTape</tabstop>
+  <tabstop>pushButtonRefFolderTape</tabstop>
+  <tabstop>lineEditFolderDisk</tabstop>
+  <tabstop>pushButtonRefFolderDisk</tabstop>
+  <tabstop>lineEditFolderExtRom</tabstop>
+  <tabstop>pushButtonRefFolderExtRom_2</tabstop>
+  <tabstop>lineEditFolderSnapShot</tabstop>
+  <tabstop>pushButtonRefFolderSnapShot</tabstop>
+  <tabstop>lineEditFolderWave</tabstop>
+  <tabstop>pushButtonRefFolderWave</tabstop>
+  <tabstop>lineEditFolderFont</tabstop>
+  <tabstop>pushButtonRefFolderFont</tabstop>
+  <tabstop>lineEditClockRatio</tabstop>
+  <tabstop>checkBoxRomCRC</tabstop>
+  <tabstop>checkBoxRomPatch</tabstop>
+  <tabstop>checkBoxTurboTape</tabstop>
+  <tabstop>lineEditTurbo60</tabstop>
+  <tabstop>lineEditTurbo66</tabstop>
+  <tabstop>checkBox_8</tabstop>
+  <tabstop>checkBox_9</tabstop>
+  <tabstop>checkBox_10</tabstop>
+  <tabstop>pushButtonColor21</tabstop>
+  <tabstop>pushButtonColor22</tabstop>
+  <tabstop>pushButtonColor23</tabstop>
+  <tabstop>pushButtonColor24</tabstop>
+  <tabstop>pushButtonColor25</tabstop>
+  <tabstop>pushButtonColor26</tabstop>
+  <tabstop>pushButtonColor27</tabstop>
+  <tabstop>pushButtonColor28</tabstop>
+  <tabstop>pushButtonColor29</tabstop>
+  <tabstop>pushButtonColor30</tabstop>
+  <tabstop>pushButtonColor31</tabstop>
+  <tabstop>pushButtonColor32</tabstop>
+  <tabstop>pushButtonColor33</tabstop>
+  <tabstop>pushButtonColor34</tabstop>
+  <tabstop>pushButtonColor35</tabstop>
+  <tabstop>pushButtonColor36</tabstop>
+  <tabstop>pushButtonColor37</tabstop>
+  <tabstop>pushButtonColor38</tabstop>
+  <tabstop>pushButtonColor39</tabstop>
+  <tabstop>pushButtonColor40</tabstop>
+  <tabstop>pushButtonColor41</tabstop>
+  <tabstop>pushButtonColor42</tabstop>
+  <tabstop>pushButtonColor43</tabstop>
+  <tabstop>pushButtonColor44</tabstop>
+  <tabstop>pushButtonColor45</tabstop>
+  <tabstop>pushButtonColor46</tabstop>
+  <tabstop>pushButtonColor47</tabstop>
+  <tabstop>pushButtonColor48</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>radioButtonModel6001</tabstop>
+  <tabstop>radioButtonModel6001mk2</tabstop>
+  <tabstop>radioButtonModel6601</tabstop>
+  <tabstop>radioButtonModel6001mk2SR</tabstop>
+  <tabstop>radioButtonModel6601SR</tabstop>
+  <tabstop>radioButtonFDD0</tabstop>
+  <tabstop>radioButtonFDD1</tabstop>
+  <tabstop>radioButtonFDD2</tabstop>
+  <tabstop>checkBoxExtRam</tabstop>
+  <tabstop>checkBoxUseSoldier</tabstop>
+  <tabstop>buttonBox</tabstop>
+  <tabstop>radioButtonColor8Bit</tabstop>
+  <tabstop>radioButtonColor16Bit</tabstop>
+  <tabstop>radioButtonColor24Bit</tabstop>
+  <tabstop>radioButtonColorBW</tabstop>
+  <tabstop>radioButtonColorRB</tabstop>
+  <tabstop>radioButtonColorBR</tabstop>
+  <tabstop>radioButtonColorPG</tabstop>
+  <tabstop>radioButtonColorGP</tabstop>
+  <tabstop>horizontalSlider</tabstop>
+  <tabstop>checkBoxScanline</tabstop>
+  <tabstop>lineEditScanLineBr</tabstop>
+  <tabstop>checkBoxDispNTSC</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>checkBox_2</tabstop>
+  <tabstop>radioButtonSample441</tabstop>
+  <tabstop>radioButtonSample225</tabstop>
+  <tabstop>radioButtonSample110</tabstop>
+  <tabstop>horizontalSliderSndBufferSize</tabstop>
+  <tabstop>horizontalSliderMasterVol</tabstop>
+  <tabstop>horizontalSliderPSGVol</tabstop>
+  <tabstop>horizontalSliderVolceVol</tabstop>
+  <tabstop>horizontalSliderTapeVol</tabstop>
+  <tabstop>lineEditPSGLPF</tabstop>
+  <tabstop>lineEditKeyRepeat</tabstop>
+  <tabstop>lineEditExtRom</tabstop>
+  <tabstop>pushButtonRefExtRom</tabstop>
+  <tabstop>lineEditLoadTape</tabstop>
+  <tabstop>pushButtonRefLoadTape</tabstop>
+  <tabstop>lineEditSaveTape</tabstop>
+  <tabstop>pushButtonRefSaveTape</tabstop>
+  <tabstop>lineEditDisk</tabstop>
+  <tabstop>pushButtonRefDisk</tabstop>
+  <tabstop>lineEditPrinter</tabstop>
+  <tabstop>pushButtonRefPrinter</tabstop>
+  <tabstop>lineEditZenFont</tabstop>
+  <tabstop>pushButtonRefZenFont</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>ConfigDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>ConfigDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

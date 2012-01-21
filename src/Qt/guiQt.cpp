@@ -552,7 +552,15 @@ static int ShowConfig()
     //#PENDING
     ConfigDialog dialog(ecfg);
     dialog.exec();
-    return 0;
+    int ret = dialog.result();
+    // OKボタンが押されたならINIファイル書込み
+    if( ret == QDialog::Accepted) ecfg->Write();
+
+    delete ecfg;
+    ecfg = NULL;
+
+    return ret;
+
 //	// ページ毎の設定を行なう
 //	PROPSHEETPAGE psp[9];
 //	PROPSHEETHEADER psh;

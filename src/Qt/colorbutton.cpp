@@ -1,14 +1,16 @@
+#include <QColorDialog>
+
 #include "colorbutton.h"
 #include "../config.h"
+
 ColorButton::ColorButton(QWidget *parent) :
     QPushButton(parent),
     colorId(0),
     config(NULL)
 {
-    setColor(QColor(0, 0, 0));
 }
 
-void ColorButton::setColor(QColor color)
+void ColorButton::updateColor()
 {
     int r = 0, g = 0, b = 0;
     color.getRgb(&r, &g, &b);
@@ -29,7 +31,28 @@ void ColorButton::initialize(int id, cConfig *cfg)
     // 設定情報から自ボタンに対応する色を取得
     COLOR24 col;
     config->GetColor(colorId, &col);
-    QColor qcol(col.r, col.g, col.b);
+    color = QColor(col.r, col.g, col.b);
     // 自身の色に反映
-    setColor(qcol);
+    updateColor();
+
+    // ボタンをクリックしたら色選択ダイアログを開く
+    connect(this, SIGNAL(clicked()), this, SLOT(chooseColor()));
+}
+
+void ColorButton::chooseColor()
+{
+    QColor newColor = QColorDialog::getColor(color);
+    // キャンセルが押された場合、isValidはfalseになる
+    if(newColor.isValid()){
+        // 表示の更新
+        color = newColor;
+        updateColor();
+
+        // 設定の更新
+        COLOR24 col;
+        col.r = color.red();
+        col.g = color.green();
+        col.b = color.blue();
+        config->SetColor(colorId, &col);
+        }
 }

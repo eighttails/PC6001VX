@@ -19,11 +19,14 @@ public:
     void initialize(int id, cConfig* cfg);
     // ボタンサイズは30x20を基準とする
     virtual QSize sizeHint () const {return QSize (30, 20);}
-
+private slots:
+    // 色選択ダイアログを開く
+    void chooseColor();
 private:
-    void setColor(QColor color);
+    void updateColor();
     int colorId;
     cConfig* config;
+    QColor color;
 };
 
 #endif // COLORBUTTON_H

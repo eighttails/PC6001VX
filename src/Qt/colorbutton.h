@@ -3,6 +3,8 @@
 
 #include <QPushButton>
 
+class cConfig;
+
 // 色選択用のボタン
 class ColorButton : public QPushButton
 {
@@ -14,9 +16,14 @@ signals:
 
 public slots:
 public:
+    void initialize(int id, cConfig* cfg);
+    // ボタンサイズは30x20を基準とする
+    virtual QSize sizeHint () const {return QSize (30, 20);}
+
+private:
     void setColor(QColor color);
-    // ボタンサイズは20x20を基準とする
-    virtual QSize sizeHint () const {return QSize (20, 20);}
+    int colorId;
+    cConfig* config;
 };
 
 #endif // COLORBUTTON_H

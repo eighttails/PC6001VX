@@ -20,6 +20,11 @@ public:
 private:
     Ui::ConfigDialog *ui;
     cConfig* config;
+
+private slots:
+    void assignColorButton();
+    void readConfig();
+    void writeConfig();
 };
 
 #endif // CONFIGDIALOG_H

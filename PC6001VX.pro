@@ -14,12 +14,6 @@ INCLUDEPATH += ./src/Qt
 DEFINES += USESDLTHREAD USESDLCS USESDLCRIT USESDLSEMAPHORE USESDLTIMER
 QMAKE_CXXFLAGS += `sdl-config --cflags` `directfb-config --cflags`
 
-#X11環境判定
-!win32:!embedded:!qpa:!mac:!symbian:CONFIG += x11
-x11 {
-    DEFINES += USEX11
-}
-
 LIBS += `sdl-config --libs`
 
 SOURCES += \

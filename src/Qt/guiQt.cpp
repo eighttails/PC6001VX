@@ -549,7 +549,6 @@ static int ShowConfig()
         return -1;
     }
 
-    //#PENDING
     ConfigDialog dialog(ecfg);
     dialog.exec();
     int ret = dialog.result();

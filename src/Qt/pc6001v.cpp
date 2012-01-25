@@ -4,10 +4,6 @@
 #include <QFrame>
 #include <QTextCodec>
 
-#ifdef USEX11
-#include <X11/Xlib.h>
-#endif
-
 #include "../typedef.h"
 #include "../config.h"
 #include "../console.h"
@@ -17,12 +13,15 @@
 
 #include "../icons.h"
 
+#ifdef SDL_VIDEO_DRIVER_X11
+#include <X11/Xlib.h>
+#endif
 ///////////////////////////////////////////////////////////
 // メイン
 ///////////////////////////////////////////////////////////
 int main( int argc, char *argv[] )
 {
-#ifdef USEX11
+#ifdef SDL_VIDEO_DRIVER_X11
     //X11環境でSDLスレッドを使用するために必要。
     XInitThreads();
 #endif

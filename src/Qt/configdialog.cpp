@@ -8,6 +8,7 @@ ConfigDialog::ConfigDialog(cConfig* cfg, QWidget *parent) :
     QDialog(parent),
     config(cfg),
     sliderLabelMap(new QSignalMapper(this)),
+    fileRefMap(new QSignalMapper(this)),
     folderRefMap(new QSignalMapper(this)),
     ui(new Ui::ConfigDialog)
 {
@@ -15,8 +16,10 @@ ConfigDialog::ConfigDialog(cConfig* cfg, QWidget *parent) :
     connect(ui->horizontalSliderFPS, SIGNAL(valueChanged(int)), this, SLOT(dispFPS(int)));
     // スライダーを動かしたらラベルに値を反映
     connect(sliderLabelMap, SIGNAL(mapped(QWidget*)), this, SLOT(dispValue(QWidget*)));
+    // 参照ボタンを押したらファイル、ファイル選択ダイアログを出し、ラインエディットに反映
+    connect(fileRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFile(QWidget*)));
     // 参照ボタンを押したらファイル、フォルダ選択ダイアログを出し、ラインエディットに反映
-    connect(folderRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFile(QWidget*)));
+    connect(folderRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFolder(QWidget*)));
 
     assignColorButton();
     readConfig();
@@ -145,51 +148,138 @@ void ConfigDialog::readConfig()
     strncpy( str, config->GetExtRomFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditExtRom->setText(str);
-    connect(ui->pushButtonRefExtRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-    folderRefMap->setMapping(ui->pushButtonRefExtRom, ui->lineEditExtRom);
+    connect(ui->pushButtonRefExtRom, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefExtRom, ui->lineEditExtRom);
 
     // TAPE(LOAD)ファイル名
     strncpy( str, config->GetTapeFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditLoadTape->setText(str);
-    connect(ui->pushButtonRefLoadTape, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-    folderRefMap->setMapping(ui->pushButtonRefLoadTape, ui->lineEditLoadTape);
+    connect(ui->pushButtonRefLoadTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefLoadTape, ui->lineEditLoadTape);
 
     // TAPE(SAVE)ファイル名
     strncpy( str, config->GetSaveFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditSaveTape->setText(str);
-    connect(ui->pushButtonRefSaveTape, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-    folderRefMap->setMapping(ui->pushButtonRefSaveTape, ui->lineEditSaveTape);
+    connect(ui->pushButtonRefSaveTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefSaveTape, ui->lineEditSaveTape);
 
     // DISKファイル名
     strncpy( str, config->GetDiskFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditDisk->setText(str);
-    connect(ui->pushButtonRefDisk, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-    folderRefMap->setMapping(ui->pushButtonRefDisk, ui->lineEditDisk);
+    connect(ui->pushButtonRefDisk, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefDisk, ui->lineEditDisk);
 
     // プリンタファイル名
     strncpy( str, config->GetPrinterFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditPrinter->setText(str);
-    connect(ui->pushButtonRefPrinter, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-    folderRefMap->setMapping(ui->pushButtonRefPrinter, ui->lineEditPrinter);
+    connect(ui->pushButtonRefPrinter, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefPrinter, ui->lineEditPrinter);
 
     // 全角フォントファイル名
     strncpy( str, config->GetFontFileZ(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditZenFont->setText(str);
-    connect(ui->pushButtonRefZenFont, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-    folderRefMap->setMapping(ui->pushButtonRefZenFont, ui->lineEditZenFont);
+    connect(ui->pushButtonRefZenFont, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefZenFont, ui->lineEditZenFont);
 
     // 半角フォントファイル名
     strncpy( str, config->GetFontFileH(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditHanFont->setText(str);
-    connect(ui->pushButtonRefHanFont, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-    folderRefMap->setMapping(ui->pushButtonRefHanFont, ui->lineEditHanFont);
+    connect(ui->pushButtonRefHanFont, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefHanFont, ui->lineEditHanFont);
 
+    // フォルダ--------------------------------------------------------------
+    // ROMパス
+    strncpy( str, config->GetRomPath(), PATH_MAX );
+    DelDelimiter( str );
+    UnDelimiter( str );
+    ui->lineEditFolderRom->setText(str);
+    connect(ui->pushButtonRefFolderRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+    folderRefMap->setMapping(ui->pushButtonRefFolderRom, ui->lineEditFolderRom);
+
+    // TAPEパス
+    strncpy( str, config->GetTapePath(), PATH_MAX );
+    DelDelimiter( str );
+    UnDelimiter( str );
+    ui->lineEditFolderTape->setText(str);
+    connect(ui->pushButtonRefFolderTape, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+    folderRefMap->setMapping(ui->pushButtonRefFolderTape, ui->lineEditFolderTape);
+
+    // DISKパス
+    strncpy( str, config->GetDiskPath(), PATH_MAX );
+    DelDelimiter( str );
+    UnDelimiter( str );
+    ui->lineEditFolderDisk->setText(str);
+    connect(ui->pushButtonRefFolderDisk, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+    folderRefMap->setMapping(ui->pushButtonRefFolderDisk, ui->lineEditFolderDisk);
+
+    // 拡張ROMパス
+    strncpy( str, config->GetExtRomPath(), PATH_MAX );
+    DelDelimiter( str );
+    UnDelimiter( str );
+    ui->lineEditFolderExtRom->setText(str);
+    connect(ui->pushButtonRefFolderExtRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+    folderRefMap->setMapping(ui->pushButtonRefFolderExtRom, ui->lineEditFolderExtRom);
+
+    // IMGパス
+    strncpy( str, config->GetImgPath(), PATH_MAX );
+    DelDelimiter( str );
+    UnDelimiter( str );
+    ui->lineEditFolderImg->setText(str);
+    connect(ui->pushButtonRefFolderImg, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+    folderRefMap->setMapping(ui->pushButtonRefFolderImg, ui->lineEditFolderImg);
+
+    // WAVEパス
+    strncpy( str, config->GetWavePath(), PATH_MAX );
+    DelDelimiter( str );
+    UnDelimiter( str );
+    ui->lineEditFolderWave->setText(str);
+    connect(ui->pushButtonRefFolderWave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+    folderRefMap->setMapping(ui->pushButtonRefFolderWave, ui->lineEditFolderWave);
+
+    // FONTパス
+    strncpy( str, config->GetFontPath(), PATH_MAX );
+    DelDelimiter( str );
+    UnDelimiter( str );
+    ui->lineEditFolderFont->setText(str);
+    connect(ui->pushButtonRefFolderFont, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+    folderRefMap->setMapping(ui->pushButtonRefFolderFont, ui->lineEditFolderFont);
+
+    // その他
+    // オーバークロック率
+    ui->lineEditClockRatio->setText(QString::number(qMin(qMax(1, config->GetOverClock()), 1000)));
+
+    // CRCチェック
+    ui->checkBoxRomCRC->setChecked(config->GetCheckCRC());
+
+    // ROMパッチ
+    ui->checkBoxRomPatch->setChecked(config->GetRomPatch());
+
+    // Turbo TAPE
+    ui->checkBoxTurboTape->setChecked(config->GetTurboTAPE());
+
+    // Boost Up
+    ui->groupBoxBoostUp->setChecked(config->GetBoostUp());
+
+    // BoostUp 最大倍率(N60モード)
+    ui->lineEditBoost60->setText(QString::number(qMin(qMax(1, config->GetMaxBoost1()), 100)));
+
+    // BoostUp 最大倍率(N60m/N66モード)
+    ui->lineEditBoost66->setText(QString::number(qMin(qMax(1, config->GetMaxBoost2()), 100)));
+
+    // ビデオキャプチャ RLE
+    ui->checkBoxAviRLE->setChecked(config->GetAviRle());
+
+    // 終了時 確認する
+    ui->checkBoxCkQuit->setChecked(config->GetCkQuit());
+
+    // 終了時 INIファイルを保存する
+    ui->checkBoxSaveQuit->setChecked(config->GetSaveQuit());
 }
 
 void ConfigDialog::writeConfig()
@@ -269,14 +359,16 @@ void ConfigDialog::selectFile(QWidget *widget)
 
 void ConfigDialog::selectFolder(QWidget *widget)
 {
-    char str[PATH_MAX];
+    char folder[PATH_MAX];
     QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
     if(edit){
-        strncpy(str, edit->text().toLocal8Bit().data(), PATH_MAX);
-        Delimiter(str);
-        OSD_FolderDiaog(NULL, str);
-        UnDelimiter(str);
-        edit->setText(QString::fromLocal8Bit(str));
+        strncpy(folder, edit->text().toLocal8Bit().data(), PATH_MAX);
+        Delimiter(folder);
+        OSD_FolderDiaog(NULL, folder);
+        UnDelimiter(folder);
+        if(strlen(folder) > 0){
+            edit->setText(QString::fromLocal8Bit(folder));
+        }
     }
 }
 

@@ -22,6 +22,7 @@ private:
     Ui::ConfigDialog *ui;
     cConfig* config;
     QSignalMapper* sliderLabelMap;
+    QSignalMapper* fileRefMap;
     QSignalMapper* folderRefMap;
 
 private slots:

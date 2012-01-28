@@ -973,7 +973,7 @@
         <widget class="QLineEdit" name="lineEditFolderRom"/>
        </item>
        <item row="0" column="2">
-        <widget class="QPushButton" name="pushButtonRefFolderExtRom">
+        <widget class="QPushButton" name="pushButtonRefFolderRom">
          <property name="text">
           <string>参照...</string>
          </property>
@@ -1030,10 +1030,10 @@
         </widget>
        </item>
        <item row="6" column="1">
-        <widget class="QLineEdit" name="lineEditFolderSnapShot"/>
+        <widget class="QLineEdit" name="lineEditFolderImg"/>
        </item>
        <item row="6" column="2">
-        <widget class="QPushButton" name="pushButtonRefFolderSnapShot">
+        <widget class="QPushButton" name="pushButtonRefFolderImg">
          <property name="text">
           <string>参照...</string>
          </property>
@@ -1106,7 +1106,7 @@
         <widget class="QLineEdit" name="lineEditFolderExtRom"/>
        </item>
        <item row="4" column="2">
-        <widget class="QPushButton" name="pushButtonRefFolderExtRom_2">
+        <widget class="QPushButton" name="pushButtonRefFolderExtRom">
          <property name="text">
           <string>参照...</string>
          </property>
@@ -2930,9 +2930,12 @@ border-radius: 1;</string>
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="groupBoxBoostUp">
          <property name="title">
           <string>Boost Up (TAPE最速化)(&amp;U)</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_16">
           <item>
@@ -2966,7 +2969,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEditTurbo60">
+           <widget class="QLineEdit" name="lineEditBoost60">
             <property name="maximumSize">
              <size>
               <width>50</width>
@@ -3008,7 +3011,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEditTurbo66">
+           <widget class="QLineEdit" name="lineEditBoost66">
             <property name="maximumSize">
              <size>
               <width>50</width>
@@ -3093,15 +3096,15 @@ border-radius: 1;</string>
   <tabstop>lineEditHanFont</tabstop>
   <tabstop>pushButtonRefHanFont</tabstop>
   <tabstop>lineEditFolderRom</tabstop>
-  <tabstop>pushButtonRefFolderExtRom</tabstop>
+  <tabstop>pushButtonRefFolderRom</tabstop>
   <tabstop>lineEditFolderTape</tabstop>
   <tabstop>pushButtonRefFolderTape</tabstop>
   <tabstop>lineEditFolderDisk</tabstop>
   <tabstop>pushButtonRefFolderDisk</tabstop>
   <tabstop>lineEditFolderExtRom</tabstop>
-  <tabstop>pushButtonRefFolderExtRom_2</tabstop>
-  <tabstop>lineEditFolderSnapShot</tabstop>
-  <tabstop>pushButtonRefFolderSnapShot</tabstop>
+  <tabstop>pushButtonRefFolderExtRom</tabstop>
+  <tabstop>lineEditFolderImg</tabstop>
+  <tabstop>pushButtonRefFolderImg</tabstop>
   <tabstop>lineEditFolderWave</tabstop>
   <tabstop>pushButtonRefFolderWave</tabstop>
   <tabstop>lineEditFolderFont</tabstop>
@@ -3110,8 +3113,8 @@ border-radius: 1;</string>
   <tabstop>checkBoxRomCRC</tabstop>
   <tabstop>checkBoxRomPatch</tabstop>
   <tabstop>checkBoxTurboTape</tabstop>
-  <tabstop>lineEditTurbo60</tabstop>
-  <tabstop>lineEditTurbo66</tabstop>
+  <tabstop>lineEditBoost60</tabstop>
+  <tabstop>lineEditBoost66</tabstop>
   <tabstop>checkBoxAviRLE</tabstop>
   <tabstop>checkBoxCkQuit</tabstop>
   <tabstop>checkBoxSaveQuit</tabstop>

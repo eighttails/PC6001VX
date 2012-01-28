@@ -2,6 +2,7 @@
 #define CONFIGDIALOG_H
 
 #include <QDialog>
+#include <QSignalMapper>
 
 class cConfig;
 
@@ -20,11 +21,17 @@ public:
 private:
     Ui::ConfigDialog *ui;
     cConfig* config;
+    QSignalMapper* sliderLabelMap;
+    QSignalMapper* folderRefMap;
 
 private slots:
     void assignColorButton();
     void readConfig();
     void writeConfig();
+    void dispFPS(int fps);
+    void dispValue(QWidget* widget);
+    void selectFile(QWidget* widget);
+    void selectFolder(QWidget* widget);
 };
 
 #endif // CONFIGDIALOG_H

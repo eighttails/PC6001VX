@@ -707,10 +707,6 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
     case FD_TapeLoad:	// TAPE(LOAD)選択
         mode   = FM_Load;
         title  = "TAPEイメージ選択(LOAD)";
-//        filter = "TAPEイメージ\0*.p6t;*.cas;*.p6\0"
-//                "P6T形式 (*.p6t)\0*.p6t\0"
-//                "ベタ形式 (*.cas;*.p6)\0*.cas\0"
-//                "全てのファイル (*.*)\0*.*\0\0";
         filter = "TAPEイメージ (*.p6t *.cas *.p6);;"
                 "P6T形式 (*.p6t);;"
                 "ベタ形式 (*.cas *.p6);;"
@@ -721,90 +717,90 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
     case FD_TapeSave:	// TAPE(SAVE)選択
         mode   = FM_Save;
         title  = "TAPEイメージ選択(SAVE)";
-        filter = "TAPEイメージ\0*.p6t;*.cas;*.p6\0"
-                "P6T形式 (*.p6t)\0*.p6t\0"
-                "ベタ形式 (*.cas;*.p6)\0*.cas\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "TAPEイメージ (*.p6t *.cas *.p6);;"
+                "P6T形式 (*.p6t);;"
+                "ベタ形式 (*.cas *.p6);;"
+                "全てのファイル (*.*)";
         ext    = "p6t";
         break;
 
     case FD_Disk:		// DISK選択
         mode   = FM_Load;
         title  = "DISKイメージ選択";
-        filter = "DISKイメージ\0*.d88\0"
-                "D88形式 (*.d88)\0*.d88\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "DISKイメージ(*.d88);;"
+                "D88形式 (*.d88);;"
+                "全てのファイル (*.*)";
         ext    = "d88";
         break;
 
     case FD_ExtRom:		// 拡張ROM選択
         mode   = FM_Load;
         title  = "拡張ROMイメージ選択";
-        filter = "全てのファイル (*.*)\0*.*\0\0";
+        filter = "全てのファイル (*.*)";
         break;
 
     case FD_Printer:	// プリンター出力ファイル選択
         mode   = FM_Save;
         title  = "プリンター出力ファイル選択";
-        filter = "全てのファイル (*.*)\0*.*\0\0";
+        filter = "全てのファイル (*.*)";
         ext    = "txt";
         break;
 
     case FD_FontZ:		// 全角フォントファイル選択
         mode   = FM_Load;
         title  = "全角フォントファイル選択";
-        filter = "PNGファイル (*.png)\0*.png\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "PNGファイル (*.png);;"
+                "全てのファイル (*.*)";
         ext    = "png";
         break;
 
     case FD_FontH:		// 半角フォントファイル選択
         mode   = FM_Load;
         title  = "半角フォントファイル選択";
-        filter = "PNGファイル (*.png)\0*.png\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "PNGファイル (*.png);;"
+                "全てのファイル (*.*)";
         ext    = "png";
         break;
 
     case FD_DokoLoad:	// どこでもLOADファイル選択
         mode   = FM_Load;
         title  = "どこでもLOADファイル選択";
-        filter = "どこでもSAVEファイル\0*.dds;*.ddr\0"
-                "どこでもSAVE形式 (*.dds)\0*.dds\0"
-                "リプレイファイル (*.ddr)\0*.ddr\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "どこでもSAVEファイル(*.dds *.ddr);;"
+                "どこでもSAVE形式 (*.dds);;"
+                "リプレイファイル (*.ddr);;"
+                "全てのファイル (*.*)";
         ext    = "dds";
         break;
 
     case FD_DokoSave:	// どこでもSAVEファイル選択
         mode   = FM_Save;
         title  = "どこでもSAVEファイル選択";
-        filter = "どこでもSAVE形式 (*.dds)\0*.dds\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "どこでもSAVE形式 (*.dds);;"
+                "全てのファイル (*.*)";
         ext    = "dds";
         break;
 
     case FD_RepLoad:	// リプレイ再生ファイル選択
         mode   = FM_Load;
         title  = "リプレイ再生ファイル選択";
-        filter = "リプレイファイル (*.ddr)\0*.ddr\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "リプレイファイル (*.ddr);;"
+                "全てのファイル (*.*)";
         ext    = "ddr";
         break;
 
     case FD_RepSave:	// リプレイ保存ファイル選択
         mode   = FM_Save;
         title  = "リプレイ保存ファイル選択";
-        filter = "リプレイファイル (*.ddr)\0*.ddr\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "リプレイファイル (*.ddr);;"
+                "全てのファイル (*.*)";
         ext    = "ddr";
         break;
 
     case FD_AVISave:	// ビデオキャプチャ出力ファイル選択
         mode   = FM_Save;
         title  = "ビデオキャプチャ出力ファイル選択";
-        filter = "AVIファイル (*.avi)\0*.avi\0"
-                "全てのファイル (*.*)\0*.*\0\0";
+        filter = "AVIファイル (*.avi);;"
+                "全てのファイル (*.*)";
         ext    = "avi";
         break;
 
@@ -812,7 +808,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
     default:
         mode   = FM_Load;
         title  = "ファイル選択";
-        filter = "全てのファイル (*.*)\0*.*\0\0";
+        filter = "全てのファイル (*.*)";
         break;
     }
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>621</width>
-    <height>453</height>
+    <height>486</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -288,6 +288,15 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="inputMethodHints">
+            <set>Qt::ImhDigitsOnly</set>
+           </property>
+           <property name="inputMask">
+            <string>999; </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
           </widget>
          </item>
          <item row="1" column="2">
@@ -318,14 +327,14 @@
           </widget>
          </item>
          <item row="3" column="0" colspan="4">
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="checkBoxFullscreen">
            <property name="text">
             <string>フルスクリーン(&amp;U)</string>
            </property>
           </widget>
          </item>
          <item row="4" column="0" colspan="4">
-          <widget class="QCheckBox" name="checkBox_2">
+          <widget class="QCheckBox" name="checkBoxStatDisp">
            <property name="text">
             <string>ステータスバーを表示する(&amp;T)</string>
            </property>
@@ -340,7 +349,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
-           <widget class="QSlider" name="horizontalSlider">
+           <widget class="QSlider" name="horizontalSliderFPS">
             <property name="maximum">
              <number>5</number>
             </property>
@@ -359,6 +368,9 @@
            <widget class="QLabel" name="labelFps">
             <property name="text">
              <string>フレームスキップ</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -424,15 +436,15 @@
              <property name="title">
               <string>マスター音量(&amp;M)</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_15">
+              <item row="0" column="0">
                <widget class="QLabel" name="label_5">
                 <property name="text">
                  <string>0</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="2">
                <widget class="QSlider" name="horizontalSliderMasterVol">
                 <property name="maximum">
                  <number>100</number>
@@ -442,10 +454,20 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="3">
                <widget class="QLabel" name="label_6">
                 <property name="text">
                  <string>100</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="labelMasterVol">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -457,15 +479,15 @@
              <property name="title">
               <string>PSG音量(&amp;P)</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_16">
+              <item row="0" column="0">
                <widget class="QLabel" name="label_7">
                 <property name="text">
                  <string>0</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="1">
                <widget class="QSlider" name="horizontalSliderPSGVol">
                 <property name="maximum">
                  <number>100</number>
@@ -475,10 +497,20 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="2">
                <widget class="QLabel" name="label_8">
                 <property name="text">
                  <string>100</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="labelPSGVol">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -490,16 +522,16 @@
              <property name="title">
               <string>音声合成音量(&amp;V)</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_17">
+              <item row="0" column="0">
                <widget class="QLabel" name="label_9">
                 <property name="text">
                  <string>0</string>
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QSlider" name="horizontalSliderVolceVol">
+              <item row="0" column="1">
+               <widget class="QSlider" name="horizontalSliderVoiceVol">
                 <property name="maximum">
                  <number>100</number>
                 </property>
@@ -508,10 +540,20 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="2">
                <widget class="QLabel" name="label_10">
                 <property name="text">
                  <string>100</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="labelVoiceVol">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -523,15 +565,15 @@
              <property name="title">
               <string>TAPEモニタ音量(&amp;T)</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_18">
+              <item row="0" column="0">
                <widget class="QLabel" name="label_11">
                 <property name="text">
                  <string>0</string>
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="1">
                <widget class="QSlider" name="horizontalSliderTapeVol">
                 <property name="maximum">
                  <number>100</number>
@@ -541,10 +583,20 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item row="0" column="2">
                <widget class="QLabel" name="label_12">
                 <property name="text">
                  <string>100</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="labelTapeVol">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -558,15 +610,15 @@
            <property name="title">
             <string>バッファサイズ(&amp;Z)</string>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
+           <layout class="QGridLayout" name="gridLayout_19">
+            <item row="0" column="0">
              <widget class="QLabel" name="label_3">
               <property name="text">
                <string>1</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item row="0" column="1">
              <widget class="QSlider" name="horizontalSliderSndBufferSize">
               <property name="minimum">
                <number>1</number>
@@ -579,10 +631,20 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item row="0" column="3">
              <widget class="QLabel" name="label_4">
               <property name="text">
                <string>5</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLabel" name="labelSndBufferSize">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -623,6 +685,15 @@
              <width>80</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="inputMethodHints">
+            <set>Qt::ImhDigitsOnly|Qt::ImhHiddenText</set>
+           </property>
+           <property name="inputMask">
+            <string>99999; </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -674,6 +745,15 @@
              <width>80</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="inputMethodHints">
+            <set>Qt::ImhDigitsOnly</set>
+           </property>
+           <property name="inputMask">
+            <string>999; </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -2795,6 +2875,15 @@ border-radius: 1;</string>
              <height>16777215</height>
             </size>
            </property>
+           <property name="inputMethodHints">
+            <set>Qt::ImhDigitsOnly</set>
+           </property>
+           <property name="inputMask">
+            <string>9999; </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
           </widget>
          </item>
          <item>
@@ -2884,6 +2973,15 @@ border-radius: 1;</string>
               <height>16777215</height>
              </size>
             </property>
+            <property name="inputMethodHints">
+             <set>Qt::ImhDigitsOnly</set>
+            </property>
+            <property name="inputMask">
+             <string>9; </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
            </widget>
           </item>
           <item>
@@ -2917,6 +3015,15 @@ border-radius: 1;</string>
               <height>16777215</height>
              </size>
             </property>
+            <property name="inputMethodHints">
+             <set>Qt::ImhDigitsOnly</set>
+            </property>
+            <property name="inputMask">
+             <string>9; </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
            </widget>
           </item>
           <item>
@@ -2936,21 +3043,21 @@ border-radius: 1;</string>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_8">
+        <widget class="QCheckBox" name="checkBoxAviRLE">
          <property name="text">
           <string>ビデオキャプチャ時 RLE有効(8bit時のみ)(&amp;R)</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_9">
+        <widget class="QCheckBox" name="checkBoxCkQuit">
          <property name="text">
           <string>終了時に確認する(&amp;F)</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_10">
+        <widget class="QCheckBox" name="checkBoxSaveQuit">
          <property name="text">
           <string>終了時にINIファイルを保存する(&amp;Q)</string>
          </property>
@@ -3005,9 +3112,9 @@ border-radius: 1;</string>
   <tabstop>checkBoxTurboTape</tabstop>
   <tabstop>lineEditTurbo60</tabstop>
   <tabstop>lineEditTurbo66</tabstop>
-  <tabstop>checkBox_8</tabstop>
-  <tabstop>checkBox_9</tabstop>
-  <tabstop>checkBox_10</tabstop>
+  <tabstop>checkBoxAviRLE</tabstop>
+  <tabstop>checkBoxCkQuit</tabstop>
+  <tabstop>checkBoxSaveQuit</tabstop>
   <tabstop>pushButtonColor21</tabstop>
   <tabstop>pushButtonColor22</tabstop>
   <tabstop>pushButtonColor23</tabstop>
@@ -3056,19 +3163,19 @@ border-radius: 1;</string>
   <tabstop>radioButtonColorBR</tabstop>
   <tabstop>radioButtonColorPG</tabstop>
   <tabstop>radioButtonColorGP</tabstop>
-  <tabstop>horizontalSlider</tabstop>
+  <tabstop>horizontalSliderFPS</tabstop>
   <tabstop>checkBoxScanline</tabstop>
   <tabstop>lineEditScanLineBr</tabstop>
   <tabstop>checkBoxDispNTSC</tabstop>
-  <tabstop>checkBox</tabstop>
-  <tabstop>checkBox_2</tabstop>
+  <tabstop>checkBoxFullscreen</tabstop>
+  <tabstop>checkBoxStatDisp</tabstop>
   <tabstop>radioButtonSample441</tabstop>
   <tabstop>radioButtonSample225</tabstop>
   <tabstop>radioButtonSample110</tabstop>
   <tabstop>horizontalSliderSndBufferSize</tabstop>
   <tabstop>horizontalSliderMasterVol</tabstop>
   <tabstop>horizontalSliderPSGVol</tabstop>
-  <tabstop>horizontalSliderVolceVol</tabstop>
+  <tabstop>horizontalSliderVoiceVol</tabstop>
   <tabstop>horizontalSliderTapeVol</tabstop>
   <tabstop>lineEditPSGLPF</tabstop>
   <tabstop>lineEditKeyRepeat</tabstop>

@@ -53,6 +53,5 @@ void ColorButton::chooseColor()
         col.r = color.red();
         col.g = color.green();
         col.b = color.blue();
-        config->SetColor(colorId, &col);
         }
 }

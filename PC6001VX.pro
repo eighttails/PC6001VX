@@ -120,3 +120,6 @@ HEADERS  += \
 
 FORMS    += \
     src/Qt/configdialog.ui
+
+OTHER_FILES += \
+    TODO.txt

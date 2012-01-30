@@ -12,18 +12,18 @@
 #include <windows.h>
 #else
 #include <stdint.h>
-typedef int BOOL;
+typedef bool BOOL;
 typedef uint8_t BYTE;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
 #endif
 
 #ifndef FALSE
-#define FALSE		0
+#define FALSE		false
 #endif
 
 #ifndef TRUE
-#define TRUE		1
+#define TRUE		true
 #endif
 
 #ifndef M_PI

@@ -168,7 +168,7 @@ SndDev::~SndDev( void ){}
 // 引数:	rate	サンプリングレート
 // 返値:	BOOL	TRUE:成功 FALSE:失敗
 ////////////////////////////////////////////////////////////////
-int SndDev::Init( int rate )
+BOOL SndDev::Init( int rate )
 {
 	SampleRate = rate;
 	

@@ -21,6 +21,9 @@ ConfigDialog::ConfigDialog(cConfig* cfg, QWidget *parent) :
     // 参照ボタンを押したらファイル、フォルダ選択ダイアログを出し、ラインエディットに反映
     connect(folderRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFolder(QWidget*)));
 
+    // OKボタンを押したら設定に書き込む
+    connect(this, SIGNAL(accepted()), this, SLOT(writeConfig()));
+
     assignColorButton();
     readConfig();
 }
@@ -284,6 +287,203 @@ void ConfigDialog::readConfig()
 
 void ConfigDialog::writeConfig()
 {
+    // 一時変数
+    int iVal = 0;
+    bool conv = false;
+
+    // 基本------------------------------------------------
+    // 機種
+    if      (ui->radioButtonModel6001->isChecked())       config->SetModel(60);
+    else if (ui->radioButtonModel6001mk2->isChecked())    config->SetModel(62);
+    else if (ui->radioButtonModel6601->isChecked())       config->SetModel(64);
+    else if (ui->radioButtonModel6001mk2SR->isChecked())  config->SetModel(66);
+    else if (ui->radioButtonModel6601SR->isChecked())     config->SetModel(68);
+
+    // FDD
+    if      (ui->radioButtonFDD0->isChecked())    config->SetFddNum(0);
+    else if (ui->radioButtonFDD1->isChecked())    config->SetFddNum(1);
+    else if (ui->radioButtonFDD2->isChecked())    config->SetFddNum(2);
+
+    // 拡張RAM使用
+    config->SetUseExtRam(ui->checkBoxExtRam->isChecked());
+
+    // 戦士のカートリッジ使用
+    config->SetUseSoldier(ui->checkBoxUseSoldier->isChecked());
+
+    // 画面---------------------------------------------------------------------
+    // カラーモード
+    if      (ui->radioButtonColor8Bit)  config->SetScrBpp(8);
+    else if (ui->radioButtonColor16Bit) config->SetScrBpp(16);
+    else if (ui->radioButtonColor24Bit) config->SetScrBpp(24);
+
+    // MODE4カラー
+    if      (ui->radioButtonColorBW->isChecked())   config->SetMode4Color(0);   // モノクロ
+    else if (ui->radioButtonColorBR->isChecked())   config->SetMode4Color(1);   // 赤/青
+    else if (ui->radioButtonColorRB->isChecked())   config->SetMode4Color(2);   // 青/赤
+    else if (ui->radioButtonColorPG->isChecked())   config->SetMode4Color(3);   // ピンク/緑
+    else if (ui->radioButtonColorGP->isChecked())   config->SetMode4Color(4);   // 緑/ピンク
+
+    // スキャンライン
+    config->SetScanLine(ui->checkBoxScanline->isChecked());
+
+    // スキャンライン輝度
+    iVal = ui->lineEditScanLineBr->text().toInt(&conv);
+    if(conv){
+        config->SetScanLineBr(conv);
+    }
+
+    // 4:3表示
+    config->SetDispNTSC(ui->checkBoxDispNTSC->isChecked());
+
+    // フルスクリーン
+    config->SetFullScreen(ui->checkBoxFullscreen->isChecked());
+
+    // ステータスバー表示状態
+    config->SetStatDisp(ui->checkBoxStatDisp->isChecked());
+
+    // フレームスキップ
+    config->SetFrameSkip(ui->horizontalSliderFPS->value());
+
+    // サウンド-------------------------------------------------------------------
+    // サンプリングレート
+    if      (ui->radioButtonSample441->isChecked())   config->SetSampleRate(44100);
+    else if (ui->radioButtonSample225->isChecked())   config->SetSampleRate(22500);
+    else if (ui->radioButtonSample110->isChecked())   config->SetSampleRate(11025);
+
+    // バッファサイズ
+    config->SetSoundBuffer(ui->horizontalSliderSndBufferSize->value());
+
+    // PSG LPFカットオフ周波数
+    iVal = ui->lineEditPSGLPF->text().toInt(&conv);
+    if(conv){
+        config->SetPsgLPF(iVal);
+    }
+
+    // マスター音量
+    config->SetMasterVol(ui->horizontalSliderMasterVol->value());
+
+    // PSG音量
+    config->SetMasterVol(ui->horizontalSliderMasterVol->value());
+
+    // 音声合成音量
+    config->SetMasterVol(ui->horizontalSliderMasterVol->value());
+
+    // TAPEモニタ音量
+    config->SetMasterVol(ui->horizontalSliderMasterVol->value());
+
+    //	case PP_INPUT:	// 入力関係
+    //		// キーリピート間隔
+    //		GetDlgItemText( hwnd, ID_KEYREP, str, sizeof(str) );
+    //		st = strtol( str, NULL, 0 );
+    //		ecfg->SetKeyRepeat( st );
+
+    //		break;
+
+    //	case PP_FOLDER:	// フォルダ
+    //		// ROMパス
+    //		GetDlgItemText( hwnd, ID_PATH1, str, sizeof(str) );
+    //		ecfg->SetRomPath( str );
+
+    //		// TAPEパス
+    //		GetDlgItemText( hwnd, ID_PATH2, str, sizeof(str) );
+    //		ecfg->SetTapePath( str );
+
+    //		// DISKパス
+    //		GetDlgItemText( hwnd, ID_PATH3, str, sizeof(str) );
+    //		ecfg->SetDiskPath( str );
+
+    //		// 拡張ROMパス
+    //		GetDlgItemText( hwnd, ID_PATH4, str, sizeof(str) );
+    //		ecfg->SetExtRomPath( str );
+
+    //		// IMGパス
+    //		GetDlgItemText( hwnd, ID_PATH5, str, sizeof(str) );
+    //		ecfg->SetImgPath( str );
+
+    //		// WAVEパス
+    //		GetDlgItemText( hwnd, ID_PATH6, str, sizeof(str) );
+    //		ecfg->SetWavePath( str );
+
+    //		// FONTパス
+    //		GetDlgItemText( hwnd, ID_PATH7, str, sizeof(str) );
+    //		ecfg->SetFontPath( str );
+
+    //		break;
+
+    //	case PP_FILE:	// ファイル
+    //		// 拡張ROMファイル
+    //		GetDlgItemText( hwnd, ID_FEXROM, str, sizeof(str) );
+    //		ecfg->SetExtRomFile( str );
+
+    //		// TAPE(LOAD)ファイル名
+    //		GetDlgItemText( hwnd, ID_FTPLD, str, sizeof(str) );
+    //		ecfg->SetTapeFile( str );
+
+    //		// TAPE(SAVE)ファイル名
+    //		GetDlgItemText( hwnd, ID_FTPSV, str, sizeof(str) );
+    //		ecfg->SetSaveFile( str );
+
+    //		// DISKファイル名
+    //		GetDlgItemText( hwnd, ID_FDISK, str, sizeof(str) );
+    //		ecfg->SetDiskFile( str );
+
+    //		// プリンタファイル名
+    //		GetDlgItemText( hwnd, ID_FPRINT, str, sizeof(str) );
+    //		ecfg->SetPrinterFile( str );
+
+    //		// 全角フォントファイル名
+    //		GetDlgItemText( hwnd, ID_FFONTZ, str, sizeof(str) );
+    //		ecfg->SetFontFileZ( str );
+
+    //		// 半角フォントファイル名
+    //		GetDlgItemText( hwnd, ID_FFONTH, str, sizeof(str) );
+    //		ecfg->SetFontFileH( str );
+
+    //		break;
+
+    //	case PP_COL:	// 色1
+    //		break;
+
+    //	case PP_ETC:	// その他
+    //		// オーバークロック率
+    //		GetDlgItemText( hwnd, ID_OVERCLK, str, sizeof(str) );
+    //		st = min( max( 1, strtol( str, NULL, 0 ) ), 1000 );
+    //		ecfg->SetOverClock( st );
+
+    //		// CRCチェック
+    //		ecfg->SetCheckCRC( IsDlgButtonChecked( hwnd, ID_CB4 ) );
+
+    //		// ROMパッチ
+    //		ecfg->SetRomPatch( IsDlgButtonChecked( hwnd, ID_CB9 ) );
+
+    //		// Turbo TAPE
+    //		ecfg->SetTurboTAPE( IsDlgButtonChecked( hwnd, ID_CB9 ) );
+
+    //		// Boost Up
+    //		ecfg->SetBoostUp( IsDlgButtonChecked( hwnd, ID_CB5 ) );
+
+    //		// BoostUp 最大倍率(N60モード)
+    //		GetDlgItemText( hwnd, ID_BOOST60, str, sizeof(str) );
+    //		st = min( max( 1, strtol( str, NULL, 0 ) ), 100 );
+    //		ecfg->SetMaxBoost1( st );
+
+    //		// BoostUp 最大倍率(N60m/N66モード)
+    //		GetDlgItemText( hwnd, ID_BOOST62, str, sizeof(str) );
+    //		st = min( max( 1, strtol( str, NULL, 0 ) ), 100 );
+    //		ecfg->SetMaxBoost2( st );
+
+    //		// ビデオキャプチャ RLE
+    //		ecfg->SetAviRle( IsDlgButtonChecked( hwnd, ID_CB6 ) );
+
+    //		// 終了時 確認する
+    //		ecfg->SetCkQuit( IsDlgButtonChecked( hwnd, ID_CB8 ) );
+
+    //		// 終了時 INIファイルを保存する
+    //		ecfg->SetSaveQuit( IsDlgButtonChecked( hwnd, ID_CB12 ) );
+
+    //		break;
+    //	}
+
 }
 
 // 色設定ボタンと設定項目を対応させる

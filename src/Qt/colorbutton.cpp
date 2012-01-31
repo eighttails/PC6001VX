@@ -12,13 +12,11 @@ ColorButton::ColorButton(QWidget *parent) :
 
 void ColorButton::updateColor()
 {
-    int r = 0, g = 0, b = 0;
-    color.getRgb(&r, &g, &b);
     QString styleSheet = QString("background-color: rgb(%1, %2, %3);"
                                  "border-style:solid;"
                                  "border-color: rgb(0, 0, 0);"
                                  "border-width: 1px;"
-                                 "border-radius: 1;").arg(r).arg(g).arg(b);
+                                 "border-radius: 1;").arg(color.r).arg(color.g).arg(color.b);
     setStyleSheet(styleSheet);
 }
 
@@ -29,9 +27,7 @@ void ColorButton::initialize(int id, cConfig *cfg)
     colorId = id;
 
     // 設定情報から自ボタンに対応する色を取得
-    COLOR24 col;
-    config->GetColor(colorId, &col);
-    color = QColor(col.r, col.g, col.b);
+    config->GetColor(colorId, &color);
     // 自身の色に反映
     updateColor();
 
@@ -41,20 +37,18 @@ void ColorButton::initialize(int id, cConfig *cfg)
 
 void ColorButton::chooseColor()
 {
-    QColor newColor = QColorDialog::getColor(color);
+    QColor oldColor(color.r, color.g, color.b);
+    QColor newColor = QColorDialog::getColor(oldColor);
     // キャンセルが押された場合、isValidはfalseになる
     if(newColor.isValid()){
         // 表示の更新
-        color = newColor;
+        int iR = 0, iG = 0, iB = 0;
+        newColor.getRgb(&iR, &iG, &iB);
+        color.r = iR;
+        color.g = iG;
+        color.b = iB;
+
         updateColor();
     }
 }
 
-const COLOR24& ColorButton::getColor() const
-{
-    COLOR24 col;
-    col.r = color.red();
-    col.g = color.green();
-    col.b = color.blue();
-    return col;
-}

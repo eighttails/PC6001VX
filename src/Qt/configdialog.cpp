@@ -447,9 +447,7 @@ void ConfigDialog::writeConfig()
 
     // TAPE(SAVE)ファイル名
     qStr = ui->lineEditSaveTape->text();
-    if(QFile(qStr).exists()){
-        config->SetSaveFile(qStr.toLocal8Bit().data());
-    }
+    config->SetSaveFile(qStr.toLocal8Bit().data());
 
     // DISKファイル名
     qStr = ui->lineEditDisk->text();
@@ -459,9 +457,7 @@ void ConfigDialog::writeConfig()
 
     // プリンタファイル名
     qStr = ui->lineEditPrinter->text();
-    if(QFile(qStr).exists()){
-        config->SetPrinterFile(qStr.toLocal8Bit().data());
-    }
+    config->SetPrinterFile(qStr.toLocal8Bit().data());
 
     // 全角フォントファイル名
     qStr = ui->lineEditZenFont->text();
@@ -481,7 +477,6 @@ void ConfigDialog::writeConfig()
         QString buttonName = QString("pushButtonColor%1").arg(id);
         // ダイアログから動的に部品を取得する
         ColorButton* button = this->findChild<ColorButton*>(buttonName);
-        button->initialize(id, config);
         config->SetColor(id, &button->getColor());
     }
 
@@ -492,44 +487,38 @@ void ConfigDialog::writeConfig()
         config->SetOverClock(min(max(1, iVal), 1000));
     }
 
-    //		GetDlgItemText( hwnd, ID_OVERCLK, str, sizeof(str) );
-    //		st = min( max( 1, strtol( str, NULL, 0 ) ), 1000 );
-    //		ecfg->SetOverClock( st );
+    // CRCチェック
+    config->SetCheckCRC(ui->checkBoxRomCRC->isChecked());
 
-    //		// CRCチェック
-    //		ecfg->SetCheckCRC( IsDlgButtonChecked( hwnd, ID_CB4 ) );
+    // ROMパッチ
+    config->SetRomPatch(ui->checkBoxRomPatch->isChecked());
 
-    //		// ROMパッチ
-    //		ecfg->SetRomPatch( IsDlgButtonChecked( hwnd, ID_CB9 ) );
+    // Turbo TAPE
+    config->SetTurboTAPE(ui->checkBoxTurboTape->isChecked());
 
-    //		// Turbo TAPE
-    //		ecfg->SetTurboTAPE( IsDlgButtonChecked( hwnd, ID_CB9 ) );
+    // Boost Up
+    config->SetBoostUp(ui->groupBoxBoostUp->isChecked());
 
-    //		// Boost Up
-    //		ecfg->SetBoostUp( IsDlgButtonChecked( hwnd, ID_CB5 ) );
+    // BoostUp 最大倍率(N60モード)
+    iVal = ui->lineEditBoost60->text().toInt(&conv);
+    if(conv){
+        config->SetMaxBoost1(min(max(1, iVal), 100));
+    }
 
-    //		// BoostUp 最大倍率(N60モード)
-    //		GetDlgItemText( hwnd, ID_BOOST60, str, sizeof(str) );
-    //		st = min( max( 1, strtol( str, NULL, 0 ) ), 100 );
-    //		ecfg->SetMaxBoost1( st );
+    // BoostUp 最大倍率(N60m/N66モード)
+    iVal = ui->lineEditBoost66->text().toInt(&conv);
+    if(conv){
+        config->SetMaxBoost2(min(max(1, iVal), 100));
+    }
 
-    //		// BoostUp 最大倍率(N60m/N66モード)
-    //		GetDlgItemText( hwnd, ID_BOOST62, str, sizeof(str) );
-    //		st = min( max( 1, strtol( str, NULL, 0 ) ), 100 );
-    //		ecfg->SetMaxBoost2( st );
+    // ビデオキャプチャ RLE
+    config->SetAviRle(ui->checkBoxAviRLE->isChecked());
 
-    //		// ビデオキャプチャ RLE
-    //		ecfg->SetAviRle( IsDlgButtonChecked( hwnd, ID_CB6 ) );
+    // 終了時 確認する
+    config->SetCkQuit(ui->checkBoxCkQuit->isChecked());
 
-    //		// 終了時 確認する
-    //		ecfg->SetCkQuit( IsDlgButtonChecked( hwnd, ID_CB8 ) );
-
-    //		// 終了時 INIファイルを保存する
-    //		ecfg->SetSaveQuit( IsDlgButtonChecked( hwnd, ID_CB12 ) );
-
-    //		break;
-    //	}
-
+    // 終了時 INIファイルを保存する
+    config->SetSaveQuit(ui->checkBoxSaveQuit->isChecked());
 }
 
 void ConfigDialog::dispFPS(int fps)

@@ -20,7 +20,7 @@ public:
     // ボタンサイズは30x20を基準とする
     virtual QSize sizeHint () const {return QSize (30, 20);}
 
-   const COLOR24& getColor() const;
+    const COLOR24& getColor() const {return color;};
 
 private slots:
     // 色選択ダイアログを開く
@@ -29,7 +29,7 @@ private:
     void updateColor();
     int colorId;
     cConfig* config;
-    QColor color;
+    COLOR24 color;
 };
 
 #endif // COLORBUTTON_H

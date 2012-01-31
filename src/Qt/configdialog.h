@@ -26,7 +26,6 @@ private:
     QSignalMapper* folderRefMap;
 
 private slots:
-    void assignColorButton();
     void readConfig();
     void writeConfig();
     void dispFPS(int fps);

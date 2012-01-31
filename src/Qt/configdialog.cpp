@@ -1,6 +1,8 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 
+#include <QDir>
+
 #include "../config.h"
 #include "../osd.h"
 
@@ -24,7 +26,6 @@ ConfigDialog::ConfigDialog(cConfig* cfg, QWidget *parent) :
     // OKボタンを押したら設定に書き込む
     connect(this, SIGNAL(accepted()), this, SLOT(writeConfig()));
 
-    assignColorButton();
     readConfig();
 }
 
@@ -253,6 +254,15 @@ void ConfigDialog::readConfig()
     connect(ui->pushButtonRefFolderFont, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderFont, ui->lineEditFolderFont);
 
+    // 色--------------------------------------------------------------------------
+    // 16〜64の色IDに対応させる。
+    for (int id = 16; id <= 64; id++){
+        QString buttonName = QString("pushButtonColor%1").arg(id);
+        // ダイアログから動的に部品を取得する
+        ColorButton* button = this->findChild<ColorButton*>(buttonName);
+        button->initialize(id, config);
+    }
+
     // その他
     // オーバークロック率
     ui->lineEditClockRatio->setText(QString::number(qMin(qMax(1, config->GetOverClock()), 1000)));
@@ -289,6 +299,7 @@ void ConfigDialog::writeConfig()
 {
     // 一時変数
     int iVal = 0;
+    QString qStr;
     bool conv = false;
 
     // 基本------------------------------------------------
@@ -371,81 +382,116 @@ void ConfigDialog::writeConfig()
     // TAPEモニタ音量
     config->SetMasterVol(ui->horizontalSliderMasterVol->value());
 
-    //	case PP_INPUT:	// 入力関係
-    //		// キーリピート間隔
-    //		GetDlgItemText( hwnd, ID_KEYREP, str, sizeof(str) );
-    //		st = strtol( str, NULL, 0 );
-    //		ecfg->SetKeyRepeat( st );
+    // 入力関係--------------------------------------------------------
+    // キーリピート間隔
+    iVal = ui->lineEditKeyRepeat->text().toInt(&conv);
+    if(conv){
+        config->SetKeyRepeat(iVal);
+    }
 
-    //		break;
+    // フォルダ-------------------------------------------------------------
+    // ROMパス
+    qStr = ui->lineEditFolderRom->text();
+    if(QDir(qStr).exists()){
+        config->SetRomPath(qStr.toLocal8Bit().data());
+    }
 
-    //	case PP_FOLDER:	// フォルダ
-    //		// ROMパス
-    //		GetDlgItemText( hwnd, ID_PATH1, str, sizeof(str) );
-    //		ecfg->SetRomPath( str );
+    // TAPEパス
+    qStr = ui->lineEditFolderTape->text();
+    if(QDir(qStr).exists()){
+        config->SetTapePath(qStr.toLocal8Bit().data());
+    }
 
-    //		// TAPEパス
-    //		GetDlgItemText( hwnd, ID_PATH2, str, sizeof(str) );
-    //		ecfg->SetTapePath( str );
+    // DISKパス
+    qStr = ui->lineEditFolderDisk->text();
+    if(QDir(qStr).exists()){
+        config->SetDiskPath(qStr.toLocal8Bit().data());
+    }
 
-    //		// DISKパス
-    //		GetDlgItemText( hwnd, ID_PATH3, str, sizeof(str) );
-    //		ecfg->SetDiskPath( str );
+    // 拡張ROMパス
+    qStr = ui->lineEditFolderExtRom->text();
+    if(QDir(qStr).exists()){
+        config->SetExtRomPath(qStr.toLocal8Bit().data());
+    }
 
-    //		// 拡張ROMパス
-    //		GetDlgItemText( hwnd, ID_PATH4, str, sizeof(str) );
-    //		ecfg->SetExtRomPath( str );
+    // IMGパス
+    qStr = ui->lineEditFolderImg->text();
+    if(QDir(qStr).exists()){
+        config->SetImgPath(qStr.toLocal8Bit().data());
+    }
 
-    //		// IMGパス
-    //		GetDlgItemText( hwnd, ID_PATH5, str, sizeof(str) );
-    //		ecfg->SetImgPath( str );
+    // WAVEパス
+    qStr = ui->lineEditFolderWave->text();
+    if(QDir(qStr).exists()){
+        config->SetWavePath(qStr.toLocal8Bit().data());
+    }
 
-    //		// WAVEパス
-    //		GetDlgItemText( hwnd, ID_PATH6, str, sizeof(str) );
-    //		ecfg->SetWavePath( str );
+    // FONTパス
+    qStr = ui->lineEditFolderFont->text();
+    if(QDir(qStr).exists()){
+        config->SetFontPath(qStr.toLocal8Bit().data());
+    }
 
-    //		// FONTパス
-    //		GetDlgItemText( hwnd, ID_PATH7, str, sizeof(str) );
-    //		ecfg->SetFontPath( str );
+    // ファイル--------------------------------------------------------
+    // 拡張ROMファイル
+    qStr = ui->lineEditExtRom->text();
+    if(QFile(qStr).exists()){
+        config->SetExtRomFile(qStr.toLocal8Bit().data());
+    }
 
-    //		break;
+    // TAPE(LOAD)ファイル名
+    qStr = ui->lineEditLoadTape->text();
+    if(QFile(qStr).exists()){
+        config->SetTapeFile(qStr.toLocal8Bit().data());
+    }
 
-    //	case PP_FILE:	// ファイル
-    //		// 拡張ROMファイル
-    //		GetDlgItemText( hwnd, ID_FEXROM, str, sizeof(str) );
-    //		ecfg->SetExtRomFile( str );
+    // TAPE(SAVE)ファイル名
+    qStr = ui->lineEditSaveTape->text();
+    if(QFile(qStr).exists()){
+        config->SetSaveFile(qStr.toLocal8Bit().data());
+    }
 
-    //		// TAPE(LOAD)ファイル名
-    //		GetDlgItemText( hwnd, ID_FTPLD, str, sizeof(str) );
-    //		ecfg->SetTapeFile( str );
+    // DISKファイル名
+    qStr = ui->lineEditDisk->text();
+    if(QFile(qStr).exists()){
+        config->SetDiskFile(qStr.toLocal8Bit().data());
+    }
 
-    //		// TAPE(SAVE)ファイル名
-    //		GetDlgItemText( hwnd, ID_FTPSV, str, sizeof(str) );
-    //		ecfg->SetSaveFile( str );
+    // プリンタファイル名
+    qStr = ui->lineEditPrinter->text();
+    if(QFile(qStr).exists()){
+        config->SetPrinterFile(qStr.toLocal8Bit().data());
+    }
 
-    //		// DISKファイル名
-    //		GetDlgItemText( hwnd, ID_FDISK, str, sizeof(str) );
-    //		ecfg->SetDiskFile( str );
+    // 全角フォントファイル名
+    qStr = ui->lineEditZenFont->text();
+    if(QFile(qStr).exists()){
+        config->SetFontFileZ(qStr.toLocal8Bit().data());
+    }
 
-    //		// プリンタファイル名
-    //		GetDlgItemText( hwnd, ID_FPRINT, str, sizeof(str) );
-    //		ecfg->SetPrinterFile( str );
+    // 半角フォントファイル名
+    qStr = ui->lineEditHanFont->text();
+    if(QFile(qStr).exists()){
+        config->SetFontFileH(qStr.toLocal8Bit().data());
+    }
 
-    //		// 全角フォントファイル名
-    //		GetDlgItemText( hwnd, ID_FFONTZ, str, sizeof(str) );
-    //		ecfg->SetFontFileZ( str );
+    // 色-----------------------------------------------------------------
+    // 16〜64の色IDに対応させる。
+    for (int id = 16; id <= 64; id++){
+        QString buttonName = QString("pushButtonColor%1").arg(id);
+        // ダイアログから動的に部品を取得する
+        ColorButton* button = this->findChild<ColorButton*>(buttonName);
+        button->initialize(id, config);
+        config->SetColor(id, &button->getColor());
+    }
 
-    //		// 半角フォントファイル名
-    //		GetDlgItemText( hwnd, ID_FFONTH, str, sizeof(str) );
-    //		ecfg->SetFontFileH( str );
+    // その他--------------------------------------------------------------
+    // オーバークロック率
+    iVal = ui->lineEditClockRatio->text().toInt(&conv);
+    if(conv){
+        config->SetOverClock(min(max(1, iVal), 1000));
+    }
 
-    //		break;
-
-    //	case PP_COL:	// 色1
-    //		break;
-
-    //	case PP_ETC:	// その他
-    //		// オーバークロック率
     //		GetDlgItemText( hwnd, ID_OVERCLK, str, sizeof(str) );
     //		st = min( max( 1, strtol( str, NULL, 0 ) ), 1000 );
     //		ecfg->SetOverClock( st );
@@ -484,18 +530,6 @@ void ConfigDialog::writeConfig()
     //		break;
     //	}
 
-}
-
-// 色設定ボタンと設定項目を対応させる
-void ConfigDialog::assignColorButton()
-{
-    // 16〜64の色IDに対応させる。
-    for (int id = 16; id <= 64; id++){
-        QString buttonName = QString("pushButtonColor%1").arg(id);
-        // ダイアログから動的に部品を取得する
-        ColorButton* button = this->findChild<ColorButton*>(buttonName);
-        button->initialize(id, config);
-    }
 }
 
 void ConfigDialog::dispFPS(int fps)

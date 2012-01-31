@@ -47,11 +47,14 @@ void ColorButton::chooseColor()
         // 表示の更新
         color = newColor;
         updateColor();
+    }
+}
 
-        // 設定の更新
-        COLOR24 col;
-        col.r = color.red();
-        col.g = color.green();
-        col.b = color.blue();
-        }
+const COLOR24& ColorButton::getColor() const
+{
+    COLOR24 col;
+    col.r = color.red();
+    col.g = color.green();
+    col.b = color.blue();
+    return col;
 }

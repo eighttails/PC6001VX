@@ -2,7 +2,7 @@
 #define COLORBUTTON_H
 
 #include <QPushButton>
-
+#include "../typedef.h"
 class cConfig;
 
 // 色選択用のボタン
@@ -19,6 +19,9 @@ public:
     void initialize(int id, cConfig* cfg);
     // ボタンサイズは30x20を基準とする
     virtual QSize sizeHint () const {return QSize (30, 20);}
+
+   const COLOR24& getColor() const;
+
 private slots:
     // 色選択ダイアログを開く
     void chooseColor();

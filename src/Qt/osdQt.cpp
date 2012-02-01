@@ -21,16 +21,9 @@
 
 //#define USESDLTIMER					// SDLのタイマ使用
 
-
-///////////////////////////////////////////////////////////
-// ローカル関数定義
-///////////////////////////////////////////////////////////
-//static BOOL CALLBACK OsdBrowseCallbackProc( HWND, UINT, LPARAM, LPARAM ); // OSD_FolderDiaog()で使用するコールバックプロシージャ
-
 ///////////////////////////////////////////////////////////
 // スタティック変数
 ///////////////////////////////////////////////////////////
-//static BROWSEINFO OBI;				// OSD_FolderDiaog()で使用する情報を格納する構造体
 std::map<int, PCKEYsym> VKTable;	// SDLキーコード  -> 仮想キーコード 変換テーブル
 
 static SDL_Joystick *Joyinfo[MAX_JOY];		// ジョイスティック情報
@@ -584,28 +577,6 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
     return result.data();
 }
 
-// OSD_FolderDiaog()で使用するコールバックプロシージャ
-//static BOOL CALLBACK OsdBrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lp1, LPARAM lp2 )
-//{
-//	char Path[PATH_MAX*2];	// 念のため2倍?
-
-//	// BIF_STATUSTEXT以外は何もしない
-//	if( OBI.ulFlags & BIF_STATUSTEXT ){
-//		switch( msg ){
-//		case BFFM_INITIALIZED:	// 初期化
-//			// 初期フォルダを設定
-//			SendMessage( hwnd, BFFM_SETSELECTION, (WPARAM)TRUE, lp2 );
-//			break;
-//		case BFFM_SELCHANGED:	// ユーザーがフォルダを変更した
-//			// ITEMIDLIST構造体からパス名を取り出す
-//			SHGetPathFromIDList( (LPCITEMIDLIST)lp1, Path );
-//			// 変更されたフォルダのパスを表示する
-//			SendMessage( hwnd, BFFM_SETSTATUSTEXT, 0, (LPARAM)Path );
-//		}
-//	}
-//	return FALSE;
-//}
-
 
 ///////////////////////////////////////////////////////////
 // ファイルの参照
@@ -633,56 +604,6 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 
     QFile file(result);
     return file.fileName().toLocal8Bit().data();
-
-//    OPENFILENAME fname;
-//    char File[PATH_MAX] = "";
-//    char Path[PATH_MAX] = "";
-//    BOOL ret = FALSE;
-
-//    if( !fullpath ) return NULL;
-
-//    if( OSD_FileExist( fullpath ) ){
-//        strncpy( File, fullpath, PATH_MAX );
-//        UnDelimiter( File );
-//    }else if( path ){
-//        strncpy( Path, path,     PATH_MAX );
-//        UnDelimiter( Path );
-//    }
-
-//    ZeroMemory( &fname, sizeof(OPENFILENAME) );
-
-//    fname.lStructSize     = sizeof(OPENFILENAME);
-//    fname.hwndOwner       = (HWND)hwnd;		// 親のウィンドウハンドル
-//    fname.lpstrFilter     = filter;			// ファイルフィルタ
-//    fname.nFilterIndex    = 1;				// 1番目のファイルフィルタを使う
-//    fname.lpstrFile       = File;			// 選択されたフルパスの格納先
-//    fname.nMaxFile        = sizeof(File);	// そのサイズ
-//    fname.lpstrInitialDir = Path;			// 初期フォルダ
-//    fname.lpstrTitle      = title;			// タイトル
-//    fname.lpstrDefExt     = ext;			// 拡張子が省略されている場合に追加する拡張子
-//    //	fname.Flags           = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_LONGNAMES;
-
-//    if( mode == FM_Save ){
-//        fname.Flags = OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_LONGNAMES;
-//        ret = GetSaveFileName( &fname );
-//    }else{
-//        fname.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_LONGNAMES;
-//        ret = GetOpenFileName( &fname );
-//    }
-
-//    if( ret ){
-//        Delimiter( File );
-//        // パスを保存
-//        if( path ){
-//            strncpy( path, File, fname.nFileOffset );
-//            path[fname.nFileOffset] = 0;
-//        }
-//        // フルパスを保存
-//        if( fullpath ) strncpy( fullpath, File, PATH_MAX );
-//        // ファイル名へのポインタを返す
-//        return fullpath + fname.nFileOffset;
-//    }else
-//        return NULL;
 }
 
 
@@ -697,7 +618,6 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 ////////////////////////////////////////////////////////////////
 const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path )
 {
-//    HWND shwnd    = (HWND)hwnd;
     FileMode mode = FM_Load;
     const char *title   = NULL;
     const char *filter  = NULL;
@@ -810,13 +730,6 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
         title  = "ファイル選択";
         filter = "全てのファイル (*.*)";
         break;
-    }
-
-    // ウィンドウハンドルが NULL だったら,スクリーンサーフェスのハンドル取得を試みる
-    if( !hwnd ){
-        SDL_SysWMinfo WinInfo;
-        SDL_VERSION( &WinInfo.version );
-//        shwnd = SDL_GetWMInfo( &WinInfo ) ? WinInfo.window : NULL;
     }
 
     return OSD_FileDiaog( NULL, mode, title, filter, fullpath, path, ext );

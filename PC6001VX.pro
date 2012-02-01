@@ -60,7 +60,8 @@ SOURCES += \
     src/Qt/pc6001v.cpp \
     src/Qt/thread.cpp \
     src/Qt/configdialog.cpp \
-    src/Qt/colorbutton.cpp
+    src/Qt/colorbutton.cpp \
+    src/Qt/aboutdialog.cpp
 
 HEADERS  += \
     src/breakpoint.h \
@@ -116,10 +117,23 @@ HEADERS  += \
     src/device/z80-code.h \
     src/device/z80-tbl.h \
     src/Qt/configdialog.h \
-    src/Qt/colorbutton.h
+    src/Qt/colorbutton.h \
+    src/Qt/aboutdialog.h
 
 FORMS    += \
-    src/Qt/configdialog.ui
+    src/Qt/configdialog.ui \
+    src/Qt/aboutdialog.ui
 
 OTHER_FILES += \
-    TODO.txt
+    TODO.txt \
+    src/Qt/res/PC60mk2.ico \
+    src/Qt/res/PC60mk2SR.ico \
+    src/Qt/res/PC60mk2W.ico \
+    src/Qt/res/PC66SR.ico \
+    src/Qt/res/PC66SR_B.ico \
+    src/Qt/res/PC6001.ico \
+    src/Qt/res/PC6601.ico \
+    src/Qt/res/PC6601w.ico
+
+RESOURCES += \
+    src/Qt/pc6001vx.qrc

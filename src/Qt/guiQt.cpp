@@ -21,6 +21,7 @@
 #include "../vdg.h"
 
 #include "configdialog.h"
+#include "aboutdialog.h"
 
 ///////////////////////////////////////////////////////////
 // ローカル関数定義
@@ -504,6 +505,8 @@ void VM6::ShowPopupMenu( int x, int y )
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
     case ID_VERSION:		// バージョン情報
+        AboutDialog dialog(cfg);
+        dialog.exec();
         //#PENDING DialogBox( (HINSTANCE)GetWindowLong( NULL, GWL_HINSTANCE), MAKEINTRESOURCE(ID_VER), hwnd, (DLGPROC)VerInfoProc );
         break;
     }

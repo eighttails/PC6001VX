@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/PC6601w.ico</file>
+        <file>res/PC6601.ico</file>
+        <file>res/PC6001.ico</file>
+        <file>res/PC66SR_B.ico</file>
+        <file>res/PC66SR.ico</file>
+        <file>res/PC60mk2W.ico</file>
+        <file>res/PC60mk2SR.ico</file>
+        <file>res/PC60mk2.ico</file>
+    </qresource>
+</RCC>

@@ -76,7 +76,6 @@ HEADERS  += \
     src/disk.h \
     src/error.h \
     src/graph.h \
-    src/icons.h \
     src/ini.h \
     src/intr.h \
     src/io.h \

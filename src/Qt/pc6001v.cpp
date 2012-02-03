@@ -11,7 +11,6 @@
 #include "../osd.h"
 #include "../pc60.h"
 
-#include "../icons.h"
 
 #ifdef SDL_VIDEO_DRIVER_X11
 #include <X11/Xlib.h>
@@ -104,7 +103,6 @@ int main( int argc, char *argv[] )
         }
 
         // 機種別P6オブジェクト確保
-        BYTE *ipix, *imsk;
         const char* iconRes = NULL;
         switch( Cfg->GetModel() ){
         case 62: P6Core = new VM62; iconRes = ":/res/PC-6001mk2.ico"; break;

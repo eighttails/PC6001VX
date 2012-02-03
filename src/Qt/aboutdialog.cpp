@@ -10,11 +10,11 @@ AboutDialog::AboutDialog(cConfig* cfg, QWidget *parent) :
 {
     ui->setupUi(this);
     switch( config->GetModel() ){
-    case 60:    ui->labelIcon->setPixmap(QPixmap(":/res/PC6001.ico"));      break;
-    case 62:    ui->labelIcon->setPixmap(QPixmap(":/res/PC60mk2.ico"));   break;
-    case 64:    ui->labelIcon->setPixmap(QPixmap(":/res/PC60mk2SR.ico")); break;
-    case 66:    ui->labelIcon->setPixmap(QPixmap(":/res/PC6601.ico"));      break;
-    case 68:    ui->labelIcon->setPixmap(QPixmap(":/res/PC66SR_B.ico"));    break;
+    case 60:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6001.ico"));      break;
+    case 62:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6001mk2.ico"));   break;
+    case 64:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6001mk2SR.ico")); break;
+    case 66:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6601.ico"));      break;
+    case 68:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6601SR.ico"));    break;
     default:;
     }
     ui->labelAppName->setText(QString::fromLocal8Bit(APPNAME));

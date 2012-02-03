@@ -105,15 +105,17 @@ int main( int argc, char *argv[] )
 
         // 機種別P6オブジェクト確保
         BYTE *ipix, *imsk;
+        const char* iconRes = NULL;
         switch( Cfg->GetModel() ){
-        case 62: P6Core = new VM62; ipix = (BYTE *)p62pix; imsk = (BYTE *)p62msk; break;
-        case 66: P6Core = new VM66; ipix = (BYTE *)p66pix; imsk = (BYTE *)p66msk; break;
-        default: P6Core = new VM60; ipix = (BYTE *)p60pix; imsk = (BYTE *)p60msk;
+        case 62: P6Core = new VM62; iconRes = ":/res/PC-6001mk2.ico"; break;
+        case 66: P6Core = new VM66; iconRes = ":/res/PC-6601.ico"; break;
+        default: P6Core = new VM60; iconRes = ":/res/PC-6001.ico";
         }
 
         // アイコン設定
-        SDL_Surface *p6icon = SDL_CreateRGBSurfaceFrom( ipix, 32, 32, 24, 32*3, 0, 0, 0, 0 );
-        SDL_WM_SetIcon( p6icon, imsk );
+        QImage icon(iconRes);
+        SDL_Surface *p6icon = SDL_CreateRGBSurfaceFrom( icon.bits(), icon.width(), icon.height(), icon.depth(), icon.bytesPerLine(), 0, 0, 0, 0 );
+        SDL_WM_SetIcon( p6icon, icon.alphaChannel().bits() );
         SDL_FreeSurface( p6icon );
 
         // VMを初期化して実行

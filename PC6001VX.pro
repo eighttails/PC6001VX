@@ -126,14 +126,11 @@ FORMS    += \
 
 OTHER_FILES += \
     TODO.txt \
-    src/Qt/res/PC60mk2.ico \
-    src/Qt/res/PC60mk2SR.ico \
-    src/Qt/res/PC60mk2W.ico \
-    src/Qt/res/PC66SR.ico \
-    src/Qt/res/PC66SR_B.ico \
-    src/Qt/res/PC6001.ico \
-    src/Qt/res/PC6601.ico \
-    src/Qt/res/PC6601w.ico
+    src/Qt/res/PC-6001.ico \
+    src/Qt/res/PC-6001mk2.ico \
+    src/Qt/res/PC-6001mk2SR.ico \
+    src/Qt/res/PC-6601.ico \
+    src/Qt/res/PC-6601SR.ico
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

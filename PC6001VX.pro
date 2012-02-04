@@ -12,8 +12,7 @@ TEMPLATE = app
 INCLUDEPATH += ./src/Qt
 
 DEFINES += USESDLTHREAD USESDLCS USESDLCRIT USESDLSEMAPHORE USESDLTIMER
-QMAKE_CXXFLAGS += `sdl-config --cflags` `directfb-config --cflags`
-
+QMAKE_CXXFLAGS += `sdl-config --cflags`
 LIBS += `sdl-config --libs`
 
 SOURCES += \

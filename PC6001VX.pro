@@ -12,8 +12,8 @@ TEMPLATE = app
 INCLUDEPATH += ./src/Qt
 
 DEFINES += USESDLTHREAD USESDLCS USESDLCRIT USESDLSEMAPHORE USESDLTIMER
-QMAKE_CXXFLAGS += `sdl-config --cflags`
-LIBS += `sdl-config --libs`
+QMAKE_CXXFLAGS += $$system(sdl-config --cflags)
+LIBS += $$system(sdl-config --libs)
 
 SOURCES += \
     src/breakpoint.cpp \

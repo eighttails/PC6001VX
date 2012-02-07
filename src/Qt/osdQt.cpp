@@ -345,8 +345,8 @@ int stricmp ( const char *s1, const char *s2 )
 ////////////////////////////////////////////////////////////////
 void Delimiter( char *path )
 {
-    QString strPath = QDir::fromNativeSeparators(QString::fromLocal8Bit(path));
-    strcpy(path, strPath.toLocal8Bit().data());
+    QString strPath = QDir::fromNativeSeparators(QString::fromUtf8(path));
+    strcpy(path, strPath.toUtf8().data());
 }
 
 
@@ -358,8 +358,8 @@ void Delimiter( char *path )
 ////////////////////////////////////////////////////////////////
 void UnDelimiter( char *path )
 {
-    QString strPath = QDir::toNativeSeparators(QString::fromLocal8Bit(path));
-    strcpy(path, strPath.toLocal8Bit().data());
+    QString strPath = QDir::toNativeSeparators(QString::fromUtf8(path));
+    strcpy(path, strPath.toUtf8().data());
 }
 
 
@@ -402,7 +402,7 @@ BOOL OSD_IsWorking( void )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_IsWorking]\n" );
 
-    QString filePath = QString::fromLocal8Bit(OSD_GetConfigPath());
+    QString filePath = QString::fromUtf8(OSD_GetConfigPath());
     filePath += QDir::separator() + QString("pc6001vx.lock");
 
     QFile lockFile(filePath);
@@ -425,7 +425,7 @@ void OSD_Finish( void )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_Finish]\n" );
 
-    QDir dir(QString::fromLocal8Bit(OSD_GetConfigPath()));
+    QDir dir(QString::fromUtf8(OSD_GetConfigPath()));
     QString lockFile("pc6001vx.lock");
 
     if (dir.exists(lockFile))
@@ -440,34 +440,34 @@ void OSD_Finish( void )
 ////////////////////////////////////////////////////////////////
 BOOL OSD_CreateConfigPath()
 {
-    QString basePath = QString::fromLocal8Bit(OSD_GetConfigPath());
+    QString basePath = QString::fromUtf8(OSD_GetConfigPath());
 
     // ROMイメージ
-    if(!QDir(basePath).mkpath(QString::fromLocal8Bit(ROM_DIR)))
+    if(!QDir(basePath).mkpath(QString::fromUtf8(ROM_DIR)))
         return FALSE;
 
     // TAPEイメージ
-    if(!QDir(basePath).mkpath(QString::fromLocal8Bit(TAPE_DIR)))
+    if(!QDir(basePath).mkpath(QString::fromUtf8(TAPE_DIR)))
         return FALSE;
 
     // DISKイメージ
-    if(!QDir(basePath).mkpath(QString::fromLocal8Bit(DISK_DIR)))
+    if(!QDir(basePath).mkpath(QString::fromUtf8(DISK_DIR)))
         return FALSE;
 
     // 拡張ROMイメージ
-    if(!QDir(basePath).mkpath(QString::fromLocal8Bit(EXTROM_DIR)))
+    if(!QDir(basePath).mkpath(QString::fromUtf8(EXTROM_DIR)))
         return FALSE;
 
     // スナップショット
-    if(!QDir(basePath).mkpath(QString::fromLocal8Bit(IMAGE_DIR)))
+    if(!QDir(basePath).mkpath(QString::fromUtf8(IMAGE_DIR)))
         return FALSE;
 
     // フォント
-    if(!QDir(basePath).mkpath(QString::fromLocal8Bit(FONT_DIR)))
+    if(!QDir(basePath).mkpath(QString::fromUtf8(FONT_DIR)))
         return FALSE;
 
     // WAVEファイル
-    if(QDir(basePath).mkdir(QString::fromLocal8Bit(WAVE_DIR)))
+    if(QDir(basePath).mkdir(QString::fromUtf8(WAVE_DIR)))
         return FALSE;
 
     return TRUE;
@@ -497,7 +497,7 @@ const char *OSD_GetConfigPath( void )
     AddDelimiter( mpath );	// 念のため
 #else
     QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
-    sprintf( mpath, "%s", confPath.toLocal8Bit().data() );
+    sprintf( mpath, "%s", confPath.toUtf8().data() );
     AddDelimiter( mpath );	// 念のため
 #endif
     return mpath;
@@ -515,7 +515,7 @@ const char *OSD_GetFileNamePart( const char *path )
     PRINTD( OSD_LOG, "[OSD][OSD_GetFileNamePart]\n" );
 
     QFile file(path);
-    return file.fileName().toLocal8Bit().data();
+    return file.fileName().toUtf8().data();
 }
 
 
@@ -529,7 +529,7 @@ BOOL OSD_FileExist( const char *fullpath )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_FileExist]\n" );
 
-    QString pathString = QString::fromLocal8Bit(fullpath);
+    QString pathString = QString::fromUtf8(fullpath);
 
     //ワイルドカードを含む場合
     if (pathString.contains("*")){
@@ -558,7 +558,7 @@ BOOL OSD_FileReadOnly( const char *fullpath )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_FileReadOnly]\n" );
 
-    QFileInfo info(QString::fromLocal8Bit(fullpath));
+    QFileInfo info(QString::fromUtf8(fullpath));
     return !info.isWritable();
 }
 
@@ -572,7 +572,7 @@ BOOL OSD_FileReadOnly( const char *fullpath )
 ///////////////////////////////////////////////////////////
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
-    QByteArray result = QFileDialog::getExistingDirectory(NULL, "フォルダを選択してください。", OSD_GetConfigPath()).toLocal8Bit();
+    QByteArray result = QFileDialog::getExistingDirectory(NULL, "フォルダを選択してください。", OSD_GetConfigPath()).toUtf8();
     strcpy(Result, result);
     return result.data();
 }
@@ -599,11 +599,11 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
         result = QFileDialog::getOpenFileName(NULL, title, path, filter);
     }
     QDir dir(result);
-    if( path ) strcpy( fullpath, dir.path().toLocal8Bit().data() );
-    if( fullpath ) strcpy( fullpath, result.toLocal8Bit().data() );
+    if( path ) strcpy( fullpath, dir.path().toUtf8().data() );
+    if( fullpath ) strcpy( fullpath, result.toUtf8().data() );
 
     QFile file(result);
-    return file.fileName().toLocal8Bit().data();
+    return file.fileName().toUtf8().data();
 }
 
 

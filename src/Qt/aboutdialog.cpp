@@ -17,8 +17,8 @@ AboutDialog::AboutDialog(cConfig* cfg, QWidget *parent) :
     case 68:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6601SR.ico"));    break;
     default:;
     }
-    ui->labelAppName->setText(QString::fromLocal8Bit(APPNAME));
-    ui->labelVersion->setText(QString::fromLocal8Bit(VERSION));
+    ui->labelAppName->setText(QString::fromUtf8(APPNAME));
+    ui->labelVersion->setText(QString::fromUtf8(VERSION));
 }
 
 AboutDialog::~AboutDialog()

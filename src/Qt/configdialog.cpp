@@ -393,82 +393,82 @@ void ConfigDialog::writeConfig()
     // ROMパス
     qStr = ui->lineEditFolderRom->text();
     if(QDir(qStr).exists()){
-        config->SetRomPath(qStr.toLocal8Bit().data());
+        config->SetRomPath(qStr.toUtf8().data());
     }
 
     // TAPEパス
     qStr = ui->lineEditFolderTape->text();
     if(QDir(qStr).exists()){
-        config->SetTapePath(qStr.toLocal8Bit().data());
+        config->SetTapePath(qStr.toUtf8().data());
     }
 
     // DISKパス
     qStr = ui->lineEditFolderDisk->text();
     if(QDir(qStr).exists()){
-        config->SetDiskPath(qStr.toLocal8Bit().data());
+        config->SetDiskPath(qStr.toUtf8().data());
     }
 
     // 拡張ROMパス
     qStr = ui->lineEditFolderExtRom->text();
     if(QDir(qStr).exists()){
-        config->SetExtRomPath(qStr.toLocal8Bit().data());
+        config->SetExtRomPath(qStr.toUtf8().data());
     }
 
     // IMGパス
     qStr = ui->lineEditFolderImg->text();
     if(QDir(qStr).exists()){
-        config->SetImgPath(qStr.toLocal8Bit().data());
+        config->SetImgPath(qStr.toUtf8().data());
     }
 
     // WAVEパス
     qStr = ui->lineEditFolderWave->text();
     if(QDir(qStr).exists()){
-        config->SetWavePath(qStr.toLocal8Bit().data());
+        config->SetWavePath(qStr.toUtf8().data());
     }
 
     // FONTパス
     qStr = ui->lineEditFolderFont->text();
     if(QDir(qStr).exists()){
-        config->SetFontPath(qStr.toLocal8Bit().data());
+        config->SetFontPath(qStr.toUtf8().data());
     }
 
     // ファイル--------------------------------------------------------
     // 拡張ROMファイル
     qStr = ui->lineEditExtRom->text();
     if(QFile(qStr).exists()){
-        config->SetExtRomFile(qStr.toLocal8Bit().data());
+        config->SetExtRomFile(qStr.toUtf8().data());
     }
 
     // TAPE(LOAD)ファイル名
     qStr = ui->lineEditLoadTape->text();
     if(QFile(qStr).exists()){
-        config->SetTapeFile(qStr.toLocal8Bit().data());
+        config->SetTapeFile(qStr.toUtf8().data());
     }
 
     // TAPE(SAVE)ファイル名
     qStr = ui->lineEditSaveTape->text();
-    config->SetSaveFile(qStr.toLocal8Bit().data());
+    config->SetSaveFile(qStr.toUtf8().data());
 
     // DISKファイル名
     qStr = ui->lineEditDisk->text();
     if(QFile(qStr).exists()){
-        config->SetDiskFile(qStr.toLocal8Bit().data());
+        config->SetDiskFile(qStr.toUtf8().data());
     }
 
     // プリンタファイル名
     qStr = ui->lineEditPrinter->text();
-    config->SetPrinterFile(qStr.toLocal8Bit().data());
+    config->SetPrinterFile(qStr.toUtf8().data());
 
     // 全角フォントファイル名
     qStr = ui->lineEditZenFont->text();
     if(QFile(qStr).exists()){
-        config->SetFontFileZ(qStr.toLocal8Bit().data());
+        config->SetFontFileZ(qStr.toUtf8().data());
     }
 
     // 半角フォントファイル名
     qStr = ui->lineEditHanFont->text();
     if(QFile(qStr).exists()){
-        config->SetFontFileH(qStr.toLocal8Bit().data());
+        config->SetFontFileH(qStr.toUtf8().data());
     }
 
     // 色-----------------------------------------------------------------
@@ -569,12 +569,12 @@ void ConfigDialog::selectFile(QWidget *widget)
             dlg = FD_FontH; path = config->GetFontPath();
         }
 
-        strncpy(folder, edit->text().toLocal8Bit().data(), PATH_MAX);
+        strncpy(folder, edit->text().toUtf8().data(), PATH_MAX);
         Delimiter(folder);
         OSD_FileSelect(NULL, dlg, folder, path);
         UnDelimiter(folder);
         if(strlen(folder) > 0){
-            edit->setText(QString::fromLocal8Bit(folder));
+            edit->setText(QString::fromUtf8(folder));
         }
     }
 
@@ -585,12 +585,12 @@ void ConfigDialog::selectFolder(QWidget *widget)
     char folder[PATH_MAX];
     QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
     if(edit){
-        strncpy(folder, edit->text().toLocal8Bit().data(), PATH_MAX);
+        strncpy(folder, edit->text().toUtf8().data(), PATH_MAX);
         Delimiter(folder);
         OSD_FolderDiaog(NULL, folder);
         UnDelimiter(folder);
         if(strlen(folder) > 0){
-            edit->setText(QString::fromLocal8Bit(folder));
+            edit->setText(QString::fromUtf8(folder));
         }
     }
 }

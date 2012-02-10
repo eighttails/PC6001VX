@@ -43,8 +43,8 @@ void ConfigDialog::readConfig()
     switch(config->GetModel()){
     case 60:    ui->radioButtonModel6001->setChecked(true);         break;
     case 62:    ui->radioButtonModel6001mk2->setChecked(true);      break;
-    case 66:    ui->radioButtonModel6001mk2SR->setChecked(true);    break;
-    case 64:    ui->radioButtonModel6601->setChecked(true);         break;
+    case 64:    ui->radioButtonModel6001mk2SR->setChecked(true);    break;
+    case 66:    ui->radioButtonModel6601->setChecked(true);         break;
     case 68:    ui->radioButtonModel6601SR->setChecked(true);       break;
     default:    Q_ASSERT(false);
     }
@@ -306,8 +306,8 @@ void ConfigDialog::writeConfig()
     // 機種
     if      (ui->radioButtonModel6001->isChecked())       config->SetModel(60);
     else if (ui->radioButtonModel6001mk2->isChecked())    config->SetModel(62);
-    else if (ui->radioButtonModel6601->isChecked())       config->SetModel(64);
-    else if (ui->radioButtonModel6001mk2SR->isChecked())  config->SetModel(66);
+    else if (ui->radioButtonModel6001mk2SR->isChecked())  config->SetModel(64);
+    else if (ui->radioButtonModel6601->isChecked())       config->SetModel(66);
     else if (ui->radioButtonModel6601SR->isChecked())     config->SetModel(68);
 
     // FDD

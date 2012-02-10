@@ -128,7 +128,9 @@ OTHER_FILES += \
     src/Qt/res/PC-6001mk2.ico \
     src/Qt/res/PC-6001mk2SR.ico \
     src/Qt/res/PC-6601.ico \
-    src/Qt/res/PC-6601SR.ico
+    src/Qt/res/PC-6601SR.ico \
+    src/Qt/res/fonth12.png \
+    src/Qt/res/fontz12.png
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

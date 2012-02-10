@@ -5,5 +5,7 @@
         <file>res/PC-6001mk2SR.ico</file>
         <file>res/PC-6001mk2.ico</file>
         <file>res/PC-6001.ico</file>
+        <file>res/fontz12.png</file>
+        <file>res/fonth12.png</file>
     </qresource>
 </RCC>

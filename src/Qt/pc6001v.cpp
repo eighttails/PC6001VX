@@ -74,9 +74,9 @@ int main( int argc, char *argv[] )
         }
     }
 
-    // #PENDINGフォントファイルが無ければ作成する
-    //	if( !OSD_FileExist( Cfg->GetFontFileH() ) ) OSD_CreateFont( Cfg->GetFontFileH(), NULL, FSIZE );
-    //	if( !OSD_FileExist( Cfg->GetFontFileZ() ) ) OSD_CreateFont( NULL, Cfg->GetFontFileZ(), FSIZE );
+    // フォントファイルが無ければ作成する
+    if( !OSD_FileExist( Cfg->GetFontFileH() ) ) OSD_CreateFont( Cfg->GetFontFileH(), NULL, FSIZE );
+    if( !OSD_FileExist( Cfg->GetFontFileZ() ) ) OSD_CreateFont( NULL, Cfg->GetFontFileZ(), FSIZE );
 
 
     // P6オブジェクトを作成して実行

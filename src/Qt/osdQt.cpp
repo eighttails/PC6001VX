@@ -598,6 +598,8 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
     } else {
         result = QFileDialog::getOpenFileName(NULL, title, path, filter);
     }
+    if(result.isEmpty())    return NULL;
+
     QDir dir(result);
     if( path ) strcpy( fullpath, dir.path().toUtf8().data() );
     if( fullpath ) strcpy( fullpath, result.toUtf8().data() );
@@ -1249,89 +1251,17 @@ const char *OSD_KeyName( PCKEYsym sym )
 ////////////////////////////////////////////////////////////////
 BOOL OSD_CreateFont( char *hfile, char *zfile, int size )
 {
-//    int Wscr = size * 96 * 2;
-//    int Hscr = size * 96 * 2;
+    // 半角
+    if(hfile){
+        QImage fonth(":/res/fonth12.png");
+        fonth.save(hfile);
+    }
 
-//    // デバイスコンテキスト取得
-//    HDC hBmpDC = CreateCompatibleDC( NULL );
-
-//    // フォント作成
-//    HFONT NewFont = CreateFont( size * 2, size,
-//                                FW_DONTCARE, FW_DONTCARE, FW_REGULAR,
-//                                FALSE, FALSE, FALSE,
-//                                SHIFTJIS_CHARSET,
-//                                OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
-//                                DEFAULT_QUALITY,
-//                                FF_MODERN | FIXED_PITCH, "" );
-//    HFONT OldFont = (HFONT)SelectObject( hBmpDC, NewFont );
-//    SetTextColor( hBmpDC, RGB(255,255,255) );
-//    SetBkColor(   hBmpDC, RGB(  0,  0,  0) );
-
-//    // 作業用ビットマップ作成
-//    BYTE *ppixel;	// ピクセルデータ
-//    char bmbuf[sizeof(BITMAPINFOHEADER)+sizeof(RGBQUAD)*2];
-//    BITMAPINFO &bi        = *(BITMAPINFO *)&bmbuf;
-//    BITMAPINFOHEADER &bih = bi.bmiHeader;
-//    ZeroMemory( &bih, sizeof(bmbuf) );
-
-//    bi.bmiColors[1].rgbBlue     = 255;
-//    bi.bmiColors[1].rgbGreen    = 255;
-//    bi.bmiColors[1].rgbRed      = 255;
-//    bi.bmiColors[1].rgbReserved = 0;
-
-//    bih.biSize     = sizeof(BITMAPINFOHEADER);
-//    bih.biWidth    = Wscr;
-//    bih.biHeight   = -Hscr;
-//    bih.biPlanes   = 1;
-//    bih.biBitCount = 8;
-//    HBITMAP hBmp   = CreateDIBSection( NULL, (BITMAPINFO*)&bi, DIB_RGB_COLORS, (void **)&ppixel, 0, 0 );
-//    ZeroMemory( ppixel, Wscr * Hscr );
-
-//    SelectObject( hBmpDC, hBmp );
-//    SelectObject( hBmpDC, GetStockObject( BLACK_BRUSH ) );
-
-//    // フォント描画
-//    BYTE strk[2] = { 0x00, 0x00 };
-//    // 半角
-//    if( hfile ){
-//        Rectangle( hBmpDC, 0, 0, Wscr, Hscr );
-//        for( int y=0; y<2; y++ ){
-//            for( int x=32; x<128; x++ ){
-//                strk[0] = x + y * 128;
-//                TextOut( hBmpDC, x*size, y*size*2, (char *)strk, 1 );
-//            }
-//        }
-//        VSurface *FFont = new VSurface;
-//        FFont->InitSurface( Wscr, size*2*2, 8 );
-//        memcpy( (BYTE *)FFont->GetPixels(), ppixel, Wscr*size*2*2 );
-//        FFont->SetPalette( (COLOR24 *)bi.bmiColors, 2 );
-//        SaveImg( hfile, FFont, NULL );
-//        delete FFont;
-//    }
-
-//    // 全角
-//    if( zfile ){
-//        Rectangle( hBmpDC, 0, 0, Wscr, Hscr );
-//        for( int y=1; y<95; y++ ){
-//            for( int x=1; x<95; x++ ){
-//                strk[0] = y + 0x20;
-//                strk[1] = x + 0x20;
-//                Jis2Sjis( &strk[0], &strk[1] );
-//                TextOut( hBmpDC, x*size*2, y*size*2, (char *)strk, 2 );
-//            }
-//        }
-//        VSurface *FFont = new VSurface;
-//        FFont->InitSurface( Wscr, Hscr, 8 );
-//        memcpy( (BYTE *)FFont->GetPixels(), ppixel, Wscr*Hscr );
-//        FFont->SetPalette( (COLOR24 *)bi.bmiColors, 2 );
-//        SaveImg( zfile, FFont, NULL );
-//        delete FFont;
-//    }
-
-//    SelectObject( hBmpDC, OldFont );
-//    DeleteObject( NewFont );
-//    DeleteObject( hBmp );
-//    DeleteDC( hBmpDC );
+    // 全角
+    if(zfile){
+        QImage fontz(":/res/fontz12.png");
+        fontz.save(zfile);
+    }
 
     return TRUE;
 }

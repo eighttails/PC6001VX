@@ -13,7 +13,7 @@
 #else
 #include <stdint.h>
 typedef bool BOOL;
-typedef uint8_t BYTE;
+typedef unsigned char BYTE;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
 #endif

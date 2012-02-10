@@ -19,7 +19,6 @@ SOURCES += \
     src/breakpoint.cpp \
     src/common.cpp \
     src/config.cpp \
-    src/console.cpp \
     src/cpum.cpp \
     src/cpus.cpp \
     src/d88.cpp \
@@ -60,7 +59,8 @@ SOURCES += \
     src/Qt/thread.cpp \
     src/Qt/configdialog.cpp \
     src/Qt/colorbutton.cpp \
-    src/Qt/aboutdialog.cpp
+    src/Qt/aboutdialog.cpp \
+    src/Qt/console.cpp
 
 HEADERS  += \
     src/breakpoint.h \

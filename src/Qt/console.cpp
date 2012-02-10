@@ -1,9 +1,9 @@
 #include <stdarg.h>
 #include <ctype.h>
 
-#include "log.h"
-#include "console.h"
-#include "common.h"
+#include "../log.h"
+#include "../console.h"
+#include "../common.h"
 
 #include <QTextCodec>
 

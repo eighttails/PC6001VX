@@ -323,9 +323,9 @@ void ConfigDialog::writeConfig()
 
     // 画面---------------------------------------------------------------------
     // カラーモード
-    if      (ui->radioButtonColor8Bit)  config->SetScrBpp(8);
-    else if (ui->radioButtonColor16Bit) config->SetScrBpp(16);
-    else if (ui->radioButtonColor24Bit) config->SetScrBpp(24);
+    if      (ui->radioButtonColor8Bit->isChecked())  config->SetScrBpp(8);
+    else if (ui->radioButtonColor16Bit->isChecked()) config->SetScrBpp(16);
+    else if (ui->radioButtonColor24Bit->isChecked()) config->SetScrBpp(24);
 
     // MODE4カラー
     if      (ui->radioButtonColorBW->isChecked())   config->SetMode4Color(0);   // モノクロ

@@ -152,7 +152,6 @@ typedef HANDLE HTHREAD;
 #define FOPENEN(a,b)	fopen(a,b)
 #endif
 
-
-
+#define INITARRAY(array,val) for (int i=0; i<(sizeof(array)/sizeof(array[0])); i++) array[i] = val;
 
 #endif	// TYPEDEF_H_INCLUDED

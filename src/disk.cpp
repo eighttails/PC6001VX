@@ -202,7 +202,8 @@ const char *DSK6::GetName( int drvno )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSK60::DSK60( VM6 *vm, const ID& id, int num ) : DSK6(vm,id,num), Device(id) {}
+DSK60::DSK60( VM6 *vm, const ID& id, int num ) : DSK6(vm,id,num), Device(id),
+    io_D1H(0), io_D2H(0), io_D3H(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -478,6 +479,7 @@ BYTE DSK60::InD3H( int )
 cFDCbuf::cFDCbuf( void )
 {
 	for( int i=0; i<4; i++ ) Index[i] = 0;
+        for( int i=0; i<4; i++ ) *Data[i] = 0;
 }
 
 
@@ -567,7 +569,14 @@ void cFDCbuf::Clear( int i )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSK66::DSK66( VM6 *vm, const ID& id, int num ) : DSK6(vm,id,num), Device(id) {}
+DSK66::DSK66( VM6 *vm, const ID& id, int num ) : DSK6(vm,id,num), Device(id),
+    SRT(0), HUT(0), HLT(0), NonDMA(FALSE), SendSectors(0), DIO(0),
+    FDCStatus(0)
+{
+    INITARRAY(SeekST0, 0);
+    INITARRAY(LastCylinder, 0);
+    INITARRAY(SeekEnd, 0);
+}
 
 
 ////////////////////////////////////////////////////////////////

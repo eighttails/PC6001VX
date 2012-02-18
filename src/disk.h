@@ -12,7 +12,7 @@
 #define	MAXDRV	2
 
 // ミニフロッピーディスク 各種情報
-typedef struct{
+struct DISK60 {
 	int ATN;			// Attention		:コマンド送信要求
 	int DAC;			// Data Accepted	:データ受信完
 	int RFD;			// Ready For Data	:データ受信準備完
@@ -29,9 +29,13 @@ typedef struct{
 	int size;			// 処理するバイト数
 	
 	BYTE retdat;		// port D0H から返す値
-	
-} DISK60;
-
+        DISK60() :
+            ATN(0), DAC(0), RFD(0), DAV(0),
+            command(0), step(0),
+            blk(0), drv(0), trk(0), sct(0),
+            size(0),
+            retdat(0) {}
+};
 
 // コマンド
 // 実際には PC-80S31 のコマンドだけど大体同じ？
@@ -155,6 +159,7 @@ private:
         struct CmdBuffer {
 		BYTE Data[10];
 		int Index;
+                CmdBuffer() : Index(0) { *Data = 0; }
 	};
 	
 	CmdBuffer CmdIn;					// コマンドバッファ

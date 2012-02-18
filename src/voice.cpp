@@ -27,6 +27,8 @@ VCE6::VCE6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id)
 	VStat   = D7752E_IDL;
         IVBuf   = NULL;
         IVLen   = IVPos = 0;
+
+        INITARRAY(ParaBuf, 0);
 }
 
 

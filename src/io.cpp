@@ -12,6 +12,8 @@ IO6::IO6( void )
 {
 	io = NULL;
 	dl = NULL;
+        for(int i=0; i<BANKSIZE; i++)    Iwait[i] = 0;
+        for(int i=0; i<BANKSIZE; i++)    Owait[i] = 0;
 }
 
 

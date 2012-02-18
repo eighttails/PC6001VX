@@ -12,10 +12,11 @@
 
 
 // 矩形領域構造体
-typedef struct{
+struct VRect{
 	int x, y;		// 描画領域座標
 	int w, h;		// 描画領域サイズ
-} VRect;
+        VRect(): x(0), y(0), w(0), h(0){}
+} ;
 
 typedef struct{
   int ncols;

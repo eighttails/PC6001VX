@@ -12,6 +12,9 @@ BPoint::BPoint( void )
 	for( int i=0; i<NR_BP; i++ ) BP[i].Type = BP_NONE;
 	ReqBreak = FALSE;
 	ReqBPNum = 0;
+        BPNo = 0;
+        BPData = 0;
+        BPStr = NULL;
 }
 
 

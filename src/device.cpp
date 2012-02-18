@@ -18,7 +18,7 @@
 IOBus::DummyIO IOBus::dummyio;
 
 IOBus::IOBus()
-: ins(0), outs(0), flags(0)
+    : ins(0), outs(0), flags(0), devlist(NULL), banksize(0)
 {
 }
 

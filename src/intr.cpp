@@ -12,9 +12,11 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-INT6::INT6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id){}
+INT6::INT6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), TimerIntrEnable(TRUE), TimerAddr(0), TimerCntUp(0) {}
 INT60::INT60( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id){}
-INT62::INT62( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id){}
+INT62::INT62( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id), TimerIntrEnable2(TRUE),
+    Int1IntrEnable(TRUE), Int2IntrEnable(TRUE), Int1AddrOutput(TRUE), Int2AddrOutput(TRUE),
+    Int1Addr(0), Int2Addr(0) {}
 
 
 ////////////////////////////////////////////////////////////////

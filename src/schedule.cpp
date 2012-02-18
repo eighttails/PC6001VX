@@ -335,6 +335,7 @@ SCH6::SCH6( VM6 *vm, const P6ID& id, int mclock ) : P6DEVICE(vm,id), cSche(mcloc
 {
 	WaitEnable = TRUE;
 	VSYNC      = FALSE;
+        EnableScrUpdate = TRUE;
 }
 
 

@@ -65,11 +65,12 @@ private:
 	int Argc;							// 引数の個数
 	int ArgvCounter;					// Shift()用カウンタ
 	
-	struct{								// 引数処理用
+        struct argv{								// 引数処理用
 		int Type;	// 引数の種類		ARGV_xxx
 		int Val;	// 引数の値			ARG_xxx または、数
 		char *Str;	// 引数の文字列		Argv[xxx]と同じ
-	} argv;
+                argv() : Type(0), Val(0), Str(NULL){}
+        } argv;
 	
 	int GetArg();						// 引数処理
 	void Shift();						// 引数配列シフト

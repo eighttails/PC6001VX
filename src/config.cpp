@@ -498,6 +498,7 @@ cConfig::cConfig( void )
 	*DiskFile       = 0;	// DISKファイル名
 	*ImgPath        = 0;	// スクリーンショット格納パス
 	*FontPath       = 0;	// フォント格納パス
+        *WavePath       = 0;    // WAVE格納パス
 	*FontFileZ      = 0;	// 全角フォントファイル名
 	*FontFileH      = 0;	// 半角フォントファイル名
 	*PrinterFile    = 0;	// プリンタファイル名

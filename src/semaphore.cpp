@@ -21,7 +21,7 @@ void cCritical::UnLock( void ){ ::LeaveCriticalSection( &(this->mcs) ); }
 
 
 #ifdef USESDLSEMAPHORE
-cSemaphore::cSemaphore( void ){ sem = SDL_CreateSemaphore( 0 ); }
+cSemaphore::cSemaphore( void ){ sem = SDL_CreateSemaphore( 0 ); count = 0; }
 cSemaphore::~cSemaphore( void ){ if( sem ) SDL_DestroySemaphore( sem ); }
 DWORD cSemaphore::Value( void ){ return SDL_SemValue( sem ); }
 int cSemaphore::Post( void ){ return SDL_SemPost( sem ); }

@@ -390,8 +390,9 @@ KEY6::KEY6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
 	ON_KANA  =			// かな
 	ON_KKANA =			// カタカナ
 	ON_CTRL  =			// CTRL
-	ON_CAPS  = FALSE;	// CAPS
-	
+        ON_STOP  =                      // STOP
+        ON_CAPS  = FALSE;	// CAPS
+
 	// 仮想キーコード -> P6キーコード 変換テーブル初期化
 	ZeroMemory( &K6Table, sizeof(K6Table) );
 	

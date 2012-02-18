@@ -302,6 +302,9 @@ cWndMon::cWndMon( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
 {
 	*KeyBuf = '\0';
 	for( int i=0; i<MAX_HIS; i++ ) *(HisBuf[i]) = '\0';
+        *Argv = '\0';
+        Argc = 0;
+        ArgvCounter = 0;
 }
 
 

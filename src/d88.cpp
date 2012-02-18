@@ -16,6 +16,7 @@ cD88::cD88( void )
 	ZeroMemory( &d88, sizeof( D88INFO ) );
 	
 	Protected = FALSE;
+        *FileName = 0;
 }
 
 

@@ -283,6 +283,18 @@ void MemBlock::Write( WORD addr, BYTE data, int *wcnt )
 ////////////////////////////////////////////////////////////////
 MEM6::MEM6( BOOL extram )
 {
+        MainRom     =
+        ExtRom      =
+        CGRom1      =
+        IntRam      =
+        ExtRam      =
+        EmptyRom    =
+        EmptyRam    =
+        NULL;
+
+        INITARRAY(Rm_blk, NULL);
+        INITARRAY(Wm_blk, NULL);
+
 	*FilePath    = '\0';
 	
 	UseExtRam    = extram;	// 拡張RAM使う?
@@ -301,9 +313,10 @@ MEM6::MEM6( BOOL extram )
 	
 }
 
-MEM60::MEM60( const ID& id, BOOL extram ) : MEM6(extram), Device(id){}
+MEM60::MEM60( const ID& id, BOOL extram ) : MEM6(extram), Device(id), CGRom0(NULL){}
 
-MEM62::MEM62( const ID& id, BOOL extram ) : MEM6(extram), Device(id)
+MEM62::MEM62( const ID& id, BOOL extram ) : MEM6(extram), Device(id),
+    CGRom2(NULL), KanjiRom(NULL), VoiceRom(NULL)
 {
 	Rf0 = INIT_RF0;			// メモリコントローラ内部レジスタ初期値設定
 	Rf1 = INIT_RF1;			// メモリコントローラ内部レジスタ初期値設定

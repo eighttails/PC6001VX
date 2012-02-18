@@ -475,6 +475,7 @@ CMTS::CMTS( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
 {
 	fp   = NULL;
 	Baud = 1200;
+        *FilePath = NULL;
 }
 
 

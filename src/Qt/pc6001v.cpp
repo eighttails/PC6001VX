@@ -81,6 +81,8 @@ int main( int argc, char *argv[] )
 
     // P6オブジェクトを作成して実行
     do{
+        Restart = VM6::Quit;
+
         // ROMファイル存在チェック&機種変更
         char RomSerch[PATH_MAX];
         int IniModel = Cfg->GetModel();

@@ -487,19 +487,12 @@ const char *OSD_GetConfigPath( void )
     //Windowsの場合はexe本体と同じ場所。
     //それ以外(UNIX系を想定)は ~/.pc6001vx を返す
 #ifdef WIN32
-    char Drive[3];
-    char Dir[PATH_MAX];
-
-    int num = GetModuleFileName( NULL, mpath, PATH_MAX );
-    _splitpath( mpath, Drive, Dir, NULL, NULL );
-    sprintf( mpath, "%s%s", Drive, Dir );
-    if( num ) Delimiter( mpath );
-    AddDelimiter( mpath );	// 念のため
+    QString confPath = QApplication::applicationDirPath() + QDir::separator();
 #else
     QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
+#endif
     sprintf( mpath, "%s", confPath.toUtf8().data() );
     AddDelimiter( mpath );	// 念のため
-#endif
     return mpath;
 }
 

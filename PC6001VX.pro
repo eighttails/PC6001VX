@@ -9,11 +9,19 @@ QT       += core gui
 TARGET = PC6001VX
 TEMPLATE = app
 
-INCLUDEPATH += ./src/Qt
+INCLUDEPATH += $$quote($$(PWD)./src/Qt)
 
+win32{
+INCLUDEPATH += $$quote($$(PWD)../SDL/include/SDL) $$quote($$(PWD)../GnuWin32/include)
+LIBS += $$quote($$(PWD)../SDL/lib/libSDL.dll.a)  $$quote($$(PWD)../GnuWin32/lib/libpng.lib)
+}else{
 DEFINES += USESDLTHREAD USESDLCS USESDLCRIT USESDLSEMAPHORE USESDLTIMER
 QMAKE_CXXFLAGS += $$system(sdl-config --cflags)
 LIBS += $$system(sdl-config --libs)
+}
+
+
+
 
 SOURCES += \
     src/breakpoint.cpp \

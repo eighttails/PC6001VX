@@ -11,6 +11,8 @@
 #include "../osd.h"
 #include "../pc60.h"
 
+//SDLMainとのコンフリクト解消
+#undef main
 
 #ifdef SDL_VIDEO_DRIVER_X11
 #include <X11/Xlib.h>

@@ -9,7 +9,7 @@ QT       += core gui
 TARGET = PC6001VX
 TEMPLATE = app
 
-INCLUDEPATH += $$quote($$(PWD)./src/Qt)
+INCLUDEPATH += src/Qt
 
 win32{
 INCLUDEPATH += $$quote($$(PWD)../SDL/include/SDL) $$quote($$(PWD)../GnuWin32/include)
@@ -20,8 +20,7 @@ QMAKE_CXXFLAGS += $$system(sdl-config --cflags)
 LIBS += $$system(sdl-config --libs)
 }
 
-
-
+win32:RC_FILE = src/win32/PC6001VX.rc
 
 SOURCES += \
     src/breakpoint.cpp \
@@ -138,7 +137,9 @@ OTHER_FILES += \
     src/Qt/res/PC-6601.ico \
     src/Qt/res/PC-6601SR.ico \
     src/Qt/res/fonth12.png \
-    src/Qt/res/fontz12.png
+    src/Qt/res/fontz12.png \
+    src/win32/PC6001VX.ico \
+    src/win32/PC6001VX.rc
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

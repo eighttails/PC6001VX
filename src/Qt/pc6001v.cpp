@@ -34,6 +34,8 @@ int main( int argc, char *argv[] )
     QApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
+    setlocale(LC_ALL,"Japanese");
+
     // 環境変数設定(テスト用)
     //	putenv( "SDL_VIDEODRIVER=windib" );
     //	putenv( "SDL_VIDEODRIVER=directx" );

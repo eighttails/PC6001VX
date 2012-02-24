@@ -261,7 +261,7 @@ void VM6::ShowPopupMenu( int x, int y )
         if( !OSD_FileExist( TapePathTemp ) )
             strncpy( TapePathTemp, cfg->GetTapePath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_TapeLoad, str, TapePathTemp ) )
-            if( !cmt->Mount( QString(str).toLocal8Bit().data() ) ) Error::SetError( Error::TapeMountFailed );
+            if( !cmt->Mount( str ) ) Error::SetError( Error::TapeMountFailed );
         break;
 
     case ID_TAPEEJECT:		// TAPE 排出
@@ -272,7 +272,7 @@ void VM6::ShowPopupMenu( int x, int y )
         if( !OSD_FileExist( DiskPathTemp ) )
             strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
-            if( !disk->Mount( 0, QString(str).toLocal8Bit().data() ) ) Error::SetError( Error::DiskMountFailed );
+            if( !disk->Mount( 0, str ) ) Error::SetError( Error::DiskMountFailed );
         break;
 
     case ID_DISKEJECT1:		// DISK1 排出
@@ -283,7 +283,7 @@ void VM6::ShowPopupMenu( int x, int y )
         if( !OSD_FileExist( DiskPathTemp ) )
             strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
-            if( !disk->Mount( 1, QString(str).toLocal8Bit().data() ) ) Error::SetError( Error::DiskMountFailed );
+            if( !disk->Mount( 1, str ) ) Error::SetError( Error::DiskMountFailed );
         break;
 
     case ID_DISKEJECT2:		// DISK2 排出
@@ -296,7 +296,7 @@ void VM6::ShowPopupMenu( int x, int y )
         if( OSD_FileSelect( NULL, FD_ExtRom, str, ExtRomPathTemp ) ){
             // リセットを伴うのでメッセージ表示
             OSD_Message( MSG_RESETI, MSG_RESETC, OSDM_OK | OSDM_ICONINFO );
-            if( !mem->MountExtRom( QString(str).toLocal8Bit().data() ) )
+            if( !mem->MountExtRom( str ) )
                 Error::SetError( Error::ExtRomMountFailed );
             else
                 Reset();
@@ -351,18 +351,18 @@ void VM6::ShowPopupMenu( int x, int y )
 
     case ID_DOKOSAVE:		// どこでもSAVE
         if( OSD_FileSelect( NULL, FD_DokoSave, str, (char *)OSD_GetConfigPath() ) )
-            DokoDemoSave( QString(str).toLocal8Bit().data() );
+            DokoDemoSave( str );
         break;
 
     case ID_DOKOLOAD:		// どこでもLOAD
         if( OSD_FileSelect( NULL, FD_DokoLoad, str, (char *)OSD_GetConfigPath() ) )
-            DokoDemoLoad( QString(str).toLocal8Bit().data() );
+            DokoDemoLoad( str );
         break;
 
     case ID_REPLAYSAVE:		// リプレイ保存
         if( REPLAY::GetStatus() == REP_IDLE ){
             if( OSD_FileSelect( NULL, FD_RepSave, str, (char *)OSD_GetConfigPath() ) ){
-                if( DokoDemoSave( QString(str).toLocal8Bit().data() ) ) REPLAY::StartRecord( QString(str).toLocal8Bit().data() );
+                if( DokoDemoSave( str ) ) REPLAY::StartRecord( str );
             }
         }else if( REPLAY::GetStatus() == REP_RECORD ){
             REPLAY::StopRecord();
@@ -372,8 +372,8 @@ void VM6::ShowPopupMenu( int x, int y )
     case ID_REPLAYLOAD:		// リプレイ再生
         if( REPLAY::GetStatus() == REP_IDLE ){
             if( OSD_FileSelect( NULL, FD_RepLoad, str, (char *)OSD_GetConfigPath() ) ){
-                if( DokoDemoLoad( QString(str).toLocal8Bit().data() ) )
-                    REPLAY::StartReplay( QString(str).toLocal8Bit().data() );
+                if( DokoDemoLoad( str ) )
+                    REPLAY::StartReplay( str );
                 else
                     if( Error::GetError() == Error::DokoDiffModel ) Error::SetError( Error::ReplayDiffModel );
             }
@@ -385,7 +385,7 @@ void VM6::ShowPopupMenu( int x, int y )
     case ID_AVISAVE:		// ビデオキャプチャ
         if( !AVI6::IsAVI() ){
             if( OSD_FileSelect( NULL, FD_AVISave, str, (char *)OSD_GetConfigPath() ) ){
-                AVI6::StartAVI( QString(str).toLocal8Bit().data(), graph->GetSubBuffer(), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviRle() );
+                AVI6::StartAVI( str, graph->GetSubBuffer(), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviRle() );
             }
         }else{
             AVI6::StopAVI();
@@ -394,7 +394,7 @@ void VM6::ShowPopupMenu( int x, int y )
 
     case ID_AUTOTYPE:		// 打込み代行
         if( OSD_FileSelect( NULL, FD_LoadAll, str, (char *)OSD_GetConfigPath() ) )
-            if( !SetAutoKeyFile( QString(str).toLocal8Bit().data() ) ) Error::SetError( Error::Unknown );
+            if( !SetAutoKeyFile( str ) ) Error::SetError( Error::Unknown );
         break;
 
     case ID_QUIT:			// 終了

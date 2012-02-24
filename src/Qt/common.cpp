@@ -1,5 +1,5 @@
-#include "log.h"
-#include "common.h"
+#include "../log.h"
+#include "../common.h"
 #include "png.h"
 
 #ifdef __APPLE__
@@ -292,7 +292,9 @@ char *Sjis2UTF8( const char *str )
 	CFRelease( cfstr );
 	return dst;
 }
+
 #endif
+
 
 
 // isioさんの txt2bas から流用
@@ -692,4 +694,16 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 	rr->y = rr->h ? y1 : 0;
 }
 
+#include <QString>
+////////////////////////////////////////////////////////////////
+// UTF8->Local(Windowsの場合SJIS,Linuxの場合UTF8)
+//
+// 引数:	str				SJIS文字列へのポインタ
+// 返値:	char *			Local文字列へのポインタ
+////////////////////////////////////////////////////////////////
+char *UTF8toLocal( const char *str )
+{
+    QString qStr = QString::fromUtf8(str);
+    return qStr.toLocal8Bit().data();
+}
 

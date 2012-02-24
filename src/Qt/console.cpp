@@ -309,8 +309,8 @@ void ZCons::Print( const char *text, ... )
 
     // 可変長引数展開（文字列に変換）
     va_start( ap, text );
-    num = vsprintf( (char *)buf, text, ap );
-    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(QString::fromUtf8((char *)buf));
+    QString str = QString().vsprintf(text, ap);
+    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
 
     for( int i=0; i<array.size(); i++ ){
         if( isprint( array[i] ) )
@@ -336,8 +336,8 @@ void ZCons::Printf( const char *text, ... )
 
     // 可変長引数展開（文字列に変換）
     va_start( ap, text );
-    num = vsprintf( (char *)buf, text, ap );
-    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(QString::fromUtf8((char *)buf));
+    QString str = QString().vsprintf(text, ap);
+    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
     for( int i=0; i<array.size(); i++ ){
         switch( array[i] ){
         case '\n':	// 改行
@@ -382,8 +382,8 @@ void ZCons::Printfr( const char *text, ... )
 
     // 可変長引数展開（文字列に変換）
     va_start( ap, text );
-    num = vsprintf( buf, text, ap );
-    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(QString::fromUtf8((char *)buf));
+    QString str = QString().vsprintf(text, ap);
+    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
 
     if( array.size() > Xmax ) num = Xmax;
     Locate( -array.size(), y );

@@ -24,7 +24,6 @@ win32:RC_FILE = src/win32/PC6001VX.rc
 
 SOURCES += \
     src/breakpoint.cpp \
-    src/common.cpp \
     src/config.cpp \
     src/cpum.cpp \
     src/cpus.cpp \
@@ -67,6 +66,7 @@ SOURCES += \
     src/Qt/configdialog.cpp \
     src/Qt/colorbutton.cpp \
     src/Qt/aboutdialog.cpp \
+    src/Qt/common.cpp \
     src/Qt/console.cpp
 
 HEADERS  += \

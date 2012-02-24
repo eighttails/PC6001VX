@@ -149,7 +149,7 @@ typedef HANDLE HTHREAD;
 #ifdef __APPLE__
 #define FOPENEN(a,b)	fopen(Sjis2UTF8(a),b)
 #else
-#define FOPENEN(a,b)	fopen(a,b)
+#define FOPENEN(a,b)	fopen(UTF8toLocal(a),b)
 #endif
 
 #define INITARRAY(array,val) for (int i=0; i<(sizeof(array)/sizeof(array[0])); i++) array[i] = val;

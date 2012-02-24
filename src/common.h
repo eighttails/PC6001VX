@@ -29,6 +29,8 @@ void Convert2Jis( BYTE *, BYTE * );					// 文字コード形式変換(SJIS,EUC 
 #ifdef __APPLE__
 char *Sjis2UTF8( const char * );					// SJIS -> UTF8
 #endif
+char *UTF8toLocal( const char *str );               // Utf8 -> システム文字コード
+
 
 int Sjis2P6( char *, char * );						// SJIS -> P6
 

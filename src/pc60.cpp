@@ -1175,16 +1175,19 @@ VM6::ReturnCode VM6::EventLoop( void )
 			
 		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 		case SDL_MOUSEBUTTONUP:	// マウスボタンクリック
-			if( ( event.button.button == SDL_BUTTON_RIGHT ) && ( event.button.state == SDL_RELEASED ) ){
-                                Stop();
-				
-				// ポップアップメニュー表示
-				ShowPopupMenu( event.button.x, event.button.y );
-				
-                                Start();
-			}
-			break;
-			
+            if( ( event.button.button == SDL_BUTTON_RIGHT ) && ( event.button.state == SDL_RELEASED ) ){
+                Stop();
+                if(cfg->GetFullScreen()){
+                    cfg->SetFullScreen( FALSE );
+                    graph->ResizeScreen();	// スクリーンサイズ変更
+                } else {
+                    // ポップアップメニュー表示
+                    ShowPopupMenu( event.button.x, event.button.y );
+                }
+                Start();
+            }
+            break;
+
 		case SDL_QUIT:			// 終了
 			if( cfg->GetCkQuit() )
 				if( OSD_Message( MSG_QUIT, MSG_QUITC, OSDM_YESNO | OSDM_ICONQUESTION ) != OSDR_YES )

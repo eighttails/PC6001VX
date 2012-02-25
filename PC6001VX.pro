@@ -139,7 +139,8 @@ OTHER_FILES += \
     src/Qt/res/fonth12.png \
     src/Qt/res/fontz12.png \
     src/win32/PC6001VX.ico \
-    src/win32/PC6001VX.rc
+    src/win32/PC6001VX.rc \
+    COPYING
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

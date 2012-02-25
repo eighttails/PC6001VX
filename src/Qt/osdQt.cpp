@@ -467,7 +467,7 @@ BOOL OSD_CreateConfigPath()
         return FALSE;
 
     // WAVEファイル
-    if(QDir(basePath).mkdir(QString::fromUtf8(WAVE_DIR)))
+    if(!QDir(basePath).mkdir(QString::fromUtf8(WAVE_DIR)))
         return FALSE;
 
     return TRUE;

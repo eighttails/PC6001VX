@@ -507,7 +507,7 @@ const char *OSD_GetFileNamePart( const char *path )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_GetFileNamePart]\n" );
 
-    QFileInfo info(path);
+    QFileInfo info(QString::fromUtf8(path));
     return info.fileName().toUtf8().data();
 }
 

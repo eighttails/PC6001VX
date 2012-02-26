@@ -38,7 +38,7 @@ int main( int argc, char *argv[] )
 
 #ifdef WIN32
     // Windowsではアプリに同梱のqjpcodecs4.dllプラグインを読み込むため、そのパスを指定
-    QApplication::addLibraryPath(qApp->applicationFilePath());
+    QApplication::addLibraryPath(qApp->applicationDirPath());
 #endif
 
     // 環境変数設定(テスト用)

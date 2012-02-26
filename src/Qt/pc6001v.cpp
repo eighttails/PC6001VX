@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFrame>
 #include <QTextCodec>
+#include <QDir>
 
 #include "../typedef.h"
 #include "../config.h"
@@ -38,7 +39,7 @@ int main( int argc, char *argv[] )
 
 #ifdef WIN32
     // Windowsではアプリに同梱のqjpcodecs4.dllプラグインを読み込むため、そのパスを指定
-    QApplication::addLibraryPath(qApp->applicationDirPath());
+    QApplication::addLibraryPath(qApp->applicationDirPath() + QDir::separator() + "plugins");
 #endif
 
     // 環境変数設定(テスト用)

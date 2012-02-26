@@ -36,6 +36,11 @@ int main( int argc, char *argv[] )
 
     setlocale(LC_ALL,"Japanese");
 
+#ifdef WIN32
+    // Windowsではアプリに同梱のqjpcodecs4.dllプラグインを読み込むため、そのパスを指定
+    QApplication::addLibraryPath(qApp->applicationFilePath());
+#endif
+
     // 環境変数設定(テスト用)
     //	putenv( "SDL_VIDEODRIVER=windib" );
     //	putenv( "SDL_VIDEODRIVER=directx" );

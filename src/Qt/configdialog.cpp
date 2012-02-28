@@ -374,13 +374,13 @@ void ConfigDialog::writeConfig()
     config->SetMasterVol(ui->horizontalSliderMasterVol->value());
 
     // PSG音量
-    config->SetMasterVol(ui->horizontalSliderMasterVol->value());
+    config->SetPsgVol(ui->horizontalSliderPSGVol->value());
 
     // 音声合成音量
-    config->SetMasterVol(ui->horizontalSliderMasterVol->value());
+    config->SetVoiceVol(ui->horizontalSliderVoiceVol->value());
 
     // TAPEモニタ音量
-    config->SetMasterVol(ui->horizontalSliderMasterVol->value());
+    config->SetCmtVol(ui->horizontalSliderTapeVol->value());
 
     // 入力関係--------------------------------------------------------
     // キーリピート間隔

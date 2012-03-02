@@ -493,6 +493,7 @@ const char *OSD_GetConfigPath( void )
 #endif
     sprintf( mpath, "%s", confPath.toUtf8().data() );
     AddDelimiter( mpath );	// 念のため
+    UnDelimiter( mpath );
     return mpath;
 }
 

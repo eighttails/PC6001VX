@@ -153,7 +153,20 @@ int main( int argc, char *argv[] )
             P6Core->Stop();
         }else{
             // 失敗した場合
-            OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+            if(Error::GetError() == Error::RomCrcNG){
+                // CRCが合わない場合
+                int ret = OSD_Message( "ROMイメージのCRCが不正です。\n"
+                                       "CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。\n"
+                                       "それでも起動しますか?",
+                                       MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING );
+                if(ret == OSDR_YES) {
+                    Cfg->SetCheckCRC(FALSE);
+                    Cfg->Write();
+                    Restart = VM6::Restart;
+                }
+            } else {
+                OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+            }
         }
 
         // P6オブジェクトを開放

@@ -340,7 +340,7 @@ void ConfigDialog::writeConfig()
     // スキャンライン輝度
     iVal = ui->lineEditScanLineBr->text().toInt(&conv);
     if(conv){
-        config->SetScanLineBr(conv);
+        config->SetScanLineBr(iVal);
     }
 
     // 4:3表示

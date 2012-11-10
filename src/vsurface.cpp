@@ -16,19 +16,9 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-VSurface::VSurface( void )
-{
-	pixels = NULL;
-	w = h  = 0;
-	bpp    = 0;
-	pitch  = 0;
-	rect.x = rect.y = rect.w = rect.h = 0;
-	palette = NULL;
-	
-	rmask  = gmask  = bmask  = 0;
-	rshift = gshift = bshift = 0;
-	rloss  = gloss  = bloss  = 0;
-}
+VSurface::VSurface( void ) : w(0), h(0), bpp(0), pitch(0), pixels(NULL), palette(NULL),
+	rmask(0), gmask(0), bmask(0), rshift(0), gshift(0),bshift(0),
+	rloss(0), gloss(0), bloss(0) {}
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
@@ -50,14 +40,14 @@ VSurface::~VSurface( void )
 //
 // 引数:	ww,hh	幅,高さ
 //			bpp		1ピクセルのbit数
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL VSurface::InitSurface( int ww, int hh, int bp )
+bool VSurface::InitSurface( int ww, int hh, int bp )
 {
 	// サイズチェック
-	if( ww <= 0 || ww > 0xffff || hh <= 0 || hh > 0xffff ) return FALSE;
+	if( ww <= 0 || ww > 0xffff || hh <= 0 || hh > 0xffff ) return false;
 	
-	if( bp != 8 && bp != 16 && bp != 24 ) return FALSE;
+	if( bp != 8 && bp != 16 && bp != 24 ) return false;
 	
 	// 作成済みならいったん開放
 	if( pixels ) delete [] (BYTE *)pixels;
@@ -72,7 +62,7 @@ BOOL VSurface::InitSurface( int ww, int hh, int bp )
 	pixels = new BYTE[pitch*hh];
 	if( !pixels ){
 		w = h = bpp = pitch = rect.x = rect.y = rect.w = rect.h = 0;
-		return FALSE;
+		return false;
 	}
 	
 	// パレット作成(8bppのみ)
@@ -101,7 +91,7 @@ BOOL VSurface::InitSurface( int ww, int hh, int bp )
 	case 24: SetMask( RMASK32, GMASK32, BMASK32 ); break;
 	}
 	
-	return TRUE;
+	return true;
 }
 
 

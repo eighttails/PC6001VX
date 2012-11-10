@@ -1,4 +1,4 @@
-// 8ãƒ“ãƒƒãƒˆè»¢é€å‘½ä»¤
+// 8ƒrƒbƒg“]‘—–½—ß
 	case LD_A_I:
 		ACC  = I;
 		FLAG = SZ_table[ACC] | (IFF==INT_DISABLE? 0:P_FLAG)|(FLAG&C_FLAG);
@@ -10,7 +10,7 @@
 	case LD_I_A: I = ACC; break;
 	case LD_R_A: R = ACC; break;
 	
-// 16ãƒ“ãƒƒãƒˆè»¢é€å‘½ä»¤
+// 16ƒrƒbƒg“]‘—–½—ß
 	case LD_x16x_HL:
 		J.B.l = ReadMem(PC.W++);
 		J.B.h = ReadMem(PC.W++);
@@ -61,7 +61,7 @@
 		SP.B.h = ReadMem(J.W  );
 		break;
 	
-// 16ãƒ“ãƒƒãƒˆç®—è¡“æ¼”ç®—å‘½ä»¤
+// 16ƒrƒbƒgZp‰‰Z–½—ß
 	case ADC_HL_BC: M_ADCW(BC.W); break;
 	case ADC_HL_DE: M_ADCW(DE.W); break;
 	case ADC_HL_HL: M_ADCW(HL.W); break;
@@ -72,7 +72,7 @@
 	case SBC_HL_HL: M_SBCW(HL.W); break;
 	case SBC_HL_SP: M_SBCW(SP.W); break;
 	
-// ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆãƒ»ã‚·ãƒ•ãƒˆå‘½ä»¤
+// ƒ[ƒe[ƒgEƒVƒtƒg–½—ß
 	case RLD:
 		i = ReadMem(HL.W);
 		J.B.l = (i<<4)|(ACC&0x0f);
@@ -88,7 +88,7 @@
 		FLAG = SZP_table[ACC]|(FLAG&C_FLAG);
 		break;
 	
-// ï¼£ï¼°ï¼µåˆ¶å¾¡å‘½ä»¤
+// ‚b‚o‚t§Œä–½—ß
 	case IM_0:
 	case IM_0_4E:
 	case IM_0_66:
@@ -100,7 +100,7 @@
 	case IM_2:
 	case IM_2_7E: IM = 2; break;
 	
-// ã‚¢ã‚­ãƒ¥ãƒ ãƒ¬ãƒ¼ã‚¿æ“ä½œå‘½ä»¤
+// ƒAƒLƒ…ƒ€ƒŒ[ƒ^‘€ì–½—ß
 	case NEG:
 	case NEG_4C:
 	case NEG_54:
@@ -110,7 +110,7 @@
 	case NEG_74:
 	case NEG_7C: i=ACC; ACC=0; M_SUB(i); break;
 	
-// åˆ†å²å‘½ä»¤
+// •ªŠò–½—ß
 	case RETI:		M_RET();	break;
 	
 	case RETN:
@@ -132,7 +132,7 @@
 //	case RETN_75: IFF = IFF2; M_RET(); break;
 
 	
-// å…¥å‡ºåŠ›å‘½ä»¤
+// “üo—Í–½—ß
 	case IN_B_xC: M_IN_C(BC.B.h); break;
 	case IN_C_xC: M_IN_C(BC.B.l); break;
 	case IN_D_xC: M_IN_C(DE.B.h); break;
@@ -152,76 +152,76 @@
 	case OUT_xC_F: M_OUT_C(0);           break;
 	
 	case INI:
-		i = ReadIO(BC.B.l);
+		i = ReadIO(BC.W);
 		WriteMem(HL.W++,i);
 		BC.B.h--;
 		FLAG = (BC.B.h? 0:Z_FLAG)|N_FLAG|(FLAG&C_FLAG);
 		break;
 	case INIR:
-		i = ReadIO(BC.B.l);
+		i = ReadIO(BC.W);
 		WriteMem(HL.W++,i);
 		BC.B.h--;
 		FLAG = (BC.B.h? 0:Z_FLAG)|N_FLAG|(FLAG&C_FLAG);
 		if( BC.B.h ){
 			state += 5;
 			PC.W -= 2;
-//			NotIntrCheck = TRUE;
+//			NotIntrCheck = true;
 		}
 		break;
 	case IND:
-		i = ReadIO(BC.B.l);
+		i = ReadIO(BC.W);
 		WriteMem(HL.W--,i);
 		BC.B.h--;
 		FLAG = (BC.B.h? 0:Z_FLAG)|N_FLAG|(FLAG&C_FLAG);
 		break;
 	case INDR:
-		i = ReadIO(BC.B.l);
+		i = ReadIO(BC.W);
 		WriteMem(HL.W--,i);
 		BC.B.h--;
 		FLAG = (BC.B.h? 0:Z_FLAG)|N_FLAG|(FLAG&C_FLAG);
 		if( BC.B.h ){
 			state += 5;
 			PC.W -= 2;
-//			NotIntrCheck = TRUE;
+//			NotIntrCheck = true;
 		}
 		break;
 		
 	case OUTI:
-		WriteIO(BC.B.l,ReadMem(HL.W));
-		HL.W++;
 		BC.B.h--;
+		WriteIO(BC.W,ReadMem(HL.W));
+		HL.W++;
 		FLAG = (BC.B.h? 0:Z_FLAG)|N_FLAG|(FLAG&C_FLAG);
 		break;
 	case OTIR:
-		WriteIO(BC.B.l,ReadMem(HL.W));
-		HL.W++;
 		BC.B.h--;
+		WriteIO(BC.W,ReadMem(HL.W));
+		HL.W++;
 		FLAG = (BC.B.h? 0:Z_FLAG)|N_FLAG|(FLAG&C_FLAG);
 		if( BC.B.h ){
 			state += 5;
 			PC.W -= 2;
-//			NotIntrCheck = TRUE;
+//			NotIntrCheck = true;
 		}
 		break;
 	case OUTD:
-		WriteIO(BC.B.l,ReadMem(HL.W));
-		HL.W--;
 		BC.B.h--;
+		WriteIO(BC.W,ReadMem(HL.W));
+		HL.W--;
 		FLAG = (BC.B.h? 0:Z_FLAG)|N_FLAG|(FLAG&C_FLAG);
 		break;
 	case OTDR:
-		WriteIO(BC.B.l,ReadMem(HL.W));
-		HL.W--;
 		BC.B.h--;
+		WriteIO(BC.W,ReadMem(HL.W));
+		HL.W--;
 		FLAG = (BC.B.h? 0:Z_FLAG)|N_FLAG|(FLAG&C_FLAG);
 		if( BC.B.h ){
 			state += 5;
 			PC.W -= 2;
-//			NotIntrCheck = TRUE;
+//			NotIntrCheck = true;
 		}
 		break;
 	
-// ãƒ–ãƒ­ãƒƒã‚¯è»¢é€å‘½ä»¤
+// ƒuƒƒbƒN“]‘—–½—ß
 	case LDI:
 		WriteMem(DE.W++,ReadMem(HL.W++));
 		BC.W--;
@@ -234,7 +234,7 @@
 		if( BC.W ){
 			state += 5;
 			PC.W -= 2;
-//			NotIntrCheck = TRUE;
+//			NotIntrCheck = true;
 		}
 		break;
 	case LDD:
@@ -249,11 +249,11 @@
 		if( BC.W ){
 			state += 5;
 			PC.W -= 2;
-//			NotIntrCheck = TRUE;
+//			NotIntrCheck = true;
 		}
 		break;
 	
-// ãƒ–ãƒ­ãƒƒã‚¯ã‚µãƒ¼ãƒå‘½ä»¤
+// ƒuƒƒbƒNƒT[ƒ`–½—ß
 	case CPI:
 		i = ReadMem(HL.W++);
 		J.B.l = ACC-i;
@@ -268,7 +268,7 @@
 		if( BC.W && J.B.l ){
 			state += 5;
 			PC.W -= 2;
-//			NotIntrCheck = TRUE;
+//			NotIntrCheck = true;
 		}
 		break;
 	case CPD:
@@ -285,6 +285,6 @@
 		if( BC.W && J.B.l ){
 			state += 5;
 			PC.W -= 2;
-//			NotIntrCheck = TRUE;
+//			NotIntrCheck = true;
 		}
 		break;

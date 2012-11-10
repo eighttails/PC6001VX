@@ -3,21 +3,23 @@
 
 #include "typedef.h"
 
+#define	MAX_JOY			(8)			// ジョイスティック最大接続数
 
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class cJoy {
+class JOY6 {
 protected:
 	int JID[2];						// インデックス
+	HJOYINFO Jinfo[MAX_JOY];		// ジョイスティック情報
 	
 public:
-	cJoy();							// コンストラクタ
-	virtual ~cJoy();				// デストラクタ
+	JOY6();							// コンストラクタ
+	virtual ~JOY6();				// デストラクタ
 	
-	BOOL Init();					// 初期化
+	bool Init();					// 初期化
 	
-	BOOL Connect( int, int );		// ジョイスティック接続
+	bool Connect( int, int );		// ジョイスティック接続
 	int GetID( int );				// インデックス取得
 	BYTE GetJoyState( int );		// ジョイスティックの状態取得
 };

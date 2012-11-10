@@ -1,4 +1,4 @@
-// 繝ｭ繝ｼ繝�繝ｼ繝医�ｻ繧ｷ繝輔ヨ蜻ｽ莉､
+// ローテート・シフト命令
 	case RLC_B:		M_RLC( BC.B.h );	break;
 	case RLC_C:		M_RLC( BC.B.l );	break;
 	case RLC_D:		M_RLC( DE.B.h );	break;
@@ -71,7 +71,7 @@
 	case SRL_xHL:	i = ReadMem( HL.W ); M_SRL( i ); WriteMem( HL.W, i );	break;
 	case SRL_A:		M_SRL( AF.B.h );	break;
 	
-// 繝薙ャ繝域桃菴懷多莉､
+// ビット操作命令
 	case BIT_0_B:	M_BIT( 0, BC.B.h );	break;
 	case BIT_0_C:	M_BIT( 0, BC.B.l );	break;
 	case BIT_0_D:	M_BIT( 0, DE.B.h );	break;

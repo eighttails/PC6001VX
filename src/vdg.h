@@ -18,7 +18,9 @@ protected:
 	
 	// 同期信号ワーク
 	int VLcnt;									// 表示ラインカウンタ
-	BOOL OnDisp;								// 表示区間フラグ
+	bool OnDisp;								// 表示区間フラグ
+	int HSdclk;									// 水平トータル期間(ドットクロック)
+	int Hclk60;									// 水平表示期間(N60)
 	
 	BYTE *GetBufAddr();							// バッファアドレス取得
 	int GetBufPitch();							// バッファピッチ(1Lineバイト数)取得
@@ -39,8 +41,8 @@ public:
 	
 	void EventCallback( int, int );				// イベントコールバック関数
 	
-	virtual BOOL Init();						// 初期化
-	BOOL IsDisp();								// 表示区間フラグ取得
+	virtual bool Init();						// 初期化
+	bool IsDisp();								// 表示区間フラグ取得
 };
 
 
@@ -75,8 +77,8 @@ public:
 	enum IDIn {};
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 
@@ -122,8 +124,8 @@ public:
 	enum IDIn {  inC1H=0 };
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

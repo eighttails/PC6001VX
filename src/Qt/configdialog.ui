@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>621</width>
-    <height>486</height>
+    <height>492</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -155,7 +155,7 @@
             <item>
              <widget class="QRadioButton" name="radioButtonFDD2">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="text">
                <string>2</string>
@@ -835,23 +835,13 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
+       <item row="7" column="1">
         <widget class="QLabel" name="label_18">
          <property name="text">
           <string>プリンタ(&amp;P):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditPrinter</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLabel" name="label_20">
-         <property name="text">
-          <string>DISK(&amp;K):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditDisk</cstring>
          </property>
         </widget>
        </item>
@@ -875,48 +865,19 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
-        <widget class="QLabel" name="label_22">
-         <property name="text">
-          <string>全角フォント(&amp;Z):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditZenFont</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QLabel" name="label_23">
-         <property name="text">
-          <string>半角フォント(&amp;H):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditHanFont</cstring>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="3">
         <widget class="QLineEdit" name="lineEditLoadTape"/>
        </item>
        <item row="0" column="3">
         <widget class="QLineEdit" name="lineEditExtRom"/>
        </item>
+       <item row="7" column="3">
+        <widget class="QLineEdit" name="lineEditPrinter"/>
+       </item>
        <item row="4" column="3">
         <widget class="QLineEdit" name="lineEditSaveTape"/>
        </item>
-       <item row="5" column="3">
-        <widget class="QLineEdit" name="lineEditDisk"/>
-       </item>
-       <item row="6" column="3">
-        <widget class="QLineEdit" name="lineEditPrinter"/>
-       </item>
-       <item row="7" column="3">
-        <widget class="QLineEdit" name="lineEditZenFont"/>
-       </item>
-       <item row="8" column="3">
-        <widget class="QLineEdit" name="lineEditHanFont"/>
-       </item>
-       <item row="9" column="1">
+       <item row="8" column="1">
         <spacer name="verticalSpacer_6">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -950,29 +911,48 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="4">
-        <widget class="QPushButton" name="pushButtonRefDisk">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="4">
+       <item row="7" column="4">
         <widget class="QPushButton" name="pushButtonRefPrinter">
          <property name="text">
           <string>参照...</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="4">
-        <widget class="QPushButton" name="pushButtonRefZenFont">
+       <item row="5" column="3">
+        <widget class="QLineEdit" name="lineEditDisk1"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>DISK1(&amp;K):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditDisk1</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="4">
+        <widget class="QPushButton" name="pushButtonRefDisk1">
          <property name="text">
           <string>参照...</string>
          </property>
         </widget>
        </item>
-       <item row="8" column="4">
-        <widget class="QPushButton" name="pushButtonRefHanFont">
+       <item row="6" column="1">
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>DISK2(&amp;J):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditDisk1</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="QLineEdit" name="lineEditDisk2"/>
+       </item>
+       <item row="6" column="4">
+        <widget class="QPushButton" name="pushButtonRefDisk2">
          <property name="text">
           <string>参照...</string>
          </property>
@@ -1018,6 +998,9 @@
        <item row="1" column="1">
         <widget class="QLineEdit" name="lineEditFolderTape"/>
        </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEditFolderDisk"/>
+       </item>
        <item row="1" column="2">
         <widget class="QPushButton" name="pushButtonRefFolderTape">
          <property name="text">
@@ -1031,12 +1014,9 @@
           <string>DISK(&amp;K):</string>
          </property>
          <property name="buddy">
-          <cstring>lineEditDisk</cstring>
+          <cstring>lineEditDisk1</cstring>
          </property>
         </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEditFolderDisk"/>
        </item>
        <item row="2" column="2">
         <widget class="QPushButton" name="pushButtonRefFolderDisk">
@@ -1070,9 +1050,6 @@
          <property name="text">
           <string>WAVE(&amp;W)</string>
          </property>
-         <property name="buddy">
-          <cstring>lineEditZenFont</cstring>
-         </property>
         </widget>
        </item>
        <item row="7" column="1">
@@ -1086,26 +1063,6 @@
         </widget>
        </item>
        <item row="8" column="0">
-        <widget class="QLabel" name="label_47">
-         <property name="text">
-          <string>フォント(&amp;N):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditHanFont</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QLineEdit" name="lineEditFolderFont"/>
-       </item>
-       <item row="8" column="2">
-        <widget class="QPushButton" name="pushButtonRefFolderFont">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
         <spacer name="verticalSpacer_13">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -3132,8 +3089,6 @@ border-radius: 1;</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>lineEditHanFont</tabstop>
-  <tabstop>pushButtonRefHanFont</tabstop>
   <tabstop>lineEditFolderRom</tabstop>
   <tabstop>pushButtonRefFolderRom</tabstop>
   <tabstop>lineEditFolderTape</tabstop>
@@ -3146,8 +3101,6 @@ border-radius: 1;</string>
   <tabstop>pushButtonRefFolderImg</tabstop>
   <tabstop>lineEditFolderWave</tabstop>
   <tabstop>pushButtonRefFolderWave</tabstop>
-  <tabstop>lineEditFolderFont</tabstop>
-  <tabstop>pushButtonRefFolderFont</tabstop>
   <tabstop>lineEditClockRatio</tabstop>
   <tabstop>checkBoxRomCRC</tabstop>
   <tabstop>checkBoxRomPatch</tabstop>
@@ -3227,12 +3180,10 @@ border-radius: 1;</string>
   <tabstop>pushButtonRefLoadTape</tabstop>
   <tabstop>lineEditSaveTape</tabstop>
   <tabstop>pushButtonRefSaveTape</tabstop>
-  <tabstop>lineEditDisk</tabstop>
-  <tabstop>pushButtonRefDisk</tabstop>
+  <tabstop>lineEditDisk1</tabstop>
+  <tabstop>pushButtonRefDisk1</tabstop>
   <tabstop>lineEditPrinter</tabstop>
   <tabstop>pushButtonRefPrinter</tabstop>
-  <tabstop>lineEditZenFont</tabstop>
-  <tabstop>pushButtonRefZenFont</tabstop>
  </tabstops>
  <resources/>
  <connections>

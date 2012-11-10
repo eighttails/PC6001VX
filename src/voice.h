@@ -72,7 +72,7 @@ private:
 	BYTE ParaBuf[7];				// パラメータバッファ
 	int	Pnum;						// パラメータ数
 	int Fnum;						// 繰り返しフレーム数
-	BOOL PReady;					// パラメータセット完了
+	bool PReady;					// パラメータセット完了
 	
 	D7752_SAMPLE *Fbuf;				// フレームバッファポインタ(10kHz 1フレーム)
 	
@@ -82,7 +82,7 @@ private:
 	int VGetStatus();				// ステータスレジスタ取得
 	void AbortVoice();				// 発声停止
 	void UpConvert();				// サンプリングレート変換
-	BOOL LoadVoice( int );			// 内部句WAV読込み
+	bool LoadVoice( int );			// 内部句WAV読込み
 	void FreeVoice();				// 内部句WAV開放
 	
 	// デバイス定義
@@ -105,7 +105,7 @@ public:
 	
 	void EventCallback( int, int );	// イベントコールバック関数
 	
-	BOOL Init( int, char * );		// 初期化
+	bool Init( int, char * );		// 初期化
 	void Reset( void );				// リセット
 	
 	int SoundUpdate( int );			// ストリーム更新
@@ -115,8 +115,8 @@ public:
 	enum IDIn {  inE0H=0,  inE2H,  inE3H };
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

@@ -9,14 +9,11 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cD88::cD88( void )
+cD88::cD88( void ) : Protected(false)
 {
 	PRINTD( D88_LOG, "[D88][cD88]\n" )
 	
-	ZeroMemory( &d88, sizeof( D88INFO ) );
-	
-	Protected = FALSE;
-        *FileName = 0;
+	INITARRAY( FileName, '\0' );
 }
 
 
@@ -32,30 +29,30 @@ cD88::~cD88( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL cD88::Init( char *fname )
+bool cD88::Init( char *fname )
 {
-	PRINTD1( D88_LOG, "[D88][Init] %s\n", fname )
+	PRINTD( D88_LOG, "[D88][Init] %s\n", fname )
 	
 	strncpy( FileName, fname, PATH_MAX );
 	
 	// 読取り専用属性ならプロテクト状態で開く
 	if( OSD_FileReadOnly( FileName ) ){
 		d88.fp = FOPENEN( FileName, "rb" );
-		Protected = TRUE;	// プロテクトシールあり
+		Protected = true;	// プロテクトシールあり
 	}else{
 		d88.fp = FOPENEN( FileName, "rb+" );
-		Protected = FALSE;	// プロテクトシールなし
+		Protected = false;	// プロテクトシールなし
 	}
 	
 	if( !d88.fp ){
 		*FileName = 0;
-		Protected = FALSE;
-		return FALSE;
+		Protected = false;
+		return false;
 	}
 	
 	ReadHeader88();	// D88 ヘッダ読込み
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -76,7 +73,7 @@ void cD88::ReadHeader88( void )
 		
 		// ライトプロテクト
 		d88.protect = fgetc( d88.fp );
-		if( d88.protect ) Protected = TRUE;
+		if( d88.protect ) Protected = true;
 		else if( Protected ) d88.protect = 0x10;
 		
 		// DISKの種類
@@ -89,10 +86,13 @@ void cD88::ReadHeader88( void )
 		for( int i=0; i<164; i++ )
 			d88.table[i] = FGETDWORD( d88.fp );
 		
-		PRINTD1( D88_LOG, " FileName : %s\n", d88.name )
-		PRINTD1( D88_LOG, " Protect  : %s\n", d88.protect ? "ON" : "OFF" )
-		PRINTD1( D88_LOG, " Format   : %d\n", d88.type )
-		PRINTD1( D88_LOG, " Size     : %d\n", (int)d88.size )
+		// アクセス中のトラックNo
+		d88.trkno = 0;
+		
+		PRINTD( D88_LOG, " FileName : %s\n", d88.name )
+		PRINTD( D88_LOG, " Protect  : %s\n", d88.protect ? "ON" : "OFF" )
+		PRINTD( D88_LOG, " Format   : %d\n", d88.type )
+		PRINTD( D88_LOG, " Size     : %d\n", (int)d88.size )
 	}
 }
 
@@ -102,9 +102,9 @@ void cD88::ReadHeader88( void )
 ////////////////////////////////////////////////////////////////
 void cD88::ReadSector88( void )
 {
-//	PRINTD( D88_LOG, "[D88][ReadSector88]\n" );
+	PRINTD( D88_LOG, "[D88][ReadSector88]\n" );
 	
-	if( d88.fp ){
+	if( d88.fp && d88.table[d88.trkno] ){
 		d88.secinfo.c = fgetc( d88.fp );			// ID の C (シリンダNo 片面の場合は=トラックNo)
 		d88.secinfo.h = fgetc( d88.fp );			// ID の H (ヘッダアドレス 片面の場合は=0)
 		d88.secinfo.r = fgetc( d88.fp );			// ID の R (トラック内のセクタNo)
@@ -117,17 +117,18 @@ void cD88::ReadSector88( void )
 		d88.secinfo.size   = FGETWORD( d88.fp );	// このセクタ部のデータサイズ
 		d88.secinfo.data   = ftell( d88.fp );		// データへのオフセット
 		d88.secinfo.offset = 0;						// 次に読込むデータのセクタ先頭からのオフセット
+		d88.secinfo.secno++;						// アクセス中のセクタNo
 		
-//		PRINTD1( D88_LOG, " C      : %d\n", d88.secinfo.c )
-//		PRINTD1( D88_LOG, " H      : %d\n", d88.secinfo.h )
-//		PRINTD1( D88_LOG, " R      : %d\n", d88.secinfo.r )
-//		PRINTD1( D88_LOG, " N      : %d\n", d88.secinfo.n )
-//		PRINTD1( D88_LOG, " SectNum: %d\n", d88.secinfo.sec_nr )
-//		PRINTD1( D88_LOG, " Density: %s\n", d88.secinfo.density&0x40 ? "D" : "DD" )
-//		PRINTD1( D88_LOG, " Del    : %s\n", d88.secinfo.deleted&0x10 ? "DELETED" : "NORMAL" )
-//		PRINTD1( D88_LOG, " Stat   : %02X\n", d88.secinfo.status )
-//		PRINTD1( D88_LOG, " Size   : %d\n", d88.secinfo.size )
-//		PRINTD1( D88_LOG, " Offset : %d\n", (int)d88.secinfo.data )
+		PRINTD( D88_LOG, " C      : %d\n", d88.secinfo.c )
+		PRINTD( D88_LOG, " H      : %d\n", d88.secinfo.h )
+		PRINTD( D88_LOG, " R      : %d\n", d88.secinfo.r )
+		PRINTD( D88_LOG, " N      : %d\n", d88.secinfo.n )
+		PRINTD( D88_LOG, " SectNum: %d/%d\n", d88.secinfo.secno, d88.secinfo.sec_nr )
+		PRINTD( D88_LOG, " Density: %s\n", d88.secinfo.density&0x40 ? "S" : "D" )
+		PRINTD( D88_LOG, " Del    : %s\n", d88.secinfo.deleted&0x10 ? "DELETED" : "NORMAL" )
+		PRINTD( D88_LOG, " Stat   : %02X\n", d88.secinfo.status )
+		PRINTD( D88_LOG, " Size   : %d\n", d88.secinfo.size )
+		PRINTD( D88_LOG, " Offset : %d\n", (int)d88.secinfo.data )
 	}
 }
 
@@ -135,23 +136,28 @@ void cD88::ReadSector88( void )
 ////////////////////////////////////////////////////////////////
 // 1byte 読込み
 ////////////////////////////////////////////////////////////////
-BYTE cD88::Getc88( void )
+BYTE cD88::Get8( void )
 {
-	PRINTD( D88_LOG, "[D88][Getc88] -> " )
+	BYTE dat;
 	
-	if( d88.fp ){
-		BYTE dat = fgetc( d88.fp );
+	PRINTD( D88_LOG, "[D88][Get8] -> " )
+	
+	if( d88.fp && d88.table[d88.trkno] ){
+		// セクタの終わりに到達したら次のセクタをシークする
+		// 最終セクタの次は同一トラックの先頭セクタに移動
+		// エラーセクタの場合は次のセクタに移動しない(Ditt!のエラー対応)
+		if( d88.secinfo.offset >= d88.secinfo.size && !d88.secinfo.status ){
+			if( d88.secinfo.secno > d88.secinfo.sec_nr ) Seek( d88.trkno );
+			else										 ReadSector88();
+		}
+		dat = fgetc( d88.fp );
 		d88.secinfo.offset++;
 		
-		PRINTD1( D88_LOG, "%02X\n", dat );
-		
-		// セクタの終わりに到達したら次のセクタをシークする
-		// (ほんと?せめて同一トラック内に限定しといたほうがいい?)
-		if( d88.secinfo.offset >= d88.secinfo.size ) ReadSector88();
+		PRINTD( D88_LOG, "%02X\n", dat );
 		
 		return dat;
 	}
-	PRINTD( D88_LOG, "FALSE(0xff)\n" );
+	PRINTD( D88_LOG, "false(0xff)\n" );
 	
 	return 0xff;
 }
@@ -160,77 +166,169 @@ BYTE cD88::Getc88( void )
 ////////////////////////////////////////////////////////////////
 // 1byte 書込み
 ////////////////////////////////////////////////////////////////
-BOOL cD88::Putc88( BYTE dat )
+bool cD88::Put8( BYTE dat )
 {
-	PRINTD5( D88_LOG, "[D88][Putc88] -> %02X(%02d:%02d:%02d:%02d)", dat, d88.secinfo.c, d88.secinfo.h, d88.secinfo.r, d88.secinfo.n );
+	PRINTD( D88_LOG, "[D88][Put8] -> %02X(%02d:%02d:%02d:%02d)", dat, d88.secinfo.c, d88.secinfo.h, d88.secinfo.r, d88.secinfo.n );
 	
-	if( d88.fp && !d88.protect ){
-		fseek( d88.fp, 0, SEEK_CUR );	// ごまかしっぽい
-		fputc( dat, d88.fp );
-		fseek( d88.fp, 0, SEEK_CUR );	// これも
-		d88.secinfo.offset++;
-		
+	if( d88.fp && d88.table[d88.trkno] && !d88.protect ){
 		// セクタの終わりに到達したら次のセクタをシークする
-		// (ほんと?せめて同一トラック内に限定しといたほうがいい?)
-		if( d88.secinfo.offset >= d88.secinfo.size ) ReadSector88();
+		// 最終セクタの次は同一トラックの先頭セクタに移動
+		if( d88.secinfo.offset >= d88.secinfo.size ){
+			if( d88.secinfo.secno > d88.secinfo.sec_nr ) Seek( d88.trkno );
+			else										 ReadSector88();
+		}
+		
+		// r+,w+,a+ で開いたファイルに対して読込みと書込みを切り替える場合は
+		// 必ず fsetpos,fseek,rewind のいずれかの関数を実行する必要があるらしい
+		fseek( d88.fp, 0, SEEK_CUR );
+		fputc( dat, d88.fp );
+		fseek( d88.fp, 0, SEEK_CUR );
+		
+		d88.secinfo.offset++;
 		
 		PRINTD( D88_LOG, " ->OK\n" );
 		
-		return TRUE;
+		return true;
 	}
 	PRINTD( D88_LOG, " ->NG\n" );
 	
-	return FALSE;
+	return false;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // シーク
 ////////////////////////////////////////////////////////////////
-BOOL cD88::Seek88( int trackno, int sectno )
+bool cD88::Seek( int trackno, int sectno )
 {
-	PRINTD2( D88_LOG, "[D88][Seek88] Track : %d Sector : %d", trackno, sectno );
+	PRINTD( D88_LOG, "[D88][Seek] Track : %d Sector : %d ", trackno, sectno );
 	
 	if( d88.fp ){
-		// トラックが無効ならエラー
-		if( !d88.table[trackno] ) return FALSE;
-		PRINTD1( D88_LOG, " -> Track:%d\n", trackno );
+		d88.trkno = trackno;
+		d88.secinfo.secno = 0;
+		
+		// トラックが無効ならUnformat扱い
+		if( !d88.table[d88.trkno] ){
+			PRINTD( D88_LOG, "-> Unformat\n" );
+			return false;
+		}
+		PRINTD( D88_LOG, "-> Track:%d\n", d88.trkno );
 		
 		// トラックの先頭をシーク
-		fseek( d88.fp, d88.table[trackno], SEEK_SET );
+		fseek( d88.fp, d88.table[d88.trkno], SEEK_SET );
 		
 		// 最初のセクタ情報読込み
 		ReadSector88();
-		if( d88.secinfo.sec_nr < sectno ) return FALSE;	// セクタ番号は有効?
-		PRINTD1( D88_LOG, " -> Sector:%d", sectno );
 		
-		// 目的のセクタが現れるまで空読み
-		int TryCnt = 2;	// トライ回数カウンタ
-		while( d88.secinfo.r != sectno ){
-			// トラック2周して見つからなければエラー
-			if( !TryCnt ) return FALSE;
+		// 目的のセクタを頭出し
+		if( sectno > 1 ){
 			fseek( d88.fp, (long)d88.secinfo.size, SEEK_CUR );
-			ReadSector88();	// 次のセクタ情報読込み
-			if( d88.secinfo.r == d88.secinfo.sec_nr ) TryCnt--;
+			ReadSector88();
 		}
-		PRINTD( D88_LOG, " -> OK\n" );
 		
-		return TRUE;
+		PRINTD( D88_LOG, "-> OK\n" );
+		
+		return true;
 	}
-	PRINTD( D88_LOG, " -> FALSE\n" );
+	PRINTD( D88_LOG, "-> false\n" );
 	
-	return FALSE;
+	return false;
+}
+
+
+////////////////////////////////////////////////////////////////
+// セクタを探す
+////////////////////////////////////////////////////////////////
+bool cD88::SearchSector( BYTE c, BYTE h, BYTE r, BYTE n )
+{
+	PRINTD( D88_LOG, "[D88][SearchSector] C:%02X H:%02X R:%02X N:%02X ", c, h, r, n );
+	
+	if( Seek( d88.trkno ) ){
+		// 目的のセクタが現れるまで空読み
+		while( d88.secinfo.secno <= d88.secinfo.sec_nr ){
+			// IDをチェック
+			if( ( d88.secinfo.c == c ) && ( d88.secinfo.h == h )
+			 && ( d88.secinfo.r == r ) && ( d88.secinfo.n == n ) ){
+				PRINTD( D88_LOG, "-> Found\n" );
+				return true;
+			}
+			// 一致しなければ次のセクタ情報読込み
+			fseek( d88.fp, (long)d88.secinfo.size, SEEK_CUR );
+			ReadSector88();
+		}
+	}
+	PRINTD( D88_LOG, "-> false\n" );
+	
+	return false;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 現在のCHRN取得
 ////////////////////////////////////////////////////////////////
-DWORD cD88::GetCHRN( void )
+void cD88::GetID( BYTE *C, BYTE *H, BYTE *R, BYTE *N )
 {
-	PRINTD( D88_LOG, "[D88][GetCHRN]\n" );
+	PRINTD( D88_LOG, "[D88][GetID] %02X %02X %02X %02X\n", d88.secinfo.c, d88.secinfo.h, d88.secinfo.r, d88.secinfo.n );
 	
-	return d88.secinfo.c<<24 || d88.secinfo.h<<16 || d88.secinfo.r<<8 || d88.secinfo.n;
+	if( C ) *C = d88.secinfo.c;
+	if( H ) *H = d88.secinfo.h;
+	if( R ) *R = d88.secinfo.r;
+	if( N ) *N = d88.secinfo.n;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 現在のセクタサイズ取得
+////////////////////////////////////////////////////////////////
+WORD cD88::GetSecSize( void )
+{
+	PRINTD( D88_LOG, "[D88][GetSecSize]\n" );
+	
+	return d88.secinfo.size;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 現在のトラック番号取得
+////////////////////////////////////////////////////////////////
+BYTE cD88::Track( void )
+{
+	PRINTD( D88_LOG, "[D88][Track]\n" );
+	
+	return d88.trkno;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 現在のセクタ番号取得
+////////////////////////////////////////////////////////////////
+BYTE cD88::Sector( void )
+{
+	PRINTD( D88_LOG, "[D88][Sector]\n" );
+	
+	return d88.secinfo.secno;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 現在のトラック内に存在するセクタ数取得
+////////////////////////////////////////////////////////////////
+WORD cD88::SecNum( void )
+{
+	PRINTD( D88_LOG, "[D88][SecNum]\n" );
+	
+	return d88.secinfo.sec_nr;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 現在のステータス取得
+////////////////////////////////////////////////////////////////
+BYTE cD88::GetSecStatus( void )
+{
+	PRINTD( D88_LOG, "[D88][GetStatus]\n" );
+	
+	return d88.secinfo.status;
 }
 
 
@@ -255,7 +353,7 @@ char *cD88::GetDiskImgName( void )
 ////////////////////////////////////////////////////////////////
 // プロテクトシール状態取得
 ////////////////////////////////////////////////////////////////
-BOOL cD88::IsProtect( void )
+bool cD88::IsProtect( void )
 {
 	return Protected;
 }

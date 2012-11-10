@@ -1,3 +1,5 @@
+#include "pc6001v.h"
+#include "p6el.h"
 #include "log.h"
 #include "intr.h"
 #include "cpus.h"
@@ -12,11 +14,12 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-INT6::INT6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), TimerIntrEnable(TRUE), TimerAddr(0), TimerCntUp(0) {}
-INT60::INT60( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id){}
-INT62::INT62( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id), TimerIntrEnable2(TRUE),
-    Int1IntrEnable(TRUE), Int2IntrEnable(TRUE), Int1AddrOutput(TRUE), Int2AddrOutput(TRUE),
-    Int1Addr(0), Int2Addr(0) {}
+INT6::INT6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id),
+	IntrFlag(0), TimerIntrEnable(false), TimerAddr(0), TimerCntUp(0) {}
+INT60::INT60( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id) {}
+INT62::INT62( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id),
+	TimerIntrEnable2(false), Int1IntrEnable(false), Int2IntrEnable(false),
+	Int1AddrOutput(false), Int2AddrOutput(false), Int1Addr(0), Int2Addr(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -35,11 +38,7 @@ void INT6::EventCallback( int id, int clock )
 	switch( id ){
 	case EID_TIMER:		// タイマ割込み発生
 		PRINTD( INTR_LOG, "[INTR][EventCallback] TimerIntr\n" );
-		
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-		if( vm->cfg->GetTimerIntr() )
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-			ReqIntr( IREQ_TIMER );
+		ReqIntr( IREQ_TIMER );
 		break;
 	}
 }
@@ -53,8 +52,7 @@ void INT6::SetTimerIntrHz( BYTE data )
 	TimerCntUp = data;
 	
 	// イベント追加
-	vm->sche->Add( this, EID_TIMER, (double)(2048)*(TimerCntUp+1), EV_LOOP|EV_STATE );
-//	vm->sche->Add( this, EID_TIMER, (double)(vm->sche->GetMasterClock()/2048)/(TimerCntUp+1), EV_LOOP|EV_HZ );
+	vm->evsc->Add( this, EID_TIMER, (double)(2048)*(TimerCntUp+1), EV_LOOP|EV_STATE );
 }
 
 
@@ -70,7 +68,7 @@ void INT60::Reset( void )
 	
 	// 各種変数初期化
 	TimerCntUp       = 3;
-	TimerIntrEnable  = FALSE;	// タイマ割込み許可フラグ降ろす
+	TimerIntrEnable  = false;	// タイマ割込み許可フラグ降ろす
 	IntrFlag         = 0;		// 割込み要求フラグクリア
 	
 	// タイマ割込み周波数初期化
@@ -89,12 +87,12 @@ void INT62::Reset( void )
 	
 	// 各種変数初期化
 	TimerCntUp       = 3;
-	TimerIntrEnable  = FALSE;	// タイマ割込み許可フラグ降ろす
-	TimerIntrEnable2 = FALSE;	// タイマ割込み許可フラグ降ろす(mk2以降)
-	Int1IntrEnable   = TRUE;	// INT1割込み許可フラグ立てる
-	Int2IntrEnable   = FALSE;	// INT2割込み許可フラグ降ろす
-	Int1AddrOutput   = FALSE;	// INT1割込みアドレス出力フラグ降ろす
-	Int2AddrOutput   = FALSE;	// INT2割込みアドレス出力フラグ降ろす
+	TimerIntrEnable  = false;	// タイマ割込み許可フラグ降ろす
+	TimerIntrEnable2 = false;	// タイマ割込み許可フラグ降ろす(mk2以降)
+	Int1IntrEnable   = true;	// INT1割込み許可フラグ立てる
+	Int2IntrEnable   = false;	// INT2割込み許可フラグ降ろす
+	Int1AddrOutput   = false;	// INT1割込みアドレス出力フラグ降ろす
+	Int2AddrOutput   = false;	// INT2割込みアドレス出力フラグ降ろす
 	IntrFlag         = 0;		// 割込み要求フラグクリア
 	
 	// タイマ割込み周波数初期化
@@ -126,7 +124,7 @@ int INT6::IntrCheck( void )
 	}
 	
 	if( IntrNo >= 0 ){
-		PRINTD1( INTR_LOG, " IntrNo = %d\n", IntrNo  );
+		PRINTD( INTR_LOG, " IntrNo = %d\n", IntrNo  );
 		IntrNo <<= 1;
 	}
 	
@@ -141,7 +139,7 @@ void INT6::ReqIntr( DWORD vec )
 {
 	IntrFlag |= vec;
 	
-	PRINTD2( INTR_LOG, "[INTR][ReqIntr] %04X -> %04X\n", (unsigned int)vec, (unsigned int)IntrFlag );
+	PRINTD( INTR_LOG, "[INTR][ReqIntr] %04X -> %04X\n", (unsigned int)vec, (unsigned int)IntrFlag );
 }
 
 
@@ -152,14 +150,18 @@ void INT6::CancelIntr( DWORD vec )
 {
 	IntrFlag &= ~vec;
 	
-	PRINTD2( INTR_LOG, "[INTR][CancelIntr] %04X -> %04X\n", (unsigned int)vec, (unsigned int)IntrFlag );
+	PRINTD( INTR_LOG, "[INTR][CancelIntr] %04X -> %04X\n", (unsigned int)vec, (unsigned int)IntrFlag );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // タイマ割込み許可チェック
 ////////////////////////////////////////////////////////////////
-BOOL INT62::IsTimerIntrEnable( void )
+bool INT6::IsTimerIntrEnable( void )
+{
+	return TimerIntrEnable;
+}
+bool INT62::IsTimerIntrEnable( void )
 {
 	return TimerIntrEnable && TimerIntrEnable2;
 }
@@ -170,11 +172,11 @@ BOOL INT62::IsTimerIntrEnable( void )
 ////////////////////////////////////////////////////////////////
 void INT62::SetIntrEnable( BYTE data )
 {
-	Int1IntrEnable   = (data&0x01 ? FALSE : TRUE);
-	Int2IntrEnable   = (data&0x02 ? FALSE : TRUE);
-	TimerIntrEnable2 = (data&0x04 ? FALSE : TRUE);
-	Int1AddrOutput   = (data&0x08 ? FALSE : TRUE);
-	Int2AddrOutput   = (data&0x10 ? FALSE : TRUE);
+	Int1IntrEnable   = (data&0x01 ? false : true);
+	Int2IntrEnable   = (data&0x02 ? false : true);
+	TimerIntrEnable2 = (data&0x04 ? false : true);
+	Int1AddrOutput   = (data&0x08 ? false : true);
+	Int2AddrOutput   = (data&0x10 ? false : true);
 }
 
 
@@ -183,43 +185,43 @@ void INT62::SetIntrEnable( BYTE data )
 ////////////////////////////////////////////////////////////////
 inline void INT60::OutB0H( int, BYTE data )
 {
-	PRINTD1( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
-	TimerIntrEnable = (data&1 ? FALSE : TRUE);
+	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
+	TimerIntrEnable = (data&1 ? false : true);
 }
 
 
 inline void INT62::OutB0H( int, BYTE data )
-{	PRINTD1( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
-	TimerIntrEnable  = (data&1 ? FALSE : TRUE);
+{	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
+	TimerIntrEnable  = (data&1 ? false : true);
 }
 
 inline void INT62::OutF3H( int, BYTE data )
 {
-	PRINTD1( INTR_LOG, "[INTR][OutF3H] %02X\n", data );
+	PRINTD( INTR_LOG, "[INTR][OutF3H] %02X\n", data );
 	SetIntrEnable( data );
 }
 
 inline void INT62::OutF4H( int, BYTE data )
 {
-	PRINTD1( INTR_LOG, "[INTR][OutF4H] %02X\n", data );
+	PRINTD( INTR_LOG, "[INTR][OutF4H] %02X\n", data );
 	Int1Addr = data;
 }
 
 inline void INT62::OutF5H( int, BYTE data )
 {
-	PRINTD1( INTR_LOG, "[INTR][OutF5H] %02X\n", data );
+	PRINTD( INTR_LOG, "[INTR][OutF5H] %02X\n", data );
 	Int2Addr = data;
 }
 
 inline void INT62::OutF6H( int, BYTE data )
 {
-	PRINTD1( INTR_LOG, "[INTR][OutF6H] %02X\n", data );
+	PRINTD( INTR_LOG, "[INTR][OutF6H] %02X\n", data );
 	SetTimerIntrHz( data );
 }
 
 inline void INT62::OutF7H( int, BYTE data )
 {
-	PRINTD1( INTR_LOG, "[INTR][OutF7H] %02X\n", data );
+	PRINTD( INTR_LOG, "[INTR][OutF7H] %02X\n", data );
 	TimerAddr = data;
 }
 
@@ -247,7 +249,7 @@ inline BYTE INT62::InF6H( int )
 
 inline BYTE INT62::InF7H( int )
 {
-	PRINTD1( INTR_LOG, "[INTR][InF7H] %02X\n", TimerAddr );
+	PRINTD( INTR_LOG, "[INTR][InF7H] %02X\n", TimerAddr );
 	return TimerAddr;
 }
 
@@ -255,14 +257,14 @@ inline BYTE INT62::InF7H( int )
 ////////////////////////////////////////////////////////////////
 // どこでもSAVE
 ////////////////////////////////////////////////////////////////
-BOOL INT6::DokoSave( cIni *Ini )
+bool INT6::DokoSave( cIni *Ini )
 {
 	cSche::evinfo e;
 	char stren[16];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "INTR", NULL, "IntrFlag",			"0x%08X",	IntrFlag );
 	Ini->PutEntry( "INTR", NULL, "TimerIntrEnable",		"%s",		TimerIntrEnable ? "Yes" : "No" );
@@ -271,17 +273,17 @@ BOOL INT6::DokoSave( cIni *Ini )
 	
 	// イベント
 	e.id = EID_TIMER;
-	if( vm->sche->GetEvinfo( &e ) ){
+	if( vm->evsc->GetEvinfo( &e ) ){
 		sprintf( stren, "Event%08X", e.id );
 		Ini->PutEntry( "INTR", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
 	}
 	
-	return TRUE;
+	return true;
 }
 
-BOOL INT62::DokoSave( cIni *Ini )
+bool INT62::DokoSave( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "INTR", NULL, "TimerIntrEnable2",	"%s",		TimerIntrEnable2 ? "Yes" : "No" );
 	Ini->PutEntry( "INTR", NULL, "Int1IntrEnable",		"%s",		Int1IntrEnable ? "Yes" : "No" );
@@ -299,7 +301,7 @@ BOOL INT62::DokoSave( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 // どこでもLOAD
 ////////////////////////////////////////////////////////////////
-BOOL INT6::DokoLoad( cIni *Ini )
+bool INT6::DokoLoad( cIni *Ini )
 {
 	int st,yn;
 	cSche::evinfo e;
@@ -308,7 +310,7 @@ BOOL INT6::DokoLoad( cIni *Ini )
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetInt(   "INTR", "IntrFlag",			&st,				IntrFlag );			IntrFlag = st;
 	Ini->GetTruth( "INTR", "TimerIntrEnable",	&TimerIntrEnable,	TimerIntrEnable );
@@ -320,18 +322,18 @@ BOOL INT6::DokoLoad( cIni *Ini )
 	sprintf( stren, "Event%08X", e.id );
 	if( Ini->GetString( "INTR", stren, strrs, "" ) ){
 		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
+		e.Active = yn ? true : false;
+		if( !vm->evsc->SetEvinfo( &e ) ) return false;
 	}
 	
-	return TRUE;
+	return true;
 }
 
-BOOL INT62::DokoLoad( cIni *Ini )
+bool INT62::DokoLoad( cIni *Ini )
 {
 	int st;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetTruth( "INTR", "TimerIntrEnable2",	&TimerIntrEnable2,	TimerIntrEnable2 );
 	Ini->GetTruth( "INTR", "Int1IntrEnable",	&Int1IntrEnable,	Int1IntrEnable );

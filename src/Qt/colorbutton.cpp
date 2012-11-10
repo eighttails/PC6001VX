@@ -20,7 +20,7 @@ void ColorButton::updateColor()
     setStyleSheet(styleSheet);
 }
 
-void ColorButton::initialize(int id, cConfig *cfg)
+void ColorButton::initialize(int id, CFG6 *cfg)
 {
     Q_ASSERT(cfg);
     config = cfg;

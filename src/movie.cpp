@@ -25,10 +25,8 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-AVI6::AVI6( void )
-{
-	vfp  = NULL;
-}
+AVI6::AVI6( void ) : vfp(NULL), ABPP(8), AVIRLE(true), PosMOVI(0),
+						RiffSize(0), MoviSize(0), anum(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -124,31 +122,31 @@ void AVI6::putWAVEFORMATEX6( WAVEFORMATEX6 *p )
 // 初期化
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL AVI6::Init( void )
+bool AVI6::Init( void )
 {
 	PRINTD( GRP_LOG, "[MOVIE][Init]\n" );
 	
 	if( vfp ) fclose( vfp );
 	vfp = NULL;
 	
-	memset( &vmh, 0, sizeof(MAINAVIHEADER6) );
-	memset( &vsh, 0, sizeof(AVISTRMHEADER6) );
-	memset( &ash, 0, sizeof(AVISTRMHEADER6) );
-	memset( &vbf, 0, sizeof(BMPINFOHEADER6) );
-	memset( &pal, 0, sizeof(RGBPAL6)*256 );
-	memset( &awf, 0, sizeof(WAVEFORMATEX6) );
+	ZeroMemory( &vmh, sizeof(MAINAVIHEADER6) );
+	ZeroMemory( &vsh, sizeof(AVISTRMHEADER6) );
+	ZeroMemory( &ash, sizeof(AVISTRMHEADER6) );
+	ZeroMemory( &vbf, sizeof(BMPINFOHEADER6) );
+	ZeroMemory( &pal, sizeof(RGBPAL6)*256 );
+	ZeroMemory( &awf, sizeof(WAVEFORMATEX6) );
 	
 	ABPP     = 8;
-	AVIRLE   = TRUE;
+	AVIRLE   = true;
 	
 	PosMOVI  = 0;
 	
 	RiffSize = 0;
 	MoviSize = 0;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -159,19 +157,19 @@ BOOL AVI6::Init( void )
 //			sbuf		サブバッファへのポインタ
 //			vrate		フレームレート(fps)
 //			arate		音声サンプリングレート(Hz)
-//			rle			TRUE:RLE使う FALSE:RLE使わない
-// 返値:	BOOL		TRUE:成功 FALSE:失敗
+//			rle			true:RLE使う false:RLE使わない
+// 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL AVI6::StartAVI( char *filename, VSurface *sbuf, int vrate, int arate, BOOL rle )
+bool AVI6::StartAVI( char *filename, VSurface *sbuf, int vrate, int arate, bool rle )
 {
 	Init();
 	
 	vfp = FOPENEN( filename, "w+b" );
-	if( !vfp ) return FALSE;
+	if( !vfp ) return false;
 	
 	switch( sbuf->Bpp() ){
-	case 24: ABPP = 24; AVIRLE = FALSE; break;
-	case 16: ABPP = 16; AVIRLE = FALSE; break;
+	case 24: ABPP = 24; AVIRLE = false; break;
+	case 16: ABPP = 16; AVIRLE = false; break;
 	default: ABPP =  8; AVIRLE = rle;
 	}
 	
@@ -193,7 +191,7 @@ BOOL AVI6::StartAVI( char *filename, VSurface *sbuf, int vrate, int arate, BOOL 
 	//						これは,ユーザーがこのファイルをデフラグメントしている可能性が高いからである。
 	//  AVIF_COPYRIGHTED	AVIファイルに著作権のあるデータおよびソフトウェアが含まれていることを示す。
 	//						このフラグが使用されている場合,ソフトウェアはデータの複製を許可すべきではない。
-	vmh.dwFlags = 0x00000010;	// AVIF_HASINDEX
+	vmh.dwFlags = 0x00000110;	// AVIF_HASINDEX | AVIF_ISINTERLEAVED
 	// ファイル内のデータのフレームの総数を指定する。
 	// (後で)
 	vmh.dwTotalFrames = 0;
@@ -367,7 +365,7 @@ BOOL AVI6::StartAVI( char *filename, VSurface *sbuf, int vrate, int arate, BOOL 
 	// カウンタ初期化
 	anum = 0;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -408,11 +406,11 @@ void AVI6::StopAVI( void )
 // ビデオキャプチャ中?
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:キャプチャ中 FALSE:ひま
+// 返値:	bool	true:キャプチャ中 false:ひま
 ////////////////////////////////////////////////////////////////
-BOOL AVI6::IsAVI( void )
+bool AVI6::IsAVI( void )
 {
-	return vfp ? TRUE : FALSE;
+	return vfp ? true : false;
 }
 
 
@@ -420,11 +418,11 @@ BOOL AVI6::IsAVI( void )
 // AVI1フレーム書出し
 //
 // 引数:	sbuf	サーフェスへのポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL AVI6::AVIWriteFrame( VSurface *sbuf )
+bool AVI6::AVIWriteFrame( VSurface *sbuf )
 {
-	if( !vfp || !sbuf ) return FALSE;
+	if( !vfp || !sbuf ) return false;
 	
 	int xx = min( sbuf->Width(),  vbf.biWidth  );
 	int yy = min( sbuf->Height(), vbf.biHeight );
@@ -500,7 +498,7 @@ BOOL AVI6::AVIWriteFrame( VSurface *sbuf )
 		}
 	}
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -520,11 +518,11 @@ cRing *AVI6::GetAudioBuffer( void )
 // ヘッダチャンク書出し
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL AVI6::WriteHeader( void )
+bool AVI6::WriteHeader( void )
 {
-	if( !vfp ) return FALSE;
+	if( !vfp ) return false;
 	
 	DWORD SIZESTRLV	= sizeof(AVISTRMHEADER6) + sizeof(BMPINFOHEADER6) + sizeof(DWORD)*5 + (ABPP==8 ? (sizeof(RGBPAL6)*256) : 0);
 	DWORD SIZESTRLA	= sizeof(AVISTRMHEADER6) + sizeof(WAVEFORMATEX6)  + sizeof(DWORD)*5;
@@ -590,7 +588,7 @@ BOOL AVI6::WriteHeader( void )
 	
 	fseek( vfp, 0, SEEK_END );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -598,11 +596,11 @@ BOOL AVI6::WriteHeader( void )
 // インデックスチャンク書出し
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL AVI6::WriteIndexr( void )
+bool AVI6::WriteIndexr( void )
 {
-	if( !vfp ) return FALSE;
+	if( !vfp ) return false;
 	
 	DWORD frames = vmh.dwTotalFrames * 2;
 	
@@ -617,8 +615,9 @@ BOOL AVI6::WriteIndexr( void )
 		
 		fseek( vfp, PosMOVI + ipos, SEEK_SET );
 		idx.ckid          = FGETDWORD( vfp );
-		if( idx.ckid == CID01WB ) idx.dwFlags = 0x00000000;
-		else                      idx.dwFlags = 0x00000010;	// AVIIF_KEYFRAME
+//		if( idx.ckid == CID01WB ) idx.dwFlags = 0x00000000;
+//		else                      idx.dwFlags = 0x00000010;	// AVIIF_KEYFRAME
+		idx.dwFlags = 0x00000010;	// AVIIF_KEYFRAME
 		idx.dwChunkOffset = ipos;
 		idx.dwChunkLength = FGETDWORD( vfp );
 		fseek( vfp, 0, SEEK_END );
@@ -626,5 +625,5 @@ BOOL AVI6::WriteIndexr( void )
 		ipos += idx.dwChunkLength + 8;
 	}
 	
-	return TRUE;
+	return true;
 }

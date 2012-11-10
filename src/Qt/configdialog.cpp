@@ -6,7 +6,7 @@
 #include "../config.h"
 #include "../osd.h"
 
-ConfigDialog::ConfigDialog(cConfig* cfg, QWidget *parent) :
+ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent) :
     QDialog(parent),
     config(cfg),
     sliderLabelMap(new QSignalMapper(this)),
@@ -169,12 +169,19 @@ void ConfigDialog::readConfig()
     connect(ui->pushButtonRefSaveTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
     fileRefMap->setMapping(ui->pushButtonRefSaveTape, ui->lineEditSaveTape);
 
-    // DISKファイル名
-    strncpy( str, config->GetDiskFile(), PATH_MAX );
+    // DISK1ファイル名
+    strncpy( str, config->GetDiskFile(1), PATH_MAX );
     UnDelimiter( str );
-    ui->lineEditDisk->setText(str);
-    connect(ui->pushButtonRefDisk, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-    fileRefMap->setMapping(ui->pushButtonRefDisk, ui->lineEditDisk);
+    ui->lineEditDisk1->setText(str);
+    connect(ui->pushButtonRefDisk1, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefDisk1, ui->lineEditDisk1);
+
+    // DISK2ファイル名
+    strncpy( str, config->GetDiskFile(2), PATH_MAX );
+    UnDelimiter( str );
+    ui->lineEditDisk2->setText(str);
+    connect(ui->pushButtonRefDisk2, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+    fileRefMap->setMapping(ui->pushButtonRefDisk2, ui->lineEditDisk2);
 
     // プリンタファイル名
     strncpy( str, config->GetPrinterFile(), PATH_MAX );
@@ -182,20 +189,6 @@ void ConfigDialog::readConfig()
     ui->lineEditPrinter->setText(str);
     connect(ui->pushButtonRefPrinter, SIGNAL(clicked()), fileRefMap, SLOT(map()));
     fileRefMap->setMapping(ui->pushButtonRefPrinter, ui->lineEditPrinter);
-
-    // 全角フォントファイル名
-    strncpy( str, config->GetFontFileZ(), PATH_MAX );
-    UnDelimiter( str );
-    ui->lineEditZenFont->setText(str);
-    connect(ui->pushButtonRefZenFont, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-    fileRefMap->setMapping(ui->pushButtonRefZenFont, ui->lineEditZenFont);
-
-    // 半角フォントファイル名
-    strncpy( str, config->GetFontFileH(), PATH_MAX );
-    UnDelimiter( str );
-    ui->lineEditHanFont->setText(str);
-    connect(ui->pushButtonRefHanFont, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-    fileRefMap->setMapping(ui->pushButtonRefHanFont, ui->lineEditHanFont);
 
     // フォルダ--------------------------------------------------------------
     // ROMパス
@@ -245,14 +238,6 @@ void ConfigDialog::readConfig()
     ui->lineEditFolderWave->setText(str);
     connect(ui->pushButtonRefFolderWave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderWave, ui->lineEditFolderWave);
-
-    // FONTパス
-    strncpy( str, config->GetFontPath(), PATH_MAX );
-    DelDelimiter( str );
-    UnDelimiter( str );
-    ui->lineEditFolderFont->setText(str);
-    connect(ui->pushButtonRefFolderFont, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-    folderRefMap->setMapping(ui->pushButtonRefFolderFont, ui->lineEditFolderFont);
 
     // 色--------------------------------------------------------------------------
     // 16〜64の色IDに対応させる。
@@ -426,12 +411,6 @@ void ConfigDialog::writeConfig()
         config->SetWavePath(qStr.toUtf8().data());
     }
 
-    // FONTパス
-    qStr = ui->lineEditFolderFont->text();
-    if(QDir(qStr).exists()){
-        config->SetFontPath(qStr.toUtf8().data());
-    }
-
     // ファイル--------------------------------------------------------
     // 拡張ROMファイル
     qStr = ui->lineEditExtRom->text();
@@ -449,27 +428,21 @@ void ConfigDialog::writeConfig()
     qStr = ui->lineEditSaveTape->text();
     config->SetSaveFile(qStr.toUtf8().data());
 
-    // DISKファイル名
-    qStr = ui->lineEditDisk->text();
+    // DISK1ファイル名
+    qStr = ui->lineEditDisk1->text();
     if(QFile(qStr).exists()){
-        config->SetDiskFile(qStr.toUtf8().data());
+        config->SetDiskFile(1, qStr.toUtf8().data());
+    }
+
+    // DISK2ファイル名
+    qStr = ui->lineEditDisk1->text();
+    if(QFile(qStr).exists()){
+        config->SetDiskFile(2, qStr.toUtf8().data());
     }
 
     // プリンタファイル名
     qStr = ui->lineEditPrinter->text();
     config->SetPrinterFile(qStr.toUtf8().data());
-
-    // 全角フォントファイル名
-    qStr = ui->lineEditZenFont->text();
-    if(QFile(qStr).exists()){
-        config->SetFontFileZ(qStr.toUtf8().data());
-    }
-
-    // 半角フォントファイル名
-    qStr = ui->lineEditHanFont->text();
-    if(QFile(qStr).exists()){
-        config->SetFontFileH(qStr.toUtf8().data());
-    }
 
     // 色-----------------------------------------------------------------
     // 16〜64の色IDに対応させる。
@@ -559,14 +532,12 @@ void ConfigDialog::selectFile(QWidget *widget)
             dlg = FD_TapeLoad; path = config->GetTapePath();
         } else if(edit == ui->lineEditSaveTape){
             dlg = FD_TapeSave; path = config->GetTapePath();
-        } else if(edit == ui->lineEditDisk){
+        } else if(edit == ui->lineEditDisk1){
+            dlg = FD_Disk; path = config->GetDiskPath();
+        } else if(edit == ui->lineEditDisk2){
             dlg = FD_Disk; path = config->GetDiskPath();
         } else if(edit == ui->lineEditPrinter){
             dlg = FD_Printer; path = NULL;
-        } else if(edit == ui->lineEditZenFont){
-            dlg = FD_FontZ; path = config->GetFontPath();
-        } else if(edit == ui->lineEditHanFont){
-            dlg = FD_FontH; path = config->GetFontPath();
         }
 
         strncpy(folder, edit->text().toUtf8().data(), PATH_MAX);

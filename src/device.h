@@ -66,9 +66,9 @@ public:
 	~DeviceList();
 	
 	void Cleanup();
-	BOOL Add( IDevice* t );
-	BOOL Del( IDevice* t ) { return t->GetID() ? Del(t->GetID()) : FALSE; }
-	BOOL Del( const ID id );
+	bool Add( IDevice* t );
+	bool Del( IDevice* t ) { return t->GetID() ? Del(t->GetID()) : false; }
+	bool Del( const ID id );
 	IDevice* Find( const ID id );
 	
 private:
@@ -121,17 +121,17 @@ public:
 	IOBus();
 	~IOBus();
 	
-	BOOL Init( DeviceList* devlist = 0, int bs = BANKSIZE );
+	bool Init( DeviceList* devlist = 0, int bs = BANKSIZE );
 	
-	BOOL ConnectIn( int bank, IDevice* device, InFuncPtr func );
-	BOOL ConnectOut( int bank, IDevice* device, OutFuncPtr func );
+	bool ConnectIn( int bank, IDevice* device, InFuncPtr func );
+	bool ConnectOut( int bank, IDevice* device, OutFuncPtr func );
 	
 	InBank* GetIns() { return ins; }
 	OutBank* GetOuts() { return outs; }
 	BYTE* GetFlags() { return flags; }
 	
-	BOOL Connect( IDevice* device, const Connector* connector );
-	BOOL Disconnect( IDevice* device );
+	bool Connect( IDevice* device, const Connector* connector );
+	bool Disconnect( IDevice* device );
 	BYTE In( int port );
 	void Out( int port, BYTE data );
 	
@@ -148,8 +148,8 @@ private:
 
 // ---------------------------------------------------------------------------
 
-#define DEV_ID(a, b, c, d)		\
-	(Device::ID(a + (DWORD(b) << 8) + (DWORD(c) << 16) + (DWORD(d) << 24)))
+#define DEV_ID(a)		\
+	(Device::ID((DWORD)a[0] + ((DWORD)a[1] << 8) + ((DWORD)a[2] << 16) + ((DWORD)a[3] << 24)))
 
 // ---------------------------------------------------------------------------
 

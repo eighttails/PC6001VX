@@ -21,10 +21,10 @@ public:
 	IO6();									// コンストラクタ
 	~IO6();									// デストラクタ
 	
-	BOOL Init( int );						// 初期化
+	bool Init( int );						// 初期化
 	
-	BOOL Connect( IDevice*, const IOBus::Connector* );	// デバイス接続
-	BOOL Disconnect( IDevice* );						// デバイス切断
+	bool Connect( IDevice*, const IOBus::Connector* );	// デバイス接続
+	bool Disconnect( IDevice* );						// デバイス切断
 	
 	BYTE In( int, int * = NULL );			// IN関数
 	void Out( int, BYTE, int * = NULL );	// OUT関数

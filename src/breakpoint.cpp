@@ -6,16 +6,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-BPoint::BPoint( void )
-{
-	// ブレークポイント初期化
-	for( int i=0; i<NR_BP; i++ ) BP[i].Type = BP_NONE;
-	ReqBreak = FALSE;
-	ReqBPNum = 0;
-        BPNo = 0;
-        BPData = 0;
-        BPStr = NULL;
-}
+BPoint::BPoint( void ) : BPNo(BP_NONE), BPData(0), BPStr(NULL), ReqBreak(false), ReqBPNum(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -27,19 +18,19 @@ BPoint::~BPoint( void ){}
 ////////////////////////////////////////////////////////////////
 // ブレークポイントの有無をチェック
 ////////////////////////////////////////////////////////////////
-BOOL BPoint::ExistBreakPoint( void )
+bool BPoint::ExistBreakPoint( void )
 {
 	for( int i=0; i<NR_BP; i++ )
-		if( BP[i].Type != BP_NONE ) return TRUE;
+		if( BP[i].Type != BP_NONE ) return true;
 	
-	return FALSE;
+	return false;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // ブレークポイントをチェック
 ////////////////////////////////////////////////////////////////
-BOOL BPoint::CheckBreakPoint( BPtype type, WORD addr, BYTE data, char *str )
+bool BPoint::CheckBreakPoint( BPtype type, WORD addr, BYTE data, char *str )
 {
 	for( int i=0; i<NR_BP; i++ ){
 		if( BP[i].Type == type && BP[i].Addr == addr ){
@@ -48,13 +39,13 @@ BOOL BPoint::CheckBreakPoint( BPtype type, WORD addr, BYTE data, char *str )
 			BPData = data;
 			BPStr  = str;
 			
-			ReqBreak = TRUE;
+			ReqBreak = true;
 			ReqBPNum = i;
 			
-			return TRUE;
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -109,7 +100,7 @@ void BPoint::SetAddr( int num, WORD addr )
 ////////////////////////////////////////////////////////////////
 // ブレーク要求あり?
 ////////////////////////////////////////////////////////////////
-BOOL BPoint::IsReqBreak( void )
+bool BPoint::IsReqBreak( void )
 {
 	return ReqBreak;
 }
@@ -129,7 +120,7 @@ int BPoint::GetReqBPNum( void )
 ////////////////////////////////////////////////////////////////
 void BPoint::ResetBreak( void )
 {
-	ReqBreak = FALSE;
+	ReqBreak = false;
 	ReqBPNum = 0;
 }
 

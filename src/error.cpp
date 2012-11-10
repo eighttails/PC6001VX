@@ -21,7 +21,8 @@ const char *Error::ErrorText[Error::EndofErrors] =
 	MSERR_RomCrcNG,				// RomCrcNG
 	MSERR_LibInitFailed,		// LibInitFailed
 	MSERR_InitFailed,			// InitFailed
-	MSERR_FontFailed,			// FontFailed
+	MSERR_FontLoadFailed,		// FontLoadFailed
+	MSERR_FontCreateFailed,		// FontCreateFailed
 	MSERR_IniDefault,			// IniDefault
 	MSERR_IniReadFailed,		// IniReadFailed
 	MSERR_IniWriteFailed,		// IniWriteFailed
@@ -30,10 +31,8 @@ const char *Error::ErrorText[Error::EndofErrors] =
 	MSERR_ExtRomMountFailed,	// ExtRomMountFailed
 	MSERR_DokoReadFailed,		// DokoReadFailed
 	MSERR_DokoWriteFailed,		// DokoWriteFailed
-	MSERR_DokoDiffModel,		// DokoDiffModel
 	MSERR_DokoDiffVersion,		// DokoDiffVersion
 	MSERR_ReplayPlayError,		// ReplayPlayError
-	MSERR_ReplayDiffModel,		// ReplayDiffModel
 	MSERR_ReplayRecError,		// ReplayRecError
 	MSERR_NoReplayData			// NoReplayData
 };

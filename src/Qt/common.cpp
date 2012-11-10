@@ -292,9 +292,7 @@ char *Sjis2UTF8( const char *str )
 	CFRelease( cfstr );
 	return dst;
 }
-
 #endif
-
 
 
 // isioさんの txt2bas から流用
@@ -436,11 +434,11 @@ int Sjis2P6( char *dstr, char *sstr )
 // 引数:	filename		保存ファイル名
 //			sur				保存するサーフェスへのポインタ
 //			pos				保存する領域情報へのポインタ
-// 返値:	なし
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-void SaveImg( char *filename, VSurface *sur, VRect *pos )
+bool SaveImg( char *filename, VSurface *sur, VRect *pos )
 {
-	PRINTD1( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
+	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
 	
 	FILE *fp;
 	png_structp PngPtr;
@@ -450,6 +448,11 @@ void SaveImg( char *filename, VSurface *sur, VRect *pos )
 	png_color_8 SigBit = { 8, 8, 8, 0 };
 	VRect rec;
 	int bpp;
+	
+	
+	// ファイルを開く
+	fp = FOPENEN( filename, "wb" );
+	if( !fp ) return false;
 	
 	// 領域設定
 	if( pos ){
@@ -542,10 +545,6 @@ void SaveImg( char *filename, VSurface *sur, VRect *pos )
 		break;
 	}
 	
-	
-	// ファイルを開く
-	fp = FOPENEN( filename, "wb" );
-	
 	// libpngにfpを知らせる
 	png_init_io( PngPtr, fp );
 	
@@ -568,6 +567,8 @@ void SaveImg( char *filename, VSurface *sur, VRect *pos )
 	
 	// 2つの構造体のメモリを解放する
 	png_destroy_write_struct( &PngPtr, &InfoPtr );
+	
+	return true;
 }
 
 
@@ -581,7 +582,7 @@ void SaveImg( char *filename, VSurface *sur, VRect *pos )
 ////////////////////////////////////////////////////////////////
 VSurface *LoadImg( char *filename )
 {
-	PRINTD1( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filename );
+	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filename );
 	
 	FILE *fp;
 	png_structp PngPtr;

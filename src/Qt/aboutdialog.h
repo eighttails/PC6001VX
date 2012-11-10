@@ -3,7 +3,7 @@
 
 #include <QDialog>
 
-class cConfig;
+class CFG6;
 
 namespace Ui {
     class AboutDialog;
@@ -14,12 +14,12 @@ class AboutDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AboutDialog(cConfig* cfg, QWidget *parent = 0);
+    explicit AboutDialog(CFG6* cfg, QWidget *parent = 0);
     ~AboutDialog();
 
 private:
     Ui::AboutDialog *ui;
-    cConfig* config;
+    CFG6* config;
 };
 
 #endif // ABOUTDIALOG_H

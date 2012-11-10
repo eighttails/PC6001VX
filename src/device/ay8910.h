@@ -5,7 +5,7 @@
 
 
 ////////////////////////////////////////////////////////////////
-// ã‚¯ãƒ©ã‚¹å®šç¾©
+// ƒNƒ‰ƒX’è‹`
 ////////////////////////////////////////////////////////////////
 class cAY8910 {
 protected:
@@ -18,33 +18,33 @@ protected:
 	int VolA, VolB, VolC, VolE;
 	BYTE EnvelopeA, EnvelopeB, EnvelopeC;
 	BYTE OutputA, OutputB, OutputC, OutputN;
-	signed char CountEnv;
+	int8_t CountEnv;
 	BYTE Hold,Alternate,Attack,Holding;
 	int RNG;
 	int VolTable[32];
 	
-	void _AYWriteReg( BYTE, BYTE );		// ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸è¾¼ã¿ã‚µãƒ–
-	void AYWriteReg( BYTE, BYTE );		// ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸è¾¼ã¿
-	BYTE AYReadReg( BYTE );				// ãƒ¬ã‚¸ã‚¹ã‚¿èª­è¾¼ã¿
+	void _AYWriteReg( BYTE, BYTE );		// ƒŒƒWƒXƒ^‘‚İƒTƒu
+	void AYWriteReg( BYTE, BYTE );		// ƒŒƒWƒXƒ^‘‚İ
+	BYTE AYReadReg( BYTE );				// ƒŒƒWƒXƒ^“Ç‚İ
 	
-	void SetClock( int, int );			// PSGã‚¯ãƒ­ãƒƒã‚¯è¨­å®š
-	void SetVolumeTable( int );			// éŸ³é‡è¨­å®š(ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒ†ãƒ¼ãƒ–ãƒ«è¨­å®š)
+	void SetClock( int, int );			// PSGƒNƒƒbƒNİ’è
+	void SetVolumeTable( int );			// ‰¹—Êİ’è(ƒ{ƒŠƒ…[ƒ€ƒe[ƒuƒ‹İ’è)
 	
-	// ãƒãƒ¼ãƒˆã‚¢ã‚¯ã‚»ã‚¹é–¢æ•°
+	// ƒ|[ƒgƒAƒNƒZƒXŠÖ”
 	virtual BYTE PortAread();
 	virtual BYTE PortBread();
 	virtual void PortAwrite( BYTE );
 	virtual void PortBwrite( BYTE );
 	
-	virtual void PreWriteReg() = 0;		// ãƒ¬ã‚¸ã‚¹ã‚¿å¤‰æ›´å‰ã®ã‚¹ãƒˆãƒªãƒ¼ãƒ æ›´æ–°
+	virtual void PreWriteReg() = 0;		// ƒŒƒWƒXƒ^•ÏX‘O‚ÌƒXƒgƒŠ[ƒ€XV
 	
 public:
-	cAY8910();							// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	virtual ~cAY8910();					// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	cAY8910();							// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	virtual ~cAY8910();					// ƒfƒXƒgƒ‰ƒNƒ^
 	
-	void Reset();						// ãƒªã‚»ãƒƒãƒˆ
+	void Reset();						// ƒŠƒZƒbƒg
 	
-	int Update1Sample();				// ã‚¹ãƒˆãƒªãƒ¼ãƒ 1Sampleæ›´æ–°
+	int Update1Sample();				// ƒXƒgƒŠ[ƒ€1SampleXV
 };
 
 

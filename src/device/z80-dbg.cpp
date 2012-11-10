@@ -3,22 +3,22 @@
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
-// ã‚ªãƒšãƒ©ãƒ³ãƒ‰ã®åž‹
-//	NOTHING	ãªã—	 XX				ãã®ã¾ã¾è¡¨ç¤º
-//	NUM_8	8bitå€¤	 XX nn			nn ã‚’16é€²ã§è¡¨ç¤º
-//	NUM_16	16bitå€¤	 XX nn nn		nn nn ã‚’16é€²ã§è¡¨ç¤º
-//	ADR_REL	ç›¸å¯¾ç•ªåœ° XX nn			çµ¶å¯¾ç•ªåœ°ã‚’16é€²ã§è¡¨ç¤º
+// ƒIƒyƒ‰ƒ“ƒh‚ÌŒ^
+//	NOTHING	‚È‚µ	 XX				‚»‚Ì‚Ü‚Ü•\Ž¦
+//	NUM_8	8bit’l	 XX nn			nn ‚ð16i‚Å•\Ž¦
+//	NUM_16	16bit’l	 XX nn nn		nn nn ‚ð16i‚Å•\Ž¦
+//	ADR_REL	‘Š‘Î”Ô’n XX nn			â‘Î”Ô’n‚ð16i‚Å•\Ž¦
 //	PREFIX
-//	NOTHING	ãªã—	 XX XX			ãã®ã¾ã¾è¡¨ç¤º
-//	NUM_8	8bitå€¤	 XX XX nn		nn ã‚’16é€²ã§è¡¨ç¤º
-//	NUM_16	16bitå€¤	 XX XX nn nn	nn nn ã‚’16é€²ã§è¡¨ç¤º
-//	INDEX	å‚ç…§	 XX XX nn		nn ã‚’ 10é€²ã§è¡¨ç¤º
-//	IDX_NUM	å‚ç…§&å€¤	 XX XX nn mm	nn ã‚’ 10é€²ã€mm ã‚’16é€²ã§è¡¨ç¤º
-//	UNEXIST	æœªå®Ÿè£…	 XX XX			XX XX ã‚’16é€²ã§è¡¨ç¤º
-//	SKIP	æœªå®Ÿè£…	 XX				XX ã‚’16é€²ã§è¡¨ç¤º
+//	NOTHING	‚È‚µ	 XX XX			‚»‚Ì‚Ü‚Ü•\Ž¦
+//	NUM_8	8bit’l	 XX XX nn		nn ‚ð16i‚Å•\Ž¦
+//	NUM_16	16bit’l	 XX XX nn nn	nn nn ‚ð16i‚Å•\Ž¦
+//	INDEX	ŽQÆ	 XX XX nn		nn ‚ð 10i‚Å•\Ž¦
+//	IDX_NUM	ŽQÆ&’l	 XX XX nn mm	nn ‚ð 10iAmm ‚ð16i‚Å•\Ž¦
+//	UNEXIST	–¢ŽÀ‘•	 XX XX			XX XX ‚ð16i‚Å•\Ž¦
+//	SKIP	–¢ŽÀ‘•	 XX				XX ‚ð16i‚Å•\Ž¦
 //	PREFIX
-//	INDEX	å‚ç…§	 XX XX nn XX	nn ã‚’ 10é€²ã§è¡¨ç¤º
-//	UNEXIST	æœªå®Ÿè£…	 XX XX XX XX	XX XX XX XX ã‚’16é€²ã§è¡¨ç¤º
+//	INDEX	ŽQÆ	 XX XX nn XX	nn ‚ð 10i‚Å•\Ž¦
+//	UNEXIST	–¢ŽÀ‘•	 XX XX XX XX	XX XX XX XX ‚ð16i‚Å•\Ž¦
 
 enum{
 	OP_NOTHING,	// XX			-> nothing
@@ -1326,7 +1326,7 @@ static Mnemonics Instruction_FD_CB[256]=
 
 
 
-// ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼ã‚¤ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰ã®è¡¨ç¤º
+// ƒAƒhƒŒƒX^ƒCƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“ƒR[ƒh‚Ì•\Ž¦
 void cZ80::PrintfHead( char *str, WORD pc, int num )
 {
 	sprintf( str, "%04X ", pc );
@@ -1353,7 +1353,7 @@ void cZ80::PrintfHead( char *str, WORD pc, int num )
 
 
 ////////////////////////////////////////////////////////////////
-// 1ãƒ©ã‚¤ãƒ³é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«
+// 1ƒ‰ƒCƒ“‹tƒAƒZƒ“ƒuƒ‹
 ////////////////////////////////////////////////////////////////
 int cZ80::Disasm( char *str, WORD pc )
 {
@@ -1465,91 +1465,91 @@ int cZ80::Disasm( char *str, WORD pc )
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒ¬ã‚¸ã‚¹ã‚¿å€¤å–å¾—
+// ƒŒƒWƒXƒ^’lŽæ“¾
 ////////////////////////////////////////////////////////////////
 void cZ80::GetRegister( Register * reg )
 {
-	// æ±Žç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
+	// ”Ä—pƒŒƒWƒXƒ^
 	reg->AF = AF;
 	reg->BC = BC;
 	reg->DE = DE;
 	reg->HL = HL;
 	
-	// å°‚ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
+	// ê—pƒŒƒWƒXƒ^
 	reg->IX = IX;
 	reg->IY = IY;
 	reg->PC = PC;
 	reg->SP = SP;
 	
-	// è£ãƒ¬ã‚¸ã‚¹ã‚¿
+	// — ƒŒƒWƒXƒ^
 	reg->AF1 = AF1;
 	reg->BC1 = BC1;
 	reg->DE1 = DE1;
 	reg->HL1 = HL1;
 	
-	// ç‰¹æ®Šãƒ¬ã‚¸ã‚¹ã‚¿
+	// “ÁŽêƒŒƒWƒXƒ^
 	reg->I = I;
 	reg->R = R;
 	
-	// R reg ä¿å­˜ç”¨
+	// R reg •Û‘¶—p
 	reg->R_saved = R_saved;
 	
 	// IFF,IFF2
 	reg->IFF = IFF;
 	reg->IFF2 = IFF2;
 	
-	// å‰²è¾¼ãƒ¢ãƒ¼ãƒ‰
+	// Š„žƒ‚[ƒh
 	reg->IM = IM;
 	
-	// HALT ãƒ•ãƒ©ã‚°
+	// HALT ƒtƒ‰ƒO
 	reg->Halt = Halt;
 }
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒ¬ã‚¸ã‚¹ã‚¿å€¤è¨­å®š
+// ƒŒƒWƒXƒ^’lÝ’è
 ////////////////////////////////////////////////////////////////
 void cZ80::SetRegister( Register * reg )
 {
-	// æ±Žç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
+	// ”Ä—pƒŒƒWƒXƒ^
 	AF = reg->AF;
 	BC = reg->BC;
 	DE = reg->DE;
 	HL = reg->HL;
 	
-	// å°‚ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
+	// ê—pƒŒƒWƒXƒ^
 	IX = reg->IX;
 	IY = reg->IY;
 	PC = reg->PC;
 	SP = reg->SP;
 	
-	// è£ãƒ¬ã‚¸ã‚¹ã‚¿
+	// — ƒŒƒWƒXƒ^
 	AF1 = reg->AF1;
 	BC1 = reg->BC1;
 	DE1 = reg->DE1;
 	HL1 = reg->HL1;
 	
-	// ç‰¹æ®Šãƒ¬ã‚¸ã‚¹ã‚¿
+	// “ÁŽêƒŒƒWƒXƒ^
 	I = reg->I;
 	R = reg->R;
 	
-	// R reg ä¿å­˜ç”¨
+	// R reg •Û‘¶—p
 	R_saved = reg->R_saved;
 	
 	// IFF,IFF2
 	IFF = reg->IFF;
 	IFF2 = reg->IFF2;
 	
-	// å‰²è¾¼ãƒ¢ãƒ¼ãƒ‰
+	// Š„žƒ‚[ƒh
 	IM = reg->IM;
 	
-	// HALT ãƒ•ãƒ©ã‚°
+	// HALT ƒtƒ‰ƒO
 	Halt = reg->Halt;
 }
 
 
 ////////////////////////////////////////////////////////////////
-// PCãƒ¬ã‚¸ã‚¹ã‚¿å€¤å–å¾—
+// PCƒŒƒWƒXƒ^’lŽæ“¾
 ////////////////////////////////////////////////////////////////
 WORD cZ80::GetPC( void )
 {

@@ -1,8 +1,8 @@
 /* $Id:	d7752.h,v 1.3 2004/02/25 12:25:58 cisc Exp $ */
 
 /*
- * Î¼PD7752	é¢¨å‘³ éŸ³å£°åˆæˆã‚¨ãƒ³ã‚¸ãƒ³
- * D7752 ç”¨ã‚µãƒ¼ãƒ“ã‚¹ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
+ * ƒÊPD7752	•—–¡ ‰¹º‡¬ƒGƒ“ƒWƒ“
+ * D7752 —pƒT[ƒrƒXƒ‚ƒWƒ…[ƒ‹
  *
  * Copyright (c) 2004 cisc.
  * All rights reserved.
@@ -42,46 +42,51 @@ typedef	int	D7752_FIXED;
 #define	D7752_ERR_BUFFER_EMPTY	(-5)
 
 
-#define	D7752E_BSY	(0x80)	/* b7 BSY -	éŸ³å£°åˆæˆä¸­ãªã‚‰ 1 */
-#define	D7752E_REQ	(0x40)	/* b6 REQ -	éŸ³å£°ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒãƒƒãƒ•ã‚¡ã«ä½™è£•ãŒã‚ã‚Œã° 1 */
+#define	D7752E_BSY	(0x80)	/* b7 BSY -	‰¹º‡¬’†‚È‚ç 1 */
+#define	D7752E_REQ	(0x40)	/* b6 REQ -	‰¹ºƒpƒ‰ƒ[ƒ^ƒoƒbƒtƒ@‚É—]—T‚ª‚ ‚ê‚Î 1 */
 #define	D7752E_EXT	(0x20)	/* b5 INT/EXT -	1 */
-#define	D7752E_ERR	(0x10)	/* b4 ERR -	è»¢é€ã‚¨ãƒ©ãƒ¼ãŒã‚ã£ãŸå ´åˆ 1 */
-#define	D7752E_IDL	(0x00)	/* å¾…æ©Ÿä¸­ */
+#define	D7752E_ERR	(0x10)	/* b4 ERR -	“]‘—ƒGƒ‰[‚ª‚ ‚Á‚½ê‡ 1 */
+#define	D7752E_IDL	(0x00)	/* ‘Ò‹@’† */
 
 
 ////////////////////////////////////////////////////////////////
-// ã‚¯ãƒ©ã‚¹å®šç¾©
+// ƒNƒ‰ƒX’è‹`
 ////////////////////////////////////////////////////////////////
 class cD7752 {
 private:
-	// ãƒ•ã‚£ãƒ«ã‚¿ä¿‚æ•°
-	typedef	struct{
+	// ƒtƒBƒ‹ƒ^ŒW”
+	struct D7752Coef{
 		D7752_FIXED	f[5];
 		D7752_FIXED	b[5];
 		D7752_FIXED	amp;
 		D7752_FIXED	pitch;
-	} D7752Coef;
+		
+		D7752Coef() : amp(0), pitch(0) {
+			INITARRAY( f, 0 );
+			INITARRAY( b, 0 );
+		}
+	};
 	
-	// ãƒœã‚¤ã‚¹
+	// ƒ{ƒCƒX
 	D7752Coef Coef;
 	int	Y[5][2];
 	int	PitchCount;
 	int	FrameSize;
 	
-	// æŒ¯å¹…å±•é–‹ãƒ†ãƒ¼ãƒ–ãƒ«
+	// U•“WŠJƒe[ƒuƒ‹
 	const static int amp_table[16];
 	
-	// è¬ã®ãƒ•ã‚£ãƒ«ã‚¿ä¿‚æ•°	(uPD7752é¢¨å‘³)
+	// “ä‚ÌƒtƒBƒ‹ƒ^ŒW”	(uPD7752•—–¡)
 	const static int iir1[128];
 	const static int iir2[64];
 	
 public:
-	cD7752();								// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	virtual	~cD7752();						// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	cD7752();								// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	virtual	~cD7752();						// ƒfƒXƒgƒ‰ƒNƒ^
 	
-	int	Start( int );						// éŸ³å£°åˆæˆé–‹å§‹
-	int	GetFrameSize();						// 1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã®ã‚µãƒ³ãƒ—ãƒ«æ•°å–å¾—
-	int	Synth( BYTE *, D7752_SAMPLE * );	// 1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã®éŸ³å£°ã‚’åˆæˆ
+	int	Start( int );						// ‰¹º‡¬ŠJn
+	int	GetFrameSize();						// 1ƒtƒŒ[ƒ€•ª‚ÌƒTƒ“ƒvƒ‹”æ“¾
+	int	Synth( BYTE *, D7752_SAMPLE * );	// 1ƒtƒŒ[ƒ€•ª‚Ì‰¹º‚ğ‡¬
 };
 
 #endif	// PD7752_H_INCLUDED

@@ -17,22 +17,19 @@
 //
 IOBus::DummyIO IOBus::dummyio;
 
-IOBus::IOBus()
-    : ins(0), outs(0), flags(0), devlist(NULL), banksize(0)
-{
-}
+IOBus::IOBus() : ins(NULL), outs(NULL), flags(NULL), devlist(NULL), banksize(0) {}
 
 IOBus::~IOBus()
 {
-	delete [] ins;
-	delete [] outs;
-	delete [] flags;
+	if( ins ) delete [] ins;
+	if( outs ) delete [] outs;
+	if( flags ) delete [] flags;
 }
 
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL IOBus::Init( DeviceList* dl, int bs )
+bool IOBus::Init( DeviceList* dl, int bs )
 {
 	devlist  = dl;
 	banksize = bs;
@@ -52,7 +49,7 @@ BOOL IOBus::Init( DeviceList* dl, int bs )
 		Error::SetError( Error::MemAllocFailed );
 		if( ins ){   delete [] ins;   ins   = NULL; }
 		if( outs ){  delete [] outs;  outs  = NULL; }
-		return FALSE;
+		return false;
 	}
 	
 	ZeroMemory( flags, banksize );
@@ -67,7 +64,7 @@ BOOL IOBus::Init( DeviceList* dl, int bs )
 		outs[i].next   = 0;
 	}
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -75,7 +72,7 @@ BOOL IOBus::Init( DeviceList* dl, int bs )
 // デバイス接続
 ////////////////////////////////////////////////////////////////
 // IN/OUT -----------
-BOOL IOBus::Connect( IDevice* device, const Connector* connector )
+bool IOBus::Connect( IDevice* device, const Connector* connector )
 {
 	if( devlist ) devlist->Add(device);
 	
@@ -85,21 +82,21 @@ BOOL IOBus::Connect( IDevice* device, const Connector* connector )
 		switch( connector->rule & 3 ){
 		case portin:
 			if( !ConnectIn(connector->bank, device, desc->indef[connector->id]) )
-				return FALSE;
+				return false;
 			break;
 			
 		case portout:
 			if( !ConnectOut(connector->bank, device, desc->outdef[connector->id]) )
-				return FALSE;
+				return false;
 			break;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 
 // IN -----------
-BOOL IOBus::ConnectIn( int bank, IDevice* device, InFuncPtr func )
+bool IOBus::ConnectIn( int bank, IDevice* device, InFuncPtr func )
 {
 	InBank* i = &ins[bank];
 	if( i->func == STATIC_CAST( InFuncPtr, &DummyIO::dummyin ) ){
@@ -114,19 +111,19 @@ BOOL IOBus::ConnectIn( int bank, IDevice* device, InFuncPtr func )
 		}
 		catch( std::bad_alloc ){	// new に失敗した場合
 			Error::SetError( Error::MemAllocFailed );
-			return FALSE;
+			return false;
 		}
 		j->device = device;
 		j->func   = func;
 		j->next   = i->next;
 		i->next   = j;
 	}
-	return TRUE;
+	return true;
 }
 
 
 // OUT -----------
-BOOL IOBus::ConnectOut( int bank, IDevice* device, OutFuncPtr func )
+bool IOBus::ConnectOut( int bank, IDevice* device, OutFuncPtr func )
 {
 	OutBank* i = &outs[bank];
 	if( i->func == STATIC_CAST( OutFuncPtr, &DummyIO::dummyout ) ){
@@ -141,21 +138,21 @@ BOOL IOBus::ConnectOut( int bank, IDevice* device, OutFuncPtr func )
 		}
 		catch( std::bad_alloc ){	// new に失敗した場合
 			Error::SetError( Error::MemAllocFailed );
-			return FALSE;
+			return false;
 		}
 		j->device = device;
 		j->func   = func;
 		j->next   = i->next;
 		i->next   = j;
 	}
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // デバイス切断
 ////////////////////////////////////////////////////////////////
-BOOL IOBus::Disconnect( IDevice* device )
+bool IOBus::Disconnect( IDevice* device )
 {
 	if( devlist ) devlist->Del(device);
 	
@@ -214,7 +211,7 @@ BOOL IOBus::Disconnect( IDevice* device )
 			current = next;
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 
@@ -223,7 +220,7 @@ BOOL IOBus::Disconnect( IDevice* device )
 ////////////////////////////////////////////////////////////////
 BYTE IOBus::In( int port )
 {
-	InBank* list = &ins[port];
+	InBank* list = &ins[port&0xff];
 	
 	BYTE data = 0xff;
 	do{
@@ -239,7 +236,7 @@ BYTE IOBus::In( int port )
 ////////////////////////////////////////////////////////////////
 void IOBus::Out( int port, BYTE data )
 {
-	OutBank* list = &outs[port];
+	OutBank* list = &outs[port&0xff];
 	do{
 		(list->device->*list->func)( port, data );
 		list = list->next;
@@ -288,31 +285,31 @@ void DeviceList::Cleanup()
 }
 
 
-BOOL DeviceList::Add( IDevice* t )
+bool DeviceList::Add( IDevice* t )
 {
 	ID id = t->GetID();
-	if( !id ) return FALSE;
+	if( !id ) return false;
 	
 	Node* n = FindNode(id);
 	if( n ){
 		n->count++;
-		return TRUE;
+		return true;
 	}else{
 		try{
 			n = new Node;
 		}
 		catch( std::bad_alloc ){	// new に失敗した場合
 			Error::SetError( Error::MemAllocFailed );
-			return FALSE;
+			return false;
 		}
 		n->entry = t, n->next = node, n->count = 1;
 		node = n;
-		return TRUE;
+		return true;
 	}
 }
 
 
-BOOL DeviceList::Del( const ID id )
+bool DeviceList::Del( const ID id )
 {
 	for( Node** r = &node; *r; r=&((*r)->next) ){
 		if( (*r)->entry->GetID() == id ){
@@ -321,10 +318,10 @@ BOOL DeviceList::Del( const ID id )
 				*r = d->next;
 				delete d;
 			}
-			return TRUE;
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 

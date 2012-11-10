@@ -40,13 +40,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cP6DATA::cP6DATA( void )
-{
-	// メンバ初期化
-	ZeroMemory( &Info, sizeof(P6TBLKINFO) );
-	Data = NULL;
-	next = before = NULL;
-}
+cP6DATA::cP6DATA( void ) : 	Data(NULL), next(NULL), before(NULL) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -160,7 +154,7 @@ int cP6DATA::SetData( FILE *fp, int num )
 ////////////////////////////////////////////////////////////////
 void cP6DATA::SetPeriod( int stime, int ptime )
 {
-	PRINTD2( P6T2_LOG, "[cP6DATA][SetPeriod] s:%d p:%d\n", stime, ptime );
+	PRINTD( P6T2_LOG, "[cP6DATA][SetPeriod] s:%d p:%d\n", stime, ptime );
 	
 	Info.STime = stime;	// 無音部の時間(ms)セット
 	Info.PTime = ptime;	// ぴー音の時間(ms)セット
@@ -205,16 +199,9 @@ int cP6DATA::Writefd( FILE *fp )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cP6PART::cP6PART( void )
+cP6PART::cP6PART( void ) : 	ID(0), Baud(1200), Data(NULL), next(NULL), before(NULL)
 {
-	// メンバ初期化
-	ID = 0;
-	*Name = '\0';
-	Baud  = 1200;
-	
-	Data = NULL;
-	
-	next = before = NULL;
+	INITARRAY( Name, 0 );
 }
 
 
@@ -387,12 +374,12 @@ int cP6PART::SetName( const char *name )
 ////////////////////////////////////////////////////////////////
 // ファイルから全PARTを読込み
 ////////////////////////////////////////////////////////////////
-BOOL cP6PART::Readf( FILE *fp )
+bool cP6PART::Readf( FILE *fp )
 {
 	PRINTD( P6T2_LOG, "[cP6PART][Readf]\n" );
 	
 	// ファイルポインタは有効?
-	if( !fp ) return FALSE;
+	if( !fp ) return false;
 	
 	// 識別子 "TI"(0x4954) ?
 	while( ( FGETWORD( fp ) ) == 0x4954 ){
@@ -431,7 +418,7 @@ BOOL cP6PART::Readf( FILE *fp )
 	
 	Renumber();
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -455,7 +442,7 @@ int cP6PART::Writefd( FILE *fp )
 ////////////////////////////////////////////////////////////////
 // ファイルに書込み(フッタ)
 ////////////////////////////////////////////////////////////////
-BOOL cP6PART::Writeff( FILE *fp )
+bool cP6PART::Writeff( FILE *fp )
 {
 // [DATAブロック]
 //  header (2byte) : "TI"
@@ -486,7 +473,7 @@ BOOL cP6PART::Writeff( FILE *fp )
 		data = data->Next();
 	}while( data );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -495,22 +482,11 @@ BOOL cP6PART::Writeff( FILE *fp )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cP6T::cP6T( void )
+cP6T::cP6T( void ) : Version(0), Start(false), BASIC(1), Page(1), ASKey(0),
+						EHead(0), ask(NULL), exh(NULL), Part(NULL), Boost(1),
+						rpart(NULL), rdata(NULL), rpt(0), swait(0), pwait(0)
 {
-	// メンバ初期化
-	*Name     = '\0';
-	Version   = 0;
-	Start     = FALSE;
-	BASIC     = 1;
-	Page      = 1;
-	ASKey     = EHead = 0;
-	ask       = exh   = NULL;
-	Part      = NULL;
-	rpart     = NULL;
-	rdata     = NULL;
-	rpt       = 0;
-	swait     = pwait = 0;
-	Boost     = 1;
+	INITARRAY( Name, 0 );
 }
 
 
@@ -599,7 +575,7 @@ BYTE cP6T::ReadOne( void )
 	
 	BYTE data = rdata->Read( rpt++ );
 	
-	PRINTD1( P6T2_LOG, "[cP6T][ReadOne] -> %02X\n", data );
+	PRINTD( P6T2_LOG, "[cP6T][ReadOne] -> %02X\n", data );
 	
 	// ブロック情報取得
 	rdata->GetInfo( &binfo );
@@ -624,22 +600,22 @@ BYTE cP6T::ReadOne( void )
 ////////////////////////////////////////////////////////////////
 // 無音部待ち?
 ////////////////////////////////////////////////////////////////
-BOOL cP6T::IsSWaiting( void )
+bool cP6T::IsSWaiting( void )
 {
-	if( !swait ) return FALSE;
+	if( !swait ) return false;
 	swait--;
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // ぴー音待ち?
 ////////////////////////////////////////////////////////////////
-BOOL cP6T::IsPWaiting( void )
+bool cP6T::IsPWaiting( void )
 {
-	if( !pwait ) return FALSE;
+	if( !pwait ) return false;
 	pwait--;
-	return TRUE;
+	return true;
 }
 
 
@@ -675,32 +651,32 @@ void cP6T::SetBoost( int boost )
 ////////////////////////////////////////////////////////////////
 // ファイルから読込み
 ////////////////////////////////////////////////////////////////
-BOOL cP6T::Readf( char *filename )
+bool cP6T::Readf( char *filename )
 {
-	PRINTD1( P6T2_LOG, "[cP6T][Readf] [%s]\n", filename );
+	PRINTD( P6T2_LOG, "[cP6T][Readf] [%s]\n", filename );
 	
 	if( !ReadP6T( filename ) ){		// P6Tを読込み
 		// 失敗したらベタとみなしP6Tに変換して読込み
-		if( !ConvP6T( filename ) ) return FALSE;
+		if( !ConvP6T( filename ) ) return false;
 	}
 	
 	Reset();	// リセット(読込み関係ワーク初期化)
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // ファイルに書込み
 ////////////////////////////////////////////////////////////////
-BOOL cP6T::Writef( char *filename )
+bool cP6T::Writef( char *filename )
 {
-	PRINTD1( P6T2_LOG, "[cP6T][Writef] [%s]\n", filename );
+	PRINTD( P6T2_LOG, "[cP6T][Writef] [%s]\n", filename );
 	
 	FILE *fp;
 	
 	fp = FOPENEN( filename, "wb" );
-	if( !fp ) return FALSE;
+	if( !fp ) return false;
 	
 	// データ書込み&ベタイメージサイズ取得
 	DWORD BetaSize = 0;
@@ -746,38 +722,38 @@ BOOL cP6T::Writef( char *filename )
 	// ベタイメージサイズ書込み
 	FPUTDWORD( BetaSize, fp );
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // P6Tを読込み
 ////////////////////////////////////////////////////////////////
-BOOL cP6T::ReadP6T( const char *filename )
+bool cP6T::ReadP6T( const char *filename )
 {
-	PRINTD1( P6T2_LOG, "[cP6T][ReadP6T] [%s]\n", filename );
+	PRINTD( P6T2_LOG, "[cP6T][ReadP6T] [%s]\n", filename );
 	
 	FILE *fp;
 	
 	fp = FOPENEN( filename, "rb" );
-	if( !fp ) return FALSE;
+	if( !fp ) return false;
 	
 	// ベタイメージサイズ取得
 	fseek( fp, -4, SEEK_END );
 	DWORD BetaSize = FGETDWORD( fp );
 	// ベタイメージサイズがファイルサイズを超えていたらエラー
-	if( BetaSize > (DWORD)ftell( fp ) ){ fclose( fp ); return FALSE; }
+	if( BetaSize > (DWORD)ftell( fp ) ){ fclose( fp ); return false; }
 	
 	// フッタの先頭に移動
 	fseek( fp, BetaSize, SEEK_SET );
 	
 	// 識別子 "P6"(0x3650) でなければエラー
 	WORD Header = FGETWORD( fp );
-	if( Header != 0x3650 ){ fclose( fp ); return FALSE; }
+	if( Header != 0x3650 ){ fclose( fp ); return false; }
 	
 	Version = fgetc( fp );					// バージョン
 	fgetc( fp );							// 含まれるDATAブロック数
-	Start   = fgetc( fp ) ? TRUE : FALSE;	// オートスタートフラグ
+	Start   = fgetc( fp ) ? true : false;	// オートスタートフラグ
 	BASIC   = fgetc( fp );					// BASICモード
 	Page    = fgetc( fp );					// ページ数
 	
@@ -797,25 +773,25 @@ BOOL cP6T::ReadP6T( const char *filename )
 	
 	// PARTを読込み
 	Part = new cP6PART;
-	if( !Part->Readf( fp ) ){ fclose( fp ); return FALSE; }
+	if( !Part->Readf( fp ) ){ fclose( fp ); return false; }
 	
 	fclose( fp );
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // ベタをP6Tに変換して読込み
 ////////////////////////////////////////////////////////////////
-BOOL cP6T::ConvP6T( const char *filename )
+bool cP6T::ConvP6T( const char *filename )
 {
-	PRINTD1( P6T2_LOG, "[cP6T][ConvP6T] [%s]\n", filename );
+	PRINTD( P6T2_LOG, "[cP6T][ConvP6T] [%s]\n", filename );
 	
 	FILE *fp;
 	
 	fp = FOPENEN( filename, "rb" );
-	if( !fp ) return FALSE;
+	if( !fp ) return false;
 	
 	// ベタイメージサイズ取得
 	fseek( fp, 0, SEEK_END );
@@ -825,7 +801,7 @@ BOOL cP6T::ConvP6T( const char *filename )
 	// P6T情報設定
 	SetName( OSD_GetFileNamePart( filename ) );	// データ名(16文字+'00H')はファイル名
 	Version = 2;								// バージョン(とりあえず2)
-	Start   = FALSE;							// オートスタートフラグ(無効)
+	Start   = false;							// オートスタートフラグ(無効)
 	BASIC   = 1;								// BASICモード(PC-6001の場合は無意味)(とりあえず1だが無意味)
 	Page    = 1;								// ページ数(とりあえず1だが無意味)
 	ASKey   = 0;								// オートスタートコマンドサイズ(0:無効)
@@ -845,7 +821,7 @@ BOOL cP6T::ConvP6T( const char *filename )
 	
 	fclose( fp );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -895,31 +871,31 @@ void cP6T::SetCount( int cnt )
 ////////////////////////////////////////////////////////////////
 // どこでもSAVE
 ////////////////////////////////////////////////////////////////
-BOOL cP6T::DokoSave( cIni *Ini )
+bool cP6T::DokoSave( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "P6T", NULL, "Counter",	"%d",	GetCount() );
 	Ini->PutEntry( "P6T", NULL, "swait",	"%d",	swait );
 	Ini->PutEntry( "P6T", NULL, "pwait",	"%d",	pwait );
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // どこでもLOAD
 ////////////////////////////////////////////////////////////////
-BOOL cP6T::DokoLoad( cIni *Ini )
+bool cP6T::DokoLoad( cIni *Ini )
 {
 	int st;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetInt( "P6T",	"Counter",	&st,	0 );
 	SetCount( st );
 	Ini->GetInt( "P6T",	"swait",	&swait,	swait );
 	Ini->GetInt( "P6T",	"pwait",	&pwait,	pwait );
 	
-	return TRUE;
+	return true;
 }

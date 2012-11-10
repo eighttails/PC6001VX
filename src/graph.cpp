@@ -1,15 +1,13 @@
 #include "pc6001v.h"
-#include "log.h"
 #include "graph.h"
+#include "log.h"
 #include "common.h"
 #include "debug.h"
 #include "osd.h"
 #include "status.h"
 #include "vdg.h"
 
-// SDLサーフェス用オプション
-#define SDLOP_SCREEN	(SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL)
-#define SDLOP_SURFACE	(SDL_SWSURFACE | SDL_HWACCEL)
+#include "p6el.h"
 
 // 通常ウィンドウサイズ
 #define	P6WINW		(vm->vdg->Width())
@@ -23,185 +21,38 @@
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 // デバッグモードウィンドウサイズ
-#define	P6DEBUGW	(P6WINW+vm->regw->Width())
-#define	P6DEBUGH	(max(P6WINH,vm->regw->Height()+vm->memw->Height())+vm->monw->Height())
+#define	P6DEBUGW	(P6WINW+vm->el->regw->Width())
+#define	P6DEBUGH	(max(P6WINH,vm->el->regw->Height()+vm->el->memw->Height())+vm->el->monw->Height())
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
 
 // モニタモード時はフルスクリーン，スキャンライン，4:3表示禁止
 // フルスクリーンモード時はステータスバー表示禁止
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-#define	DISPMON		(vm->cfg->GetMonDisp())
-#define	DISPFULL	(!DISPMON  && vm->cfg->GetFullScreen())
-#define	DISPSCAN	(!DISPMON  && vm->cfg->GetScanLine())
-#define	DISPNTSC	(!DISPMON  && vm->cfg->GetDispNTSC())
-#define	DISPSTAT	(!DISPFULL && vm->cfg->GetStatDisp())
+#define	DISPMON		(vm->el->cfg->GetMonDisp())
+#define	DISPFULL	(!DISPMON  && vm->el->cfg->GetFullScreen())
+#define	DISPSCAN	(!DISPMON  && vm->el->cfg->GetScanLine())
+#define	DISPNTSC	(!DISPMON  && vm->el->cfg->GetDispNTSC())
+#define	DISPSTAT	(!DISPFULL && vm->el->cfg->GetStatDisp())
 
 #else
 
-#define	DISPFULL	(vm->cfg->GetFullScreen())
-#define	DISPSCAN	(vm->cfg->GetScanLine())
-#define	DISPNTSC	(vm->cfg->GetDispNTSC())
-#define	DISPSTAT	(vm->cfg->GetStatDisp())
+#define	DISPFULL	(vm->el->cfg->GetFullScreen())
+#define	DISPSCAN	(vm->el->cfg->GetScanLine())
+#define	DISPNTSC	(vm->el->cfg->GetDispNTSC())
+#define	DISPSTAT	(vm->el->cfg->GetStatDisp())
 
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
 
 
-void DSP6::BlitToSDL( VSurface *src, int x, int y )
-{
-	VRect src1,drc1;
-	
-	if( !src ) return;
-	SDL_Surface *dst  = SDL_GetVideoSurface();	// スクリーンサーフェスへのポインタ取得
-	
-	// 転送元範囲設定
-	src1.x = max( 0, -x );
-	src1.y = max( 0, -y );
-	src1.w = min( src->Width()  - src1.x, dst->w );
-	src1.h = min( src->Height() - src1.y, dst->h );
-	
-	if( src1.w <= 0 || src1.h <= 0 ) return;
-	
-	// 転送先範囲設定
-	drc1.x = max( 0, x );
-	drc1.y = max( 0, y );
-	
-	
-	if( SDL_MUSTLOCK( dst ) ) SDL_LockSurface( dst );
-	
-	BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x * src->Bpp() / 8;
-	BYTE *pdst = (BYTE *)dst->pixels      + dst->pitch   * drc1.y + drc1.x * dst->format->BytesPerPixel;
-	
-	if( src->Bpp() == dst->format->BitsPerPixel ){
-		for( int i=0; i < src1.h; i++ ){
-			memcpy( pdst, psrc, src1.w * dst->format->BytesPerPixel );
-			psrc += src->Pitch();
-			pdst += dst->pitch;
-		}
-	}else if( src->Bpp() == 8 && dst->format->BitsPerPixel == 16 ){	// 8 -> 16 bpp (5:6:5)
-		for( int i=0; i < src1.h; i++ ){
-			for( int j=0; j < src1.w; j++ ){
-				WORD wdat = (WORD)(Pal[*psrc].r & 0xf8) << 8
-				          | (WORD)(Pal[*psrc].g & 0xfc) << 3
-				          | (WORD)(Pal[*psrc].b & 0xf8) >> 3;
-				*pdst++ = (BYTE)( wdat       & 0xff);
-				*pdst++ = (BYTE)((wdat >> 8) & 0xff);
-				psrc++;
-			}
-			psrc += src->Pitch() - src1.w;
-			pdst += dst->pitch   - src1.w * 2;
-		}
-	}else if( src->Bpp() == 8 && dst->format->BitsPerPixel == 24 ){	// 8 -> 24 bpp
-		for( int i=0; i < src1.h; i++ ){
-			for( int j=0; j < src1.w; j++ ){
-				*pdst++ = Pal[*psrc].b;
-				*pdst++ = Pal[*psrc].g;
-				*pdst++ = Pal[*psrc].r;
-				psrc++;
-			}
-			psrc += src->Pitch() - src1.w;
-			pdst += dst->pitch   - src1.w * 3;
-		}
-	}
-	
-	if( SDL_MUSTLOCK( dst ) ) SDL_UnlockSurface( dst );
-
-}
-
-
-void DSP6::BlitToSDL2( VSurface *src, int x, int y )
-{
-	VRect src1,drc1;
-	
-	if( !src ) return;
-	SDL_Surface *dst  = SDL_GetVideoSurface();	// スクリーンサーフェスへのポインタ取得
-	
-	// 転送元範囲設定
-	src1.x = max( 0, -x/2 );
-	src1.y = max( 0, -y/2 );
-	src1.w = min( src->Width()  - src1.x, dst->w / 2 );
-	src1.h = min( src->Height() - src1.y, dst->h / 2 );
-	
-	if( src1.w <= 0 || src1.h <= 0 ) return;
-	
-	// 転送先範囲設定
-	drc1.x = max( 0, x );
-	drc1.y = max( 0, y );
-	
-	
-	if( SDL_MUSTLOCK( dst ) ) SDL_LockSurface( dst );
-	
-	BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x * src->Bpp() / 8;
-	BYTE *pdst = (BYTE *)dst->pixels      + dst->pitch   * drc1.y + drc1.x * dst->format->BytesPerPixel;
-	
-	if( src->Bpp() == dst->format->BitsPerPixel ){
-		switch( src->Bpp() ){
-		case 8:
-			for( int i=0; i < src1.h; i++ ){
-				for( int j=0; j < src1.w; j++ ){
-					*pdst++ = *psrc;
-					*pdst++ = *psrc++;
-				}
-				psrc += src->Pitch()   - src1.w;
-				pdst += dst->pitch * 2 - src1.w * 2;
-			}
-			break;
-			
-		case 16:
-			for( int i=0; i < src1.h; i++ ){
-				for( int j=0; j < src1.w; j++ ){
-					WORD d1 = *(WORD *)psrc++;
-					psrc++;
-					*((WORD *)pdst++) = d1;
-					pdst++;
-					*((WORD *)pdst++) = d1;
-					pdst++;
-				}
-				psrc += src->Pitch()   - src1.w * 2;
-				pdst += dst->pitch * 2 - src1.w * 4;
-			}
-			break;
-			
-		case 24:
-			for( int i=0; i < src1.h; i++ ){
-				for( int j=0; j < src1.w; j++ ){
-					BYTE b = *psrc++;
-					BYTE g = *psrc++;
-					BYTE r = *psrc++;
-					*pdst++ = b;
-					*pdst++ = g;
-					*pdst++ = r;
-					*pdst++ = b;
-					*pdst++ = g;
-					*pdst++ = r;
-				}
-				psrc += src->Pitch()   - src1.w * 3;
-				pdst += dst->pitch * 2 - src1.w * 6;
-			}
-		}
-		
-		pdst = (BYTE *)dst->pixels + dst->pitch * drc1.y + drc1.x * dst->format->BytesPerPixel;
-		for( int i=0; i < src1.h; i++ ){
-			memcpy( pdst + dst->pitch, pdst, src1.w * 2 * dst->format->BytesPerPixel );
-			pdst += dst->pitch * 2;
-		}
-	}
-	
-	if( SDL_MUSTLOCK( dst ) ) SDL_UnlockSurface( dst );
-}
 
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSP6::DSP6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
-{
-	SBuf = NULL;
-	Pal  = NULL;
-	Bpp  = DEFAULT_COLOR_MODE;
-	SLBr = DEFAULT_SCANLINEBR;
-}
+DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL), SBuf(NULL), Pal(NULL),
+							Bpp(DEFAULT_COLOR_MODE), SLBr(DEFAULT_SCANLINEBR) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -210,6 +61,7 @@ DSP6::DSP6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
 DSP6::~DSP6( void )
 {
 	if( SBuf ) delete SBuf;
+	if( Wh ) OSD_DestroyWindow( Wh );
 }
 
 
@@ -219,9 +71,9 @@ DSP6::~DSP6( void )
 // 引数:	bpp		1ピクセルのbit数
 //			br		スキャンライン輝度
 //			pal		パレットへのポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL DSP6::Init( int bpp, int br, COLOR24 *pal )
+bool DSP6::Init( int bpp, int br, VPalette *pal )
 {
 	PRINTD( GRP_LOG, "[GRP][Init]\n" );
 	
@@ -230,12 +82,21 @@ BOOL DSP6::Init( int bpp, int br, COLOR24 *pal )
 	Pal  = pal;
 	
 	// スクリーンサーフェス作成
-	if( !SetScreenSurface() ) return FALSE;
+	if( !SetScreenSurface() ) return false;
 	
-	// ステータスバー初期化
-	if( !vm->staw->Init( SDL_GetVideoSurface()->w ) ) return FALSE;
-	
-	return TRUE;
+	return true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 初期化
+//
+// 引数:	model	機種 60,62,66
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void DSP6::SetIcon( int model )
+{
+	OSD_SetIcon( Wh, model );
 }
 
 
@@ -243,61 +104,63 @@ BOOL DSP6::Init( int bpp, int br, COLOR24 *pal )
 // スクリーンサーフェス作成
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL DSP6::SetScreenSurface( void )
+bool DSP6::SetScreenSurface( void )
 {
 	PRINTD( GRP_LOG, "[GRP][SetScreenSurface]\n" );
 	
-	int x = 0, y = 0, opt = 0;
+	int x = 0, y = 0;
+	bool fsflag = false;
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	if( DISPMON ){	// モニタモード?
-		x   = P6DEBUGW;
-		y   = P6DEBUGH;
-		opt = SDLOP_SCREEN;
+		x      = P6DEBUGW;
+		y      = P6DEBUGH;
+		fsflag = false;
 		
-		PRINTD2( GRP_LOG, " -> Monitor Mode ( X:%d Y:%d )\n", x, y );
+		PRINTD( GRP_LOG, " -> Monitor Mode ( X:%d Y:%d )\n", x, y );
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	{
 		if( DISPFULL ){	// フルスクリーン?
 			// Mac のフルスクリーンは 640x480, 800x600, 1024x768 に限られるらしい。by Windyさん
 			// とりあえず問答無用で640x480に固定してみる
-			x   = P6WIFW;
-			y   = P6WIFH;
-			opt = SDLOP_SCREEN | SDL_FULLSCREEN;
+			x      = P6WIFW;
+			y      = P6WIFH;
+			fsflag = true;
 			
-			PRINTD3( GRP_LOG, " -> FullScreen ( X:%d Y:%d %dbpp)\n", x, y, Bpp );
+			PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d %dbpp)\n", x, y, Bpp );
 		}else{
-			x   = P6WINW * ( DISPSCAN ? 2 : 1 );
-			y   = ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) + ( DISPSTAT ? vm->staw->Height() : 0 );
-			opt = SDLOP_SCREEN;
+			x      = P6WINW * ( DISPSCAN ? 2 : 1 );
+			y      = ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
+			fsflag = false;
 			
-			PRINTD3( GRP_LOG, " -> Window ( X:%d Y:%d %dbpp )\n", x, y, Bpp );
+			PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d %dbpp )\n", x, y, Bpp );
 		}
 	}
 	
 	// スクリーンサーフェス作成
-	if( !SDL_SetVideoMode( x, y, Bpp, opt ) ) return FALSE;
+	OSD_CreateWindow( &Wh, x, y, Bpp, fsflag );
+	if( !Wh ) return false;
 	
-	PRINTD3( GRP_LOG, " -> OK ( %d x %d x %d )\n", SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h, SDL_GetVideoSurface()->format->BitsPerPixel );
+	PRINTD( GRP_LOG, " -> OK ( %d x %d x %d )\n", OSD_GetWindowWidth( Wh ), OSD_GetWindowHeight( Wh ), OSD_GetWindowBPP( Wh ) );
 	
 	if( DISPFULL ){	// フルスクリーンの時
 		// マウスカーソルを消す
-		SDL_ShowCursor( SDL_DISABLE );
+		OSD_ShowCursor( false );
 	}else{			// フルスクリーンでない時
 		// マウスカーソルを表示する
-		SDL_ShowCursor( SDL_ENABLE );
+		OSD_ShowCursor( true );
 		// ウィンドウキャプション設定
-		SDL_WM_SetCaption( vm->cfg->GetCaption(), "" );
+		OSD_SetWindowCaption( Wh, vm->el->cfg->GetCaption() );
 	}
 	
 	// スクリーンサーフェスにパレットを選択する
-	if( SDL_GetVideoSurface()->format->BitsPerPixel == 8 )
-		if( !SDL_SetPalette( SDL_GetVideoSurface(), SDL_LOGPAL|SDL_PHYSPAL, (SDL_Color *)Pal, 0, 256 ) ) return FALSE;
+	if( OSD_GetWindowBPP( Wh ) == 8 )
+		if( !OSD_SetPalette( Wh, Pal ) ) return false;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -305,14 +168,13 @@ BOOL DSP6::SetScreenSurface( void )
 // スクリーンサイズ変更
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL DSP6::ResizeScreen( void )
+bool DSP6::ResizeScreen( void )
 {
 	PRINTD( GRP_LOG, "[GRP][ResizeScreen]\n" );
 	
-	int x,y;
-	SDL_Surface *scr  = SDL_GetVideoSurface();	// スクリーンサーフェスへのポインタ取得
+	int x, y;
 	
 	// ウィンドウサイズチェック
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
@@ -326,18 +188,18 @@ BOOL DSP6::ResizeScreen( void )
 		y = ( DISPFULL ? P6WIFH : ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) );
 		
 		// ステータスバー表示?
-		if( !DISPFULL && DISPSTAT ) y += vm->staw->Height();
+		if( !DISPFULL && DISPSTAT ) y += vm->el->staw->Height();
 	}
 	
 	// ウィンドウサイズが不適切なら作り直す
-	if( !scr || (x != scr->w) || (y != scr->h) ){
-		if( !SetScreenSurface() ) return FALSE;
-		vm->staw->Init( SDL_GetVideoSurface()->w );	// ステータスバーも
+	if( !Wh || (x != OSD_GetWindowWidth( Wh )) || (y != OSD_GetWindowHeight( Wh )) ){
+		if( !SetScreenSurface() ) return false;
+		vm->el->staw->Init( OSD_GetWindowWidth( Wh ) );	// ステータスバーも
 	}else
 		// 作り直さない場合は現在のスクリーンサーフェスをクリア
-		SDL_FillRect( scr, NULL, 0 );
+		OSD_ClearWindow( Wh );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -351,10 +213,9 @@ void DSP6::DrawScreen( void )
 {
 	PRINTD( GRP_LOG, "[GRP][DrawScreen]\n" );
 	
-	SDL_Surface *scr = SDL_GetVideoSurface();	// スクリーンサーフェスへのポインタ取得
 	VSurface *BBuf = vm->vdg;		// バックバッファへのポインタ取得
 	
-	if( !scr || !BBuf ) return;
+	if( !Wh || !BBuf ) return;
 	
 	// スクリーンサーフェスにblit
 	PRINTD( GRP_LOG, " -> Blit" );
@@ -364,16 +225,16 @@ void DSP6::DrawScreen( void )
 		PRINTD( GRP_LOG, " -> Monitor" );
 		
 		// バックバッファ
-		BlitToSDL( BBuf, 0, 0 );
+		OSD_BlitToWindow( Wh, BBuf, 0, 0, Pal );
 		
 		// モニタウィンドウ
-		BlitToSDL( vm->monw, 0, max( P6WINH, vm->regw->Height() + vm->memw->Height() ) );
+		OSD_BlitToWindow( Wh, vm->el->monw, 0, max( P6WINH, vm->el->regw->Height() + vm->el->memw->Height() ), Pal );
 		
 		// レジスタウィンドウ
-		BlitToSDL( vm->regw, P6WINW, 0 );
+		OSD_BlitToWindow( Wh, vm->el->regw, P6WINW, 0, Pal );
 		
 		// メモリウィンドウ
-		BlitToSDL( vm->memw, P6WINW, vm->regw->Height() );
+		OSD_BlitToWindow( Wh, vm->el->memw, P6WINW, vm->el->regw->Height(), Pal );
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	{
@@ -383,13 +244,13 @@ void DSP6::DrawScreen( void )
 			PRINTD( GRP_LOG, " -> FullScreen" );
 			if( DISPSCAN ){	// スキャンラインありの場合
 				PRINTD( GRP_LOG, "(Scan line)" );
-				BlitToSDL( SBuf, ( scr->w - SBuf->Width() ) / 2, ( scr->h - SBuf->Height() ) / 2 );
+				OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() ) / 2, Pal );
 			}else{
-				BlitToSDL2( SBuf, ( scr->w - SBuf->Width() * 2 ) / 2, ( scr->h - SBuf->Height() * 2 ) / 2 );
+				OSD_BlitToWindow2( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() * 2 ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() * 2 ) / 2 );
 			}
 		}else{			// フルスクリーンでない
 			PRINTD( GRP_LOG, " -> Window" );
-			BlitToSDL( SBuf, 0, 0 );
+			OSD_BlitToWindow( Wh, SBuf, 0, 0, Pal );
 		}
 		
 		// ステータスバー
@@ -398,16 +259,16 @@ void DSP6::DrawScreen( void )
 			
 			// ステータスバー更新
 			// スクリーンサーフェス下端に位置を合わせてblit
-			vm->staw->Update();
+			vm->el->staw->Update();
 			
-			BlitToSDL( (VSurface *)vm->staw, 0, SDL_GetVideoSurface()->h - vm->staw->Height() );
+			OSD_BlitToWindow( Wh, STATIC_CAST( VSurface *, vm->el->staw ), 0, OSD_GetWindowHeight( Wh ) - vm->el->staw->Height(), Pal );
 		}
 	}
 	
 	PRINTD( GRP_LOG, " -> OK\n" );
 	
 	// フリップ
- 	SDL_Flip( scr );
+	OSD_RenderWindow( Wh );
 }
 
 
@@ -448,22 +309,34 @@ VSurface *DSP6::GetSubBuffer( void )
 
 
 ////////////////////////////////////////////////////////////////
+// ウィンドウハンドル取得
+//
+// 引数:	なし
+// 返値:	HWINDOW *	ウィンドウハンドル
+////////////////////////////////////////////////////////////////
+HWINDOW DSP6::GetWindowHandle( void )
+{
+	return (HWINDOW)Wh;
+}
+
+
+////////////////////////////////////////////////////////////////
 // サブバッファ更新
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
 #define	RESO43		(8)		/* 中間色計算用分解能(1ラインをRESO43分割する) */
 #define	THRE43		(0)		/* 中間色処理のしきい値(これより大きければ中間色処理) */
-BOOL DSP6::UpdateSubBuf( void )
+bool DSP6::UpdateSubBuf( void )
 {
 	PRINTD( GRP_LOG, "[GRP][UpdateSubBuf]\n" );
 	
 	VSurface *BBuf = vm->vdg;
 	
-	if( !BBuf ) return FALSE;
+	if( !BBuf ) return false;
 	
-	if( !RefreshSubBuf() ) return FALSE;
+	if( !RefreshSubBuf() ) return false;
 	
 	if( DISPNTSC ){	// 4:3表示有効の場合
 		PRINTD( GRP_LOG, " -> 4:3" );
@@ -513,9 +386,9 @@ BOOL DSP6::UpdateSubBuf( void )
 							BYTE d1 = *(soff);
 							BYTE d2 = *((soff++)+BBuf->Pitch());
 							
-							BYTE r = ( Pal[d1].r * a2 + Pal[d2].r * a1 ) / RESO43;
-							BYTE g = ( Pal[d1].g * a2 + Pal[d2].g * a1 ) / RESO43;
-							BYTE b = ( Pal[d1].b * a2 + Pal[d2].b * a1 ) / RESO43;
+							BYTE r = ( Pal->colors[d1].r * a2 + Pal->colors[d2].r * a1 ) / RESO43;
+							BYTE g = ( Pal->colors[d1].g * a2 + Pal->colors[d2].g * a1 ) / RESO43;
+							BYTE b = ( Pal->colors[d1].b * a2 + Pal->colors[d2].b * a1 ) / RESO43;
 							
 							DWORD dd = ( (DWORD)( r & 0xf8 ) << 8 ) | ( (DWORD)( g & 0xfc ) << 3 ) | ( (DWORD)( b & 0xf8 ) >> 3 );
 							dd |= dd << 16;
@@ -533,9 +406,9 @@ BOOL DSP6::UpdateSubBuf( void )
 						for( int x=0; x<(int)BBuf->Width(); x++ ){
 							BYTE d1 = *(soff++);
 							
-							BYTE r = Pal[d1].r;
-							BYTE g = Pal[d1].g;
-							BYTE b = Pal[d1].b;
+							BYTE r = Pal->colors[d1].r;
+							BYTE g = Pal->colors[d1].g;
+							BYTE b = Pal->colors[d1].b;
 							
 							DWORD dd = ( (DWORD)( r & 0xf8 ) << 8 ) | ( (DWORD)( g & 0xfc ) << 3 ) | ( (DWORD)( b & 0xf8 ) >> 3 );
 							dd |= dd << 16;
@@ -571,9 +444,9 @@ BOOL DSP6::UpdateSubBuf( void )
 							BYTE d1 = *(soff);
 							BYTE d2 = *((soff++)+BBuf->Pitch());
 							
-							BYTE r = ( Pal[d1].r * a2 + Pal[d2].r * a1 ) / RESO43;
-							BYTE g = ( Pal[d1].g * a2 + Pal[d2].g * a1 ) / RESO43;
-							BYTE b = ( Pal[d1].b * a2 + Pal[d2].b * a1 ) / RESO43;
+							BYTE r = ( Pal->colors[d1].r * a2 + Pal->colors[d2].r * a1 ) / RESO43;
+							BYTE g = ( Pal->colors[d1].g * a2 + Pal->colors[d2].g * a1 ) / RESO43;
+							BYTE b = ( Pal->colors[d1].b * a2 + Pal->colors[d2].b * a1 ) / RESO43;
 							
 							PUT3BYTE( b, g, r, doff );
 							PUT3BYTE( b, g, r, doff );
@@ -589,9 +462,9 @@ BOOL DSP6::UpdateSubBuf( void )
 						for( int x=0; x<(int)BBuf->Width(); x++ ){
 							BYTE d1 = *(soff++);
 							
-							BYTE r = Pal[d1].r;
-							BYTE g = Pal[d1].g;
-							BYTE b = Pal[d1].b;
+							BYTE r = Pal->colors[d1].r;
+							BYTE g = Pal->colors[d1].g;
+							BYTE b = Pal->colors[d1].b;
 							
 							PUT3BYTE( b, g, r, doff );
 							PUT3BYTE( b, g, r, doff );
@@ -637,17 +510,17 @@ BOOL DSP6::UpdateSubBuf( void )
 						for( int x=0; x<BBuf->Pitch(); x++ ){
 							BYTE d1 = *(soff);
 							BYTE d2 = *((soff++)+BBuf->Pitch());
-							WORD dd = ( (WORD)( ( ( Pal[d1].r * a2 + Pal[d2].r * a1 ) / RESO43 ) & 0xf8 ) << 8 ) |
-									  ( (WORD)( ( ( Pal[d1].g * a2 + Pal[d2].g * a1 ) / RESO43 ) & 0xfc ) << 3 ) |
-									  ( (WORD)( ( ( Pal[d1].b * a2 + Pal[d2].b * a1 ) / RESO43 ) & 0xf8 ) >> 3 );
+							WORD dd = ( (WORD)( ( ( Pal->colors[d1].r * a2 + Pal->colors[d2].r * a1 ) / RESO43 ) & 0xf8 ) << 8 ) |
+									  ( (WORD)( ( ( Pal->colors[d1].g * a2 + Pal->colors[d2].g * a1 ) / RESO43 ) & 0xfc ) << 3 ) |
+									  ( (WORD)( ( ( Pal->colors[d1].b * a2 + Pal->colors[d2].b * a1 ) / RESO43 ) & 0xf8 ) >> 3 );
 							*(doff++) = dd;
 						}
 					}else{
 						for( int x=0; x<BBuf->Pitch(); x++ ){
 							BYTE d1 = *(soff++);
-							WORD dd = ( (WORD)( Pal[d1].r & 0xf8 ) << 8 ) |
-									  ( (WORD)( Pal[d1].g & 0xfc ) << 3 ) |
-									  ( (WORD)( Pal[d1].b & 0xf8 ) >> 3 );
+							WORD dd = ( (WORD)( Pal->colors[d1].r & 0xf8 ) << 8 ) |
+									  ( (WORD)( Pal->colors[d1].g & 0xfc ) << 3 ) |
+									  ( (WORD)( Pal->colors[d1].b & 0xf8 ) >> 3 );
 							*(doff++) = dd;
 						}
 					}
@@ -670,9 +543,9 @@ BOOL DSP6::UpdateSubBuf( void )
 							BYTE d1 = *(soff);
 							BYTE d2 = *((soff++)+BBuf->Pitch());
 							
-							BYTE r = ( Pal[d1].r * a2 + Pal[d2].r * a1 ) / RESO43;
-							BYTE g = ( Pal[d1].g * a2 + Pal[d2].g * a1 ) / RESO43;
-							BYTE b = ( Pal[d1].b * a2 + Pal[d2].b * a1 ) / RESO43;
+							BYTE r = ( Pal->colors[d1].r * a2 + Pal->colors[d2].r * a1 ) / RESO43;
+							BYTE g = ( Pal->colors[d1].g * a2 + Pal->colors[d2].g * a1 ) / RESO43;
+							BYTE b = ( Pal->colors[d1].b * a2 + Pal->colors[d2].b * a1 ) / RESO43;
 							
 							PUT3BYTE( b, g, r, doff );
 						}
@@ -680,9 +553,9 @@ BOOL DSP6::UpdateSubBuf( void )
 						for( int x=0; x<BBuf->Pitch(); x++ ){
 							BYTE d1 = *(soff++);
 							
-							BYTE r = Pal[d1].r;
-							BYTE g = Pal[d1].g;
-							BYTE b = Pal[d1].b;
+							BYTE r = Pal->colors[d1].r;
+							BYTE g = Pal->colors[d1].g;
+							BYTE b = Pal->colors[d1].b;
 							
 							PUT3BYTE( b, g, r, doff );
 						}
@@ -725,9 +598,9 @@ BOOL DSP6::UpdateSubBuf( void )
 					WORD *eoff = doff + SBuf->Pitch()/sizeof(WORD);
 					
 					for( int x=0; x<BBuf->Width(); x++ ){
-						BYTE r = Pal[*(soff)].r;
-						BYTE g = Pal[*(soff)].g;
-						BYTE b = Pal[*(soff)].b;
+						BYTE r = Pal->colors[*(soff)].r;
+						BYTE g = Pal->colors[*(soff)].g;
+						BYTE b = Pal->colors[*(soff)].b;
 						
 						WORD dd = ( (WORD)( r & 0xf8 ) << 8 ) |
 								  ( (WORD)( g & 0xfc ) << 3 ) |
@@ -758,9 +631,9 @@ BOOL DSP6::UpdateSubBuf( void )
 					BYTE *eoff = doff + SBuf->Pitch();
 					
 					for( int x=0; x<BBuf->Width(); x++ ){
-						BYTE r = Pal[*(soff)].r;
-						BYTE g = Pal[*(soff)].g;
-						BYTE b = Pal[*(soff)].b;
+						BYTE r = Pal->colors[*(soff)].r;
+						BYTE g = Pal->colors[*(soff)].g;
+						BYTE b = Pal->colors[*(soff)].b;
 						
 						PUT3BYTE( b, g, r, doff );
 						PUT3BYTE( b, g, r, doff );
@@ -786,7 +659,7 @@ BOOL DSP6::UpdateSubBuf( void )
 	PRINTD( GRP_LOG, " -> OK\n" );
 	
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -794,17 +667,17 @@ BOOL DSP6::UpdateSubBuf( void )
 // サブバッファリフレッシュ
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL DSP6::RefreshSubBuf( void )
+bool DSP6::RefreshSubBuf( void )
 {
 	PRINTD( GRP_LOG, "[GRP][RefreshSubBuf]\n" );
 	
 	if( SBuf ){
 		if( SBuf->Width() == ScreenX() && SBuf->Height() == ScreenY() ){
 			// サイズが変わっていなければOK
-			PRINTD2( GRP_LOG, " X:%d Y:%d -> OK\n", SBuf->Width(), SBuf->Height() );
-			return TRUE;
+			PRINTD( GRP_LOG, " X:%d Y:%d -> OK\n", SBuf->Width(), SBuf->Height() );
+			return true;
 		}else{
 			// サブバッファ一旦削除
 			delete SBuf;
@@ -813,20 +686,20 @@ BOOL DSP6::RefreshSubBuf( void )
 	}
 	
 	// サブバッファ作成
-	PRINTD3( GRP_LOG, " Create SubBuffer X:%d Y:%d BPP:%d\n", ScreenX(), ScreenY(), Bpp );
+	PRINTD( GRP_LOG, " Create SubBuffer X:%d Y:%d BPP:%d\n", ScreenX(), ScreenY(), Bpp );
 	SBuf = new VSurface;
-	if( !SBuf ) return FALSE;
+	if( !SBuf ) return false;
 	
 	if( !SBuf->InitSurface( ScreenX(), ScreenY(), Bpp ) ){
 		delete SBuf;
 		SBuf = NULL;
-		return FALSE;
+		return false;
 	}
 	
 	// パレット設定
-	if( Bpp == 8 ) SBuf->SetPalette( Pal );
+	if( Bpp == 8 ) SBuf->SetPalette( Pal->colors );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -844,10 +717,10 @@ void DSP6::SnapShot( char *path )
 	char img_name[PATH_MAX] = "P6V";
 	int Index = 0;
 	
-	// スクリーンショット格納フォルダがなければエラー
+	// スナップショット格納フォルダがなければエラー
 	if( !OSD_FileExist( path ) ) return;
 	
-	// スクリーンショットファイル名を決める
+	// スナップショットファイル名を決める
 	do{
 		sprintf( img_file, "%s%s%03d.%s", path, img_name, ++Index, IMG_EXT );
 	}while( OSD_FileExist( img_file ) || (Index > 999) );

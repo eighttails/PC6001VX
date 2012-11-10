@@ -172,12 +172,9 @@ const MEM6::MEMINFO MEM66::IINTRAM  = { NULL,          0x10000, 0,          0,  
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-MemBlock::MemBlock( void )
+MemBlock::MemBlock( void ) : MB(NULL), RWait(0), WWait(0), WPt(false)
 {
-	*Name = '\0';
-	MB    = NULL;
-	RWait = WWait = 0;
-	WPt   = FALSE;
+	INITARRAY( Name, '\0' );
 }
 
 
@@ -235,10 +232,10 @@ int MemBlock::GetWait( void )
 ////////////////////////////////////////////////////////////////
 // ライトプロテクト設定
 //
-// 引数:	prt		ライトプロテクトフラグ TRUE:セット FALSE：解除
+// 引数:	prt		ライトプロテクトフラグ true:セット false：解除
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void MemBlock::SetProtect( BOOL prt )
+void MemBlock::SetProtect( bool prt )
 {
 	WPt = prt;
 }
@@ -248,9 +245,9 @@ void MemBlock::SetProtect( BOOL prt )
 // ライトプロテクト取得
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:セット FALSE：解除
+// 返値:	bool	true:セット false：解除
 ////////////////////////////////////////////////////////////////
-BOOL MemBlock::GetProtect( void )
+bool MemBlock::GetProtect( void )
 {
 	return WPt;
 }
@@ -281,53 +278,27 @@ void MemBlock::Write( WORD addr, BYTE data, int *wcnt )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-MEM6::MEM6( BOOL extram )
+MEM6::MEM6( bool extram ) : 
+	CGBank(false), UseExtRom(false), UseExtRam(extram),
+	MainRom(NULL), ExtRom(NULL), CGRom1(NULL), IntRam(NULL),
+	ExtRam(NULL), EmptyRom(NULL), EmptyRam(NULL),
+	M1Wait(1), EnableChkCRC(true),
+	UseSol(false), SolBank(0)
 {
-        MainRom     =
-        ExtRom      =
-        CGRom1      =
-        IntRam      =
-        ExtRam      =
-        EmptyRom    =
-        EmptyRam    =
-        NULL;
-
-        INITARRAY(Rm_blk, NULL);
-        INITARRAY(Wm_blk, NULL);
-
-	*FilePath    = '\0';
-	
-	UseExtRam    = extram;	// 拡張RAM使う?
-	
-	CGBank       = FALSE;	// CG ROM BANK 無効
-	UseExtRom    = FALSE;	// 拡張ROM無効
-	EnableChkCRC = TRUE;	// CRCチェック有効
-	M1Wait       = 1;		// M1ウェイト初期設定
-	
-	memset( ram_sel, 0xff, sizeof(ram_sel) );
-	
-	// 戦士のカートリッジ --------------------------
-	UseSol  = FALSE;		// 無効
-	SolBank = 0;			// ROMバンク初期化
-	// ----------------------------------------------
-	
+	INITARRAY( Rm_blk, NULL );
+	INITARRAY( Wm_blk, NULL );
+	INITARRAY( ram_sel, 0xff );
+	INITARRAY( FilePath, '\0' );
 }
 
-MEM60::MEM60( const ID& id, BOOL extram ) : MEM6(extram), Device(id), CGRom0(NULL){}
+MEM60::MEM60( const ID& id, bool extram ) : MEM6(extram), Device(id), CGRom0(NULL) {}
 
-MEM62::MEM62( const ID& id, BOOL extram ) : MEM6(extram), Device(id),
-    CGRom2(NULL), KanjiRom(NULL), VoiceRom(NULL)
-{
-	Rf0 = INIT_RF0;			// メモリコントローラ内部レジスタ初期値設定
-	Rf1 = INIT_RF1;			// メモリコントローラ内部レジスタ初期値設定
-	Rf2 = INIT_RF2;			// メモリコントローラ内部レジスタ初期値設定
-	
-	cgrom  = TRUE;
-	kj_rom = TRUE;
-	kj_LR  = TRUE;
-}
+MEM62::MEM62( const ID& id, bool extram ) : MEM6(extram), Device(id),
+	CGRom2(NULL), KanjiRom(NULL), VoiceRom(NULL),
+	cgrom(true), kj_rom(true), kj_LR(true), cgenable(true), cgaddr(3),
+	Rf0(INIT_RF0), Rf1(INIT_RF1), Rf2(INIT_RF2) {}
 
-MEM66::MEM66( const ID& id, BOOL extram ) : MEM62(id,extram){}
+MEM66::MEM66( const ID& id, bool extram ) : MEM62(id,extram) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -358,18 +329,19 @@ MEM66::~MEM66( void ){}
 ////////////////////////////////////////////////////////////////
 // 拡張ROM マウント
 ////////////////////////////////////////////////////////////////
-BOOL MEM6::MountExtRom( char *filename )
+bool MEM6::MountExtRom( char *filename )
 {
-	PRINTD1( MEM_LOG, "[MEM][MountExtRom] -> %s\n", filename );
+	PRINTD( MEM_LOG, "[MEM][MountExtRom] -> %s\n", filename );
 	
-	DWORD LoadSize = 0;
+//	DWORD LoadSize = 0;
 	
 	UnmountExtRom();	// 一旦開放
 	
 	try{
 		FILE *fp = FOPENEN( filename, "rb" );
 		if( !fp ) throw Error::ExtRomMountFailed;
-		LoadSize = fread( ExtRom, sizeof(BYTE), IEXTROM.Size, fp );
+//		LoadSize = fread( ExtRom, sizeof(BYTE), IEXTROM.Size, fp );
+		fread( ExtRom, sizeof(BYTE), IEXTROM.Size, fp );
 		fclose( fp );
 		
 		// サイズチェック
@@ -383,12 +355,12 @@ BOOL MEM6::MountExtRom( char *filename )
 		Error::SetError( i );
 		
 		UnmountExtRom();
-		return FALSE;
+		return false;
 	}
 	
-	UseExtRom = TRUE;
+	UseExtRom = true;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -402,7 +374,7 @@ void MEM6::UnmountExtRom( void )
 	memset( ExtRom, IEXTROM.Init, IEXTROM.Size );
 	*FilePath = '\0';
 	
-	UseExtRom = FALSE;
+	UseExtRom = false;
 }
 
 
@@ -418,9 +390,9 @@ char *MEM6::GetFile( void )
 ////////////////////////////////////////////////////////////////
 // メモリ確保とROMファイル読込み
 ////////////////////////////////////////////////////////////////
-BOOL MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, char *path )
+bool MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, char *path )
 {
-	PRINTD1( MEM_LOG, "[MEM][AllocMemory] -> %s\n", info->FileName );
+	PRINTD( MEM_LOG, "[MEM][AllocMemory] -> %s\n", info->FileName );
 	
 	BYTE *buffer = NULL;
 	DWORD LoadSize = 0;
@@ -432,7 +404,7 @@ BOOL MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, char *path )
 		*buf = buffer;
 		
 		// ファイル名=NULL ならばRAMまたはNULL
-		if( !info->FileName ) return TRUE;
+		if( !info->FileName ) return true;
 		
 		// ファイルから読込み
 		char fpath[PATH_MAX] = "";
@@ -453,14 +425,14 @@ BOOL MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, char *path )
 			if( info->Crc != 0 ) throw Error::NoRom;
 		
 		// CRCチェック
-		if( EnableChkCRC && (info->Crc != 0) ){	// EnableChkCRC=FALSE または CRC=0の時はチェックしない
+		if( EnableChkCRC && (info->Crc != 0) ){	// EnableChkCRC=false または CRC=0の時はチェックしない
 			if( CalcCrc32( buffer, info->Size ) !=info->Crc ) throw Error::RomCrcNG;
 		}
 	}
 	// new に失敗した場合
 	catch( std::bad_alloc ){
 		Error::SetError( Error::MemAllocFailed );
-		return FALSE;
+		return false;
 	}
 	// 例外発生
 	catch( Error::Errno i ){
@@ -474,17 +446,17 @@ BOOL MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, char *path )
 			delete [] buffer;
 			*buf = NULL;
 		}
-		return FALSE;
+		return false;
 	}
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL MEM6::InitCommon( BOOL chkcrc, BOOL usesol )
+bool MEM6::InitCommon( bool chkcrc, bool usesol )
 {
 	PRINTD( MEM_LOG, "[MEM][InitCommon]\n" );
 	
@@ -492,25 +464,25 @@ BOOL MEM6::InitCommon( BOOL chkcrc, BOOL usesol )
 	UseSol       = usesol;	// 戦士のカートリッジ有効
 	
 	// 戦士のカートリッジを使う場合は必ず外部RAM有効
-	if( UseSol ) UseExtRam = TRUE;
+	if( UseSol ) UseExtRam = true;
 	
 	// メモリ確保
-	if( !AllocMemory( &EmptyRom, &IEMPTROM, NULL ) ) return FALSE;
-	if( !AllocMemory( &EmptyRam, &IEMPTRAM, NULL ) ) return FALSE;
+	if( !AllocMemory( &EmptyRom, &IEMPTROM, NULL ) ) return false;
+	if( !AllocMemory( &EmptyRam, &IEMPTRAM, NULL ) ) return false;
 	
-	if( !AllocMemory( &ExtRom,   &IEXTROM,  NULL ) ) return FALSE;
-	if( !AllocMemory( &ExtRam,   &IEXTRAM,  NULL ) ) return FALSE;
+	if( !AllocMemory( &ExtRom,   &IEXTROM,  NULL ) ) return false;
+	if( !AllocMemory( &ExtRam,   &IEXTRAM,  NULL ) ) return false;
 	
 	
 	// メモリブロック設定
 	// とりあえず全てEmptyに設定
 	for( int i=0; i<MAXRMB; i++ ){
 		RomB[i].SetMemory( "EmptyRom", EmptyRom, IEMPTROM.WaitR, IEMPTROM.WaitW );
-		RomB[i].SetProtect( TRUE );		// ライトプロテクト有効
+		RomB[i].SetProtect( true );		// ライトプロテクト有効
 	}
 	for( int i=0; i<MAXWMB; i++ ){
 		RamB[i].SetMemory( "EmptyRam", EmptyRam, IEMPTRAM.WaitR, IEMPTRAM.WaitW );
-		RamB[i].SetProtect( FALSE );	// ライトプロテクト無効
+		RamB[i].SetProtect( false );	// ライトプロテクト無効
 	}
 	
 	// EmptyRom,EmptyRam
@@ -518,8 +490,8 @@ BOOL MEM6::InitCommon( BOOL chkcrc, BOOL usesol )
 	//   アクセスウェイトのみ異なる
 	EMPTYROM.SetMemory( "EmptyRom", EmptyRom, IEMPTROM.WaitR, IEMPTROM.WaitW );
 	EMPTYRAM.SetMemory( "EmptyRam", EmptyRom, IEMPTRAM.WaitR, IEMPTRAM.WaitW );
-	EMPTYROM.SetProtect( TRUE );		// ライトプロテクト有効
-	EMPTYRAM.SetProtect( TRUE );		// ライトプロテクト有効
+	EMPTYROM.SetProtect( true );		// ライトプロテクト有効
+	EMPTYRAM.SetProtect( true );		// ライトプロテクト有効
 	
 	// 拡張ROM領域
 	EXTROM0.SetMemory( "ExtRom0", ExtRom,        IEXTROM.WaitR, IEXTROM.WaitW );
@@ -541,25 +513,25 @@ BOOL MEM6::InitCommon( BOOL chkcrc, BOOL usesol )
 	if( UseSol )	// 外部RAMの一部を利用
 		SOLRAM.SetMemory( "SolRam", ExtRam+0x6000, ISOLRAM.WaitR, ISOLRAM.WaitW );
 	
-	PRINTD1( MEM_LOG, "[MEM][Alloc] ExtRom   :%08X\n", (int)ExtRom );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] ExtRam   :%08X\n", (int)ExtRam );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] EmptyRom :%08X\n", (int)EmptyRom );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] EmptyRam :%08X\n", (int)EmptyRam );
+	PRINTD( MEM_LOG, "[MEM][Alloc] ExtRom   :%p\n", ExtRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] ExtRam   :%p\n", ExtRam );
+	PRINTD( MEM_LOG, "[MEM][Alloc] EmptyRom :%p\n", EmptyRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] EmptyRam :%p\n", EmptyRam );
 	
-	return TRUE;
+	return true;
 }
 
-BOOL MEM60::Init( char *path, BOOL chkcrc, BOOL usesol )
+bool MEM60::Init( char *path, bool chkcrc, bool usesol )
 {
 	PRINTD( MEM_LOG, "[MEM][Init]\n" );
 	
-	if( !InitCommon( chkcrc, usesol ) ) return FALSE;	// 共通部分初期化
+	if( !InitCommon( chkcrc, usesol ) ) return false;	// 共通部分初期化
 	
 	// メモリ確保
-	if( !AllocMemory( &MainRom, &IMAINROM, path ) ) return FALSE;
-	if( !AllocMemory( &CGRom0,  &ICGROM0,  path ) ) return FALSE;
-	if( !AllocMemory( &CGRom1,  &ICGROM1,  path ) ) return FALSE;
-	if( !AllocMemory( &IntRam,  &IINTRAM,  path ) ) return FALSE;
+	if( !AllocMemory( &MainRom, &IMAINROM, path ) ) return false;
+	if( !AllocMemory( &CGRom0,  &ICGROM0,  path ) ) return false;
+	if( !AllocMemory( &CGRom1,  &ICGROM1,  path ) ) return false;
+	if( !AllocMemory( &IntRam,  &IINTRAM,  path ) ) return false;
 	
 	
 	// メモリブロック設定
@@ -584,26 +556,26 @@ BOOL MEM60::Init( char *path, BOOL chkcrc, BOOL usesol )
 	
 	Reset();
 	
-	PRINTD1( MEM_LOG, "[MEM][Alloc] IntRam  :%08X\n", (int)IntRam );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] MainRom :%08X\n", (int)MainRom );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] CGRom1  :%08X\n", (int)CGRom1 );
+	PRINTD( MEM_LOG, "[MEM][Alloc] IntRam  :%p\n", IntRam );
+	PRINTD( MEM_LOG, "[MEM][Alloc] MainRom :%p\n", MainRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] CGRom1  :%p\n", CGRom1 );
 	
-	return TRUE;
+	return true;
 }
 
-BOOL MEM62::Init( char *path, BOOL chkcrc, BOOL usesol )
+bool MEM62::Init( char *path, bool chkcrc, bool usesol )
 {
 	PRINTD( MEM_LOG, "[MEM][Init]\n" );
 	
-	if( !InitCommon( chkcrc, usesol ) ) return FALSE;	// 共通部分初期化
+	if( !InitCommon( chkcrc, usesol ) ) return false;	// 共通部分初期化
 	
 	// メモリ確保
-	if( !AllocMemory( &MainRom,  &IMAINROM, path ) ) return FALSE;
-	if( !AllocMemory( &CGRom1,   &ICGROM1,  path ) ) return FALSE;
-	if( !AllocMemory( &CGRom2,   &ICGROM2,  path ) ) return FALSE;
-	if( !AllocMemory( &KanjiRom, &IKANJI,   path ) ) return FALSE;
-	if( !AllocMemory( &VoiceRom, &IVOICE,   path ) ) return FALSE;
-	if( !AllocMemory( &IntRam,   &IINTRAM,  path ) ) return FALSE;
+	if( !AllocMemory( &MainRom,  &IMAINROM, path ) ) return false;
+	if( !AllocMemory( &CGRom1,   &ICGROM1,  path ) ) return false;
+	if( !AllocMemory( &CGRom2,   &ICGROM2,  path ) ) return false;
+	if( !AllocMemory( &KanjiRom, &IKANJI,   path ) ) return false;
+	if( !AllocMemory( &VoiceRom, &IVOICE,   path ) ) return false;
+	if( !AllocMemory( &IntRam,   &IINTRAM,  path ) ) return false;
 	
 	
 	// メモリブロック設定
@@ -618,14 +590,14 @@ BOOL MEM62::Init( char *path, BOOL chkcrc, BOOL usesol )
 	CGROM2.SetMemory( "CGRom2", CGRom2, ICGROM2.WaitR, ICGROM2.WaitW );
 	
 	// 漢字ROM
-	KANJIROM0.SetMemory( "KanjiRom0", KanjiRom,        IKANJI.WaitR, IKANJI.WaitW );
-	KANJIROM1.SetMemory( "KanjiRom1", KanjiRom+0x2000, IKANJI.WaitR, IKANJI.WaitW );
-	KANJIROM2.SetMemory( "KanjiRom2", KanjiRom+0x4000, IKANJI.WaitR, IKANJI.WaitW );
-	KANJIROM3.SetMemory( "KanjiRom3", KanjiRom+0x6000, IKANJI.WaitR, IKANJI.WaitW );
+	KANJIROM0.SetMemory( "KanjRom0", KanjiRom,        IKANJI.WaitR, IKANJI.WaitW );
+	KANJIROM1.SetMemory( "KanjRom1", KanjiRom+0x2000, IKANJI.WaitR, IKANJI.WaitW );
+	KANJIROM2.SetMemory( "KanjRom2", KanjiRom+0x4000, IKANJI.WaitR, IKANJI.WaitW );
+	KANJIROM3.SetMemory( "KanjRom3", KanjiRom+0x6000, IKANJI.WaitR, IKANJI.WaitW );
 	
 	// 音声合成ROM
-	VOICEROM0.SetMemory( "VoiceRom0", VoiceRom,        IVOICE.WaitR, IVOICE.WaitW );
-	VOICEROM1.SetMemory( "VoiceRom1", VoiceRom+0x2000, IVOICE.WaitR, IVOICE.WaitW );
+	VOICEROM0.SetMemory( "VoicRom0", VoiceRom,        IVOICE.WaitR, IVOICE.WaitW );
+	VOICEROM1.SetMemory( "VoicRom1", VoiceRom+0x2000, IVOICE.WaitR, IVOICE.WaitW );
 	
 	// 内部RAM
 	MAINRAM0.SetMemory( "IntRam0", IntRam,        IINTRAM.WaitR, IINTRAM.WaitW );
@@ -652,29 +624,29 @@ BOOL MEM62::Init( char *path, BOOL chkcrc, BOOL usesol )
 	
 	Reset();
 	
-	PRINTD1( MEM_LOG, "[MEM][Alloc] IntRam   :%08X\n", (int)IntRam );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] MainRom  :%08X\n", (int)MainRom );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] CGRom1   :%08X\n", (int)CGRom1 );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] CGRom2   :%08X\n", (int)CGRom2 );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] KanjiRom :%08X\n", (int)KanjiRom );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] VoiceRom :%08X\n", (int)VoiceRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] IntRam   :%p\n", IntRam );
+	PRINTD( MEM_LOG, "[MEM][Alloc] MainRom  :%p\n", MainRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] CGRom1   :%p\n", CGRom1 );
+	PRINTD( MEM_LOG, "[MEM][Alloc] CGRom2   :%p\n", CGRom2 );
+	PRINTD( MEM_LOG, "[MEM][Alloc] KanjiRom :%p\n", KanjiRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] VoiceRom :%p\n", VoiceRom );
 	
-	return TRUE;
+	return true;
 }
 
-BOOL MEM66::Init( char *path, BOOL chkcrc, BOOL usesol )
+bool MEM66::Init( char *path, bool chkcrc, bool usesol )
 {
 	PRINTD( MEM_LOG, "[MEM][Init]\n" );
 	
-	if( !InitCommon( chkcrc, usesol ) ) return FALSE;	// 共通部分初期化
+	if( !InitCommon( chkcrc, usesol ) ) return false;	// 共通部分初期化
 	
 	// メモリ確保
-	if( !AllocMemory( &MainRom,  &IMAINROM, path ) ) return FALSE;
-	if( !AllocMemory( &CGRom1,   &ICGROM1,  path ) ) return FALSE;
-	if( !AllocMemory( &CGRom2,   &ICGROM2,  path ) ) return FALSE;
-	if( !AllocMemory( &KanjiRom, &IKANJI,   path ) ) return FALSE;
-	if( !AllocMemory( &VoiceRom, &IVOICE,   path ) ) return FALSE;
-	if( !AllocMemory( &IntRam,  &IINTRAM,  path ) ) return FALSE;
+	if( !AllocMemory( &MainRom,  &IMAINROM, path ) ) return false;
+	if( !AllocMemory( &CGRom1,   &ICGROM1,  path ) ) return false;
+	if( !AllocMemory( &CGRom2,   &ICGROM2,  path ) ) return false;
+	if( !AllocMemory( &KanjiRom, &IKANJI,   path ) ) return false;
+	if( !AllocMemory( &VoiceRom, &IVOICE,   path ) ) return false;
+	if( !AllocMemory( &IntRam,  &IINTRAM,  path ) ) return false;
 	
 	
 	// メモリブロック設定
@@ -689,14 +661,14 @@ BOOL MEM66::Init( char *path, BOOL chkcrc, BOOL usesol )
 	CGROM2.SetMemory( "CGRom2", CGRom2, ICGROM2.WaitR, ICGROM2.WaitW );
 	
 	// 漢字ROM
-	KANJIROM0.SetMemory( "KanjiRom0", KanjiRom,        IKANJI.WaitR, IKANJI.WaitW );
-	KANJIROM1.SetMemory( "KanjiRom1", KanjiRom+0x2000, IKANJI.WaitR, IKANJI.WaitW );
-	KANJIROM2.SetMemory( "KanjiRom2", KanjiRom+0x4000, IKANJI.WaitR, IKANJI.WaitW );
-	KANJIROM3.SetMemory( "KanjiRom3", KanjiRom+0x6000, IKANJI.WaitR, IKANJI.WaitW );
+	KANJIROM0.SetMemory( "KanjRom0", KanjiRom,        IKANJI.WaitR, IKANJI.WaitW );
+	KANJIROM1.SetMemory( "KanjRom1", KanjiRom+0x2000, IKANJI.WaitR, IKANJI.WaitW );
+	KANJIROM2.SetMemory( "KanjRom2", KanjiRom+0x4000, IKANJI.WaitR, IKANJI.WaitW );
+	KANJIROM3.SetMemory( "KanjRom3", KanjiRom+0x6000, IKANJI.WaitR, IKANJI.WaitW );
 	
 	// 音声合成ROM
-	VOICEROM0.SetMemory( "VoiceRom0", VoiceRom,        IVOICE.WaitR, IVOICE.WaitW );
-	VOICEROM1.SetMemory( "VoiceRom1", VoiceRom+0x2000, IVOICE.WaitR, IVOICE.WaitW );
+	VOICEROM0.SetMemory( "VoicRom0", VoiceRom,        IVOICE.WaitR, IVOICE.WaitW );
+	VOICEROM1.SetMemory( "VoicRom1", VoiceRom+0x2000, IVOICE.WaitR, IVOICE.WaitW );
 	
 	// 内部RAM
 	MAINRAM0.SetMemory( "IntRam0", IntRam,        IINTRAM.WaitR, IINTRAM.WaitW );
@@ -723,14 +695,14 @@ BOOL MEM66::Init( char *path, BOOL chkcrc, BOOL usesol )
 	
 	Reset();
 	
-	PRINTD1( MEM_LOG, "[MEM][Alloc] IntRam   :%08X\n", (int)IntRam );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] MainRom  :%08X\n", (int)MainRom );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] CGRom1   :%08X\n", (int)CGRom1 );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] CGRom2   :%08X\n", (int)CGRom2 );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] KanjiRom :%08X\n", (int)KanjiRom );
-	PRINTD1( MEM_LOG, "[MEM][Alloc] VoiceRom :%08X\n", (int)VoiceRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] IntRam   :%p\n", IntRam );
+	PRINTD( MEM_LOG, "[MEM][Alloc] MainRom  :%p\n", MainRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] CGRom1   :%p\n", CGRom1 );
+	PRINTD( MEM_LOG, "[MEM][Alloc] CGRom2   :%p\n", CGRom2 );
+	PRINTD( MEM_LOG, "[MEM][Alloc] KanjiRom :%p\n", KanjiRom );
+	PRINTD( MEM_LOG, "[MEM][Alloc] VoiceRom :%p\n", VoiceRom );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -772,7 +744,7 @@ void MEM60::Reset( void )
 	if( UseSol ) SetSolBank( 0 );	// メモリバンク初期化
 	// -------------------------------------------------------------
 	
-	CGBank = FALSE;	// CG ROM BANK 無効
+	CGBank = false;	// CG ROM BANK 無効
 	
 	// CGROMの後半4KBに拡張ROMの内容をコピー
 	// (バンク切り替えを8KB単位で行うため)
@@ -788,7 +760,7 @@ void MEM62::Reset( void )
 	if( UseSol ) SetSolBank( 0 );	// メモリバンク初期化
 	// -------------------------------------------------------------
 	
-	CGBank = FALSE;	// CG ROM BANK 無効
+	CGBank = false;	// CG ROM BANK 無効
 	Rf0 = INIT_RF0;	// メモリコントローラ内部レジスタ初期値設定
 	Rf1 = INIT_RF1;	// メモリコントローラ内部レジスタ初期値設定
 	Rf2 = INIT_RF2;	// メモリコントローラ内部レジスタ初期値設定
@@ -803,7 +775,7 @@ void MEM62::Reset( void )
 ////////////////////////////////////////////////////////////////
 BYTE MEM6::Fetch( WORD addr, int *m1wait )
 {
-	PRINTD1( MEM_LOG, "[MEM][Fetch] -> %04X", addr );
+	PRINTD( MEM_LOG, "[MEM][Fetch] -> %04X", addr );
 	
 	// M1ウェイト追加
 	if( m1wait ) (*m1wait) += M1Wait;
@@ -817,7 +789,7 @@ BYTE MEM6::Fetch( WORD addr, int *m1wait )
 ////////////////////////////////////////////////////////////////
 BYTE MEM6::Read( WORD addr, int *wcnt )
 {
-	PRINTD1( MEM_LOG, "[MEM][Read] -> %04X", addr );
+	PRINTD( MEM_LOG, "[MEM][Read] -> %04X", addr );
 	
 	return Rm_blk[addr>>13]->Read( addr, wcnt );
 }
@@ -828,7 +800,7 @@ BYTE MEM6::Read( WORD addr, int *wcnt )
 ////////////////////////////////////////////////////////////////
 void MEM6::Write( WORD addr, BYTE data, int *wcnt )
 {
-	PRINTD5( MEM_LOG, "[MEM][Write] %04X:%02X -> %08X[%04X]'%c'", addr, data, (int)Wm_blk[addr>>13], addr&0x1fff, data );
+	PRINTD( MEM_LOG, "[MEM][Write] %04X:%02X -> %p[%04X]'%c'", addr, data, Wm_blk[addr>>13], addr&0x1fff, data );
 	
 	Wm_blk[addr>>13]->Write( addr, data, wcnt );
 	
@@ -882,7 +854,7 @@ void MEM62::SetMB_R( BYTE mem1, BYTE mem2 )
 		case 0xe0:	Rm_blk[2] = pEXTRAM2;	Rm_blk[3] = pEXTRAM3;	break;
 		case 0xf0:	Rm_blk[2] = pEMPTYROM;	Rm_blk[3] = pEMPTYROM;	break;
 	}
-	if( CGBank ) Rm_blk[3] = cgrom ? pCGROM1 : pCGROM2;
+//	if( CGBank ) Rm_blk[3] = cgrom ? pCGROM1 : pCGROM2;
 	
 	// Port F1H
 	switch( mem2 & 0x0f ){	// RF1下位 (0x8000 - 0xbfff)
@@ -922,6 +894,8 @@ void MEM62::SetMB_R( BYTE mem1, BYTE mem2 )
 		case 0xf0:	Rm_blk[6] = pEMPTYROM;	Rm_blk[7] = pEMPTYROM;	break;
 	}
 	
+	if( CGBank ) Rm_blk[cgaddr] = cgrom ? pCGROM1 : pCGROM2;
+	
 	// 内部レジスタ保存
 	Rf0 = mem1;
 	Rf1 = mem2;
@@ -939,7 +913,7 @@ void MEM62::SetMB_R( BYTE mem1, BYTE mem2 )
 ////////////////////////////////////////////////////////////////
 void MEM62::SetMB_W( BYTE data )
 {
-	PRINTD1( MEM_LOG, "[MEM][SetMB_W] -> %02X\n", data );
+	PRINTD( MEM_LOG, "[MEM][SetMB_W] -> %02X\n", data );
 	
 	switch( ram_sel[0] = data & 3 ){
 	case 0: Wm_blk[0] = pEMPTYRAM;	Wm_blk[1] = pEMPTYRAM;	break;
@@ -981,7 +955,7 @@ void MEM62::SetMB_W( BYTE data )
 ////////////////////////////////////////////////////////////////
 void MEM62::SetWait( BYTE data )
 {
-	PRINTD3( MEM_LOG, "[MEM][SetWait] -> M1:%d ROM:%d RAM:%d\n", (data>>7)&1, (data>>6)&1, (data>>5)&1 );
+	PRINTD( MEM_LOG, "[MEM][SetWait] -> M1:%d ROM:%d RAM:%d\n", (data>>7)&1, (data>>6)&1, (data>>5)&1 );
 	
 	// M1
 	M1Wait = data&0x80 ? 1 : 0;
@@ -1057,31 +1031,56 @@ void MEM60::SetMB_60( void )
 
 
 ////////////////////////////////////////////////////////////////
+// CG ROM アドレス等設定(62,66のみ)
+////////////////////////////////////////////////////////////////
+void MEM62::SetCGrom( BYTE data )
+{
+	PRINTD( MEM_LOG, "[MEM][SetCGrom] -> %02x\n", data );
+	
+	// bit 7
+	int	cgwait = data&0x80 ? 0 : 1;
+	CGROM1.SetWait( cgwait, cgwait );
+	CGROM2.SetWait( cgwait, cgwait );
+	
+	// bit 6
+	cgenable = data&0x40 ? true : false;
+	
+	// bit 5,4,3
+	// とりあえず無視
+	
+	// bit 2,1,0
+	cgaddr   = data&3;
+	
+	SetMB_R( Rf0, Rf1 );
+}
+
+
+////////////////////////////////////////////////////////////////
 // CG ROM 選択(62,66のみ)
 ////////////////////////////////////////////////////////////////
 void MEM62::SelectCGrom( int mode )
 {
-	PRINTD1( MEM_LOG, "[MEM][SelectCGrom] -> %d\n", mode );
+	PRINTD( MEM_LOG, "[MEM][SelectCGrom] -> %d\n", mode );
 	
 	// mode 1:32*16(N60モード) 0:40*20(N60mモード)
-	cgrom = mode ? TRUE : FALSE;
+	cgrom = mode ? true : false;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // CG ROM BANK を切り替える
 ////////////////////////////////////////////////////////////////
-void MEM6::SetCGBank( BOOL data )
+void MEM6::SetCGBank( bool data )
 {
-	PRINTD1( MEM_LOG, "[MEM][SetCGBank] -> %d\n", data );
+	PRINTD( MEM_LOG, "[MEM][SetCGBank] -> %d\n", data );
 	
 	CGBank = data;
 	Rm_blk[3] = CGBank ? pCGROM1 : UseSol ? (MemBlock*)pSOLRAM : pEXTROM1;
 }
 
-void MEM62::SetCGBank( BOOL data )
+void MEM62::SetCGBank( bool data )
 {
-	PRINTD1( MEM_LOG, "[MEM][SetCGBank] -> %d\n", data );
+	PRINTD( MEM_LOG, "[MEM][SetCGBank] -> %d\n", data );
 	
 	CGBank = data;
 	SetMB_R( Rf0, Rf1 );
@@ -1093,16 +1092,16 @@ void MEM62::SetCGBank( BOOL data )
 ////////////////////////////////////////////////////////////////
 void MEM62::SelectKanjiRom( BYTE mode )
 {
-	PRINTD1( MEM_LOG, "[MEM][SelectKanjiRom] -> %02X\n", mode );
+	PRINTD( MEM_LOG, "[MEM][SelectKanjiRom] -> %02X\n", mode );
 	
 // mode bit0 0:音声合成ROM選択 1:漢字ROM選択
 //      bit1 0:漢字ROM左側     1:漢字ROM右側
 
 	// 漢字 左？右？
-	kj_LR = mode&0x02 ? TRUE : FALSE;
+	kj_LR = mode&0x02 ? true : false;
 	
 	// 漢字ROM？音声合成ROM？
-	kj_rom = mode&0x01 ? TRUE : FALSE;
+	kj_rom = mode&0x01 ? true : false;
 	
 	SetMB_R( Rf0, Rf1 );
 }
@@ -1128,7 +1127,7 @@ void MEM6::SetSolBank( BYTE data )
 	EXTROM0.SetMemory( EXTROM0.GetName(), ExtRom + 0x2000 * SolBank, IEXTROM.WaitR, IEXTROM.WaitW );
 	
 	// RAMのライトプロテクト
-	SOLRAM.SetProtect( data & 0x10 ? TRUE : FALSE );
+	SOLRAM.SetProtect( data & 0x10 ? true : false );
 }
 
 
@@ -1165,6 +1164,7 @@ inline void MEM62::OutF0H( int, BYTE data ){ SetMB_R( data, Rf1 ); }
 inline void MEM62::OutF1H( int, BYTE data ){ SetMB_R( Rf0, data ); }
 inline void MEM62::OutF2H( int, BYTE data ){ SetMB_W( data ); }
 inline void MEM62::OutF3H( int, BYTE data ){ SetWait( data ); }
+inline void MEM62::OutF8H( int, BYTE data ){ SetCGrom( data ); }
 inline BYTE MEM62::InF0H( int ){ return Rf0; }
 inline BYTE MEM62::InF1H( int ){ return Rf1; }
 inline BYTE MEM62::InF2H( int ){ return Rf2; }
@@ -1175,11 +1175,11 @@ inline BYTE MEM62::InF3H( int ){ return GetWait() | 0x1f; }
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL MEM60::DokoSave( cIni *Ini )
+bool MEM60::DokoSave( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "MEMORY", NULL, "CGBank",	 "%s",	CGBank ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "UseExtRam",	 "%s",	UseExtRam ? "Yes" : "No" );
@@ -1217,12 +1217,12 @@ BOOL MEM60::DokoSave( cIni *Ini )
 		}
 	}
 	
-	return TRUE;
+	return true;
 }
 
-BOOL MEM62::DokoSave( cIni *Ini )
+bool MEM62::DokoSave( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "MEMORY", NULL, "CGBank",	 "%s",	CGBank ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "UseExtRam",	 "%s",	UseExtRam ? "Yes" : "No" );
@@ -1258,7 +1258,7 @@ BOOL MEM62::DokoSave( cIni *Ini )
 		}
 	}
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -1267,13 +1267,13 @@ BOOL MEM62::DokoSave( cIni *Ini )
 // どこでもLOAD
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL MEM60::DokoLoad( cIni *Ini )
+bool MEM60::DokoLoad( cIni *Ini )
 {
 	char strfp[PATH_MAX];
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetTruth( "MEMORY", "CGBank",		&CGBank,	CGBank );
 	Ini->GetTruth( "MEMORY", "UseExtRam",	&UseExtRam,	UseExtRam );
@@ -1320,15 +1320,15 @@ BOOL MEM60::DokoLoad( cIni *Ini )
 	if( UseSol ) SetSolBank( SolBank );	// メモリバンク初期化
 	// -------------------------------------------------------------
 	
-	return TRUE;
+	return true;
 }
 
-BOOL MEM62::DokoLoad( cIni *Ini )
+bool MEM62::DokoLoad( cIni *Ini )
 {
 	int st;
 	char strfp[PATH_MAX];
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetTruth( "MEMORY", "CGBank",		&CGBank,	CGBank );
 	Ini->GetTruth( "MEMORY", "UseExtRam",	&UseExtRam,	UseExtRam );
@@ -1382,7 +1382,7 @@ BOOL MEM62::DokoLoad( cIni *Ini )
 	if( UseSol ) SetSolBank( SolBank );	// メモリバンク初期化
 	// -------------------------------------------------------------
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -1428,7 +1428,8 @@ const Device::OutFuncPtr MEM62::outdef[] = {
 	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutF0H ),
 	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutF1H ),
 	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutF2H ),
-	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutF3H )
+	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutF3H ),
+	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutF8H )
 };
 
 const Device::InFuncPtr MEM62::indef[] = {

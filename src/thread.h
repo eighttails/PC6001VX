@@ -14,7 +14,7 @@
 
 class cThread : public cCritical {
 private:
-	BOOL m_bCancel;				// for Cancel().
+	bool m_bCancel;				// for Cancel().
 	HTHREAD m_hThread;			// for Thread Handle.
 	void *m_BeginTheadParam;
 	
@@ -27,11 +27,11 @@ public:
 	cThread();
 	virtual ~cThread();
 	
-	BOOL BeginThread( void * = NULL );	// Start Thread. 
-	BOOL Waiting();						// Wait for created thread end.
+	bool BeginThread( void * = NULL );	// Start Thread. 
+	bool Waiting();						// Wait for created thread end.
 	
 	void Cancel();						// Method for cancel.
-	BOOL IsCancel();
+	bool IsCancel();
 };
 
 #endif // THREAD_H_INCLUDED

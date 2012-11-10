@@ -1,3 +1,4 @@
+#include "config.h"
 #include "log.h"
 #include "cpus.h"
 #include "intr.h"
@@ -62,16 +63,19 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-SUB6::SUB6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
-{
-	Reset();
-}
+SUB6::SUB6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id),
+	CmtStatus(CMTCLOSE), Status8049(D8049_IDLE),
+	IntrFlag(0), KeyCode(0), JoyCode(0), CmtData(0), SioData(0) {}
 
+SUB60::SUB60( VM6 *vm, const P6ID& id ) : SUB6(vm,id){}
+SUB62::SUB62( VM6 *vm, const P6ID& id ) : SUB6(vm,id){}
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
 ////////////////////////////////////////////////////////////////
 SUB6::~SUB6( void ){}
+SUB60::~SUB60( void ){}
+SUB62::~SUB62( void ){}
 
 
 ////////////////////////////////////////////////////////////////
@@ -97,25 +101,25 @@ void SUB6::EventCallback( int id, int clock )
 			else if( IntrFlag & IR_SIO )  { Status8049 = D8049_SIO;   }
 			
 			if( Status8049 != D8049_IDLE )
-				vm->sche->Add( this, EID_VECTOR, WAIT_DATA, EV_LOOP|EV_STATE );
+				vm->evsc->Add( this, EID_VECTOR, WAIT_DATA, EV_LOOP|EV_STATE );
 		}
 		break;
 		
 	case EID_VECTOR:	// 割込みベクタ出力
 		// T0=IBF=H つまり8255のバッファが空いていなければリトライ
 		if( GetT0() ) break;
-		vm->sche->Del( this, EID_VECTOR );
+		vm->evsc->Del( this, EID_VECTOR );
 		
 		OutVector();	// 割込みベクタ出力
 		
 		// 続いてデータ出力
-		vm->sche->Add( this, EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
+		vm->evsc->Add( this, EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
 		break;
 		
 	case EID_DATA:		// 割込みデータ出力
 		// T0=IBF=H つまり8255のバッファが空いていなければリトライ
 		if( GetT0() ) break;
-		vm->sche->Del( this, EID_DATA );
+		vm->evsc->Del( this, EID_DATA );
 		
 		// CPUに対する割込み要求をキャンセル(割込み禁止対策)
 		vm->intr->CancelIntr( IREQ_8049 );
@@ -140,7 +144,7 @@ void SUB6::Reset( void )
 	CmtData    = 0;
 	SioData    = 0;
 	
-	vm->sche->Add( this, EID_INTCHK, WAIT_INTCHK, EV_LOOP|EV_US );
+	vm->evsc->Add( this, EID_INTCHK, WAIT_INTCHK, EV_LOOP|EV_US );
 }
 
 
@@ -175,16 +179,16 @@ inline BYTE SUB6::ReadExt( void )
 ////////////////////////////////////////////////////////////////
 // テスト0ステータス取得
 ////////////////////////////////////////////////////////////////
-inline BOOL SUB6::GetT0( void )
+inline bool SUB6::GetT0( void )
 {
-	return vm->ios->In( IO8049_T0 ) ? TRUE : FALSE;
+	return vm->ios->In( IO8049_T0 ) ? true : false;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // テスト1ステータス取得
 ////////////////////////////////////////////////////////////////
-inline BOOL SUB6::GetT1( void )
+inline bool SUB6::GetT1( void )
 {
 	return 0;
 }
@@ -193,9 +197,9 @@ inline BOOL SUB6::GetT1( void )
 ////////////////////////////////////////////////////////////////
 // 外部割込みステータス取得
 ////////////////////////////////////////////////////////////////
-inline BOOL SUB6::GetINT( void )
+inline bool SUB6::GetINT( void )
 {
-	return vm->ios->In( IO8049_INT ) ? TRUE : FALSE;
+	return vm->ios->In( IO8049_INT ) ? true : false;
 }
 
 
@@ -204,7 +208,7 @@ inline BOOL SUB6::GetINT( void )
 ////////////////////////////////////////////////////////////////
 void SUB6::ExtIntr( void )
 {
-//	static BOOL CmtPut = FALSE;
+//	static bool CmtPut = false;
 	
 	// 外部メモリ入力(8255のPortA)
 	BYTE comm = ReadExt();
@@ -213,64 +217,137 @@ void SUB6::ExtIntr( void )
 	if( Status8049 & D8049_IMASK ){
 		// CMT 1文字出力
 		if( ( Status8049 & D8049_IMASK ) == D8049_CMTO ){
-			PRINTD1( SUB_LOG, "[8049][ExtIntr] CmtPut %02X\n", comm );
+			PRINTD( SUB_LOG, "[8049][ExtIntr] CmtPut %02X\n", comm );
 			
 			vm->cmts->CmtWrite( comm );
 			Status8049 &= ~D8049_IMASK;
 		}
 		
 	}else{
-		PRINTD1( SUB_LOG, "[8049][ExtIntr] Command %02X\n", comm );
+		// 外部割込み処理
+		ExtIntrExec( comm );
+	}
+}
+
+
+////////////////////////////////////////////////////////////////
+// 外部割込み処理
+////////////////////////////////////////////////////////////////
+void SUB60::ExtIntrExec( BYTE comm )
+{
+	PRINTD( SUB_LOG, "[8049][ExtIntrExec] Command %02X\n", comm );
+	
+	// コマンド
+	switch( comm ){
+	case 0x0c:	// ------ RS-232C ----------
+	case 0x2c:
+		break;
 		
-		// コマンド
-		switch( comm ){
-		case 0x0c:	// ------ RS-232C ----------
-		case 0x2c:
-			break;
-			
-		case 0x06:	// ------ STICK,STRIG ----------
-			// ゲーム用キー割込み要求
-			ReqJoyIntr();
-			break;
-			
-		case 0x19:	// ------ CMT(LOAD) OPEN ----------
-			CmtStatus = LOADOPEN;
-			break;
-			
-		case 0x1a:	// ------ CMT(LOAD) CLOSE ----------
-			CmtStatus = CMTCLOSE;
-			break;
-			
-		case 0x1d:	// ------ CMT(LOAD) 600ボー ----------
-	//		vm->cmt->SetBaud( 600 );
-			break;
-			
-		case 0x1e:	// ------ CMT(LOAD) 1200ボー ----------
-	//		vm->cmt->SetBaud( 1200 );
-			break;
-			
-		case 0x38:	// ------ CMT 1文字出力 ----------
-			Status8049 |= D8049_CMTO;
-			break;
-			
-		case 0x39:	// ------ CMT(SAVE) OPEN ----------
-			vm->cmts->Mount();
-			CmtStatus = SAVEOPEN;
-			break;
-			
-		case 0x3a:	// ------ CMT(SAVE) CLOSE ----------
-			CmtStatus = CMTCLOSE;
-			vm->cmts->Unmount();
-			break;
-			
-		case 0x3d:	// ------ CMT(SAVE) 600ボー ----------
-			vm->cmts->SetBaud( 600 );
-			break;
-			
-		case 0x3e:	// ------ CMT(SAVE) 1200ボー ----------
-			vm->cmts->SetBaud( 1200 );
-			break;
-		}
+	case 0x06:	// ------ STICK,STRIG ----------
+		// ゲーム用キー割込み要求
+		ReqJoyIntr();
+		break;
+		
+	case 0x19:	// ------ CMT(LOAD) OPEN ----------
+		CmtStatus = LOADOPEN;
+		break;
+		
+	case 0x1a:	// ------ CMT(LOAD) CLOSE ----------
+		CmtStatus = CMTCLOSE;
+		break;
+		
+	case 0x1d:	// ------ CMT(LOAD) 600ボー ----------
+//		vm->cmtl->SetBaud( 600 );
+		break;
+		
+	case 0x1e:	// ------ CMT(LOAD) 1200ボー ----------
+//		vm->cmtl->SetBaud( 1200 );
+		break;
+		
+	case 0x38:	// ------ CMT 1文字出力 ----------
+		Status8049 |= D8049_CMTO;
+		break;
+		
+	case 0x39:	// ------ CMT(SAVE) OPEN ----------
+		vm->cmts->Mount();
+		CmtStatus = SAVEOPEN;
+		break;
+		
+	case 0x3a:	// ------ CMT(SAVE) CLOSE ----------
+		CmtStatus = CMTCLOSE;
+		vm->cmts->Unmount();
+		break;
+		
+	case 0x3d:	// ------ CMT(SAVE) 600ボー ----------
+		vm->cmts->SetBaud( 600 );
+		break;
+		
+	case 0x3e:	// ------ CMT(SAVE) 1200ボー ----------
+		vm->cmts->SetBaud( 1200 );
+		break;
+	}
+}
+
+void SUB62::ExtIntrExec( BYTE comm )
+{
+	PRINTD( SUB_LOG, "[8049][ExtIntrExec] Command %02X\n", comm );
+	
+	// コマンド
+	switch( comm ){
+	case 0x0c:	// ------ RS-232C ----------
+	case 0x2c:
+		break;
+		
+	case 0x04:	// ------ 英字<->かな切換 ----------
+		vm->key->ChangeKana();
+		break;
+		
+	case 0x05:	// ------ かな<->カナ切換 ----------
+		vm->key->ChangeKKana();
+		break;
+		
+	case 0x06:	// ------ STICK,STRIG ----------
+		// ゲーム用キー割込み要求
+		ReqJoyIntr();
+		break;
+		
+	case 0x19:	// ------ CMT(LOAD) OPEN ----------
+		CmtStatus = LOADOPEN;
+		break;
+		
+	case 0x1a:	// ------ CMT(LOAD) CLOSE ----------
+		CmtStatus = CMTCLOSE;
+		break;
+		
+	case 0x1d:	// ------ CMT(LOAD) 600ボー ----------
+//		vm->cmtl->SetBaud( 600 );
+		break;
+		
+	case 0x1e:	// ------ CMT(LOAD) 1200ボー ----------
+//		vm->cmtl->SetBaud( 1200 );
+		break;
+		
+	case 0x38:	// ------ CMT 1文字出力 ----------
+		Status8049 |= D8049_CMTO;
+		break;
+		
+	case 0x39:	// ------ CMT(SAVE) OPEN ----------
+		vm->cmts->Mount();
+		CmtStatus = SAVEOPEN;
+		break;
+		
+	case 0x3a:	// ------ CMT(SAVE) CLOSE ----------
+		CmtStatus = CMTCLOSE;
+		vm->cmts->Unmount();
+		break;
+		
+	case 0x3d:	// ------ CMT(SAVE) 600ボー ----------
+		vm->cmts->SetBaud( 600 );
+		break;
+		
+	case 0x3e:	// ------ CMT(SAVE) 1200ボー ----------
+		vm->cmts->SetBaud( 1200 );
+		break;
 	}
 }
 
@@ -302,11 +379,11 @@ void SUB6::ReqKeyIntr( int flag, BYTE data )
 	}else{			// STOP以外
 		// GRAPH or FUNCTION KEY ?
 		if( flag&6 ){
-			PRINTD1( SUB_LOG, "[8049][ReqKeyIntr] KEY2 %02X\n", data );
+			PRINTD( SUB_LOG, "[8049][ReqKeyIntr] KEY2 %02X\n", data );
 			IntrFlag |= IR_KEY2;
 			KeyCode   = data;
 		}else{
-			PRINTD1( SUB_LOG, "[8049][ReqKeyIntr] KEY3 %02X\n", data );
+			PRINTD( SUB_LOG, "[8049][ReqKeyIntr] KEY3 %02X\n", data );
 			IntrFlag |= IR_KEY3;
 			KeyCode   = data;
 		}
@@ -417,7 +494,7 @@ void SUB6::OutData( void )
 {
 	switch( Status8049 ){
 	case D8049_JOY:		// ゲーム用キー割込み データ出力
-		PRINTD1( SUB_LOG, "[OutData JOY] Data: %02X\n", JoyCode );
+		PRINTD( SUB_LOG, "[OutData JOY] Data: %02X\n", JoyCode );
 		WriteExt( JoyCode );
 		IntrFlag &= ~IR_JOY;
 		break;
@@ -431,7 +508,7 @@ void SUB6::OutData( void )
 		break;
 		
 	case D8049_CMTR:	// CMT READ割込み データ出力
-		PRINTD1( SUB_LOG, "[OutData CMTR] Data: %02X\n", CmtData );
+		PRINTD( SUB_LOG, "[OutData CMTR] Data: %02X\n", CmtData );
 		WriteExt( CmtData );
 		IntrFlag &= ~IR_CMTR;
 		break;
@@ -441,19 +518,19 @@ void SUB6::OutData( void )
 		break;
 		
 	case D8049_KEY2:	// キー割込み2 データ出力
-		PRINTD1( SUB_LOG, "[OutData KEY2] Data: %02X\n", KeyCode );
+		PRINTD( SUB_LOG, "[OutData KEY2] Data: %02X\n", KeyCode );
 		WriteExt( KeyCode );
 		IntrFlag &= ~IR_KEY2;
 		break;
 		
 	case D8049_KEY3:	// キー割込み3 データ出力
-		PRINTD1( SUB_LOG, "[OutData KEY3] Data: %02X\n", KeyCode );
+		PRINTD( SUB_LOG, "[OutData KEY3] Data: %02X\n", KeyCode );
 		WriteExt( KeyCode );
 		IntrFlag &= ~IR_KEY3;
 		break;
 		
 	case D8049_SIO:		// RS232C受信割込み データ出力
-		PRINTD1( SUB_LOG, "[OutData SIO] Data: %02X\n", SioData );
+		PRINTD( SUB_LOG, "[OutData SIO] Data: %02X\n", SioData );
 		WriteExt( SioData );
 		IntrFlag &= ~IR_SIO;
 	}
@@ -473,7 +550,7 @@ int SUB6::GetCmtStatus( void )
 ////////////////////////////////////////////////////////////////
 // CMT割込み発生可?
 ////////////////////////////////////////////////////////////////
-BOOL SUB6::IsCmtIntrReady( void )
+bool SUB6::IsCmtIntrReady( void )
 {
 	// 何もしていなくてLOADOPENで前回のCMT READ割込みが処理済みでIBF=Lだったら発生可
 	// BoostUp有効の場合はワークエリアもチェック
@@ -482,7 +559,7 @@ BOOL SUB6::IsCmtIntrReady( void )
 			( CmtStatus == LOADOPEN ) &&
 			!( IntrFlag & IR_CMTR ) &&
 			!GetT0() &&
-			!( vm->cmt->IsBoostUp() && ( vm->mem->Read( 0xfa19 ) & 2 ) )	// ワークエリアのフラグ参照
+			!( vm->cmtl->IsBoostUp() && ( vm->mem->Read( 0xfa19 ) & 2 ) )	// ワークエリアのフラグ参照
 			);
 }
 
@@ -490,14 +567,15 @@ BOOL SUB6::IsCmtIntrReady( void )
 ////////////////////////////////////////////////////////////////
 // どこでもSAVE
 ////////////////////////////////////////////////////////////////
-BOOL SUB6::DokoSave( cIni *Ini )
+bool SUB6::DokoSave( cIni *Ini )
 {
+	int i;
 	cSche::evinfo e;
 	char stren[16];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "8049", NULL, "CmtStatus",	"%d",		CmtStatus );
 	Ini->PutEntry( "8049", NULL, "Status8049",	"%d",		Status8049 );
@@ -508,41 +586,34 @@ BOOL SUB6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "8049", NULL, "SioData",		"0x%02X",	SioData );
 	
 	// イベント
-	e.id = EID_INTCHK;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "8049", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
+	int eid[] = { EID_INTCHK, EID_VECTOR, EID_DATA, 0 };
+	i = 0;
+	
+	while( eid[i] ){
+		e.id = eid[i++];
+		if( vm->evsc->GetEvinfo( &e ) ){
+			sprintf( stren, "Event%08X", e.id );
+			Ini->PutEntry( "8049", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
+		}
 	}
 	
-	e.id = EID_VECTOR;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "8049", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
-	
-	e.id = EID_DATA;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "8049", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
-	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // どこでもLOAD
 ////////////////////////////////////////////////////////////////
-BOOL SUB6::DokoLoad( cIni *Ini )
+bool SUB6::DokoLoad( cIni *Ini )
 {
-	int st,yn;
+	int st,yn,i;
 	cSche::evinfo e;
 	char stren[16];
 	char strrs[64];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetInt(   "8049", "CmtStatus",		&CmtStatus,		CmtStatus );
 	Ini->GetInt(   "8049", "Status8049",	&Status8049,	Status8049 );
@@ -553,29 +624,18 @@ BOOL SUB6::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "8049", "SioData",		&st,		SioData );	SioData  = st;
 	
 	// イベント
-	e.id = EID_INTCHK;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "8049", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
+	int eid[] = { EID_INTCHK, EID_VECTOR, EID_DATA, 0 };
+	i = 0;
+	
+	while( eid[i] ){
+		e.id = eid[i++];
+		sprintf( stren, "Event%08X", e.id );
+		if( Ini->GetString( "8049", stren, strrs, "" ) ){
+			sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
+			e.Active = yn ? true : false;
+			if( !vm->evsc->SetEvinfo( &e ) ) return false;
+		}
 	}
 	
-	e.id = EID_VECTOR;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "8049", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
-	}
-	
-	e.id = EID_DATA;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "8049", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
-	}
-	
-	return TRUE;
+	return true;
 }

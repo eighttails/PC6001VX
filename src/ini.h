@@ -40,21 +40,21 @@ protected:
 	cNode *IniNode;				// 先頭ノードへのポインタ
 	char FileName[PATH_MAX];	// ファイル名
 	
-	BOOL Ready;
+	bool Ready;
 	
 public:
 	cIni();						// コンストラクタ
 	virtual ~cIni();			// デストラクタ
 	
-	BOOL Init( char * );		// 初期化
+	bool Init( char * );		// 初期化
 	
-	BOOL IsReady(){ return Ready; }
+	bool IsReady(){ return Ready; }
 	
-	BOOL Write();															// 書込み
-	BOOL GetString( const char *, const char *, char *, const char * );		// 文字列読込み
-	BOOL GetInt( const char *, const char *, int *, const int );			// 数値読込み
-	BOOL GetTruth( const char *, const char *, BOOL *, const BOOL );		// YesNo読込み
-	BOOL PutEntry( const char *, const char *, const char *, const char *, ... );	// エントリ追加
+	bool Write();															// 書込み
+	bool GetString( const char *, const char *, char *, const char * );		// 文字列読込み
+	bool GetInt( const char *, const char *, int *, const int );			// 数値読込み
+	bool GetTruth( const char *, const char *, bool *, const bool );		// YesNo読込み
+	bool PutEntry( const char *, const char *, const char *, const char *, ... );	// エントリ追加
 	
 };
 
@@ -63,8 +63,8 @@ public:
 // どこでもSAVE用インターフェイス
 struct IDoko
 {
-	virtual BOOL DokoLoad( cIni * ) = 0;
-	virtual BOOL DokoSave( cIni * ) = 0;
+	virtual bool DokoLoad( cIni * ) = 0;
+	virtual bool DokoSave( cIni * ) = 0;
 };
 
 #endif	// INI_H_INCLUDED

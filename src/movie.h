@@ -1,7 +1,6 @@
 #ifndef MOVIE_H_INCLUDED
 #define MOVIE_H_INCLUDED
 
-#include "typedef.h"
 #include "sound.h"
 #include "vsurface.h"
 
@@ -102,7 +101,7 @@ protected:
 	WAVEFORMATEX6 awf;
 	
 	int ABPP;					// bpp (8,16,24)
-	BOOL AVIRLE;				// RLEフラグ  TRUE:RLE  FALSE:ベタ
+	bool AVIRLE;				// RLEフラグ  true:RLE  false:ベタ
 	
 	DWORD PosMOVI;
 	
@@ -112,8 +111,8 @@ protected:
 	cRing ABuf;					// オーディオバッファ
 	DWORD anum;					// オーディオサンプル数カウント用
 	
-	BOOL WriteHeader();						// ヘッダチャンク書出し
-	BOOL WriteIndexr();						// インデックスチャンク書出し
+	bool WriteHeader();						// ヘッダチャンク書出し
+	bool WriteIndexr();						// インデックスチャンク書出し
 	
 	void putBMPINFOHEADER6( BMPINFOHEADER6 * );
 	void putMAINAVIHEADER6( MAINAVIHEADER6 * );
@@ -125,14 +124,14 @@ public:
 	AVI6();									// コンストラクタ
 	~AVI6();								// デストラクタ
 	
-	BOOL Init();							// 初期化
+	bool Init();							// 初期化
 	
-	BOOL StartAVI( char *, VSurface *, int, int, BOOL );	// ビデオキャプチャ開始
+	bool StartAVI( char *, VSurface *, int, int, bool );	// ビデオキャプチャ開始
 	
 	void StopAVI();							// ビデオキャプチャ停止
-	BOOL IsAVI();							// ビデオキャプチャ中?
+	bool IsAVI();							// ビデオキャプチャ中?
 	
-	BOOL AVIWriteFrame( VSurface * );		// AVI1フレーム書出し
+	bool AVIWriteFrame( VSurface * );		// AVI1フレーム書出し
 	
 	cRing *GetAudioBuffer();				// オーディオバッファ取得
 };

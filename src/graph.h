@@ -2,7 +2,7 @@
 #define GRAPH_H_INCLUDED
 
 #include "typedef.h"
-#include "p6device.h"
+#include "p6vm.h"
 #include "vsurface.h"
 
 
@@ -10,27 +10,29 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class DSP6 : public P6DEVICE {
+class DSP6 {
 protected:
+	VM6* vm;
+	
+	HWINDOW Wh;				// ウィンドウハンドル
 	VSurface *SBuf;			// サブバッファポインタ
-	COLOR24 *Pal;			// パレットへのポインタ
+	VPalette *Pal;			// パレットへのポインタ
 	int Bpp;				// カラーモード
 	int SLBr;				// スキャンライン輝度
 	
-	BOOL SetScreenSurface();				// スクリーンサーフェス作成
-	BOOL UpdateSubBuf();					// サブバッファ更新
-	BOOL RefreshSubBuf();					// サブバッファリフレッシュ
+	bool SetScreenSurface();				// スクリーンサーフェス作成
+	bool UpdateSubBuf();					// サブバッファ更新
+	bool RefreshSubBuf();					// サブバッファリフレッシュ
 	
-	void BlitToSDL( VSurface *, int, int );	// SDLサーフェスにVSurfaceをBlit
-	void BlitToSDL2( VSurface *, int, int );	// SDLサーフェスにVSurfaceをBlit 2倍
 
 public:
-	DSP6( VM6 *, const P6ID& );				// コンストラクタ
+	DSP6( VM6 * );							// コンストラクタ
 	~DSP6();								// デストラクタ
 	
-	BOOL Init( int, int, COLOR24 * );		// 初期化
+	bool Init( int, int, VPalette * );		// 初期化
+	void SetIcon( int );					// アイコン設定
 	
-	BOOL ResizeScreen();					// スクリーンサイズ変更
+	bool ResizeScreen();					// スクリーンサイズ変更
 	
 	void DrawScreen();						// 画面更新
 	void SnapShot( char * );				// スナップショット
@@ -39,6 +41,7 @@ public:
 	int ScreenY();							// 有効スクリーン高さ取得
 	
 	VSurface *GetSubBuffer();				// サブバッファ取得
+	HWINDOW GetWindowHandle();				// ウィンドウハンドル取得
 };
 
 

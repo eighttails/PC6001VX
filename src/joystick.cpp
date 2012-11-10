@@ -5,20 +5,21 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cJoy::cJoy( void )
+JOY6::JOY6( void )
 {
-	JID[0] = JID[1] = -1;
+	INITARRAY( JID, -1 );
+	INITARRAY( Jinfo, NULL );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
 ////////////////////////////////////////////////////////////////
-cJoy::~cJoy( void )
+JOY6::~JOY6( void )
 {
 	// オープンされていたらクローズする
-	for( int i=0; i < OSD_GetJoyNum(); i++ )
-		if( OSD_OpenedJoy( i ) ) OSD_CloseJoy( i );
+	for( int i=0; i < MAX_JOY; i++ )
+		if( Jinfo[i] && OSD_OpenedJoy( i ) ) OSD_CloseJoy( Jinfo[i] );
 }
 
 
@@ -26,18 +27,18 @@ cJoy::~cJoy( void )
 // 初期化
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL cJoy::Init( void )
+bool JOY6::Init( void )
 {
 	// オープンされていたらクローズする
-	for( int i=0; i < OSD_GetJoyNum(); i++ )
-		if( OSD_OpenedJoy( i ) ) OSD_CloseJoy( i );
+	for( int i=0; i < MAX_JOY; i++ )
+		if( Jinfo[i] && OSD_OpenedJoy( i ) ) OSD_CloseJoy( Jinfo[i] );
 	
 	Connect( 0, 0 );
 	Connect( 1, 1 );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -47,22 +48,23 @@ BOOL cJoy::Init( void )
 //
 // 引数:	jno		ジョイスティック番号(0-1)
 //			index	インデックス
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL cJoy::Connect( int jno, int index )
+bool JOY6::Connect( int jno, int index )
 {
-	if( jno == 0 || jno == 1 ){
-		if( index >= 0 && index < OSD_GetJoyNum() ){
-			if( !OSD_OpenedJoy( index ) ) OSD_OpenJoy( index );
-			if( OSD_OpenedJoy( index ) ){
-				JID[jno] = index;
-				return TRUE;
-			}
+	if( ( jno == 0 || jno == 1 ) && index >= 0 && index < min( OSD_GetJoyNum(), MAX_JOY ) ){
+		if( !OSD_OpenedJoy( index ) )
+			Jinfo[index] = OSD_OpenJoy( index );
+		
+		if( OSD_OpenedJoy( index ) ){
+			JID[jno] = index;
+			return true;
 		}
 		JID[jno] = -1;
+		Jinfo[index] = NULL;
 	}
 	
-	return FALSE;
+	return false;
 }
 
 
@@ -72,7 +74,7 @@ BOOL cJoy::Connect( int jno, int index )
 // 引数:	jno		ジョイスティック番号(0-1)
 // 返値:	int		インデックス
 ////////////////////////////////////////////////////////////////
-int cJoy::GetID( int jno )
+int JOY6::GetID( int jno )
 {
 	return 	( jno == 0 || jno == 1 ) ? JID[jno] : -1;
 }
@@ -92,7 +94,7 @@ int cJoy::GetID( int jno )
 //				bit1: 上
 //				bit0: 下
 ////////////////////////////////////////////////////////////////
-BYTE cJoy::GetJoyState( int jno )
+BYTE JOY6::GetJoyState( int jno )
 {
 	BYTE ret = 0;
 	
@@ -101,17 +103,17 @@ BYTE cJoy::GetJoyState( int jno )
 			int Xmove, Ymove;
 			
 			// 軸
-			Xmove = OSD_GetJoyAxis( JID[jno], 0 );
-			Ymove = OSD_GetJoyAxis( JID[jno], 1 );
+			Xmove = OSD_GetJoyAxis( Jinfo[JID[jno]], 0 );
+			Ymove = OSD_GetJoyAxis( Jinfo[JID[jno]], 1 );
 			
-			if( Xmove < -16384 ) ret |= 4;	// 左
-			if( Xmove >  16384 ) ret |= 8;	// 右
-			if( Ymove < -16384 ) ret |= 1;	// 下
-			if( Ymove >  16384 ) ret |= 2;	// 上
+			if( Xmove < INT16_MIN/2 ) ret |= 4;	// 左
+			if( Xmove > INT16_MAX/2 ) ret |= 8;	// 右
+			if( Ymove < INT16_MIN/2 ) ret |= 1;	// 下
+			if( Ymove > INT16_MAX/2 ) ret |= 2;	// 上
 			
 			// ボタン
-			for( int i=0; i < min( OSD_GetJoyNumButtons( JID[jno] ), 4 ); i++ )
-				if( OSD_GetJoyButton( JID[jno], i ) ) ret |= 0x10<<i;
+			for( int i=0; i < min( OSD_GetJoyNumButtons( Jinfo[JID[jno]] ), 4 ); i++ )
+				if( OSD_GetJoyButton( Jinfo[JID[jno]], i ) ) ret |= 0x10<<i;
 		}
 	}
 	

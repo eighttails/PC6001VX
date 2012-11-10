@@ -3,7 +3,7 @@
 #include "../config.h"
 #include "../pc6001v.h"
 
-AboutDialog::AboutDialog(cConfig* cfg, QWidget *parent) :
+AboutDialog::AboutDialog(CFG6* cfg, QWidget *parent) :
     QDialog(parent),
     config(cfg),
     ui(new Ui::AboutDialog)

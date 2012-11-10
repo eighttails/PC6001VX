@@ -15,7 +15,7 @@ win32{
 INCLUDEPATH += $$quote($$(PWD)../SDL/include/SDL) $$quote($$(PWD)../GnuWin32/include)
 LIBS += $$quote($$(PWD)../SDL/lib/libSDL.dll.a)  $$quote($$(PWD)../GnuWin32/lib/libpng.lib)
 }else{
-DEFINES += USESDLTHREAD USESDLCS USESDLCRIT USESDLSEMAPHORE USESDLTIMER
+DEFINES += USESDLTHREAD USESDLCS USESDLSEMAPHORE USESDLTIMER
 QMAKE_CXXFLAGS += $$system(sdl-config --cflags)
 LIBS += $$system(sdl-config --libs)
 }
@@ -41,7 +41,6 @@ SOURCES += \
     src/memory.cpp \
     src/movie.cpp \
     src/p6t2.cpp \
-    src/pc60.cpp \
     src/pio.cpp \
     src/psg.cpp \
     src/replay.cpp \
@@ -67,7 +66,10 @@ SOURCES += \
     src/Qt/colorbutton.cpp \
     src/Qt/aboutdialog.cpp \
     src/Qt/common.cpp \
-    src/Qt/console.cpp
+    src/Qt/console.cpp \
+    src/p6el.cpp \
+    src/p6vm.cpp \
+    src/SDL/osdSDL.cpp
 
 HEADERS  += \
     src/breakpoint.h \
@@ -94,7 +96,6 @@ HEADERS  += \
     src/osd.h \
     src/p6device.h \
     src/p6t2.h \
-    src/pc60.h \
     src/pc6001v.h \
     src/pio.h \
     src/psg.h \
@@ -106,7 +107,6 @@ HEADERS  += \
     src/tape.h \
     src/thread.h \
     src/typedef.h \
-    src/usrevent.h \
     src/vdg.h \
     src/voice.h \
     src/vsurface.h \
@@ -123,7 +123,10 @@ HEADERS  += \
     src/device/z80-tbl.h \
     src/Qt/configdialog.h \
     src/Qt/colorbutton.h \
-    src/Qt/aboutdialog.h
+    src/Qt/aboutdialog.h \
+    src/event.h \
+    src/p6el.h \
+    src/p6vm.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

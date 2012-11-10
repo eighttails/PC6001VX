@@ -12,7 +12,7 @@
 #define P6DEVICE_H_INCLUDED
 
 #include "typedef.h"
-#include "pc60.h"
+#include "p6vm.h"
 
 class P6DEVICE {
 public:

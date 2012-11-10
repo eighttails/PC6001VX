@@ -13,22 +13,14 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cNode::cNode( cNode *pn )
+cNode::cNode( cNode *pn ) : PrevNode(pn), NodeID(NODE_NONE),
+							Comment(NULL), Section(NULL), Entry(NULL), Value(NULL)
 {
-	// メンバ変数初期化
-	NodeID   = NODE_NONE;
-	
-	// 前のノード
-	PrevNode = pn;
-	// 次のノード
 	if( PrevNode ){
 		NextNode = PrevNode->GetNextNode();
 		PrevNode->SetNextNode( this );
 	}else
 		NextNode = NULL;
-	
-	Comment = Section = Entry = Value = NULL;
-	
 }
 
 
@@ -159,7 +151,7 @@ void cNode::SetMember( NodeType id, const char *str )
 ////////////////////////////////////////////////////////////////
 cIni::cIni( void )
 {
-	Ready   = FALSE;
+	Ready   = false;
 	IniNode = NULL;
 	
 	*FileName = '\0';
@@ -178,7 +170,7 @@ cIni::~cIni( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL cIni::Init( char *filename )
+bool cIni::Init( char *filename )
 {
 	char str[MAX_LINE+1];
 	FILE *fp;
@@ -190,11 +182,11 @@ BOOL cIni::Init( char *filename )
 	// 最初のノード確保(ダミー)
 	if( IniNode ) delete IniNode;
 	IniNode = node = new cNode( NULL );
-	if( !IniNode ) return FALSE;
+	if( !IniNode ) return false;
 	
 	// INIファイルを開く
 	fp = FOPENEN( FileName, "rt" );
-	if( !fp ) return FALSE;
+	if( !fp ) return false;
 	
 	// 先頭から読む
 	fseek( fp, 0, SEEK_SET );
@@ -204,7 +196,7 @@ BOOL cIni::Init( char *filename )
 		node = node->AddNode();
 		if( !node ){
 			fclose( fp );
-			return FALSE;
+			return false;
 		}
 		
 		// 先頭が';'だったらコメント行
@@ -224,25 +216,25 @@ BOOL cIni::Init( char *filename )
 	}
 	fclose( fp );
 	
-	Ready = TRUE;
+	Ready = true;
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 書込み
 ////////////////////////////////////////////////////////////////
-BOOL cIni::Write( void )
+bool cIni::Write( void )
 {
 	FILE *fp;
 	cNode *node;
 	
-	if( !Ready ) return FALSE;
+	if( !Ready ) return false;
 	
 	// INIファイルを開く
 	fp = FOPENEN( FileName, "wt" );
-	if( !fp ) return FALSE;
+	if( !fp ) return false;
 	
 	node = IniNode;
 	do{
@@ -280,55 +272,55 @@ BOOL cIni::Write( void )
 	
 	fclose( fp );
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 文字列読込み
 ////////////////////////////////////////////////////////////////
-BOOL cIni::GetString( const char *section, const char *entry, char *val, const char *def )
+bool cIni::GetString( const char *section, const char *entry, char *val, const char *def )
 {
 	cNode *node, *tnode;
-	BOOL Found  = FALSE;
+	bool Found  = false;
 	
 	// まずはデフォルト値をセット
 	strcpy( val, def );
 	
-	if( !Ready ) return FALSE;
+	if( !Ready ) return false;
 	
 	// セクションを探す
 	node = IniNode;
 	do{
 		if( node->NodeID == cNode::NODE_SECTION )
-			if( !stricmp( node->Section, section ) ) Found = TRUE;
+			if( !stricmp( node->Section, section ) ) Found = true;
 	}while( (node = node->GetNextNode()) && !Found );
 	// セクションが見つからないかエントリがなければエラー
-	if( !Found || !node ) return FALSE;
-	Found = FALSE;
+	if( !Found || !node ) return false;
+	Found = false;
 	
 	// エントリを探す
 	do{
 		tnode = node;
 		if( node->NodeID == cNode::NODE_ENTRY )
-			if( !stricmp( node->Entry, entry ) ) Found = TRUE;
+			if( !stricmp( node->Entry, entry ) ) Found = true;
 	}while( (node = node->GetNextNode()) && tnode->NodeID != cNode::NODE_SECTION && !Found  );
 	// エントリが見つからなければエラー
-	if( !Found ) return FALSE;
+	if( !Found ) return false;
 	
 	// 値を保存
 	strcpy( val, tnode->Value );
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 数値読込み
 ////////////////////////////////////////////////////////////////
-BOOL cIni::GetInt( const char *section, const char *entry, int *val, const int def )
+bool cIni::GetInt( const char *section, const char *entry, int *val, const int def )
 {
-	BOOL res;
+	bool res;
 	char str[MAX_LINE+1];
 	
 	// まずはデフォルト値をセット
@@ -344,9 +336,9 @@ BOOL cIni::GetInt( const char *section, const char *entry, int *val, const int d
 ////////////////////////////////////////////////////////////////
 // YesNo読込み
 ////////////////////////////////////////////////////////////////
-BOOL cIni::GetTruth( const char *section, const char *entry, BOOL *val, const BOOL def )
+bool cIni::GetTruth( const char *section, const char *entry, bool *val, const bool def )
 {
-	BOOL res;
+	bool res;
 	char str[MAX_LINE+1];
 	
 	// まずはデフォルト値をセット
@@ -354,12 +346,12 @@ BOOL cIni::GetTruth( const char *section, const char *entry, BOOL *val, const BO
 	
 	if( (res = GetString( section, entry, str, "" )) ){
 		if( !strcmp( str, "1" ) || !stricmp( str, "yes" ) || !stricmp( str, "on" ) || !stricmp( str, "true" ) )
-			*val = TRUE;
+			*val = true;
 		else
 		if( !strcmp( str, "0" ) || !stricmp( str, "no" ) || !stricmp( str, "off" ) || !stricmp( str, "false" ) )
-			*val = FALSE;
+			*val = false;
 		else
-			return FALSE;
+			return false;
 	}
 	return res;
 }
@@ -368,13 +360,13 @@ BOOL cIni::GetTruth( const char *section, const char *entry, BOOL *val, const BO
 ////////////////////////////////////////////////////////////////
 // エントリ追加
 ////////////////////////////////////////////////////////////////
-BOOL cIni::PutEntry( const char *section, const char *comment, const char *entry, const char *val, ... )
+bool cIni::PutEntry( const char *section, const char *comment, const char *entry, const char *val, ... )
 {
 	char rstr[MAX_LINE+1];
 	cNode *node, *tnode;
-	BOOL Found = FALSE;
+	bool Found = false;
 	
-	if( !Ready ) return FALSE;
+	if( !Ready ) return false;
 	
 	// 引数処理
 	va_list arg;
@@ -388,27 +380,27 @@ BOOL cIni::PutEntry( const char *section, const char *comment, const char *entry
 	do{
 		tnode = node;
 		if( node->NodeID == cNode::NODE_SECTION )
-			if( !stricmp( node->Section, section ) ) Found = TRUE;
+			if( !stricmp( node->Section, section ) ) Found = true;
 	}while( (node = node->GetNextNode() ) && !Found );
 	
 	// セクションが見つからなければ追加
 	if( !Found ){
 		// セクションノード追加
 		node = tnode->AddNode();
-		if( !node ) return FALSE;
+		if( !node ) return false;
 		node->SetMember( cNode::NODE_SECTION, section );
 		// エントリノード追加
 		node = node->AddNode();
-		if( !node ) return FALSE;
+		if( !node ) return false;
 	}else{
 	// セクションが見つかった場合
-		Found = FALSE;
+		Found = false;
 		
 		// エントリを探す
 		do{
 			tnode = node;
 			if( node->NodeID == cNode::NODE_ENTRY )
-				if( !stricmp( node->Entry, entry ) ) Found = TRUE;
+				if( !stricmp( node->Entry, entry ) ) Found = true;
 		}while( (node = node->GetNextNode()) && tnode->NodeID != cNode::NODE_SECTION && !Found  );
 		node = tnode;
 		// エントリが見つからなければ追加
@@ -418,7 +410,7 @@ BOOL cIni::PutEntry( const char *section, const char *comment, const char *entry
 			
 			// エントリノード追加
 			node = node->AddNode();
-			if( !node ) return FALSE;
+			if( !node ) return false;
 		}
 	}
 	
@@ -430,5 +422,5 @@ BOOL cIni::PutEntry( const char *section, const char *comment, const char *entry
 	sprintf( tstr, "%s=%s", entry, rstr );
 	node->SetMember( cNode::NODE_ENTRY, tstr );
 	
-	return TRUE;
+	return true;
 }

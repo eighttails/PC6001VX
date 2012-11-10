@@ -1,9 +1,6 @@
 #ifndef COMMON_H_INCLUDED
 #define COMMON_H_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "typedef.h"
 #include "vsurface.h"
@@ -38,7 +35,7 @@ int Sjis2P6( char *, char * );						// SJIS -> P6
 ////////////////////////////////////////////////////////////////
 // 画像ファイル操作関数
 ////////////////////////////////////////////////////////////////
-void SaveImg( char *, VSurface *, VRect * );		// Img SAVE
+bool SaveImg( char *, VSurface *, VRect * );		// Img SAVE
 VSurface *LoadImg( char * );						// Img LOAD
 
 
@@ -48,8 +45,5 @@ VSurface *LoadImg( char * );						// Img LOAD
 void RectAdd( VRect *, VRect *, VRect * );			// 矩形領域合成
 
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif	// COMMON_H_INCLUDED

@@ -16,10 +16,12 @@ public:
 	enum BPtype{ BP_NONE, BP_PC, BP_READ, BP_WRITE, BP_IN, BP_OUT, EndofBPtype };
 	
 private:
-	typedef struct{
+	struct BreakPoint {
 		BPtype Type;
 		WORD Addr;
-	} BreakPoint;
+		
+		BreakPoint() : Type(BP_NONE), Addr(0) {}
+	};
 	BreakPoint BP[NR_BP];	// ブレークポイント
 	
 	// ブレークポイントの情報
@@ -29,15 +31,15 @@ private:
 	char *BPStr;
 	
 	// ブレーク要求
-	BOOL ReqBreak;
+	bool ReqBreak;
 	int ReqBPNum;
 	
 public:
 	BPoint();
 	~BPoint();
 	
-	BOOL ExistBreakPoint();								// ブレークポイントの有無をチェック
-	BOOL CheckBreakPoint( BPtype, WORD, BYTE, char * );	// ブレークポイントをチェック
+	bool ExistBreakPoint();								// ブレークポイントの有無をチェック
+	bool CheckBreakPoint( BPtype, WORD, BYTE, char * );	// ブレークポイントをチェック
 	
 	void ClearStatus();									// ブレークポイントの情報をクリア
 	
@@ -46,7 +48,7 @@ public:
 	void SetType( int, BPtype );						// ブレークポイントのタイプを設定
 	void SetAddr( int, WORD );							// ブレークポイントのアドレスを設定
 	
-	BOOL IsReqBreak();									// ブレーク要求あり?
+	bool IsReqBreak();									// ブレーク要求あり?
 	int GetReqBPNum();									// ブレーク要求のあったブレークポイントNo.を取得
 	void ResetBreak();									// ブレーク要求キャンセル
 };

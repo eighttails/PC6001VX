@@ -8,14 +8,15 @@
 #include "osd.h"
 
 
+// バッファサイズの倍率
+#define	MULTI		(2)
+//   内部的にはサイズがMULTI倍されるが対外的には等倍のように振舞う
+//   読み書きは全領域に対して行なわれるがサイズ取得は等倍
+//   つまりオーバーフローを防止しつつレスポンスを保てる...はず
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cRing::cRing( void )
-{
-	Buffer = NULL;
-	Size = Wpt = Rpt = Num = 0;
-}
+cRing::cRing( void ) : Buffer(NULL), Size(0), Wpt(0), Rpt(0), Num(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@ cRing::cRing( void )
 ////////////////////////////////////////////////////////////////
 cRing::~cRing( void )
 {
-	if( Buffer ) delete[] Buffer;
+	if( Buffer ) delete [] Buffer;
 }
 
 
@@ -31,15 +32,15 @@ cRing::~cRing( void )
 // バッファ初期化
 //
 // 引数:	size		サンプル数
-// 返値:	BOOL		TRUE:成功 FALSE:失敗
+// 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL cRing::InitBuffer( int size )
+bool cRing::InitBuffer( int size )
 {
-	PRINTD1( SND_LOG, "[cRing][Init] Size:%d\n", size );
+	PRINTD( SND_LOG, "[cRing][Init] Size:%d\n", size );
 	
 	if( Buffer ) delete [] Buffer;
 	
-	Size = size*MULTI;	// 実際のバッファサイズはMULTI倍
+	Size = size * MULTI;	// 実際のバッファサイズはMULTI倍
 	Wpt = Rpt = Num = 0;
 	
 	try{
@@ -49,36 +50,26 @@ BOOL cRing::InitBuffer( int size )
 	// new に失敗した場合
 	catch( std::bad_alloc ){
 		Error::SetError( Error::MemAllocFailed );
-		return FALSE;
+		return false;
 	}
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 読込み
 //
-// 引数:	idx		インデックス(-1:1データ読んでポインタ進める)
-//								(0-:idxから1データ読む ポインタ進めない)
+// 引数:	なし
 // 返値:	int		データ
 ////////////////////////////////////////////////////////////////
-int cRing::Get( int idx )
+int cRing::Get( void )
 {
 	if( Num ){
-		int data = 0;
 		cCritical::Lock();
-		if( idx < 0 ){
-			data = Buffer[Rpt++];
-			if( Rpt == Size ) Rpt = 0;
-			Num--;
-		}else{
-			if( idx < Size ){
-				int pt = Rpt + idx;
-				if( pt >= Size ) pt -= Size;
-				data = Buffer[pt];
-			}
-		}
+		int data = Buffer[Rpt++];
+		if( Rpt == Size ) Rpt = 0;
+		Num--;
 		cCritical::UnLock();
 		return data;
 	}else{
@@ -91,9 +82,9 @@ int cRing::Get( int idx )
 // 書込み
 //
 // 引数:	data		データ
-// 返値:	BOOL		TRUE:成功 FALSE:失敗(バッファいっぱい)
+// 返値:	bool		true:成功 false:失敗(バッファいっぱい)
 ////////////////////////////////////////////////////////////////
-BOOL cRing::Put( int data )
+bool cRing::Put( int data )
 {
 	if( Num < Size ){
 		cCritical::Lock();
@@ -101,9 +92,9 @@ BOOL cRing::Put( int data )
 		if( Wpt == Size ) Wpt = 0;
 		Num++;
 		cCritical::UnLock();
-		return TRUE;
+		return true;
 	}else
-		return FALSE;
+		return false;
 }
 
 
@@ -148,13 +139,8 @@ int cRing::GetSize( void )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-SndDev::SndDev( void )
-{
-	SampleRate = DEFAULT_SAMPLE_RATE;
-	Volume     = 0;
-	LPF_Mem    = 0;
-	LPF_k      = 0x8000;
-}
+SndDev::SndDev( void ) : SampleRate(DEFAULT_SAMPLE_RATE),
+							Volume(0), LPF_Mem(0), LPF_fc(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -166,13 +152,13 @@ SndDev::~SndDev( void ){}
 ////////////////////////////////////////////////////////////////
 // 初期化
 // 引数:	rate	サンプリングレート
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL SndDev::Init( int rate )
+bool SndDev::Init( int rate )
 {
 	SampleRate = rate;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -184,10 +170,7 @@ BOOL SndDev::Init( int rate )
 ////////////////////////////////////////////////////////////////
 void SndDev::SetLPF( int fc )
 {
-	if( fc == 0 )
-		LPF_k = 0x8000;
-	else
-		LPF_k = (int)((2.0*M_PI*(double)fc*(double)0x8000)/(double)SampleRate);
+	LPF_fc = fc;
 }
 
 
@@ -202,7 +185,9 @@ void SndDev::SetLPF( int fc )
 ////////////////////////////////////////////////////////////////
 int SndDev::LPF( int src )
 {
-	LPF_Mem += ( ( src - LPF_Mem ) * LPF_k ) / 0x8000;
+	int lpf_k = LPF_fc ? (int)((2.0*M_PI*(double)LPF_fc*(double)0x8000)/(double)SampleRate) : 0x8000;
+	
+	LPF_Mem += ( ( src - LPF_Mem ) * lpf_k ) / 0x8000;
 	return LPF_Mem;
 }
 
@@ -210,13 +195,31 @@ int SndDev::LPF( int src )
 ////////////////////////////////////////////////////////////////
 // 読込み(オーバーライド)
 //
-// 引数:	idx		インデックス(-1:1データ読んでポインタ進める)
-//								(0-:idxから1データ読む ポインタ進めない)
+// 引数:	なし
 // 返値:	int		データ
 ////////////////////////////////////////////////////////////////
-int SndDev::Get( int idx )
+int SndDev::Get( void )
 {
-	return LPF( cRing::Get( idx ) );
+	return LPF( this->cRing::Get() );
+}
+
+
+////////////////////////////////////////////////////////////////
+// サンプリングレート設定
+//
+// 引数:	rate	サンプリングレート
+//			size	バッファサイズ
+// 返値:	bool	true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool SndDev::SetSampleRate( int rate, int size )
+{
+	if( SampleRate == rate ) return false;
+	
+	SampleRate = rate;
+	
+	if( !InitBuffer( size ) ) return false;
+	
+	return true;
 }
 
 
@@ -247,11 +250,10 @@ int SndDev::SoundUpdate( int samples )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-SND6::SND6( void )
+SND6::SND6( void ) : Volume(DEFAULT_MASTERVOL), SampleRate(DEFAULT_SAMPLE_RATE), BSize(SOUND_BUFFER_SIZE),
+						CbFunc(NULL), CbData(NULL)
 {
-	for( int i=0; i<MAXSTREAM; i++ ) RB[i] = NULL;
-	Volume     = DEFAULT_MASTERVOL;
-	SampleRale = DEFAULT_SAMPLE_RATE;
+	INITARRAY( RB, NULL );
 }
 
 
@@ -269,13 +271,13 @@ SND6::~SND6( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 //
-// 引数:	p6			自分自身へのオブジェクトポインタ
+// 引数:	cbdata		コールバック関数に渡すデータ
 //			callback	コールバック関数へのポインタ
 //			rate		サンプリングレート
 //			size		バッファサイズ(倍率)
-// 返値:	BOOL		TRUE:成功 FALSE:失敗
+// 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL SND6::Init( void *p6, void (*callback)(void *, BYTE *, int ), int rate, int size )
+bool SND6::Init( void *cbdata, void (*callback)(void *, BYTE *, int ), int rate, int size )
 {
 	PRINTD( SND_LOG, "[SND6][Init]\n" );
 	
@@ -285,17 +287,20 @@ BOOL SND6::Init( void *p6, void (*callback)(void *, BYTE *, int ), int rate, int
 	int samples = rate * size / VSYNC_HZ;
 	
 	// バッファ初期化
-	if( !cRing::InitBuffer( samples ) ) return FALSE;
+	if( !this->cRing::InitBuffer( samples ) ) return false;
 	
 	// オーディオデバイスを開く
-	if( !OSD_OpenAudio( p6, callback, rate, samples ) ) return FALSE;
+	if( !OSD_OpenAudio( cbdata, callback, rate, samples ) ) return false;
 	
-	SampleRale = rate;
+	CbData     = cbdata;
+	CbFunc     = callback;
+	SampleRate = rate;
+	BSize      = size;
 	
-	PRINTD1( SND_LOG, " SampleRate : %d\n", rate );
-	PRINTD1( SND_LOG, " BufferSize : %d\n", samples );
+	PRINTD( SND_LOG, " SampleRate : %d\n", rate );
+	PRINTD( SND_LOG, " BufferSize : %d\n", samples );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -303,24 +308,27 @@ BOOL SND6::Init( void *p6, void (*callback)(void *, BYTE *, int ), int rate, int
 // ストリーム接続
 //
 // 引数:	SndDev *	バッファポインタ
-// 返値:	BOOL		TRUE:成功 FALSE:失敗
+// 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL SND6::ConnectStream( SndDev *buf )
+bool SND6::ConnectStream( SndDev *buf )
 {
 	PRINTD( SND_LOG, "[SND6][ConnectStream]\n" );
 	
-	if( !buf ) return FALSE;
+	if( !buf ) return false;
+	
+	// バッファサイズ(サンプル数)
+	int samples = SampleRate * BSize / VSYNC_HZ;
 	
 	for( int i=0; i<MAXSTREAM; i++ ){
 		if( !RB[i] ){
 			// バッファ初期化
-			if( !buf->InitBuffer( SampleRale ) ) return FALSE;
+			if( !buf->InitBuffer( samples ) ) return false;
 			RB[i] = buf;
-			return TRUE;
+			return true;
 		}
 	}
 	
-	return FALSE;
+	return false;
 }
 
 
@@ -353,6 +361,38 @@ void SND6::Pause( void )
 
 
 ////////////////////////////////////////////////////////////////
+// サンプリングレート設定
+//
+// 引数:	rate	サンプリングレート
+// 返値:	bool	true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool SND6::SetSampleRate( int rate )
+{
+//	if( SampleRate == rate ) return false;
+	
+	SampleRate = rate;
+	
+	bool pflag = OSD_AudioPlaying();
+	OSD_CloseAudio();
+	
+	// バッファサイズ(サンプル数)
+	int samples = rate * BSize / VSYNC_HZ;
+	
+	// バッファ初期化
+	if( !this->cRing::InitBuffer( samples ) ) return false;
+	
+	for( int i=0; i<MAXSTREAM; i++ )
+		if( RB[i] && !RB[i]->SetSampleRate( rate, samples ) ) return false;
+	
+	// オーディオデバイスを開く
+	if( !OSD_OpenAudio( CbData, CbFunc, rate, samples ) ) return false;
+	if( pflag ) Play();
+	
+	return true;
+}
+
+
+////////////////////////////////////////////////////////////////
 // サンプリングレート取得
 //
 // 引数:	なし
@@ -360,7 +400,7 @@ void SND6::Pause( void )
 ////////////////////////////////////////////////////////////////
 int SND6::GetSampleRate( void )
 {
-	return SampleRale;
+	return SampleRate;
 }
 
 
@@ -387,7 +427,7 @@ int SND6::PreUpdate( int samples, cRing *exbuf )
 {
 	int exsam = 0;
 	
-	PRINTD3( SND_LOG,"PreUpdate %d %d %d \n", RB[0]->ReadySize(), RB[1]->ReadySize(), RB[2]->ReadySize() );
+	PRINTD( SND_LOG,"PreUpdate %d %d %d \n", RB[0]->ReadySize(), RB[1]->ReadySize(), RB[2]->ReadySize() );
 	
 	for( int i=0; i<MAXSTREAM; i++ )
 		if( RB[i] ) exsam = min( max( exsam, RB[i]->ReadySize() ), samples );
@@ -398,11 +438,11 @@ int SND6::PreUpdate( int samples, cRing *exbuf )
 			if( RB[j] ) dat += RB[j]->Get();
 		
 		dat = ( dat * Volume ) / 100;
-		dat = min( max( dat, -32768 ), 32767 );
+		dat = min( max( dat, INT16_MIN ), INT16_MAX );
 		
-		cRing::Put( (signed short)dat );
+		this->cRing::Put( (int16_t)dat );
 		// 外部バッファが存在すれば書込み
-		if( exbuf ) exbuf->Put( (signed short)dat );
+		if( exbuf ) exbuf->Put( (int16_t)dat );
 	}
 	
 	return exsam;
@@ -418,11 +458,11 @@ int SND6::PreUpdate( int samples, cRing *exbuf )
 ////////////////////////////////////////////////////////////////
 void SND6::Update( BYTE *stream, int samples )
 {
-	signed short *str = (signed short *)stream;
+	int16_t *str = (int16_t *)stream;
 	
-	PRINTD3( SND_LOG, "[SND6][Update] Stream:%08X Samples:%d / %d\n", (int)stream, samples, cRing::ReadySize() );
+	PRINTD( SND_LOG, "[SND6][Update] Stream:%p Samples:%d / %d\n", stream, samples, this->cRing::ReadySize() );
 	
 	for( int i=0; i<samples; i++ ){
-		*(str++) = (signed short)cRing::Get();
+		*(str++) = (int16_t)this->cRing::Get();
 	}
 }

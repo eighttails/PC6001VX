@@ -15,6 +15,7 @@
 class PSG6 : public P6DEVICE, public Device, public cAY8910, public SndDev, public IDoko {
 private:
 	BYTE JoyNo;							// 読取るジョイスティックの番号(0-1)
+	int Clock;							// クロック
 	
 	// ポートアクセス関数
 	BYTE PortAread();
@@ -41,7 +42,9 @@ public:
 	
 	void EventCallback( int, int );		// イベントコールバック関数
 	
-	BOOL Init( int, int );				// 初期化
+	bool Init( int, int );				// 初期化
+	
+	bool SetSampleRate( int, int );		// サンプリングレート設定
 	
 	int SoundUpdate( int );				// ストリーム更新
 	
@@ -50,8 +53,8 @@ public:
 	enum IDIn {  inA2H=0 };
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

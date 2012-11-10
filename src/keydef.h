@@ -249,6 +249,26 @@ typedef enum {
 	KVC_LAST
 } PCKEYsym;
 
+// 仮想キーモディファイア定義
+typedef enum {
+	KVM_NONE	= 0x0000,
+	KVM_LSHIFT	= 0x0001,
+	KVM_RSHIFT	= 0x0002,
+	KVM_LCTRL	= 0x0040,
+	KVM_RCTRL	= 0x0080,
+	KVM_LALT	= 0x0100,
+	KVM_RALT	= 0x0200,
+	KVM_LMETA	= 0x0400,
+	KVM_RMETA	= 0x0800,
+	KVM_NUM		= 0x1000,
+	KVM_CAPS	= 0x2000,
+	KVM_MODE	= 0x4000,
+} PCKEYmod;
+
+#define KVM_CTRL	(KVM_LCTRL|KVM_RCTRL)
+#define KVM_SHIFT	(KVM_LSHIFT|KVM_RSHIFT)
+#define KVM_ALT		(KVM_LALT|KVM_RALT)
+#define KVM_META	(KVM_LMETA|KVM_RMETA)
 
 // 仮想キーコード -> P6キーコード定義
 typedef struct {
@@ -269,6 +289,15 @@ typedef struct {
 	P6KEYsym P6Key;		// P6キーコード
 	const char *Name;	// キー名
 } P6KeyName;
+// マウスボタン定義
+typedef enum {
+	MBT_NONE		= 0,
+	MBT_LEFT		= 1,
+	MBT_MIDDLE		= 2,
+	MBT_RIGHT		= 3,
+	MBT_WHEELUP		= 4,
+	MBT_WHEELDOWN	= 5
+} MouseButton;
 
 
 #endif	// KEYDEF_H_INCLUDED

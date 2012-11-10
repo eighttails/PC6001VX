@@ -1,6 +1,9 @@
 #ifndef TYPEDEF_H_INCLUDED
 #define TYPEDEF_H_INCLUDED
 
+#define __STDC_LIMIT_MACROS
+
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
@@ -8,24 +11,30 @@
 /////////////////////////////////////////////////////////////////////////////
 // 型,定数定義
 /////////////////////////////////////////////////////////////////////////////
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64)
 #include <windows.h>
 #else
-#include <stdint.h>
-typedef bool BOOL;
-typedef unsigned char BYTE;
+typedef uint8_t BYTE;
 typedef uint16_t WORD;
 typedef uint32_t DWORD;
 #endif
 
-#ifndef FALSE
-#define FALSE		false
-#endif
+// OSD関連オブジェクトへのポインタ
+// 面倒なのでとりあえず何でもvoid *
+typedef void *HTHREAD;				// スレッド
+typedef void *HCRSECT;				// クリティカルセクション
+typedef void *HSEMAPHORE;			// セマフォ
+typedef void *HTIMERID;				// タイマID
+typedef void *HWINDOW;				// ウィンドウハンドル的な
+typedef void *HJOYINFO;				// ジョイスティック
 
-#ifndef TRUE
-#define TRUE		true
-#endif
+// OSD関連コールバック関数へのポインタ
+typedef void (*CBF_SND)( void *, BYTE *, int );	// サウンドストリーム
+typedef DWORD (*CBF_TMR)( DWORD, void * );		// タイマ
 
+/////////////////////////////////////////////////////////////////////////////
+// 定数など
+/////////////////////////////////////////////////////////////////////////////
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
 #endif
@@ -33,6 +42,10 @@ typedef uint32_t DWORD;
 
 #ifndef PATH_MAX
 #define	PATH_MAX	260
+#endif
+
+#ifndef MAX_PATH
+#define MAX_PATH PATH_MAX
 #endif
 
 #ifndef LIL_ENDIAN
@@ -55,48 +68,6 @@ typedef uint32_t DWORD;
 #endif
 
 
-typedef struct {
-	BYTE r;
-	BYTE g;
-	BYTE b;
-	BYTE reserved;
-} COLOR24;
-
-
-// CriticalSection変数型定義
-//#define	USESDLCS
-#ifdef USESDLCS
-#include <SDL.h>
-typedef SDL_mutex* CRITSECT;
-#else
-#ifdef WIN32
-typedef CRITICAL_SECTION CRITSECT;
-#endif
-#endif
-
-
-// Semaphore変数型定義
-//#define	USESDLSEMAPHORE
-#ifdef USESDLSEMAPHORE
-#include <SDL.h>
-typedef SDL_sem* HSEMAPHORE;
-#else
-#ifdef WIN32
-typedef HANDLE HSEMAPHORE;
-#endif
-#endif
-
-
-// ThreadHandle変数型定義
-//#define	USESDLTHREAD
-#ifdef USESDLTHREAD
-#include <SDL.h>
-typedef SDL_Thread* HTHREAD;
-#else
-#ifdef WIN32
-typedef HANDLE HTHREAD;
-#endif
-#endif
 
 
 
@@ -106,6 +77,7 @@ typedef HANDLE HTHREAD;
 // 汎用マクロ
 /////////////////////////////////////////////////////////////////////////////
 #define STATIC_CAST(t, o)	static_cast<t> (o)
+#define CONST_CAST(t, o)	const_cast<t> (o)
 
 #define FGETBYTE(fp)		((BYTE)fgetc(fp))
 #define FGETWORD(fp)		((WORD)(((BYTE)fgetc(fp))|((BYTE)fgetc(fp)<<8)))
@@ -134,6 +106,7 @@ typedef HANDLE HTHREAD;
 
 #define	COUNTOF(arr)		(int)(sizeof(arr)/sizeof((arr)[0]))
 
+#define INITARRAY(arr,val)	{for(int i=0; i<COUNTOF(arr); i++) arr[i] = val;}
 #ifndef ZeroMemory
 #define ZeroMemory(d,l)	memset((d), 0, (l))
 #endif
@@ -149,9 +122,8 @@ typedef HANDLE HTHREAD;
 #ifdef __APPLE__
 #define FOPENEN(a,b)	fopen(Sjis2UTF8(a),b)
 #else
-#define FOPENEN(a,b)	fopen(UTF8toLocal(a),b)
+#define FOPENEN(a,b)	fopen(a,b)
 #endif
 
-#define INITARRAY(array,val) for (int i=0; i<(sizeof(array)/sizeof(array[0])); i++) array[i] = val;
 
 #endif	// TYPEDEF_H_INCLUDED

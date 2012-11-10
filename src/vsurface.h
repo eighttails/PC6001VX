@@ -3,7 +3,6 @@
 
 #include "typedef.h"
 
-
 // サーフェスの仕様
 //  色深度は8,16,24bit
 //  8bitの時のみパレットを持つ
@@ -11,17 +10,27 @@
 //  最大サイズは65536x65536
 
 
+struct COLOR24 {
+	BYTE r;
+	BYTE g;
+	BYTE b;
+	BYTE reserved;
+};
+
 // 矩形領域構造体
 struct VRect{
 	int x, y;		// 描画領域座標
 	int w, h;		// 描画領域サイズ
-        VRect(): x(0), y(0), w(0), h(0){}
-} ;
+	
+	VRect() : x(0), y(0), w(0), h(0) {}
+};
 
-typedef struct{
-  int ncols;
-  COLOR24 *colors;
-} VPalette;
+struct VPalette{
+	int ncols;
+	COLOR24 *colors;
+	
+	VPalette() : ncols(0), colors(NULL) {}
+};
 
 
 ////////////////////////////////////////////////////////////////
@@ -45,7 +54,7 @@ public:
 	VSurface();									// コンストラクタ
 	virtual ~VSurface();						// デストラクタ
 	
-	virtual BOOL InitSurface( int, int, int );	// 初期化(サーフェスサイズ指定)
+	virtual bool InitSurface( int, int, int );	// 初期化(サーフェスサイズ指定)
 	void SetRect( int, int, int, int );			// 描画領域設定
 	VRect *GetRect();							// 描画領域取得
 	int SetPalette( COLOR24 *, int = 256 );		// パレット設定

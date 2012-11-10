@@ -2,7 +2,6 @@
 #define CPUM_H_INCLUDED
 
 #include "typedef.h"
-#include "ini.h"
 #include "p6device.h"
 #include "device/z80.h"
 
@@ -28,11 +27,11 @@ public:
 	CPU6( VM6 *, const P6ID& );		// コンストラクタ
 	~CPU6();						// デストラクタ
 	
-	BOOL IsBUSREQ();				// BUSREQ取得
+	bool IsBUSREQ();				// BUSREQ取得
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

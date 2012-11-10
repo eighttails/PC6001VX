@@ -10,11 +10,11 @@
 class cD88 {
 private:
 	// D88 セクタ情報構造体
-	typedef struct{
+	struct D88SECTOR {
 		BYTE c;				// ID の C (シリンダNo 片面の場合は=トラックNo)
 		BYTE h;				// ID の H (ヘッダアドレス 片面の場合は=0)
 		BYTE r;				// ID の R (トラック内のセクタNo)
-		BYTE n;				// ID の N (セクタサイズ 0:256 1:256 2:512 3:1024)
+		BYTE n;				// ID の N (セクタサイズ 0:128 1:256 2:512 3:1024)
 		WORD sec_nr;		// このトラック内に存在するセクタの数
 		BYTE density;		// 記録密度     0x00:倍密度   0x40:単密度
 		BYTE deleted;		// DELETED MARK 0x00:ノーマル 0x10:DELETED
@@ -23,10 +23,17 @@ private:
 		WORD size;			// このセクタ部のデータサイズ
 		DWORD data;			// データへのオフセット
 		WORD offset;		// 次に読込むデータのセクタ先頭からのオフセット
-	} D88SECTOR;
+		WORD secno;			// アクセス中のセクタNo
+		
+		D88SECTOR() : c(0), h(0), r(0), n(0), sec_nr(0), density(0), deleted(0),
+						status(0), size(0), data(0), offset(0), secno(0)
+		{
+			INITARRAY( reserve, 0 );
+		}
+	};
 	
 	// D88 情報構造体
-	typedef struct{
+	struct D88INFO {
 		BYTE name[17];		// ディスクの名前(ASCII + '\0')
 		BYTE reserve[9];	// リザーブ
 		BYTE protect;		// ライトプロテクト  0x00:なし 0x10:あり
@@ -35,30 +42,46 @@ private:
 		DWORD table[164];	// トラック部のオフセットテーブル(Track 0-163)
 		D88SECTOR secinfo;	// セクタ情報
 		FILE *fp;			// FILE ポインタ
-	} D88INFO;
+		int trkno;			// アクセス中のトラックNo
+		
+		D88INFO() : protect(0), type(0), size(0), fp(NULL), trkno(0)
+		{
+			INITARRAY( name, 0 );
+			INITARRAY( reserve, 0 );
+			INITARRAY( table, 0 );
+		}
+	};
 	
-	D88INFO d88;				// D88 情報
-	char FileName[PATH_MAX];	// ファイル名バッファ
+	D88INFO d88;					// D88 情報
+	char FileName[PATH_MAX];		// ファイル名バッファ
 	
-	BOOL Protected;				// プロテクトシール
+	bool Protected;					// プロテクトシール
 	
-	void ReadHeader88();		// D88 ヘッダ読込み
-	void ReadSector88();		// D88 セクタ情報読込み
+	void ReadHeader88();			// D88 ヘッダ読込み
+	void ReadSector88();			// D88 セクタ情報読込み
 	
 public:
-	cD88();						// コンストラクタ
-	~cD88();					// デストラクタ
+	cD88();							// コンストラクタ
+	~cD88();						// デストラクタ
 	
-	BOOL Init( char * );		// 初期化
+	bool Init( char * );			// 初期化
 	
-	BYTE Getc88();				// 1byte 読込み
-	BOOL Putc88( BYTE );		// 1byte 書込み
-	BOOL Seek88( int, int );	// シーク
-	DWORD GetCHRN();			// 現在のCHRN取得
+	BYTE Get8();					// 1byte 読込み
+	bool Put8( BYTE );				// 1byte 書込み
+	bool Seek( int, int = -1 );		// シーク
+	bool SearchSector( BYTE, BYTE, BYTE, BYTE );	// セクタを探す
 	
-	char *GetFileName();		// ファイル名取得
-	char *GetDiskImgName();		// DISKイメージ名取得
-	BOOL IsProtect();			// プロテクトシール状態取得
+	void GetID( BYTE *, BYTE *, BYTE *, BYTE * );	// 現在のCHRN取得
+	WORD GetSecSize();				// 現在のセクタサイズ取得
+	BYTE GetSecStatus();			// 現在のステータス取得
+	
+	char *GetFileName();			// ファイル名取得
+	char *GetDiskImgName();			// DISKイメージ名取得
+	bool IsProtect();				// プロテクトシール状態取得
+	
+	BYTE Track();					// 現在のトラック番号取得
+	BYTE Sector();					// 現在のセクタ番号取得
+	WORD SecNum();					// 現在のトラック内に存在するセクタ数取得
 };
 
 #endif	// D88_H_INCLUDED

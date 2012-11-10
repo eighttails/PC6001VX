@@ -40,12 +40,12 @@ class INT6 : public P6DEVICE, public IDoko {
 protected:
 	DWORD IntrFlag;			// 割込み要求フラグ
 	
-	BOOL TimerIntrEnable;	// タイマ割込み許可フラグ
+	bool TimerIntrEnable;	// タイマ割込み許可フラグ
 	BYTE TimerAddr;			// タイマ割込みアドレス
 	BYTE TimerCntUp;		// タイマ割込みカウントアップ値
 	
 	void SetTimerIntrHz( BYTE );			// タイマ割込み周波数設定
-	virtual BOOL IsTimerIntrEnable() = 0;	// タイマ割込み許可チェック
+	virtual bool IsTimerIntrEnable();		// タイマ割込み許可チェック
 	
 public:
 	INT6( VM6 *, const P6ID& );				// コンストラクタ
@@ -61,16 +61,14 @@ public:
 	void CancelIntr( DWORD );				// 割込み撤回
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 
 
 class INT60 : public INT6, public Device {
 private:
-	BOOL IsTimerIntrEnable(){ return TimerIntrEnable; }	// タイマ割込み許可チェック
-	
 	// デバイス定義
 	static const Descriptor descriptor;
 	static const InFuncPtr  indef[];
@@ -94,16 +92,16 @@ public:
 
 class INT62 : public INT6, public Device {
 private:
-	BOOL TimerIntrEnable2;	// タイマ割込み許可フラグ(PortF3H mk2以降)
-	BOOL Int1IntrEnable;	// INT1割込み許可フラグ
-	BOOL Int2IntrEnable;	// INT2割込み許可フラグ
-	BOOL Int1AddrOutput;	// INT1割込みアドレス出力フラグ
-	BOOL Int2AddrOutput;	// INT2割込みアドレス出力フラグ
+	bool TimerIntrEnable2;	// タイマ割込み許可フラグ(PortF3H mk2以降)
+	bool Int1IntrEnable;	// INT1割込み許可フラグ
+	bool Int2IntrEnable;	// INT2割込み許可フラグ
+	bool Int1AddrOutput;	// INT1割込みアドレス出力フラグ
+	bool Int2AddrOutput;	// INT2割込みアドレス出力フラグ
 	
 	BYTE Int1Addr;			// INT1割込みアドレス
 	BYTE Int2Addr;			// INT2割込みアドレス
 	
-	BOOL IsTimerIntrEnable();				// タイマ割込み許可チェック
+	bool IsTimerIntrEnable();				// タイマ割込み許可チェック
 	void SetIntrEnable( BYTE );				// 割込み許可フラグ設定
 	
 	// デバイス定義
@@ -136,8 +134,8 @@ public:
 	enum IDIn {  inF3H=0,  inF4H,  inF5H,  inF6H,  inF7H };
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

@@ -40,7 +40,7 @@ public:
 	JFont();									// コンストラクタ
 	~JFont();									// デストラクタ
 	
-	static BOOL OpenFont( char *, char * );		// ファイルファイルを開く
+	static bool OpenFont( char *, char * );		// ファイルファイルを開く
 	static void CloseFont();					// フォントを破棄する
 	
 	static int FontWidth(){ return hWidth; }	// フォントの幅取得(半角)
@@ -67,8 +67,8 @@ public:
 	ZCons();									// コンストラクタ
 	virtual ~ZCons();							// デストラクタ
 	
-	BOOL Init   ( int, int, const char *, int = FC_WHITE, int = FC_BLACK );	// 初期化(文字数でサイズ指定)
-	BOOL InitRes( int, int, const char *, int = FC_WHITE, int = FC_BLACK );	// 初期化(解像度でサイズ指定)
+	bool Init   ( int, int, const char *, int = FC_WHITE, int = FC_BLACK );	// 初期化(文字数でサイズ指定)
+	bool InitRes( int, int, const char *, int = FC_WHITE, int = FC_BLACK );	// 初期化(解像度でサイズ指定)
 	
 	void Locate( int, int );					// カーソル位置設定
 	void LocateR( int, int );					// カーソル位置設定(相対座標)

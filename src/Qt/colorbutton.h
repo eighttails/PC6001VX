@@ -2,8 +2,8 @@
 #define COLORBUTTON_H
 
 #include <QPushButton>
-#include "../typedef.h"
-class cConfig;
+#include "../vsurface.h"
+class CFG6;
 
 // 色選択用のボタン
 class ColorButton : public QPushButton
@@ -16,7 +16,7 @@ signals:
 
 public slots:
 public:
-    void initialize(int id, cConfig* cfg);
+    void initialize(int id, CFG6* cfg);
     // ボタンサイズは30x20を基準とする
     virtual QSize sizeHint () const {return QSize (30, 20);}
 
@@ -28,7 +28,7 @@ private slots:
 private:
     void updateColor();
     int colorId;
-    cConfig* config;
+    CFG6* config;
     COLOR24 color;
 };
 

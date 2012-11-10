@@ -1,3 +1,4 @@
+#include "p6el.h"
 #include "pc6001v.h"
 #include "log.h"
 #include "tape.h"
@@ -49,14 +50,11 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-CMTL::CMTL( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id)
+CMTL::CMTL( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id),
+	p6t(NULL), Relay(false), Boost(DEFAULT_BOOST),
+	MaxBoost60(DEFAULT_MAXBOOST60), MaxBoost62(DEFAULT_MAXBOOST62)
 {
-	*FilePath  = '\0';
-	p6t        = NULL;
-	Relay      = FALSE;
-	Boost      = DEFAULT_BOOST;
-	MaxBoost60 = DEFAULT_MAXBOOST60;
-	MaxBoost62 = DEFAULT_MAXBOOST62;
+	INITARRAY( FilePath, '\0' );
 }
 
 
@@ -97,9 +95,9 @@ void CMTL::EventCallback( int id, int clock )
 ////////////////////////////////////////////////////////////////
 // リモート制御(PLAY,STOP)
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::Remote( BOOL relay )
+bool CMTL::Remote( bool relay )
 {
-    PRINTD1( TAPE_LOG, "[TAPE][Relay] -> %s\n", relay ? "TRUE" : "FALSE" );
+    PRINTD( TAPE_LOG, "[TAPE][Relay] -> %s\n", relay ? "true" : "false" );
 	
 	// リレーの状態を保存
 	Relay = relay;
@@ -113,18 +111,18 @@ BOOL CMTL::Remote( BOOL relay )
 		
 		if( IsMount() ) p6t->SetBoost( bst );
 		
-		if( !vm->sche->Add( this, EID_TAPE, DEFAULT_CMT_HZ * bst, EV_LOOP|EV_HZ ) ) return FALSE;
+		if( !vm->evsc->Add( this, EID_TAPE, DEFAULT_CMT_HZ * bst, EV_LOOP|EV_HZ ) ) return false;
 	}else{			// OFF
-		if( !vm->sche->Del( this, EID_TAPE ) ) return FALSE;
+		if( !vm->evsc->Del( this, EID_TAPE ) ) return false;
 	}
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::Init( int srate )
+bool CMTL::Init( int srate )
 {
 	// P6T情報 領域初期化(リセット時には無効)
 	p6t = NULL;
@@ -191,7 +189,7 @@ void CMTL::SetAutoStart( int model )
 		memcpy( &buf[strlen(buf)], p6t->GetAutoStartStr(), p6t->GetAutoStartLen() );
 		
 		// 自動キー入力設定
-		if( vm->SetAutoKey( buf, strlen(buf) ) );
+		if( vm->el->SetAutoKey( buf, strlen(buf) ) );
 	}
 }
 
@@ -199,9 +197,9 @@ void CMTL::SetAutoStart( int model )
 ////////////////////////////////////////////////////////////////
 // TAPEマウント
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::Mount( char *filename )
+bool CMTL::Mount( char *filename )
 {
-	PRINTD1( TAPE_LOG, "[TAPE][Mount] %s\n", filename  );
+	PRINTD( TAPE_LOG, "[TAPE][Mount] %s\n", filename  );
 	
 	// もしマウント済みであればアンマウントする
 	if( p6t ){
@@ -211,19 +209,19 @@ BOOL CMTL::Mount( char *filename )
 	
 	// P6T確保
 	p6t = new cP6T;
-	if( !p6t ) return FALSE;
+	if( !p6t ) return false;
 	
 	// ファイルから読込み
 	if( !p6t->Readf( filename ) ){
 		delete p6t;
 		p6t = NULL;
-		return FALSE;
+		return false;
 	}
 	
 	// ファイルパス保存
 	strncpy( FilePath, filename, PATH_MAX );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -275,20 +273,20 @@ WORD CMTL::CmtRead( void )
 ////////////////////////////////////////////////////////////////
 // マウント済み?
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::IsMount( void )
+bool CMTL::IsMount( void )
 {
-	if( p6t ) return TRUE;
-	else      return FALSE;
+	if( p6t ) return true;
+	else      return false;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // オートスタート?
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::IsAutoStart( void )
+bool CMTL::IsAutoStart( void )
 {
 	if( p6t ) return p6t->GetStart();
-	else      return FALSE;
+	else      return false;
 }
 
 
@@ -334,7 +332,7 @@ int CMTL::GetCount( void )
 ////////////////////////////////////////////////////////////////
 // リレーの状態取得
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::IsRelay( void )
+bool CMTL::IsRelay( void )
 {
 	return Relay;
 }
@@ -343,14 +341,14 @@ BOOL CMTL::IsRelay( void )
 ////////////////////////////////////////////////////////////////
 // BoostUp設定
 ////////////////////////////////////////////////////////////////
-void CMTL::SetBoost( BOOL boost )
+void CMTL::SetBoost( bool boost )
 {
 	if( Boost != boost ){
 		Boost = boost;
 		// リレーONだったら一旦止めて再開
 		if( Relay ){
-			Remote( FALSE );
-			Remote( TRUE );
+			Remote( false );
+			Remote( true );
 		}
 	}
 }
@@ -369,14 +367,14 @@ void CMTL::SetMaxBoost( int max60, int max62 )
 ////////////////////////////////////////////////////////////////
 // BoostUp状態取得
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::IsBoostUp( void )
+bool CMTL::IsBoostUp( void )
 {
 	return Boost;
 }
 
 
 ////////////////////////////////////////////////////////////////
-// ストリーム更新
+// ストリーム更新(1byte分)
 ////////////////////////////////////////////////////////////////
 WORD CMTL::Update( void )
 {
@@ -387,7 +385,7 @@ WORD CMTL::Update( void )
 	// TAPEイメージオープン?
 	if( p6t ){
 		// 1byte分のデータを作る 10ms(基本)
-		int length = GetSampleRate() / DEFAULT_CMT_HZ;
+		int length = SndDev::SampleRate / DEFAULT_CMT_HZ;
 		int bdata;
 		
 		rd = CmtRead();		// CMT 1文字読込み
@@ -432,6 +430,37 @@ WORD CMTL::Update( void )
 
 
 ////////////////////////////////////////////////////////////////
+// ストリーム更新
+//
+// 引数:	samples	更新サンプル数(-1:残りバッファ全て 0:処理クロック分)
+// 返値:	int		更新サンプル数
+////////////////////////////////////////////////////////////////
+int CMTL::SoundUpdate( int samples )
+{
+	PRINTD( TAPE_LOG, "[TAPE][SoundUpdate] Samples: %d(%d)", samples, SndDev::cRing::FreeSize() );
+	
+	int length = 0;
+	
+	if( samples == 0 ){
+		// あとで
+	}else if( samples > 0 ) length = min( samples - SndDev::cRing::ReadySize(), SndDev::cRing::FreeSize() );
+	else                    length = SndDev::cRing::FreeSize();
+	
+	PRINTD( TAPE_LOG, " -> %d\n", length );
+	
+	if( !length ) return 0;
+	
+	
+	for( int i=0; i<length; i++ ){
+		// バッファに書込み
+		SndDev::cRing::Put( Relay ? GetSinCurve( PG_HI ) : 0 );	// 手抜き
+	}
+	
+	return length;
+}
+
+
+////////////////////////////////////////////////////////////////
 // sin波取得
 ////////////////////////////////////////////////////////////////
 int CMTL::GetSinCurve( int fq )
@@ -446,7 +475,7 @@ int CMTL::GetSinCurve( int fq )
 	
 	// サンプリングレートと周波数で間引きの間隔を決める
 	// データテーブルは44100Hz,1200Hzの数値
-	n += (fq == PG_HI ? 2:1 ) * 44100 / GetSampleRate();
+	n += (fq == PG_HI ? 2:1 ) * 44100 / SndDev::SampleRate;
 	
 	// テーブルサイズは72(sizeof(sinc))
 	if( n >= (int)(sizeof(sinc)/sizeof(int)) ) n -= (int)(sizeof(sinc)/sizeof(int));
@@ -457,25 +486,14 @@ int CMTL::GetSinCurve( int fq )
 }
 
 
-////////////////////////////////////////////////////////////////
-// サンプリングレート取得
-////////////////////////////////////////////////////////////////
-int CMTL::GetSampleRate( void )
-{
-	return vm->snd->GetSampleRate();
-}
-
-
 
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-CMTS::CMTS( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
+CMTS::CMTS( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), fp(NULL), Baud(1200)
 {
-	fp   = NULL;
-	Baud = 1200;
-        *FilePath = NULL;
+	INITARRAY( FilePath, '\0' );
 }
 
 
@@ -491,27 +509,27 @@ CMTS::~CMTS( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL CMTS::Init( char *filename )
+bool CMTS::Init( char *filename )
 {
 	if( *filename ){
 		// ファイルパス保存
 		strncpy( FilePath, filename, PATH_MAX );
 	}
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // TAPEマウント
 ////////////////////////////////////////////////////////////////
-BOOL CMTS::Mount( void )
+bool CMTS::Mount( void )
 {
 	if( fp ) fclose( fp );
 	
 	fp = FOPENEN( FilePath, "wb" );
 	
-	if( fp ) return TRUE;
-	else     return FALSE;
+	if( fp ) return true;
+	else     return false;
 }
 
 
@@ -585,33 +603,33 @@ void CMTS::CmtWrite( BYTE data )
 ////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
-void CMTL::OutB0H( int, BYTE data ){ Remote( data&0x08 ? TRUE : FALSE ); }
+void CMTL::OutB0H( int, BYTE data ){ Remote( data&0x08 ? true : false ); }
 
 
 ////////////////////////////////////////////////////////////////
 // どこでもSAVE
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::DokoSave( cIni *Ini )
+bool CMTL::DokoSave( cIni *Ini )
 {
 	cSche::evinfo e;
 	char stren[16];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "TAPE", NULL, "Relay",	"%s",	Relay ? "Yes" : "No" );
 	Ini->PutEntry( "TAPE", NULL, "BoostUp",	"%s",	Boost ? "Yes" : "No" );
 	
 	// イベント
 	e.id = EID_TAPE;
-	if( vm->sche->GetEvinfo( &e ) ){
+	if( vm->evsc->GetEvinfo( &e ) ){
 		sprintf( stren, "Event%08X", e.id );
 		Ini->PutEntry( "TAPE", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
 	}
 	
 	// TAPEがマウントされてなければ何もしないで戻る
-	if( !p6t ) return TRUE;
+	if( !p6t ) return true;
 	
 	// マウントされていたらP6TオブジェクトをSAVE
 	Ini->PutEntry( "TAPE", NULL, "FilePath",	"%s",	FilePath );
@@ -623,7 +641,7 @@ BOOL CMTL::DokoSave( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 // どこでもLOAD
 ////////////////////////////////////////////////////////////////
-BOOL CMTL::DokoLoad( cIni *Ini )
+bool CMTL::DokoLoad( cIni *Ini )
 {
 	int yn;
 	cSche::evinfo e;
@@ -632,7 +650,7 @@ BOOL CMTL::DokoLoad( cIni *Ini )
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetTruth( "TAPE", "Relay",		&Relay,	Relay );
 	Ini->GetTruth( "TAPE", "BoostUp",	&Boost,	Boost );
@@ -642,19 +660,19 @@ BOOL CMTL::DokoLoad( cIni *Ini )
 	sprintf( stren, "Event%08X", e.id );
 	if( Ini->GetString( "TAPE", stren, strrs, "" ) ){
 		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
+		e.Active = yn ? true : false;
+		if( !vm->evsc->SetEvinfo( &e ) ) return false;
 	}
 	
 	Ini->GetString( "TAPE", "FilePath", FilePath, "" );
 	if( *FilePath ){
-		if( !Mount( FilePath ) ) return FALSE;
-		if( !p6t->DokoLoad( Ini ) ) return FALSE;
+		if( !Mount( FilePath ) ) return false;
+		if( !p6t->DokoLoad( Ini ) ) return false;
 	}else
 		Unmount();
 	
 	
-	return TRUE;
+	return true;
 }
 
 

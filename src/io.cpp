@@ -8,12 +8,10 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-IO6::IO6( void )
+IO6::IO6( void ) : io(NULL), dl(NULL)
 {
-	io = NULL;
-	dl = NULL;
-        for(int i=0; i<BANKSIZE; i++)    Iwait[i] = 0;
-        for(int i=0; i<BANKSIZE; i++)    Owait[i] = 0;
+	INITARRAY( Iwait, 0 );
+	INITARRAY( Owait, 0 );
 }
 
 
@@ -24,15 +22,13 @@ IO6::~IO6( void )
 {
 	if( dl ) delete dl;
 	if( io ) delete io;
-	
-	for( int i=0; i<BANKSIZE; i++ ) Iwait[i] = Owait[i] = 0;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL IO6::Init( int banksize )
+bool IO6::Init( int banksize )
 {
 	// オブジェクト確保
 	try{
@@ -44,24 +40,24 @@ BOOL IO6::Init( int banksize )
 	catch( std::bad_alloc ){	// new に失敗した場合
 		Error::SetError( Error::MemAllocFailed );
 		if( dl ){ delete dl; dl = NULL; }
-		return FALSE;
+		return false;
 	}
 	// 例外発生
 	catch( Error::Errno i ){
 		Error::SetError( i );
-		return FALSE;
+		return false;
 	}
 	
 	for( int i=0; i<BANKSIZE; i++ ) Iwait[i] = Owait[i] = 0;
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // デバイス接続
 ////////////////////////////////////////////////////////////////
-BOOL IO6::Connect( IDevice* device, const IOBus::Connector* connector )
+bool IO6::Connect( IDevice* device, const IOBus::Connector* connector )
 {
 	return io->Connect( device, connector );
 }
@@ -70,7 +66,7 @@ BOOL IO6::Connect( IDevice* device, const IOBus::Connector* connector )
 ////////////////////////////////////////////////////////////////
 // デバイス切断
 ////////////////////////////////////////////////////////////////
-BOOL IO6::Disconnect( IDevice* device )
+bool IO6::Disconnect( IDevice* device )
 {
 	return io->Disconnect( device );
 }
@@ -81,10 +77,10 @@ BOOL IO6::Disconnect( IDevice* device )
 ////////////////////////////////////////////////////////////////
 BYTE IO6::In( int port, int *wcnt )
 {
-	PRINTD1( IO_LOG, "[IO][In] port : %02X", port );
+	PRINTD( IO_LOG, "[IO][In] port : %02X\n", port&0xff );
 	
 	if( wcnt ) (*wcnt) += Iwait[port&0xff];
-	return io->In( port&0xff );
+	return io->In( port );
 }
 
 
@@ -93,10 +89,10 @@ BYTE IO6::In( int port, int *wcnt )
 ////////////////////////////////////////////////////////////////
 void IO6::Out( int port, BYTE data, int *wcnt )
 {
-	PRINTD2( IO_LOG, "[IO][Out] port : %02X  data : %02X", port, data );
+	PRINTD( IO_LOG, "[IO][Out] port : %02X  data : %02X\n", port&0xff, data );
 	
 	if( wcnt ) (*wcnt) += Owait[port&0xff];
-	io->Out( port&0xff, data );
+	io->Out( port, data );
 }
 
 

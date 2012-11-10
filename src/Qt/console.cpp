@@ -19,7 +19,6 @@ int JFont::hWidth  = 0;			// 半角文字の幅
 int JFont::hHeight = 0;			//           高さ
 
 
-
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
@@ -34,7 +33,7 @@ JFont::~JFont( void ){}
 ////////////////////////////////////////////////////////////////
 // フォントファイルを開く
 ////////////////////////////////////////////////////////////////
-BOOL JFont::OpenFont( char *zfilename, char *hfilename )
+bool JFont::OpenFont( char *zfilename, char *hfilename )
 {
 	// 既に読込まれていたら破棄する
 	CloseFont();
@@ -63,7 +62,7 @@ BOOL JFont::OpenFont( char *zfilename, char *hfilename )
 	zWidth  = hWidth * 2;
 	zHeight = hHeight;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -104,7 +103,7 @@ void JFont::PutCharh( VSurface *dst, int dx, int dy, BYTE txt, BYTE fg, BYTE bg 
 	// 転送
 	for( int y=0; y<sr.h; y++ )
 		for( int x=0; x<sr.w; x++ )
-			dst->PSet( dr.x + x, dr.y + y, (DWORD)( HFont->PGet( sr.x + x, sr.y + y ) ? fg : bg ) );
+			dst->PSet( dr.x + x, dr.y + y, (DWORD)( HFont && HFont->PGet( sr.x + x, sr.y + y ) ? fg : bg ) );
 }
 
 
@@ -133,7 +132,7 @@ void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, BYTE fg, BYTE bg 
 	// 転送
 	for( int y=0; y<sr.h; y++ )
 		for( int x=0; x<sr.w; x++ )
-			dst->PSet( dr.x + x, dr.y + y, (DWORD)( ZFont->PGet( sr.x + x, sr.y + y ) ? fg : bg ) );
+			dst->PSet( dr.x + x, dr.y + y, (DWORD)( ZFont && ZFont->PGet( sr.x + x, sr.y + y ) ? fg : bg ) );
 }
 
 
@@ -163,7 +162,7 @@ ZCons::~ZCons( void ){}
 ////////////////////////////////////////////////////////////////
 // コンソール作成(文字数でサイズ指定)
 ////////////////////////////////////////////////////////////////
-BOOL ZCons::Init( int winx, int winy, const char *caption, int fcol, int bcol )
+bool ZCons::Init( int winx, int winy, const char *caption, int fcol, int bcol )
 {
 	int winxr = winx * hWidth  + BLNKW * 2;
 	int winyr = winy * hHeight + BLNKH * 2;
@@ -175,10 +174,10 @@ BOOL ZCons::Init( int winx, int winy, const char *caption, int fcol, int bcol )
 ////////////////////////////////////////////////////////////////
 // コンソール作成(解像度でサイズ指定)
 ////////////////////////////////////////////////////////////////
-BOOL ZCons::InitRes( int winx, int winy, const char *caption, int fcol, int bcol )
+bool ZCons::InitRes( int winx, int winy, const char *caption, int fcol, int bcol )
 {
 	// サーフェス作成
-	if( !VSurface::InitSurface( winx, winy, 8 ) ) return FALSE;
+	if( !VSurface::InitSurface( winx, winy, 8 ) ) return false;
 	
 	// サーフェス全体を背景色で塗りつぶす
 	VSurface::Fill( bcol );
@@ -213,7 +212,7 @@ BOOL ZCons::InitRes( int winx, int winy, const char *caption, int fcol, int bcol
 	
 	x = y = 0;
 	
-	return TRUE;
+	return true;
 }
 
 

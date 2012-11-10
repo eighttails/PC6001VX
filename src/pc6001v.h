@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報,機種名など
 /////////////////////////////////////////////////////////////////////////////
-#define	VERSION		"1.0β2"
+#define	VERSION		"1.0β3"
 #define	APPNAME		"PC6001VX"
 #define	P60NAME		"PC-6001"
 #define	P62NAME		"PC-6001mk2"
@@ -35,26 +35,26 @@
 #define	DEFAULT_VOICEVOL		(100)				/* 音声合成音量 */
 #define	DEFAULT_TAPEVOL			(20)				/* TAPEモニタ音量 */
 #define	DEFAULT_TAPELPF			(1540)				/* TAPE LPFカットオフ周波数(0で無効) */
-#define	DEFAULT_TURBO			(TRUE)				/* Turbo TAPE Yes:有効 No:無効 */
-#define	DEFAULT_BOOST			(FALSE)				/* BoostUp Yes:有効 No:無効 */
+#define	DEFAULT_TURBO			(true)				/* Turbo TAPE Yes:有効 No:無効 */
+#define	DEFAULT_BOOST			(false)				/* BoostUp Yes:有効 No:無効 */
 #define DEFAULT_MAXBOOST60		(8)					/* BoostUp最大倍率(N60モード) */
 #define DEFAULT_MAXBOOST62		(5)					/* BoostUp最大倍率(N60m/N66モード) */
 #define	DEFAULT_FDD				(0)					/* FDD接続台数 */
 #define	DEFAULT_COLOR_MODE		(16)				/* カラーモード 8:8bit 16:bit 24:24bit */
 #define	DEFAULT_MODE4_COLOR		(1)					/* モード４カラーモード 0:モノ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク */
-#define	DEFAULT_SCANLINE		(FALSE) 			/* スキャンライン TRUE:あり FALSE:なし */
+#define	DEFAULT_SCANLINE		(false) 			/* スキャンライン true:あり false:なし */
 #define	DEFAULT_SCANLINEBR		(50)				/* スキャンライン輝度 (0-100)% */
-#define	DEFAULT_DISPNTSC		(TRUE) 				/* 4:3表示 TRUE:有効 FALSE:無効 */
+#define	DEFAULT_DISPNTSC		(true) 				/* 4:3表示 true:有効 false:無効 */
 #define	DEFAULT_FRAMESKIP		(0)					/* フレームスキップ */
 #define	DEFAULT_OVERCLOCK		(100)				/* オーバークロック率 */
-#define	DEFAULT_CHECKCRC		(TRUE) 				/* CRCチェック */
-#define	DEFAULT_ROMPATCH		(TRUE) 				/* ROMパッチ */
-#define	DEFAULT_FULLSCREEN		(FALSE) 			/* フルスクリーン */
-#define	DEFAULT_DISPSTATUS		(TRUE) 				/* ステータスバー表示状態 */
-#define	DEFAULT_AVIRLE			(TRUE) 				/* RLEフラグ */
-#define	DEFAULT_CKQUIT			(FALSE) 			/* 終了時確認 */
-#define	DEFAULT_SAVEQUIT		(TRUE) 				/* 終了時INI保存 */
-#define	DEFAULT_SOLDIER			(FALSE) 			/* 戦士のカートリッジ使うフラグ */
+#define	DEFAULT_CHECKCRC		(true) 				/* CRCチェック */
+#define	DEFAULT_ROMPATCH		(true) 				/* ROMパッチ */
+#define	DEFAULT_FULLSCREEN		(false) 			/* フルスクリーン */
+#define	DEFAULT_DISPSTATUS		(true) 				/* ステータスバー表示状態 */
+#define	DEFAULT_AVIRLE			(true) 				/* RLEフラグ */
+#define	DEFAULT_CKQUIT			(false) 			/* 終了時確認 */
+#define	DEFAULT_SAVEQUIT		(true) 				/* 終了時INI保存 */
+#define	DEFAULT_SOLDIER			(false) 			/* 戦士のカートリッジ使うフラグ */
 
 
 #define	CPUM_CLOCK60			(3993600)			/* メインCPUクロック(Hz) 60 */
@@ -68,7 +68,7 @@
 #define	DEFAULT_BAUD			(1200)				/* CMTボーレート 初期値 */
 #define	DEFAULT_CMT_HZ			(DEFAULT_BAUD/12)	/* CMT割込み周波数 初期値 (1byte -> StartBit:1 + DataBit:8 + StopBit:3 = 12bits とする) */
 
-//#define	DEFAULT_FPS_CNT			(TRUE)			/* FPSカウンタ TRUE:表示 FALSE:非表示 */
+//#define	DEFAULT_FPS_CNT			(true)			/* FPSカウンタ true:表示 false:非表示 */
 
 /////////////////////////////////////////////////////////////////////////////
 // 各種ディレクトリ名 初期値

@@ -3,14 +3,12 @@
 
 // OS依存の汎用ルーチン(主にUI用)
 
+#include "event.h"
 #include "typedef.h"
 #include "keydef.h"
+#include "vsurface.h"
 
 
-#ifdef __cplusplus
-extern "C" 
-{
-#endif
 
 // ファイル選択ダイアログ用
 enum FileMode{ FM_Load, FM_Save };
@@ -35,20 +33,22 @@ void AddDelimiter( char * );
 void DelDelimiter( char * );
 
 // --- プロセス管理関数 ---
-// 多重起動チェック
-BOOL OSD_IsWorking();
+// 初期化
+bool OSD_Init();
 // 終了処理
-void OSD_Finish();
+void OSD_Quit();
+// 多重起動チェック
+bool OSD_IsWorking();
 
 // --- ファイル操作関数 ---
 // 設定ファイルパス作成
-BOOL OSD_CreateConfigPath();
+bool OSD_CreateConfigPath();
 // 設定ファイルパス取得
 const char *OSD_GetConfigPath();
 // ファイルの存在チェック
-BOOL OSD_FileExist( const char * );
+bool OSD_FileExist( const char * );
 // ファイルの読取り専用チェック
-BOOL OSD_FileReadOnly( const char * );
+bool OSD_FileReadOnly( const char * );
 // フルパスからファイル名を取得
 const char *OSD_GetFileNamePart( const char * );
 // フォルダの参照
@@ -66,59 +66,96 @@ int OSD_Message( const char *, const char *, int );
 // キーリピート設定
 void OSD_SetKeyRepeat( int );
 // OSDキーコード -> 仮想キーコード変換
-int OSD_ConvertKeyCode( int );
+PCKEYsym OSD_ConvertKeyCode( int );
 
 // --- ジョイスティック処理関数 ---
-#define	MAX_JOY			(8)
 // 利用可能なジョイスティック数取得
 int OSD_GetJoyNum();
 // ジョイスティック名取得
 const char *OSD_GetJoyName( int );
 // ジョイスティックオープンされてる？
-BOOL OSD_OpenedJoy( int );
+bool OSD_OpenedJoy( int );
 // ジョイスティックオープン
-BOOL OSD_OpenJoy( int );
+HJOYINFO OSD_OpenJoy( int );
 // ジョイスティッククローズ
-void OSD_CloseJoy( int );
+void OSD_CloseJoy( HJOYINFO );
 // ジョイスティックの軸の数取得
-int OSD_GetJoyNumAxes( int );
+int OSD_GetJoyNumAxes( HJOYINFO );
 // ジョイスティックのボタンの数取得
-int OSD_GetJoyNumButtons( int );
+int OSD_GetJoyNumButtons( HJOYINFO );
 // ジョイスティックの軸の状態取得
-int OSD_GetJoyAxis( int, int );
+int OSD_GetJoyAxis( HJOYINFO, int );
 // ジョイスティックのボタンの状態取得
-BOOL OSD_GetJoyButton( int, int );
+bool OSD_GetJoyButton( HJOYINFO, int );
 
 // --- サウンド関連関数 ---
 // オーディオデバイスオープン
-BOOL OSD_OpenAudio( void *, void (*)(void *, BYTE *, int ), int, int );
+bool OSD_OpenAudio( void *, CBF_SND, int, int );
 // オーディオデバイスクローズ
 void OSD_CloseAudio();
 // 再生開始
 void OSD_StartAudio();
 // 再生停止
 void OSD_StopAudio();
+// 再生状態取得
+bool OSD_AudioPlaying();
 // Waveファイル読込み
-BOOL OSD_LoadWAV( const char *, BYTE **, DWORD *, int * );
+bool OSD_LoadWAV( const char *, BYTE **, DWORD *, int * );
 // Waveファイル開放
 void OSD_FreeWAV( BYTE * );
 
-// --- タイマ関数 ---
+// --- タイマ関連関数 ---
 // 指定時間待機
 void OSD_Delay( DWORD );
 // プロセス開始からの経過時間取得
 DWORD OSD_GetTicks();
+// タイマ追加
+HTIMERID OSD_AddTimer( DWORD, CBF_TMR, void * );
+// タイマ削除
+bool OSD_DelTimer( HTIMERID );
+
+// --- ウィンドウ関連関数 ---
+// キャプション設定
+void OSD_SetWindowCaption( HWINDOW, const char * );
+// マウスカーソル表示/非表示
+void OSD_ShowCursor( bool );
+// ウィンドウ作成
+bool OSD_CreateWindow( HWINDOW *, int, int, int, bool );
+// ウィンドウ破棄
+void OSD_DestroyWindow( HWINDOW );
+// ウィンドウの幅を取得
+int OSD_GetWindowWidth( HWINDOW );
+// ウィンドウの高さを取得
+int OSD_GetWindowHeight( HWINDOW );
+// ウィンドウの色深度を取得
+int OSD_GetWindowBPP( HWINDOW );
+// パレット設定
+bool OSD_SetPalette( HWINDOW, VPalette * );
+// ウィンドウクリア
+void OSD_ClearWindow( HWINDOW );
+// ウィンドウ反映
+void OSD_RenderWindow( HWINDOW );
+// ウィンドウに転送
+void OSD_BlitToWindow( HWINDOW, VSurface *, int, int, VPalette * );
+// ウィンドウに転送(2倍)
+void OSD_BlitToWindow2( HWINDOW, VSurface *, int, int );
+// アイコン設定
+void OSD_SetIcon( HWINDOW, int );
+
+// --- イベント処理関連関数 ---
+// イベント取得(イベントが発生するまで待つ)
+bool OSD_GetEvent( Event * );
+// イベントをキューにプッシュする
+bool OSD_PushEvent( EventType, ... );
 
 
 // --- その他の雑関数 ---
-// 初期化
-BOOL OSD_Init();
 // 色の名前取得
 const char *OSD_ColorName( int );
 // キーの名前取得
 const char *OSD_KeyName( PCKEYsym );
 // フォントファイル作成
-BOOL OSD_CreateFont( char *, char *, int );
+bool OSD_CreateFont( char *, char *, int );
 
 
 // メッセージボックスのタイプ
@@ -201,26 +238,27 @@ extern const char *MsgIni[];
 #define	MSINI_ExtRom		MsgIni[27]	// " 拡張ROMファイル名"
 #define	MSINI_tape			MsgIni[28]	// " TAPE(LODE)ファイル名(起動時に自動マウント)"
 #define	MSINI_save			MsgIni[29]	// " TAPE(SAVE)ファイル名(SAVE時に自動マウント)"
-#define	MSINI_disk			MsgIni[30]	// " DISKファイル名(起動時に自動マウント)"
-#define	MSINI_printer		MsgIni[31]	// " プリンタ出力ファイル名"
-#define	MSINI_fontz			MsgIni[32]	// " 全角フォントファイル名"
-#define	MSINI_fonth			MsgIni[33]	// " 半角フォントファイル名"
+#define	MSINI_disk1			MsgIni[30]	// " DISK1ファイル名(起動時に自動マウント)"
+#define	MSINI_disk2			MsgIni[31]	// " DISK2ファイル名(起動時に自動マウント)"
+#define	MSINI_printer		MsgIni[32]	// " プリンタ出力ファイル名"
+#define	MSINI_fontz			MsgIni[33]	// " 全角フォントファイル名"
+#define	MSINI_fonth			MsgIni[34]	// " 半角フォントファイル名"
 // [PATH]
-#define	MSINI_RomPath		MsgIni[34]	// " ROMイメージ格納パス"
-#define	MSINI_TapePath		MsgIni[35]	// " TAPEイメージ格納パス"
-#define	MSINI_DiskPath		MsgIni[36]	// " DISKイメージ格納パス"
-#define	MSINI_ExtRomPath	MsgIni[37]	// " 拡張ROMイメージ格納パス"
-#define	MSINI_ImgPath		MsgIni[38]	// " スナップショット格納パス"
-#define	MSINI_WavePath		MsgIni[39]	// " WAVEファイル格納パス"
-#define	MSINI_FontPath		MsgIni[40]	// " FONT格納パス"
+#define	MSINI_RomPath		MsgIni[35]	// " ROMイメージ格納パス"
+#define	MSINI_TapePath		MsgIni[36]	// " TAPEイメージ格納パス"
+#define	MSINI_DiskPath		MsgIni[37]	// " DISKイメージ格納パス"
+#define	MSINI_ExtRomPath	MsgIni[38]	// " 拡張ROMイメージ格納パス"
+#define	MSINI_ImgPath		MsgIni[39]	// " スナップショット格納パス"
+#define	MSINI_WavePath		MsgIni[40]	// " WAVEファイル格納パス"
+#define	MSINI_FontPath		MsgIni[41]	// " FONT格納パス"
 // [CHECK]
-#define	MSINI_CkQuit		MsgIni[41]	// " 終了時確認 Yes:する No:しない"
-#define	MSINI_SaveQuit		MsgIni[42]	// " 終了時INIファイルを保存 Yes:する No:しない"
+#define	MSINI_CkQuit		MsgIni[42]	// " 終了時確認 Yes:する No:しない"
+#define	MSINI_SaveQuit		MsgIni[43]	// " 終了時INIファイルを保存 Yes:する No:しない"
 // [KEY]
-#define	MSINI_KeyRepeat		MsgIni[43]	// " キーリピートの間隔(単位:ms 0で無効)"
-#define	MSINI_UsePS2KBD		MsgIni[44]	// " PS/2キーボード使う? Yes:PS/2 No:USB"
+#define	MSINI_KeyRepeat		MsgIni[44]	// " キーリピートの間隔(単位:ms 0で無効)"
+#define	MSINI_UsePS2KBD		MsgIni[45]	// " PS/2キーボード使う? Yes:PS/2 No:USB"
 // [OPTION]
-#define	MSINI_UseSoldier	MsgIni[45]	// " 戦士のカートリッジ Yes:有効 No:無効"
+#define	MSINI_UseSoldier	MsgIni[46]	// " 戦士のカートリッジ Yes:有効 No:無効"
 
 
 // どこでもSAVE用メッセージ ------
@@ -240,27 +278,23 @@ extern const char *MsgErr[];
 #define	MSERR_RomCrcNG			MsgErr[7]	// "ROMイメージのCRCが不正です"
 #define	MSERR_LibInitFailed		MsgErr[8]	// "ライブラリの初期化に失敗しました"
 #define	MSERR_InitFailed		MsgErr[9]	// "初期化に失敗しました\n設定を確認してください"
-#define	MSERR_FontFailed		MsgErr[10]	// "フォントの読込みに失敗しました"
-#define	MSERR_IniDefault		MsgErr[11]	// "INIファイルの読込みに失敗しました\nデフォルト設定で起動します"
-#define	MSERR_IniReadFailed		MsgErr[12]	// "INIファイルの読込みに失敗しました"
-#define	MSERR_IniWriteFailed	MsgErr[13]	// "INIファイルの保存に失敗しました"
-#define	MSERR_TapeMountFailed	MsgErr[14]	// "TAPEイメージのマウントに失敗しました"
-#define	MSERR_DiskMountFailed	MsgErr[15]	// "DISKイメージのマウントに失敗しました"
-#define	MSERR_ExtRomMountFailed	MsgErr[16]	// "拡張ROMイメージのマウントに失敗しました"
-#define	MSERR_DokoReadFailed	MsgErr[17]	// "どこでもLOADに失敗しました"
-#define	MSERR_DokoWriteFailed	MsgErr[18]	// "どこでもSAVEに失敗しました"
-#define	MSERR_DokoDiffModel		MsgErr[19]	// "どこでもLOADに失敗しました\n保存時と機種が異なります"
+#define	MSERR_FontLoadFailed	MsgErr[10]	// "フォントの読込みに失敗しました"
+#define	MSERR_FontCreateFailed	MsgErr[11]	// "フォントファイルの作成に失敗しました"
+#define	MSERR_IniDefault		MsgErr[12]	// "INIファイルの読込みに失敗しました\nデフォルト設定で起動します"
+#define	MSERR_IniReadFailed		MsgErr[13]	// "INIファイルの読込みに失敗しました"
+#define	MSERR_IniWriteFailed	MsgErr[14]	// "INIファイルの保存に失敗しました"
+#define	MSERR_TapeMountFailed	MsgErr[15]	// "TAPEイメージのマウントに失敗しました"
+#define	MSERR_DiskMountFailed	MsgErr[16]	// "DISKイメージのマウントに失敗しました"
+#define	MSERR_ExtRomMountFailed	MsgErr[17]	// "拡張ROMイメージのマウントに失敗しました"
+#define	MSERR_DokoReadFailed	MsgErr[18]	// "どこでもLOADに失敗しました"
+#define	MSERR_DokoWriteFailed	MsgErr[19]	// "どこでもSAVEに失敗しました"
 #define	MSERR_DokoDiffVersion	MsgErr[20]	// "どこでもLOADに失敗しました\n保存時とPC6001Vのバージョンが異なります"
 #define	MSERR_ReplayPlayError	MsgErr[21]	// "リプレイ再生に失敗しました"
-#define	MSERR_ReplayDiffModel	MsgErr[22]	// "リプレイ再生に失敗しました\n保存時と機種が異なります"
-#define	MSERR_ReplayRecError	MsgErr[23]	// "リプレイ記録に失敗しました"
-#define	MSERR_NoReplayData		MsgErr[24]	// "リプレイデータがありません"
+#define	MSERR_ReplayRecError	MsgErr[22]	// "リプレイ記録に失敗しました"
+#define	MSERR_NoReplayData		MsgErr[23]	// "リプレイデータがありません"
 
 
 
-#ifdef __cplusplus
-}
-#endif
 
 
 #endif	// OSD_H_INCLUDED

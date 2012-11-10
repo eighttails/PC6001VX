@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "p6el.h"
 #include "debug.h"
 #include "breakpoint.h"
 #include "cpum.h"
@@ -17,7 +18,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndMem::cWndMem( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id){}
+cWndMem::cWndMem( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), Addr(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ cWndMem::~cWndMem( void ){}
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL cWndMem::Init( void )
+bool cWndMem::Init( void )
 {
 	// 表示アドレス初期化
 	Addr = 0;
@@ -95,7 +96,7 @@ void cWndMem::Update( void )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndReg::cWndReg( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id){}
+cWndReg::cWndReg( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -107,7 +108,7 @@ cWndReg::~cWndReg( void ){}
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL cWndReg::Init( void )
+bool cWndReg::Init( void )
 {
 	return ZCons::Init( REGWINW, REGWINH, "REGISTER" );
 }
@@ -298,13 +299,11 @@ const struct{
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndMon::cWndMon( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
+cWndMon::cWndMon( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), Argc(0), ArgvCounter(0)
 {
-	*KeyBuf = '\0';
-	for( int i=0; i<MAX_HIS; i++ ) *(HisBuf[i]) = '\0';
-        *Argv = '\0';
-        Argc = 0;
-        ArgvCounter = 0;
+	INITARRAY( KeyBuf, '\0' );
+	for( int i=0; i<MAX_HIS; i++ ) ZeroMemory( HisBuf[i], MAX_CHRS );
+	INITARRAY( Argv, NULL );
 }
 
 
@@ -317,7 +316,7 @@ cWndMon::~cWndMon( void ){}
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL cWndMon::Init( void )
+bool cWndMon::Init( void )
 {
 	if( ZCons::Init( MONWINW, MONWINH, "" ) ){
 		// 最初だけメッセージ表示
@@ -326,10 +325,10 @@ BOOL cWndMon::Init( void )
 		ZCons::Printf( "*  help 又は ? と入力するとヘルプを表示します *\n" );
 		ZCons::Printf( "***********************************************\n\n" );
 		ZCons::Printf( PROMPT );
-		return TRUE;
+		return true;
 	}
 	
-	return FALSE;
+	return false;
 }
 
 
@@ -342,14 +341,14 @@ void cWndMon::Update( void ){}
 ////////////////////////////////////////////////////////////////
 // キー入力処理
 ////////////////////////////////////////////////////////////////
-void cWndMon::KeyIn( int kcode, BOOL shift, int ccode )
+void cWndMon::KeyIn( int kcode, bool shift, int ccode )
 {
 	static int LastKey  = KVC_ENTER;	// 前回のキー
 	static int HisLevel = 1;			// ヒストリレベル
 	
 	switch( kcode ){		// キーコード
 	case KVC_F6:			// モニタモード変更
-		vm->ToggleMonitor();
+		vm->el->ToggleMonitor();
 		break;
 		
 	case KVC_ENTER:			// Enter
@@ -403,11 +402,11 @@ void cWndMon::KeyIn( int kcode, BOOL shift, int ccode )
 		
 	// メモリウィンドウ
 	case KVC_PAGEDOWN:		// PageDown
-		vm->memw->SetAddress( vm->memw->GetAddress() + ( shift ? 2048 : 16 ) );
+		vm->el->memw->SetAddress( vm->el->memw->GetAddress() + ( shift ? 2048 : 16 ) );
 		break;
 		
 	case KVC_PAGEUP:		// PageUp
-		vm->memw->SetAddress( vm->memw->GetAddress() - ( shift ? 2048 : 16 ) );
+		vm->el->memw->SetAddress( vm->el->memw->GetAddress() - ( shift ? 2048 : 16 ) );
 		break;
 		
 	default:
@@ -501,8 +500,7 @@ int cWndMon::GetArg( void )
 ////////////////////////////////////////////////////////////////
 void cWndMon::Shift( void )
 {
-	int i;
-	BOOL size = FALSE;
+	bool size = false;
 	char *p, *chk;
 	
 	// これ以上引数が無い
@@ -511,9 +509,9 @@ void cWndMon::Shift( void )
 	// まだ引数があるので解析
 	else{
 		p = Argv[ ArgvCounter ];
-		if( *p == '#' ){ size = TRUE; p++; }
+		if( *p == '#' ){ size = true; p++; }
 		
-		argv.Type = 0;
+		argv.Type = ARGV_END;
 		argv.Val  = strtol( p, &chk, 0 );
 		argv.Str  = Argv[ ArgvCounter ];
 		
@@ -533,13 +531,13 @@ void cWndMon::Shift( void )
 			if( size ){		// #で始まる
 				argv.Type = ARGV_STR;
 			}else{			// 字で始まる
-				for( i=0; i<COUNTOF( MonitorArgv ); i++ ){
+				for( int i=0; i<COUNTOF( MonitorArgv ); i++ ){
 					if( !strcmp( p, MonitorArgv[i].StrL ) || !strcmp( p, MonitorArgv[i].StrU ) ){
 						argv.Type |= MonitorArgv[i].Type;
 						argv.Val   = MonitorArgv[i].Val;
 					}
 				}
-				if( !argv.Type ) argv.Type = ARGV_STR;
+				if( argv.Type == ARGV_END ) argv.Type = ARGV_STR;
 			}
 		}
 		ArgvCounter++;
@@ -577,11 +575,11 @@ void cWndMon::Exec( int cmd )
 		int i;
 		char *cmd = NULL;
 		
-		if( argv.Type ){				// [cmd]
+		if( argv.Type != ARGV_END ){				// [cmd]
 			cmd = argv.Str;
 			Shift();
 		}
-		if( argv.Type ) ErrorMes();		// 余計な引数があればエラー
+		if( argv.Type != ARGV_END ) ErrorMes();		// 余計な引数があればエラー
 		
 		if( !cmd ){	// 引数なし。全ヘルプ表示
 			ZCons::Printf( "help\n" );
@@ -603,9 +601,9 @@ void cWndMon::Exec( int cmd )
 	//	 実行
 	//--------------------------------------------------------------
 	{
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->ToggleMonitor();
+		vm->el->ToggleMonitor();
 		
 		break;
 	}
@@ -619,18 +617,18 @@ void cWndMon::Exec( int cmd )
 	{
 		int step = 1;
 		
-		if( argv.Type ){
+		if( argv.Type != ARGV_END ){
 			if     ( ArgvIs( ARGV_SIZE ) ) step = argv.Val;	// [<step>]
 			else if( ArgvIs( ARGV_NUM )  ) step = argv.Val;	// [#<step>]
 			else                            ErrorMes();
 			Shift();
 		}
 		
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		
 		while( step-- ){
-			vm->sche->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
+			vm->evsc->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
 		}
 		
 //		if( CheckBreakPointPC() ) set_emumode( TRACE_BP );
@@ -647,25 +645,24 @@ void cWndMon::Exec( int cmd )
 	//  CALL,DJNZ,LDIR etc のスキップも可
 	//--------------------------------------------------------------
 	{
-		BOOL call = FALSE, jp = FALSE, rep = FALSE;
-		BOOL flag = FALSE;
+		bool call = false, jp = false, rep = false;
 		BYTE code;
 		WORD addr;
 		char DisCode[128];
 		cZ80::Register reg;
 		
-		while( argv.Type ){
+		while( argv.Type != ARGV_END ){
 			if( ArgvIs( ARGV_STEP ) ){
-				if( argv.Val == ARG_CALL )	call = TRUE;
-				if( argv.Val == ARG_JP )	jp   = TRUE;
-				if( argv.Val == ARG_REP )	rep  = TRUE;
-				if( argv.Val == ARG_ALL )	call = jp = rep = TRUE;
+				if( argv.Val == ARG_CALL )	call = true;
+				if( argv.Val == ARG_JP )	jp   = true;
+				if( argv.Val == ARG_REP )	rep  = true;
+				if( argv.Val == ARG_ALL )	call = jp = rep = true;
 				Shift();
 			}else
 				ErrorMes();
 		}
 		
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		vm->cpum->GetRegister( &reg );
 		
@@ -676,14 +673,12 @@ void cWndMon::Exec( int cmd )
 			if( code		== 0xcd ||	// CALL nn    = 11001101B
 			  ( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
 				addr += 3;
-				flag = TRUE;
 			}
 		}
 		
 		if( jp ){
 			if( code == 0x10 ){			// DJNZ e     = 00010000B
 				addr += 2;
-				flag = TRUE;
 			}
 		}
 		
@@ -692,7 +687,6 @@ void cWndMon::Exec( int cmd )
 				code = vm->mem->Read( addr+1 );
 				if( (code&0xf4) == 0xb0 ){
 					addr += 2;
-					flag = TRUE;
 				}
 			}
 		}
@@ -700,17 +694,7 @@ void cWndMon::Exec( int cmd )
 		vm->cpum->Disasm( DisCode, addr );
 		ZCons::Printf( "%s\n", DisCode );
 		
-		vm->sche->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
-		
-//		if( flag ){
-//			BP[BP_NUM_FOR_SYSTEM].Type = BP_PC;
-//			BP[BP_NUM_FOR_SYSTEM].Addr   = addr;
-//			set_emumode( STEP_BP );
-//		}else{
-//			BP[BP_NUM_FOR_SYSTEM].Type = BP_NONE;
-//			set_emumode( STEP );
-//		}
-		
+		vm->evsc->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
 		
 		break;
 	}	
@@ -720,13 +704,12 @@ void cWndMon::Exec( int cmd )
 	//  step all に同じ
 	//--------------------------------------------------------------
 	{
-		BOOL flag = FALSE;
 		BYTE code;
 		WORD addr;
 		char DisCode[128];
 		cZ80::Register reg;
 		
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		vm->cpum->GetRegister( &reg );
 		
@@ -736,35 +719,23 @@ void cWndMon::Exec( int cmd )
 		if( code		== 0xcd ||	// CALL nn    = 11001101B
 		  ( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
 			addr += 3;
-			flag = TRUE;
 		}
 		
 		if( code == 0x10 ){			// DJNZ e     = 00010000B
 			addr += 2;
-			flag = TRUE;
 		}
 		
 		if( code == 0xed ){			// LDIR/LDDR/CPIR/CPDR etc
 			code = vm->mem->Read( addr+1 );
 			if( (code&0xf4) == 0xb0 ){
 				addr += 2;
-				flag = TRUE;
 			}
 		}
 		
 		vm->cpum->Disasm( DisCode, addr );
 		ZCons::Printf( "%s\n", DisCode );
 		
-		vm->sche->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
-		
-//		if( flag ){
-//			BP[BP_NUM_FOR_SYSTEM].Type = BP_PC;
-//			BP[BP_NUM_FOR_SYSTEM].Addr   = addr;
-//			set_emumode( STEP_BP );
-//		}else{
-//			BP[BP_NUM_FOR_SYSTEM].Type = BP_NONE;
-//			set_emumode( STEP );
-//		}
+		vm->evsc->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
 		
 		break;
 	}	
@@ -776,12 +747,12 @@ void cWndMon::Exec( int cmd )
 	//  ブレークポイントの設定／解除／表示
 	//--------------------------------------------------------------
 	{
-		BOOL show = FALSE;
+		bool show = false;
 		int action = ARG_PC;
 		WORD addr = 0;
 		int number = 0;
 		
-		if( argv.Type ){
+		if( argv.Type != ARGV_END ){
 			// <action>
 			if( ArgvIs( ARGV_BREAK ) ){
 				action = argv.Val;
@@ -806,17 +777,17 @@ void cWndMon::Exec( int cmd )
 			}
 			
 			// [#<No>]
-			if( argv.Type ){
+			if( argv.Type != ARGV_END ){
 				if( !ArgvIs( ARGV_SIZE ) ) ErrorMes();
 				if( argv.Val < 1 || argv.Val > NR_BP ) ErrorMes();
 				number = argv.Val - 1;
 				Shift();
 			}
 		}else{
-			show = TRUE;
+			show = true;
 		}
 		
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		
 		if( show ){
@@ -896,7 +867,7 @@ void cWndMon::Exec( int cmd )
 	//  特定のアドレスにライト
 	//--------------------------------------------------------------
 	{
-		if( !argv.Type ) ErrorMes();
+		if( argv.Type == ARGV_END ) ErrorMes();
 		
 		// <addr>
 		if( !ArgvIs( ARGV_ADDR )) ErrorMes();
@@ -908,11 +879,11 @@ void cWndMon::Exec( int cmd )
 		BYTE data = argv.Val;
 		Shift();
 		
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		vm->mem->Write( addr, data );
 		
-		ZCons::Printf( "WRITE memory [ %04XH ] <- %02X  (= %d | %+d | ", addr, (BYTE)data, (BYTE)data, (Sint8)data );
+		ZCons::Printf( "WRITE memory [ %04XH ] <- %02X  (= %d | %+d | ", addr, (BYTE)data, (BYTE)data, (int8_t)data );
 		int i,j;
 		for( i=0, j=0x80; i<8; i++, j>>=1 ) ZCons::Printf( "%d", (data & j) ? 1 : 0 );
 		ZCons::Printf( "B )\n");
@@ -929,7 +900,7 @@ void cWndMon::Exec( int cmd )
 	{
 		int start, size, value;
 		
-		if( !argv.Type ) ErrorMes();
+		if( argv.Type == ARGV_END ) ErrorMes();
 		
 		// <addr>
 		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
@@ -947,7 +918,7 @@ void cWndMon::Exec( int cmd )
 		value = argv.Val;
 		Shift();
 		
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		for( int i=0; i<size; i++ ) vm->mem->Write( start+i, value );
 		
@@ -963,7 +934,7 @@ void cWndMon::Exec( int cmd )
 	{
 		int start, size, dist;
 		
-		if( !argv.Type ) ErrorMes();
+		if( argv.Type == ARGV_END ) ErrorMes();
 		
 		// <addr>
 		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
@@ -981,7 +952,7 @@ void cWndMon::Exec( int cmd )
 		dist = argv.Val;
 		Shift();
 		
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		// 転送元-転送先が 重ならない
 		if( start+size <= dist ) for( int i=0; i<size; i++ )    vm->mem->Write( dist+i, vm->mem->Read( start+i ) );
@@ -1005,7 +976,7 @@ void cWndMon::Exec( int cmd )
 	//  特定のポートに出力
 	//--------------------------------------------------------------
 	{
-		if( !argv.Type ) ErrorMes();
+		if( argv.Type == ARGV_END ) ErrorMes();
 		
 		// <port>
 		if( !ArgvIs( ARGV_PORT )) ErrorMes();
@@ -1017,11 +988,11 @@ void cWndMon::Exec( int cmd )
 		BYTE data = argv.Val;
 		Shift();
 		
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->io->Out( port, data );
+		vm->iom->Out( port, data );
 		
-		ZCons::Printf( "OUT port [ %02XH ] <- %02X  (= %d | %+d | ", port, (BYTE)data, (BYTE)data, (Sint8)data );
+		ZCons::Printf( "OUT port [ %02XH ] <- %02X  (= %d | %+d | ", port, (BYTE)data, (BYTE)data, (int8_t)data );
 		int i,j;
 		for( i=0, j=0x80; i<8; i++, j>>=1 ) ZCons::Printf( "%d", (data & j) ? 1 : 0 );
 		ZCons::Printf( "B )\n");
@@ -1050,7 +1021,7 @@ void cWndMon::Exec( int cmd )
 	//  reset
 	//	リセット
 	//--------------------------------------------------------------
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		vm->Reset();
 		
 		break;
@@ -1064,7 +1035,7 @@ void cWndMon::Exec( int cmd )
 		const char *str;
 		cZ80::Register reg;
 		
-		if( argv.Type ){
+		if( argv.Type != ARGV_END ){
 			if( !ArgvIs( ARGV_REG )) ErrorMes();		// <name>
 			re = argv.Val;
 			Shift();
@@ -1072,7 +1043,7 @@ void cWndMon::Exec( int cmd )
 			val = argv.Val;
 			Shift();
 		}
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		vm->cpum->GetRegister( &reg );
 		
@@ -1119,7 +1090,7 @@ void cWndMon::Exec( int cmd )
 		char DisCode[128];
 		cZ80::Register reg;
 		
-		if( argv.Type ){
+		if( argv.Type != ARGV_END ){
 			if( ArgvIs( ARGV_ADDR )){		// [<addr>]
 				addr = argv.Val;
 				Shift();
@@ -1129,7 +1100,7 @@ void cWndMon::Exec( int cmd )
 				Shift();
 			}
 		}
-		if( argv.Type ) ErrorMes();
+		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		vm->cpum->GetRegister( &reg );
 		if( addr == -1 ) addr = reg.PC.W;	// ADDR 未指定時

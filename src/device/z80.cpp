@@ -2,71 +2,71 @@
 // QUASI88 --- PC-8801 emulator
 //	 Copyright (C) Showzoh Fukunaga 1998
 //
-// Z80 ã®ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿ãƒ¼
+// Z80 ‚ÌƒGƒ~ƒ…ƒŒ[ƒ^[
 //
-//	Z80 ã®ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿ãƒ¼ã¯ã€fMSX ã®ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã‚’æ”¹å¤‰ã—ã¦ã€ä½œæˆ
-//	ã—ã¾ã—ãŸã€‚ã¾ãŸã€M.A.M.E. ã®ã€Z80 ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿ã®ã‚½ãƒ¼ã‚¹ã®å½±éŸ¿ã‚‚
-//	å—ã‘ã¦ã„ã¾ã™ã€‚
-//	( fMSX ã¯ã€Marat Fayzullinæ°ä½œã®ãƒ•ãƒªãƒ¼ã‚¦ã‚§ã‚¢ã§ã™ã€‚M.A.M.E. ã®
-//	  Z80ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿ã¯ã€Marcel de Kogelæ°ä½œã®ãƒ•ãƒªãƒ¼ã‚¦ã‚§ã‚¢ã§ã™ã€‚)
+//	Z80 ‚ÌƒGƒ~ƒ…ƒŒ[ƒ^[‚ÍAfMSX ‚Ìƒ\[ƒXƒR[ƒh‚ğ‰ü•Ï‚µ‚ÄAì¬
+//	‚µ‚Ü‚µ‚½B‚Ü‚½AM.A.M.E. ‚ÌAZ80 ƒGƒ~ƒ…ƒŒ[ƒ^‚Ìƒ\[ƒX‚Ì‰e‹¿‚à
+//	ó‚¯‚Ä‚¢‚Ü‚·B
+//	( fMSX ‚ÍAMarat Fayzullinì‚ÌƒtƒŠ[ƒEƒFƒA‚Å‚·BM.A.M.E. ‚Ì
+//	  Z80ƒGƒ~ƒ…ƒŒ[ƒ^‚ÍAMarcel de Kogelì‚ÌƒtƒŠ[ƒEƒFƒA‚Å‚·B)
 //
 //
-//	å‡¦ç†æ‰‹é †ï¼‰
+//	ˆ—è‡j
 //	      {
-//		å‘½ä»¤ãƒ•ã‚§ãƒƒãƒ(fetch);
-//		PC += å‘½ä»¤é•·
-//		R += å‘½ä»¤ãƒã‚¤ãƒˆ
-//		state += å‘½ä»¤ã‚¹ãƒ†ãƒ¼ãƒˆ
-//		switch( å‘½ä»¤ ){
+//		–½—ßƒtƒFƒbƒ`(fetch);
+//		PC += –½—ß’·
+//		R += –½—ßƒoƒCƒg
+//		state += –½—ßƒXƒe[ƒg
+//		switch( –½—ß ){
 //		  case EI:
-//		    return;		â† EI å‘½ä»¤ã®ç›´å¾Œã¯ å‰²è¾¼åˆ¤å®šãªã—
+//		    return;		© EI –½—ß‚Ì’¼Œã‚Í Š„”»’è‚È‚µ
 //		  case HALT:
-//		    PC --;		â† ä¸€éƒ¨ã®å‘½ä»¤ã¯ã€PCã‚’é€²ã‚ãªã„
+//		    PC --;		© ˆê•”‚Ì–½—ß‚ÍAPC‚ği‚ß‚È‚¢
 //		    break;
 //		  case LDIR/etc :
-//		    if() PC -= 2;	â† ä¸€éƒ¨ã®å‘½ä»¤ã¯ã€PCã‚’é€²ã‚ãªã„
+//		    if() PC -= 2;	© ˆê•”‚Ì–½—ß‚ÍAPC‚ği‚ß‚È‚¢
 //		    break;
 //		  case DD/FD unknown opcode:
-//		    return;		â† å­˜åœ¨ã—ãªã„DD/FDã¯å‰²è¾¼åˆ¤å®šãªã—
+//		    return;		© ‘¶İ‚µ‚È‚¢DD/FD‚ÍŠ„”»’è‚È‚µ
 //		}
 //		if( IFF==0 ){
-//		  if( å‰²è¾¼ã¿åˆ¤å®š ){
-//		    CALL( å‰²è¾¼ã¿ç•ªåœ° );
-//		    Halt = FALSE;
+//		  if( Š„‚İ”»’è ){
+//		    CALL( Š„‚İ”Ô’n );
+//		    Halt = false;
 //		    IFF = 1;
 //		  }
 //		}
 //	      }
 //
-//	æ³¨æ„ç‚¹ï¼‰
-//	      ãƒ»PC-8801 ã® Z80 ã¨ã„ã†ã“ã¨ã«ã€ç‰¹åŒ–ã—ã¦ã„ã¾ã™ã€‚
-//	      ãƒ»ãƒãƒ³ãƒã‚¹ã‚«ãƒ–ãƒ«å‰²è¾¼ã¿ã¯ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ã¾ã›ã‚“ã€‚
-//	      ãƒ»IN / OUT å‘½ä»¤ã¯ã€256å€‹åˆ†ã®ãƒãƒ¼ãƒˆã®ã¿ã‚µãƒãƒ¼ãƒˆã—ã¾ã™
+//	’ˆÓ“_j
+//	      EPC-8801 ‚Ì Z80 ‚Æ‚¢‚¤‚±‚Æ‚ÉA“Á‰»‚µ‚Ä‚¢‚Ü‚·B
+//	      Eƒmƒ“ƒ}ƒXƒJƒuƒ‹Š„‚İ‚ÍƒTƒ|[ƒg‚µ‚Ä‚¢‚Ü‚¹‚ñB
+//	      EIN / OUT –½—ß‚ÍA256ŒÂ•ª‚Ìƒ|[ƒg‚Ì‚İƒTƒ|[ƒg‚µ‚Ü‚·
 //
-//	æœªå®šç¾©å‘½ä»¤ï¼‰
-//	      ãƒ»SLL r      [ CB 30ã€œCB 37 ]
-//	      ãƒ»LD (nn),HL [ ED 63 ]
-//	      ãƒ»LD HL,(nn) [ ED 6B ]
-//	      ãƒ»OUT F,(C)  [ ED 70 ]
-//	      ãƒ»IN  (C),F  [ ED    ]
-//	      ãƒ»IX/IY ã®ä¸Šä½ä¸‹ä½ã‚’ä½¿ã†å‘½ä»¤   [ DD xx / FD xx ç³»]
-//	      ãƒ»SLL (IX+d) [ DD CD d 36 ] 
-//	      ãƒ»SLL (IY+d) [ FD CD d 36 ] 
-//	      ãƒ»ãã‚Œä»¥å¤–ã®å ´åˆ
-//		    ED ?? ã®å ´åˆ
-//			NOP ã¨ã¿ãªã™ã€‚ã‚¹ãƒ†ãƒ¼ãƒˆã¯ 8 ?
-//		    DD/FD ?? ã®å ´åˆ
-//			?? ã®ä½ç½®ã«PC ã‚’åˆã‚ã›ã‚‹ã€‚
-//			å‰²è¾¼ã¿åˆ¤å®šã—ãªã„ã€‚ã‚¹ãƒ†ãƒ¼ãƒˆã¯ 4 ?
-//		    DD/FD CB ?? ?? ã®å ´åˆ
-//			NOP ã¨ã¿ãªã™ã€‚ã‚¹ãƒ†ãƒ¼ãƒˆã¯ 23?
+//	–¢’è‹`–½—ßj
+//	      ESLL r      [ CB 30`CB 37 ]
+//	      ELD (nn),HL [ ED 63 ]
+//	      ELD HL,(nn) [ ED 6B ]
+//	      EOUT F,(C)  [ ED 70 ]
+//	      EIN  (C),F  [ ED    ]
+//	      EIX/IY ‚ÌãˆÊ‰ºˆÊ‚ğg‚¤–½—ß   [ DD xx / FD xx Œn]
+//	      ESLL (IX+d) [ DD CD d 36 ] 
+//	      ESLL (IY+d) [ FD CD d 36 ] 
+//	      E‚»‚êˆÈŠO‚Ìê‡
+//		    ED ?? ‚Ìê‡
+//			NOP ‚Æ‚İ‚È‚·BƒXƒe[ƒg‚Í 8 ?
+//		    DD/FD ?? ‚Ìê‡
+//			?? ‚ÌˆÊ’u‚ÉPC ‚ğ‡‚í‚¹‚éB
+//			Š„‚İ”»’è‚µ‚È‚¢BƒXƒe[ƒg‚Í 4 ?
+//		    DD/FD CB ?? ?? ‚Ìê‡
+//			NOP ‚Æ‚İ‚È‚·BƒXƒe[ƒg‚Í 23?
 //
-//	æœªå®šç¾©ãƒ•ãƒ©ã‚°å¤‰åŒ–ï¼‰
-//		CCF å‘½ä»¤ã®      Hãƒ•ãƒ©ã‚° â†’ Cãƒ•ãƒ©ã‚°ã¨é€£å‹•
-//		16BITæ¼”ç®—å‘½ä»¤ã® Hãƒ•ãƒ©ã‚° â†’ 10BITç›®ã®ç¹°ã‚Šä¸ŠãŒã‚Šã§å¤‰åŒ–
-//		IN r,(C) å‘½ä»¤ã® Hãƒ•ãƒ©ã‚° â†’ ï¼
-//		BIT 7,r  å‘½ä»¤ã® Sãƒ•ãƒ©ã‚° â†’ ã‚µã‚¤ãƒ³ãƒ•ãƒ©ã‚°
-//		ãƒ•ãƒ©ã‚°å¤‰åŒ–ä¸å®šã®å ´åˆã¯å¤§æŠµï¼ã«ãƒªã‚»ãƒƒãƒˆã•ã‚Œã‚‹
+//	–¢’è‹`ƒtƒ‰ƒO•Ï‰»j
+//		CCF –½—ß‚Ì      Hƒtƒ‰ƒO ¨ Cƒtƒ‰ƒO‚Æ˜A“®
+//		16BIT‰‰Z–½—ß‚Ì Hƒtƒ‰ƒO ¨ 10BIT–Ú‚ÌŒJ‚èã‚ª‚è‚Å•Ï‰»
+//		IN r,(C) –½—ß‚Ì Hƒtƒ‰ƒO ¨ ‚O
+//		BIT 7,r  –½—ß‚Ì Sƒtƒ‰ƒO ¨ ƒTƒCƒ“ƒtƒ‰ƒO
+//		ƒtƒ‰ƒO•Ï‰»•s’è‚Ìê‡‚Í‘å’ï‚O‚ÉƒŠƒZƒbƒg‚³‚ê‚é
 //
 //**********************************************************************
 #include "z80.h"
@@ -92,11 +92,11 @@
 #define M_PE()	(FLAG & V_FLAG)
 #define M_PO()	(!M_PE())
 
-// IFF ã®ä¸­èº«
+// IFF ‚Ì’†g
 #define INT_DISABLE	(0)
 #define INT_ENABLE	(1)
 
-// GetIntrVector() ã®è¿”ã‚Šå€¤
+// GetIntrVector() ‚Ì•Ô‚è’l
 #define	INTR_NONE		(-1)
 #define	INTR_LEVEL_0	(0)
 #define	INTR_LEVEL_1	(2)
@@ -112,38 +112,40 @@
 
 
 ////////////////////////////////////////////////////////////////
-// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 ////////////////////////////////////////////////////////////////
-cZ80::cZ80( void ){}
+cZ80::cZ80( void )
+{
+	Reset();
+}
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒfƒXƒgƒ‰ƒNƒ^
 ////////////////////////////////////////////////////////////////
 cZ80::~cZ80( void ){}
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒªã‚»ãƒƒãƒˆ
-//	æ±ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿ã¯å…¨ã¦ 0xffff
-//	PC,I,IX,IY ã‚‚ 0xffff
-//	PC ã¯ 0x0000
-//	SP ã¯ 0xffff
-//	å‰²è¾¼ã¿ã¯ç¦æ­¢
-//	å‰²è¾¼ã¿ãƒ¢ãƒ¼ãƒ‰ 0
-//	R ã¯é©å½“ãªå€¤
+// ƒŠƒZƒbƒg
+//	”Ä—pƒŒƒWƒXƒ^‚Í‘S‚Ä 0xffff
+//	PC,I,IX,IY ‚à 0xffff
+//	PC ‚Í 0x0000
+//	SP ‚Í 0xffff
+//	Š„‚İ‚Í‹Ö~
+//	Š„‚İƒ‚[ƒh 0
+//	R ‚Í“K“–‚È’l
 ////////////////////////////////////////////////////////////////
 void cZ80::Reset( void )
 {
 	AF.W  = BC.W  = DE.W  = HL.W  =
 	AF1.W = BC1.W = DE1.W = HL1.W =
-	IX.W  = IY.W  = 0xffff;
+	IX.W  = IY.W  = SP.W  = 0xffff;
 	PC.W  = 0x0000;
-	SP.W  = 0xffff;
 	I     = 0x00;
 	IFF   = IFF2 = INT_DISABLE;
 	IM    = 0;
-	Halt  = FALSE;
+	Halt  = false;
 	R_saved = R = 0;
 	
 	mstate = 0;
@@ -154,10 +156,10 @@ void cZ80::Reset( void )
 
 
 //------------------------------------------------------
-// ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆï¼ã‚·ãƒ•ãƒˆå‘½ä»¤ã®ãƒã‚¯ãƒ­
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//				 â‡” â‡” 0  ï¼° 0  â‡”
-//				(â†‘ â†‘    â†‘        ãƒ†ãƒ¼ãƒ–ãƒ«å‚ç…§)
+// ƒ[ƒe[ƒg^ƒVƒtƒg–½—ß‚Ìƒ}ƒNƒ
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//				 Ì Ì 0  ‚o 0  Ì
+//				(ª ª    ª        ƒe[ƒuƒ‹QÆ)
 //------------------------------------------------------
 #define M_RLC(reg)	do{						\
 					FLAG = reg>>7;			\
@@ -209,13 +211,13 @@ void cZ80::Reset( void )
 			}while(0)
 
 //------------------------------------------------------
-// ãƒ“ãƒƒãƒˆæ¼”ç®—ã®ãƒã‚¯ãƒ­
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//	(BIT)	     Ã— â‡” 1  Ã— 0  ãƒ»
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//	(SET/RES)    ãƒ» ãƒ» ãƒ» ãƒ» ãƒ» ãƒ»
+// ƒrƒbƒg‰‰Z‚Ìƒ}ƒNƒ
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//	(BIT)	     ~ Ì 1  ~ 0  E
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//	(SET/RES)    E E E E E E
 //
-//	BIT 7,reg ã§ã¯ã€ã‚µã‚¤ãƒ³ãƒ•ãƒ©ã‚°ãŒå¤‰åŒ–ã™ã‚‹ã€‚
+//	BIT 7,reg ‚Å‚ÍAƒTƒCƒ“ƒtƒ‰ƒO‚ª•Ï‰»‚·‚éB
 //------------------------------------------------------
 #define M_BIT(bit,reg)	do{												\
 				FLAG = (FLAG&~(Z_FLAG|N_FLAG|S_FLAG)) | H_FLAG |		\
@@ -225,9 +227,9 @@ void cZ80::Reset( void )
 #define M_RES(bit,reg)	do{ reg &= ~(1<<bit); }while(0)
 
 //------------------------------------------------------
-// PUSH/POP/åˆ†å²å‘½ä»¤ã®ãƒã‚¯ãƒ­
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//		     ãƒ» ãƒ» ãƒ» ãƒ» ãƒ» ãƒ»
+// PUSH/POP/•ªŠò–½—ß‚Ìƒ}ƒNƒ
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//		     E E E E E E
 //------------------------------------------------------
 #define M_POP(reg)	do{							\
 				reg.B.l = ReadMem( SP.W++ );	\
@@ -270,9 +272,9 @@ void cZ80::Reset( void )
 #define M_RET_SKIP()    do{            }while(0)
 
 //------------------------------------------------------
-// 16ãƒ“ãƒƒãƒˆãƒ­ãƒ¼ãƒ‰å‘½ä»¤ã®ãƒã‚¯ãƒ­
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//		     ãƒ» ãƒ» ãƒ» ãƒ» ãƒ» ãƒ»
+// 16ƒrƒbƒgƒ[ƒh–½—ß‚Ìƒ}ƒNƒ
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//		     E E E E E E
 //------------------------------------------------------
 #define M_LDWORD(reg)	do{					\
 			  reg.B.l = ReadMem( PC.W++ );	\
@@ -280,10 +282,10 @@ void cZ80::Reset( void )
 			}while(0)
 
 //------------------------------------------------------
-// 8ãƒ“ãƒƒãƒˆç®—è¡“æ¼”ç®—å‘½ä»¤ã®ãƒã‚¯ãƒ­
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//		     â‡” â‡” â‡” ï¼¶ â‡” â‡”
-//	            (â†‘ â†‘              ãƒ†ãƒ¼ãƒ–ãƒ«å‚ç…§)
+// 8ƒrƒbƒgZp‰‰Z–½—ß‚Ìƒ}ƒNƒ
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//		     Ì Ì Ì ‚u Ì Ì
+//	            (ª ª              ƒe[ƒuƒ‹QÆ)
 //------------------------------------------------------
 #define M_ADD_A(reg)	do{									\
 			  J.W = ACC+reg;								\
@@ -338,13 +340,13 @@ void cZ80::Reset( void )
 			}while(0)
 
 //------------------------------------------------------
-// 8ãƒ“ãƒƒãƒˆè«–ç†å‘½ä»¤ã®ãƒã‚¯ãƒ­
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//	(AND)	     â‡” â‡” 1  ï¼° 0  0
-//	            (â†‘ â†‘    â†‘        ãƒ†ãƒ¼ãƒ–ãƒ«å‚ç…§)
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//	(OR/XOR)     â‡” â‡” 0  ï¼° 0  0
-//	            (â†‘ â†‘    â†‘        ãƒ†ãƒ¼ãƒ–ãƒ«å‚ç…§)
+// 8ƒrƒbƒg˜_—–½—ß‚Ìƒ}ƒNƒ
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//	(AND)	     Ì Ì 1  ‚o 0  0
+//	            (ª ª    ª        ƒe[ƒuƒ‹QÆ)
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//	(OR/XOR)     Ì Ì 0  ‚o 0  0
+//	            (ª ª    ª        ƒe[ƒuƒ‹QÆ)
 //------------------------------------------------------
 #define M_AND(reg)	do{						\
 			  ACC &= reg;					\
@@ -360,29 +362,29 @@ void cZ80::Reset( void )
 			}while(0)
 
 //------------------------------------------------------
-// å…¥å‡ºåŠ›å‘½ä»¤ã®ãƒã‚¯ãƒ­
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//	(IN)	     â‡” â‡” 0  ï¼° 0  ãƒ»
-//	            (â†‘ â†‘    â†‘        ãƒ†ãƒ¼ãƒ–ãƒ«å‚ç…§)
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//	(OUT)	     ãƒ» ãƒ» ãƒ» ãƒ» ãƒ» ãƒ»
+// “üo—Í–½—ß‚Ìƒ}ƒNƒ
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//	(IN)	     Ì Ì 0  ‚o 0  E
+//	            (ª ª    ª        ƒe[ƒuƒ‹QÆ)
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//	(OUT)	     E E E E E E
 //------------------------------------------------------
 #define M_IN_C(reg)	do{									\
-				i = ReadIO( BC.B.l );					\
+				i = ReadIO( BC.W );						\
 				reg = i;								\
 				FLAG = SZP_table[reg]|(FLAG&C_FLAG);	\
 			}while(0)
 #define M_OUT_C(reg)	do{				\
-				WriteIO( BC.B.l, reg );	\
+				WriteIO( BC.W, reg );	\
 			}while(0)
 
 
 //------------------------------------------------------
-// 16ãƒ“ãƒƒãƒˆç®—è¡“æ¼”ç®—å‘½ä»¤ã®ãƒã‚¯ãƒ­
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//	(ADD)	     ãƒ» ãƒ» Ã— ãƒ» 0  â‡”
-//	ãƒ•ãƒ©ã‚°å¤‰åŒ– : S  Z  H  PV N  C
-//	(ADC/SBC)    â‡” â‡” Ã— ï¼¶ â‡” â‡”
+// 16ƒrƒbƒgZp‰‰Z–½—ß‚Ìƒ}ƒNƒ
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//	(ADD)	     E E ~ E 0  Ì
+//	ƒtƒ‰ƒO•Ï‰» : S  Z  H  PV N  C
+//	(ADC/SBC)    Ì Ì ~ ‚u Ì Ì
 //------------------------------------------------------
 #define M_ADDW(reg1,reg2)	do{									\
 				  J.W = (reg1+reg2)&0xffff;						\
@@ -530,36 +532,36 @@ enum CodesED
 
 
 ////////////////////////////////////////////////////////////////
-// 1å‘½ä»¤å®Ÿè¡Œ
+// 1–½—ßÀs
 ////////////////////////////////////////////////////////////////
 int cZ80::Exec( void )
 {
 	int opcode,INTR_value;
 	int state=0, istate=0;
-	BOOL NotIntrCheck = FALSE;
+	bool NotIntrCheck = false;
 	BYTE i;
 	PAIR J;
 	
 	
-	// BUSREQãƒã‚§ãƒƒã‚¯
+	// BUSREQƒ`ƒFƒbƒN
 	if( IsBUSREQ() ) return 1;
 	
-	//-------- Z80 ãƒ‹ãƒ¢ãƒ‹ãƒƒã‚¯ã®ãƒ‡ã‚³ãƒ¼ãƒ‰ --------
+	//-------- Z80 ƒjƒ‚ƒjƒbƒN‚ÌƒfƒR[ƒh --------
 	#if (CPU_LOG)
 		char DisCode[128];
 		Disasm( DisCode, PC.W );
 		fprintf( stdout, "[CPU][Exec] PC:%04X OP:%02X %s\n", PC.W, ReadMemNW(PC.W), DisCode );
 	#endif
 	state = istate = 0;
-	opcode = Fetch( PC.W++, &state );	// å‘½ä»¤ãƒ•ã‚§ãƒƒãƒ
+	opcode = Fetch( PC.W++, &state );	// –½—ßƒtƒFƒbƒ`
 	state += state_table[ opcode ];
 	R ++;
 	
 	switch( opcode ){
-	#include "z80-code.h"			// é€šå¸¸å‘½ä»¤ã®å ´åˆ
+	#include "z80-code.h"			// ’Êí–½—ß‚Ìê‡
 	
-	case PFX_CB:					// CB å‘½ä»¤ã®å ´åˆ
-		opcode = Fetch( PC.W++, &state );	// å‘½ä»¤ãƒ•ã‚§ãƒƒãƒ
+	case PFX_CB:					// CB –½—ß‚Ìê‡
+		opcode = Fetch( PC.W++, &state );	// –½—ßƒtƒFƒbƒ`
 		state += state_CB_table[ opcode ];
 		R ++;
 		switch( opcode ){
@@ -570,8 +572,8 @@ int cZ80::Exec( void )
 		}
 		break;
 		
-	case PFX_ED:					// ED å‘½ä»¤ã®å ´åˆ
-		opcode = Fetch( PC.W++, &state );	// å‘½ä»¤ãƒ•ã‚§ãƒƒãƒ
+	case PFX_ED:					// ED –½—ß‚Ìê‡
+		opcode = Fetch( PC.W++, &state );	// –½—ßƒtƒFƒbƒ`
 		state += state_ED_table[ opcode ];
 		R ++;
 		switch( opcode ){
@@ -582,14 +584,14 @@ int cZ80::Exec( void )
 		}
 		break;
 		
-	case PFX_DD:					// DD å‘½ä»¤ã®å ´åˆ
-		opcode = Fetch( PC.W++, &state );	// å‘½ä»¤ãƒ•ã‚§ãƒƒãƒ
+	case PFX_DD:					// DD –½—ß‚Ìê‡
+		opcode = Fetch( PC.W++, &state );	// –½—ßƒtƒFƒbƒ`
 		state += state_XX_table[ opcode ];
 		R ++;
 		#define XX IX
 		switch( opcode ){
 		#include "z80-cdXX.h"		// DD XX
-		case PFX_CB:				// DD CB ã®å ´åˆ
+		case PFX_CB:				// DD CB ‚Ìê‡
 			J.W = XX.W + (offset)ReadMem( PC.W++ );
 			opcode = ReadMem( PC.W++ );
 			state += state_XXCB_table[ opcode ];
@@ -604,22 +606,22 @@ int cZ80::Exec( void )
 		default:					// DD ??
 			printf( "Unrecognized instruction: DD %02X at PC=%04X\n", ReadMemNW(PC.W-1), PC.W-2 );
 			PC.W --;
-			R --;					// ?? ã®ä½ç½®ã«PCã‚’æˆ»ã™
+			R --;					// ?? ‚ÌˆÊ’u‚ÉPC‚ğ–ß‚·
 			state += 4;				// right ???
-			NotIntrCheck = TRUE;	// å‰²è¾¼ã¿åˆ¤å®šãªã—
+			NotIntrCheck = true;	// Š„‚İ”»’è‚È‚µ
 			break;
 		}
 		#undef XX
 		break;
 		
-	case PFX_FD:					// FD å‘½ä»¤ã®å ´åˆ
-		opcode = Fetch( PC.W++, &state );	// å‘½ä»¤ãƒ•ã‚§ãƒƒãƒ
+	case PFX_FD:					// FD –½—ß‚Ìê‡
+		opcode = Fetch( PC.W++, &state );	// –½—ßƒtƒFƒbƒ`
 		state += state_XX_table[ opcode ];
 		R ++;
 		#define XX IY
 		switch( opcode ){
 		#include "z80-cdXX.h"		// FD XX
-		case PFX_CB:				// FD CB ã®å ´åˆ
+		case PFX_CB:				// FD CB ‚Ìê‡
 			J.W = XX.W +(offset)ReadMem( PC.W++ );
 			opcode = ReadMem( PC.W++ );
 			state += state_XXCB_table[ opcode ];
@@ -634,9 +636,9 @@ int cZ80::Exec( void )
 		default:					// FD ??
 			printf( "Unrecognized instruction: FD %02X at PC=%04X\n", ReadMemNW(PC.W-1), PC.W-2 );
 			PC.W --;
-			R --;					// ?? ã®ä½ç½®ã«PCã‚’æˆ»ã™
+			R --;					// ?? ‚ÌˆÊ’u‚ÉPC‚ğ–ß‚·
 			state += 4;				// right ???
-			NotIntrCheck = TRUE;	// å‰²è¾¼ã¿åˆ¤å®šãªã—
+			NotIntrCheck = true;	// Š„‚İ”»’è‚È‚µ
 			break;
 		}
 		#undef XX
@@ -648,23 +650,23 @@ int cZ80::Exec( void )
 		break;
 	}
 	
-	//------------ å‰²è¾¼ã¿å‡¦ç† ------------
-	if( NotIntrCheck ) NotIntrCheck = FALSE;
+	//------------ Š„‚İˆ— ------------
+	if( NotIntrCheck ) NotIntrCheck = false;
 	else{
 		if( IFF == INT_ENABLE ){
-			INTR_value = GetIntrVector();				// å‰²è¾¼ã¿ãƒ™ã‚¯ã‚¿å–å¾—
-			if( INTR_value >= 0 ){						// å‰²è¾¼ã¿å—ã‘ä»˜ã‘
+			INTR_value = GetIntrVector();				// Š„‚İƒxƒNƒ^æ“¾
+			if( INTR_value >= 0 ){						// Š„‚İó‚¯•t‚¯
 				IFF = INT_DISABLE;
 				istate += 2;							// ??? Really ?
 				
 				if( Halt ){
-					Halt = FALSE;
+					Halt = false;
 					PC.W ++;
 					istate += 4;						// ??? Really ?
 				}
 				
 				switch( IM ){
-				case 0:	// IM 0 ã®æ™‚
+				case 0:	// IM 0 ‚Ì
 					R ++;
 					istate += state_table[ INTR_value ];
 					switch( INTR_value ){
@@ -695,12 +697,12 @@ int cZ80::Exec( void )
 						break;
 					}
 					break;
-				case 1:	// IM 1 ã®æ™‚
+				case 1:	// IM 1 ‚Ì
 					R ++;
 					istate += state_table[ RST38 ];	
 					M_RST( 0x0038 );
 					break;
-				case 2:	// IM 2 ã®æ™‚
+				case 2:	// IM 2 ‚Ì
 					M_PUSH( PC );
 					INTR_value |= (WORD)cZ80::I << 8;
 					PC.B.l = ReadMem( INTR_value++ );
@@ -714,7 +716,7 @@ int cZ80::Exec( void )
 		}
 	}
 	
-	state += mstate;	// ãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã‚¦ã‚§ã‚¤ãƒˆ ã‚¹ãƒ†ãƒ¼ãƒˆæ•°ã‚’åŠ ç®—
+	state += mstate;	// ƒƒ‚ƒŠƒAƒNƒZƒXƒEƒFƒCƒg ƒXƒe[ƒg”‚ğ‰ÁZ
 	
 	mstate = 0;
 	
@@ -723,10 +725,10 @@ int cZ80::Exec( void )
 
 
 ////////////////////////////////////////////////////////////////
-// BUSREQå–å¾—
+// BUSREQæ“¾
 ////////////////////////////////////////////////////////////////
-BOOL cZ80::IsBUSREQ( void )
+bool cZ80::IsBUSREQ( void )
 {
-	return FALSE;
+	return false;
 }
 

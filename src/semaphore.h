@@ -16,7 +16,7 @@
 // CriticalSection
 class cCritical {
 private:
-	CRITSECT mcs;
+	HCRSECT mcs;
 	
 public:
 	cCritical();

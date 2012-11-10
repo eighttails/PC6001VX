@@ -1,15 +1,15 @@
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
-#include "typedef.h"
 #include "ini.h"
 #include "keydef.h"
+#include "vsurface.h"
 
 
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class cConfig {
+class CFG6 {
 protected:
 	cIni *Ini;								// INIオブジェクトポインタ
 	
@@ -19,8 +19,7 @@ protected:
 	char DokoFile[PATH_MAX];				// どこでもSAVEファイル名
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	BOOL MonDisp;							// モニタウィンドウ表示状態 TRUE:表示 FALSE:非表示
-	BOOL TimerIntr;							// タイマ割込み許可フラグ
+	bool MonDisp;							// モニタウィンドウ表示状態 true:表示 false:非表示
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	
 	
@@ -33,7 +32,8 @@ protected:
 	char TapeFile[PATH_MAX];				// TAPEファイル名
 	char SaveFile[PATH_MAX];				// TAPE(SAVE)ファイル名
 	char DiskPath[PATH_MAX];				// DISKパス
-	char DiskFile[PATH_MAX];				// DISKファイル名
+	char DiskFile1[PATH_MAX];				// DISK1ファイル名
+	char DiskFile2[PATH_MAX];				// DISK2ファイル名
 	char ImgPath[PATH_MAX];					// スクリーンショット格納パス
 	char FontPath[PATH_MAX];				// フォント格納パス
 	char FontFileZ[PATH_MAX];				// 全角フォントファイル名
@@ -47,18 +47,18 @@ protected:
 	static const COLOR24 STDColor[];		// 標準カラーデータ
 	
 	
-	void InitIni( cIni *, BOOL );			// INIオブジェクト初期値設定
+	void InitIni( cIni *, bool );			// INIオブジェクト初期値設定
 	const char *GetPCKeyName( PCKEYsym );	// 仮想キーコードから名称取得
 	const char *GetP6KeyName( P6KEYsym );	// P6キーコードから名称取得
 	PCKEYsym GetPCKeyCode( char * );		// キー名称から仮想キーコードを取得
 	P6KEYsym GetP6KeyCode( char * );		// キー名称からP6キーコードを取得
 
 public:
-	cConfig();								// コンストラクタ
-	virtual ~cConfig();						// デストラクタ
+	CFG6();								// コンストラクタ
+	virtual ~CFG6();						// デストラクタ
 	
-	BOOL Init();							// 初期化(INIファイル読込み)
-	BOOL Write();							// INIファイル書込み
+	bool Init();							// 初期化(INIファイル読込み)
+	bool Write();							// INIファイル書込み
 	
 	// メンバアクセス関数
 	// 共通
@@ -73,16 +73,16 @@ public:
 	// メモリ関係
 	char *GetRomPath();						// ROMパス取得
 	void SetRomPath( const char * );		//        設定
-	BOOL GetUseExtRam();					// 拡張RAMを使う取得
-	void SetUseExtRam( BOOL );				//              設定
+	bool GetUseExtRam();					// 拡張RAMを使う取得
+	void SetUseExtRam( bool );				//              設定
 	char *GetExtRomPath();					// 拡張ROMパス取得
 	void SetExtRomPath( const char * );		//            設定
 	char *GetExtRomFile();					// 拡張ROMファイル名取得
 	void SetExtRomFile( const char * );		//                  設定
-	BOOL GetCheckCRC();						// CRCチェック取得
-	void SetCheckCRC( BOOL );				//            設定
-	BOOL GetRomPatch();						// ROMパッチ取得
-	void SetRomPatch( BOOL );				//          設定
+	bool GetCheckCRC();						// CRCチェック取得
+	void SetCheckCRC( bool );				//            設定
+	bool GetRomPatch();						// ROMパッチ取得
+	void SetRomPatch( bool );				//          設定
 	
 	// キーボード関係
 	int GetKeyRepeat();						// キーリピート取得
@@ -115,10 +115,10 @@ public:
 	void SetTapeFile( const char * );		//               設定
 	int GetCmtVol();						// TAPEモニタ音量取得
 	void SetCmtVol( int );					//               設定
-	BOOL GetTurboTAPE();					// Turbo TAPE 有効フラグ取得
-	void SetTurboTAPE( BOOL );				//                      設定
-	BOOL GetBoostUp();						// BoostUp 有効フラグ取得
-	void SetBoostUp( BOOL );				//                   設定
+	bool GetTurboTAPE();					// Turbo TAPE 有効フラグ取得
+	void SetTurboTAPE( bool );				//                      設定
+	bool GetBoostUp();						// BoostUp 有効フラグ取得
+	void SetBoostUp( bool );				//                   設定
 	int GetMaxBoost1();						// BoostUp 最大倍率(N60モード)取得
 	void SetMaxBoost1( int );				//                            設定
 	int GetMaxBoost2();						// BoostUp 最大倍率(N60m/N66モード)取得
@@ -129,8 +129,8 @@ public:
 	// DISK関係
 	char *GetDiskPath();					// DISKパス取得
 	void SetDiskPath( const char * );		//         設定
-	char *GetDiskFile();					// DISKファイル名取得
-	void SetDiskFile( const char * );		//               設定
+	char *GetDiskFile( int );				// DISKファイル名取得
+	void SetDiskFile( int, const char * );	//               設定
 	int GetFddNum();						// FDD接続台数取得
 	void SetFddNum( int );					//            設定
 	
@@ -141,44 +141,36 @@ public:
 	void SetScrBpp( int );					//             設定
 	int GetMode4Color();					// モード4カラーモード取得
 	void SetMode4Color( int );				//                    設定
-	BOOL GetScanLine();						// スキャンライン取得
-	void SetScanLine( BOOL );				//               設定
+	bool GetScanLine();						// スキャンライン取得
+	void SetScanLine( bool );				//               設定
 	int GetScanLineBr();					// スキャンライン輝度取得
 	void SetScanLineBr( int );				//                   設定
-	BOOL GetDispNTSC();						// 4:3表示取得
-	void SetDispNTSC( BOOL );				//        設定
-	BOOL GetFullScreen();					// フルスクリーン取得
-	void SetFullScreen( BOOL );				//               設定
-	BOOL GetStatDisp();						// ステータスバー表示状態取得
-	void SetStatDisp( BOOL );				//                       設定
+	bool GetDispNTSC();						// 4:3表示取得
+	void SetDispNTSC( bool );				//        設定
+	bool GetFullScreen();					// フルスクリーン取得
+	void SetFullScreen( bool );				//               設定
+	bool GetStatDisp();						// ステータスバー表示状態取得
+	void SetStatDisp( bool );				//                       設定
 	int GetFrameSkip();						// フレームスキップ取得
 	void SetFrameSkip( int );				//                 設定
 	
 	// ビデオキャプチャ関係
-	BOOL GetAviRle();						// RLEフラグ取得
-	void SetAviRle( BOOL );					//          設定
-	
-	// フォント関係
-	char *GetFontPath();					// フォント格納パス取得
-	void SetFontPath( const char * );		//                 設定
-	char *GetFontFileZ();					// 全角フォントファイル名取得
-	void SetFontFileZ( const char * );		//                       設定
-	char *GetFontFileH();					// 半角フォントファイル名取得
-	void SetFontFileH( const char * );		//                       設定
+	bool GetAviRle();						// RLEフラグ取得
+	void SetAviRle( bool );					//          設定
 	
 	// プリンタ関係
 	char *GetPrinterFile();					// プリンタファイル名取得
 	void SetPrinterFile( const char * );	//                   設定
 	
 	// 確認関係
-	BOOL GetCkQuit();						// 終了時確認取得
-	void SetCkQuit( BOOL );					//           設定
-	BOOL GetSaveQuit();						// 終了時INI保存取得
-	void SetSaveQuit( BOOL );				//              設定
+	bool GetCkQuit();						// 終了時確認取得
+	void SetCkQuit( bool );					//           設定
+	bool GetSaveQuit();						// 終了時INI保存取得
+	void SetSaveQuit( bool );				//              設定
 	
 	// 特殊機能・拡張機能関係
-	BOOL GetUseSoldier();					// 戦士のカートリッジ使うフラグ取得
-	void SetUseSoldier( BOOL );				//                             設定
+	bool GetUseSoldier();					// 戦士のカートリッジ使うフラグ取得
+	void SetUseSoldier( bool );				//                             設定
 	
 	// パレット関係
 	COLOR24 *GetColor( int, COLOR24 * );	// カラーデータ取得
@@ -190,16 +182,14 @@ public:
 	int GetVKeyDef( VKeyConv ** );			// キー定義配列取得
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	BOOL GetMonDisp();						// モニタウィンドウ表示状態取得
-	void SetMonDisp( BOOL );				// モニタウィンドウ表示状態設定
-	BOOL GetTimerIntr();					// タイマ割込み許可フラグ取得
-	void SetTimerIntr( BOOL );				// タイマ割込み許可フラグ設定
+	bool GetMonDisp();						// モニタウィンドウ表示状態取得
+	void SetMonDisp( bool );				// モニタウィンドウ表示状態設定
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

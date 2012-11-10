@@ -1,4 +1,5 @@
 #include "pc6001v.h"
+#include "p6el.h"
 #include "log.h"
 #include "psg.h"
 #include "keyboard.h"
@@ -14,10 +15,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-PSG6::PSG6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id)
-{
-	JoyNo = 0;
-}
+PSG6::PSG6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id), JoyNo(0), Clock(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -55,8 +53,8 @@ void PSG6::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
 ////////////////////////////////////////////////////////////////
 int PSG6::GetUpdateSamples( void )
 {
-	int samples = (int)( (double)SndDev::SampleRate * vm->sche->Scale( this, EID_PSG ) + 0.5 );
-	vm->sche->Reset( this, EID_PSG );
+	int samples = (int)( (double)SndDev::SampleRate * vm->evsc->Scale( this, EID_PSG ) + 0.5 );
+	vm->evsc->Reset( this, EID_PSG );
 	return samples;
 }
 
@@ -76,12 +74,12 @@ void PSG6::PreWriteReg( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL PSG6::Init( int clock, int srate )
+bool PSG6::Init( int clock, int srate )
 {
 	PRINTD( PSG_LOG, "[PSG][Init]\n" );
 	
 	// PSGクロック設定
-	cAY8910::SetClock( clock, SndDev::SampleRate );
+	cAY8910::SetClock( clock, srate );
 	
 	// PSG ボリュームテーブル設定
 	cAY8910::SetVolumeTable( DEFAULT_PSGVOL );
@@ -90,9 +88,26 @@ BOOL PSG6::Init( int clock, int srate )
 	cAY8910::Reset();
 	
 	// 少なくとも1秒に1回くらいは更新するだろうという前提
-	if( !vm->sche->Add( this, EID_PSG, 1000, EV_LOOP|EV_MS ) ) return FALSE;
+	if( !vm->evsc->Add( this, EID_PSG, 1000, EV_LOOP|EV_MS ) ) return false;
+	
+	Clock = clock;
 	
 	return SndDev::Init( srate );
+}
+
+
+////////////////////////////////////////////////////////////////
+// サンプリングレート設定
+//
+// 引数:	rate	サンプリングレート
+//			size	バッファサイズ
+// 返値:	bool	true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool PSG6::SetSampleRate( int rate, int size )
+{
+	cAY8910::SetClock( Clock, rate );
+	
+	return SndDev::SetSampleRate( rate, size );
 }
 
 
@@ -104,17 +119,17 @@ BOOL PSG6::Init( int clock, int srate )
 ////////////////////////////////////////////////////////////////
 int PSG6::SoundUpdate( int samples )
 {
-	PRINTD2( PSG_LOG, "[PSG][Update] Samples: %d(%d)", samples, SndDev::cRing::FreeSize() );
+	PRINTD( PSG_LOG, "[PSG][SoundUpdate] Samples: %d(%d)", samples, SndDev::cRing::FreeSize() );
 	
 	int length = 0;
 	
-	if( !samples ){
+	if( samples == 0 ){
 		int sam = GetUpdateSamples();
-		length = min( sam,  SndDev::cRing::FreeSize() );
+		length = min( sam, SndDev::cRing::FreeSize() );
 	}else if( samples > 0 ) length = min( samples, SndDev::cRing::FreeSize() );
-	else                    length = SndDev::cRing::FreeSize();
+	else                   length = SndDev::cRing::FreeSize();
 	
-	PRINTD1( PSG_LOG, " -> %d\n", length );
+	PRINTD( PSG_LOG, " -> %d\n", length );
 	
 	if( !length ) return 0;
 	
@@ -135,7 +150,7 @@ int PSG6::SoundUpdate( int samples )
 // PSGレジスタアドレスラッチ
 inline void PSG6::OutA0H( int, BYTE data )
 {
-	PRINTD1( PSG_LOG, "[PSG][RegisterLatch] -> %d\n", data );
+	PRINTD( PSG_LOG, "[PSG][RegisterLatch] -> %d\n", data );
 	
 	cAY8910::RegisterLatch = data & 0x0f;
 }
@@ -160,16 +175,16 @@ inline BYTE PSG6::InA2H( int )
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL PSG6::DokoSave( cIni *Ini )
+bool PSG6::DokoSave( cIni *Ini )
 {
 	cSche::evinfo e;
 	char stren[16];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	// cAY8910
 	Ini->PutEntry( "PSG", NULL, "RegisterLatch",	"%d",	RegisterLatch );
@@ -209,12 +224,12 @@ BOOL PSG6::DokoSave( cIni *Ini )
 	
 	// イベント
 	e.id = EID_PSG;
-	if( vm->sche->GetEvinfo( &e ) ){
+	if( vm->evsc->GetEvinfo( &e ) ){
 		sprintf( stren, "Event%08X", e.id );
 		Ini->PutEntry( "PSG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
 	}
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -222,9 +237,9 @@ BOOL PSG6::DokoSave( cIni *Ini )
 // どこでもLOAD
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL PSG6::DokoLoad( cIni *Ini )
+bool PSG6::DokoLoad( cIni *Ini )
 {
 	int st,yn;
 	cSche::evinfo e;
@@ -233,7 +248,7 @@ BOOL PSG6::DokoLoad( cIni *Ini )
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	// cAY8910
 	Ini->GetInt( "PSG", "RegisterLatch", &RegisterLatch, RegisterLatch );
@@ -276,11 +291,11 @@ BOOL PSG6::DokoLoad( cIni *Ini )
 	sprintf( stren, "Event%08X", e.id );
 	if( Ini->GetString( "PSG", stren, strrs, "" ) ){
 		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
+		e.Active = yn ? true : false;
+		if( !vm->evsc->SetEvinfo( &e ) ) return false;
 	}
 	
-	return TRUE;
+	return true;
 }
 
 

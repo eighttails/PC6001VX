@@ -6,12 +6,14 @@
 
 
 // P6T ブロック情報
-typedef struct{
+struct P6TBLKINFO {
 	int STime;				// 無音部の時間(ms)
 	int PTime;				// ぴー音の時間(ms)
 	int Offset;				// ベタイメージ先頭からのオフセット
 	int DNum;				// データサイズ
-} P6TBLKINFO;
+	
+	P6TBLKINFO() : STime(0), PTime(0), Offset(0), DNum(0) {}
+};
 
 
 // DATAブロッククラス
@@ -90,9 +92,9 @@ public:
 	int SetName( const char * );			// データ名設定
 	void SetBaud( int baud ){ Baud = baud; }	// ボーレート設定
 	
-	BOOL Readf( FILE * );					// ファイルから全PARTを読込み
+	bool Readf( FILE * );					// ファイルから全PARTを読込み
 	int Writefd( FILE * );					// ファイルに書込み(データ)
-	BOOL Writeff( FILE * );					// ファイルに書込み(フッタ)
+	bool Writeff( FILE * );					// ファイルに書込み(フッタ)
 };
 
 
@@ -102,7 +104,7 @@ private:
 	char Name[17];							// データ名(16文字+'00H')
 	BYTE Version;							// バージョン
 	
-	BOOL Start;								// オートスタートフラグ
+	bool Start;								// オートスタートフラグ
 	BYTE BASIC;								// BASICモード(PC-6001の場合は無意味)
 	BYTE Page;								// ページ数
 	WORD ASKey;								// オートスタートコマンドサイズ
@@ -122,8 +124,8 @@ private:
 	int swait;								// 無音部の待ち回数
 	int pwait;								// ぴー音の待ち回数
 	
-	BOOL ReadP6T( const char * );			// P6Tを読込み
-	BOOL ConvP6T( const char * );			// ベタをP6Tに変換して読込み
+	bool ReadP6T( const char * );			// P6Tを読込み
+	bool ConvP6T( const char * );			// ベタをP6Tに変換して読込み
 	
 public:
 	cP6T();									// コンストラクタ
@@ -136,7 +138,7 @@ public:
 	
 	int SetName( const char * );			// データ名設定
 	char *GetName(){ return Name; }			//         取得
-	BOOL GetStart(){ return Start; }		// オートスタートフラグ取得
+	bool GetStart(){ return Start; }		// オートスタートフラグ取得
 	BYTE GetBASIC(){ return BASIC; }		// BASICモード取得
 	BYTE GetPage() { return Page; }			// ページ数取得
 	
@@ -147,11 +149,11 @@ public:
 	
 	BYTE ReadOne();							// 1文字読込み
 	
-	BOOL IsSWaiting();						// 無音部待ち?
-	BOOL IsPWaiting();						// ぴー音待ち?
+	bool IsSWaiting();						// 無音部待ち?
+	bool IsPWaiting();						// ぴー音待ち?
 	
-	BOOL Readf( char * );					// ファイルから読込み
-	BOOL Writef( char * );					// ファイルに書込み
+	bool Readf( char * );					// ファイルから読込み
+	bool Writef( char * );					// ファイルに書込み
 	
 	int GetCount();							// TAPEカウンタ取得
 	void SetCount( int );					//             設定
@@ -161,8 +163,8 @@ public:
 	void SetBoost( int );					// ボーレート倍率設定
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

@@ -1,4 +1,5 @@
 #include "pc6001v.h"
+#include "p6el.h"
 #include "log.h"
 #include "vdg.h"
 #include "memory.h"
@@ -11,11 +12,13 @@
 #define	EID_DISPE	(3)			/* 表示区間終了 */
 
 #define	VSLINE		(262)		/* 垂直トータルライン   */
-#define	HSDCLOCK	(455)		/* 水平トータル期間(ドットクロック) */
 #define	VLINES60	(192)		/* 垂直表示ライン(N60)  */
 #define	VLINES62	(200)		/* 垂直表示ライン(N60m) */
 
-#define	HCLOCK60	(256+40)	/* 水平表示期間(N60)    */
+#define	HSDCLK60	(455)		/* 水平トータル期間(ドットクロック) 60    */
+#define	HSDCLK62	(456)		/* 水平トータル期間(ドットクロック) 62,66 */
+#define	HCLK6060	(256+40)	/* 水平表示期間(N60)  60    */
+#define	HCLK6062	(256+48)	/* 水平表示期間(N60)  62,66 */
 #define	HCLOCK62	(320+48)	/* 水平表示期間(N60m)   */
 
 
@@ -89,16 +92,14 @@ const BYTE VDG62::COL62_CG4[][16] = {	// mode 2-4 -----
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-VDG6::VDG6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
-{
-	Mode4Col = DEFAULT_MODE4_COLOR;
-	AddrOff  = 0;
-	VLcnt    = VLINES60;
-	OnDisp   = FALSE;
-}
+VDG6::VDG6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id),
+		AddrOff(0), VLcnt(VLINES60), OnDisp(false) {}
 
 VDG60::VDG60( VM6 *vm, const ID& id ) : VDG6(vm,id), Device(id)
 {
+	HSdclk = HSDCLK60;
+	Hclk60 = HCLK6060;
+	
 	// カラーコード設定
 	for( int i=0; i<COUNTOF(COL_AN); i++ ) COL_AN[i] = COL60_AN[i];
 	for( int i=0; i<COUNTOF(COL_SG); i++ ) COL_SG[i] = COL60_SG[i];
@@ -112,6 +113,9 @@ VDG60::VDG60( VM6 *vm, const ID& id ) : VDG6(vm,id), Device(id)
 
 VDG62::VDG62( VM6 *vm, const ID& id ) : VDG6(vm,id), Device(id)
 {
+	HSdclk = HSDCLK62;
+	Hclk60 = HCLK6062;
+	
 	// カラーコード設定
 	for( int i=0; i<COUNTOF(COL_AN); i++ ) COL_AN[i] = COL62_AN[i];
 	for( int i=0; i<COUNTOF(COL_SG); i++ ) COL_SG[i] = COL62_SG[i];
@@ -129,10 +133,6 @@ VDG62::VDG62( VM6 *vm, const ID& id ) : VDG6(vm,id), Device(id)
 	for( int i=0; i<COUNTOF(COL_CG4); i++ )
 		for( int j=0; j<COUNTOF(COL_CG4[0]); j++ )
 			COL_CG4[i][j] = COL62_CG4[i][j];
-	
-	Mk2CharMode  = TRUE;
-	Mk2GraphMode = FALSE;
-	Css1 = Css2 = Css3 = 1;
 }
 
 
@@ -157,21 +157,21 @@ void VDG6::EventCallback( int id, int clock )
 {
 	switch( id ){
 	case EID_VSYNC:	// VSYNC
-		vm->sche->OnVSYNC();					// VSYNCを通知する
+		vm->evsc->OnVSYNC();				// VSYNCを通知する
 		VLcnt = N60Win ? VLINES60 : VLINES62;	// 表示ラインカウント初期化
-		vm->sche->Reset( this, EID_DISPS, 1.0 - (double)( N60Win ? HCLOCK60 : HCLOCK62 ) / (double)HSDCLOCK );
-		vm->sche->Reset( this, EID_DISPE );
+		vm->evsc->Reset( this, EID_DISPS, 1.0 - (double)( N60Win ? Hclk60 : HCLOCK62 ) / (double)HSdclk );
+		vm->evsc->Reset( this, EID_DISPE );
 		break;
 		
 	case EID_DISPS:	// 表示区間開始
 		if( VLcnt ){
-			OnDisp = CrtDisp ? TRUE : FALSE;
+			OnDisp = CrtDisp ? true : false;
 			VLcnt--;
 		}
 		break;
 		
 	case EID_DISPE:	// 表示区間終了
-		OnDisp = FALSE;
+		OnDisp = false;
 		break;
 	}
 }
@@ -282,23 +282,23 @@ BYTE VDG62::GetFont2( WORD addr )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL VDG6::Init( void )
+bool VDG6::Init( void )
 {
 	// イベント追加
-	if( !vm->sche->Add( this, EID_VSYNC, VSYNC_HZ,        EV_LOOP|EV_HZ ) ) return FALSE;
-	if( !vm->sche->Add( this, EID_DISPS, VSYNC_HZ*VSLINE, EV_LOOP|EV_HZ ) ) return FALSE;
-	if( !vm->sche->Add( this, EID_DISPE, VSYNC_HZ*VSLINE, EV_LOOP|EV_HZ ) ) return FALSE;
+	if( !vm->evsc->Add( this, EID_VSYNC, VSYNC_HZ,        EV_LOOP|EV_HZ ) ) return false;
+	if( !vm->evsc->Add( this, EID_DISPS, VSYNC_HZ*VSLINE, EV_LOOP|EV_HZ ) ) return false;
+	if( !vm->evsc->Add( this, EID_DISPE, VSYNC_HZ*VSLINE, EV_LOOP|EV_HZ ) ) return false;
 	
 	// サーフェス作成
-	if( VSurface::InitSurface( cMC6847core::GetW(), cMC6847core::GetH(), 8 ) ) return TRUE;
-	else																	   return FALSE;
+	if( VSurface::InitSurface( cMC6847core::GetW(), cMC6847core::GetH(), 8 ) ) return true;
+	else																	   return false;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 表示区間フラグ取得
 ////////////////////////////////////////////////////////////////
-BOOL VDG6::IsDisp( void )
+bool VDG6::IsDisp( void )
 {
 	return OnDisp;
 }
@@ -378,13 +378,13 @@ WORD VDG62::GerAttrAddr( void )
 ////////////////////////////////////////////////////////////////
 void VDG62::SetCss( BYTE data )
 {
-	PRINTD1( GRP_LOG, "[VDG][62][SetCss] -> %02X : ", data );
+	PRINTD( GRP_LOG, "[VDG][62][SetCss] -> %02X : ", data );
 	
 	Css1 =  data    &1;
 	Css2 = (data>>1)&1;
 	Css3 = (data>>2)&1;
 	
-	PRINTD3( GRP_LOG, "1:%d 2:%d 3:%d\n", Css1, Css2, Css3 );
+	PRINTD( GRP_LOG, "1:%d 2:%d 3:%d\n", Css1, Css2, Css3 );
 }
 
 
@@ -393,16 +393,16 @@ void VDG62::SetCss( BYTE data )
 ////////////////////////////////////////////////////////////////
 void VDG62::SetCrtControler( BYTE data )
 {
-	PRINTD1( GRP_LOG, "[VDG][62][SetCrtControler] -> %02X\n", data );
+	PRINTD( GRP_LOG, "[VDG][62][SetCrtControler] -> %02X\n", data );
 	
-	N60Win       = data&2 ? TRUE : FALSE;	// ウィンドウサイズ       TRUE:N60        FALSE:N60m
-	Mk2CharMode  = data&4 ? TRUE : FALSE;	// mk2 表示モード         TRUE:キャラクタ FALSE:グラフィック
-	Mk2GraphMode = data&8 ? TRUE : FALSE;	// mk2 グラフィック解像度 TRUE:160*200    FALSE:320*200
+	N60Win       = data&2 ? true : false;	// ウィンドウサイズ       true:N60        false:N60m
+	Mk2CharMode  = data&4 ? true : false;	// mk2 表示モード         true:キャラクタ false:グラフィック
+	Mk2GraphMode = data&8 ? true : false;	// mk2 グラフィック解像度 true:160*200    false:320*200
 	
-	PRINTD1( GRP_LOG, " DATA        :%02X\n", data );
-	PRINTD1( GRP_LOG, " N60Win      :%s\n", N60Win       ? "N60"  : "N60m" );
-	PRINTD1( GRP_LOG, " Mk2CharMode :%s\n", Mk2CharMode  ? "Char" : "Graph" );
-	PRINTD1( GRP_LOG, " Mk2GraphMode:%d\n", Mk2GraphMode ? 160    : 320 );
+	PRINTD( GRP_LOG, " DATA        :%02X\n", data );
+	PRINTD( GRP_LOG, " N60Win      :%s\n", N60Win       ? "N60"  : "N60m" );
+	PRINTD( GRP_LOG, " Mk2CharMode :%s\n", Mk2CharMode  ? "Char" : "Graph" );
+	PRINTD( GRP_LOG, " Mk2GraphMode:%d\n", Mk2GraphMode ? 160    : 320 );
 }
 
 
@@ -420,14 +420,15 @@ inline BYTE VDG62::InC1H( int ){ return (N60Win ? 2 : 0) | (Mk2CharMode ? 4 : 0)
 ////////////////////////////////////////////////////////////////
 // どこでもSAVE
 ////////////////////////////////////////////////////////////////
-BOOL VDG60::DokoSave( cIni *Ini )
+bool VDG60::DokoSave( cIni *Ini )
 {
+	int i;
 	cSche::evinfo e;
 	char stren[16];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	
 	Ini->PutEntry( "VDG", NULL, "CrtDisp",	"%s",			CrtDisp ? "Yes" : "No" );
@@ -450,53 +451,47 @@ BOOL VDG60::DokoSave( cIni *Ini )
 	
 	
 	// イベント
-	e.id = EID_VSYNC;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "VDG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
+	int eid[] = { EID_VSYNC, EID_DISPS, EID_DISPE, 0 };
+	i = 0;
+	
+	while( eid[i] ){
+		e.id = eid[i++];
+		if( vm->evsc->GetEvinfo( &e ) ){
+			sprintf( stren, "Event%08X", e.id );
+			Ini->PutEntry( "VDG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
+		}
 	}
 	
-	e.id = EID_DISPS;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "VDG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
-	
-	e.id = EID_DISPE;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "VDG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
-	
-	return TRUE;
+	return true;
 }
 
-BOOL VDG62::DokoSave( cIni *Ini )
+bool VDG62::DokoSave( cIni *Ini )
 {
+	int i;
 	cSche::evinfo e;
 	char stren[16];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	
-	Ini->PutEntry( "VDG", NULL, "CrtDisp",	"%s",			CrtDisp ? "Yes" : "No" );
-	Ini->PutEntry( "VDG", NULL, "N60Win",	"%s",			N60Win  ? "Yes" : "No" );
+	Ini->PutEntry( "VDG", NULL, "CrtDisp",		"%s",		CrtDisp ? "Yes" : "No" );
+	Ini->PutEntry( "VDG", NULL, "N60Win",		"%s",		N60Win  ? "Yes" : "No" );
 	
-	Ini->PutEntry( "VDG", NULL, "VAddr",	"0x%04X",		VAddr );
-	Ini->PutEntry( "VDG", NULL, "HAddr",	"0x%04X",		HAddr );
-	Ini->PutEntry( "VDG", NULL, "RowCntA",	"%d",			RowCntA );
-	Ini->PutEntry( "VDG", NULL, "AT_AG",	"0x%02X",		AT_AG );
-	Ini->PutEntry( "VDG", NULL, "AT_AS",	"0x%02X",		AT_AS );
-	Ini->PutEntry( "VDG", NULL, "AT_IE",	"0x%02X",		AT_IE );
-	Ini->PutEntry( "VDG", NULL, "AT_GM",	"0x%02X",		AT_GM );
-	Ini->PutEntry( "VDG", NULL, "AT_CSS",	"0x%02X",		AT_CSS );
-	Ini->PutEntry( "VDG", NULL, "AT_INV",	"0x%02X",		AT_INV );
+	Ini->PutEntry( "VDG", NULL, "VAddr",		"0x%04X",	VAddr );
+	Ini->PutEntry( "VDG", NULL, "HAddr",		"0x%04X",	HAddr );
+	Ini->PutEntry( "VDG", NULL, "RowCntA",		"%d",		RowCntA );
+	Ini->PutEntry( "VDG", NULL, "AT_AG",		"0x%02X",	AT_AG );
+	Ini->PutEntry( "VDG", NULL, "AT_AS",		"0x%02X",	AT_AS );
+	Ini->PutEntry( "VDG", NULL, "AT_IE",		"0x%02X",	AT_IE );
+	Ini->PutEntry( "VDG", NULL, "AT_GM",		"0x%02X",	AT_GM );
+	Ini->PutEntry( "VDG", NULL, "AT_CSS",		"0x%02X",	AT_CSS );
+	Ini->PutEntry( "VDG", NULL, "AT_INV",		"0x%02X",	AT_INV );
 	
-	Ini->PutEntry( "VDG", NULL, "AddrOff",	"0x%02X",		AddrOff );
-	Ini->PutEntry( "VDG", NULL, "VLcnt",	"%d",			VLcnt );
-	Ini->PutEntry( "VDG", NULL, "OnDisp",	"%s",			OnDisp ? "Yes" : "No" );
+	Ini->PutEntry( "VDG", NULL, "AddrOff",		"0x%02X",	AddrOff );
+	Ini->PutEntry( "VDG", NULL, "VLcnt",		"%d",		VLcnt );
+	Ini->PutEntry( "VDG", NULL, "OnDisp",		"%s",		OnDisp ? "Yes" : "No" );
 	
 	Ini->PutEntry( "VDG", NULL, "Mk2CharMode",	"%s",		Mk2CharMode  ? "Yes" : "No" );
 	Ini->PutEntry( "VDG", NULL, "Mk2GraphMode",	"%s",		Mk2GraphMode ? "Yes" : "No" );
@@ -505,41 +500,34 @@ BOOL VDG62::DokoSave( cIni *Ini )
 	Ini->PutEntry( "VDG", NULL, "Css3",			"%d",		Css3 );
 	
 	// イベント
-	e.id = EID_VSYNC;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "VDG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
+	int eid[] = { EID_VSYNC, EID_DISPS, EID_DISPE, 0 };
+	i = 0;
+	
+	while( eid[i] ){
+		e.id = eid[i++];
+		if( vm->evsc->GetEvinfo( &e ) ){
+			sprintf( stren, "Event%08X", e.id );
+			Ini->PutEntry( "VDG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
+		}
 	}
 	
-	e.id = EID_DISPS;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "VDG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
-	
-	e.id = EID_DISPE;
-	if( vm->sche->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "VDG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
-	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // どこでもLOAD
 ////////////////////////////////////////////////////////////////
-BOOL VDG60::DokoLoad( cIni *Ini )
+bool VDG60::DokoLoad( cIni *Ini )
 {
-	int st,yn;
+	int st,yn,i;
 	cSche::evinfo e;
 	char stren[16];
 	char strrs[64];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	
 	Ini->GetTruth( "VDG", "CrtDisp",		&CrtDisp,	CrtDisp );
@@ -561,61 +549,50 @@ BOOL VDG60::DokoLoad( cIni *Ini )
 	Ini->GetTruth( "VDG", "OnDisp",			&OnDisp,	OnDisp );
 	
 	// イベント
-	e.id = EID_VSYNC;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "VDG", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
+	int eid[] = { EID_VSYNC, EID_DISPS, EID_DISPE, 0 };
+	i = 0;
+	
+	while( eid[i] ){
+		e.id = eid[i++];
+		sprintf( stren, "Event%08X", e.id );
+		if( Ini->GetString( "VDG", stren, strrs, "" ) ){
+			sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
+			e.Active = yn ? true : false;
+			if( !vm->evsc->SetEvinfo( &e ) ) return false;
+		}
 	}
 	
-	e.id = EID_DISPS;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "VDG", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
-	}
-	
-	e.id = EID_DISPE;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "VDG", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
-	}
-	
-	return TRUE;
+	return true;
 }
 
-BOOL VDG62::DokoLoad( cIni *Ini )
+bool VDG62::DokoLoad( cIni *Ini )
 {
-	int st,yn;
+	int st,yn,i;
 	cSche::evinfo e;
 	char stren[16];
 	char strrs[64];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	
-	Ini->GetTruth( "VDG", "CrtDisp",		&CrtDisp,	CrtDisp );
-	Ini->GetTruth( "VDG", "N60Win",			&N60Win,	N60Win );
+	Ini->GetTruth( "VDG", "CrtDisp",		&CrtDisp,		CrtDisp );
+	Ini->GetTruth( "VDG", "N60Win",			&N60Win,		N60Win );
 	
-	Ini->GetInt(   "VDG", "VAddr",			&st,		VAddr );	VAddr = st;
-	Ini->GetInt(   "VDG", "HAddr",			&st,		HAddr );	HAddr = st;
-	Ini->GetInt(   "VDG", "RowCntA",		&RowCntA,	RowCntA );
-	Ini->GetInt(   "VDG", "AT_AG",			&st,		AT_AG );	AT_AG = st;
-	Ini->GetInt(   "VDG", "AT_AS",			&st,		AT_AS );	AT_AS = st;
-	Ini->GetInt(   "VDG", "AT_IE",			&st,		AT_IE );	AT_IE = st;
-	Ini->GetInt(   "VDG", "AT_GM",			&st,		AT_GM );	AT_GM = st;
-	Ini->GetInt(   "VDG", "AT_CSS",			&st,		AT_CSS );	AT_CSS = st;
-	Ini->GetInt(   "VDG", "AT_INV",			&st,		AT_INV );	AT_INV = st;
+	Ini->GetInt(   "VDG", "VAddr",			&st,			VAddr );	VAddr = st;
+	Ini->GetInt(   "VDG", "HAddr",			&st,			HAddr );	HAddr = st;
+	Ini->GetInt(   "VDG", "RowCntA",		&RowCntA,		RowCntA );
+	Ini->GetInt(   "VDG", "AT_AG",			&st,			AT_AG );	AT_AG = st;
+	Ini->GetInt(   "VDG", "AT_AS",			&st,			AT_AS );	AT_AS = st;
+	Ini->GetInt(   "VDG", "AT_IE",			&st,			AT_IE );	AT_IE = st;
+	Ini->GetInt(   "VDG", "AT_GM",			&st,			AT_GM );	AT_GM = st;
+	Ini->GetInt(   "VDG", "AT_CSS",			&st,			AT_CSS );	AT_CSS = st;
+	Ini->GetInt(   "VDG", "AT_INV",			&st,			AT_INV );	AT_INV = st;
 	
-	Ini->GetInt(   "VDG", "AddrOff",		&st,		AddrOff );	AddrOff = st;
-	Ini->GetInt(   "VDG", "VLcnt",			&VLcnt,		VLcnt );
-	Ini->GetTruth( "VDG", "OnDisp",			&OnDisp,	OnDisp );
+	Ini->GetInt(   "VDG", "AddrOff",		&st,			AddrOff );	AddrOff = st;
+	Ini->GetInt(   "VDG", "VLcnt",			&VLcnt,			VLcnt );
+	Ini->GetTruth( "VDG", "OnDisp",			&OnDisp,		OnDisp );
 	
 	Ini->GetTruth( "VDG", "Mk2CharMode",	&Mk2CharMode,	Mk2CharMode );
 	Ini->GetTruth( "VDG", "Mk2GraphMode",	&Mk2GraphMode,	Mk2GraphMode );
@@ -624,31 +601,20 @@ BOOL VDG62::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "VDG", "Css3",			&Css3,			Css3 );
 	
 	// イベント
-	e.id = EID_VSYNC;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "VDG", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
+	int eid[] = { EID_VSYNC, EID_DISPS, EID_DISPE, 0 };
+	i = 0;
+	
+	while( eid[i] ){
+		e.id = eid[i++];
+		sprintf( stren, "Event%08X", e.id );
+		if( Ini->GetString( "VDG", stren, strrs, "" ) ){
+			sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
+			e.Active = yn ? true : false;
+			if( !vm->evsc->SetEvinfo( &e ) ) return false;
+		}
 	}
 	
-	e.id = EID_DISPS;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "VDG", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
-	}
-	
-	e.id = EID_DISPE;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "VDG", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? TRUE : FALSE;
-		if( !vm->sche->SetEvinfo( &e ) ) return FALSE;
-	}
-	
-	return TRUE;
+	return true;
 }
 
 

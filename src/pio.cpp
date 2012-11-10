@@ -1,3 +1,4 @@
+#include "config.h"
 #include "pio.h"
 #include "cpus.h"
 #include "intr.h"
@@ -89,6 +90,68 @@ bit6 WIE		CPUに対するデータ書込み要求割り込みの許可フラグ�
 //#define	HS_RIE	(0x10)	/* bit4 */
 //#define	HS_WIE	(0x40)	/* bit6 */
 
+////////////////////////////////////////////////////////////////
+// コンストラクタ
+////////////////////////////////////////////////////////////////
+cPRT::cPRT() : fp(NULL), pdata(0), strb(false)
+{
+	INITARRAY( FilePath, '\0' );
+}
+
+
+////////////////////////////////////////////////////////////////
+// デストラクタ
+////////////////////////////////////////////////////////////////
+cPRT::~cPRT()
+{
+	if( fp ) fclose( fp );
+}
+
+
+////////////////////////////////////////////////////////////////
+// 初期化
+////////////////////////////////////////////////////////////////
+void cPRT::Init( char *filename )
+{
+	if( filename && *filename ){
+		// ファイルパス保存
+		strncpy( FilePath, filename, PATH_MAX );
+	}
+}
+
+
+////////////////////////////////////////////////////////////////
+// 印刷するデータを受付
+//
+// 引数:	data	印刷するデータデータ
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void cPRT::SetData( BYTE data )
+{
+	pdata = ~data;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ストローブ受付
+//
+// 引数:	st		ストローブ信号 true:有効 false:無効
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void cPRT::Strobe( bool st )
+{
+	if( !strb && st ){
+		if( fp || (fp = FOPENEN( FilePath, "ab" )) ){
+			fputc( pdata, fp );
+		}
+	}else{
+		if( fp && strb && !st ){
+			fclose( fp );
+			fp = NULL;
+		}
+		strb = st;
+	}
+}
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
@@ -117,6 +180,19 @@ void PIO6::JobWriteA( BYTE data )
 
 
 ////////////////////////////////////////////////////////////////
+// PartB ライト
+//
+// 引数:	data	書き込むデータ
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void PIO6::JobWriteB( BYTE data )
+{
+	// プリンタにデータ出力
+	cPRT::SetData( data );
+}
+
+
+////////////////////////////////////////////////////////////////
 // PartC ライト
 //
 // 引数:	data	書き込むデータ
@@ -125,12 +201,13 @@ void PIO6::JobWriteA( BYTE data )
 void PIO6::JobWriteC1( BYTE data )
 {
 	// プリンタストローブ
+	cPRT::Strobe( data&1 ? false : true );
 	
 	// CRT表示切替
-	vm->vdg->SetCrtDisp( data&2 ? TRUE : FALSE );
+	vm->vdg->SetCrtDisp( data&2 ? true : false );
 	
 	// CG ROM BANK 切替
-	vm->mem->SetCGBank( data&4 ? FALSE : TRUE );
+	vm->mem->SetCGBank( data&4 ? false : true );
 }
 
 
@@ -145,14 +222,15 @@ void PIO6::JobWriteD( BYTE data )
 	// bit毎の対応
 	switch( (data>>1)&0x07 ){
 	case 0: // プリンタストローブ
+		cPRT::Strobe( data&1 ? false : true );
 		break;
 		
 	case 1: // CRT表示切替
-		vm->vdg->SetCrtDisp( data&1 ? TRUE : FALSE );
+		vm->vdg->SetCrtDisp( data&1 ? true : false );
 		break;
 		
 	case 2: // CG ROM BANK 切替
-		vm->mem->SetCGBank( data&1 ? FALSE : TRUE );
+		vm->mem->SetCGBank( data&1 ? false : true );
 		break;
 	}
 }
@@ -179,11 +257,11 @@ inline BYTE PIO6::InOBF( int ){ return GetOBF() ? 1 : 0; }
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL PIO6::DokoSave( cIni *Ini )
+bool PIO6::DokoSave( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "8255", NULL, "PortA",		"0x%02X",	PortA );
 	Ini->PutEntry( "8255", NULL, "PortB",		"0x%02X",	PortB );
@@ -205,7 +283,7 @@ BOOL PIO6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "8255", NULL, "RIE0",		"%s",		RIE0 ? "Yes" : "No" );
 	Ini->PutEntry( "8255", NULL, "WIE0",		"%s",		WIE0 ? "Yes" : "No" );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -213,13 +291,13 @@ BOOL PIO6::DokoSave( cIni *Ini )
 // どこでもLOAD
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL PIO6::DokoLoad( cIni *Ini )
+bool PIO6::DokoLoad( cIni *Ini )
 {
 	int st;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetInt(   "8255", "PortA",		&st,		PortA );	PortA = st;
 	Ini->GetInt(   "8255", "PortB",		&st,		PortB );	PortB = st;
@@ -241,7 +319,7 @@ BOOL PIO6::DokoLoad( cIni *Ini )
 	Ini->GetTruth( "8255", "RIE0",		&RIE0,	RIE0 );
 	Ini->GetTruth( "8255", "WIE0",		&WIE0,	WIE0 );
 	
-	return TRUE;
+	return true;
 }
 
 

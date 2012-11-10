@@ -20,7 +20,7 @@ protected:
 	BYTE *MB;					// メモリブロックへのポインタ
 	int RWait;					// アクセスウェイト(読込み)
 	int WWait;					// アクセスウェイト(書込み)
-	BOOL WPt;					// ライトプロテクトフラグ
+	bool WPt;					// ライトプロテクトフラグ
 	
 public:
 	MemBlock();									// コンストラクタ
@@ -29,8 +29,8 @@ public:
 	void SetMemory( const char *, BYTE *, int, int );	// メモリブロック設定
 	void SetWait( int, int );					// アクセスウェイト設定
 	int GetWait();								// アクセスウェイト取得
-	void SetProtect( BOOL );					// ライトプロテクト設定
-	BOOL GetProtect();							// ライトプロテクト取得
+	void SetProtect( bool );					// ライトプロテクト設定
+	bool GetProtect();							// ライトプロテクト取得
 	
 	char *GetName(){ return Name; }				// メモリブロック名取得
 	
@@ -57,9 +57,9 @@ protected:
 	static const MEMINFO IEMPTRAM;
 	static const MEMINFO IEXTRAM;
 	
-	BOOL CGBank;				// CG ROM BANK TRUE:有効 FALSE:無効
-	BOOL UseExtRom;				// 拡張ROM     TRUE:有効 FALSE:無効
-	BOOL UseExtRam;				// 拡張RAM     TRUE:有効 FALSE:無効
+	bool CGBank;				// CG ROM BANK true:有効 false:無効
+	bool UseExtRom;				// 拡張ROM     true:有効 false:無効
+	bool UseExtRam;				// 拡張RAM     true:有効 false:無効
 	
 	BYTE *MainRom;				// BASIC ROM	60:16KB 62,66:32KB
 	BYTE *ExtRom;				// 拡張 ROM		60:16KB 62,66:16KB
@@ -79,25 +79,25 @@ protected:
 	
 	char FilePath[PATH_MAX];	// 拡張ROMファイルフルパス
 	int M1Wait;					// M1ウェイト
-	BOOL EnableChkCRC;			// CRCチェック有効?
+	bool EnableChkCRC;			// CRCチェック有効?
 	
 	
 	// 戦士のカートリッジ ------------------------------------------
 	static const MEMINFO ISOLRAM;	// RAM情報
-	BOOL UseSol;					// TRUE:有効 FALSE:無効
+	bool UseSol;					// true:有効 false:無効
 	int SolBank;					// ROMバンク(0-15)
 	void SetSolBank( BYTE );		// ROMバンク設定
 	// -------------------------------------------------------------
 	
 	
-	BOOL AllocMemory( BYTE **, const MEMINFO *, char * );	// メモリ確保とROMファイル読込み
-	BOOL InitCommon( BOOL, BOOL );	// 共通部分初期化
+	bool AllocMemory( BYTE **, const MEMINFO *, char * );	// メモリ確保とROMファイル読込み
+	bool InitCommon( bool, bool );	// 共通部分初期化
 	
 public:
-	MEM6( BOOL );							// コンストラクタ
+	MEM6( bool );							// コンストラクタ
 	virtual ~MEM6();						// デストラクタ
 	
-	virtual BOOL Init( char *, BOOL, BOOL ) = 0;	// 初期化
+	virtual bool Init( char *, bool, bool ) = 0;	// 初期化
 	virtual void Patch();					// パッチ
 	virtual void Reset();					// リセット
 	
@@ -105,12 +105,12 @@ public:
 	BYTE Read( WORD, int * = NULL );		// メモリリード
 	void Write( WORD, BYTE, int * = NULL );	// メモリライト
 	
-	BOOL MountExtRom( char * );				// 拡張ROM マウント
+	bool MountExtRom( char * );				// 拡張ROM マウント
 	void UnmountExtRom();					// 拡張ROM アンマウント
 	char *GetFile();						// 拡張ROMファイルパス取得
 	
 	// 8255入出力関連関数
-	virtual void SetCGBank( BOOL );			// CG ROM BANK を切り替える
+	virtual void SetCGBank( bool );			// CG ROM BANK を切り替える
 	
 	// 直接アクセス関数
 	virtual BYTE ReadMainRom( WORD );
@@ -149,10 +149,10 @@ private:
 	void Out7FH( int, BYTE );
 	
 public:
-	MEM60( const ID&, BOOL );			// コンストラクタ
+	MEM60( const ID&, bool );			// コンストラクタ
 	~MEM60();							// デストラクタ
 	
-	BOOL Init( char *, BOOL, BOOL );	// 初期化
+	bool Init( char *, bool, bool );	// 初期化
 	void Patch();						// パッチ
 	void Reset();						// リセット
 	
@@ -165,8 +165,8 @@ public:
 	enum IDIn {};
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 
@@ -185,9 +185,12 @@ protected:
 	BYTE *KanjiRom;		// 漢字 ROM		60: -KB 62,66:32KB
 	BYTE *VoiceRom;		// 音声合成 ROM	60: -KB 62,66:16KB
 	
-	BOOL cgrom;			// CG ROM 選択用 TRUE:N60モード FALSE:N60mモード
-	BOOL kj_rom;		// 漢字ROM,音声合成ROM 選択用 TRUE:漢字ROM FALSE:音声合成ROM
-	BOOL kj_LR;			// 漢字ROM 左右選択用 TRUE:右 FALSE:左
+	bool cgrom;			// CG ROM 選択用 true:N60モード false:N60mモード
+	bool kj_rom;		// 漢字ROM,音声合成ROM 選択用 true:漢字ROM false:音声合成ROM
+	bool kj_LR;			// 漢字ROM 左右選択用 true:右 false:左
+	
+	bool cgenable;		// CG ROMアクセスフラグ true:アクセス可 false:アクセス不可
+	BYTE cgaddr;		// CG ROMアドレス A13,14,15
 	
 	BYTE Rf0;			// メモリコントローラ内部レジスタ
 	BYTE Rf1;			// メモリコントローラ内部レジスタ
@@ -198,6 +201,7 @@ protected:
 	void SetWait( BYTE );				// メモリアクセスウェイト設定
 	BYTE GetWait();						// メモリアクセスウェイト取得
 	
+	void SetCGrom( BYTE );				// CG ROM アドレス等設定(62,66のみ)
 	void SelectCGrom( int );			// CG ROM 選択(62,66のみ)
 	void SelectKanjiRom( BYTE );		// 漢字ROM および 音声合成ROM 切り替え(62,66のみ)
 	
@@ -216,6 +220,7 @@ protected:
 	void OutF1H( int, BYTE );
 	void OutF2H( int, BYTE );
 	void OutF3H( int, BYTE );
+	void OutF8H( int, BYTE );
 	
 	BYTE InF0H( int );
 	BYTE InF1H( int );
@@ -223,15 +228,15 @@ protected:
 	BYTE InF3H( int );
 	
 public:
-	MEM62( const ID&, BOOL );			// コンストラクタ
+	MEM62( const ID&, bool );			// コンストラクタ
 	virtual ~MEM62();					// デストラクタ
 	
-	virtual BOOL Init( char *, BOOL, BOOL );	// 初期化
+	virtual bool Init( char *, bool, bool );	// 初期化
 	void Patch();						// パッチ
 	void Reset();						// リセット
 	
 	// 8255入出力関連関数
-	void SetCGBank( BOOL );				// CG ROM BANK を切り替える
+	void SetCGBank( bool );				// CG ROM BANK を切り替える
 	
 	// 直接アクセス関数
 	BYTE ReadMainRom( WORD );
@@ -241,12 +246,12 @@ public:
 	BYTE ReadVoiceRom( WORD );
 	
 	// デバイスID
-	enum IDOut{ out7FH=0, outC1H, outC2H, outC3H, outF0H,  outF1H, outF2H, outF3H };
-	enum IDIn {                                    inF0H=0, inF1H,  inF2H,  inF3H };
+	enum IDOut{ out7FH=0, outC1H, outC2H, outC3H, outF0H,  outF1H, outF2H, outF3H, outF8H };
+	enum IDIn {                                    inF0H=0, inF1H,  inF2H,  inF3H         };
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 
@@ -264,10 +269,10 @@ private:
 	void SelectKanjiRom( BYTE );		// 漢字ROM および 音声合成ROM 切り替え(62,66のみ)
 	
 public:
-	MEM66( const ID&, BOOL );			// コンストラクタ
+	MEM66( const ID&, bool );			// コンストラクタ
 	~MEM66();							// デストラクタ
 	
-	BOOL Init( char *, BOOL, BOOL );	// 初期化
+	bool Init( char *, bool, bool );	// 初期化
 	void Patch();						// パッチ
 };
 

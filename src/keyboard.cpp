@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <stdlib.h>
 
+#include "config.h"
 #include "log.h"
 #include "keyboard.h"
 #include "cpus.h"
@@ -383,26 +384,21 @@ enum KeyGroup
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-KEY6::KEY6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id)
+KEY6::KEY6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id),
+	ON_SHIFT(false), ON_GRAPH(false), ON_KANA(false), ON_KKANA(false),
+	ON_CTRL(false), ON_STOP(false), ON_CAPS(false)
 {
-	ON_SHIFT =			// SHIFT
-	ON_GRAPH =			// GRAPH
-	ON_KANA  =			// かな
-	ON_KKANA =			// カタカナ
-	ON_CTRL  =			// CTRL
-        ON_STOP  =                      // STOP
-        ON_CAPS  = FALSE;	// CAPS
 
 	// 仮想キーコード -> P6キーコード 変換テーブル初期化
-	ZeroMemory( &K6Table, sizeof(K6Table) );
+	INITARRAY( K6Table, KP6_UNKNOWN );
 	
 	// P6キーコード -> マトリクス 変換テーブル初期化
-	ZeroMemory( &MatTable, sizeof(MatTable) );
+	INITARRAY( MatTable, 0 );
 	for( int i=0; i < COUNTOF(P6KeyMx); i++ ) MatTable[P6KeyMx[i].P6KEY] = P6KeyMx[i].Mat;
 	
 	// キーマトリクス初期化
-	memset( P6Matrix,  0xff, COUNTOF(P6Matrix) );
-	memset( P6Mtrx,    0xff, COUNTOF(P6Mtrx)   );
+	INITARRAY( P6Matrix, 0xff );
+	INITARRAY( P6Mtrx,   0xff );
 }
 
 KEY60::KEY60( VM6 *vm, const P6ID& id ) : KEY6(vm,id)
@@ -425,9 +421,9 @@ KEY60::~KEY60( void ){}
 // 初期化
 //
 // 引数:	repeat	キーリピートの間隔(ms) 0で無効
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL KEY6::Init( int repeat )
+bool KEY6::Init( int repeat )
 {
 	PRINTD( KEY_LOG, "[KEY][Init]\n" );
 	
@@ -438,12 +434,12 @@ BOOL KEY6::Init( int repeat )
 	ON_KKANA =
 	ON_CTRL  =
 	ON_STOP  =
-	ON_CAPS  = FALSE;
+	ON_CAPS  = false;
 	
 	// キーリピート設定
 	if( repeat ) OSD_SetKeyRepeat( repeat );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -475,12 +471,12 @@ BYTE KEY6::GetKeyJoy( void )
 // キーマトリクス更新(キー)
 //
 // 引数:	code	仮想キーコード
-//			pflag	押したフラグ TRUE:押した FALSE:離した
+//			pflag	押したフラグ true:押した false:離した
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void KEY6::UpdateMatrixKey( int code, BOOL pflag )
+void KEY6::UpdateMatrixKey( int code, bool pflag )
 {
-	PRINTD2( KEY_LOG, "[KEY][UpdateMatrixKey] %02X %s\n", code, pflag ? "PUSH" : "RELEASE" );
+	PRINTD( KEY_LOG, "[KEY][UpdateMatrixKey] %02X %s\n", code, pflag ? "PUSH" : "RELEASE" );
 	
 	// P6キーコードを取得
 	P6KEYsym P6Code = K6Table[code];
@@ -511,15 +507,16 @@ void KEY6::UpdateMatrixKey( int code, BOOL pflag )
 ////////////////////////////////////////////////////////////////
 // キーマトリクス更新(ジョイスティック)
 //
-// 引数:	なし
+// 引数:	joy1	ジョイスティック1の状態
+//			joy2	ジョイスティック2の状態
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void KEY6::UpdateMatrixJoy( void )
+void KEY6::UpdateMatrixJoy( BYTE joy1, BYTE joy2 )
 {
-	PRINTD( KEY_LOG, "[KEY][UpdateMatrixJoy]\n" );
+	PRINTD( KEY_LOG, "[KEY][UpdateMatrixJoy] JOY1:%02X JOY2:%02X\n", joy1, joy2 );
 	
-	P6Matrix[NOM-2] = vm->joy->GetJoyState( 0 );
-	P6Matrix[NOM-1] = vm->joy->GetJoyState( 1 );
+	P6Matrix[NOM-2] = joy1;
+	P6Matrix[NOM-1] = joy2;
 }
 
 
@@ -527,34 +524,34 @@ void KEY6::UpdateMatrixJoy( void )
 // キーマトリクススキャン
 //
 // 引数:	なし
-// 返値:	TRUE:変化あり FALSE:変化なし
+// 返値:	true:変化あり false:変化なし
 ////////////////////////////////////////////////////////////////
-BOOL KEY6::ScanMatrix( void )
+bool KEY6::ScanMatrix( void )
 {
 	PRINTD( KEY_LOG, "[KEY][ScanMatrix] " );
 	
 	// キーマトリクスを保存
 	memcpy( P6Mtrx, P6Matrix, COUNTOF(P6Mtrx) );
 	
-	BOOL MatChg  = FALSE;	// 前回のマトリクスと変化したかフラグ
-	BOOL KeyPUSH = FALSE;	// キー押したフラグ
-	BOOL ON_FUNC = FALSE;	// ファンクションキーとかフラグ
+	bool MatChg  = false;	// 前回のマトリクスと変化したかフラグ
+	bool KeyPUSH = false;	// キー押したフラグ
+	bool ON_FUNC = false;	// ファンクションキーとかフラグ
 	BYTE MatData = 0;		// P6のマトリクスコード(bit7-4:Y-1 bit3-0:X)
 	BYTE KeyData = 0;		// P6のキーコード
 	
 	// 特殊キー判定(ON-OFF状態を判定)
-	ON_CTRL  = P6Mtrx[0] & 0x02 ? FALSE : TRUE;
-	ON_SHIFT = P6Mtrx[0] & 0x04 ? FALSE : TRUE;
-	ON_GRAPH = P6Mtrx[0] & 0x08 ? FALSE : TRUE;
+	ON_CTRL  = P6Mtrx[0] & 0x02 ? false : true;
+	ON_SHIFT = P6Mtrx[0] & 0x04 ? false : true;
+	ON_GRAPH = P6Mtrx[0] & 0x08 ? false : true;
 	
 	// 一般キー判定
 	for( int y=1; (y<(NOM-2))&&~KeyPUSH; y++ ){
 		// 前回のマトリクスと変化あり?
 		if( P6Mtrx[y] != P6Mtrx[y+NOM] ){
-			MatChg = TRUE;
+			MatChg = true;
 			// キー押した?
 			if( (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y+NOM] ){
-				KeyPUSH = TRUE;
+				KeyPUSH = true;
 				for( int x=0; x<8; x++ ){
 					// マトリクスコードセット bit7-4:Y-1 bit3-0:X
 					// 1->0 になったビットを検出
@@ -570,27 +567,27 @@ BOOL KEY6::ScanMatrix( void )
 	if( KeyPUSH ){	// キー押した?
 		switch( MatData ){	// マトリクスコード
 		case 0x96:	// CAPS
-			ON_CAPS = ON_CAPS ? FALSE : TRUE;
-			ON_FUNC = TRUE;
+			ON_CAPS = ON_CAPS ? false : true;
+			ON_FUNC = true;
 			break;
 			
 		case 0x95:	// MODE
-			ON_FUNC = TRUE;
+			ON_FUNC = true;
 			break;
 			
 		case 0x90:	// かな
-			ON_KANA = ON_KANA ? FALSE : TRUE;
-			ON_FUNC = TRUE;
+			ON_KANA = ON_KANA ? false : true;
+			ON_FUNC = true;
 			break;
 			
 		case 0x81:	// STOP
-			ON_STOP = TRUE;
+			ON_STOP = true;
 			break;
 			
 		case 0x93:	// PAGE or かな/カナ切り替え
 			if( ON_SHIFT ){
-				ON_KKANA = ON_KKANA ? FALSE : TRUE;
-				ON_FUNC  = TRUE;
+				ON_KKANA = ON_KKANA ? false : true;
+				ON_FUNC  = true;
 			}
 			break;
 			
@@ -599,7 +596,7 @@ BOOL KEY6::ScanMatrix( void )
 		case 0x56:
 		case 0x66:
 		case 0x76:
-			ON_FUNC = TRUE;
+			ON_FUNC = true;
 			break;
 		}
 		
@@ -636,16 +633,16 @@ BOOL KEY6::ScanMatrix( void )
 			// bit 1 : ON_GRAPH
 			// bit 2 : ON_FUNC
 			
-			PRINTD1( KEY_LOG, "[Intr] %02X", KeyData );
+			PRINTD( KEY_LOG, "[Intr] %02X", KeyData );
 			vm->cpus->ReqKeyIntr( ON_STOP ? 1 : 0 | ON_GRAPH ? 2 : 0 | ON_FUNC ? 4 : 0, KeyData );
-			ON_STOP = FALSE;
+			ON_STOP = false;
 		}
 	}
 	
 	// ジョイスティック判定
 	for( int y=NOM-2; y<NOM; y++ ){
 		// 前回のマトリクスと変化あり?
-		if( P6Mtrx[y] != P6Mtrx[y+NOM] ) MatChg = TRUE;
+		if( P6Mtrx[y] != P6Mtrx[y+NOM] ) MatChg = true;
 	}
 	
 	// 変化があればキーマトリクス保存
@@ -714,7 +711,7 @@ BYTE KEY6::GetKeyIndicator( void )
 	// CAPSキー
 	if( ON_CAPS ) ret |= KI_CAPS;
 	
-	PRINTD1( KEY_LOG, "%d\n", ret );
+	PRINTD( KEY_LOG, "%d\n", ret );
 	
 	return ret;
 }
@@ -756,21 +753,52 @@ BYTE KEY6::GetJoy( int JoyNo )
 
 
 ////////////////////////////////////////////////////////////////
+// 英字<->かな切換
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void KEY6::ChangeKana( void )
+{
+	ON_KANA = ON_KANA ? false : true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// かな<->カナ切換
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void KEY6::ChangeKKana( void )
+{
+	ON_KKANA = ON_KKANA ? false : true;
+}
+
+
+////////////////////////////////////////////////////////////////
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL KEY6::DokoSave( cIni *Ini )
+bool KEY6::DokoSave( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	char strva[256];
+	
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "KEY", NULL, "ON_KANA",		"%s",	ON_KANA  ? "Yes" : "No" );
 	Ini->PutEntry( "KEY", NULL, "ON_KKANA",		"%s",	ON_KKANA ? "Yes" : "No" );
 	Ini->PutEntry( "KEY", NULL, "ON_STOP",		"%s",	ON_STOP  ? "Yes" : "No" );
 	Ini->PutEntry( "KEY", NULL, "ON_CAPS",		"%s",	ON_CAPS  ? "Yes" : "No" );
 	
-	return TRUE;
+	for( int i=0; i<32; i++ ) sprintf( &strva[i*2], "%02X", P6Matrix[i] );
+	Ini->PutEntry( "KEY", NULL, "P6Matrix",		"%s",	strva );
+	for( int i=0; i<32; i++ ) sprintf( &strva[i*2], "%02X", P6Mtrx[i] );
+	Ini->PutEntry( "KEY", NULL, "P6Mtrx",		"%s",	strva );
+	
+	return true;
 }
 
 
@@ -778,16 +806,35 @@ BOOL KEY6::DokoSave( cIni *Ini )
 // どこでもLOAD
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL KEY6::DokoLoad( cIni *Ini )
+bool KEY6::DokoLoad( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	char strva[256];
+	
+	if( !Ini ) return false;
 	
 	Ini->GetTruth( "KEY", "ON_KANA",	&ON_KANA,	ON_KANA );
 	Ini->GetTruth( "KEY", "ON_KKANA",	&ON_KKANA,	ON_KKANA );
 	Ini->GetTruth( "KEY", "ON_STOP",	&ON_STOP,	ON_STOP );
 	Ini->GetTruth( "KEY", "ON_CAPS",	&ON_CAPS,	ON_CAPS );
 	
-	return TRUE;
+	memset( strva, 'F', 32*2 );
+	if( Ini->GetString( "KEY", "P6Matrix", strva, strva ) ){
+		for( int i=0; i<32; i++ ){
+			char dt[5] = "0x";
+			strncpy( &dt[2], &strva[i*2], 2 );
+			P6Matrix[i] = strtol( dt, NULL, 16 );
+		}
+	}
+	memset( strva, 'F', 32*2 );
+	if( Ini->GetString( "KEY", "P6Mtrx", strva, strva ) ){
+		for( int i=0; i<32; i++ ){
+			char dt[5] = "0x";
+			strncpy( &dt[2], &strva[i*2], 2 );
+			P6Mtrx[i] = strtol( dt, NULL, 16 );
+		}
+	}
+	
+	return true;
 }

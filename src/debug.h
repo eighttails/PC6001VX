@@ -31,7 +31,7 @@ public:
 	cWndMem( VM6 *, const P6ID& );		// コンストラクタ
 	~cWndMem();							// デストラクタ
 	
-	BOOL Init();						// 初期化
+	bool Init();						// 初期化
 	void Update();						// ウィンドウ更新
 	
 	void SetAddress( WORD addr ){ Addr = addr & 0xfff8; }	// 表示アドレス設定
@@ -49,7 +49,7 @@ public:
 	cWndReg( VM6 *, const P6ID& );		// コンストラクタ
 	~cWndReg();							// デストラクタ
 	
-	BOOL Init();						// 初期化
+	bool Init();						// 初期化
 	void Update();						// ウィンドウ更新
 };
 
@@ -65,12 +65,12 @@ private:
 	int Argc;							// 引数の個数
 	int ArgvCounter;					// Shift()用カウンタ
 	
-        struct argv{								// 引数処理用
+	struct argv{						// 引数処理用
 		int Type;	// 引数の種類		ARGV_xxx
 		int Val;	// 引数の値			ARG_xxx または、数
 		char *Str;	// 引数の文字列		Argv[xxx]と同じ
-                argv() : Type(0), Val(0), Str(NULL){}
-        } argv;
+		argv() : Type(0), Val(0), Str(NULL) {}
+	} argv;
 	
 	int GetArg();						// 引数処理
 	void Shift();						// 引数配列シフト
@@ -81,10 +81,10 @@ public:
 	cWndMon( VM6 *, const P6ID& );		// コンストラクタ
 	~cWndMon();							// デストラクタ
 	
-	BOOL Init();						// 初期化
+	bool Init();						// 初期化
 	void Update();						// ウィンドウ更新
 	
-	void KeyIn( int, BOOL, int );		// キー入力処理
+	void KeyIn( int, bool, int );		// キー入力処理
 	
 	void BreakIn( WORD );				// ブレークポイント到達
 };

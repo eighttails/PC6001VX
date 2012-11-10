@@ -1,3 +1,4 @@
+#include "config.h"
 #include "log.h"
 #include "cpum.h"
 #include "breakpoint.h"
@@ -10,7 +11,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-CPU6::CPU6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id){}
+CPU6::CPU6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -94,11 +95,11 @@ inline void CPU6::WriteMem( WORD addr, BYTE data)
 ////////////////////////////////////////////////////////////////
 inline BYTE CPU6::ReadIO( int addr )
 {
-	BYTE data = vm->io->In( addr, &mstate );
+	BYTE data = vm->iom->In( addr, &mstate );
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	// ブレークポイントチェック
-	if( vm->bp->CheckBreakPoint( BPoint::BP_IN, addr, data, NULL ) ){
+	if( vm->bp->CheckBreakPoint( BPoint::BP_IN, addr&0xff, data, NULL ) ){
 		PRINTD( IO_LOG, " -> Break!" );
 	}
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
@@ -109,11 +110,11 @@ inline BYTE CPU6::ReadIO( int addr )
 
 inline void CPU6::WriteIO( int addr, BYTE data )
 {
-	vm->io->Out( addr, data, &mstate );
+	vm->iom->Out( addr, data, &mstate );
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	// ブレークポイントチェック
-	if( vm->bp->CheckBreakPoint( BPoint::BP_OUT, addr, data, NULL ) ){
+	if( vm->bp->CheckBreakPoint( BPoint::BP_OUT, addr&0xff, data, NULL ) ){
 		PRINTD( IO_LOG, " -> Break!" );
 	}
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
@@ -133,7 +134,7 @@ inline int CPU6::GetIntrVector( void )
 ////////////////////////////////////////////////////////////////
 // BUSREQ取得
 ////////////////////////////////////////////////////////////////
-inline BOOL CPU6::IsBUSREQ( void )
+inline bool CPU6::IsBUSREQ( void )
 {
 	return vm->vdg->IsDisp();
 }
@@ -142,9 +143,9 @@ inline BOOL CPU6::IsBUSREQ( void )
 ////////////////////////////////////////////////////////////////
 // どこでもSAVE
 ////////////////////////////////////////////////////////////////
-BOOL CPU6::DokoSave( cIni *Ini )
+bool CPU6::DokoSave( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "Z80", NULL, "AF",		"0x%04X",	AF.W );
 	Ini->PutEntry( "Z80", NULL, "BC",		"0x%04X",	BC.W );
@@ -168,18 +169,18 @@ BOOL CPU6::DokoSave( cIni *Ini )
 	
 	Ini->PutEntry( "Z80", NULL, "mstate",	"%d",	mstate );
 	
-	return TRUE;
+	return true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // どこでもLOAD
 ////////////////////////////////////////////////////////////////
-BOOL CPU6::DokoLoad( cIni *Ini )
+bool CPU6::DokoLoad( cIni *Ini )
 {
 	int st;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetInt( "Z80", "AF",		&st,	AF.W );		AF.W = st;
 	Ini->GetInt( "Z80", "BC",		&st,	BC.W );		BC.W = st;
@@ -203,5 +204,5 @@ BOOL CPU6::DokoLoad( cIni *Ini )
 	
 	Ini->GetInt( "Z80", "mstate",	&mstate,	mstate );
 	
-	return TRUE;
+	return true;
 }

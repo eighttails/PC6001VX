@@ -28,17 +28,17 @@ public:
 	REPLAY();								// コンストラクタ
 	~REPLAY();								// デストラクタ
 	
-	BOOL Init( int );						// 初期化
+	bool Init( int );						// 初期化
 	
-	BOOL GetStatus();						// ステータス取得
+	int GetStatus();						// ステータス取得
 	
-	BOOL StartRecord( char * );				// リプレイ記録開始
+	bool StartRecord( char * );				// リプレイ記録開始
 	void StopRecord();						// リプレイ記録停止
-	BOOL ReplayWriteFrame( BYTE *, BOOL );	// リプレイ1フレーム書出し
+	bool ReplayWriteFrame( BYTE *, bool );	// リプレイ1フレーム書出し
 	
-	BOOL StartReplay( char * );				// リプレイ再生開始
+	bool StartReplay( char * );				// リプレイ再生開始
 	void StopReplay();						// リプレイ再生止
-	BOOL ReplayReadFrame( BYTE * );			// リプレイ1フレーム読込み
+	bool ReplayReadFrame( BYTE * );			// リプレイ1フレーム読込み
 	
 };
 

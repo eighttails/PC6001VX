@@ -10,10 +10,32 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class PIO6 : public P6DEVICE, public Device, public cD8255, public IDoko {
+class cPRT {
+private:
+	char FilePath[PATH_MAX];		// PRINTERファイルフルパス
+	
+	FILE *fp;						// FILE ポインタ
+	BYTE pdata;						// パラレルポートから受け取ったデータ
+	
+	bool strb;						// ストローブ
+	
+public:
+	cPRT();							// コンストラクタ
+	~cPRT();						// デストラクタ
+	
+	void Init( char * );			// 初期化
+	void SetData( BYTE );			// 印刷するデータを受付
+	void Strobe( bool );			// ストローブ受付
+};
+
+
+
+
+class PIO6 : public P6DEVICE, public Device, public cD8255, public cPRT, public IDoko {
 private:
 	// 入出力処理関数
 	void JobWriteA( BYTE );
+	void JobWriteB( BYTE );
 	void JobWriteC1( BYTE );
 	void JobWriteD( BYTE );
 	
@@ -46,8 +68,8 @@ public:
 	enum IDIn {  in90H=0,          in92H,  in93H,  inPBH,  inIBF,  inOBF };
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

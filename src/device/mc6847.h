@@ -5,25 +5,25 @@
 
 
 ////////////////////////////////////////////////////////////////
-// ã‚¯ãƒ©ã‚¹å®šç¾©
+// ƒNƒ‰ƒX’è‹`
 ////////////////////////////////////////////////////////////////
 class cMC6847core {
 protected:
-	BYTE COL_AN[5];			// ã‚«ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰(ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯)
-	BYTE COL_SG[9];			// ã‚«ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰(ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯)
-	BYTE COL_CG[10][4];		// ã‚«ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰(ã‚«ãƒ©ãƒ¼ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯)
-	BYTE COL_RG[2][2];		// ã‚«ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰(ãƒ¢ãƒŽã‚¯ãƒ­ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯)
+	BYTE COL_AN[5];			// ƒJƒ‰[ƒR[ƒh(ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN)
+	BYTE COL_SG[9];			// ƒJƒ‰[ƒR[ƒh(ƒZƒ~ƒOƒ‰ƒtƒBƒbƒN)
+	BYTE COL_CG[10][4];		// ƒJƒ‰[ƒR[ƒh(ƒJƒ‰[ƒOƒ‰ƒtƒBƒbƒN)
+	BYTE COL_RG[2][2];		// ƒJƒ‰[ƒR[ƒh(ƒ‚ƒmƒNƒƒOƒ‰ƒtƒBƒbƒN)
 	
-	BOOL CrtDisp;			// CRTè¡¨ç¤ºçŠ¶æ…‹ TRUE:è¡¨ç¤º FALSE:éžè¡¨ç¤º
-	BOOL N60Win;			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚º TRUE:N60 FALSE:N60m
-	int Mode4Col;			// ãƒ¢ãƒ¼ãƒ‰4ã‚«ãƒ©ãƒ¼ãƒ¢ãƒ¼ãƒ‰ 0:ãƒ¢ãƒŽ 1:èµ¤/é’ 2:é’/èµ¤ 3:ãƒ”ãƒ³ã‚¯/ç·‘ 4:ç·‘/ãƒ”ãƒ³ã‚¯
+	bool CrtDisp;			// CRT•\Ž¦ó‘Ô true:•\Ž¦ false:”ñ•\Ž¦
+	bool N60Win;			// ƒEƒBƒ“ƒhƒEƒTƒCƒY true:N60 false:N60m
+	int Mode4Col;			// ƒ‚[ƒh4ƒJƒ‰[ƒ‚[ƒh 0:ƒ‚ƒm 1:Ô/Â 2:Â/Ô 3:ƒsƒ“ƒN/—Î 4:—Î/ƒsƒ“ƒN
 	
-	WORD VAddr;				// åž‚ç›´ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚«ã‚¦ãƒ³ã‚¿
-	WORD HAddr;				// æ°´å¹³ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚«ã‚¦ãƒ³ã‚¿
-	int RowCntA;			// è¡¨ç¤ºãƒ©ã‚¤ãƒ³ã‚«ã‚¦ãƒ³ã‚¿(ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯,ã‚»ãƒŸã‚°ãƒ©)
-	int RowCntG;			// è¡¨ç¤ºãƒ©ã‚¤ãƒ³ã‚«ã‚¦ãƒ³ã‚¿(ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯)
+	WORD VAddr;				// ‚’¼ƒAƒhƒŒƒXƒJƒEƒ“ƒ^
+	WORD HAddr;				// …•½ƒAƒhƒŒƒXƒJƒEƒ“ƒ^
+	int RowCntA;			// •\Ž¦ƒ‰ƒCƒ“ƒJƒEƒ“ƒ^(ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN,ƒZƒ~ƒOƒ‰)
+	int RowCntG;			// •\Ž¦ƒ‰ƒCƒ“ƒJƒEƒ“ƒ^(ƒOƒ‰ƒtƒBƒbƒN)
 	
-	// ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆãƒ‡ãƒ¼ã‚¿
+	// ƒAƒgƒŠƒrƒ…[ƒgƒf[ƒ^
 	BYTE AT_AG;
 	BYTE AT_AS;
 	BYTE AT_IE;
@@ -31,73 +31,73 @@ protected:
 	BYTE AT_CSS;
 	BYTE AT_INV;
 	
-	int GetW();									// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡å¹…å–å¾—(è¦å®šå€¤)
-	int GetH();									// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡é«˜ã•å–å¾—(è¦å®šå€¤)
+	int GetW();									// ƒoƒbƒNƒoƒbƒtƒ@•Žæ“¾(‹K’è’l)
+	int GetH();									// ƒoƒbƒNƒoƒbƒtƒ@‚‚³Žæ“¾(‹K’è’l)
 	
-	virtual BYTE *GetBufAddr() = 0;				// ãƒãƒƒãƒ•ã‚¡ã‚¢ãƒ‰ãƒ¬ã‚¹å–å¾—
-	virtual int GetBufPitch() = 0;				// ãƒãƒƒãƒ•ã‚¡ãƒ”ãƒƒãƒ(1Lineãƒã‚¤ãƒˆæ•°)å–å¾—
-	virtual int GetBufHeight() = 0;				// ãƒãƒƒãƒ•ã‚¡é«˜ã•å–å¾—
+	virtual BYTE *GetBufAddr() = 0;				// ƒoƒbƒtƒ@ƒAƒhƒŒƒXŽæ“¾
+	virtual int GetBufPitch() = 0;				// ƒoƒbƒtƒ@ƒsƒbƒ`(1LineƒoƒCƒg”)Žæ“¾
+	virtual int GetBufHeight() = 0;				// ƒoƒbƒtƒ@‚‚³Žæ“¾
 	
-	virtual void LatchGMODE() = 0;				// ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆãƒ‡ãƒ¼ã‚¿ãƒ©ãƒƒãƒ(ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ¢ãƒ¼ãƒ‰ã®ã¿)
-	virtual void LatchAttr() = 0;				// ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆãƒ‡ãƒ¼ã‚¿ãƒ©ãƒƒãƒ
-	virtual BYTE GetAttr() = 0;					// ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆãƒ‡ãƒ¼ã‚¿å–å¾—
-	virtual BYTE GetVram() = 0;					// VRAMãƒ‡ãƒ¼ã‚¿å–å¾—
-	virtual BYTE GetFont1( WORD ) = 0;			// Font1ãƒ‡ãƒ¼ã‚¿å–å¾—
+	virtual void LatchGMODE() = 0;				// ƒAƒgƒŠƒrƒ…[ƒgƒf[ƒ^ƒ‰ƒbƒ`(ƒOƒ‰ƒtƒBƒbƒNƒ‚[ƒh‚Ì‚Ý)
+	virtual void LatchAttr() = 0;				// ƒAƒgƒŠƒrƒ…[ƒgƒf[ƒ^ƒ‰ƒbƒ`
+	virtual BYTE GetAttr() = 0;					// ƒAƒgƒŠƒrƒ…[ƒgƒf[ƒ^Žæ“¾
+	virtual BYTE GetVram() = 0;					// VRAMƒf[ƒ^Žæ“¾
+	virtual BYTE GetFont1( WORD ) = 0;			// Font1ƒf[ƒ^Žæ“¾
 	
 public:
-	cMC6847core();								// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	virtual ~cMC6847core();						// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	cMC6847core();								// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	virtual ~cMC6847core();						// ƒfƒXƒgƒ‰ƒNƒ^
 	
-	virtual void UpdateBackBuf() = 0;			// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡æ›´æ–°
+	virtual void UpdateBackBuf() = 0;			// ƒoƒbƒNƒoƒbƒtƒ@XV
 	
-	void SetCrtDisp( BOOL );					// CRTè¡¨ç¤ºçŠ¶æ…‹è¨­å®š
+	void SetCrtDisp( bool );					// CRT•\Ž¦ó‘ÔÝ’è
 	
-	BOOL GetWinSize();							// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå–å¾—
+	bool GetWinSize();							// ƒEƒBƒ“ƒhƒEƒTƒCƒYŽæ“¾
 	
-	int GetMode4Color();						// ãƒ¢ãƒ¼ãƒ‰4ã‚«ãƒ©ãƒ¼ãƒ¢ãƒ¼ãƒ‰å–å¾—
-	void SetMode4Color( int );					// ãƒ¢ãƒ¼ãƒ‰4ã‚«ãƒ©ãƒ¼ãƒ¢ãƒ¼ãƒ‰è¨­å®š
+	int GetMode4Color();						// ƒ‚[ƒh4ƒJƒ‰[ƒ‚[ƒhŽæ“¾
+	void SetMode4Color( int );					// ƒ‚[ƒh4ƒJƒ‰[ƒ‚[ƒhÝ’è
 };
 
 
 class cMC6847_1 : public virtual cMC6847core {
 protected:
-	virtual BYTE GetFont0( WORD ) = 0;			// Font0(VDG Font)ãƒ‡ãƒ¼ã‚¿å–å¾—
-	BYTE GetBcol();								// ãƒœãƒ¼ãƒ€ãƒ¼ã‚«ãƒ©ãƒ¼å–å¾—
+	virtual BYTE GetFont0( WORD ) = 0;			// Font0(VDG Font)ƒf[ƒ^Žæ“¾
+	BYTE GetBcol();								// ƒ{[ƒ_[ƒJƒ‰[Žæ“¾
 	
-	void Draw1line1( int );						// 1ãƒ©ã‚¤ãƒ³æç”»(N60)
+	void Draw1line1( int );						// 1ƒ‰ƒCƒ“•`‰æ(N60)
 	
 public:
-	cMC6847_1();								// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	virtual ~cMC6847_1();						// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	cMC6847_1();								// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	virtual ~cMC6847_1();						// ƒfƒXƒgƒ‰ƒNƒ^
 	
-	void UpdateBackBuf();						// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡æ›´æ–°
+	void UpdateBackBuf();						// ƒoƒbƒNƒoƒbƒtƒ@XV
 };
 
 
 class cMC6847_2 : public virtual cMC6847core {
 protected:
-	BYTE COL_AN2[16];		// ã‚«ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰(ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯ 60m)
-	BYTE COL_CG3[2][16];	// ã‚«ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰(ã‚«ãƒ©ãƒ¼ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ 60m ãƒ¢ãƒ¼ãƒ‰3)
-	BYTE COL_CG4[2][16];	// ã‚«ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰(ã‚«ãƒ©ãƒ¼ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ 60m ãƒ¢ãƒ¼ãƒ‰4)
+	BYTE COL_AN2[16];		// ƒJƒ‰[ƒR[ƒh(ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN 60m)
+	BYTE COL_CG3[2][16];	// ƒJƒ‰[ƒR[ƒh(ƒJƒ‰[ƒOƒ‰ƒtƒBƒbƒN 60m ƒ‚[ƒh3)
+	BYTE COL_CG4[2][16];	// ƒJƒ‰[ƒR[ƒh(ƒJƒ‰[ƒOƒ‰ƒtƒBƒbƒN 60m ƒ‚[ƒh4)
 	
-	BOOL Mk2CharMode;		// mk2 è¡¨ç¤ºãƒ¢ãƒ¼ãƒ‰ TRUE:ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ FALSE:ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
-	BOOL Mk2GraphMode;		// mk2 ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯è§£åƒåº¦ TRUE:160*200 FALSE:320*200
+	bool Mk2CharMode;		// mk2 •\Ž¦ƒ‚[ƒh true:ƒLƒƒƒ‰ƒNƒ^ false:ƒOƒ‰ƒtƒBƒbƒN
+	bool Mk2GraphMode;		// mk2 ƒOƒ‰ƒtƒBƒbƒN‰ð‘œ“x true:160*200 false:320*200
 	
-	int Css1;				// è‰²ã®çµ„ã¿åˆã‚ã›
+	int Css1;				// F‚Ì‘g‚Ý‡‚í‚¹
 	int Css2;
 	int Css3;
 	
-	virtual BYTE GetFont2( WORD ) = 0;			// Font2ãƒ‡ãƒ¼ã‚¿å–å¾—
-	BYTE GetBcol();								// ãƒœãƒ¼ãƒ€ãƒ¼ã‚«ãƒ©ãƒ¼å–å¾—
+	virtual BYTE GetFont2( WORD ) = 0;			// Font2ƒf[ƒ^Žæ“¾
+	BYTE GetBcol();								// ƒ{[ƒ_[ƒJƒ‰[Žæ“¾
 	
-	void Draw1line1( int );						// 1ãƒ©ã‚¤ãƒ³æç”»(N60)
-	void Draw1line2( int );						// 1ãƒ©ã‚¤ãƒ³æç”»(N60m)
+	void Draw1line1( int );						// 1ƒ‰ƒCƒ“•`‰æ(N60)
+	void Draw1line2( int );						// 1ƒ‰ƒCƒ“•`‰æ(N60m)
 	
 public:
-	cMC6847_2();								// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	virtual ~cMC6847_2();						// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	cMC6847_2();								// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	virtual ~cMC6847_2();						// ƒfƒXƒgƒ‰ƒNƒ^
 	
-	void UpdateBackBuf();						// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡æ›´æ–°
+	void UpdateBackBuf();						// ƒoƒbƒNƒoƒbƒtƒ@XV
 };
 
 

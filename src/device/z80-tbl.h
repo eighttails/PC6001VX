@@ -1,18 +1,18 @@
 //**********************************************************************
-// フラグ、ステート数、DAAのテーブル
+// �t���O�A�X�e�[�g���ADAA�̃e�[�u��
 //
-//	SZ_table[n]  … 演算結果が n の時の、Z、S フラグの状態
-//	SZP_table[n] … 演算結果が n の時の、P/V、Z、S フラグの状態
+//	SZ_table[n]  �c ���Z���ʂ� n �̎��́AZ�AS �t���O�̏��
+//	SZP_table[n] �c ���Z���ʂ� n �̎��́AP/V�AZ�AS �t���O�̏��
 //
-// 命令に応じて、どのテーブルからフラグ情報を引き出すかを使い分ける。
+// ���߂ɉ����āA�ǂ̃e�[�u������t���O���������o�������g��������B
 //
-//	state_table[n]       … 通常命令のステート数
-//	state_CB_table[n]    … CB XX 命令のステート数
-//	state_ED_table[n]    … ED XX 命令のステート数
-//	state_XX_table[n]    … DD/FD XX 命令のステート数
-//	state_XXCB_table[n]  … DD/FD CB XX XX 命令のステート数
+//	state_table[n]       �c �ʏ햽�߂̃X�e�[�g��
+//	state_CB_table[n]    �c CB XX ���߂̃X�e�[�g��
+//	state_ED_table[n]    �c ED XX ���߂̃X�e�[�g��
+//	state_XX_table[n]    �c DD/FD XX ���߂̃X�e�[�g��
+//	state_XXCB_table[n]  �c DD/FD CB XX XX ���߂̃X�e�[�g��
 //
-//	DAA_table[] … DAA 命令の際に、AFレジスタに入れる値
+//	DAA_table[] �c DAA ���߂̍ۂɁAAF���W�X�^�ɓ����l
 //
 //**********************************************************************
 
@@ -82,10 +82,10 @@ static BYTE SZP_table[256] =
 #undef Z
 };
 
-// 相対ジャンプ (JR,  JR C/Z/NC/NZ,  DJNZ)               は、分岐時に、+5
-// コール命令   (CALL, CALL C/Z/P/PE/NC/NZ/M/PO )        は、分岐時に、+7
-// リターン命令 (RET, RET C/Z/P/PE/NC/NZ/M/PO,  RETI/N ) は、分岐時に、+6
-// ブロック命令 (LD*R, CP*R, IN*R, OT*R)             は、繰り返し時に、+5
+// ���΃W�����v (JR,  JR C/Z/NC/NZ,  DJNZ)               �́A���򎞂ɁA+5
+// �R�[������   (CALL, CALL C/Z/P/PE/NC/NZ/M/PO )        �́A���򎞂ɁA+7
+// ���^�[������ (RET, RET C/Z/P/PE/NC/NZ/M/PO,  RETI/N ) �́A���򎞂ɁA+6
+// �u���b�N���� (LD*R, CP*R, IN*R, OT*R)             �́A�J��Ԃ����ɁA+5
 
 static int state_table[256] =
 {

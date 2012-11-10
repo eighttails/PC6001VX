@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "p6el.h"
 #include "pc6001v.h"
 #include "log.h"
 #include "voice.h"
@@ -15,20 +16,13 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-VCE6::VCE6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id)
+VCE6::VCE6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id),
+	io_E0H(0), io_E2H(0), io_E3H(0), VStat(D7752E_IDL),
+	IVLen(0), IVBuf(NULL), IVPos(0), Pnum(0), Fnum(0), PReady(false), Fbuf(NULL)
 {
+	INITARRAY( FilePath, '\0' );
+	INITARRAY( ParaBuf, 0 );
 	SndDev::Volume = DEFAULT_VOICEVOL;
-	*FilePath = '\0';
-	io_E0H = io_E2H = io_E3H = 0;
-	Pnum    = 0;
-	Fnum    = 0;
-	PReady 	= FALSE;
-	Fbuf    = NULL;
-	VStat   = D7752E_IDL;
-        IVBuf   = NULL;
-        IVLen   = IVPos = 0;
-
-        INITARRAY(ParaBuf, 0);
 }
 
 
@@ -37,7 +31,8 @@ VCE6::VCE6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id)
 ////////////////////////////////////////////////////////////////
 VCE6::~VCE6()
 {
-	if( Fbuf )    delete [] Fbuf;
+	FreeVoice();
+	if( Fbuf ) delete [] Fbuf;
 }
 
 
@@ -68,7 +63,7 @@ void VCE6::EventCallback( int id, int clock )
 					UpConvert();
 					
 					// 次フレームのパラメータを受け付ける
-					PReady = FALSE;
+					PReady = false;
 					VStat |= D7752E_REQ;
 				}
 			}else{			// 完了してなければエラー
@@ -79,7 +74,7 @@ void VCE6::EventCallback( int id, int clock )
 			PRINTD( VOI_LOG, "(INT) " );
 			// 1フレーム分のサンプルをバッファに書込む
 			int num = min( IVLen - IVPos, cD7752::GetFrameSize() * SndDev::SampleRate / 10000 );
-			PRINTD2( VOI_LOG, "%d/%d\n", num, IVPos );
+			PRINTD( VOI_LOG, "%d/%d\n", num, IVPos );
 			while( num-- )
 				SndDev::cRing::Put( ( IVBuf[IVPos++] * SndDev::Volume ) / 100 );
 			if( IVPos >= IVLen ){	// 最後まで発生したら発声終了
@@ -97,8 +92,8 @@ void VCE6::EventCallback( int id, int clock )
 ////////////////////////////////////////////////////////////////
 void VCE6::VSetMode( BYTE mode )
 {
-	PRINTD2( VOI_LOG, "[VOICE][VSetMode]    %02X %dms", mode, (((mode>>2)&1)+1)*10 );
-	PRINTD1( VOI_LOG, " %s\n", mode&1 && mode&2 ? "X" : mode&1 ? "SLOW" : mode&2 ? "FAST" : "NORMAL" );
+	PRINTD( VOI_LOG, "[VOICE][VSetMode]    %02X %dms", mode, (((mode>>2)&1)+1)*10 );
+	PRINTD( VOI_LOG, " %s\n", mode&1 && mode&2 ? "X" : mode&1 ? "SLOW" : mode&2 ? "FAST" : "NORMAL" );
 	
 	// 音声合成開始
 	cD7752::Start( mode );
@@ -113,7 +108,7 @@ void VCE6::VSetMode( BYTE mode )
 ////////////////////////////////////////////////////////////////
 void VCE6::VSetCommand( BYTE comm )
 {
-	PRINTD1( VOI_LOG, "[VOICE][VSetCommand] %02X\n", comm );
+	PRINTD( VOI_LOG, "[VOICE][VSetCommand] %02X\n", comm );
 	
 	// 発声中なら止める
 	AbortVoice();
@@ -131,7 +126,7 @@ void VCE6::VSetCommand( BYTE comm )
 		VStat = D7752E_BSY;
 		
 		// フレームイベントをセットする
-		vm->sche->Add( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
+		vm->evsc->Add( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
 		
 		break;
 		
@@ -144,7 +139,7 @@ void VCE6::VSetCommand( BYTE comm )
 		VStat = D7752E_BSY | D7752E_EXT | D7752E_REQ;
 		
 		// フレームイベントをセットする
-		vm->sche->Add( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
+		vm->evsc->Add( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
 		
 		break;
 		
@@ -163,7 +158,7 @@ void VCE6::VSetCommand( BYTE comm )
 ////////////////////////////////////////////////////////////////
 void VCE6::VSetData( BYTE data )
 {
-	PRINTD1( VOI_LOG, "[VOICE][VSetData]    %02X\n", data );
+	PRINTD( VOI_LOG, "[VOICE][VSetData]    %02X\n", data );
 	
 	// 再生時のみデータを受け付ける
 	if(	(VStat & D7752E_BSY)&&(VStat & D7752E_REQ) ){
@@ -177,7 +172,7 @@ void VCE6::VSetData( BYTE data )
 				VStat &= ~D7752E_REQ;
 				Pnum = 0;
 				if( Fnum > 0 ) Fnum--;
-				PReady = TRUE;
+				PReady = true;
 			}
 		}else{						// 繰り返しフレーム?
 			// パラメータバッファに保存
@@ -187,7 +182,7 @@ void VCE6::VSetData( BYTE data )
 			VStat &= ~D7752E_REQ;
 			Pnum = 0;
 			Fnum--;
-			PReady = TRUE;
+			PReady = true;
 		}
 	}
 }
@@ -210,11 +205,11 @@ void VCE6::AbortVoice( void )
 	PRINTD( VOI_LOG, "[VOICE][AbortVoice]\n" );
 	
 	// フレームイベント停止
-	vm->sche->Del( this, EID_FRAME );
+	vm->evsc->Del( this, EID_FRAME );
 	
 	// 残りのパラメータはキャンセル
 	Pnum = Fnum = 0;
-	PReady = FALSE;
+	PReady = false;
 	
 	// フレームバッファ開放
 	if( Fbuf ){
@@ -238,7 +233,7 @@ void VCE6::UpConvert( void )
 	
 	// 10kHz -> 実際に再生するサンプリングレートに変換した時のサンプル数
 	int samples = cD7752::GetFrameSize() * SndDev::SampleRate / 10000;
-	PRINTD1( VOI_LOG, "UpConvert %d \n", samples );
+	PRINTD( VOI_LOG, "UpConvert %d \n", samples );
 	
 	for( int i=0; i<samples; i++ ){
 		int dat = Fbuf[i * cD7752::GetFrameSize() / samples] * 4;	// * 4 は 16bit<-14bit のため
@@ -252,9 +247,9 @@ void VCE6::UpConvert( void )
 ////////////////////////////////////////////////////////////////
 // 内部句WAV読込み
 ////////////////////////////////////////////////////////////////
-BOOL VCE6::LoadVoice( int index )
+bool VCE6::LoadVoice( int index )
 {
-	PRINTD1( VOI_LOG, "[VOICE][LoadVoice]  No.%d -> ", index );
+	PRINTD( VOI_LOG, "[VOICE][LoadVoice]  No.%d -> ", index );
 	
 	DWORD len;		// 元データサイズ
 	BYTE *buf;		// 元データバッファ
@@ -264,11 +259,11 @@ BOOL VCE6::LoadVoice( int index )
 	char filepath[PATH_MAX];
 	sprintf( filepath, "%sf4%d.wav", FilePath, index );
 	
-	PRINTD1( VOI_LOG, "%s ->", filepath );
+	PRINTD( VOI_LOG, "%s ->", filepath );
 	
 	if( !OSD_LoadWAV( filepath, &buf, &len, &freq ) ){
 		PRINTD( VOI_LOG, "Error!\n" );
-		return FALSE;
+		return false;
 	}
 	
 	PRINTD( VOI_LOG, "OK\n" );
@@ -278,13 +273,13 @@ BOOL VCE6::LoadVoice( int index )
 	IVLen = (int)( (double)SndDev::SampleRate * (double)(len/2) / (double)freq
 					* (double)cD7752::GetFrameSize() / (double)160 );
 	
-	PRINTD2( VOI_LOG, "Len:%d/%d ->", IVLen, (int)len );
+	PRINTD( VOI_LOG, "Len:%d/%d ->", IVLen, (int)len );
 	
 	IVBuf = new int[IVLen];
 	if( !IVBuf ){
 		OSD_FreeWAV( buf );
 		IVLen = 0;
-		return FALSE;
+		return false;
 	}
 	
 	// 発声速度変換
@@ -301,7 +296,7 @@ BOOL VCE6::LoadVoice( int index )
 	// 読込みポインタ初期化
 	IVPos = 0;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -321,14 +316,14 @@ void VCE6::FreeVoice( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-BOOL VCE6::Init( int srate, char *path )
+bool VCE6::Init( int srate, char *path )
 {
 	PRINTD( VOI_LOG, "[VOICE][Init] BufferSize:" );
 	
 	// WAVEファイル格納パス保存
 	strncpy( FilePath, path, PATH_MAX );
 	
-	PRINTD1( VOI_LOG, ":%d\n", SndDev::cRing::GetSize() );
+	PRINTD( VOI_LOG, ":%d\n", SndDev::cRing::GetSize() );
 	
 	return SndDev::Init( srate );
 }
@@ -346,12 +341,32 @@ void VCE6::Reset( void )
 
 ////////////////////////////////////////////////////////////////
 // ストリーム更新
+//
+// 引数:	samples	更新サンプル数(-1:残りバッファ全て 0:処理クロック分)
+// 返値:	int		更新サンプル数
 ////////////////////////////////////////////////////////////////
 int VCE6::SoundUpdate( int samples )
 {
-	PRINTD( VOI_LOG, "[VOICE][Update]\n" );
+	PRINTD( VOI_LOG, "[VOICE][SoundUpdate] Samples: %d(%d)", samples, SndDev::cRing::FreeSize() );
 	
-	return 0;
+	int length = 0;
+	
+	if( samples == 0 ){
+		// あとで
+	}else if( samples > 0 ) length = min( samples - SndDev::cRing::ReadySize(), SndDev::cRing::FreeSize() );
+	else                    length = SndDev::cRing::FreeSize();
+	
+	PRINTD( VOI_LOG, " -> %d\n", length );
+	
+	if( !length ) return 0;
+	
+	
+	for( int i=0; i<length; i++ ){
+		// バッファに書込み
+		SndDev::cRing::Put( 0 );	// 手抜き
+	}
+	
+	return length;
 }
 
 
@@ -370,16 +385,16 @@ inline BYTE VCE6::InE3H( int ){ return io_E3H; }
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL VCE6::DokoSave( cIni *Ini )
+bool VCE6::DokoSave( cIni *Ini )
 {
 	cSche::evinfo e;
 	char stren[16];
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->PutEntry( "VOICE", NULL, "io_E0H",		"0x%02X",	io_E0H );
 	Ini->PutEntry( "VOICE", NULL, "io_E2H",		"0x%02X",	io_E2H );
@@ -406,12 +421,12 @@ BOOL VCE6::DokoSave( cIni *Ini )
 	
 	// イベント
 	e.id = EID_FRAME;
-	if( vm->sche->GetEvinfo( &e ) ){
+	if( vm->evsc->GetEvinfo( &e ) ){
 		sprintf( stren, "Event%08X", e.id );
 		Ini->PutEntry( "VOICE", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
 	}
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -419,9 +434,9 @@ BOOL VCE6::DokoSave( cIni *Ini )
 // どこでもLOAD
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL VCE6::DokoLoad( cIni *Ini )
+bool VCE6::DokoLoad( cIni *Ini )
 {
 	int st;
 	cSche::evinfo e;
@@ -429,7 +444,7 @@ BOOL VCE6::DokoLoad( cIni *Ini )
 	
 	e.device = this;
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	Ini->GetInt(   "VOICE", "io_E0H",		&st,		io_E0H );	io_E0H = st;
 	Ini->GetInt(   "VOICE", "io_E2H",		&st,		io_E2H );	io_E2H = st;
@@ -454,12 +469,12 @@ BOOL VCE6::DokoLoad( cIni *Ini )
 	
 	// イベント
 	e.id = EID_FRAME;
-	if( vm->sche->GetEvinfo( &e ) ){
+	if( vm->evsc->GetEvinfo( &e ) ){
 		sprintf( stren, "Event%08X", e.id );
 		Ini->PutEntry( "VOICE", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
 	}
 	
-	return TRUE;
+	return true;
 }
 
 

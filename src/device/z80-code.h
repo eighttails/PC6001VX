@@ -1,4 +1,4 @@
-// 8ãƒ“ãƒƒãƒˆè»¢é€å‘½ä»¤
+// 8ƒrƒbƒg“]‘—–½—ß
 	case LD_A_A:	ACC=ACC;	break;
 	case LD_A_B:	ACC=BC.B.h;	break;
 	case LD_A_C:	ACC=BC.B.l;	break;
@@ -94,7 +94,7 @@
 		WriteMem(J.W,ACC);
 		break;
 	
-// 16ãƒ“ãƒƒãƒˆè»¢é€å‘½ä»¤
+// 16ƒrƒbƒg“]‘—–½—ß
 	case LD_BC_16:	M_LDWORD(BC);	break;
 	case LD_DE_16:	M_LDWORD(DE);	break;
 	case LD_HL_16:	M_LDWORD(HL);	break;
@@ -125,7 +125,7 @@
 	case POP_HL:	M_POP(HL);	break;
 	case POP_AF:	M_POP(AF);	break;
 	
-// 8ãƒ“ãƒƒãƒˆç®—è¡“è«–ç†æ¼”ç®—å‘½ä»¤
+// 8ƒrƒbƒgŽZp˜_—‰‰ŽZ–½—ß
 	case ADD_A_A:	M_ADD_A(ACC);		break;
 	case ADD_A_B:	M_ADD_A(BC.B.h);	break;
 	case ADD_A_C:	M_ADD_A(BC.B.l);	break;
@@ -224,7 +224,7 @@
 	case DEC_L:	M_DEC(HL.B.l);	break;
 	case DEC_xHL:	i=ReadMem(HL.W); M_DEC(i); WriteMem(HL.W,i);	break;
 	
-// 16ãƒ“ãƒƒãƒˆç®—è¡“æ¼”ç®—å‘½ä»¤
+// 16ƒrƒbƒgŽZp‰‰ŽZ–½—ß
 	case ADD_HL_BC:	M_ADDW(HL.W,BC.W);	break;
 	case ADD_HL_DE:	M_ADDW(HL.W,DE.W);	break;
 	case ADD_HL_HL:	M_ADDW(HL.W,HL.W);	break;
@@ -240,7 +240,7 @@
 	case DEC_HL:	HL.W--;	break;
 	case DEC_SP:	SP.W--;	break;
 	
-// ãƒ¬ã‚¸ã‚¹ã‚¿äº¤æ›å‘½ä»¤
+// ƒŒƒWƒXƒ^ŒðŠ·–½—ß
 	case EX_AF_AF:
 		J.W=AF.W; AF.W=AF1.W; AF1.W=J.W;
 		break;
@@ -258,7 +258,7 @@
 		J.W=HL.W; HL.W=HL1.W; HL1.W=J.W;
 		break;
 	
-// åˆ†å²å‘½ä»¤
+// •ªŠò–½—ß
 	case JP:	M_JP();	break;
 	case JP_NZ:	if( M_NZ() ) M_JP(); else M_JP_SKIP();	break;
 	case JP_NC:	if( M_NC() ) M_JP(); else M_JP_SKIP();	break;
@@ -307,7 +307,7 @@
 	case RST30:	M_RST(0x0030);	break;
 	case RST38:	M_RST(0x0038);	break;
 	
-// ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆï¼ã‚·ãƒ•ãƒˆå‘½ä»¤
+// ƒ[ƒe[ƒg^ƒVƒtƒg–½—ß
 	case RLCA:
 		i = ACC>>7;
 		ACC = (ACC<<1)|i;
@@ -329,16 +329,16 @@
 		FLAG = (FLAG&~(H_FLAG|N_FLAG|C_FLAG))|i;
 		break;
 	
-// å…¥å‡ºåŠ›å‘½ä»¤
+// “üo—Í–½—ß
 	case IN_A_x8:
-		i = ReadIO( ReadMem(PC.W++) );
+		i = ReadIO( (ACC<<8)|ReadMem(PC.W++) );
 		ACC = i;
 		break;
 	case OUT_x8_A:
-		WriteIO( ReadMem(PC.W++), ACC );
+		WriteIO( (ACC<<8)|ReadMem(PC.W++), ACC );
 		break;
 	
-// ãã®ä»–ã®å‘½ä»¤
+// ‚»‚Ì‘¼‚Ì–½—ß
 	case NOP:	break;
 	
 	case DI:
@@ -347,7 +347,7 @@
 	case EI:
 		if( IFF == INT_DISABLE ){
 			IFF = IFF2 = INT_ENABLE;
-			NotIntrCheck = TRUE;
+			NotIntrCheck = true;
 		}
 		break;
 	
@@ -372,6 +372,6 @@
 		break;
 	
 	case HALT:
-		Halt = TRUE;
+		Halt = true;
 		PC.W --;
 		break;

@@ -6,6 +6,9 @@
 #include <SDL_syswm.h>
 
 #include "../pc6001v.h"
+#include "../p6el.h"
+#include "../p6vm.h"
+#include "../config.h"
 #include "../breakpoint.h"
 #include "../disk.h"
 #include "../error.h"
@@ -14,10 +17,8 @@
 #include "../memory.h"
 #include "../movie.h"
 #include "../osd.h"
-#include "../pc60.h"
 #include "../schedule.h"
 #include "../tape.h"
-#include "../usrevent.h"
 #include "../vdg.h"
 
 #include "configdialog.h"
@@ -31,8 +32,8 @@ static int ShowConfig();			// 環境設定プロパティシート表示
 ///////////////////////////////////////////////////////////
 // 仕方なしにスタティック変数
 ///////////////////////////////////////////////////////////
-static cConfig *ccfg = NULL;				// 環境設定オブジェクトポインタ
-static cConfig *ecfg = NULL;				// 環境設定オブジェクトポインタ(編集用)
+static CFG6 *ccfg = NULL;				// 環境設定オブジェクトポインタ
+static CFG6 *ecfg = NULL;				// 環境設定オブジェクトポインタ(編集用)
 static char ExtRomPathTemp[PATH_MAX] = "";	// 拡張ROMパス(Temp)
 static char TapePathTemp[PATH_MAX] = "";	// TAPEパス(Temp)
 static char DiskPathTemp[PATH_MAX] = "";	// DISKパス(Temp)
@@ -89,7 +90,6 @@ enum MenuCommand{
     ID_FSKP4,		// 4
     ID_FSKP5,		// 5
     ID_MONITOR,		// モニターモード
-    ID_TIMERINT,	// タイマ割込み許可
     ID_VERSION,		// バージョン情報
 };
 Q_DECLARE_METATYPE(MenuCommand)
@@ -107,7 +107,7 @@ QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable =
 ///////////////////////////////////////////////////////////
 // ポップアップメニュー表示
 ///////////////////////////////////////////////////////////
-void VM6::ShowPopupMenu( int x, int y )
+void EL6::ShowPopupMenu( int x, int y )
 {
     QAction* selectedAction = NULL;
 
@@ -128,13 +128,13 @@ void VM6::ShowPopupMenu( int x, int y )
     QAction* repleyLoad = addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
     // モニタモード or ブレークポインタが設定されている
     // またはリプレイ記録中だったらリプレイ再生無効
-    if( cfg->GetMonDisp() || bp->ExistBreakPoint() || ( REPLAY::GetStatus() == REP_RECORD ) )
+    if( cfg->GetMonDisp() || vm->bp->ExistBreakPoint() || ( REPLAY::GetStatus() == REP_RECORD ) )
         repleyLoad->setEnabled(false);
 
     QAction* repleySave = addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
     // モニタモード or ブレークポインタが設定されている
     // またはリプレイ再生中だったらリプレイ記録無効
-    if( cfg->GetMonDisp() || bp->ExistBreakPoint() || ( REPLAY::GetStatus() == REP_REPLAY ) )
+    if( cfg->GetMonDisp() || vm->bp->ExistBreakPoint() || ( REPLAY::GetStatus() == REP_REPLAY ) )
         repleySave->setEnabled(false);
 
     // ビデオキャプチャ
@@ -147,17 +147,17 @@ void VM6::ShowPopupMenu( int x, int y )
     QMenu* tapeMenu = menu.addMenu("TAPE");
     addCommand(tapeMenu, "挿入...", ID_TAPEINSERT);
     QAction* tapeEject = addCommand(tapeMenu, "取出", ID_TAPEEJECT);
-    if(!*cmt->GetFile()) tapeEject->setEnabled(false);
+    if(!*vm->cmtl->GetFile()) tapeEject->setEnabled(false);
 
     // DISKメニュー
-    if (disk->GetDrives()){
+    if (vm->disk->GetDrives()){
         QMenu* diskMenu = menu.addMenu("DISK");
-        for (int i = 0; i < disk->GetDrives(); i++){
+        for (int i = 0; i < vm->disk->GetDrives(); i++){
             QString item = QString("Drive%1").arg(i + 1);
             QMenu* driveMenu = diskMenu->addMenu(item);
             addCommand(driveMenu, "挿入...", MenuCommand(ID_DISKINSERT1 + i));
             QAction* diskEject = addCommand(driveMenu, "取出", MenuCommand(ID_DISKEJECT1 + i));
-            if (!*disk->GetFile(i)) diskEject->setEnabled(false);
+            if (!*vm->disk->GetFile(i)) diskEject->setEnabled(false);
         }
     }
 
@@ -165,7 +165,7 @@ void VM6::ShowPopupMenu( int x, int y )
     QMenu* extRomMenu = menu.addMenu("拡張ROM");
     addCommand(extRomMenu, "挿入...", ID_ROMINSERT);
     QAction* romEject = addCommand(extRomMenu, "取出", ID_ROMEJECT);
-    if(!*mem->GetFile()) romEject->setEnabled(false);
+    if(!*vm->mem->GetFile()) romEject->setEnabled(false);
 
     // ジョイスティックメニュー
     QMenu* joystickMenu = menu.addMenu("ジョイスティック");
@@ -210,7 +210,7 @@ void VM6::ShowPopupMenu( int x, int y )
                            << "緑/桃");
     for( int i = 0; i < 5; i++ ){
         QAction* color = addCommand(colorMenu, colorList[i], MenuCommand(ID_M4MONO + i), true);
-        if (vdg->GetMode4Color() == i) color->setChecked(true);
+        if (vm->vdg->GetMode4Color() == i) color->setChecked(true);
     }
 
     QMenu* fpsMenu = settingsMenu->addMenu("フレームスキップ");
@@ -233,15 +233,13 @@ void VM6::ShowPopupMenu( int x, int y )
     QAction* turboTape = addCommand(settingsMenu, "Turbo TAPE", ID_TURBO, true);
     if (cfg->GetTurboTAPE()) turboTape->setChecked(true);
     QAction* boostUp =  addCommand(settingsMenu, "Boost Up", ID_BOOST, true);
-    if (cmt->IsBoostUp()) boostUp->setChecked(true);
+    if (vm->cmtl->IsBoostUp()) boostUp->setChecked(true);
     addCommand(settingsMenu, "環境設定...", ID_CONFIG);
 
     // デバッグメニュー
     QMenu* debugMenu = menu.addMenu("デバッグ");
     QAction* monitorMode =  addCommand(debugMenu, "モニタモード", ID_MONITOR, true);
     if (cfg->GetMonDisp()) monitorMode->setChecked(true);
-    QAction* timerInt = addCommand(debugMenu, "タイマ割込み禁止", ID_TIMERINT, true);
-    if (!cfg->GetTimerIntr()) timerInt->setChecked(true);
     menu.addSeparator();
 
     // ヘルプメニュー
@@ -261,33 +259,33 @@ void VM6::ShowPopupMenu( int x, int y )
         if( !OSD_FileExist( TapePathTemp ) )
             strncpy( TapePathTemp, cfg->GetTapePath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_TapeLoad, str, TapePathTemp ) )
-            if( !cmt->Mount( str ) ) Error::SetError( Error::TapeMountFailed );
+            if( !vm->cmtl->Mount( str ) ) Error::SetError( Error::TapeMountFailed );
         break;
 
     case ID_TAPEEJECT:		// TAPE 排出
-        cmt->Unmount();
+        vm->cmtl->Unmount();
         break;
 
     case ID_DISKINSERT1:	// DISK1 挿入
         if( !OSD_FileExist( DiskPathTemp ) )
             strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
-            if( !disk->Mount( 0, str ) ) Error::SetError( Error::DiskMountFailed );
+            if( !vm->disk->Mount( 0, str ) ) Error::SetError( Error::DiskMountFailed );
         break;
 
     case ID_DISKEJECT1:		// DISK1 排出
-        disk->Unmount( 0 );
+        vm->disk->Unmount( 0 );
         break;
 
     case ID_DISKINSERT2:	// DISK2 挿入
         if( !OSD_FileExist( DiskPathTemp ) )
             strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
-            if( !disk->Mount( 1, str ) ) Error::SetError( Error::DiskMountFailed );
+            if( !vm->disk->Mount( 1, str ) ) Error::SetError( Error::DiskMountFailed );
         break;
 
     case ID_DISKEJECT2:		// DISK2 排出
-        disk->Unmount( 1 );
+        vm->disk->Unmount( 1 );
         break;
 
     case ID_ROMINSERT:		// 拡張ROM 挿入
@@ -296,18 +294,18 @@ void VM6::ShowPopupMenu( int x, int y )
         if( OSD_FileSelect( NULL, FD_ExtRom, str, ExtRomPathTemp ) ){
             // リセットを伴うのでメッセージ表示
             OSD_Message( MSG_RESETI, MSG_RESETC, OSDM_OK | OSDM_ICONINFO );
-            if( !mem->MountExtRom( str ) )
+            if( !vm->mem->MountExtRom( str ) )
                 Error::SetError( Error::ExtRomMountFailed );
             else
-                Reset();
+                vm->Reset();
         }
         break;
 
     case ID_ROMEJECT:		// 拡張ROM 排出
         // リセットを伴うのでメッセージ表示
         OSD_Message( MSG_RESETE, MSG_RESETC, OSDM_OK | OSDM_ICONINFO );
-        mem->UnmountExtRom();
-        Reset();
+        vm->mem->UnmountExtRom();
+        vm->Reset();
         break;
 
     case ID_JOY101:			// ジョイスティック1
@@ -338,15 +336,15 @@ void VM6::ShowPopupMenu( int x, int y )
         if( ShowConfig() > 0 )
             // 再起動?
             if( OSD_Message( MSG_RESTART, MSG_RESTARTC, OSDM_YESNO | OSDM_ICONQUESTION ) == OSDR_YES )
-                SENDEVENT( SDL_RESTART )
+                OSD_PushEvent( EV_RESTART );
                         break;
 
     case ID_RESET:			// リセット
-        Reset();
+        vm->Reset();
         break;
 
     case ID_RESTART:		// 再起動
-        SENDEVENT( SDL_RESTART )
+        OSD_PushEvent( EV_RESTART );
                 break;
 
     case ID_DOKOSAVE:		// どこでもSAVE
@@ -372,10 +370,7 @@ void VM6::ShowPopupMenu( int x, int y )
     case ID_REPLAYLOAD:		// リプレイ再生
         if( REPLAY::GetStatus() == REP_IDLE ){
             if( OSD_FileSelect( NULL, FD_RepLoad, str, (char *)OSD_GetConfigPath() ) ){
-                if( DokoDemoLoad( str ) )
-                    REPLAY::StartReplay( str );
-                else
-                    if( Error::GetError() == Error::DokoDiffModel ) Error::SetError( Error::ReplayDiffModel );
+                REPLAY::StartReplay( str );
             }
         }else if( REPLAY::GetStatus() == REP_REPLAY ){
             REPLAY::StopReplay();
@@ -398,26 +393,26 @@ void VM6::ShowPopupMenu( int x, int y )
         break;
 
     case ID_QUIT:			// 終了
-        SENDEVENT( SDL_QUIT )
+        OSD_PushEvent( EV_QUIT );
                 break;
 
     case ID_NOWAIT:			// Wait有効無効変更
-        sche->SetWaitEnable( sche->GetWaitEnable() ? FALSE : TRUE );
+        sche->SetWaitEnable( sche->GetWaitEnable() ? false : true );
         break;
 
     case ID_TURBO:			// Turbo TAPE
-        cfg->SetTurboTAPE( cfg->GetTurboTAPE() ? FALSE : TRUE );
+        cfg->SetTurboTAPE( cfg->GetTurboTAPE() ? false : true );
         break;
 
     case ID_BOOST:			// Boost Up
-        cfg->SetBoostUp( cfg->GetBoostUp() ? FALSE : TRUE );
-        cmt->SetBoost( cmt->IsBoostUp() ? FALSE : TRUE );
+        cfg->SetBoostUp( cfg->GetBoostUp() ? false : true );
+        vm->cmtl->SetBoost( vm->cmtl->IsBoostUp() ? false : true );
         break;
 
     case ID_SCANLINE:		// スキャンラインモード変更
         // ビデオキャプチャ中は無効
         if( !AVI6::IsAVI() ){
-            cfg->SetScanLine( cfg->GetScanLine() ? FALSE : TRUE );
+            cfg->SetScanLine( cfg->GetScanLine() ? false : true );
             graph->ResizeScreen();	// スクリーンサイズ変更
         }
         break;
@@ -425,36 +420,36 @@ void VM6::ShowPopupMenu( int x, int y )
     case ID_DISP43:			// 4:3表示変更
         // ビデオキャプチャ中は無効
         if( !AVI6::IsAVI() ){
-            cfg->SetDispNTSC( cfg->GetDispNTSC() ? FALSE : TRUE );
+            cfg->SetDispNTSC( cfg->GetDispNTSC() ? false : true );
             graph->ResizeScreen();	// スクリーンサイズ変更
         }
         break;
 
     case ID_STATUS:			// ステータスバー表示状態変更
-        cfg->SetStatDisp( cfg->GetStatDisp() ? FALSE : TRUE );
+        cfg->SetStatDisp( cfg->GetStatDisp() ? false : true );
         graph->ResizeScreen();	// スクリーンサイズ変更
         break;
 
         // MODE4カラー
     case ID_M4MONO:		// モノクロ
         cfg->SetMode4Color( 0 );
-        vdg->SetMode4Color( 0 );
+        vm->vdg->SetMode4Color( 0 );
         break;
     case ID_M4RDBL:		// 赤/青
         cfg->SetMode4Color( 1 );
-        vdg->SetMode4Color( 1 );
+        vm->vdg->SetMode4Color( 1 );
         break;
     case ID_M4BLRD:		// 青/赤
         cfg->SetMode4Color( 2 );
-        vdg->SetMode4Color( 2 );
+        vm->vdg->SetMode4Color( 2 );
         break;
     case ID_M4PKGR:		// ピンク/緑
         cfg->SetMode4Color( 3 );
-        vdg->SetMode4Color( 3 );
+        vm->vdg->SetMode4Color( 3 );
         break;
     case ID_M4GRPK:		// 緑/ピンク
         cfg->SetMode4Color( 4 );
-        vdg->SetMode4Color( 4 );
+        vm->vdg->SetMode4Color( 4 );
         break;
 
         // フレームスキップ
@@ -482,10 +477,6 @@ void VM6::ShowPopupMenu( int x, int y )
     case ID_MONITOR:		// モニターモード
         ToggleMonitor();
         break;
-
-    case ID_TIMERINT:		// タイマ割込み許可
-        cfg->SetTimerIntr( cfg->GetTimerIntr() ? FALSE : TRUE );
-        break;
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
     case ID_VERSION:		// バージョン情報
@@ -508,7 +499,7 @@ static int ShowConfig()
 {
     // INIファイルを開く
     try{
-        ecfg = new cConfig();
+        ecfg = new CFG6();
         if( !ecfg->Init() ) throw Error::IniReadFailed;
     }
     // new に失敗した場合

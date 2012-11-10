@@ -22,17 +22,15 @@ class CMTL : public P6DEVICE, public Device, public SndDev, public IDoko {
 private:
 	char FilePath[PATH_MAX];	// TAPEファイルフルパス
 	cP6T *p6t;
-	BOOL Relay;					// リレーの状態
+	bool Relay;					// リレーの状態
 	
-	BOOL Boost;					// BoostUp使う? TRUE:使う FALSE:使わない
+	bool Boost;					// BoostUp使う? true:使う false:使わない
 	int MaxBoost60;				// BoostUp 最大倍率(N60モード)
 	int MaxBoost62;				// BoostUp 最大倍率(N60m/N66モード)
 	
-	BOOL Remote( BOOL );			// リモート制御(PLAY,STOP)
+	bool Remote( bool );			// リモート制御(PLAY,STOP)
 	WORD CmtRead();					// CMT 1文字読込み
 	int GetSinCurve( int );			// sin波取得
-	
-	int GetSampleRate();			// サンプリングレート取得
 	
 	// デバイス定義
 	static const Descriptor descriptor;
@@ -49,37 +47,37 @@ public:
 	
 	void EventCallback( int, int );	// イベントコールバック関数
 	
-	BOOL Init( int );				// 初期化
+	bool Init( int );				// 初期化
 	void Reset();					// リセット
 	
 	void SetAutoStart( int );		// オートスタート文字列設定
 	
-	BOOL Mount( char * );			// TAPE マウント
+	bool Mount( char * );			// TAPE マウント
 	void Unmount();					// TAPE アンマウント
 	
-	WORD Update();					// ストリーム更新
-//	void SoundUpdate( int );		// 最終的にはこの形にしたい
+	WORD Update();					// ストリーム更新(1byte分)
+	int SoundUpdate( int );			// ストリーム更新
 	
-	BOOL IsMount();					// マウント済み?
-	BOOL IsAutoStart();				// オートスタート?
+	bool IsMount();					// マウント済み?
+	bool IsAutoStart();				// オートスタート?
 	
 	char *GetFile();				// ファイルパス取得
 	char *GetName();				// TAPE名取得
 	DWORD GetSize();				// ベタイメージサイズ取得
 	int GetCount();					// カウンタ取得
-	BOOL IsRelay();					// リレーの状態取得
+	bool IsRelay();					// リレーの状態取得
 	
-	void SetBoost( BOOL );			// BoostUp設定
+	void SetBoost( bool );			// BoostUp設定
 	void SetMaxBoost( int, int );	// BoostUp最大倍率設定
-	BOOL IsBoostUp();				// BoostUp状態取得
+	bool IsBoostUp();				// BoostUp状態取得
 	
 	// デバイスID
 	enum IDOut{ outB0H=0 };
 	enum IDIn {};
 	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );		// どこでもSAVE
-	BOOL DokoLoad( cIni * );		// どこでもLOAD
+	bool DokoSave( cIni * );		// どこでもSAVE
+	bool DokoLoad( cIni * );		// どこでもLOAD
 	// ------------------------------------------
 };
 
@@ -95,9 +93,9 @@ public:
 	CMTS( VM6 *, const P6ID& );		// コンストラクタ
 	~CMTS();						// デストラクタ
 	
-	BOOL Init( char * );			// 初期化
+	bool Init( char * );			// 初期化
 	
-	BOOL Mount();					// TAPE マウント
+	bool Mount();					// TAPE マウント
 	void Unmount();					// TAPE アンマウント
 	
 	void SetBaud( int );			// ボーレート設定

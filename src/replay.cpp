@@ -10,15 +10,8 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-REPLAY::REPLAY( void )
-{
-	Ini     = NULL;
-	RepST   = REP_IDLE;
-	Matrix  = NULL;
-	MSize   = 0;
-	RepFrm  = 0;
-	EndFrm  = 0;
-}
+REPLAY::REPLAY( void ) : Ini(NULL), RepST(REP_IDLE), Matrix(NULL),
+							MSize(0), RepFrm(0), EndFrm(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -39,9 +32,9 @@ REPLAY::~REPLAY( void )
 // 初期化
 //
 // 引数:	msize	マトリクスサイズ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL REPLAY::Init( int msize )
+bool REPLAY::Init( int msize )
 {
 	PRINTD( GRP_LOG, "[REPLAY][Init]\n" );
 	
@@ -50,14 +43,14 @@ BOOL REPLAY::Init( int msize )
 	
 	if( Matrix ) delete [] Matrix;
 	Matrix = new BYTE[msize];
-	if( !Matrix ) return FALSE;
+	if( !Matrix ) return false;
 	
 	RepST   = REP_IDLE;
 	MSize   = msize;
 	RepFrm  = 0;
 	EndFrm  = 0;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -67,7 +60,7 @@ BOOL REPLAY::Init( int msize )
 // 引数:	なし
 // 返値:	int		ステータス
 ////////////////////////////////////////////////////////////////
-BOOL REPLAY::GetStatus( void )
+int REPLAY::GetStatus( void )
 {
 	return RepST;
 }
@@ -77,9 +70,9 @@ BOOL REPLAY::GetStatus( void )
 // リプレイ記録開始
 //
 // 引数:	filename	出力ファイル名
-// 返値:	BOOL		TRUE:成功 FALSE:失敗
+// 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL REPLAY::StartRecord( char *filename )
+bool REPLAY::StartRecord( char *filename )
 {
 	// とりあえずエラー設定
 	Error::SetError( Error::ReplayPlayError );
@@ -91,13 +84,13 @@ BOOL REPLAY::StartRecord( char *filename )
 	}
 	catch( std::bad_alloc ){	// new に失敗した場合
 		Error::SetError( Error::MemAllocFailed );
-		return FALSE;
+		return false;
 	}
 	catch( Error::Errno i ){	// 例外発生
 		Error::SetError( i );
 		if( Ini ) delete Ini;
 		Ini = NULL;
-		return FALSE;
+		return false;
 	}
 	
 	memset( Matrix, 0xff, MSize );		// キーマトリクスバッファクリア
@@ -108,7 +101,7 @@ BOOL REPLAY::StartRecord( char *filename )
 	// 無事だったのでエラーなし
 	Error::SetError( Error::NoError );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -139,14 +132,14 @@ void REPLAY::StopRecord( void )
 // リプレイ1フレーム書出し
 //
 // 引数:	mt		キーマトリクスポインタ
-// 			chg		キーマトリクス変化 TRUE:した FALSE:しない
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 			chg		キーマトリクス変化 true:した false:しない
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL REPLAY::ReplayWriteFrame( BYTE *mt, BOOL chg )
+bool REPLAY::ReplayWriteFrame( BYTE *mt, bool chg )
 {
 	char stren[16],strva[256];
 	
-	if( ( RepST != REP_RECORD ) || !mt || !Ini ) return FALSE;
+	if( ( RepST != REP_RECORD ) || !mt || !Ini ) return false;
 	
 	// マトリクスに変化があったら書出し
 	if( chg ){
@@ -158,7 +151,7 @@ BOOL REPLAY::ReplayWriteFrame( BYTE *mt, BOOL chg )
 	
 	RepFrm++;
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -166,9 +159,9 @@ BOOL REPLAY::ReplayWriteFrame( BYTE *mt, BOOL chg )
 // リプレイ再生開始
 //
 // 引数:	filename	入力ファイル名
-// 返値:	BOOL		TRUE:成功 FALSE:失敗
+// 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL REPLAY::StartReplay( char *filename )
+bool REPLAY::StartReplay( char *filename )
 {
 	// とりあえずエラー設定
 	Error::SetError( Error::ReplayPlayError );
@@ -185,13 +178,13 @@ BOOL REPLAY::StartReplay( char *filename )
 	}
 	catch( std::bad_alloc ){	// new に失敗した場合
 		Error::SetError( Error::MemAllocFailed );
-		return FALSE;
+		return false;
 	}
 	catch( Error::Errno i ){	// 例外発生
 		Error::SetError( i );
 		if( Ini ) delete Ini;
 		Ini = NULL;
-		return FALSE;
+		return false;
 	}
 	
 	memset( Matrix, 0xff, MSize );	// キーマトリクスバッファクリア
@@ -202,7 +195,7 @@ BOOL REPLAY::StartReplay( char *filename )
 	// 無事だったのでエラーなし
 	Error::SetError( Error::NoError );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -229,13 +222,13 @@ void REPLAY::StopReplay( void )
 // リプレイ1フレーム読込み
 //
 // 引数:	mt		キーマトリクスポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL REPLAY::ReplayReadFrame( BYTE *mt )
+bool REPLAY::ReplayReadFrame( BYTE *mt )
 {
 	char stren[16],strva[256];
 	
-	if( ( RepST != REP_REPLAY ) || !mt || !Ini ) return FALSE;
+	if( ( RepST != REP_REPLAY ) || !mt || !Ini ) return false;
 	
 	sprintf( stren, "%08lX", RepFrm );
 	if( Ini->GetString( "REPLAY", stren, strva, "" ) ){
@@ -253,5 +246,5 @@ BOOL REPLAY::ReplayReadFrame( BYTE *mt )
 		StopReplay();
 	}
 	
-	return TRUE;
+	return true;
 }

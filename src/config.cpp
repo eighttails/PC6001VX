@@ -7,7 +7,7 @@
 #include "error.h"
 #include "osd.h"
 
-const P6KeyName cConfig::P6KeyNameDef[] = {	// P6キーコード 名称定義
+const P6KeyName CFG6::P6KeyNameDef[] = {	// P6キーコード 名称定義
 	{ KP6_UNKNOWN,		"K6_UNKNOWN" },
 	
 	{ KP6_1,			"K6_1" },
@@ -122,7 +122,7 @@ const P6KeyName cConfig::P6KeyNameDef[] = {	// P6キーコード 名称定義
 };
 
 
-const PCKeyName cConfig::PCKeyNameDef[] = {	// 仮想キーコード 名称定義
+const PCKeyName CFG6::PCKeyNameDef[] = {	// 仮想キーコード 名称定義
 	{ KVC_UNKNOWN,		"K_UNKNOWN" },
 	
 	{ KVC_1,			"K_1" },
@@ -250,7 +250,7 @@ const PCKeyName cConfig::PCKeyNameDef[] = {	// 仮想キーコード 名称定�
 };
 
 
-const VKeyConv cConfig::KeyIni[] = {	// 仮想キーコード -> P6キーコード定義初期値
+const VKeyConv CFG6::KeyIni[] = {	// 仮想キーコード -> P6キーコード定義初期値
 	{ KVC_1,			KP6_1 },			// 1	!
 	{ KVC_2,			KP6_2 },			// 2	"
 	{ KVC_3,			KP6_3 },			// 3	#
@@ -380,7 +380,7 @@ const VKeyConv cConfig::KeyIni[] = {	// 仮想キーコード -> P6キーコー�
 };
 
 
-const COLOR24 cConfig::STDColor[] = {	// 標準カラーデータ ( R,G,B,0  0-255 )
+const COLOR24 CFG6::STDColor[] = {	// 標準カラーデータ ( R,G,B,0  0-255 )
 				// システムカラー
 				{   0,   0,   0, 0 },	// 00:
 				{   0,   0, 128, 0 },	// 01:
@@ -478,35 +478,28 @@ const COLOR24 cConfig::STDColor[] = {	// 標準カラーデータ ( R,G,B,0  0-2
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cConfig::cConfig( void )
-{
-	Ini = NULL;
-	
-	// INIファイルのパスを設定
-	sprintf( IniPath, "%s" CONF_FILE, OSD_GetConfigPath() );
-	
-	*Caption        = 0;	// ウィンドウキャプション
-	*DokoFile       = 0;	// どこでもSAVEファイルパス
-	
-	*RomPath        = 0;	// ROMパス
-	*ExtRomPath     = 0;	// 拡張ROMパス
-	*ExtRomFile     = 0;	// 拡張ROMファイル名
-	*TapePath       = 0;	// TAPEパス
-	*TapeFile       = 0;	// TAPEファイル名
-	*SaveFile       = 0;	// TAPE(SAVE)ファイル名
-	*DiskPath       = 0;	// DISKパス
-	*DiskFile       = 0;	// DISKファイル名
-	*ImgPath        = 0;	// スクリーンショット格納パス
-	*FontPath       = 0;	// フォント格納パス
-        *WavePath       = 0;    // WAVE格納パス
-	*FontFileZ      = 0;	// 全角フォントファイル名
-	*FontFileH      = 0;	// 半角フォントファイル名
-	*PrinterFile    = 0;	// プリンタファイル名
-	
+CFG6::CFG6( void ) : Ini(NULL)
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	MonDisp   = FALSE;		// モニタウィンドウ非表示
-	TimerIntr = TRUE;		// タイマ割込み許可
+	, MonDisp(false)
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+{
+	// INIファイルのパスを設定
+    sprintf( IniPath, "%s" CONF_FILE, OSD_GetConfigPath() );
+	
+	INITARRAY( Caption, '\0' );		// ウィンドウキャプション
+	INITARRAY( DokoFile, '\0' );	// どこでもSAVEファイルパス
+	INITARRAY( RomPath, '\0' );		// ROMパス
+	INITARRAY( ExtRomPath, '\0' );	// 拡張ROMパス
+	INITARRAY( ExtRomFile, '\0' );	// 拡張ROMファイル名
+	INITARRAY( TapePath, '\0' );	// TAPEパス
+	INITARRAY( TapeFile, '\0' );	// TAPEファイル名
+	INITARRAY( SaveFile, '\0' );	// TAPE(SAVE)ファイル名
+	INITARRAY( DiskPath, '\0' );	// DISKパス
+	INITARRAY( DiskFile1, '\0' );	// DISK1ファイル名
+	INITARRAY( DiskFile2, '\0' );	// DISK2ファイル名
+	INITARRAY( ImgPath, '\0' );		// スクリーンショット格納パス
+	INITARRAY( WavePath, '\0' );	// WAVE格納パス
+	INITARRAY( PrinterFile, '\0' );	// プリンタファイル名
 
 }
 
@@ -514,7 +507,7 @@ cConfig::cConfig( void )
 ////////////////////////////////////////////////////////////////
 // デストラクタ
 ////////////////////////////////////////////////////////////////
-cConfig::~cConfig( void )
+CFG6::~CFG6( void )
 {
 	if( Ini ){
 		if( GetSaveQuit() ) Ini->Write();	// INIファイルに書込み
@@ -527,9 +520,9 @@ cConfig::~cConfig( void )
 // 初期化(INIファイル読込み)
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL cConfig::Init( void )
+bool CFG6::Init( void )
 {
 	// INIオブジェクトが存在していたら一旦開放
 	if( Ini ) delete Ini;
@@ -546,27 +539,27 @@ BOOL cConfig::Init( void )
 			// INIファイルを開く
 			Ini = new cIni();
 			if( !Ini->Init( IniPath ) ) throw Error::IniDefault;
-			InitIni( Ini, TRUE );	// INIオブジェクト初期値設定
+			InitIni( Ini, true );	// INIオブジェクト初期値設定
 			Ini->Write();
 		}else{
 			// INIファイルを開く
 			Ini = new cIni();
 			if( !Ini->Init( IniPath ) ) throw Error::IniDefault;
-			InitIni( Ini, FALSE );	// INIオブジェクト初期値設定
+			InitIni( Ini, false );	// INIオブジェクト初期値設定
 		}
 	}
 	catch( std::bad_alloc ){	// new に失敗した場合
 		Error::SetError( Error::MemAllocFailed );
-		return FALSE;
+		return false;
 	}
 	catch( Error::Errno i ){	// 例外発生
 		Error::SetError( i );
 		if( Ini ) delete Ini;
 		Ini = NULL;
-		return FALSE;
+		return false;
 	}
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -574,15 +567,15 @@ BOOL cConfig::Init( void )
 // INIファイル書込み
 //
 // 引数:	なし
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL cConfig::Write( void )
+bool CFG6::Write( void )
 {
 	if( Ini ){
 		// INIファイルに書込み
 		return Ini->Write();
 	}
-	return FALSE;
+	return false;
 }
 
 
@@ -590,7 +583,7 @@ BOOL cConfig::Write( void )
 // メンバアクセス関数
 ////////////////////////////////////////////////////////////////
 // 機種取得
-int cConfig::GetModel( void )
+int CFG6::GetModel( void )
 {
 	int st = DEFAULT_MODEL;
 	Ini->GetInt( "CONFIG", "Model", &st, st );
@@ -598,13 +591,13 @@ int cConfig::GetModel( void )
 }
 
 // 機種設定
-void cConfig::SetModel( int data )
+void CFG6::SetModel( int data )
 {
 	Ini->PutEntry( "CONFIG", MSINI_Model, "Model", "%02d", data );
 }
 
 // ウィンドウキャプション取得
-char *cConfig::GetCaption( void )
+char *CFG6::GetCaption( void )
 {
 	switch( GetModel() ){	// 機種取得
 	case 62: sprintf( Caption, APPNAME " (" P62NAME ") Ver." VERSION ); break;
@@ -617,13 +610,13 @@ char *cConfig::GetCaption( void )
 }
 
 // どこでもSAVEファイル名取得
-char *cConfig::GetDokoFile( void )
+char *CFG6::GetDokoFile( void )
 {
 	return DokoFile;
 }
 
 // どこでもSAVEファイル名設定
-void cConfig::SetDokoFile( const char *str )
+void CFG6::SetDokoFile( const char *str )
 {
 	strncpy( DokoFile, str, PATH_MAX );
 	UnDelimiter( DokoFile );
@@ -631,7 +624,7 @@ void cConfig::SetDokoFile( const char *str )
 }
 
 // オーバークロック率取得
-int cConfig::GetOverClock( void )
+int CFG6::GetOverClock( void )
 {
 	int st = 100;
 	Ini->GetInt( "CONFIG", "OverClock", &st, st );
@@ -639,13 +632,13 @@ int cConfig::GetOverClock( void )
 }
 
 // オーバークロック率設定
-void cConfig::SetOverClock( int data )
+void CFG6::SetOverClock( int data )
 {
 	Ini->PutEntry( "CONFIG", MSINI_OverClock, "OverClock", "%d", data );
 }
 
 // ROMパス取得
-char *cConfig::GetRomPath( void )
+char *CFG6::GetRomPath( void )
 {
 	Ini->GetString( "PATH", "RomPath", RomPath, RomPath );
 	Delimiter( RomPath );
@@ -654,7 +647,7 @@ char *cConfig::GetRomPath( void )
 }
 
 // ROMパス設定
-void cConfig::SetRomPath( const char *str )
+void CFG6::SetRomPath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -664,21 +657,21 @@ void cConfig::SetRomPath( const char *str )
 }
 
 // 拡張RAMを使う取得
-BOOL cConfig::GetUseExtRam( void )
+bool CFG6::GetUseExtRam( void )
 {
-	BOOL st = DEFAULT_EXTRAM;
+	bool st = DEFAULT_EXTRAM;
 	Ini->GetTruth( "CONFIG", "ExtRam", &st, st );
 	return st;
 }
 
 // 拡張RAMを使う設定
-void cConfig::SetUseExtRam( BOOL yn )
+void CFG6::SetUseExtRam( bool yn )
 {
 	Ini->PutEntry( "CONFIG", MSINI_ExtRam, "ExtRam", "%s", yn ? "Yes" : "No" );
 }
 
 // 拡張ROMパス取得
-char *cConfig::GetExtRomPath( void )
+char *CFG6::GetExtRomPath( void )
 {
 	Ini->GetString( "PATH", "ExtRomPath", ExtRomPath, ExtRomPath );
 	Delimiter( ExtRomPath );
@@ -686,7 +679,7 @@ char *cConfig::GetExtRomPath( void )
 	return ExtRomPath;
 }
 // 拡張ROMパス設定
-void cConfig::SetExtRomPath( const char *str )
+void CFG6::SetExtRomPath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -696,7 +689,7 @@ void cConfig::SetExtRomPath( const char *str )
 }
 
 // 拡張ROMファイル名取得
-char *cConfig::GetExtRomFile( void )
+char *CFG6::GetExtRomFile( void )
 {
 	Ini->GetString( "FILES", "ExtRom", ExtRomFile, ExtRomFile );
 	Delimiter( ExtRomFile );
@@ -704,7 +697,7 @@ char *cConfig::GetExtRomFile( void )
 }
 
 // 拡張ROMファイル名設定
-void cConfig::SetExtRomFile( const char *str )
+void CFG6::SetExtRomFile( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -713,33 +706,33 @@ void cConfig::SetExtRomFile( const char *str )
 }
 
 // CRCチェック取得
-BOOL cConfig::GetCheckCRC( void )
+bool CFG6::GetCheckCRC( void )
 {
-	BOOL st = TRUE;
+	bool st = true;
 	Ini->GetTruth( "CONFIG", "CheckCRC", &st, st );
 	return st;
 }
 // CRCチェック設定
-void cConfig::SetCheckCRC( BOOL yn )
+void CFG6::SetCheckCRC( bool yn )
 {
 	Ini->PutEntry( "CONFIG", MSINI_CheckCRC, "CheckCRC", "%s", yn ? "Yes" : "No" );
 }
 
 // ROMパッチ取得
-BOOL cConfig::GetRomPatch( void )
+bool CFG6::GetRomPatch( void )
 {
-	BOOL st = TRUE;
+	bool st = true;
 	Ini->GetTruth( "CONFIG", "RomPatch", &st, st );
 	return st;
 }
 // ROMパッチ設定
-void cConfig::SetRomPatch( BOOL yn )
+void CFG6::SetRomPatch( bool yn )
 {
 	Ini->PutEntry( "CONFIG", MSINI_RomPatch, "RomPatch", "%s", yn ? "Yes" : "No" );
 }
 
 // キーリピート取得
-int cConfig::GetKeyRepeat( void )
+int CFG6::GetKeyRepeat( void )
 {
 	int st = DEFAULT_REPEAT;
 	Ini->GetInt( "KEY", "KeyRepeat", &st, st );
@@ -747,13 +740,13 @@ int cConfig::GetKeyRepeat( void )
 }
 
 // キーリピート設定
-void cConfig::SetKeyRepeat( int data )
+void CFG6::SetKeyRepeat( int data )
 {
 	Ini->PutEntry( "KEY", MSINI_KeyRepeat, "KeyRepeat", "%d", data );
 }
 
 // サンプリングレート取得
-int cConfig::GetSampleRate( void )
+int CFG6::GetSampleRate( void )
 {
 	int st = DEFAULT_SAMPLE_RATE;
 	Ini->GetInt( "SOUND", "SampleRate", &st, st );
@@ -761,13 +754,13 @@ int cConfig::GetSampleRate( void )
 }
 
 // サンプリングレート設定
-void cConfig::SetSampleRate( int data )
+void CFG6::SetSampleRate( int data )
 {
 	Ini->PutEntry( "SOUND", MSINI_SampleRate, "SampleRate", "%d", data );
 }
 
 // サウンドバッファ長倍率取得
-int cConfig::GetSoundBuffer( void )
+int CFG6::GetSoundBuffer( void )
 {
 	int st = SOUND_BUFFER_SIZE;
 	Ini->GetInt( "SOUND", "SoundBuffer", &st, st );
@@ -775,13 +768,13 @@ int cConfig::GetSoundBuffer( void )
 }
 
 // サウンドバッファ長倍率設定
-void cConfig::SetSoundBuffer( int data )
+void CFG6::SetSoundBuffer( int data )
 {
 	Ini->PutEntry( "SOUND", MSINI_SoundBuffer, "SoundBuffer", "%d", data );
 }
 
 // マスター音量取得
-int cConfig::GetMasterVol( void )
+int CFG6::GetMasterVol( void )
 {
 	int st = DEFAULT_MASTERVOL;
 	Ini->GetInt( "SOUND", "MasterVolume", &st, st );
@@ -789,14 +782,14 @@ int cConfig::GetMasterVol( void )
 }
 
 // マスター音量設定
-void cConfig::SetMasterVol( int data )
+void CFG6::SetMasterVol( int data )
 {
 	Ini->PutEntry( "SOUND", MSINI_MasterVolume, "MasterVolume", "%d", data );
 }
 
 
 // PSG音量取得
-int cConfig::GetPsgVol( void )
+int CFG6::GetPsgVol( void )
 {
 	int st = DEFAULT_PSGVOL;
 	Ini->GetInt( "SOUND", "PsgVolume", &st, st );
@@ -804,13 +797,13 @@ int cConfig::GetPsgVol( void )
 }
 
 // PSG音量設定
-void cConfig::SetPsgVol( int data )
+void CFG6::SetPsgVol( int data )
 {
 	Ini->PutEntry( "SOUND", MSINI_PsgVolume, "PsgVolume", "%d", data );
 }
 
 // PSG LPFカットオフ周波数取得
-int cConfig::GetPsgLPF( void )
+int CFG6::GetPsgLPF( void )
 {
 	int st = DEFAULT_PSGLPF;
 	Ini->GetInt( "SOUND", "PsgLPF", &st, st );
@@ -818,13 +811,13 @@ int cConfig::GetPsgLPF( void )
 }
 
 // PSG LPFカットオフ周波数設定
-void cConfig::SetPsgLPF( int data )
+void CFG6::SetPsgLPF( int data )
 {
 	Ini->PutEntry( "SOUND", MSINI_PsgLPF,  "PsgLPF",  "%d", data );
 }
 
 // WAVEパス取得
-char *cConfig::GetWavePath( void )
+char *CFG6::GetWavePath( void )
 {
 	Ini->GetString( "PATH", "WavePath", WavePath, WavePath );
 	Delimiter( WavePath );
@@ -833,7 +826,7 @@ char *cConfig::GetWavePath( void )
 }
 
 // WAVEパス設定
-void cConfig::SetWavePath( const char *str )
+void CFG6::SetWavePath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -843,7 +836,7 @@ void cConfig::SetWavePath( const char *str )
 }
 
 // 音声合成音量取得
-int cConfig::GetVoiceVol( void )
+int CFG6::GetVoiceVol( void )
 {
 	int st = DEFAULT_VOICEVOL;
 	Ini->GetInt( "SOUND", "VoiceVolume", &st, st );
@@ -851,13 +844,13 @@ int cConfig::GetVoiceVol( void )
 }
 
 // 音声合成音量設定
-void cConfig::SetVoiceVol( int data )
+void CFG6::SetVoiceVol( int data )
 {
 	Ini->PutEntry( "SOUND", MSINI_VoiceVolume, "VoiceVolume", "%d", data );
 }
 
 // TAPEパス取得
-char *cConfig::GetTapePath( void )
+char *CFG6::GetTapePath( void )
 {
 	Ini->GetString( "PATH", "TapePath", TapePath, TapePath );
 	Delimiter( TapePath );
@@ -866,7 +859,7 @@ char *cConfig::GetTapePath( void )
 }
 
 // TAPEパス設定
-void cConfig::SetTapePath( const char *str )
+void CFG6::SetTapePath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -876,7 +869,7 @@ void cConfig::SetTapePath( const char *str )
 }
 
 // TAPEファイル取得
-char *cConfig::GetTapeFile( void )
+char *CFG6::GetTapeFile( void )
 {
 	Ini->GetString( "FILES", "tape", TapeFile, TapeFile );
 	Delimiter( TapeFile );
@@ -884,7 +877,7 @@ char *cConfig::GetTapeFile( void )
 }
 
 // TAPEファイル設定
-void cConfig::SetTapeFile( const char *str )
+void CFG6::SetTapeFile( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -894,7 +887,7 @@ void cConfig::SetTapeFile( const char *str )
 }
 
 // TAPEモニタ音量取得
-int cConfig::GetCmtVol( void )
+int CFG6::GetCmtVol( void )
 {
 	int st = DEFAULT_TAPEVOL;
 	Ini->GetInt( "SOUND", "TapeVolume", &st, st );
@@ -902,41 +895,41 @@ int cConfig::GetCmtVol( void )
 }
 
 // TAPEモニタ音量設定
-void cConfig::SetCmtVol( int data )
+void CFG6::SetCmtVol( int data )
 {
 	Ini->PutEntry( "SOUND", MSINI_TapeVolume, "TapeVolume", "%d", data );
 }
 
 // Turbo TAPE 有効フラグ取得
-BOOL cConfig::GetTurboTAPE( void )
+bool CFG6::GetTurboTAPE( void )
 {
-	BOOL st = DEFAULT_TURBO;
+	bool st = DEFAULT_TURBO;
 	Ini->GetTruth( "CONFIG", "TurboTAPE", &st, st );
 	return st;
 }
 
 // Turbo TAPE 有効フラグ設定
-void cConfig::SetTurboTAPE( BOOL yn )
+void CFG6::SetTurboTAPE( bool yn )
 {
 	Ini->PutEntry( "CONFIG", MSINI_TurboTAPE, "TurboTAPE", "%s", yn ? "Yes" : "No" );
 }
 
 // Boost Up 有効フラグ取得
-BOOL cConfig::GetBoostUp( void )
+bool CFG6::GetBoostUp( void )
 {
-	BOOL st = DEFAULT_BOOST;
+	bool st = DEFAULT_BOOST;
 	Ini->GetTruth( "CONFIG", "BoostUp", &st, st );
 	return st;
 }
 
 // BoostUp 有効フラグ設定
-void cConfig::SetBoostUp( BOOL yn )
+void CFG6::SetBoostUp( bool yn )
 {
 	Ini->PutEntry( "CONFIG", MSINI_BoostUp, "BoostUp", "%s", yn ? "Yes" : "No" );
 }
 
 // BoostUp 最大倍率(N60モード)取得
-int cConfig::GetMaxBoost1( void )
+int CFG6::GetMaxBoost1( void )
 {
 	int st = DEFAULT_MAXBOOST60;
 	Ini->GetInt( "CONFIG", "MaxBoost60", &st, st );
@@ -944,26 +937,26 @@ int cConfig::GetMaxBoost1( void )
 }
 
 // BoostUp 最大倍率(N60モード)設定
-void cConfig::SetMaxBoost1( int data )
+void CFG6::SetMaxBoost1( int data )
 {
 	Ini->PutEntry( "CONFIG", MSINI_MaxBoost60, "MaxBoost60", "%d", data );
 }
 
 // BoostUp 最大倍率(N60m/N66モード)取得
-int cConfig::GetMaxBoost2( void )
+int CFG6::GetMaxBoost2( void )
 {
 	int st = DEFAULT_MAXBOOST62;
 	Ini->GetInt( "CONFIG", "MaxBoost62", &st, st );
 	return st;
 }
 // BoostUp 最大倍率(N60m/N66モード)設定
-void cConfig::SetMaxBoost2( int data )
+void CFG6::SetMaxBoost2( int data )
 {
 	Ini->PutEntry( "CONFIG", MSINI_MaxBoost62, "MaxBoost62", "%d", data );
 }
 
 // TAPE(SAVE)ファイル取得
-char *cConfig::GetSaveFile( void )
+char *CFG6::GetSaveFile( void )
 {
 	Ini->GetString( "FILES", "save", SaveFile, SaveFile );
 	Delimiter( SaveFile );
@@ -971,7 +964,7 @@ char *cConfig::GetSaveFile( void )
 }
 
 // TAPE(SAVE)ファイル設定
-void cConfig::SetSaveFile( const char *str )
+void CFG6::SetSaveFile( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -981,7 +974,7 @@ void cConfig::SetSaveFile( const char *str )
 }
 
 // DISKパス取得
-char *cConfig::GetDiskPath( void )
+char *CFG6::GetDiskPath( void )
 {
 	Ini->GetString( "PATH", "DiskPath", DiskPath, DiskPath );
 	Delimiter( DiskPath );
@@ -990,7 +983,7 @@ char *cConfig::GetDiskPath( void )
 }
 
 // DISKパス設定
-void cConfig::SetDiskPath( const char *str )
+void CFG6::SetDiskPath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -1000,25 +993,34 @@ void cConfig::SetDiskPath( const char *str )
 }
 
 // DISKファイル名取得
-char *cConfig::GetDiskFile( void )
+char *CFG6::GetDiskFile( int drv )
 {
-	Ini->GetString( "FILES", "disk", DiskFile, DiskFile );
-	Delimiter( DiskFile );
-	return DiskFile;
+	switch( drv ){
+	case 1:	Ini->GetString( "FILES", "disk1", DiskFile1, DiskFile1 );
+			Delimiter( DiskFile1 );
+			return DiskFile1;
+	case 2: Ini->GetString( "FILES", "disk2", DiskFile2, DiskFile2 );
+			Delimiter( DiskFile2 );
+			return DiskFile2;
+	}
+	return NULL;
 }
 
 // DISKファイル名設定
-void cConfig::SetDiskFile( const char *str )
+void CFG6::SetDiskFile( int drv, const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
 	UnDelimiter( temp );
 	DelDelimiter( temp );
-	Ini->PutEntry( "FILES", MSINI_disk, "disk", temp );
+	switch( drv ){
+	case 1: Ini->PutEntry( "FILES", MSINI_disk1, "disk1", temp ); break;
+	case 2: Ini->PutEntry( "FILES", MSINI_disk2, "disk2", temp ); break;
+	}
 }
 
 // FDD接続台数取得
-int cConfig::GetFddNum( void )
+int CFG6::GetFddNum( void )
 {
 	int st = DEFAULT_FDD;
 	Ini->GetInt( "CONFIG", "FDD", &st, st );
@@ -1026,13 +1028,13 @@ int cConfig::GetFddNum( void )
 }
 
 // FDD接続台数設定
-void cConfig::SetFddNum( int data )
+void CFG6::SetFddNum( int data )
 {
 	Ini->PutEntry( "CONFIG", MSINI_FDD, "FDD", "%d", data );
 }
 
 // スクリーンショット格納パス取得
-char *cConfig::GetImgPath( void )
+char *CFG6::GetImgPath( void )
 {
 	Ini->GetString( "PATH", "ImgPath", ImgPath, ImgPath );
 	Delimiter( ImgPath );
@@ -1041,7 +1043,7 @@ char *cConfig::GetImgPath( void )
 }
 
 // スクリーンショット格納パス設定
-void cConfig::SetImgPath( const char *str )
+void CFG6::SetImgPath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -1051,7 +1053,7 @@ void cConfig::SetImgPath( const char *str )
 }
 
 // カラーモード取得
-int cConfig::GetScrBpp( void )
+int CFG6::GetScrBpp( void )
 {
 	int st = DEFAULT_COLOR_MODE;
 	Ini->GetInt( "DISPLAY", "ScrBpp", &st, st );
@@ -1059,13 +1061,13 @@ int cConfig::GetScrBpp( void )
 }
 
 // カラーモード設定
-void cConfig::SetScrBpp( int data )
+void CFG6::SetScrBpp( int data )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_ScrBpp, "ScrBpp", "%d", data );
 }
 
 // モード4カラーモード取得
-int cConfig::GetMode4Color( void )
+int CFG6::GetMode4Color( void )
 {
 	int st = DEFAULT_MODE4_COLOR;
 	Ini->GetInt( "DISPLAY", "Mode4Color", &st, st );
@@ -1073,27 +1075,27 @@ int cConfig::GetMode4Color( void )
 }
 
 // モード4カラーモード設定
-void cConfig::SetMode4Color( int data )
+void CFG6::SetMode4Color( int data )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_Mode4Color, "Mode4Color", "%d", data );
 }
 
 // スキャンライン取得
-BOOL cConfig::GetScanLine( void )
+bool CFG6::GetScanLine( void )
 {
-	BOOL st = DEFAULT_SCANLINE;
+	bool st = DEFAULT_SCANLINE;
 	Ini->GetTruth( "DISPLAY", "ScanLine", &st, st );
 	return st;
 }
 
 // スキャンライン設定
-void cConfig::SetScanLine( BOOL yn )
+void CFG6::SetScanLine( bool yn )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_ScanLine, "ScanLine", "%s", yn ? "Yes" : "No" );
 }
 
 // スキャンライン輝度取得
-int cConfig::GetScanLineBr( void )
+int CFG6::GetScanLineBr( void )
 {
 	int st = DEFAULT_SCANLINEBR;
 	Ini->GetInt( "DISPLAY", "ScanLineBr", &st, st );
@@ -1101,55 +1103,55 @@ int cConfig::GetScanLineBr( void )
 }
 
 // スキャンライン輝度設定
-void cConfig::SetScanLineBr( int data )
+void CFG6::SetScanLineBr( int data )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_ScanLineBr, "ScanLineBr", "%d", data );
 }
 
 // 4:3表示取得
-BOOL cConfig::GetDispNTSC( void )
+bool CFG6::GetDispNTSC( void )
 {
-	BOOL st = DEFAULT_DISPNTSC;
+	bool st = DEFAULT_DISPNTSC;
 	Ini->GetTruth( "DISPLAY", "DispNTSC", &st, st );
 	return st;
 }
 
 // 4:3表示設定
-void cConfig::SetDispNTSC( BOOL yn )
+void CFG6::SetDispNTSC( bool yn )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_DispNTSC, "DispNTSC", "%s", yn ? "Yes" : "No" );
 }
 
 // フルスクリーン取得
-BOOL cConfig::GetFullScreen( void )
+bool CFG6::GetFullScreen( void )
 {
-	BOOL st = FALSE;
+	bool st = false;
 	Ini->GetTruth( "DISPLAY", "FullScreen", &st, st );
 	return st;
 }
 
 // フルスクリーン設定
-void cConfig::SetFullScreen( BOOL yn )
+void CFG6::SetFullScreen( bool yn )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_FullScreen, "FullScreen", "%s", yn ? "Yes" : "No" );
 }
 
 // ステータスバー表示状態取得
-BOOL cConfig::GetStatDisp( void )
+bool CFG6::GetStatDisp( void )
 {
-	BOOL st = TRUE;
+	bool st = true;
 	Ini->GetTruth( "DISPLAY", "DispStatus", &st, st );
 	return st;
 }
 
 // ステータスバー表示状態設定
-void cConfig::SetStatDisp( BOOL yn )
+void CFG6::SetStatDisp( bool yn )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_DispStatus, "DispStatus", "%s", yn ? "Yes" : "No" );
 }
 
 // フレームスキップ取得
-int cConfig::GetFrameSkip( void )
+int CFG6::GetFrameSkip( void )
 {
 	int st = DEFAULT_FRAMESKIP;
 	Ini->GetInt( "DISPLAY", "FrameSkip", &st, st );
@@ -1157,82 +1159,27 @@ int cConfig::GetFrameSkip( void )
 }
 
 // フレームスキップ設定
-void cConfig::SetFrameSkip( int data )
+void CFG6::SetFrameSkip( int data )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_FrameSkip, "FrameSkip", "%d", data );
 }
 
 // RLEフラグ取得
-BOOL cConfig::GetAviRle()
+bool CFG6::GetAviRle()
 {
-	BOOL st = TRUE;
+	bool st = true;
 	Ini->GetTruth( "MOVIE", "AviRle", &st, st );
 	return st;
 }
 
 // RLEフラグ設定
-void cConfig::SetAviRle( BOOL yn )
+void CFG6::SetAviRle( bool yn )
 {
 	Ini->PutEntry( "MOVIE", MSINI_AviRle, "AviRle", "%s", yn ? "Yes" : "No" );
 }
 
-// フォント格納パス取得
-char *cConfig::GetFontPath()
-{
-	Ini->GetString( "PATH", "FontPath", FontPath, FontPath );
-	Delimiter( FontPath );
-	AddDelimiter( FontPath );
-	return FontPath;
-}
-
-// フォント格納パス設定
-void cConfig::SetFontPath( const char *str )
-{
-	char temp[PATH_MAX];
-	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
-	Ini->PutEntry( "PATH",	MSINI_FontPath,	"FontPath",	temp );
-}
-
-// 全角フォントファイル名取得
-char *cConfig::GetFontFileZ()
-{
-	Ini->GetString( "FILES", "fontz", FontFileZ, FontFileZ );
-	Delimiter( FontFileZ );
-return FontFileZ;
-}
-
-// 全角フォントファイル名設定
-void cConfig::SetFontFileZ( const char *str )
-{
-	char temp[PATH_MAX];
-	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
-	Ini->PutEntry( "FILES", MSINI_fontz, "fontz", temp );
-}
-
-// 半角フォントファイル名取得
-char *cConfig::GetFontFileH()
-{
-	Ini->GetString( "FILES", "fonth", FontFileH, FontFileH );
-	Delimiter( FontFileH );
-	return FontFileH;
-}
-
-// 半角フォントファイル名設定
-void cConfig::SetFontFileH( const char *str )
-{
-	char temp[PATH_MAX];
-	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
-	Ini->PutEntry( "FILES", MSINI_fonth, "fonth", temp );
-}
-
 // プリンタファイル名取得
-char *cConfig::GetPrinterFile( void )
+char *CFG6::GetPrinterFile( void )
 {
 	Ini->GetString( "FILES", "printer", PrinterFile, PrinterFile );
 	Delimiter( PrinterFile );
@@ -1240,7 +1187,7 @@ char *cConfig::GetPrinterFile( void )
 }
 
 // プリンタファイル名設定
-void cConfig::SetPrinterFile( const char *str )
+void CFG6::SetPrinterFile( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
@@ -1250,49 +1197,49 @@ void cConfig::SetPrinterFile( const char *str )
 }
 
 // 終了時確認取得
-BOOL cConfig::GetCkQuit( void )
+bool CFG6::GetCkQuit( void )
 {
-	BOOL st = FALSE;
+	bool st = false;
 	Ini->GetTruth( "CHECK", "CkQuit", &st, st );
 	return st;
 }
 
 // 終了時確認設定
-void cConfig::SetCkQuit( BOOL yn )
+void CFG6::SetCkQuit( bool yn )
 {
 	Ini->PutEntry( "CHECK", MSINI_CkQuit, "CkQuit", "%s", yn ? "Yes" : "No" );
 }
 
 // 終了時INI保存取得
-BOOL cConfig::GetSaveQuit( void )
+bool CFG6::GetSaveQuit( void )
 {
-	BOOL st = FALSE;
+	bool st = false;
 	Ini->GetTruth( "CHECK", "SaveQuit", &st, st );
 	return st;
 }
 
 // 終了時INI保存設定
-void cConfig::SetSaveQuit( BOOL yn )
+void CFG6::SetSaveQuit( bool yn )
 {
 	Ini->PutEntry( "CHECK", MSINI_SaveQuit, "SaveQuit", "%s", yn ? "Yes" : "No" );
 }
 
 // 戦士のカートリッジ使うフラグ取得
-BOOL cConfig::GetUseSoldier()
+bool CFG6::GetUseSoldier()
 {
-	BOOL st = TRUE;
+	bool st = true;
 	Ini->GetTruth( "OPTION", "UseSoldier", &st, st );
 	return st;
 }
 
 // 戦士のカートリッジ使うフラグ設定
-void cConfig::SetUseSoldier( BOOL yn )
+void CFG6::SetUseSoldier( bool yn )
 {
 	Ini->PutEntry( "OPTION", MSINI_UseSoldier, "UseSoldier", "%s", yn ? "Yes" : "No" );
 }
 
 // カラーデータ取得
-COLOR24 *cConfig::GetColor( int num, COLOR24 *col )
+COLOR24 *CFG6::GetColor( int num, COLOR24 *col )
 {
 	if( num < (int)(sizeof(STDColor)/sizeof(STDColor[0])) ){
 		char strin[16], str[PATH_MAX];
@@ -1312,7 +1259,7 @@ COLOR24 *cConfig::GetColor( int num, COLOR24 *col )
 }
 
 // カラーデータ設定
-void cConfig::SetColor( int num, const COLOR24 *col )
+void CFG6::SetColor( int num, const COLOR24 *col )
 {
 	char stren[16];
 	sprintf( stren, "COL%03d", num );
@@ -1321,7 +1268,7 @@ void cConfig::SetColor( int num, const COLOR24 *col )
 }
 
 // キー定義取得
-P6KEYsym cConfig::GetVKey( PCKEYsym pcs )
+P6KEYsym CFG6::GetVKey( PCKEYsym pcs )
 {
 	char str[PATH_MAX] = "";
 	
@@ -1336,7 +1283,7 @@ P6KEYsym cConfig::GetVKey( PCKEYsym pcs )
 }
 
 // キー定義設定
-void cConfig::SetVKey( PCKEYsym pcs, P6KEYsym p6s )
+void CFG6::SetVKey( PCKEYsym pcs, P6KEYsym p6s )
 {
 	const char *k1 = GetPCKeyName( pcs );
 	const char *k2 = GetP6KeyName( p6s );
@@ -1346,7 +1293,7 @@ void cConfig::SetVKey( PCKEYsym pcs, P6KEYsym p6s )
 }
 
 // キー定義配列取得
-int cConfig::GetVKeyDef( VKeyConv **kdef )
+int CFG6::GetVKeyDef( VKeyConv **kdef )
 {
 	VKeyConv *key = NULL;
 	
@@ -1376,27 +1323,15 @@ int cConfig::GetVKeyDef( VKeyConv **kdef )
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 // モニタウィンドウ表示状態取得
-BOOL cConfig::GetMonDisp( void )
+bool CFG6::GetMonDisp( void )
 {
 	return MonDisp;
 }
 
 // モニタウィンドウ表示状態設定
-void cConfig::SetMonDisp( BOOL yn )
+void CFG6::SetMonDisp( bool yn )
 {
 	MonDisp = yn;
-}
-
-// タイマ割込み許可フラグ取得
-BOOL cConfig::GetTimerIntr( void )
-{
-	return TimerIntr;
-}
-
-// タイマ割込み許可フラグ設定
-void cConfig::SetTimerIntr( BOOL yn )
-{
-	TimerIntr = yn;
 }
 
 
@@ -1407,10 +1342,10 @@ void cConfig::SetTimerIntr( BOOL yn )
 // INIオブジェクト初期値設定
 //
 // 引数:	ini		INIオブジェクトへのポインタ
-//			over	TRUE:上書き FALSE:ノードが存在していたらパス
+//			over	true:上書き false:ノードが存在していたらパス
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void cConfig::InitIni( cIni *ini, BOOL over )
+void CFG6::InitIni( cIni *ini, bool over )
 {
 	if( !ini ) return;
 	
@@ -1543,29 +1478,19 @@ void cConfig::InitIni( cIni *ini, BOOL over )
 		ini->PutEntry( "FILES",	MSINI_save,		"save",		str );
 	}
 	
-	// DISKファイル名(起動時に自動マウント)
-	if( over || !ini->GetString( "FILES", "disk", str, str ) )
-		ini->PutEntry( "FILES",	MSINI_disk,		"disk",		"" );
+	// DISK1ファイル名(起動時に自動マウント)
+	if( over || !ini->GetString( "FILES", "disk1", str, str ) )
+		ini->PutEntry( "FILES",	MSINI_disk1,	"disk1",	"" );
+	
+	// DISK2ファイル名(起動時に自動マウント)
+	if( over || !ini->GetString( "FILES", "disk2", str, str ) )
+		ini->PutEntry( "FILES",	MSINI_disk2,	"disk2",	"" );
 	
 	// プリンタファイル名
 	if( over || !ini->GetString( "FILES", "printer", str, str ) ){
 		sprintf( str, "%s" PRINTER_FILE, OSD_GetConfigPath() );
 		UnDelimiter( str );
 		ini->PutEntry( "FILES",	MSINI_printer,	"printer",	str );
-	}
-	
-	// 全角フォントファイル名
-	if( over || !ini->GetString( "FILES", "fontz", str, str ) ){
-		sprintf( str, "%s%s/%s", OSD_GetConfigPath(), FONT_DIR, FONTZ_FILE );
-		UnDelimiter( str );
-		ini->PutEntry( "FILES",	MSINI_fontz,	"fontz",	str );
-	}
-	
-	// 半角フォントファイル名
-	if( over || !ini->GetString( "FILES", "fonth", str, str ) ){
-		sprintf( str, "%s%s/%s", OSD_GetConfigPath(), FONT_DIR, FONTH_FILE );
-		UnDelimiter( str );
-		ini->PutEntry( "FILES",	MSINI_fonth,	"fonth",	str );
 	}
 	
 	// [PATH]
@@ -1609,13 +1534,6 @@ void cConfig::InitIni( cIni *ini, BOOL over )
 		sprintf( str, "%s" IMAGE_DIR, OSD_GetConfigPath() );
 		UnDelimiter( str );
 		ini->PutEntry( "PATH",	MSINI_ImgPath,	"ImgPath",	str );
-	}
-	
-	// FONTパス
-	if( over || !ini->GetString( "PATH", "FontPath", str, str ) ){
-		sprintf( str, "%s" FONT_DIR, OSD_GetConfigPath() );
-		UnDelimiter( str );
-		ini->PutEntry( "PATH",	MSINI_FontPath,	"FontPath",	str );
 	}
 	
 	// [CHECK]
@@ -1670,7 +1588,7 @@ void cConfig::InitIni( cIni *ini, BOOL over )
 // 引数:	sym		仮想キーコード
 // 返値:	char *	名称文字列へのポインタ(見つからなければNULL)
 ////////////////////////////////////////////////////////////////
-const char *cConfig::GetPCKeyName( PCKEYsym sym )
+const char *CFG6::GetPCKeyName( PCKEYsym sym )
 {
 	const char *str = NULL;
 	for( int i=0; i<(int)(sizeof(PCKeyNameDef)/sizeof(PCKeyName)); i++ ){
@@ -1689,7 +1607,7 @@ const char *cConfig::GetPCKeyName( PCKEYsym sym )
 // 引数:	sym		P6キーコード
 // 返値:	char *	名称文字列へのポインタ(見つからなければNULL)
 ////////////////////////////////////////////////////////////////
-const char *cConfig::GetP6KeyName( P6KEYsym sym )
+const char *CFG6::GetP6KeyName( P6KEYsym sym )
 {
 	const char *str = NULL;
 	for( int i=0; i<(int)(sizeof(P6KeyNameDef)/sizeof(P6KeyName)); i++ ){
@@ -1708,7 +1626,7 @@ const char *cConfig::GetP6KeyName( P6KEYsym sym )
 // 引数:	str			名称文字列へのポインタ
 // 返値:	PCKEYsym	仮想キーコード
 ////////////////////////////////////////////////////////////////
-PCKEYsym cConfig::GetPCKeyCode( char *str )
+PCKEYsym CFG6::GetPCKeyCode( char *str )
 {
 	PCKEYsym sym = KVC_UNKNOWN;
 	for( int i=0; i<(int)(sizeof(PCKeyNameDef)/sizeof(PCKeyName)); i++ ){
@@ -1727,7 +1645,7 @@ PCKEYsym cConfig::GetPCKeyCode( char *str )
 // 引数:	str			名称文字列へのポインタ
 // 返値:	P6KEYsym	P6キーコード
 ////////////////////////////////////////////////////////////////
-P6KEYsym cConfig::GetP6KeyCode( char *str )
+P6KEYsym CFG6::GetP6KeyCode( char *str )
 {
 	P6KEYsym sym = KP6_UNKNOWN;
 	for( int i=0; i<(int)(sizeof(P6KeyNameDef)/sizeof(P6KeyName)); i++ ){
@@ -1744,17 +1662,17 @@ P6KEYsym cConfig::GetP6KeyCode( char *str )
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL cConfig::DokoSave( cIni *Ini )
+bool CFG6::DokoSave( cIni *Ini )
 {
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	// 共通
 	Ini->PutEntry( "GLOBAL", NULL, "Version",	VERSION );
 	Ini->PutEntry( "GLOBAL", NULL, "P6Model",	"%02d",	GetModel() );
 	
-	return TRUE;
+	return true;
 }
 
 
@@ -1762,28 +1680,23 @@ BOOL cConfig::DokoSave( cIni *Ini )
 // どこでもLOAD
 //
 // 引数:	Ini		INIオブジェクトポインタ
-// 返値:	BOOL	TRUE:成功 FALSE:失敗
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-BOOL cConfig::DokoLoad( cIni *Ini )
+bool CFG6::DokoLoad( cIni *Ini )
 {
 	int st;
 	char strva[256];
 	
-	if( !Ini ) return FALSE;
+	if( !Ini ) return false;
 	
 	// 共通
 	Ini->GetString( "GLOBAL", "Version", strva, "" );
 	if( strcmp( strva, VERSION ) ){
 		Error::SetError( Error::DokoDiffVersion );
-		return FALSE;
-	}
-	Ini->GetInt( "GLOBAL", "P6Model",	&st, 0 );
-	if( st != GetModel() ){
-		// 保存時と機種が違ったら機種変更して再起動
-		SetModel( st );
-		Error::SetError( Error::DokoDiffModel );
-		return FALSE;
+		return false;
 	}
 	
-	return TRUE;
+	Ini->GetInt( "GLOBAL", "P6Model",	&st, 0 );	SetModel( st );
+	
+	return true;
 }

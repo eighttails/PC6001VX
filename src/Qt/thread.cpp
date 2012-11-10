@@ -19,7 +19,7 @@
 // Constructer
 cThread::cThread( void )
 {
-	this->m_bCancel			= FALSE;
+	this->m_bCancel			= false;
 	this->m_hThread			= NULL;
 	this->m_BeginTheadParam	= NULL;
 }
@@ -28,10 +28,10 @@ cThread::cThread( void )
 // Destructer
 cThread::~cThread( void )
 {
-	BOOL bWaiting = this->Waiting();
-	if( bWaiting == FALSE )
+	bool bWaiting = this->Waiting();
+	if( bWaiting == false )
 		#ifdef USESDLTHREAD
-		SDL_KillThread( this->m_hThread );
+        SDL_KillThread( (SDL_Thread*)this->m_hThread );
 		#else
 		::TerminateThread( this->m_hThread, 0 );
 		#endif
@@ -39,26 +39,26 @@ cThread::~cThread( void )
 
 
 // Start Thread. 
-BOOL cThread::BeginThread ( void *lpVoid )
+bool cThread::BeginThread ( void *lpVoid )
 {
-	BOOL bSuccess = FALSE;
+	bool bSuccess = false;
 	
 	if( this->m_hThread == NULL ){
 		this->m_BeginTheadParam = lpVoid;
-		this->m_bCancel			= FALSE;
+		this->m_bCancel			= false;
 		
 		#ifdef USESDLTHREAD
                 HTHREAD hThread = SDL_CreateThread( (int (*)(void *))ThreadProc, (void *)this );
 		if( hThread >= 0 ){
 			this->m_hThread = hThread;
-			bSuccess = TRUE;
+			bSuccess = true;
 		}
 		#else
 		HTHREAD hThread = (HTHREAD)::_beginthread(ThreadProc, 0, reinterpret_cast<void*>(this) );
 		if( hThread != (HTHREAD)(unsigned int)-1 ){
 			this->m_hThread = hThread;
 			::SetThreadPriority( hThread, THREAD_PRIORITY_NORMAL );
-			bSuccess = TRUE;
+			bSuccess = true;
 		}
 		#endif
 	}
@@ -68,25 +68,25 @@ BOOL cThread::BeginThread ( void *lpVoid )
 
 
 // Wait for create thread end. ( forvOnThread end )
-//inline BOOL cThread::Waiting (DWORD dwWaitTime)
-BOOL cThread::Waiting( void )
+//inline bool cThread::Waiting (DWORD dwWaitTime)
+bool cThread::Waiting( void )
 {
-	BOOL bSuccess = FALSE;
+	bool bSuccess = false;
 	
 	if( this->m_hThread != NULL ){
 		#ifdef USESDLTHREAD
 		int status = 0;
-		SDL_WaitThread( this->m_hThread, &status );
+        SDL_WaitThread( (SDL_Thread*)this->m_hThread, &status );
 		if( !status ){
 		#else
 		DWORD dwRet = ::WaitForSingleObject( this->m_hThread, INFINITE );
 		if( dwRet == WAIT_OBJECT_0 ){
 		#endif
 			this->m_hThread = NULL;
-			bSuccess = TRUE;
+			bSuccess = true;
 		}
 	}else{
-		bSuccess = TRUE;
+		bSuccess = true;
 	}
 	
 	return bSuccess;
@@ -96,14 +96,14 @@ BOOL cThread::Waiting( void )
 void cThread::Cancel()
 {
 	this->cCritical::Lock();
-	this->m_bCancel = TRUE;
+	this->m_bCancel = true;
 	this->cCritical::UnLock();
 }
 
 
-BOOL cThread::IsCancel()
+bool cThread::IsCancel()
 {
-	BOOL bCancel = FALSE;
+	bool bCancel = false;
 	this->cCritical::Lock();
 	bCancel = this->m_bCancel;
 	this->cCritical::UnLock();

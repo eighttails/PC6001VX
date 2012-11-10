@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////
 //  ay8910.cpp
 //
-//	MAMEã®ã‚½ãƒ¼ã‚¹ã‚’ãƒ™ãƒ¼ã‚¹ã«ã‚†ã¿ãŸã‚ãŒæ‰‹ã‚’åŠ ãˆãŸã‚‚ã®ã§ã™
+//	MAME‚Ìƒ\[ƒX‚ğƒx[ƒX‚É‚ä‚İ‚½‚ë‚ªè‚ğ‰Á‚¦‚½‚à‚Ì‚Å‚·
 //
 //  Emulation of the AY-3-8910
 //  Based on various code snippets by Ville Hallik, Michael Cuddy,
@@ -34,19 +34,31 @@
 
 
 ////////////////////////////////////////////////////////////////
-// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 ////////////////////////////////////////////////////////////////
-cAY8910::cAY8910( void ){}
+cAY8910::cAY8910( void ) : 
+	RegisterLatch(0), LastEnable(-1), UpdateStep(0),
+	PeriodA(0), PeriodB(0), PeriodC(0), PeriodN(0), PeriodE(0),
+	CountA(0), CountB(0), CountC(0), CountN(0), CountE(0),
+	VolA(0), VolB(0), VolC(0), VolE(0),
+	EnvelopeA(0), EnvelopeB(0), EnvelopeC(0),
+	OutputA(0), OutputB(0), OutputC(0), OutputN(0xff),
+	CountEnv(0), Hold(0), Alternate(0), Attack(0), Holding(0),
+	RNG(1)
+{
+	INITARRAY( Regs, 0 );
+	INITARRAY( VolTable, 0 );
+}
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+// ƒfƒXƒgƒ‰ƒNƒ^
 ////////////////////////////////////////////////////////////////
 cAY8910::~cAY8910( void ){}
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒãƒ¼ãƒˆã‚¢ã‚¯ã‚»ã‚¹é–¢æ•°
+// ƒ|[ƒgƒAƒNƒZƒXŠÖ”
 ////////////////////////////////////////////////////////////////
 BYTE cAY8910::PortAread( void ){ return 0xff; }
 BYTE cAY8910::PortBread( void ){ return 0xff; }
@@ -55,11 +67,11 @@ void cAY8910::PortBwrite( BYTE ){}
 
 
 ////////////////////////////////////////////////////////////////
-// PSGã‚¯ãƒ­ãƒƒã‚¯è¨­å®š
+// PSGƒNƒƒbƒNİ’è
 ////////////////////////////////////////////////////////////////
 void cAY8910::SetClock( int clock, int rate )
 {
-	PRINTD2( PSG_LOG, "[PSG][SetClock] clock:%d SampleRate:%d\n", clock, rate );
+	PRINTD( PSG_LOG, "[PSG][SetClock] clock:%d SampleRate:%d\n", clock, rate );
 	
 	// the step clock for the tone and noise generators is the chip clock
 	// divided by 8; for the envelope generator of the AY-3-8910, it is half
@@ -74,11 +86,11 @@ void cAY8910::SetClock( int clock, int rate )
 
 
 ////////////////////////////////////////////////////////////////
-// éŸ³é‡è¨­å®š(ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒ†ãƒ¼ãƒ–ãƒ«è¨­å®š)
+// ‰¹—Êİ’è(ƒ{ƒŠƒ…[ƒ€ƒe[ƒuƒ‹İ’è)
 ////////////////////////////////////////////////////////////////
 void cAY8910::SetVolumeTable( int vol )
 {
-	PRINTD1( PSG_LOG, "[PSG][SetVolumeTable] %d\n", vol );
+	PRINTD( PSG_LOG, "[PSG][SetVolumeTable] %d\n", vol );
 	
 	double out = (MAX_OUTPUT * min( max( vol, 0 ), 100 ) ) / 100;
 	
@@ -91,7 +103,7 @@ void cAY8910::SetVolumeTable( int vol )
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒªã‚»ãƒƒãƒˆ
+// ƒŠƒZƒbƒg
 ////////////////////////////////////////////////////////////////
 void cAY8910::Reset( void )
 {
@@ -109,9 +121,9 @@ void cAY8910::Reset( void )
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸è¾¼ã¿
+// ƒŒƒWƒXƒ^‘‚İ
 ////////////////////////////////////////////////////////////////
-// ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸è¾¼ã¿ã‚µãƒ–
+// ƒŒƒWƒXƒ^‘‚İƒTƒu
 void cAY8910::_AYWriteReg( BYTE r, BYTE v )
 {
 	int old;
@@ -207,65 +219,65 @@ void cAY8910::_AYWriteReg( BYTE r, BYTE v )
 		if( EnvelopeC ) VolC = VolE;
 		break;
 	case AY_PORTA:
-//		if( Regs[AY_ENABLE] & 0x40 ) PortAwrite( Regs[AY_PORTA] );
-		// æš«å®šæªç½®
-		// å®Ÿæ©Ÿã§ã¯ãƒãƒ¼ãƒˆãŒinputè¨­å®šã§ã‚‚æ›¸è¾¼ã¿ã§ãã‚‹ã‚ˆã†ã ??
-		PortAwrite( Regs[AY_PORTA] );
+		// b’è‘[’u
+		// À‹@‚Å‚Íƒ|[ƒg‚ªinputİ’è‚Å‚à‘‚İ‚Å‚«‚é‚æ‚¤‚¾??
+		if( Regs[AY_ENABLE] & 0x40 )
+			PortAwrite( Regs[AY_PORTA] );
 		break;
 	case AY_PORTB:
-//		if( Regs[AY_ENABLE] & 0x80 ) PortBwrite( Regs[AY_PORTB] );
-		// æš«å®šæªç½®
-		// å®Ÿæ©Ÿã§ã¯ãƒãƒ¼ãƒˆãŒinputè¨­å®šã§ã‚‚æ›¸è¾¼ã¿ã§ãã‚‹ã‚ˆã†ã ??
-		PortBwrite( Regs[AY_PORTB] );
+		// b’è‘[’u
+		// À‹@‚Å‚Íƒ|[ƒg‚ªinputİ’è‚Å‚à‘‚İ‚Å‚«‚é‚æ‚¤‚¾??
+		if( Regs[AY_ENABLE] & 0x80 )
+			PortBwrite( Regs[AY_PORTB] );
 		break;
 	}
 }
 
 
-// ãƒ¬ã‚¸ã‚¹ã‚¿æ›¸è¾¼ã¿ãƒ¡ã‚¤ãƒ³
+// ƒŒƒWƒXƒ^‘‚İƒƒCƒ“
 void cAY8910::AYWriteReg( BYTE r, BYTE v )
 {
-	PRINTD2( PSG_LOG, "[PSG][AYWriteReg] -> %02X, %02X\n", r, v );
+	PRINTD( PSG_LOG, "[PSG][AYWriteReg] -> %02X, %02X\n", r, v );
 	
 	if( r > 15 ) return;
-	if( r < 14 ){
-		if( r == AY_ESHAPE || Regs[r] != v ){
-			// ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’å¤‰æ›´ã™ã‚‹å‰ã«ã‚¹ãƒˆãƒªãƒ¼ãƒ ã‚’æ›´æ–°ã™ã‚‹
-			PreWriteReg();
-		}
+	if( r == AY_ESHAPE || Regs[r] != v ){
+		// ƒŒƒWƒXƒ^‚ğ•ÏX‚·‚é‘O‚ÉƒXƒgƒŠ[ƒ€‚ğXV‚·‚é
+		PreWriteReg();
 	}
 	_AYWriteReg( r, v );
 }
 
 
 ////////////////////////////////////////////////////////////////
-// ãƒ¬ã‚¸ã‚¹ã‚¿èª­è¾¼ã¿
+// ƒŒƒWƒXƒ^“Ç‚İ
 ////////////////////////////////////////////////////////////////
 BYTE cAY8910::AYReadReg( BYTE r )
 {
-	PRINTD1( PSG_LOG, "[PSG][AYReadReg] -> %02X ", r );
+	PRINTD( PSG_LOG, "[PSG][AYReadReg] -> %02X ", r );
 	
 	if( r > 15 ) return 0;
 	
 	switch( r ){
 	case AY_PORTA:
-		if( !(Regs[AY_ENABLE] & 0x40) ) Regs[AY_PORTA] = PortAread();
+//		if( !(Regs[AY_ENABLE] & 0x40) )
+			Regs[AY_PORTA] = PortAread();
 		break;
 		
 	case AY_PORTB:
-		if( !(Regs[AY_ENABLE] & 0x80) ) Regs[AY_PORTB] = PortBread();
+//		if( !(Regs[AY_ENABLE] & 0x80) )
+			Regs[AY_PORTB] = PortBread();
 		break;
 	}
-	PRINTD1( PSG_LOG, "%02X\n", Regs[r] );
+	PRINTD( PSG_LOG, "%02X\n", Regs[r] );
 	return Regs[r];
 }
 
 
 ////////////////////////////////////////////////////////////////
-// ã‚¹ãƒˆãƒªãƒ¼ãƒ 1Sampleæ›´æ–°
+// ƒXƒgƒŠ[ƒ€1SampleXV
 //
-// å¼•æ•°:	ãªã—
-// è¿”å€¤:	int		æ›´æ–°ã‚µãƒ³ãƒ—ãƒ«
+// ˆø”:	‚È‚µ
+// •Ô’l:	int		XVƒTƒ“ƒvƒ‹
 ////////////////////////////////////////////////////////////////
 int cAY8910::Update1Sample( void )
 {

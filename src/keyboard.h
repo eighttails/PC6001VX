@@ -23,13 +23,13 @@ protected:
 	BYTE MatTable[KP6_LAST];		// P6キーコード -> マトリクス 変換テーブル
 	
 	// 特殊キー フラグ
-	BOOL ON_SHIFT;	// SHIFT
-	BOOL ON_GRAPH;	// GRAPH
-	BOOL ON_KANA;	// かな
-	BOOL ON_KKANA;	// カタカナ
-	BOOL ON_CTRL;	// CTRL
-	BOOL ON_STOP;	// STOP
-	BOOL ON_CAPS;	// CAPS
+	bool ON_SHIFT;	// SHIFT
+	bool ON_GRAPH;	// GRAPH
+	bool ON_KANA;	// かな
+	bool ON_KKANA;	// カタカナ
+	bool ON_CTRL;	// CTRL
+	bool ON_STOP;	// STOP
+	bool ON_CAPS;	// CAPS
 	
 	BYTE P6Matrix[16*2];		// キーマトリクス (前半:今回 後半:前回)
 	BYTE P6Mtrx[16*2];			// キーマトリクス保存用
@@ -39,11 +39,11 @@ public:
 	KEY6( VM6 *, const P6ID& );			// コンストラクタ
 	virtual ~KEY6();					// デストラクタ
 	
-	BOOL Init( int );					// 初期化
+	bool Init( int );					// 初期化
 	
-	void UpdateMatrixKey( int, BOOL );	// キーマトリクス更新(キー)
-	void UpdateMatrixJoy();				// キーマトリクス更新(ジョイスティック)
-	BOOL ScanMatrix();					// キーマトリクススキャン
+	void UpdateMatrixKey( int, bool );	// キーマトリクス更新(キー)
+	void UpdateMatrixJoy( BYTE, BYTE );	// キーマトリクス更新(ジョイスティック)
+	bool ScanMatrix();					// キーマトリクススキャン
 	int GetMatrixSize();				// キーマトリクスサイズ取得
 	BYTE *GetMatrix();					// キーマトリクスポインタ取得
 	BYTE *GetMatrix2();					// キーマトリクスポインタ(保存用)取得
@@ -55,9 +55,13 @@ public:
 	
 	BYTE GetJoy( int );					// ジョイスティック状態取得
 	
+	void ChangeKana();					// 英字<->かな切換
+	void ChangeKKana();					// かな<->カナ切換
+	
+	
 	// ------------------------------------------
-	BOOL DokoSave( cIni * );	// どこでもSAVE
-	BOOL DokoLoad( cIni * );	// どこでもLOAD
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };
 

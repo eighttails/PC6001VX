@@ -89,6 +89,9 @@ enum MenuCommand{
     ID_FSKP3,		// 3
     ID_FSKP4,		// 4
     ID_FSKP5,		// 5
+    ID_SPR44,       // 44.1kHz
+    ID_SPR22,       // 22.05kHz
+    ID_SPR11,       // 11.025kHz
     ID_MONITOR,		// モニターモード
     ID_VERSION,		// バージョン情報
 };
@@ -222,9 +225,21 @@ void EL6::ShowPopupMenu( int x, int y )
                            << "3 (15fps)"
                            << "4 (12fps)"
                            << "5 (10fps)");
-    for( int i = 0; i < 6; i++ ){
+    for( int i = 0; i < fpsList.size(); i++ ){
         QAction* fps = addCommand(fpsMenu, fpsList[i], MenuCommand(ID_FSKP0 + i), true);
         if (cfg->GetFrameSkip() == i) fps->setChecked(true);
+    }
+    settingsMenu->addSeparator();
+
+    QMenu* sprMenu = settingsMenu->addMenu("サンプリングレート");
+    QActionGroup* sprGroup = new QActionGroup(&menu);
+    QStringList sprList = (QStringList()
+                           << "44100Hz"
+                           << "22050Hz"
+                           << "11025Hz");
+    for( int i = 0; i < sprList.size(); i++ ){
+        QAction* spr = addCommand(sprMenu, sprList[i], MenuCommand(ID_SPR44 + i), true);
+        if (2 - ((cfg->GetSampleRate()/11025)>>1) == i) spr->setChecked(true);
     }
     settingsMenu->addSeparator();
 
@@ -259,33 +274,33 @@ void EL6::ShowPopupMenu( int x, int y )
         if( !OSD_FileExist( TapePathTemp ) )
             strncpy( TapePathTemp, cfg->GetTapePath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_TapeLoad, str, TapePathTemp ) )
-            if( !vm->cmtl->Mount( str ) ) Error::SetError( Error::TapeMountFailed );
+            if( !TapeMount( str ) ) Error::SetError( Error::TapeMountFailed );
         break;
 
     case ID_TAPEEJECT:		// TAPE 排出
-        vm->cmtl->Unmount();
+        TapeUnmount();
         break;
 
     case ID_DISKINSERT1:	// DISK1 挿入
         if( !OSD_FileExist( DiskPathTemp ) )
             strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
-            if( !vm->disk->Mount( 0, str ) ) Error::SetError( Error::DiskMountFailed );
+            if( !DiskMount( 0, str ) ) Error::SetError( Error::DiskMountFailed );
         break;
 
     case ID_DISKEJECT1:		// DISK1 排出
-        vm->disk->Unmount( 0 );
+        DiskUnmount( 0 );
         break;
 
     case ID_DISKINSERT2:	// DISK2 挿入
         if( !OSD_FileExist( DiskPathTemp ) )
             strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
         if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
-            if( !vm->disk->Mount( 1, str ) ) Error::SetError( Error::DiskMountFailed );
+            if( !DiskMount( 1, str ) ) Error::SetError( Error::DiskMountFailed );
         break;
 
     case ID_DISKEJECT2:		// DISK2 排出
-        vm->disk->Unmount( 1 );
+        DiskUnmount( 1 );
         break;
 
     case ID_ROMINSERT:		// 拡張ROM 挿入
@@ -353,27 +368,30 @@ void EL6::ShowPopupMenu( int x, int y )
         break;
 
     case ID_DOKOLOAD:		// どこでもLOAD
-        if( OSD_FileSelect( NULL, FD_DokoLoad, str, (char *)OSD_GetConfigPath() ) )
-            DokoDemoLoad( str );
+        if( OSD_FileSelect( NULL, FD_DokoLoad, str, (char *)OSD_GetConfigPath() ) ){
+            cfg->SetModel( GetDokoModel( str ) );
+            cfg->SetDokoFile( str );
+            OSD_PushEvent( EV_DOKOLOAD );
+        }
         break;
 
     case ID_REPLAYSAVE:		// リプレイ保存
         if( REPLAY::GetStatus() == REP_IDLE ){
             if( OSD_FileSelect( NULL, FD_RepSave, str, (char *)OSD_GetConfigPath() ) ){
-                if( DokoDemoSave( str ) ) REPLAY::StartRecord( str );
+                if( DokoDemoSave( str ) ) ReplayStartRec( str );
             }
         }else if( REPLAY::GetStatus() == REP_RECORD ){
-            REPLAY::StopRecord();
+            ReplayStopRec();
         }
         break;
 
     case ID_REPLAYLOAD:		// リプレイ再生
         if( REPLAY::GetStatus() == REP_IDLE ){
             if( OSD_FileSelect( NULL, FD_RepLoad, str, (char *)OSD_GetConfigPath() ) ){
-                REPLAY::StartReplay( str );
+                ReplayStartPlay( str );
             }
         }else if( REPLAY::GetStatus() == REP_REPLAY ){
-            REPLAY::StopReplay();
+            ReplayStopPlay();
         }
         break;
 
@@ -471,6 +489,20 @@ void EL6::ShowPopupMenu( int x, int y )
         break;
     case ID_FSKP5:		// 5
         if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 5 );
+        break;
+
+        // サンプリングレート
+    case ID_SPR44:		// 44100Hz
+        cfg->SetSampleRate( 44100 );
+        snd->SetSampleRate( 44100 );
+        break;
+    case ID_SPR22:		// 22050Hz
+        cfg->SetSampleRate( 22050 );
+        snd->SetSampleRate( 22050 );
+        break;
+    case ID_SPR11:		// 11025Hz
+        cfg->SetSampleRate( 11025 );
+        snd->SetSampleRate( 11025 );
         break;
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //

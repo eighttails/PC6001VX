@@ -294,8 +294,8 @@ bool EL6::Init( const CFG6 *config )
 	snd->SetVolume( cfg->GetMasterVol() );
 	
 	// 画面描画 -----
-	if( !graph->Init( cfg->GetScrBpp(), cfg->GetScanLineBr(), &GPal ) ) return false;
-	graph->SetIcon( cfg->GetModel() );	// アイコン設定
+    graph->SetIcon( cfg->GetModel() );	// アイコン設定
+    if( !graph->Init( cfg->GetScrBpp(), cfg->GetScanLineBr(), &GPal ) ) return false;
 	
 	// ジョイスティック -----
 	if( !joy->Init() ) return false;

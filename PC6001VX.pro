@@ -8,12 +8,13 @@ QT       += core gui
 
 TARGET = PC6001VX
 TEMPLATE = app
-QTPLUGIN += qjpcodecs qico
 
 debug:DEFINES += DEBUG
 
 INCLUDEPATH += src/Qt
 win32:{
+#Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインも明示的に指定してリンクする。
+QTPLUGIN += qjpcodecs qico
 INCLUDEPATH += C:/mingw/include/SDL
 LIBS += -LC:/mingw/lib
 CONFIG += exceptions

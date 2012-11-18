@@ -5,10 +5,12 @@
 #include <QTextCodec>
 #include <QDir>
 
-//使用するプラグインを明示的に指定
+#ifdef WIN32
+//Windowsではプラグインを静的リンクする。
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(qjpcodecs)
 Q_IMPORT_PLUGIN(qico)
+#endif
 
 #include "../pc6001v.h"
 #include "../typedef.h"

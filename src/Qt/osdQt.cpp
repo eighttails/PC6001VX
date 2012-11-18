@@ -174,7 +174,7 @@ const char *OSD_GetConfigPath( void )
     //Windowsの場合はexe本体と同じ場所。
     //それ以外(UNIX系を想定)は ~/.pc6001vx を返す
 #ifdef WIN32
-    QString confPath = QApplication::applicationDirPath() + QDir::separator();
+    QString confPath = qApp->applicationDirPath() + QDir::separator();
 #else
     QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
 #endif

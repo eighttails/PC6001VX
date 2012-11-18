@@ -3,7 +3,7 @@
 #include <QtGui>
 #include <new>
 
-#include <SDL_syswm.h>
+#include <SDL.h>
 
 #include "../pc6001v.h"
 #include "../p6el.h"

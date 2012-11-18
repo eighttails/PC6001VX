@@ -5,6 +5,11 @@
 #include <QTextCodec>
 #include <QDir>
 
+//使用するプラグインを明示的に指定
+#include <QtPlugin>
+Q_IMPORT_PLUGIN(qjpcodecs)
+Q_IMPORT_PLUGIN(qico)
+
 #include "../pc6001v.h"
 #include "../typedef.h"
 #include "../config.h"
@@ -20,6 +25,7 @@
 #ifdef SDL_VIDEO_DRIVER_X11
 #include <X11/Xlib.h>
 #endif
+
 
 ///////////////////////////////////////////////////////////
 // フォントファイルチェック(無ければ作成する)
@@ -56,8 +62,8 @@ bool SerchRom( CFG6 *cfg )
 	for( int i=0; i < COUNTOF(models); i++ ){
 		sprintf( RomSerch, "%s*.%2d", cfg->GetRomPath(), models[i] );
 		if( OSD_FileExist( RomSerch ) ){
-			cfg->SetModel( models[i] );
-			Error::SetError( Error::RomChange );
+            cfg->SetModel( models[i] );
+            Error::SetError( Error::RomChange );
 			return true;
 		}
 	}
@@ -75,6 +81,9 @@ int main( int argc, char *argv[] )
     XInitThreads();
 #endif
 
+    QApplication app(argc, argv);
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+
 	EL6 *P6Core             = NULL;			// オブジェクトポインタ
 	EL6::ReturnCode Restart = EL6::Quit;	// 再起動フラグ
 	CFG6 Cfg;								// 環境設定オブジェクト
@@ -85,8 +94,6 @@ int main( int argc, char *argv[] )
 //	putenv( "SDL_AUDIODRIVER=waveout" );
 //	putenv( "SDL_AUDIODRIVER=dsound" );
 	
-    QApplication app(argc, argv);
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
     setlocale(LC_ALL,"Japanese");
 
@@ -96,8 +103,13 @@ int main( int argc, char *argv[] )
 #endif
 	
 	// 二重起動禁止
+#ifndef DEBUG
 	if( OSD_IsWorking() ) return false;
-	
+#endif
+
+    // 設定ファイルパスを作成
+    if(!OSD_CreateConfigPath()) return false;
+
 	// OSD関連初期化
 	if( !OSD_Init() ){
 		Error::SetError( Error::InitFailed );

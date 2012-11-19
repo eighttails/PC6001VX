@@ -16,10 +16,10 @@ win32:{
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインも明示的に指定してリンクする。
 QTPLUGIN += qjpcodecs qico
 INCLUDEPATH += C:/mingw/include/SDL
-LIBS += -LC:/mingw/lib
+LIBS += -LC:/mingw/lib -Wl,-Bstatic $$system(sh sdl-config --static-libs)
 CONFIG += exceptions
 QMAKE_CXXFLAGS += $$system(sh sdl-config --cflags)
-LIBS += $$system(sh sdl-config --static-libs)
+QMAKE_LFLAGS += -static-libgcc
 RC_FILE = src/win32/PC6001VX.rc
 }else{
 DEFINES += USESDLTHREAD USESDLCS USESDLSEMAPHORE USESDLTIMER

@@ -122,7 +122,7 @@ typedef DWORD (*CBF_TMR)( DWORD, void * );		// タイマ
 #ifdef __APPLE__
 #define FOPENEN(a,b)	fopen(Sjis2UTF8(a),b)
 #else
-#define FOPENEN(a,b)	fopen(a,b)
+#define FOPENEN(a,b)	fopen(UTF8toLocal(a),b)
 #endif
 
 

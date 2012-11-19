@@ -4,7 +4,7 @@
 #include "intr.h"
 #include "memory.h"
 #include "vdg.h"
-
+#include "common.h"
 
 /*
 BASIC ROM内ルーチン

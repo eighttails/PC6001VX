@@ -158,13 +158,30 @@ int main( int argc, char *argv[] )
 	do{
 		// ROMファイル存在チェック&機種変更
 		if( SerchRom( &Cfg ) ){
-			if( Error::GetError() != Error::NoError ){
-				OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONWARNING );
+            if( Error::GetError() != Error::NoError ){
+                OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONWARNING );
 				Error::SetError( Error::NoError );
 			}
 		}else{
 			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
-			break;	// do 抜ける
+            //ROMフォルダ再設定
+            char folder[PATH_MAX];
+            strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
+            Delimiter(folder);
+            OSD_FolderDiaog(NULL, folder);
+            UnDelimiter(folder);
+            // ダイアログの後始末など、キューに溜まっているイベントを処理する
+            while(QApplication::hasPendingEvents()){
+                QApplication::processEvents();
+            }
+            if(strlen(folder) > 0){
+                Cfg.SetRomPath(folder);
+                Cfg.Write();
+                Restart = EL6::Restart;
+            } else {
+                break;	// do 抜ける
+            }
+            continue;
 		}
 		
 		// 機種別P6オブジェクト確保

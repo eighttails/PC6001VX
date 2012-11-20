@@ -273,7 +273,7 @@ extern const char *MsgErr[];
 #define	MSERR_Unknown			MsgErr[2]	// "原因不明のエラーが発生しました"
 #define	MSERR_MemAllocFailed	MsgErr[3]	// "メモリの確保に失敗しました"
 #define	MSERR_RomChange			MsgErr[4]	// "指定された機種のROMイメージが見つからないため機種を変更しました\n設定を確認してください"
-#define	MSERR_NoRom				MsgErr[5]	// "ROMイメージが見つかりません\n設定とファイル名を確認してください"
+#define	MSERR_NoRom				MsgErr[5]	// "ROMイメージが見つかりません\nROMイメージが配置されているフォルダを指定してください"
 #define	MSERR_RomSizeNG			MsgErr[6]	// "ROMイメージのサイズが不正です"
 #define	MSERR_RomCrcNG			MsgErr[7]	// "ROMイメージのCRCが不正です"
 #define	MSERR_LibInitFailed		MsgErr[8]	// "ライブラリの初期化に失敗しました"

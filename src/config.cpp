@@ -675,7 +675,6 @@ char *CFG6::GetExtRomPath( void )
 {
 	Ini->GetString( "PATH", "ExtRomPath", ExtRomPath, ExtRomPath );
 	Delimiter( ExtRomPath );
-	AddDelimiter( ExtRomPath );
 	return ExtRomPath;
 }
 // 拡張ROMパス設定
@@ -821,7 +820,6 @@ char *CFG6::GetWavePath( void )
 {
 	Ini->GetString( "PATH", "WavePath", WavePath, WavePath );
 	Delimiter( WavePath );
-	AddDelimiter( WavePath );
 	return WavePath;
 }
 
@@ -854,7 +852,6 @@ char *CFG6::GetTapePath( void )
 {
 	Ini->GetString( "PATH", "TapePath", TapePath, TapePath );
 	Delimiter( TapePath );
-	AddDelimiter( TapePath );
 	return TapePath;
 }
 
@@ -978,7 +975,6 @@ char *CFG6::GetDiskPath( void )
 {
 	Ini->GetString( "PATH", "DiskPath", DiskPath, DiskPath );
 	Delimiter( DiskPath );
-	AddDelimiter( DiskPath );
 	return DiskPath;
 }
 
@@ -1038,7 +1034,6 @@ char *CFG6::GetImgPath( void )
 {
 	Ini->GetString( "PATH", "ImgPath", ImgPath, ImgPath );
 	Delimiter( ImgPath );
-	AddDelimiter( ImgPath );
 	return ImgPath;
 }
 
@@ -1503,36 +1498,56 @@ void CFG6::InitIni( cIni *ini, bool over )
 	
 	// TAPEパス
 	if( over || !ini->GetString( "PATH", "TapePath", str, str ) ){
-		sprintf( str, "%s" TAPE_DIR, OSD_GetConfigPath() );
+#ifdef WIN32
+        sprintf( str, "%s" TAPE_DIR, OSD_GetConfigPath() );
+#else
+        strcpy(str, "");
+#endif
 		UnDelimiter( str );
-		ini->PutEntry( "PATH",	MSINI_TapePath,	"TapePath",	str );
+        ini->PutEntry( "PATH",	MSINI_TapePath,	"TapePath",	str );
 	}
 	
 	// DISKパス
 	if( over || !ini->GetString( "PATH", "DiskPath", str, str ) ){
-		sprintf( str, "%s" DISK_DIR, OSD_GetConfigPath() );
-		UnDelimiter( str );
+#ifdef WIN32
+        sprintf( str, "%s" DISK_DIR, OSD_GetConfigPath() );
+#else
+        strcpy(str, "");
+#endif
+        UnDelimiter( str );
 		ini->PutEntry( "PATH",	MSINI_DiskPath,	"DiskPath",	str );
 	}
 	
 	// 拡張ROMパス
 	if( over || !ini->GetString( "PATH", "ExtRomPath", str, str ) ){
-		sprintf( str, "%s" EXTROM_DIR, OSD_GetConfigPath() );
-		UnDelimiter( str );
+#ifdef WIN32
+        sprintf( str, "%s" EXTROM_DIR, OSD_GetConfigPath() );
+#else
+        strcpy(str, "");
+#endif
+        UnDelimiter( str );
 		ini->PutEntry( "PATH",	MSINI_ExtRomPath,	"ExtRomPath",	str );
 	}
 	
 	// WAVEパス
 	if( over || !ini->GetString( "PATH", "WavePath", str, str ) ){
-		sprintf( str, "%s" WAVE_DIR, OSD_GetConfigPath() );
-		UnDelimiter( str );
+#ifdef WIN32
+        sprintf( str, "%s" WAVE_DIR, OSD_GetConfigPath() );
+#else
+        strcpy(str, "");
+#endif
+        UnDelimiter( str );
 		ini->PutEntry( "PATH",	MSINI_WavePath,	"WavePath",	str );
 	}
 	
 	// IMGパス
 	if( over || !ini->GetString( "PATH", "ImgPath", str, str ) ){
-		sprintf( str, "%s" IMAGE_DIR, OSD_GetConfigPath() );
-		UnDelimiter( str );
+#ifdef WIN32
+        sprintf( str, "%s" IMAGE_DIR, OSD_GetConfigPath() );
+#else
+        strcpy(str, "");
+#endif
+        UnDelimiter( str );
 		ini->PutEntry( "PATH",	MSINI_ImgPath,	"ImgPath",	str );
 	}
 	

@@ -253,7 +253,7 @@ bool OSD_FileReadOnly( const char *fullpath )
 ///////////////////////////////////////////////////////////
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
-    QByteArray result = QFileDialog::getExistingDirectory(NULL, "フォルダを選択してください。", OSD_GetConfigPath()).toUtf8();
+    QByteArray result = QFileDialog::getExistingDirectory(NULL, "フォルダを選択してください。", QDir::homePath()).toUtf8();
     strcpy(Result, result);
     return result.data();
 }
@@ -274,15 +274,17 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const char *filter, char *fullpath, char *path, const char *ext )
 {
     QString result;
+    //検索パスが指定されていない場合はホームフォルダとする
+    QString pathStr = strlen(path) ? path : QDir::homePath();
     if(mode == FM_Save){
-        result = QFileDialog::getSaveFileName(NULL, title, path, filter);
+        result = QFileDialog::getSaveFileName(NULL, title, pathStr, filter);
     } else {
-        result = QFileDialog::getOpenFileName(NULL, title, path, filter);
+        result = QFileDialog::getOpenFileName(NULL, title, pathStr, filter);
     }
     if(result.isEmpty())    return NULL;
 
     QDir dir(result);
-    if( path ) strcpy( fullpath, dir.path().toUtf8().data() );
+    if( path ) strcpy( path, dir.path().toUtf8().data() );
     if( fullpath ) strcpy( fullpath, result.toUtf8().data() );
 
     QFile file(result);

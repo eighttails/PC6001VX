@@ -143,41 +143,47 @@ int main( int argc, char *argv[] )
 		switch( Error::GetError() ){
 		case Error::IniDefault:
 			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONWARNING );
-			Error::SetError( Error::NoError );
-			break;
-			
-		default:
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
-			OSD_Quit();			// 終了処理
-			return false;
-		}
-	}
-	
-	
-	// P6オブジェクトを作成して実行
-	do{
-		// ROMファイル存在チェック&機種変更
-		if( SerchRom( &Cfg ) ){
+            Error::SetError( Error::NoError );
+            break;
+
+        default:
+            OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+            OSD_Quit();			// 終了処理
+            return false;
+        }
+    }
+
+
+    // P6オブジェクトを作成して実行
+    do{
+        // ROMファイル存在チェック&機種変更
+        if( SerchRom( &Cfg ) ){
             if( Error::GetError() != Error::NoError ){
-                OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONWARNING );
-				Error::SetError( Error::NoError );
-			}
-		}else{
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
-            //ROMフォルダ再設定
-            char folder[PATH_MAX];
-            strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
-            Delimiter(folder);
-            OSD_FolderDiaog(NULL, folder);
-            UnDelimiter(folder);
-            // ダイアログの後始末など、キューに溜まっているイベントを処理する
-            while(QApplication::hasPendingEvents()){
-                QApplication::processEvents();
+                OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONWARNING );
+                Error::SetError( Error::NoError );
             }
-            if(strlen(folder) > 0){
-                Cfg.SetRomPath(folder);
-                Cfg.Write();
-                Restart = EL6::Restart;
+        }else{
+            if(OSD_Message( QString("ROMファイルが見つかりません。\n"
+                                    "ROMフォルダ(%1)にROMファイルをコピーするか、"
+                                    "別のROMフォルダを指定してください。\n"
+                                    "別のROMフォルダを指定しますか?").arg(Cfg.GetRomPath()).toLocal8Bit().data(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONERROR ) == OSDR_YES){
+                //ROMフォルダ再設定
+                char folder[PATH_MAX];
+                strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
+                Delimiter(folder);
+                OSD_FolderDiaog(NULL, folder);
+                UnDelimiter(folder);
+                // ダイアログの後始末など、キューに溜まっているイベントを処理する
+                while(QApplication::hasPendingEvents()){
+                    QApplication::processEvents();
+                }
+                if(strlen(folder) > 0){
+                    Cfg.SetRomPath(folder);
+                    Cfg.Write();
+                    Restart = EL6::Restart;
+                } else {
+                    break;	// do 抜ける
+                }
             } else {
                 break;	// do 抜ける
             }

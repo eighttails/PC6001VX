@@ -66,7 +66,6 @@ SOURCES += \
     src/Qt/guiQt.cpp \
     src/Qt/osdQt.cpp \
     src/Qt/pc6001v.cpp \
-    src/Qt/thread.cpp \
     src/Qt/configdialog.cpp \
     src/Qt/colorbutton.cpp \
     src/Qt/aboutdialog.cpp \
@@ -80,7 +79,8 @@ SOURCES += \
     src/Qt/qtsingleapplication/qtlockedfile_unix.cpp \
     src/Qt/qtsingleapplication/qtlockedfile_win.cpp \
     src/Qt/qtsingleapplication/qtsingleapplication.cpp \
-    src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp
+    src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
+    src/thread.cpp
 
 HEADERS  += \
     src/breakpoint.h \

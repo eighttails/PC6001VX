@@ -4,14 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 TARGET = PC6001VX
 TEMPLATE = app
 
 debug:DEFINES += DEBUG
 
-INCLUDEPATH += src/Qt
+INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 win32:{
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインも明示的に指定してリンクする。
 QTPLUGIN += qjpcodecs qico
@@ -74,7 +74,13 @@ SOURCES += \
     src/Qt/console.cpp \
     src/p6el.cpp \
     src/p6vm.cpp \
-    src/SDL/osdSDL.cpp
+    src/SDL/osdSDL.cpp \
+    src/Qt/qtsingleapplication/qtlocalpeer.cpp \
+    src/Qt/qtsingleapplication/qtlockedfile.cpp \
+    src/Qt/qtsingleapplication/qtlockedfile_unix.cpp \
+    src/Qt/qtsingleapplication/qtlockedfile_win.cpp \
+    src/Qt/qtsingleapplication/qtsingleapplication.cpp \
+    src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp
 
 HEADERS  += \
     src/breakpoint.h \
@@ -131,7 +137,13 @@ HEADERS  += \
     src/Qt/aboutdialog.h \
     src/event.h \
     src/p6el.h \
-    src/p6vm.h
+    src/p6vm.h \
+    src/Qt/qtsingleapplication/QtLockedFile \
+    src/Qt/qtsingleapplication/QtSingleApplication \
+    src/Qt/qtsingleapplication/qtlocalpeer.h \
+    src/Qt/qtsingleapplication/qtlockedfile.h \
+    src/Qt/qtsingleapplication/qtsingleapplication.h \
+    src/Qt/qtsingleapplication/qtsinglecoreapplication.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

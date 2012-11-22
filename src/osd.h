@@ -37,8 +37,6 @@ void DelDelimiter( char * );
 bool OSD_Init();
 // 終了処理
 void OSD_Quit();
-// 多重起動チェック
-bool OSD_IsWorking();
 
 // --- ファイル操作関数 ---
 // 設定ファイルパス作成

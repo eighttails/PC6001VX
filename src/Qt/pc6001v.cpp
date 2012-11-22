@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <errno.h>
-#include <QApplication>
+#include <QtSingleApplication>
 #include <QFrame>
 #include <QTextCodec>
 #include <QDir>
@@ -83,7 +83,7 @@ int main( int argc, char *argv[] )
     XInitThreads();
 #endif
 
-    QApplication app(argc, argv);
+    QtSingleApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
 	EL6 *P6Core             = NULL;			// オブジェクトポインタ
@@ -105,9 +105,7 @@ int main( int argc, char *argv[] )
 #endif
 	
 	// 二重起動禁止
-#ifndef DEBUG
-	if( OSD_IsWorking() ) return false;
-#endif
+    if( app.isRunning() ) return false;
 
     // 設定ファイルパスを作成
     if(!OSD_CreateConfigPath()) return false;

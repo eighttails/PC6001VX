@@ -78,29 +78,6 @@ void DelDelimiter( char *path )
 
 
 ////////////////////////////////////////////////////////////////
-// 多重起動チェック
-//
-// 引数:	なし
-// 返値:	bool		true:起動済み false:未起動
-////////////////////////////////////////////////////////////////
-bool OSD_IsWorking( void )
-{
-    PRINTD( OSD_LOG, "[OSD][OSD_IsWorking]\n" );
-
-    QString filePath = QString::fromUtf8(OSD_GetConfigPath());
-    filePath += QDir::separator() + QString("pc6001vx.lock");
-
-    QFile lockFile(filePath);
-    if (lockFile.exists()) return true;
-
-    lockFile.open(QIODevice::WriteOnly);
-    lockFile.close();
-
-    return false;
-}
-
-
-////////////////////////////////////////////////////////////////
 // 終了処理
 //
 // 引数:	なし

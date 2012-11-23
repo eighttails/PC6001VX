@@ -6,8 +6,8 @@
 
 #include "semaphore.h"
 
-#define USESDLCS					// SDLのクリティカルセクション使用
-#define USESDLSEMAPHORE				// SDLのセマフォ使用
+//#define USESDLCS					// SDLのクリティカルセクション使用
+//#define USESDLSEMAPHORE				// SDLのセマフォ使用
 
 
 #ifdef USESDLCS

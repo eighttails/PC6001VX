@@ -10,8 +10,8 @@ TARGET = PC6001VX
 TEMPLATE = app
 
 debug:DEFINES += DEBUG
-
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
+
 win32:{
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインも明示的に指定してリンクする。
 QTPLUGIN += qjpcodecs qico

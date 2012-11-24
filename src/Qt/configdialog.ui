@@ -1284,7 +1284,7 @@ border-radius: 1;</string>
               <item row="7" column="1">
                <widget class="QLabel" name="label_99">
                 <property name="text">
-                 <string>深緑</string>
+                 <string>深橙</string>
                 </property>
                </widget>
               </item>

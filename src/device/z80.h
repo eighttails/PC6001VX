@@ -5,11 +5,11 @@
 
 
 ////////////////////////////////////////////////////////////////
-// ƒNƒ‰ƒX’è‹`
+// ã‚¯ãƒ©ã‚¹å®šç¾©
 ////////////////////////////////////////////////////////////////
 class cZ80 {
 public:
-	// ƒyƒAƒŒƒWƒXƒ^ ƒf[ƒ^Œ^’è‹`
+	// ãƒšã‚¢ãƒ¬ã‚¸ã‚¹ã‚¿ ãƒ‡ãƒ¼ã‚¿å‹å®šç¾©
 	typedef union {
 	#if BYTEORDER == BIG_ENDIAN
 	 	struct { BYTE h,l; } B;
@@ -19,68 +19,68 @@ public:
 				 WORD        W;
 	} PAIR;
 	
-	// ƒŒƒWƒXƒ^ŒQ \‘¢‘Ì’è‹`
+	// ãƒ¬ã‚¸ã‚¹ã‚¿ç¾¤ æ§‹é€ ä½“å®šç¾©
 	struct Register {
-		PAIR AF, BC, DE, HL;	// ”Ä—pƒŒƒWƒXƒ^
-		PAIR IX, IY, PC, SP;	// ê—pƒŒƒWƒXƒ^
-		PAIR AF1,BC1,DE1,HL1;	//  —  ƒŒƒWƒXƒ^
-		BYTE I, R;				// “ÁêƒŒƒWƒXƒ^
-		BYTE R_saved;			// R reg •Û‘¶—p
+		PAIR AF, BC, DE, HL;	// æ±ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
+		PAIR IX, IY, PC, SP;	// å°‚ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
+		PAIR AF1,BC1,DE1,HL1;	//  è£ ãƒ¬ã‚¸ã‚¹ã‚¿
+		BYTE I, R;				// ç‰¹æ®Šãƒ¬ã‚¸ã‚¹ã‚¿
+		BYTE R_saved;			// R reg ä¿å­˜ç”¨
 		BYTE IFF,IFF2;			// IFF,IFF2
-		BYTE IM;				// Š„ƒ‚[ƒh
-		BYTE Halt;				// HALT ƒtƒ‰ƒO
+		BYTE IM;				// å‰²è¾¼ãƒ¢ãƒ¼ãƒ‰
+		BYTE Halt;				// HALT ãƒ•ãƒ©ã‚°
 	};
 	
 protected:
 	typedef int8_t	offset;
 	
-	PAIR AF, BC, DE, HL;	// ”Ä—pƒŒƒWƒXƒ^
-	PAIR IX, IY, PC, SP;	// ê—pƒŒƒWƒXƒ^
-	PAIR AF1,BC1,DE1,HL1;	//  —  ƒŒƒWƒXƒ^
-	BYTE I, R;				// “ÁêƒŒƒWƒXƒ^
-	BYTE R_saved;			// R reg •Û‘¶—p
+	PAIR AF, BC, DE, HL;	// æ±ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
+	PAIR IX, IY, PC, SP;	// å°‚ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿
+	PAIR AF1,BC1,DE1,HL1;	//  è£ ãƒ¬ã‚¸ã‚¹ã‚¿
+	BYTE I, R;				// ç‰¹æ®Šãƒ¬ã‚¸ã‚¹ã‚¿
+	BYTE R_saved;			// R reg ä¿å­˜ç”¨
 	BYTE IFF,IFF2;			// IFF,IFF2
-	BYTE IM;				// Š„ƒ‚[ƒh
-	BYTE Halt;				// HALT ƒtƒ‰ƒO
+	BYTE IM;				// å‰²è¾¼ãƒ¢ãƒ¼ãƒ‰
+	BYTE Halt;				// HALT ãƒ•ãƒ©ã‚°
 	
-	int mstate;				// ƒƒ‚ƒŠƒAƒNƒZƒXƒEƒFƒCƒg ƒXƒe[ƒg”
+	int mstate;				// ãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã‚¦ã‚§ã‚¤ãƒˆ ã‚¹ãƒ†ãƒ¼ãƒˆæ•°
 	
-	// ƒtƒFƒbƒ`(M1)
+	// ãƒ•ã‚§ãƒƒãƒ(M1)
 	virtual BYTE Fetch( WORD, int * )   = 0;
 	
-	// ƒƒ‚ƒŠƒAƒNƒZƒX(ƒEƒFƒCƒg‚È‚µ)
+	// ãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹(ã‚¦ã‚§ã‚¤ãƒˆãªã—)
 	virtual BYTE ReadMemNW( WORD )      = 0;
 	
-	// ƒƒ‚ƒŠƒAƒNƒZƒX(ƒEƒFƒCƒg‚ ‚è)
+	// ãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹(ã‚¦ã‚§ã‚¤ãƒˆã‚ã‚Š)
 	virtual BYTE ReadMem( WORD )        = 0;
 	virtual void WriteMem( WORD, BYTE ) = 0;
 	
-	// I/Oƒ|[ƒgƒAƒNƒZƒX
+	// I/Oãƒãƒ¼ãƒˆã‚¢ã‚¯ã‚»ã‚¹
 	virtual BYTE ReadIO( int )          = 0;
 	virtual void WriteIO( int, BYTE )   = 0;
 	
-	// Š„‚İƒxƒNƒ^æ“¾
+	// å‰²è¾¼ã¿ãƒ™ã‚¯ã‚¿å–å¾—
 	virtual int GetIntrVector()         = 0;
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	void PrintfHead( char *, WORD, int );	// ƒAƒhƒŒƒX/ƒCƒ“ƒXƒgƒ‰ƒNƒVƒ‡ƒ“ƒR[ƒh‚Ì•\¦
+	void PrintfHead( char *, WORD, int );	// ã‚¢ãƒ‰ãƒ¬ã‚¹/ã‚¤ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚·ãƒ§ãƒ³ã‚³ãƒ¼ãƒ‰ã®è¡¨ç¤º
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	
 public:
-	cZ80();						// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	virtual ~cZ80();			// ƒfƒXƒgƒ‰ƒNƒ^
+	cZ80();						// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	virtual ~cZ80();			// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	
-	void Reset();				// ƒŠƒZƒbƒg
-	int Exec();					// 1–½—ßÀs
+	void Reset();				// ãƒªã‚»ãƒƒãƒˆ
+	int Exec();					// 1å‘½ä»¤å®Ÿè¡Œ
 	
-	virtual bool IsBUSREQ();	// BUSREQæ“¾
+	virtual bool IsBUSREQ();	// BUSREQå–å¾—
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	// ƒfƒoƒbƒO—p
-	int Disasm( char *, WORD );		// 1ƒ‰ƒCƒ“‹tƒAƒZƒ“ƒuƒ‹
-	void GetRegister( Register * );	// ƒŒƒWƒXƒ^’læ“¾
-	void SetRegister( Register * );	// ƒŒƒWƒXƒ^’lİ’è
-	WORD GetPC();					// PCƒŒƒWƒXƒ^’læ“¾
+	// ãƒ‡ãƒãƒƒã‚°ç”¨
+	int Disasm( char *, WORD );		// 1ãƒ©ã‚¤ãƒ³é€†ã‚¢ã‚»ãƒ³ãƒ–ãƒ«
+	void GetRegister( Register * );	// ãƒ¬ã‚¸ã‚¹ã‚¿å€¤å–å¾—
+	void SetRegister( Register * );	// ãƒ¬ã‚¸ã‚¹ã‚¿å€¤è¨­å®š
+	WORD GetPC();					// PCãƒ¬ã‚¸ã‚¹ã‚¿å€¤å–å¾—
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 };
 

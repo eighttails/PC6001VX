@@ -2,7 +2,7 @@
 #include "pd8255.h"
 
 
-// ƒnƒ“ƒhƒVƒFƒCƒN—p§Œäƒrƒbƒg
+// ãƒãƒ³ãƒ‰ã‚·ã‚§ã‚¤ã‚¯ç”¨åˆ¶å¾¡ãƒ“ãƒƒãƒˆ
 #define	HS_INT	(0x08)	/* bit3 */
 #define	HS_STB	(0x10)	/* bit4 */
 #define	HS_IBF	(0x20)	/* bit5 */
@@ -14,7 +14,7 @@
 
 
 ////////////////////////////////////////////////////////////////
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 ////////////////////////////////////////////////////////////////
 cD8255::cD8255( void )
 {
@@ -23,16 +23,16 @@ cD8255::cD8255( void )
 
 
 ////////////////////////////////////////////////////////////////
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 ////////////////////////////////////////////////////////////////
 cD8255::~cD8255(){}
 
 
 ////////////////////////////////////////////////////////////////
-// ƒŠƒZƒbƒg
+// ãƒªã‚»ãƒƒãƒˆ
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cD8255::Reset( void )
 {
@@ -47,16 +47,16 @@ void cD8255::Reset( void )
 
 
 ////////////////////////////////////////////////////////////////
-// ƒ‚[ƒhÝ’è
+// ãƒ¢ãƒ¼ãƒ‰è¨­å®š
 //
-// ˆø”:	data	ƒf[ƒ^“]‘—•ûŒü
-//				bit6,5: ƒOƒ‹[ƒvA‚Ìƒ‚[ƒh	1x:ƒ‚[ƒh2 01:ƒ‚[ƒh1 00:ƒ‚[ƒh0
-//				bit4:   PortA				1:“ü—Í(“Ç‚Ý) 0:o—Í(‘‚«)
-//				bit3:   PortC(bit4-7)		1:“ü—Í(“Ç‚Ý) 0:o—Í(‘‚«)
-//				bit2:   ƒOƒ‹[ƒvB‚Ìƒ‚[ƒh	1:ƒ‚[ƒh1 0:ƒ‚[ƒh0
-//				bit1:   PortB				1:“ü—Í(“Ç‚Ý) 0:o—Í(‘‚«)
-//				bit0:   PortC(bit0-3)		1:“ü—Í(“Ç‚Ý) 0:o—Í(‘‚«)
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	data	ãƒ‡ãƒ¼ã‚¿è»¢é€æ–¹å‘
+//				bit6,5: ã‚°ãƒ«ãƒ¼ãƒ—Aã®ãƒ¢ãƒ¼ãƒ‰	1x:ãƒ¢ãƒ¼ãƒ‰2 01:ãƒ¢ãƒ¼ãƒ‰1 00:ãƒ¢ãƒ¼ãƒ‰0
+//				bit4:   PortA				1:å…¥åŠ›(èª­ã¿) 0:å‡ºåŠ›(æ›¸ã)
+//				bit3:   PortC(bit4-7)		1:å…¥åŠ›(èª­ã¿) 0:å‡ºåŠ›(æ›¸ã)
+//				bit2:   ã‚°ãƒ«ãƒ¼ãƒ—Bã®ãƒ¢ãƒ¼ãƒ‰	1:ãƒ¢ãƒ¼ãƒ‰1 0:ãƒ¢ãƒ¼ãƒ‰0
+//				bit1:   PortB				1:å…¥åŠ›(èª­ã¿) 0:å‡ºåŠ›(æ›¸ã)
+//				bit0:   PortC(bit0-3)		1:å…¥åŠ›(èª­ã¿) 0:å‡ºåŠ›(æ›¸ã)
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cD8255::SetMode( BYTE data )
 {
@@ -75,20 +75,20 @@ void cD8255::SetMode( BYTE data )
 
 
 ////////////////////////////////////////////////////////////////
-// PartA ƒ‰ƒCƒg(Žü•Ó‘¤)
+// PartA ãƒ©ã‚¤ãƒˆ(å‘¨è¾ºå´)
 //
-// ˆø”:	data	‘‚«ž‚Þƒf[ƒ^
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	data	æ›¸ãè¾¼ã‚€ãƒ‡ãƒ¼ã‚¿
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cD8255::WriteAE( BYTE data )
 {
 	PRINTD( PPI_LOG, "[8255][WriteAE] %02X", data );
 	
-	// ‚Æ‚è‚ ‚¦‚¸ƒ‚[ƒh2‚Ìê‡‚¾‚¯l‚¦‚é
+	// ã¨ã‚Šã‚ãˆãšãƒ¢ãƒ¼ãƒ‰2ã®å ´åˆã ã‘è€ƒãˆã‚‹
 	if( ModeA == 2 ){
-		// ƒoƒbƒtƒ@‚Éƒf[ƒ^‚ðƒ‰ƒbƒ`
+		// ãƒãƒƒãƒ•ã‚¡ã«ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ©ãƒƒãƒ
 		PortAbuf = data;
-		// —§‰º‚è
+		// ç«‹ä¸‹ã‚Š
 		if( HSSTB0 ){
 			// IBF=H
 			HSIBF0   = true;
@@ -96,9 +96,9 @@ void cD8255::WriteAE( BYTE data )
 			PRINTD( PPI_LOG, " DOWN IBF:%d RINT:%d DATA:%02X", HSIBF0 ? 1 : 0, HSRINT0 ? 1 : 0, data );
 		}
 		HSSTB0 = false;
-		// —§ã‚è
+		// ç«‹ä¸Šã‚Š
 		if( !HSSTB0 ){
-			// IBF=H ‚È‚çRINT=H
+			// IBF=H ãªã‚‰RINT=H
 			if( HSIBF0 ) HSRINT0 = true;
 			
 			PRINTD( PPI_LOG, " UP IBF:%d RINT:%d", HSIBF0 ? 1 : 0, HSRINT0 ? 1 : 0 );
@@ -111,27 +111,27 @@ void cD8255::WriteAE( BYTE data )
 
 
 ////////////////////////////////////////////////////////////////
-// PartA ƒŠ[ƒh(Žü•Ó‘¤)
+// PartA ãƒªãƒ¼ãƒ‰(å‘¨è¾ºå´)
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	BYTE	PortA‚Ì’l
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	BYTE	PortAã®å€¤
 ////////////////////////////////////////////////////////////////
 BYTE cD8255::ReadAE( void )
 {
 	PRINTD( PPI_LOG, "[8255][ReadAE]" );
 	
-	// ‚Æ‚è‚ ‚¦‚¸ƒ‚[ƒh2‚Ìê‡‚¾‚¯l‚¦‚é
+	// ã¨ã‚Šã‚ãˆãšãƒ¢ãƒ¼ãƒ‰2ã®å ´åˆã ã‘è€ƒãˆã‚‹
 	if( ModeA == 2 ){
-		// —§‰º‚è‚È‚çOBF=H
+		// ç«‹ä¸‹ã‚Šãªã‚‰OBF=H
 		if( HSDAK0 ){
 			HSOBF0 = true;
 			
 			PRINTD( PPI_LOG, " DN OBF:%d WINT %d", HSOBF0 ? 1 : 0, HSWINT0 ? 1 : 0 );
 		}
 		HSDAK0 = false;
-		// —§ã‚è
+		// ç«‹ä¸Šã‚Š
 		if( !HSDAK0 ){
-			// OBF=H ‚È‚çWRINT=H
+			// OBF=H ãªã‚‰WRINT=H
 			if( HSOBF0 ) HSWINT0 = true;
 			
 			PRINTD( PPI_LOG, " UP OBF:%d WINT %d", HSOBF0 ? 1 : 0, HSWINT0 ? 1 : 0 );
@@ -146,10 +146,10 @@ BYTE cD8255::ReadAE( void )
 
 
 ////////////////////////////////////////////////////////////////
-// PartA ƒ‰ƒCƒg
+// PartA ãƒ©ã‚¤ãƒˆ
 //
-// ˆø”:	data	‘‚«ž‚Þƒf[ƒ^
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	data	æ›¸ãè¾¼ã‚€ãƒ‡ãƒ¼ã‚¿
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cD8255::WriteA( BYTE data )
 {
@@ -158,11 +158,11 @@ void cD8255::WriteA( BYTE data )
 	if( !PortAdir ){
 		PortA = data;
 		
-		// ‚Æ‚è‚ ‚¦‚¸ƒ‚[ƒh2‚Ìê‡‚¾‚¯l‚¦‚é
+		// ã¨ã‚Šã‚ãˆãšãƒ¢ãƒ¼ãƒ‰2ã®å ´åˆã ã‘è€ƒãˆã‚‹
 		if( ModeA == 2 ){
-			// WR0—§‰º‚è‚ÅWINT=L
+			// WR0ç«‹ä¸‹ã‚Šã§WINT=L
 			HSWINT0 = false;
-			// WR0—§ã‚è‚Å DAK=H ‚È‚ç OBF=L
+			// WR0ç«‹ä¸Šã‚Šã§ DAK=H ãªã‚‰ OBF=L
 			if( HSDAK0 ) HSOBF0 = false;
 			
 			PRINTD( PPI_LOG, " WINT:%d OBF %d\n", HSWINT0 ? 1 : 0, HSOBF0 ? 1 : 0 );
@@ -175,10 +175,10 @@ void cD8255::WriteA( BYTE data )
 
 
 ////////////////////////////////////////////////////////////////
-// PartB ƒ‰ƒCƒg
+// PartB ãƒ©ã‚¤ãƒˆ
 //
-// ˆø”:	data	‘‚«ž‚Þƒf[ƒ^
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	data	æ›¸ãè¾¼ã‚€ãƒ‡ãƒ¼ã‚¿
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cD8255::WriteB( BYTE data )
 {
@@ -194,38 +194,38 @@ void cD8255::WriteB( BYTE data )
 
 
 ////////////////////////////////////////////////////////////////
-// PartC ƒ‰ƒCƒg
+// PartC ãƒ©ã‚¤ãƒˆ
 //
-// ˆø”:	data	‘‚«ž‚Þƒf[ƒ^
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	data	æ›¸ãè¾¼ã‚€ãƒ‡ãƒ¼ã‚¿
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cD8255::WriteC( BYTE data )
 {
 	PRINTD( PPI_LOG, "[8255][WriteC] %02X", data );
 	
-	// ’¼Ú‘ž‚Ý‚Íƒ‚[ƒh0‚ÌŽž‚É‚Ì‚Ý‰Â”\
+	// ç›´æŽ¥æ›¸è¾¼ã¿ã¯ãƒ¢ãƒ¼ãƒ‰0ã®æ™‚ã«ã®ã¿å¯èƒ½
 	
-	// ƒOƒ‹[ƒvA‚ªƒ‚[ƒh0  ‚¾‚Á‚½‚ç ‰ºˆÊ‚Íbit0-3 ãˆÊ‚Íbit4-7
-	//            ƒ‚[ƒh1,2‚¾‚Á‚½‚ç ‰ºˆÊ‚Íbit0-2 ãˆÊ‚Íbit3-7
+	// ã‚°ãƒ«ãƒ¼ãƒ—AãŒãƒ¢ãƒ¼ãƒ‰0  ã ã£ãŸã‚‰ ä¸‹ä½ã¯bit0-3 ä¸Šä½ã¯bit4-7
+	//            ãƒ¢ãƒ¼ãƒ‰1,2ã ã£ãŸã‚‰ ä¸‹ä½ã¯bit0-2 ä¸Šä½ã¯bit3-7
 	
 	
 	if( ModeA == 0 ){
-		// ƒOƒ‹[ƒvA‚ªƒ‚[ƒh0,ƒOƒ‹[ƒvB‚ªƒ‚[ƒh1‚¾‚Á‚½‚ç‰ºˆÊ(bit0-3)‚ðƒ}ƒXƒN
+		// ã‚°ãƒ«ãƒ¼ãƒ—AãŒãƒ¢ãƒ¼ãƒ‰0,ã‚°ãƒ«ãƒ¼ãƒ—BãŒãƒ¢ãƒ¼ãƒ‰1ã ã£ãŸã‚‰ä¸‹ä½(bit0-3)ã‚’ãƒžã‚¹ã‚¯
 		if( ModeB == 1 ) data = ( PortC & 0x0f ) | ( data & 0xf0 );
 	}else{
-		// ƒOƒ‹[ƒvA‚ªƒ‚[ƒh1,2‚¾‚Á‚½‚çãˆÊ(bit3-7)‚ðƒ}ƒXƒN
+		// ã‚°ãƒ«ãƒ¼ãƒ—AãŒãƒ¢ãƒ¼ãƒ‰1,2ã ã£ãŸã‚‰ä¸Šä½(bit3-7)ã‚’ãƒžã‚¹ã‚¯
 		PortC = ( PortC & 0xf8 ) | ( data & 0x07 );
-		// ƒOƒ‹[ƒvA‚ªƒ‚[ƒh1,2,ƒOƒ‹[ƒvB‚ªƒ‚[ƒh1‚¾‚Á‚½‚ç‘S‚Äƒ}ƒXƒN
+		// ã‚°ãƒ«ãƒ¼ãƒ—AãŒãƒ¢ãƒ¼ãƒ‰1,2,ã‚°ãƒ«ãƒ¼ãƒ—BãŒãƒ¢ãƒ¼ãƒ‰1ã ã£ãŸã‚‰å…¨ã¦ãƒžã‚¹ã‚¯
 		if( ModeB == 1 ) data = PortC;
 	}
 	
-	// ‰ºˆÊ
+	// ä¸‹ä½
 	if( !PortC1dir && ModeB == 0 ){
 		if( ModeA == 0 ) PortC = ( PortC & 0xf0 ) | ( data & 0x0f );
 		else             PortC = ( PortC & 0xf8 ) | ( data & 0x07 );
 		JobWriteC1( PortC );
 	}
-	// ãˆÊ
+	// ä¸Šä½
 	if( !PortC2dir && ModeA == 0 ){
 		PortC = ( PortC & 0x07 ) | ( data & 0xf8 );
 		JobWriteC2( PortC );
@@ -236,24 +236,24 @@ void cD8255::WriteC( BYTE data )
 
 
 ////////////////////////////////////////////////////////////////
-// PartD ƒ‰ƒCƒg(ƒRƒ“ƒgƒ[ƒ‹ƒ|[ƒg)
+// PartD ãƒ©ã‚¤ãƒˆ(ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒãƒ¼ãƒˆ)
 //
-// ˆø”:	data	‘‚«ž‚Þƒf[ƒ^
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	data	æ›¸ãè¾¼ã‚€ãƒ‡ãƒ¼ã‚¿
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cD8255::WriteD( BYTE data )
 {
 	PRINTD( PPI_LOG, "[8255][WriteD] %02X", data );
 	
-	if( data&0x80 ){	// ÅãˆÊƒrƒbƒg‚ª1‚È‚ç
-		// ƒ‚[ƒh‘I‘ð
+	if( data&0x80 ){	// æœ€ä¸Šä½ãƒ“ãƒƒãƒˆãŒ1ãªã‚‰
+		// ãƒ¢ãƒ¼ãƒ‰é¸æŠž
 		SetMode( data );
-	}else{				// ÅãˆÊƒrƒbƒg‚ª0‚È‚ç
-		// ƒrƒbƒgƒZƒbƒg/ƒŠƒZƒbƒg
-		// ƒ‚[ƒh2‚Å‘ÎÛbit‚ªINT(bit3),IBF(bit5),OBF(bit7)‚Ìê‡‚Í(“ü—Íƒ|[ƒg‚È‚Ì‚Å)ƒ}ƒXƒN‚·‚é
-		// ‘¼‚Ìƒ‚[ƒh‚Íƒm[ƒPƒA
+	}else{				// æœ€ä¸Šä½ãƒ“ãƒƒãƒˆãŒ0ãªã‚‰
+		// ãƒ“ãƒƒãƒˆã‚»ãƒƒãƒˆ/ãƒªã‚»ãƒƒãƒˆ
+		// ãƒ¢ãƒ¼ãƒ‰2ã§å¯¾è±¡bitãŒINT(bit3),IBF(bit5),OBF(bit7)ã®å ´åˆã¯(å…¥åŠ›ãƒãƒ¼ãƒˆãªã®ã§)ãƒžã‚¹ã‚¯ã™ã‚‹
+		// ä»–ã®ãƒ¢ãƒ¼ãƒ‰ã¯ãƒŽãƒ¼ã‚±ã‚¢
 		if( ModeA == 2 ){
-			// bit–ˆ‚Ì‘Î‰ž
+			// bitæ¯Žã®å¯¾å¿œ
 			switch( (data>>1)&0x07 ){
 			case 4: // RIE0
 				RIE0 = ( data&1 ) ? true : false;
@@ -268,7 +268,7 @@ void cD8255::WriteD( BYTE data )
 			case 7: // OBF0
 				break;
 			
-			default:	// ‚Â‚Ü‚èbit0-2
+			default:	// ã¤ã¾ã‚Šbit0-2
 				if( data&1 ) PortC |=   1<<((data>>1)&0x07);
 				else         PortC &= ~(1<<((data>>1)&0x07));
 			}
@@ -284,27 +284,27 @@ void cD8255::WriteD( BYTE data )
 
 
 ////////////////////////////////////////////////////////////////
-// PartA ƒŠ[ƒh
+// PartA ãƒªãƒ¼ãƒ‰
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	BYTE	PortA‚Ì’l
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	BYTE	PortAã®å€¤
 ////////////////////////////////////////////////////////////////
 BYTE cD8255::ReadA( void )
 {
-	// o—Íƒ|[ƒg‚Å‚à‚»‚Ì‚Ü‚Ü“Çž‚ß‚é
+	// å‡ºåŠ›ãƒãƒ¼ãƒˆã§ã‚‚ãã®ã¾ã¾èª­è¾¼ã‚ã‚‹
 	
 	JobReadA();
-	// ‚Æ‚è‚ ‚¦‚¸ƒ‚[ƒh2‚Ìê‡‚¾‚¯l‚¦‚é
+	// ã¨ã‚Šã‚ãˆãšãƒ¢ãƒ¼ãƒ‰2ã®å ´åˆã ã‘è€ƒãˆã‚‹
 	if( ModeA == 2 ){
-		// RD0—§‰º‚è‚ÅRINT=L
+		// RD0ç«‹ä¸‹ã‚Šã§RINT=L
 		HSRINT0 = false;
 		
-		// IBF=H‚È‚çƒoƒbƒtƒ@‚©‚çƒf[ƒ^‚ð“Çž‚Þ
+		// IBF=Hãªã‚‰ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’èª­è¾¼ã‚€
 		if( HSIBF0 ){
 			PortA = PortAbuf;
 		}
 		
-		// RD0—§ã‚è‚Å STB=H ‚È‚ç IBF=L
+		// RD0ç«‹ä¸Šã‚Šã§ STB=H ãªã‚‰ IBF=L
 		if( HSSTB0 ) HSIBF0 = false;
 	}
 	
@@ -314,14 +314,14 @@ BYTE cD8255::ReadA( void )
 
 
 ////////////////////////////////////////////////////////////////
-// PartB ƒŠ[ƒh
+// PartB ãƒªãƒ¼ãƒ‰
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	BYTE	PortB‚Ì’l
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	BYTE	PortBã®å€¤
 ////////////////////////////////////////////////////////////////
 BYTE cD8255::ReadB( void )
 {
-	// o—Íƒ|[ƒg‚Å‚à‚»‚Ì‚Ü‚Ü“Çž‚ß‚é
+	// å‡ºåŠ›ãƒãƒ¼ãƒˆã§ã‚‚ãã®ã¾ã¾èª­è¾¼ã‚ã‚‹
 	
 	JobReadB();
 	return PortB;
@@ -329,17 +329,17 @@ BYTE cD8255::ReadB( void )
 
 
 ////////////////////////////////////////////////////////////////
-// PartC ƒŠ[ƒh
+// PartC ãƒªãƒ¼ãƒ‰
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	BYTE	PortC‚Ì’l
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	BYTE	PortCã®å€¤
 ////////////////////////////////////////////////////////////////
 BYTE cD8255::ReadC( void )
 {
-	// o—Íƒ|[ƒg‚Å‚à‚»‚Ì‚Ü‚Ü“Çž‚ß‚é
+	// å‡ºåŠ›ãƒãƒ¼ãƒˆã§ã‚‚ãã®ã¾ã¾èª­è¾¼ã‚ã‚‹
 	
 	JobReadC();
-	// ‚Æ‚è‚ ‚¦‚¸ƒ‚[ƒh2‚Ìê‡‚¾‚¯l‚¦‚é
+	// ã¨ã‚Šã‚ãˆãšãƒ¢ãƒ¼ãƒ‰2ã®å ´åˆã ã‘è€ƒãˆã‚‹
 	if( ModeA == 2 ){
 		HSWINT0 = ( HSOBF0 && WIE0 && HSDAK0 ) ? true : false;
 		HSRINT0 = ( HSIBF0 && RIE0 && HSSTB0 ) ? true : false;
@@ -355,14 +355,14 @@ BYTE cD8255::ReadC( void )
 
 
 ////////////////////////////////////////////////////////////////
-// IBFŽæ“¾
+// IBFå–å¾—
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	bool	ƒXƒe[ƒ^ƒX
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	bool	ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
 ////////////////////////////////////////////////////////////////
 bool cD8255::GetIBF( void )
 {
-	// ‚Æ‚è‚ ‚¦‚¸ƒ‚[ƒh2‚Ìê‡‚¾‚¯l‚¦‚é
+	// ã¨ã‚Šã‚ãˆãšãƒ¢ãƒ¼ãƒ‰2ã®å ´åˆã ã‘è€ƒãˆã‚‹
 	if( ModeA == 2 ) return HSIBF0;
 	
 	return false;
@@ -370,14 +370,14 @@ bool cD8255::GetIBF( void )
 
 
 ////////////////////////////////////////////////////////////////
-// OBFŽæ“¾
+// OBFå–å¾—
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	bool	ƒXƒe[ƒ^ƒX
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	bool	ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
 ////////////////////////////////////////////////////////////////
 bool cD8255::GetOBF( void )
 {
-	// ‚Æ‚è‚ ‚¦‚¸ƒ‚[ƒh2‚Ìê‡‚¾‚¯l‚¦‚é
+	// ã¨ã‚Šã‚ãˆãšãƒ¢ãƒ¼ãƒ‰2ã®å ´åˆã ã‘è€ƒãˆã‚‹
 	if( ModeA == 2 ) return HSOBF0;
 	
 	return false;

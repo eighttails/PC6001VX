@@ -1,4 +1,4 @@
-// ローテート・シフト命令
+// 繝ｭ繝ｼ繝�繝ｼ繝医�ｻ繧ｷ繝輔ヨ蜻ｽ莉､
 	case RLC_xHL:	i = ReadMem( J.W );	M_RLC( i );	WriteMem( J.W, i );	break;
 	case RRC_xHL:	i = ReadMem( J.W );	M_RRC( i );	WriteMem( J.W, i );	break;
 	case RL_xHL:	i = ReadMem( J.W );	M_RL( i );	WriteMem( J.W, i );	break;
@@ -8,7 +8,7 @@
 	case SLL_xHL:	i = ReadMem( J.W );	M_SLL( i );	WriteMem( J.W, i );	break;
 	case SRL_xHL:	i = ReadMem( J.W );	M_SRL( i );	WriteMem( J.W, i );	break;
 	
-// ビット演算命令
+// 繝薙ャ繝域ｼ皮ｮ怜多莉､
 	case BIT_0_B:
 	case BIT_0_C:
 	case BIT_0_D:
@@ -104,7 +104,7 @@
 
 
 
-// 未定義命令追加
+// 譛ｪ螳夂ｾｩ蜻ｽ莉､霑ｽ蜉
 	case RLC_B:	i = ReadMem( J.W ); M_RLC( i ); WriteMem( J.W, i ); BC.B.h = i;	break;
 	case RLC_C:	i = ReadMem( J.W ); M_RLC( i ); WriteMem( J.W, i ); BC.B.l = i;	break;
 	case RLC_D:	i = ReadMem( J.W ); M_RLC( i ); WriteMem( J.W, i ); DE.B.h = i;	break;

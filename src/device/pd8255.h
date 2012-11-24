@@ -5,23 +5,23 @@
 
 
 ////////////////////////////////////////////////////////////////
-// ƒNƒ‰ƒX’è‹`
+// ã‚¯ãƒ©ã‚¹å®šç¾©
 ////////////////////////////////////////////////////////////////
 class cD8255 {
 protected:
-	BYTE PortA;						// ƒ|[ƒgA
-	BYTE PortB;						// ƒ|[ƒgB
-	BYTE PortC;						// ƒ|[ƒgC
+	BYTE PortA;						// ãƒãƒ¼ãƒˆA
+	BYTE PortB;						// ãƒãƒ¼ãƒˆB
+	BYTE PortC;						// ãƒãƒ¼ãƒˆC
 	
-	BYTE PortAbuf;					// ƒ|[ƒgAƒoƒbƒtƒ@(ƒ|[ƒgA‚Ì“ü—Í‚ğˆê“I‚Éƒ‰ƒbƒ`)
+	BYTE PortAbuf;					// ãƒãƒ¼ãƒˆAãƒãƒƒãƒ•ã‚¡(ãƒãƒ¼ãƒˆAã®å…¥åŠ›ã‚’ä¸€æ™‚çš„ã«ãƒ©ãƒƒãƒ)
 	
-	int ModeA;						// ƒOƒ‹[ƒvAƒ‚[ƒh
-	int ModeB;						// ƒOƒ‹[ƒvBƒ‚[ƒh
+	int ModeA;						// ã‚°ãƒ«ãƒ¼ãƒ—Aãƒ¢ãƒ¼ãƒ‰
+	int ModeB;						// ã‚°ãƒ«ãƒ¼ãƒ—Bãƒ¢ãƒ¼ãƒ‰
 	
-	bool PortAdir;					// ƒ|[ƒgA         “üo—Í§Œä true:“ü—Í(“Ç‚İ) false:o—Í(‘‚«)
-	bool PortBdir;					// ƒ|[ƒgB         “üo—Í§Œä true:“ü—Í(“Ç‚İ) false:o—Í(‘‚«)
-	bool PortC1dir;					// ƒ|[ƒgC(bit0-3) “üo—Í§Œä true:“ü—Í(“Ç‚İ) false:o—Í(‘‚«)
-	bool PortC2dir;					// ƒ|[ƒgC(bit4-7) “üo—Í§Œä true:“ü—Í(“Ç‚İ) false:o—Í(‘‚«)
+	bool PortAdir;					// ãƒãƒ¼ãƒˆA         å…¥å‡ºåŠ›åˆ¶å¾¡ true:å…¥åŠ›(èª­ã¿) false:å‡ºåŠ›(æ›¸ã)
+	bool PortBdir;					// ãƒãƒ¼ãƒˆB         å…¥å‡ºåŠ›åˆ¶å¾¡ true:å…¥åŠ›(èª­ã¿) false:å‡ºåŠ›(æ›¸ã)
+	bool PortC1dir;					// ãƒãƒ¼ãƒˆC(bit0-3) å…¥å‡ºåŠ›åˆ¶å¾¡ true:å…¥åŠ›(èª­ã¿) false:å‡ºåŠ›(æ›¸ã)
+	bool PortC2dir;					// ãƒãƒ¼ãƒˆC(bit4-7) å…¥å‡ºåŠ›åˆ¶å¾¡ true:å…¥åŠ›(èª­ã¿) false:å‡ºåŠ›(æ›¸ã)
 	
 	bool HSINT0;					// INT0
 	bool HSWINT0;					// WINT0
@@ -34,38 +34,38 @@ protected:
 	bool RIE0;						// RIE0
 	bool WIE0;						// WIE0
 	
-	// “üo—Íˆ—ŠÖ”
+	// å…¥å‡ºåŠ›å‡¦ç†é–¢æ•°
 	virtual void JobWriteA( BYTE ){}
 	virtual void JobWriteB( BYTE ){}
-	virtual void JobWriteC1( BYTE ){}	// ‰ºˆÊ
-	virtual void JobWriteC2( BYTE ){}	// ãˆÊ
-	virtual void JobWriteD( BYTE ){}	// ƒrƒbƒgƒZƒbƒg/ƒŠƒZƒbƒg‚Ì‚İ
+	virtual void JobWriteC1( BYTE ){}	// ä¸‹ä½
+	virtual void JobWriteC2( BYTE ){}	// ä¸Šä½
+	virtual void JobWriteD( BYTE ){}	// ãƒ“ãƒƒãƒˆã‚»ãƒƒãƒˆ/ãƒªã‚»ãƒƒãƒˆã®ã¿
 	virtual void JobReadA(){}
 	virtual void JobReadB(){}
 	virtual void JobReadC(){}
 	
-	void SetMode( BYTE );			// ƒ‚[ƒhİ’è
+	void SetMode( BYTE );			// ãƒ¢ãƒ¼ãƒ‰è¨­å®š
 	
 public:
-	cD8255();						// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	virtual ~cD8255();				// ƒfƒXƒgƒ‰ƒNƒ^
+	cD8255();						// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	virtual ~cD8255();				// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	
-	void Reset();					// ƒŠƒZƒbƒg
+	void Reset();					// ãƒªã‚»ãƒƒãƒˆ
 	
-	// “üo—ÍŠÖ”
+	// å…¥å‡ºåŠ›é–¢æ•°
 	void WriteA( BYTE );
 	void WriteB( BYTE );
 	void WriteC( BYTE );
-	void WriteD( BYTE );			// ƒRƒ“ƒgƒ[ƒ‹ƒ|[ƒgo—Í
+	void WriteD( BYTE );			// ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒãƒ¼ãƒˆå‡ºåŠ›
 	BYTE ReadA();
 	BYTE ReadB();
 	BYTE ReadC();
 	
-	// ƒ‚[ƒh2ƒnƒ“ƒhƒVƒFƒCƒN—p
-	void WriteAE( BYTE );			// PartA ƒ‰ƒCƒg(ü•Ó‘¤)
-	BYTE ReadAE();					// PartA ƒŠ[ƒh(ü•Ó‘¤)
-	bool GetIBF();					// IBFæ“¾
-	bool GetOBF();					// OBFæ“¾
+	// ãƒ¢ãƒ¼ãƒ‰2ãƒãƒ³ãƒ‰ã‚·ã‚§ã‚¤ã‚¯ç”¨
+	void WriteAE( BYTE );			// PartA ãƒ©ã‚¤ãƒˆ(å‘¨è¾ºå´)
+	BYTE ReadAE();					// PartA ãƒªãƒ¼ãƒ‰(å‘¨è¾ºå´)
+	bool GetIBF();					// IBFå–å¾—
+	bool GetOBF();					// OBFå–å¾—
 };
 
 

@@ -1,7 +1,7 @@
 /* $Id:	d7752.c,v 1.3 2004/02/25 12:25:58 cisc Exp $ */
 
 /*
- * ƒÊPD7752	•—–¡ ‰¹º‡¬ƒGƒ“ƒWƒ“
+ * Î¼PD7752	é¢¨å‘³ éŸ³å£°åˆæˆã‚¨ãƒ³ã‚¸ãƒ³
  *
  * Copyright (c) 2004 cisc.
  * All rights reserved.
@@ -32,10 +32,10 @@
 #define	F2I(a) ((int)((a) >> 16))
 
 
-// U•“WŠJƒe[ƒuƒ‹
+// æŒ¯å¹…å±•é–‹ãƒ†ãƒ¼ãƒ–ãƒ«
 const int cD7752::amp_table[16] = { 0,	1, 1, 2, 3,	4, 5, 7, 9,	13,	17,	23,	31,	42,	56,	75 };
 
-// “ä‚ÌƒtƒBƒ‹ƒ^ŒW”	(uPD7752•—–¡)
+// è¬Žã®ãƒ•ã‚£ãƒ«ã‚¿ä¿‚æ•°	(uPD7752é¢¨å‘³)
 const int cD7752::iir1[128] = {
 	 11424,	11400, 11377, 11331, 11285,	11265, 11195, 11149,
 	 11082,	11014, 10922, 10830, 10741,	10629, 10491, 10332,
@@ -68,7 +68,7 @@ const int cD7752::iir2[64]	= {
 
 
 ////////////////////////////////////////////////////////////////
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 ////////////////////////////////////////////////////////////////
 cD7752::cD7752( void ) : PitchCount(0), FrameSize(0)
 {
@@ -79,22 +79,22 @@ cD7752::cD7752( void ) : PitchCount(0), FrameSize(0)
 
 
 ////////////////////////////////////////////////////////////////
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 ////////////////////////////////////////////////////////////////
 cD7752::~cD7752( void ){}
 
 
 ////////////////////////////////////////////////////////////////
-// ‰¹º‡¬‚ðŠJŽn‚µ‚Ü‚·B
-// ˆø”:	mode	‰¹º‡¬‚Ìƒ‚[ƒh‚ðŽw’è‚µ‚Ü‚·
-//					b2 F: •ªÍƒtƒŒ[ƒ€ BIT
-//						F=0	10ms/ƒtƒŒ[ƒ€
-//						F=1	20ms/ƒtƒŒ[ƒ€
-//					b1-0 S:	”­º‘¬“x BIT
+// éŸ³å£°åˆæˆã‚’é–‹å§‹ã—ã¾ã™ã€‚
+// å¼•æ•°:	mode	éŸ³å£°åˆæˆã®ãƒ¢ãƒ¼ãƒ‰ã‚’æŒ‡å®šã—ã¾ã™
+//					b2 F: åˆ†æžãƒ•ãƒ¬ãƒ¼ãƒ  BIT
+//						F=0	10ms/ãƒ•ãƒ¬ãƒ¼ãƒ 
+//						F=1	20ms/ãƒ•ãƒ¬ãƒ¼ãƒ 
+//					b1-0 S:	ç™ºå£°é€Ÿåº¦ BIT
 //						S=00: NORMAL SPEED
 //						S=01: SLOW SPEED
 //						S=10: FAST SPEED
-// •Ô’l:	int		ƒGƒ‰[ƒR[ƒh
+// è¿”å€¤:	int		ã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
 ////////////////////////////////////////////////////////////////
 int	cD7752::Start( int mode )
 {
@@ -109,11 +109,11 @@ int	cD7752::Start( int mode )
 		200,		 //	PROHIBITED
 	};
 	
-	// ƒtƒBƒ‹ƒ^ƒpƒ‰ƒ[ƒ^‚Ì‰Šú’l
+	// ãƒ•ã‚£ãƒ«ã‚¿ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®åˆæœŸå€¤
 	const static int f_default[5] =	{ 126, 64, 121,	111, 96	};
 	const static int b_default[5] =	{	9,	4,	 9,	  9, 11	};
 	
-	// ƒpƒ‰ƒ[ƒ^•Ï”‚Ì‰Šú‰»
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å¤‰æ•°ã®åˆæœŸåŒ–
 	FrameSize =	frame_size[mode	& 7];
 	
 	for( int i=0; i<5; i++ ){
@@ -131,10 +131,10 @@ int	cD7752::Start( int mode )
 
 
 ////////////////////////////////////////////////////////////////
-//	‰¹º‡¬‚Ì1ƒtƒŒ[ƒ€•ª‚Ì’·‚³‚ð‹‚ß‚Ü‚·B
-//	ƒtƒŒ[ƒ€’·‚ÍAStart	‚ðŒÄ‚Ño‚µ‚½Žž“_‚ÅÝ’è‚³‚ê‚Ü‚·B
-//	ˆø”:	‚È‚µ
-//	•Ô’l:	int		ƒtƒŒ[ƒ€ƒTƒCƒY
+//	éŸ³å£°åˆæˆã®1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã®é•·ã•ã‚’æ±‚ã‚ã¾ã™ã€‚
+//	ãƒ•ãƒ¬ãƒ¼ãƒ é•·ã¯ã€Start	ã‚’å‘¼ã³å‡ºã—ãŸæ™‚ç‚¹ã§è¨­å®šã•ã‚Œã¾ã™ã€‚
+//	å¼•æ•°:	ãªã—
+//	è¿”å€¤:	int		ãƒ•ãƒ¬ãƒ¼ãƒ ã‚µã‚¤ã‚º
 ////////////////////////////////////////////////////////////////
 int	cD7752::GetFrameSize( void	)
 {
@@ -143,9 +143,9 @@ int	cD7752::GetFrameSize( void	)
 
 
 ////////////////////////////////////////////////////////////////
-// 1ƒtƒŒ[ƒ€•ª‚Ì‰¹º‚ð‡¬‚µ‚Ü‚·B
-// ˆø”:	frame	‡¬‚µ‚½”gŒ`ƒf[ƒ^‚ÌŠi”[æB1ƒtƒŒ[ƒ€•ª‚ÌŒÂ”
-// •Ô’l:	int		ƒGƒ‰[ƒR[ƒh
+// 1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã®éŸ³å£°ã‚’åˆæˆã—ã¾ã™ã€‚
+// å¼•æ•°:	frame	åˆæˆã—ãŸæ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã®æ ¼ç´å…ˆã€‚1ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã®å€‹æ•°
+// è¿”å€¤:	int		ã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
 ////////////////////////////////////////////////////////////////
 int	cD7752::Synth(	BYTE *param, D7752_SAMPLE *frame )
 {
@@ -158,7 +158,7 @@ int	cD7752::Synth(	BYTE *param, D7752_SAMPLE *frame )
 	
 	curr = &Coef;
 	
-	// ‚Ü‚¸Aƒpƒ‰ƒ[ƒ^‚ðŒW”‚É“WŠJ‚·‚é
+	// ã¾ãšã€ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ä¿‚æ•°ã«å±•é–‹ã™ã‚‹
 	qmag = (param[0] & 4) != 0 ? 1 : 0;
 	
 	for( int i=0; i<5; i++ ){
@@ -177,7 +177,7 @@ int	cD7752::Synth(	BYTE *param, D7752_SAMPLE *frame )
 	if(	p &	4 )	p -= 8;
 	next.pitch = curr->pitch + I2F(p);
 	
-	// üŒ`•âŠ®—p‚Ì‘•ª’l‚ÌŒvŽZ
+	// ç·šå½¢è£œå®Œç”¨ã®å¢—åˆ†å€¤ã®è¨ˆç®—
 	incr.amp   = ( next.amp	  -	curr->amp )	  /	FrameSize;
 	incr.pitch = ( next.pitch -	curr->pitch	) /	FrameSize;
 	for( int i=0; i<5; i++ ){
@@ -185,15 +185,15 @@ int	cD7752::Synth(	BYTE *param, D7752_SAMPLE *frame )
 		incr.f[i] =	( next.f[i]	- curr->f[i] ) / FrameSize;
 	}
 	
-	// ƒCƒ“ƒpƒ‹ƒXEƒmƒCƒY‚Ì”­¶—L–³‚ðƒ`ƒFƒbƒN
+	// ã‚¤ãƒ³ãƒ‘ãƒ«ã‚¹ãƒ»ãƒŽã‚¤ã‚ºã®ç™ºç”Ÿæœ‰ç„¡ã‚’ãƒã‚§ãƒƒã‚¯
 	vu	= param[0] & 1 ? 1 : 2;
 	vu |= param[6] & 4 ? 3 : 0;
 	
-	// ‡¬‚·‚é
+	// åˆæˆã™ã‚‹
 	for( int i=0; i<FrameSize; i++ ){
 		int	y =	0;
 		
-		// ƒCƒ“ƒpƒ‹ƒX”­¶
+		// ã‚¤ãƒ³ãƒ‘ãƒ«ã‚¹ç™ºç”Ÿ
 		int	c =	F2I( curr->pitch );
 		if(	PitchCount > (c	> 0	? c	: 128) ){
 			if(	vu & 1 ) y = amp_table[F2I(curr->amp)] * 16	- 1;
@@ -201,11 +201,11 @@ int	cD7752::Synth(	BYTE *param, D7752_SAMPLE *frame )
 		}
 		PitchCount++;
 		
-		// ƒmƒCƒY”­¶
+		// ãƒŽã‚¤ã‚ºç™ºç”Ÿ
 		if(	vu & 2 )
-			if(	rand() & 1 ) y += amp_table[F2I(curr->amp)]	* 4	- 1;	 //	XXX	ƒmƒCƒYÚ×•s–¾
+			if(	rand() & 1 ) y += amp_table[F2I(curr->amp)]	* 4	- 1;	 //	XXX	ãƒŽã‚¤ã‚ºè©³ç´°ä¸æ˜Ž
 		
-		// “ä‚ÌƒfƒBƒWƒ^ƒ‹ƒtƒBƒ‹ƒ^
+		// è¬Žã®ãƒ‡ã‚£ã‚¸ã‚¿ãƒ«ãƒ•ã‚£ãƒ«ã‚¿
 		for( int j=0; j<5; j++ ){
 			int	t;
 			t  = Y[j][0] * iir1[ F2I( curr->f[j] ) & 0x7f		  ]	/ 8192;
@@ -218,10 +218,10 @@ int	cD7752::Synth(	BYTE *param, D7752_SAMPLE *frame )
 			Y[j][0]	= y;
 		}
 		
-		// ƒf[ƒ^‚ð•Û‘¶
+		// ãƒ‡ãƒ¼ã‚¿ã‚’ä¿å­˜
 		*frame++ = y;
 		
-		// ƒpƒ‰ƒ[ƒ^‚ð‘•ª
+		// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¢—åˆ†
 		curr->amp	+= incr.amp;
 		curr->pitch	+= incr.pitch;
 		for( int j=0; j<5; j++ ){
@@ -230,7 +230,7 @@ int	cD7752::Synth(	BYTE *param, D7752_SAMPLE *frame )
 		}
 	}
 	
-	// ƒpƒ‰ƒ[ƒ^‚ðƒVƒtƒg‚·‚é
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚·ãƒ•ãƒˆã™ã‚‹
 	memcpy(	curr, &next, sizeof(D7752Coef) );
 	
 	return D7752_ERR_SUCCESS;

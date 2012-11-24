@@ -4,16 +4,16 @@
 #include "mc6847.h"
 
 
-#define	P6WIDTH		(256)	/* …•½—LŒø•\Ž¦ŠúŠÔ(N60)     */
-#define	P6HEIGHT	(192)	/* ‚’¼—LŒø•\Ž¦ƒ‰ƒCƒ“(N60)   */
-#define	P2WIDTH		(320)	/* …•½—LŒø•\Ž¦ŠúŠÔ(N60m)    */
-#define	P2HEIGHT	(200)	/* ‚’¼—LŒø•\Ž¦ƒ‰ƒCƒ“(N60m)  */
+#define	P6WIDTH		(256)	/* æ°´å¹³æœ‰åŠ¹è¡¨ç¤ºæœŸé–“(N60)     */
+#define	P6HEIGHT	(192)	/* åž‚ç›´æœ‰åŠ¹è¡¨ç¤ºãƒ©ã‚¤ãƒ³(N60)   */
+#define	P2WIDTH		(320)	/* æ°´å¹³æœ‰åŠ¹è¡¨ç¤ºæœŸé–“(N60m)    */
+#define	P2HEIGHT	(200)	/* åž‚ç›´æœ‰åŠ¹è¡¨ç¤ºãƒ©ã‚¤ãƒ³(N60m)  */
 
-// ƒoƒbƒNƒoƒbƒtƒ@ƒTƒCƒY
-#define	WBBUF		(376-16)	/* •K‚¸4‚Ì”{” */
+// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+#define	WBBUF		(376-16)	/* å¿…ãš4ã®å€æ•° */
 #define	HBBUF		(242-12)
 
-// ƒ{[ƒ_[ƒTƒCƒY
+// ãƒœãƒ¼ãƒ€ãƒ¼ã‚µã‚¤ã‚º
 #define	LB60		((int)((WBBUF-P6WIDTH)/2))
 #define	RB60		(WBBUF-P6WIDTH-LB60)
 #define	TB60		((int)((HBBUF-P6HEIGHT)/2))
@@ -23,7 +23,7 @@
 #define	TB62		((int)((HBBUF-P2HEIGHT)/2))
 #define	BB62		(HBBUF-P2HEIGHT-TB62)
 
-// ƒAƒgƒŠƒrƒ…[ƒg
+// ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆ
 #define ATTR_AG		0x80
 #define ATTR_AS		0x40
 #define ATTR_INTEXT	0x20
@@ -34,25 +34,25 @@
 #define ATTR_INV	0x01
 
 #define ANMODE		( ( AT_AS << 1 ) | AT_IE )
-#define AM_AN0		0		/* ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN(“à•”ƒtƒHƒ“ƒg) */
-#define AM_AN1		1		/* ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN(ŠO•”ƒtƒHƒ“ƒg) */
-#define AM_SG4		2		/* ƒZƒ~ƒOƒ‰ƒtƒBƒbƒN4 */
-#define AM_SG6		3		/* ƒZƒ~ƒOƒ‰ƒtƒBƒbƒN6 */
+#define AM_AN0		0		/* ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯(å†…éƒ¨ãƒ•ã‚©ãƒ³ãƒˆ) */
+#define AM_AN1		1		/* ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯(å¤–éƒ¨ãƒ•ã‚©ãƒ³ãƒˆ) */
+#define AM_SG4		2		/* ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯4 */
+#define AM_SG6		3		/* ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯6 */
 
-#define GM_CG1		0		/*  64x 64 ƒJƒ‰[	*/
-#define GM_CG2		1		/* 128x 64 ƒJƒ‰[	*/
-#define GM_CG3		2		/* 128x 96 ƒJƒ‰[	*/
-#define GM_CG6		3		/* 128x192 ƒJƒ‰[	*/
-#define GM_RG1		4		/* 128x 64 ƒ‚ƒmƒNƒ	*/
-#define GM_RG2		5		/* 128x 96 ƒ‚ƒmƒNƒ	*/
-#define GM_RG3		6		/* 128x192 ƒ‚ƒmƒNƒ	*/
-#define GM_RG6		7		/* 256x192 ƒ‚ƒmƒNƒ	*/
+#define GM_CG1		0		/*  64x 64 ã‚«ãƒ©ãƒ¼	*/
+#define GM_CG2		1		/* 128x 64 ã‚«ãƒ©ãƒ¼	*/
+#define GM_CG3		2		/* 128x 96 ã‚«ãƒ©ãƒ¼	*/
+#define GM_CG6		3		/* 128x192 ã‚«ãƒ©ãƒ¼	*/
+#define GM_RG1		4		/* 128x 64 ãƒ¢ãƒŽã‚¯ãƒ­	*/
+#define GM_RG2		5		/* 128x 96 ãƒ¢ãƒŽã‚¯ãƒ­	*/
+#define GM_RG3		6		/* 128x192 ãƒ¢ãƒŽã‚¯ãƒ­	*/
+#define GM_RG6		7		/* 256x192 ãƒ¢ãƒŽã‚¯ãƒ­	*/
 
 
 
 
 ////////////////////////////////////////////////////////////////
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 ////////////////////////////////////////////////////////////////
 cMC6847core::cMC6847core( void ) :
 	CrtDisp(true), N60Win(true),
@@ -66,7 +66,7 @@ cMC6847_2::cMC6847_2( void ) :
 
 
 ////////////////////////////////////////////////////////////////
-// ƒfƒXƒgƒ‰ƒNƒ^
+// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 ////////////////////////////////////////////////////////////////
 cMC6847core::~cMC6847core( void ){}
 
@@ -76,7 +76,7 @@ cMC6847_2::~cMC6847_2( void ){}
 
 
 ////////////////////////////////////////////////////////////////
-// ƒoƒbƒNƒoƒbƒtƒ@•Žæ“¾(‹K’è’l)
+// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡å¹…å–å¾—(è¦å®šå€¤)
 ////////////////////////////////////////////////////////////////
 int cMC6847core::GetW( void )
 {
@@ -85,7 +85,7 @@ int cMC6847core::GetW( void )
 
 
 ////////////////////////////////////////////////////////////////
-// ƒoƒbƒNƒoƒbƒtƒ@‚‚³Žæ“¾(‹K’è’l)
+// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡é«˜ã•å–å¾—(è¦å®šå€¤)
 ////////////////////////////////////////////////////////////////
 int cMC6847core::GetH( void )
 {
@@ -94,7 +94,7 @@ int cMC6847core::GetH( void )
 
 
 ////////////////////////////////////////////////////////////////
-// CRT•\Ž¦ó‘ÔÝ’è
+// CRTè¡¨ç¤ºçŠ¶æ…‹è¨­å®š
 ////////////////////////////////////////////////////////////////
 void cMC6847core::SetCrtDisp( bool st )
 {
@@ -103,7 +103,7 @@ void cMC6847core::SetCrtDisp( bool st )
 
 
 ////////////////////////////////////////////////////////////////
-// ƒEƒBƒ“ƒhƒEƒTƒCƒYŽæ“¾
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå–å¾—
 ////////////////////////////////////////////////////////////////
 bool cMC6847core::GetWinSize( void )
 {
@@ -112,7 +112,7 @@ bool cMC6847core::GetWinSize( void )
 
 
 ////////////////////////////////////////////////////////////////
-// ƒ‚[ƒh4ƒJƒ‰[ƒ‚[ƒhŽæ“¾
+// ãƒ¢ãƒ¼ãƒ‰4ã‚«ãƒ©ãƒ¼ãƒ¢ãƒ¼ãƒ‰å–å¾—
 ////////////////////////////////////////////////////////////////
 int cMC6847core::GetMode4Color( void )
 {
@@ -121,7 +121,7 @@ int cMC6847core::GetMode4Color( void )
 
 
 ////////////////////////////////////////////////////////////////
-// ƒ‚[ƒh4ƒJƒ‰[ƒ‚[ƒhÝ’è
+// ãƒ¢ãƒ¼ãƒ‰4ã‚«ãƒ©ãƒ¼ãƒ¢ãƒ¼ãƒ‰è¨­å®š
 ////////////////////////////////////////////////////////////////
 void cMC6847core::SetMode4Color( int col )
 {
@@ -130,10 +130,10 @@ void cMC6847core::SetMode4Color( int col )
 
 
 ////////////////////////////////////////////////////////////////
-// ƒoƒbƒNƒoƒbƒtƒ@XV
+// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡æ›´æ–°
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cMC6847_1::UpdateBackBuf( void )
 {
@@ -143,13 +143,13 @@ void cMC6847_1::UpdateBackBuf( void )
 	
 	VAddr = HAddr = RowCntA = RowCntG = 0;
 	
-	// ã‘¤ƒ{[ƒ_•`‰æ
+	// ä¸Šå´ãƒœãƒ¼ãƒ€æç”»
 	for( int i=0; i<TB60*GetBufPitch(); i++ ) *(doff++) = GetBcol();
 	
-	// •\Ž¦ƒGƒŠƒA•`‰æ
+	// è¡¨ç¤ºã‚¨ãƒªã‚¢æç”»
 	for( int i=0; i<P6HEIGHT; i++ ) Draw1line1( i );
 	
-	// ‰º‘¤ƒ{[ƒ_•`‰æ
+	// ä¸‹å´ãƒœãƒ¼ãƒ€æç”»
 	doff = GetBufAddr() + ( TB60 + P6HEIGHT ) * GetBufPitch();
 	for( int i=0; i<BB60*GetBufPitch(); i++ ) *(doff++) = GetBcol();
 }
@@ -163,23 +163,23 @@ void cMC6847_2::UpdateBackBuf( void )
 	VAddr = HAddr = RowCntA = 0;
 	
 	if( N60Win ){	// N60
-		// ã‘¤ƒ{[ƒ_•`‰æ
+		// ä¸Šå´ãƒœãƒ¼ãƒ€æç”»
 		for( int i=0; i<TB60*GetBufPitch(); i++ ) *(doff++) = GetBcol();
 		
-		// •\Ž¦ƒGƒŠƒA•`‰æ
+		// è¡¨ç¤ºã‚¨ãƒªã‚¢æç”»
 		for( int i=0; i<P6HEIGHT; i++ ) Draw1line1( i );
 		
-		// ‰º‘¤ƒ{[ƒ_•`‰æ
+		// ä¸‹å´ãƒœãƒ¼ãƒ€æç”»
 		doff = GetBufAddr() + ( TB60 + P6HEIGHT ) * GetBufPitch();
 		for( int i=0; i<BB60*GetBufPitch(); i++ ) *(doff++) = GetBcol();
 	}else{			// N60m
-		// ã‘¤ƒ{[ƒ_•`‰æ
+		// ä¸Šå´ãƒœãƒ¼ãƒ€æç”»
 		for( int i=0; i<TB62*GetBufPitch(); i++ ) *(doff++) = GetBcol();
 		
-		// •\Ž¦ƒGƒŠƒA•`‰æ
+		// è¡¨ç¤ºã‚¨ãƒªã‚¢æç”»
 		for( int i=0; i<P2HEIGHT; i++ ) Draw1line2( i );
 		
-		// ‰º‘¤ƒ{[ƒ_•`‰æ
+		// ä¸‹å´ãƒœãƒ¼ãƒ€æç”»
 		doff = GetBufAddr() + ( TB62 + P2HEIGHT ) * GetBufPitch();
 		for( int i=0; i<BB62*GetBufPitch(); i++ ) *(doff++) = GetBcol();
 	}
@@ -187,45 +187,45 @@ void cMC6847_2::UpdateBackBuf( void )
 
 
 ////////////////////////////////////////////////////////////////
-// 1ƒ‰ƒCƒ“•`‰æ(N60)
+// 1ãƒ©ã‚¤ãƒ³æç”»(N60)
 //
-// ˆø”:	line	•`‰æ‚·‚éƒ‰ƒCƒ“”Ô†(0-191)
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	line	æç”»ã™ã‚‹ãƒ©ã‚¤ãƒ³ç•ªå·(0-191)
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cMC6847_1::Draw1line1( int line )
 {
 	BYTE data, fdat=0, fg=0, bg=0;
 	BYTE LAT_AG=0, LAT_GM=0;
 	
-	// ƒoƒbƒNƒoƒbƒtƒ@ƒAƒhƒŒƒX‹‚ß‚é
+	// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚¢ãƒ‰ãƒ¬ã‚¹æ±‚ã‚ã‚‹
 	BYTE *doff = GetBufAddr() + ( TB60 + line ) * GetBufPitch();
 	
-	// ¶‘¤ƒ{[ƒ_[•`‰æ
+	// å·¦å´ãƒœãƒ¼ãƒ€ãƒ¼æç”»
 	for( int i=0; i<LB60; i++ ) *(doff++) = GetBcol();
 	
-	// •\Ž¦ƒGƒŠƒA•`‰æ
+	// è¡¨ç¤ºã‚¨ãƒªã‚¢æç”»
 	for( int x=0; x<( P6WIDTH / 8 ); x++ ){
 		if( CrtDisp ){
 			LatchAttr();
 			data = GetVram();
 			HAddr++;
-			LAT_AG |= AT_AG;				// ‚Æ‚è‚ ‚¦‚¸
-			if( x == 2 ) LAT_GM = AT_GM;	// ‚Æ‚è‚ ‚¦‚¸
+			LAT_AG |= AT_AG;				// ã¨ã‚Šã‚ãˆãš
+			if( x == 2 ) LAT_GM = AT_GM;	// ã¨ã‚Šã‚ãˆãš
 			
-			// 1byteæ‚ÌƒOƒ‰ƒtƒBƒbƒNƒ‚[ƒhŽæ“¾
+			// 1byteå…ˆã®ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ¢ãƒ¼ãƒ‰å–å¾—
 			if( LAT_AG ) LatchGMODE();
-				// ‰‘ã‹@‚ÌVDG(Žü•Ó‰ñ˜H?)‚É‚ÍƒoƒO‚ª‚ ‚é‚ç‚µ‚¢
-				// ƒAƒgƒŠƒrƒ…[ƒgƒAƒhƒŒƒX‚É‘Î‚µƒJƒ‰[ƒZƒbƒg‚Í³‚µ‚­“Ç‚ß‚é‚ª
-				// ƒ‚[ƒh”»’è‚ÌŽž‚É‚Í1byteæ‚ÌƒAƒhƒŒƒX‚©‚ç“Ç‚ñ‚Å‚µ‚Ü‚¤‚æ‚¤‚¾
-				// ‰E’[‚Ìê‡‚Í‚»‚Ìƒ‰ƒCƒ“‚Ìæ“ª(¶’[)‚Ìƒf[ƒ^‚ð“Ç‚Þ‚ç‚µ‚¢
-				// mk2,66‚Å‚Í‚Ç‚¿‚ç‚à³‚µ‚­“Ç‚ß‚é
+				// åˆä»£æ©Ÿã®VDG(å‘¨è¾ºå›žè·¯?)ã«ã¯ãƒã‚°ãŒã‚ã‚‹ã‚‰ã—ã„
+				// ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆã‚¢ãƒ‰ãƒ¬ã‚¹ã«å¯¾ã—ã‚«ãƒ©ãƒ¼ã‚»ãƒƒãƒˆã¯æ­£ã—ãèª­ã‚ã‚‹ãŒ
+				// ãƒ¢ãƒ¼ãƒ‰åˆ¤å®šã®æ™‚ã«ã¯1byteå…ˆã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‹ã‚‰èª­ã‚“ã§ã—ã¾ã†ã‚ˆã†ã 
+				// å³ç«¯ã®å ´åˆã¯ãã®ãƒ©ã‚¤ãƒ³ã®å…ˆé ­(å·¦ç«¯)ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã‚€ã‚‰ã—ã„
+				// mk2,66ã§ã¯ã©ã¡ã‚‰ã‚‚æ­£ã—ãèª­ã‚ã‚‹
 		}else{
-			data = AT_AG ? rand() : 0;	// ƒzƒ“ƒgH Œã‚Å‚Ç‚¤‚É‚©‚·‚é
+			data = AT_AG ? rand() : 0;	// ãƒ›ãƒ³ãƒˆï¼Ÿ å¾Œã§ã©ã†ã«ã‹ã™ã‚‹
 		}
 		
-		if( AT_AG ){	// ƒOƒ‰ƒtƒBƒbƒN
+		if( AT_AG ){	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
 			switch( AT_GM ){
-			case GM_CG1:	//  64x 64 ƒJƒ‰[   (CG1)
+			case GM_CG1:	//  64x 64 ã‚«ãƒ©ãƒ¼   (CG1)
 				for( int i=3; i>=0; i-- ){
 					fdat = COL_CG[AT_CSS][(data>>(i*2))&3];
 					for( int j=0; j<4; j++ ) *(doff++) = fdat;
@@ -233,9 +233,9 @@ void cMC6847_1::Draw1line1( int line )
 				x++;
 				break;
 				
-			case GM_CG2:	// 128x 64 ƒJƒ‰[   (CG2)
-			case GM_CG3:	// 128x 96 ƒJƒ‰[   (CG3)
-			case GM_CG6:	// 128x192 ƒJƒ‰[   (CG6)
+			case GM_CG2:	// 128x 64 ã‚«ãƒ©ãƒ¼   (CG2)
+			case GM_CG3:	// 128x 96 ã‚«ãƒ©ãƒ¼   (CG3)
+			case GM_CG6:	// 128x192 ã‚«ãƒ©ãƒ¼   (CG6)
 				for( int i=6; i>=0; i-=2 ){
 					fdat = COL_CG[AT_CSS][(data>>i)&3];
 					*(doff++) = fdat;
@@ -243,9 +243,9 @@ void cMC6847_1::Draw1line1( int line )
 				}
 				break;
 				
-			case GM_RG1:	// 128x 64 ƒ‚ƒmƒNƒ (RG1)
-			case GM_RG2:	// 128x 96 ƒ‚ƒmƒNƒ (RG2)
-			case GM_RG3:	// 128x192 ƒ‚ƒmƒNƒ (RG3)
+			case GM_RG1:	// 128x 64 ãƒ¢ãƒŽã‚¯ãƒ­ (RG1)
+			case GM_RG2:	// 128x 96 ãƒ¢ãƒŽã‚¯ãƒ­ (RG2)
+			case GM_RG3:	// 128x192 ãƒ¢ãƒŽã‚¯ãƒ­ (RG3)
 				for( int i=7; i>=0; i-- ){
 					fdat = COL_RG[AT_CSS][(data>>i)&1];
 					*(doff++) = fdat;
@@ -254,42 +254,42 @@ void cMC6847_1::Draw1line1( int line )
 				x++;
 				break;
 				
-			case GM_RG6:	// 256x192 ƒ‚ƒmƒNƒ (RG6)
-				if( Mode4Col ){	// 128x192 ƒJƒ‰[(‚É‚¶‚Ý)
+			case GM_RG6:	// 256x192 ãƒ¢ãƒŽã‚¯ãƒ­ (RG6)
+				if( Mode4Col ){	// 128x192 ã‚«ãƒ©ãƒ¼(ã«ã˜ã¿)
 					int CsC = AT_CSS + Mode4Col*2;
 					for( int i=6; i>=0; i-=2 ){
 						fdat = COL_CG[CsC][(data>>i)&3];
 						*(doff++) = fdat;
 						*(doff++) = fdat;
 					}
-				}else{			// 256x192 ƒ‚ƒmƒNƒ
+				}else{			// 256x192 ãƒ¢ãƒŽã‚¯ãƒ­
 					for( int i=7; i>=0; i-- )
 						*(doff++) = COL_RG[AT_CSS][(data>>i)&1];
 				}
 			}
 			
-		}else{			// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN
+		}else{			// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯
 			switch( ANMODE ){
-			case AM_AN0:		// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN(“à•”ƒtƒHƒ“ƒg)
+			case AM_AN0:		// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯(å†…éƒ¨ãƒ•ã‚©ãƒ³ãƒˆ)
 				fg   = COL_AN[(AT_CSS<<1) |   AT_INV];
 				bg   = COL_AN[(AT_CSS<<1) | (~AT_INV&1)];
 				fdat = GetFont0( (data&0x3f)*16 + RowCntA );
 				break;
 				
-			case AM_AN1:		// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN(ŠO•”ƒtƒHƒ“ƒg)
+			case AM_AN1:		// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯(å¤–éƒ¨ãƒ•ã‚©ãƒ³ãƒˆ)
 				fg   = COL_AN[(AT_CSS<<1) |   AT_INV];
 				bg   = COL_AN[(AT_CSS<<1) | (~AT_INV&1)];
 				fdat = GetFont1( data*16 + RowCntA );
 				break;
 				
-			case AM_SG4:		// ƒZƒ~ƒOƒ‰ƒtƒBƒbƒN4
+			case AM_SG4:		// ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯4
 				fg   = COL_SG[(data>>4)&7];
 				bg   = COL_SG[8];
 				fdat = (data<<(4+(RowCntA/6)*2)&0x80) | (data<<(1+(RowCntA/6)*2)&0x08);
 				fdat |= fdat>>1 | fdat>>2 | fdat>>3;
 				break;
 				
-			case AM_SG6:		// ƒZƒ~ƒOƒ‰ƒtƒBƒbƒN6
+			case AM_SG6:		// ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯6
 				fg   = COL_SG[(AT_CSS<<2) | ((data>>6)&3)];
 				bg   = COL_SG[8];
 				fdat = (data<<(2+(RowCntA/4)*2)&0x80) | (((data<<(3+(RowCntA/4)*2))>>4)&0x08);
@@ -303,33 +303,33 @@ void cMC6847_1::Draw1line1( int line )
 	}
 	
 	
-	// ƒƒ‚ƒŠƒAƒhƒŒƒXƒIƒtƒZƒbƒg‹‚ß‚é
-	//   ‚Ç‚¤‚â‚çŠeƒ‰ƒCƒ“3byte–Ú‚Ì•\Ž¦ƒ‚[ƒh‚ÅŒˆ‚Ü‚Á‚Ä‚­‚é‚ç‚µ‚¢
-	//   ‚½‚¾‚µ“¯ˆêƒ‰ƒCƒ“‚ÉˆÙ‚È‚éƒ‚[ƒh‚ª¬Ý‚·‚é‚Æ‚«‚Í‹““®‚ª•Ï‚í‚é
-	if( LAT_AG ){	// ƒOƒ‰ƒtƒBƒbƒN
+	// ãƒ¡ãƒ¢ãƒªã‚¢ãƒ‰ãƒ¬ã‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆæ±‚ã‚ã‚‹
+	//   ã©ã†ã‚„ã‚‰å„ãƒ©ã‚¤ãƒ³3byteç›®ã®è¡¨ç¤ºãƒ¢ãƒ¼ãƒ‰ã§æ±ºã¾ã£ã¦ãã‚‹ã‚‰ã—ã„
+	//   ãŸã ã—åŒä¸€ãƒ©ã‚¤ãƒ³ã«ç•°ãªã‚‹ãƒ¢ãƒ¼ãƒ‰ãŒæ··åœ¨ã™ã‚‹ã¨ãã¯æŒ™å‹•ãŒå¤‰ã‚ã‚‹
+	if( LAT_AG ){	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
 		switch( LAT_GM ){
-		case GM_CG1:	//  64x 64 ƒJƒ‰[   (CG1)
-		case GM_CG2:	// 128x 64 ƒJƒ‰[   (CG2)
-		case GM_RG1:	// 128x 64 ƒ‚ƒmƒNƒ (RG1)
+		case GM_CG1:	//  64x 64 ã‚«ãƒ©ãƒ¼   (CG1)
+		case GM_CG2:	// 128x 64 ã‚«ãƒ©ãƒ¼   (CG2)
+		case GM_RG1:	// 128x 64 ãƒ¢ãƒŽã‚¯ãƒ­ (RG1)
 			if( RowCntG++ == 2 ){
 				VAddr++;
 				RowCntG = 0;
 			}
 			break;
-		case GM_CG3:	// 128x 96 ƒJƒ‰[   (CG3)
-		case GM_RG2:	// 128x 96 ƒ‚ƒmƒNƒ (RG2)
+		case GM_CG3:	// 128x 96 ã‚«ãƒ©ãƒ¼   (CG3)
+		case GM_RG2:	// 128x 96 ãƒ¢ãƒŽã‚¯ãƒ­ (RG2)
 			if( RowCntG++ == 1 ){
 				VAddr++;
 				RowCntG = 0;
 			}
 			break;
-		case GM_CG6:	// 128x192 ƒJƒ‰[   (CG6)
-		case GM_RG3:	// 128x192 ƒ‚ƒmƒNƒ (RG3)
-		case GM_RG6:	// 256x192 ƒ‚ƒmƒNƒ (RG6)
+		case GM_CG6:	// 128x192 ã‚«ãƒ©ãƒ¼   (CG6)
+		case GM_RG3:	// 128x192 ãƒ¢ãƒŽã‚¯ãƒ­ (RG3)
+		case GM_RG6:	// 256x192 ãƒ¢ãƒŽã‚¯ãƒ­ (RG6)
 			VAddr++;
 		}
 		RowCntA = 0;
-	}else{			// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN
+	}else{			// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯
 		if( RowCntA++ == 11 ){
 			VAddr++;
 			RowCntA = 0;
@@ -338,7 +338,7 @@ void cMC6847_1::Draw1line1( int line )
 	}
 	HAddr = 0;
 	
-	// ‰E‘¤ƒ{[ƒ_[•`‰æ
+	// å³å´ãƒœãƒ¼ãƒ€ãƒ¼æç”»
 	doff = GetBufAddr() + ( TB60 + line ) * GetBufPitch() + LB60 + P6WIDTH;
 	for( int i=0; i<RB60; i++ ) *(doff++) = GetBcol();
 }
@@ -348,29 +348,29 @@ void cMC6847_2::Draw1line1( int line )
 	BYTE data, fdat=0, fg=0, bg=0;
 	BYTE LAT_AG=0;
 	
-	// ƒoƒbƒNƒoƒbƒtƒ@ƒAƒhƒŒƒX‹‚ß‚é
+	// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚¢ãƒ‰ãƒ¬ã‚¹æ±‚ã‚ã‚‹
 	BYTE *doff = GetBufAddr() + ( TB60 + line ) * GetBufPitch();
 	
-	// ¶‘¤ƒ{[ƒ_[•`‰æ
+	// å·¦å´ãƒœãƒ¼ãƒ€ãƒ¼æç”»
 	for( int i=0; i<LB60; i++ ) *(doff++) = GetBcol();
 	
-	// •\Ž¦ƒGƒŠƒA•`‰æ
+	// è¡¨ç¤ºã‚¨ãƒªã‚¢æç”»
 	for( int x=0; x<( P6WIDTH / 8 ); x++ ){
 		if( CrtDisp ){
 			LatchAttr();
 			data = GetVram();
 			HAddr++;
-			LAT_AG |= AT_AG;				// ‚Æ‚è‚ ‚¦‚¸
+			LAT_AG |= AT_AG;				// ã¨ã‚Šã‚ãˆãš
 		}else{
-			data = 0;	// ƒzƒ“ƒgHRGBo—Í‚ÆƒrƒfƒIo—Í‚ÅˆÙ‚È‚é‚Í‚¸
+			data = 0;	// ãƒ›ãƒ³ãƒˆï¼ŸRGBå‡ºåŠ›ã¨ãƒ“ãƒ‡ã‚ªå‡ºåŠ›ã§ç•°ãªã‚‹ã¯ãš
 		}
 		
-		if( AT_AG ){	// ƒOƒ‰ƒtƒBƒbƒN
+		if( AT_AG ){	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
 			switch( AT_GM ){
-			case GM_CG1:	//  64x 64 ƒJƒ‰[   (CG1)(–³Œø)
-			case GM_CG2:	// 128x 64 ƒJƒ‰[   (CG2)(–³Œø)
-			case GM_CG3:	// 128x 96 ƒJƒ‰[   (CG3)(–³Œø)
-			case GM_CG6:	// 128x192 ƒJƒ‰[   (CG6)
+			case GM_CG1:	//  64x 64 ã‚«ãƒ©ãƒ¼   (CG1)(ç„¡åŠ¹)
+			case GM_CG2:	// 128x 64 ã‚«ãƒ©ãƒ¼   (CG2)(ç„¡åŠ¹)
+			case GM_CG3:	// 128x 96 ã‚«ãƒ©ãƒ¼   (CG3)(ç„¡åŠ¹)
+			case GM_CG6:	// 128x192 ã‚«ãƒ©ãƒ¼   (CG6)
 				for( int i=6; i>=0; i-=2 ){
 					fdat = COL_CG[AT_CSS][(data>>i)&3];
 					*(doff++) = fdat;
@@ -378,36 +378,36 @@ void cMC6847_2::Draw1line1( int line )
 				}
 				break;
 				
-			case GM_RG1:	// 128x 64 ƒ‚ƒmƒNƒ (RG1)(–³Œø)
-			case GM_RG2:	// 128x 96 ƒ‚ƒmƒNƒ (RG2)(–³Œø)
-			case GM_RG3:	// 128x192 ƒ‚ƒmƒNƒ (RG3)(–³Œø)
-			case GM_RG6:	// 256x192 ƒ‚ƒmƒNƒ (RG6)
-				if( Mode4Col ){	// 128x192 ƒJƒ‰[(‚É‚¶‚Ý)
+			case GM_RG1:	// 128x 64 ãƒ¢ãƒŽã‚¯ãƒ­ (RG1)(ç„¡åŠ¹)
+			case GM_RG2:	// 128x 96 ãƒ¢ãƒŽã‚¯ãƒ­ (RG2)(ç„¡åŠ¹)
+			case GM_RG3:	// 128x192 ãƒ¢ãƒŽã‚¯ãƒ­ (RG3)(ç„¡åŠ¹)
+			case GM_RG6:	// 256x192 ãƒ¢ãƒŽã‚¯ãƒ­ (RG6)
+				if( Mode4Col ){	// 128x192 ã‚«ãƒ©ãƒ¼(ã«ã˜ã¿)
 					int CsC = AT_CSS + Mode4Col*2;
 					for( int i=6; i>=0; i-=2 ){
 						fdat = COL_CG[CsC][(data>>i)&3];
 						*(doff++) = fdat;
 						*(doff++) = fdat;
 					}
-				}else{			// 256x192 ƒ‚ƒmƒNƒ
+				}else{			// 256x192 ãƒ¢ãƒŽã‚¯ãƒ­
 					for( int i=7; i>=0; i-- )
 						*(doff++) = COL_RG[AT_CSS][(data>>i)&1];
 				}
 			}
-		}else{			// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN
+		}else{			// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯
 			switch( ANMODE ){
-			case AM_AN0:		// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN(“à•”ƒtƒHƒ“ƒg)(–³Œø)
-			case AM_AN1:		// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN(ŠO•”ƒtƒHƒ“ƒg)
+			case AM_AN0:		// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯(å†…éƒ¨ãƒ•ã‚©ãƒ³ãƒˆ)(ç„¡åŠ¹)
+			case AM_AN1:		// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯(å¤–éƒ¨ãƒ•ã‚©ãƒ³ãƒˆ)
 				fg   = COL_AN[(AT_CSS<<1) |   AT_INV];
 				bg   = COL_AN[(AT_CSS<<1) | (~AT_INV&1)];
 				fdat = GetFont1( data*16 + RowCntA );
 				break;
 				
-			case AM_SG4:		// ƒZƒ~ƒOƒ‰ƒtƒBƒbƒN4(–³Œø)
-			case AM_SG6:		// ƒZƒ~ƒOƒ‰ƒtƒBƒbƒN6
+			case AM_SG4:		// ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯4(ç„¡åŠ¹)
+			case AM_SG6:		// ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯6
 				fg   = COL_SG[(AT_CSS<<2) | ((data>>6)&3)];
 				bg   = COL_SG[8];
-				fdat = GetFont1( 0x1000 + (data&0x3f)*16 + RowCntA );	// ƒZƒ~ƒOƒ‰ƒtƒHƒ“ƒg‚Í 1000H-13FFH
+				fdat = GetFont1( 0x1000 + (data&0x3f)*16 + RowCntA );	// ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚©ãƒ³ãƒˆã¯ 1000H-13FFH
 			}
 			for( int i=7; i>=0; i-- )
 				*(doff++) = (fdat>>i)&1 ? fg : bg;
@@ -415,14 +415,14 @@ void cMC6847_2::Draw1line1( int line )
 	}
 	
 	
-	// ƒƒ‚ƒŠƒAƒhƒŒƒXƒIƒtƒZƒbƒg‹‚ß‚é
-	//   ‚Ç‚¤‚â‚çŠeƒ‰ƒCƒ“3byte–Ú‚Ì•\Ž¦ƒ‚[ƒh‚ÅŒˆ‚Ü‚Á‚Ä‚­‚é‚ç‚µ‚¢
-	//   ‚½‚¾‚µ“¯ˆêƒ‰ƒCƒ“‚ÉˆÙ‚È‚éƒ‚[ƒh‚ª¬Ý‚·‚é‚Æ‚«‚Í‹““®‚ª•Ï‚í‚é
-	//   mk,66‚à“¯‚¶‚©‚Ç‚¤‚©‚Í•s–¾‚¾‚ª‚à‚¿‚å‚Á‚ÆƒVƒ“ƒvƒ‹‚¾‚ÆŽv‚í‚ê‚é
-	if( LAT_AG ){	// ƒOƒ‰ƒtƒBƒbƒN
+	// ãƒ¡ãƒ¢ãƒªã‚¢ãƒ‰ãƒ¬ã‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆæ±‚ã‚ã‚‹
+	//   ã©ã†ã‚„ã‚‰å„ãƒ©ã‚¤ãƒ³3byteç›®ã®è¡¨ç¤ºãƒ¢ãƒ¼ãƒ‰ã§æ±ºã¾ã£ã¦ãã‚‹ã‚‰ã—ã„
+	//   ãŸã ã—åŒä¸€ãƒ©ã‚¤ãƒ³ã«ç•°ãªã‚‹ãƒ¢ãƒ¼ãƒ‰ãŒæ··åœ¨ã™ã‚‹ã¨ãã¯æŒ™å‹•ãŒå¤‰ã‚ã‚‹
+	//   mk,66ã‚‚åŒã˜ã‹ã©ã†ã‹ã¯ä¸æ˜Žã ãŒã‚‚ã¡ã‚‡ã£ã¨ã‚·ãƒ³ãƒ—ãƒ«ã ã¨æ€ã‚ã‚Œã‚‹
+	if( LAT_AG ){	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
 		VAddr++;
 		RowCntA = 0;
-	}else{			// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN
+	}else{			// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯
 		if( RowCntA++ == 11 ){
 			VAddr++;
 			RowCntA = 0;
@@ -430,53 +430,53 @@ void cMC6847_2::Draw1line1( int line )
 	}
 	HAddr = 0;
 	
-	// ‰E‘¤ƒ{[ƒ_[•`‰æ
+	// å³å´ãƒœãƒ¼ãƒ€ãƒ¼æç”»
 	doff = GetBufAddr() + ( TB60 + line ) * GetBufPitch() + LB60 + P6WIDTH;
 	for( int i=0; i<RB60; i++ ) *(doff++) = GetBcol();
 }
 
 
 ////////////////////////////////////////////////////////////////
-// 1ƒ‰ƒCƒ“•`‰æ(N60m)
+// 1ãƒ©ã‚¤ãƒ³æç”»(N60m)
 //
-// ˆø”:	line	•`‰æ‚·‚éƒ‰ƒCƒ“”Ô†(0-199)
-// •Ô’l:	‚È‚µ
+// å¼•æ•°:	line	æç”»ã™ã‚‹ãƒ©ã‚¤ãƒ³ç•ªå·(0-199)
+// è¿”å€¤:	ãªã—
 ////////////////////////////////////////////////////////////////
 void cMC6847_2::Draw1line2( int line )
 {
 	BYTE attr, data;
 	
-	// ƒoƒbƒNƒoƒbƒtƒ@ƒAƒhƒŒƒX‹‚ß‚é
+	// ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚¢ãƒ‰ãƒ¬ã‚¹æ±‚ã‚ã‚‹
 	BYTE *doff = GetBufAddr() + ( TB62 + line ) * GetBufPitch();
 	
-	// ¶‘¤ƒ{[ƒ_[•`‰æ
+	// å·¦å´ãƒœãƒ¼ãƒ€ãƒ¼æç”»
 	for( int i=0; i<LB62; i++ ) *(doff++) = GetBcol();
 	
-	// •\Ž¦ƒGƒŠƒA•`‰æ
+	// è¡¨ç¤ºã‚¨ãƒªã‚¢æç”»
 	for( int x=0; x<( P2WIDTH / 8 ); x++){
 		if( CrtDisp ){
 			attr = GetAttr();
 			data = GetVram();
 			HAddr++;
 		}else{
-			attr = 0;	// ƒzƒ“ƒgH
-			data = 0;	// ƒzƒ“ƒgH
+			attr = 0;	// ãƒ›ãƒ³ãƒˆï¼Ÿ
+			data = 0;	// ãƒ›ãƒ³ãƒˆï¼Ÿ
 		}
 		
-		if( Mk2CharMode ){	// ƒLƒƒƒ‰ƒNƒ^ƒ‚[ƒh
+		if( Mk2CharMode ){	// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¢ãƒ¼ãƒ‰
 			BYTE fg   = COL_AN2[attr&0x0f];
 			BYTE bg   = COL_AN2[((attr>>4)&0x07)|((Css2&1)<<3)];
 			BYTE fdat = GetFont2( (data+((attr&0x80)?256:0))*16 + RowCntA );
 			for( int i=7; i>=0; i-- )
 				*(doff++) = (fdat>>i)&1 ? fg : bg;
-		}else{				// ƒOƒ‰ƒtƒBƒbƒNƒ‚[ƒh
-			if( Mk2GraphMode ){	// ƒOƒ‰ƒtƒBƒbƒN ƒ‚[ƒh3
+		}else{				// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ¢ãƒ¼ãƒ‰
+			if( Mk2GraphMode ){	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ ãƒ¢ãƒ¼ãƒ‰3
 				for( int i=6; i>=0; i-=2 ){
 					BYTE fdat = COL_CG3[Css3][(((data<<2)>>i)&0x0c)|((attr>>i)&3)];
 					*(doff++) = fdat;
 					*(doff++) = fdat;
 				}
-			}else{				// ƒOƒ‰ƒtƒBƒbƒN ƒ‚[ƒh4
+			}else{				// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ ãƒ¢ãƒ¼ãƒ‰4
 				BYTE c = (Css2<<3)|(Css1<<2);
 				for( int i=7; i>=0; i-- )
 					*(doff++) = COL_CG4[Css3][c|(((data<<1)>>i)&2)|((attr>>i)&1)];
@@ -485,40 +485,40 @@ void cMC6847_2::Draw1line2( int line )
 	}
 	
 	
-	// ƒƒ‚ƒŠƒAƒhƒŒƒXƒIƒtƒZƒbƒg‹‚ß‚é
-	if( Mk2CharMode ){	// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN
+	// ãƒ¡ãƒ¢ãƒªã‚¢ãƒ‰ãƒ¬ã‚¹ã‚ªãƒ•ã‚»ãƒƒãƒˆæ±‚ã‚ã‚‹
+	if( Mk2CharMode ){	// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯
 		if( RowCntA++ == 9 ){
 			VAddr++;
 			RowCntA = 0;
 		}
-	}else{				// ƒOƒ‰ƒtƒBƒbƒN
+	}else{				// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
 		VAddr++;
 		RowCntA = 0;
 	}
 	HAddr = 0;
 	
-	// ‰E‘¤ƒ{[ƒ_[•`‰æ
+	// å³å´ãƒœãƒ¼ãƒ€ãƒ¼æç”»
 	doff = GetBufAddr() + ( TB62 + line ) * GetBufPitch() + LB62 + P2WIDTH;
 	for( int i=0; i<RB62; i++ ) *(doff++) = GetBcol();
 }
 
 
 ////////////////////////////////////////////////////////////////
-// ƒ{[ƒ_[ƒJƒ‰[Žæ“¾
+// ãƒœãƒ¼ãƒ€ãƒ¼ã‚«ãƒ©ãƒ¼å–å¾—
 //
-// ˆø”:	‚È‚µ
-// •Ô’l:	BYTE	ƒ{[ƒ_[ƒJƒ‰[ƒR[ƒh
+// å¼•æ•°:	ãªã—
+// è¿”å€¤:	BYTE	ãƒœãƒ¼ãƒ€ãƒ¼ã‚«ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰
 ////////////////////////////////////////////////////////////////
 BYTE cMC6847_1::GetBcol( void )
 {
 	BYTE bcol;
 	
-	if( AT_AG ){	// ƒOƒ‰ƒtƒBƒbƒNƒ‚[ƒh
-		if( AT_GM & 4 ) bcol = COL_RG[AT_CSS][1];	// ƒ‚ƒmƒNƒ
-		else			bcol = COL_CG[AT_CSS][0];	// ƒJƒ‰[
-	}else{			// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒNƒ‚[ƒh
-		if( AT_AS ) 	bcol = COL_SG[8];			// ƒZƒ~ƒOƒ‰ƒtƒBƒbƒN
-		else			bcol = COL_AN[4];			// ƒAƒ‹ƒtƒ@ƒjƒ…[ƒƒŠƒbƒN
+	if( AT_AG ){	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ¢ãƒ¼ãƒ‰
+		if( AT_GM & 4 ) bcol = COL_RG[AT_CSS][1];	// ãƒ¢ãƒŽã‚¯ãƒ­
+		else			bcol = COL_CG[AT_CSS][0];	// ã‚«ãƒ©ãƒ¼
+	}else{			// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯ãƒ¢ãƒ¼ãƒ‰
+		if( AT_AS ) 	bcol = COL_SG[8];			// ã‚»ãƒŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯
+		else			bcol = COL_AN[4];			// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ‹ãƒ¥ãƒ¼ãƒ¡ãƒªãƒƒã‚¯
 	}
 	
 	return bcol;
@@ -528,13 +528,13 @@ BYTE cMC6847_2::GetBcol( void )
 {
 	BYTE bcol;
 	
-	// ŽÀÛ‚Í‘S•”“¯‚¶‚©‚à
+	// å®Ÿéš›ã¯å…¨éƒ¨åŒã˜ã‹ã‚‚
 	if( N60Win )               bcol = COL_AN[4];		// N60
 	else{												// N60m
-		if( Mk2CharMode )      bcol = COL_AN2[0];		// ƒLƒƒƒ‰ƒNƒ^ƒ‚[ƒh
+		if( Mk2CharMode )      bcol = COL_AN2[0];		// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¢ãƒ¼ãƒ‰
 		else{
-			if( Mk2GraphMode ) bcol = COL_CG3[0][0];	// ƒOƒ‰ƒtƒBƒbƒN ƒ‚[ƒh3
-			else			   bcol = COL_CG4[0][0];	// ƒOƒ‰ƒtƒBƒbƒN ƒ‚[ƒh4
+			if( Mk2GraphMode ) bcol = COL_CG3[0][0];	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ ãƒ¢ãƒ¼ãƒ‰3
+			else			   bcol = COL_CG4[0][0];	// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ ãƒ¢ãƒ¼ãƒ‰4
 		}
 	}
 	

@@ -1,4 +1,4 @@
-// 8ƒrƒbƒg“]‘—–½—ß
+// 8ãƒ“ãƒƒãƒˆè»¢é€å‘½ä»¤
 	case LD_A_I:
 		ACC  = I;
 		FLAG = SZ_table[ACC] | (IFF==INT_DISABLE? 0:P_FLAG)|(FLAG&C_FLAG);
@@ -10,7 +10,7 @@
 	case LD_I_A: I = ACC; break;
 	case LD_R_A: R = ACC; break;
 	
-// 16ƒrƒbƒg“]‘—–½—ß
+// 16ãƒ“ãƒƒãƒˆè»¢é€å‘½ä»¤
 	case LD_x16x_HL:
 		J.B.l = ReadMem(PC.W++);
 		J.B.h = ReadMem(PC.W++);
@@ -61,7 +61,7 @@
 		SP.B.h = ReadMem(J.W  );
 		break;
 	
-// 16ƒrƒbƒgZp‰‰Z–½—ß
+// 16ãƒ“ãƒƒãƒˆç®—è¡“æ¼”ç®—å‘½ä»¤
 	case ADC_HL_BC: M_ADCW(BC.W); break;
 	case ADC_HL_DE: M_ADCW(DE.W); break;
 	case ADC_HL_HL: M_ADCW(HL.W); break;
@@ -72,7 +72,7 @@
 	case SBC_HL_HL: M_SBCW(HL.W); break;
 	case SBC_HL_SP: M_SBCW(SP.W); break;
 	
-// ƒ[ƒe[ƒgEƒVƒtƒg–½—ß
+// ãƒ­ãƒ¼ãƒ†ãƒ¼ãƒˆãƒ»ã‚·ãƒ•ãƒˆå‘½ä»¤
 	case RLD:
 		i = ReadMem(HL.W);
 		J.B.l = (i<<4)|(ACC&0x0f);
@@ -88,7 +88,7 @@
 		FLAG = SZP_table[ACC]|(FLAG&C_FLAG);
 		break;
 	
-// ‚b‚o‚t§Œä–½—ß
+// ï¼£ï¼°ï¼µåˆ¶å¾¡å‘½ä»¤
 	case IM_0:
 	case IM_0_4E:
 	case IM_0_66:
@@ -100,7 +100,7 @@
 	case IM_2:
 	case IM_2_7E: IM = 2; break;
 	
-// ƒAƒLƒ…ƒ€ƒŒ[ƒ^‘€ì–½—ß
+// ã‚¢ã‚­ãƒ¥ãƒ ãƒ¬ãƒ¼ã‚¿æ“ä½œå‘½ä»¤
 	case NEG:
 	case NEG_4C:
 	case NEG_54:
@@ -110,7 +110,7 @@
 	case NEG_74:
 	case NEG_7C: i=ACC; ACC=0; M_SUB(i); break;
 	
-// •ªŠò–½—ß
+// åˆ†å²å‘½ä»¤
 	case RETI:		M_RET();	break;
 	
 	case RETN:
@@ -132,7 +132,7 @@
 //	case RETN_75: IFF = IFF2; M_RET(); break;
 
 	
-// “üo—Í–½—ß
+// å…¥å‡ºåŠ›å‘½ä»¤
 	case IN_B_xC: M_IN_C(BC.B.h); break;
 	case IN_C_xC: M_IN_C(BC.B.l); break;
 	case IN_D_xC: M_IN_C(DE.B.h); break;
@@ -221,7 +221,7 @@
 		}
 		break;
 	
-// ƒuƒƒbƒN“]‘—–½—ß
+// ãƒ–ãƒ­ãƒƒã‚¯è»¢é€å‘½ä»¤
 	case LDI:
 		WriteMem(DE.W++,ReadMem(HL.W++));
 		BC.W--;
@@ -253,7 +253,7 @@
 		}
 		break;
 	
-// ƒuƒƒbƒNƒT[ƒ`–½—ß
+// ãƒ–ãƒ­ãƒƒã‚¯ã‚µãƒ¼ãƒå‘½ä»¤
 	case CPI:
 		i = ReadMem(HL.W++);
 		J.B.l = ACC-i;

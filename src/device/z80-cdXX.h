@@ -1,4 +1,4 @@
-// 8ビット転送命令
+// 8繝薙ャ繝郁ｻ｢騾∝多莉､
 	case LD_A_H:	ACC=XX.B.h;	break;
 	case LD_A_L:	ACC=XX.B.l;	break;
 	case LD_A_xHL:	ACC=ReadMem(XX.W+(offset)ReadMem(PC.W++));	break;
@@ -72,7 +72,7 @@
 		WriteMem(J.W,ReadMem(PC.W++));
 		break;
 	
-// 16ビット転送命令
+// 16繝薙ャ繝郁ｻ｢騾∝多莉､
 	case LD_HL_16:	M_LDWORD(XX);	break;
 	
 	case LD_SP_HL:	SP.W=XX.W;	break;
@@ -93,7 +93,7 @@
 	case PUSH_HL:	M_PUSH(XX);	break;
 	case POP_HL:	M_POP(XX);	break;
 	
-// 8ビット算術論理演算命令
+// 8繝薙ャ繝育ｮ苓｡楢ｫ也炊貍皮ｮ怜多莉､
 	case ADD_A_H:	M_ADD_A(XX.B.h);	break;
 	case ADD_A_L:	M_ADD_A(XX.B.l);	break;
 	case ADD_A_xHL:
@@ -166,7 +166,7 @@
  		WriteMem(XX.W+(offset)ReadMem(PC.W++),i);
 		break;
 	
-// 16ビット算術演算命令
+// 16繝薙ャ繝育ｮ苓｡捺ｼ皮ｮ怜多莉､
 	case ADD_HL_BC:	M_ADDW(XX.W,BC.W);	break;
 	case ADD_HL_DE:	M_ADDW(XX.W,DE.W);	break;
 	case ADD_HL_HL:	M_ADDW(XX.W,XX.W);	break;
@@ -175,12 +175,12 @@
 	case INC_HL:	XX.W++;	break;
 	case DEC_HL:	XX.W--;	break;
 	
-// レジスタ交換命令
+// 繝ｬ繧ｸ繧ｹ繧ｿ莠､謠帛多莉､
 	case EX_xSP_HL:
 		J.B.l=ReadMem(SP.W); WriteMem(SP.W++,XX.B.l);
 		J.B.h=ReadMem(SP.W); WriteMem(SP.W--,XX.B.h);
 		XX.W=J.W;
 	break;
 	
-// 分岐命令
+// 蛻�蟯仙多莉､
 	case JP_xHL:	PC.W = XX.W;	break;

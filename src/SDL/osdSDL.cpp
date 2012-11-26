@@ -1508,7 +1508,16 @@ const char *OSD_ColorName( int num )
 		"mk2〜 透明(黒)",		"mk2〜 橙",				"mk2〜 青緑",			"mk2〜 黄緑",
 		"mk2〜 青紫",			"mk2〜 赤紫",			"mk2〜 空色",			"mk2〜 灰色",
 		"mk2〜 黒",				"mk2〜 赤",				"mk2〜 緑",				"mk2〜 黄",
-		"mk2〜 青",				"mk2〜 マゼンタ",		"mk2〜 シアン",			"mk2〜 白" };
+        "mk2〜 青",				"mk2〜 マゼンタ",		"mk2〜 シアン",			"mk2〜 白",
+        "MODE4 Set2 にじみ 明るい赤",
+        "MODE4 Set2 にじみ 暗い赤",
+        "MODE4 Set2 にじみ 明るい青",
+        "MODE4 Set2 にじみ 暗い青",
+        "MODE4 Set2 にじみ 明るい桃",
+        "MODE4 Set2 にじみ 暗い桃",
+        "MODE4 Set2 にじみ 明るい緑",
+        "MODE4 Set2 にじみ 暗い緑",
+    };
 	
 	if( num < 0 || num >= COUNTOF( JColorName ) ) return NULL;
 	else                                          return JColorName[num];

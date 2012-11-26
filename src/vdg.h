@@ -51,7 +51,7 @@ protected:
 	// カラーコード
 	static const BYTE COL60_AN[];
 	static const BYTE COL60_SG[];
-	static const BYTE COL60_CG[][4];
+    static const BYTE COL60_CG[][8];
 	static const BYTE COL60_RG[][2];
 	
 	BYTE GetFont0( WORD );						// Font0(VDG Font)データ取得

@@ -11,7 +11,7 @@ class cMC6847core {
 protected:
 	BYTE COL_AN[5];			// カラーコード(アルファニューメリック)
 	BYTE COL_SG[9];			// カラーコード(セミグラフィック)
-	BYTE COL_CG[10][4];		// カラーコード(カラーグラフィック)
+    BYTE COL_CG[10][8];		// カラーコード(カラーグラフィック)
 	BYTE COL_RG[2][2];		// カラーコード(モノクログラフィック)
 	
 	bool CrtDisp;			// CRT表示状態 true:表示 false:非表示

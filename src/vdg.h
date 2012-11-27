@@ -89,7 +89,7 @@ protected:
 	// カラーコード
 	static const BYTE COL62_AN[];
 	static const BYTE COL62_SG[];
-	static const BYTE COL62_CG[][4];
+    static const BYTE COL62_CG[][8];
 	static const BYTE COL62_RG[][2];
 	static const BYTE COL62_AN2[];
 	static const BYTE COL62_CG3[][16];

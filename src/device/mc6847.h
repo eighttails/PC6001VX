@@ -13,7 +13,7 @@ protected:
 	BYTE COL_SG[9];			// カラーコード(セミグラフィック)
     BYTE COL_CG[10][8];		// カラーコード(カラーグラフィック)
 	BYTE COL_RG[2][2];		// カラーコード(モノクログラフィック)
-	
+
 	bool CrtDisp;			// CRT表示状態 true:表示 false:非表示
 	bool N60Win;			// ウィンドウサイズ true:N60 false:N60m
 	int Mode4Col;			// モード4カラーモード 0:モノ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク

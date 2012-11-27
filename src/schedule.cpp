@@ -214,7 +214,7 @@ void cSche::Reset( P6DEVICE *dev, int id, double ini )
 	evinfo *e = Find( dev, id );
 	if( e ){
 		// 溜め込んだクロック分を考慮
-		e->Clock = (int)((double)e->Period * min( max( 0.0, ini ), 1.0 )) + SaveClock;
+        e->Clock = (int)((double)e->Period * min( max( 0.0, ini ), 1.0 )) + SaveClock;
 	}
 }
 

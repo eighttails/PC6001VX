@@ -62,7 +62,7 @@ public:
 	bool SetHz( P6DEVICE *, int, double );		// イベント発生周波数設定
 	
 	void Update( int );							// イベント更新
-	void Reset( P6DEVICE *, int, double=0 );	// 指定イベントをリセットする
+    void Reset( P6DEVICE *, int, double = 1.0 );	// 指定イベントをリセットする
 	
 	int Rest( P6DEVICE *, int );				// イベント発生までの残りクロック数を求める
 	double Scale( P6DEVICE *, int );			// イベントの進行率を求める

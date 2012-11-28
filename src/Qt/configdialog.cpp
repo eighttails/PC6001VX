@@ -241,7 +241,7 @@ void ConfigDialog::readConfig()
 
     // 色--------------------------------------------------------------------------
     // 16〜64の色IDに対応させる。
-    for (int id = 16; id <= 64; id++){
+    for (int id = 16; id <= 72; id++){
         QString buttonName = QString("pushButtonColor%1").arg(id);
         // ダイアログから動的に部品を取得する
         ColorButton* button = this->findChild<ColorButton*>(buttonName);

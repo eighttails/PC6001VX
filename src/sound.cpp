@@ -283,8 +283,8 @@ bool SND6::Init( void *cbdata, void (*callback)(void *, BYTE *, int ), int rate,
 	
 	for( int i=0; i<MAXSTREAM; i++ ) RB[i] = NULL;
 	
-	// バッファサイズ(サンプル数)
-	int samples = rate * size / VSYNC_HZ;
+    // バッファサイズ(サンプル数)
+    int samples = rate * size / VSYNC_HZ;
 	
 	// バッファ初期化
 	if( !this->cRing::InitBuffer( samples ) ) return false;

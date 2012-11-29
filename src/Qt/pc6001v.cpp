@@ -65,6 +65,7 @@ bool SerchRom( CFG6 *cfg )
 		sprintf( RomSerch, "%s*.%2d", cfg->GetRomPath(), models[i] );
 		if( OSD_FileExist( RomSerch ) ){
             cfg->SetModel( models[i] );
+            cfg->Write();
             Error::SetError( Error::RomChange );
 			return true;
 		}

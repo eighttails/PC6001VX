@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報,機種名など
 /////////////////////////////////////////////////////////////////////////////
-#define	VERSION		"1.0β3"
+#define	VERSION		"1.0"
 #define	APPNAME		"PC6001VX"
 #define	P60NAME		"PC-6001"
 #define	P62NAME		"PC-6001mk2"
@@ -86,7 +86,7 @@
 // 各種ファイル名 初期値
 /////////////////////////////////////////////////////////////////////////////
 #define	IMG_EXT			"png"				/* 画像ファイル拡張子 */
-#define	CONF_FILE		"pc6001v.ini"		/* 設定ファイル */
+#define	CONF_FILE		"pc6001vx.ini"		/* 設定ファイル */
 #define	PRINTER_FILE	"printer.txt"		/* プリンタ出力ファイル */
 #define	DOKODEMO_FILE	"dokodemo.dds"		/* どこでもSAVEファイル */
 #define	SERIAL_FILE		"serial.txt"		/* シリアル出力ファイル */

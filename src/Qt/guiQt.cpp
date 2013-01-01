@@ -65,6 +65,7 @@ enum MenuCommand{
     ID_CONFIG,		// 環境設定
     ID_RESET,		// リセット
     ID_RESTART,		// 再起動
+    ID_EXIT,        // 終了
     ID_DOKOSAVE,	// どこでもSAVE
     ID_DOKOLOAD,	// どこでもLOAD
     ID_REPLAYSAVE,	// リプレイ保存
@@ -118,16 +119,20 @@ void EL6::ShowPopupMenu( int x, int y )
 
     // システムメニュー
     QMenu* systemMenu = menu.addMenu("システム");
+    menu.addSeparator();
     addCommand(systemMenu, "リセット", ID_RESET);
     addCommand(systemMenu, "再起動", ID_RESTART);
+    systemMenu->addSeparator();
 
     // どこでもLOAD,SAVEメニュー
     QMenu* dokoMenu = systemMenu->addMenu("どこでも");
+    systemMenu->addSeparator();
     addCommand(dokoMenu, "LOAD...", ID_DOKOLOAD);
     addCommand(dokoMenu, "SAVE...", ID_DOKOSAVE);
 
     // リプレイメニュー
     QMenu* replayMenu = systemMenu->addMenu("リプレイ");
+    systemMenu->addSeparator();
     QAction* repleyLoad = addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
     // モニタモード or ブレークポインタが設定されている
     // またはリプレイ記録中だったらリプレイ再生無効
@@ -135,6 +140,7 @@ void EL6::ShowPopupMenu( int x, int y )
         repleyLoad->setEnabled(false);
 
     QAction* repleySave = addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
+    systemMenu->addSeparator();
     // モニタモード or ブレークポインタが設定されている
     // またはリプレイ再生中だったらリプレイ記録無効
     if( cfg->GetMonDisp() || vm->bp->ExistBreakPoint() || ( REPLAY::GetStatus() == REP_REPLAY ) )
@@ -142,9 +148,11 @@ void EL6::ShowPopupMenu( int x, int y )
 
     // ビデオキャプチャ
     addCommand(systemMenu, AVI6::IsAVI() ? MSMEN_AVI1 : MSMEN_AVI0, ID_AVISAVE);
+    systemMenu->addSeparator();
 
     addCommand(systemMenu, "打込み代行...", ID_AUTOTYPE);
-    menu.addSeparator();
+    systemMenu->addSeparator();
+    addCommand(systemMenu, "終了", ID_EXIT);
 
     // TAPEメニュー
     QMenu* tapeMenu = menu.addMenu("TAPE");
@@ -217,6 +225,7 @@ void EL6::ShowPopupMenu( int x, int y )
     }
 
     QMenu* fpsMenu = settingsMenu->addMenu("フレームスキップ");
+    settingsMenu->addSeparator();
     QActionGroup* fpsGroup = new QActionGroup(&menu);
     QStringList fpsList = (QStringList()
                            << "0 (60fps)"
@@ -229,9 +238,9 @@ void EL6::ShowPopupMenu( int x, int y )
         QAction* fps = addCommand(fpsMenu, fpsList[i], MenuCommand(ID_FSKP0 + i), true);
         if (cfg->GetFrameSkip() == i) fps->setChecked(true);
     }
-    settingsMenu->addSeparator();
 
     QMenu* sprMenu = settingsMenu->addMenu("サンプリングレート");
+    settingsMenu->addSeparator();
     QActionGroup* sprGroup = new QActionGroup(&menu);
     QStringList sprList = (QStringList()
                            << "44100Hz"
@@ -241,7 +250,6 @@ void EL6::ShowPopupMenu( int x, int y )
         QAction* spr = addCommand(sprMenu, sprList[i], MenuCommand(ID_SPR44 + i), true);
         if (2 - ((cfg->GetSampleRate()/11025)>>1) == i) spr->setChecked(true);
     }
-    settingsMenu->addSeparator();
 
     QAction* noWait = addCommand(settingsMenu, "ウェイト無効", ID_NOWAIT, true);
     if (!sche->GetWaitEnable()) noWait->setChecked(true);
@@ -253,9 +261,9 @@ void EL6::ShowPopupMenu( int x, int y )
 
     // デバッグメニュー
     QMenu* debugMenu = menu.addMenu("デバッグ");
+    menu.addSeparator();
     QAction* monitorMode =  addCommand(debugMenu, "モニタモード", ID_MONITOR, true);
     if (cfg->GetMonDisp()) monitorMode->setChecked(true);
-    menu.addSeparator();
 
     // ヘルプメニュー
     QMenu* helpMenu = menu.addMenu("ヘルプ");
@@ -360,6 +368,10 @@ void EL6::ShowPopupMenu( int x, int y )
 
     case ID_RESTART:		// 再起動
         OSD_PushEvent( EV_RESTART );
+                break;
+
+    case ID_EXIT:           // 終了
+        OSD_PushEvent( EV_QUIT );
                 break;
 
     case ID_DOKOSAVE:		// どこでもSAVE

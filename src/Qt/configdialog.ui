@@ -1860,7 +1860,7 @@ border-radius: 1;</string>
               <string>MODE4(&amp;4)</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_10">
-              <item row="12" column="0">
+              <item row="11" column="0">
                <widget class="ColorButton" name="pushButtonColor51">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1883,7 +1883,7 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="5" column="0">
+              <item row="4" column="0">
                <widget class="ColorButton" name="pushButtonColor45">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1906,14 +1906,14 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="7" column="0" colspan="6">
+              <item row="6" column="0" colspan="6">
                <widget class="QLabel" name="label_71">
                 <property name="text">
                  <string>にじみ2</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="3">
+              <item row="8" column="3">
                <widget class="QLabel" name="label_78">
                 <property name="text">
                  <string>桃</string>
@@ -1927,7 +1927,7 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
+              <item row="5" column="0">
                <widget class="ColorButton" name="pushButtonColor47">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1950,7 +1950,7 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="0">
+              <item row="8" column="0">
                <widget class="ColorButton" name="pushButtonColor49">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2003,38 +2003,51 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="4" column="7" colspan="3">
-               <widget class="QLabel" name="label_101">
-                <property name="text">
-                 <string>明↔暗</string>
+              <item row="4" column="8">
+               <widget class="ColorButton" name="pushButtonColor53">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
-              <item row="5" column="10">
+              <item row="4" column="10">
                <widget class="QLabel" name="label_74">
                 <property name="text">
                  <string>赤</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="10">
+              <item row="5" column="10">
                <widget class="QLabel" name="label_75">
                 <property name="text">
                  <string>青</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="10">
+              <item row="11" column="10">
                <widget class="QLabel" name="label_76">
                 <property name="text">
                  <string>緑</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="10">
+              <item row="8" column="10">
                <widget class="QLabel" name="label_77">
                 <property name="text">
                  <string>桃</string>
@@ -2048,7 +2061,7 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="7" column="7" colspan="2">
+              <item row="6" column="7" colspan="2">
                <widget class="QLabel" name="label_70">
                 <property name="text">
                  <string>にじみ2</string>
@@ -2129,7 +2142,30 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="2">
+              <item row="4" column="7">
+               <widget class="ColorButton" name="pushButtonColor57">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="2">
                <widget class="ColorButton" name="pushButtonColor52">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2175,275 +2211,14 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="3">
+              <item row="11" column="3">
                <widget class="QLabel" name="label_79">
                 <property name="text">
                  <string>緑</string>
                 </property>
                </widget>
               </item>
-              <item row="1" column="1" colspan="2">
-               <widget class="QLabel" name="label_64">
-                <property name="text">
-                 <string>深緑</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="2">
-               <widget class="ColorButton" name="pushButtonColor46">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="1">
-               <widget class="ColorButton" name="pushButtonColor44">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0" colspan="3">
-               <widget class="QLabel" name="label_100">
-                <property name="text">
-                 <string>明↔暗</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="3">
-               <widget class="QLabel" name="label_73">
-                <property name="text">
-                 <string>青</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="3">
-               <widget class="QLabel" name="label_72">
-                <property name="text">
-                 <string>赤</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="ColorButton" name="pushButtonColor42">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="ColorButton" name="pushButtonColor41">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="1">
-               <widget class="ColorButton" name="pushButtonColor43">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="2">
-               <widget class="ColorButton" name="pushButtonColor48">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="2">
-               <widget class="ColorButton" name="pushButtonColor50">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="7">
-               <widget class="ColorButton" name="pushButtonColor57">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
               <item row="5" column="8">
-               <widget class="ColorButton" name="pushButtonColor53">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="9">
-               <widget class="ColorButton" name="pushButtonColor58">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="8">
                <widget class="ColorButton" name="pushButtonColor54">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2466,7 +2241,60 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="9">
+              <item row="1" column="1" colspan="2">
+               <widget class="QLabel" name="label_64">
+                <property name="text">
+                 <string>深緑</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="ColorButton" name="pushButtonColor46">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="1">
+               <widget class="ColorButton" name="pushButtonColor44">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="9">
                <widget class="ColorButton" name="pushButtonColor60">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2489,122 +2317,21 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="7">
-               <widget class="ColorButton" name="pushButtonColor61">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
+              <item row="5" column="3">
+               <widget class="QLabel" name="label_73">
                 <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
+                 <string>青</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="8">
-               <widget class="ColorButton" name="pushButtonColor55">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
+              <item row="4" column="3">
+               <widget class="QLabel" name="label_72">
                 <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
+                 <string>赤</string>
                 </property>
                </widget>
               </item>
-              <item row="9" column="9">
-               <widget class="ColorButton" name="pushButtonColor62">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="7">
-               <widget class="ColorButton" name="pushButtonColor63">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="8">
-               <widget class="ColorButton" name="pushButtonColor56">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="9">
+              <item row="11" column="9">
                <widget class="ColorButton" name="pushButtonColor64">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2627,8 +2354,261 @@ border-radius: 1;</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="7">
+              <item row="4" column="9">
+               <widget class="ColorButton" name="pushButtonColor58">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="7">
+               <widget class="ColorButton" name="pushButtonColor61">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="8">
+               <widget class="ColorButton" name="pushButtonColor55">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="9">
+               <widget class="ColorButton" name="pushButtonColor62">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="ColorButton" name="pushButtonColor42">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="ColorButton" name="pushButtonColor41">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="7">
                <widget class="ColorButton" name="pushButtonColor59">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="ColorButton" name="pushButtonColor43">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="2">
+               <widget class="ColorButton" name="pushButtonColor48">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="2">
+               <widget class="ColorButton" name="pushButtonColor50">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="7">
+               <widget class="ColorButton" name="pushButtonColor63">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="8">
+               <widget class="ColorButton" name="pushButtonColor56">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>

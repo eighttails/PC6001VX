@@ -48,34 +48,6 @@
 #define GM_RG3		6		/* 128x192 モノクロ	*/
 #define GM_RG6		7		/* 256x192 モノクロ	*/
 
-//色にじみカラーコードテーブル
-//数値はCOL_CG上のインデックス
-static const BYTE NIJIMI_TBL[][2] = {
-    {0,0}, {0,0}, {0,7}, {0,7},
-    {5,4}, {5,4}, {5,4}, {5,4},
-    {6,7}, {6,7}, {6,2}, {6,7},
-    {6,4}, {6,4}, {6,3}, {6,3},
-    {5,0}, {5,0}, {5,7}, {5,7},
-    {1,4}, {1,1}, {5,4}, {5,4},
-    {6,7}, {6,7}, {6,7}, {6,7},
-    {3,4}, {3,4}, {3,3}, {3,3},
-    {0,0}, {0,0}, {0,7}, {0,7},
-    {5,4}, {5,4}, {5,4}, {5,4},
-    {6,7}, {6,7}, {2,2}, {2,7},
-    {6,4}, {6,4}, {6,3}, {6,3},
-    {5,0}, {5,0}, {5,7}, {5,7},
-    {5,4}, {5,1}, {5,4}, {5,4},
-    {6,7}, {6,7}, {6,7}, {6,7},
-    {3,4}, {3,4}, {3,3}, {3,3}
-};
-//色にじみは2ドット単位で描画する。
-//描画する対象の2ドットとその前後の各2ドット、計6ビットをVRAMから取得し
-//その値をインデックスとして、2ドット分の色情報を取得する。
-//テーブルに格納された値はさらにCOL_CG上のインデックスとなる。
-//黒　0
-//白　3
-//赤/桃　明←6 2 7→暗
-//青/緑　明←4 1 5→暗
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
@@ -220,7 +192,7 @@ void cMC6847_2::UpdateBackBuf( void )
 ////////////////////////////////////////////////////////////////
 void cMC6847_1::Draw1line1( int line )
 {
-    BYTE data, fdat=0, prevdata=0, nextdata=0, fg=0, bg=0;
+	BYTE data=0xff, prevdata=0, nextdata=0, fdat=0, fg=0, bg=0;
 	BYTE LAT_AG=0, LAT_GM=0;
 	
 	// バックバッファアドレス求める
@@ -233,12 +205,12 @@ void cMC6847_1::Draw1line1( int line )
 	for( int x=0; x<( P6WIDTH / 8 ); x++ ){
 		if( CrtDisp ){
 			LatchAttr();
-            //1バイト前のデータ(色にじみ算出に使用)
-            prevdata = data;
-            data = GetVram();
-            HAddr++;
-            //1バイト後のデータ(色にじみ算出に使用)
-            nextdata = GetVram();
+			// 1バイト前のデータ(色にじみ算出に使用)
+			prevdata = data;
+			data = GetVram();
+			HAddr++;
+			// 1バイト後のデータ(色にじみ算出に使用)
+			nextdata = ( x < (P6WIDTH/8-1) ) ? GetVram() : 0xff;
 			LAT_AG |= AT_AG;				// とりあえず
 			if( x == 2 ) LAT_GM = AT_GM;	// とりあえず
 			
@@ -285,16 +257,19 @@ void cMC6847_1::Draw1line1( int line )
 				break;
 				
 			case GM_RG6:	// 256x192 モノクロ (RG6)
-                if( Mode4Col ){	// 128x192 カラー(にじみ)
-                    // VRAM上の連続した3バイト
-                    uint32_t data3 = prevdata << 16 | data << 8 | nextdata;
-                    int CsC = AT_CSS + Mode4Col*2;
-                    for( int i=6; i>=0; i-=2 ){
-                        // にじみテーブル上のインデックス
-                        uint32_t nijimiIdx = (data3 & (0x0000003F << (i + 6))) >> (i + 6);
-                        *(doff++) = COL_CG[CsC][NIJIMI_TBL[nijimiIdx][0]];
-                        *(doff++) = COL_CG[CsC][NIJIMI_TBL[nijimiIdx][1]];
-                    }
+				if( Mode4Col ){	// 128x192 カラー(にじみ)
+					// VRAM上の連続した3バイト
+					DWORD data3 = prevdata << 16 | data << 8 | nextdata;
+					int CsC = AT_CSS + Mode4Col*2;
+					for( int i=6; i>=0; i-=2 ){
+						// にじみテーブル上のインデックス
+						DWORD nijimiIdx = (data3 & (0x0000003f << (i + 6))) >> (i + 6);
+						*(doff++) = COL_CG[CsC][NIJIMI_TBL[nijimiIdx][0]];
+						*(doff++) = COL_CG[CsC][NIJIMI_TBL[nijimiIdx][1]];
+//						fdat = COL_CG[CsC][(data>>i)&3];
+//						*(doff++) = fdat;
+//						*(doff++) = fdat;
+					}
 				}else{			// 256x192 モノクロ
 					for( int i=7; i>=0; i-- )
 						*(doff++) = COL_RG[AT_CSS][(data>>i)&1];
@@ -378,7 +353,7 @@ void cMC6847_1::Draw1line1( int line )
 
 void cMC6847_2::Draw1line1( int line )
 {
-    BYTE data=0, prevdata=0, nextdata=0, fdat=0, fg=0, bg=0;
+	BYTE data=0, prevdata=0, nextdata=0, fdat=0, fg=0, bg=0;
 	BYTE LAT_AG=0;
 	
 	// バックバッファアドレス求める
@@ -391,13 +366,13 @@ void cMC6847_2::Draw1line1( int line )
 	for( int x=0; x<( P6WIDTH / 8 ); x++ ){
 		if( CrtDisp ){
 			LatchAttr();
-            //1バイト前のデータ(色にじみ算出に使用)
-            prevdata = data;
+			//1バイト前のデータ(色にじみ算出に使用)
+			prevdata = data;
 			data = GetVram();
 			HAddr++;
-            //1バイト後のデータ(色にじみ算出に使用)
-            nextdata = GetVram();
-            LAT_AG |= AT_AG;				// とりあえず
+			//1バイト後のデータ(色にじみ算出に使用)
+			nextdata = ( x < (P6WIDTH/8-1) ) ? GetVram() : 0;
+			LAT_AG |= AT_AG;				// とりあえず
 		}else{
 			data = 0;	// ホント？RGB出力とビデオ出力で異なるはず
 		}
@@ -420,15 +395,18 @@ void cMC6847_2::Draw1line1( int line )
 			case GM_RG3:	// 128x192 モノクロ (RG3)(無効)
 			case GM_RG6:	// 256x192 モノクロ (RG6)
 				if( Mode4Col ){	// 128x192 カラー(にじみ)
-                    //VRAM上の連続した3バイト
-                    uint32_t data3 = prevdata << 16 | data << 8 | nextdata;
-                    int CsC = AT_CSS + Mode4Col*2;
-                    for( int i=6; i>=0; i-=2 ){
-                        //にじみテーブル上のインデックス
-                        uint32_t nijimiIdx = (data3 & (0x0000003F << (i + 6))) >> (i + 6);
-                        *(doff++) = COL_CG[CsC][NIJIMI_TBL[nijimiIdx][0]];
-                        *(doff++) = COL_CG[CsC][NIJIMI_TBL[nijimiIdx][1]];
-                    }
+					// VRAM上の連続した3バイト
+					DWORD data3 = prevdata << 16 | data << 8 | nextdata;
+					int CsC = AT_CSS + Mode4Col*2;
+					for( int i=6; i>=0; i-=2 ){
+						// にじみテーブル上のインデックス
+						DWORD nijimiIdx = (data3 & (0x0000003f << (i + 6))) >> (i + 6);
+						*(doff++) = COL_CG[CsC][NIJIMI_TBL[nijimiIdx][0]];
+						*(doff++) = COL_CG[CsC][NIJIMI_TBL[nijimiIdx][1]];
+//						fdat = COL_CG[CsC][(data>>i)&3];
+//						*(doff++) = fdat;
+//						*(doff++) = fdat;
+					}
 				}else{			// 256x192 モノクロ
 					for( int i=7; i>=0; i-- )
 						*(doff++) = COL_RG[AT_CSS][(data>>i)&1];

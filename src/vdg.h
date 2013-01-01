@@ -14,6 +14,8 @@
 ////////////////////////////////////////////////////////////////
 class VDG6 : public P6DEVICE, public VSurface, public virtual cMC6847core, public IDoko {
 protected:
+	static const BYTE NJM6_TBL[][2];			// 色にじみカラーコードテーブル
+	
 	BYTE AddrOff;								// VRAM,ATTRオフセット(Bit1,2)
 	
 	// 同期信号ワーク
@@ -51,7 +53,7 @@ protected:
 	// カラーコード
 	static const BYTE COL60_AN[];
 	static const BYTE COL60_SG[];
-    static const BYTE COL60_CG[][8];
+	static const BYTE COL60_CG[][8];
 	static const BYTE COL60_RG[][2];
 	
 	BYTE GetFont0( WORD );						// Font0(VDG Font)データ取得
@@ -89,7 +91,7 @@ protected:
 	// カラーコード
 	static const BYTE COL62_AN[];
 	static const BYTE COL62_SG[];
-    static const BYTE COL62_CG[][8];
+	static const BYTE COL62_CG[][8];
 	static const BYTE COL62_RG[][2];
 	static const BYTE COL62_AN2[];
 	static const BYTE COL62_CG3[][16];

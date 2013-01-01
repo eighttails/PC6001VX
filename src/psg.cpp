@@ -2,6 +2,7 @@
 #include "p6el.h"
 #include "log.h"
 #include "psg.h"
+#include "osd.h"
 #include "keyboard.h"
 #include "schedule.h"
 
@@ -127,17 +128,17 @@ int PSG6::SoundUpdate( int samples )
 		int sam = GetUpdateSamples();
 		length = min( sam, SndDev::cRing::FreeSize() );
 	}else if( samples > 0 ) length = min( samples, SndDev::cRing::FreeSize() );
-	else                   length = SndDev::cRing::FreeSize();
+	else					length = SndDev::cRing::FreeSize();
 	
 	PRINTD( PSG_LOG, " -> %d\n", length );
 	
-	if( !length ) return 0;
+	if( length <= 0 ) return 0;
 	
 	
 	// buffering loop
 	for( int i=0; i<length; i++ ){
 		// バッファに書込み
-		SndDev::cRing::Put( cAY8910::Update1Sample() );
+		SndDev::cRing::Put( ( cAY8910::Update1Sample() * SndDev::Volume ) / 100 );
 	}
 	
 	return length;
@@ -150,15 +151,13 @@ int PSG6::SoundUpdate( int samples )
 // PSGレジスタアドレスラッチ
 inline void PSG6::OutA0H( int, BYTE data )
 {
-	PRINTD( PSG_LOG, "[PSG][RegisterLatch] -> %d\n", data );
-	
-	cAY8910::RegisterLatch = data & 0x0f;
+	cAY8910::AYWriteReg( 0, data );
 }
 
 // PSGライトデータ
 inline void PSG6::OutA1H( int, BYTE data )
 {
-	cAY8910::AYWriteReg( cAY8910::RegisterLatch, data );
+	cAY8910::AYWriteReg( 1, data );
 }
 
 // PSGインアクティブ
@@ -167,7 +166,7 @@ inline void PSG6::OutA3H( int, BYTE data ){}
 // PSGリードデータ
 inline BYTE PSG6::InA2H( int )
 {
-	return cAY8910::AYReadReg( cAY8910::RegisterLatch );
+	return cAY8910::AYReadReg();
 }
 
 

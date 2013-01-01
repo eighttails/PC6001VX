@@ -98,7 +98,15 @@ void EL6::OnThread( void *inst )
 					p6->SoundUpdate( 0 );
 					// 画面更新
 					if( p6->sche->IsScreenUpdate() ) p6->ScreenUpdate();
-					p6->Wait();		// ウェイト
+					
+					// 自動キー入力
+					if( IsAutoKey() ){
+						BYTE key = GetAutoKey();
+						if( key ) p6->vm->cpus->ReqKeyIntr( 0, key );
+					}
+					
+					// ウェイト
+					p6->Wait();
 				}
 				
 				// ブレークポイントチェック
@@ -152,7 +160,8 @@ void EL6::OnThread( void *inst )
 				if( key ) p6->vm->cpus->ReqKeyIntr( 0, key );
 			}
 			
-			p6->Wait();		// ウェイト
+			// ウェイト
+			p6->Wait();
 		}
 	}
 }
@@ -604,15 +613,18 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 {
 	// PSG更新
 	vm->psg->SoundUpdate( samples );
+	int size = vm->psg->SndDev::cRing::ReadySize();
 	
 	// CMT(LOAD)更新
-	vm->cmtl->SoundUpdate( vm->psg->SndDev::cRing::ReadySize() );
+	vm->cmtl->SoundUpdate( size );
 	
 	// 音声合成更新
-	if( vm->voice ) vm->voice->SoundUpdate( vm->psg->SndDev::cRing::ReadySize() );
+	if( vm->voice ) vm->voice->SoundUpdate( size );
 	
 	// サウンドバッファ更新
-	return snd->PreUpdate( vm->psg->SndDev::cRing::ReadySize(), exbuf );
+	int ret = snd->PreUpdate( size, exbuf );
+	
+	return ret;
 }
 
 
@@ -633,12 +645,13 @@ void EL6::StreamUpdate( void *userdata, BYTE *stream, int len )
 	//  ただしビデオキャプチャ中は無視
 	int addsam = len/sizeof(int16_t) - p6->snd->cRing::ReadySize();
 	
-	p6->snd->Update( stream, min( len/sizeof(int16_t), p6->snd->cRing::ReadySize() ) );
+	p6->snd->Update( stream, min( (int)(len/sizeof(int16_t)), p6->snd->cRing::ReadySize() ) );
 	
 	if( addsam > 0 && !p6->AVI6::IsAVI() ){
 		p6->SoundUpdate( addsam );
 		p6->snd->Update( stream, addsam );
 	}
+	
 }
 
 

@@ -358,7 +358,7 @@ int VCE6::SoundUpdate( int samples )
 	
 	PRINTD( VOI_LOG, " -> %d\n", length );
 	
-	if( !length ) return 0;
+	if( length <= 0 ) return 0;
 	
 	
 	for( int i=0; i<length; i++ ){

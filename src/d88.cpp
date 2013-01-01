@@ -119,6 +119,23 @@ void cD88::ReadSector88( void )
 		d88.secinfo.offset = 0;						// 次に読込むデータのセクタ先頭からのオフセット
 		d88.secinfo.secno++;						// アクセス中のセクタNo
 		
+		// Dittのバグ対応
+		// 吸出し時，データサイズ=0の時に00Hが256バイト格納されるバグがあるらしい
+		// データサイズが0だったら続く256バイトを調べ，全て00Hだったら読み飛ばす
+		// 00H以外のデータが現れたら次のセクタのデータと判断し，読み飛ばさない。
+		// 256バイト先がトラックorディスクの末尾に到達する場合も読み飛ばさない
+		if( (d88.secinfo.size == 0) &&
+			(((d88.trkno < 163) && (d88.table[d88.trkno+1] >= d88.secinfo.data+256)) ||
+			 (d88.size >= d88.secinfo.data+256)	) ){
+			
+			for( int i=0; i<256; i++ ){
+				if( fgetc( d88.fp ) != 0 ){
+					fseek( d88.fp, d88.secinfo.data, SEEK_SET );
+					break;
+				}
+			}
+		}
+		
 		PRINTD( D88_LOG, " C      : %d\n", d88.secinfo.c )
 		PRINTD( D88_LOG, " H      : %d\n", d88.secinfo.h )
 		PRINTD( D88_LOG, " R      : %d\n", d88.secinfo.r )
@@ -205,7 +222,8 @@ bool cD88::Seek( int trackno, int sectno )
 	
 	if( d88.fp ){
 		d88.trkno = trackno;
-		d88.secinfo.secno = 0;
+		d88.secinfo.secno  = 0;
+		d88.secinfo.status = BIOS_MISSING_IAM;
 		
 		// トラックが無効ならUnformat扱い
 		if( !d88.table[d88.trkno] ){
@@ -256,6 +274,34 @@ bool cD88::SearchSector( BYTE c, BYTE h, BYTE r, BYTE n )
 			fseek( d88.fp, (long)d88.secinfo.size, SEEK_CUR );
 			ReadSector88();
 		}
+	}
+	PRINTD( D88_LOG, "-> false\n" );
+	
+	return false;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 次のセクタに移動する
+////////////////////////////////////////////////////////////////
+bool cD88::NextSector( void )
+{
+	PRINTD( D88_LOG, "[D88][NextSector] Sector:%d ", d88.secinfo.secno );
+	
+	if( d88.secinfo.sec_nr ){
+		int ssize = d88.secinfo.size - d88.secinfo.offset;	// 現在のセクタ終端までのデータ数
+		
+		if( d88.secinfo.secno == d88.secinfo.sec_nr )
+			// 最終セクタの次は同一トラックの先頭セクタに移動
+			Seek( d88.trkno );
+		else{
+			// 次のセクタ先頭まで移動してセクタ情報を読込み
+			fseek( d88.fp, (long)ssize, SEEK_CUR );
+			ReadSector88();
+		}
+		PRINTD( D88_LOG, "-> %d\n", d88.secinfo.secno );
+		
+		return true;
 	}
 	PRINTD( D88_LOG, "-> false\n" );
 	

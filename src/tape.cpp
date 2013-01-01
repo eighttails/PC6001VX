@@ -51,7 +51,7 @@
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 CMTL::CMTL( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id),
-	p6t(NULL), Relay(false), Boost(DEFAULT_BOOST),
+	p6t(NULL), Relay(false), stron(false), Boost(DEFAULT_BOOST),
 	MaxBoost60(DEFAULT_MAXBOOST60), MaxBoost62(DEFAULT_MAXBOOST62)
 {
 	INITARRAY( FilePath, '\0' );
@@ -98,6 +98,8 @@ void CMTL::EventCallback( int id, int clock )
 bool CMTL::Remote( bool relay )
 {
     PRINTD( TAPE_LOG, "[TAPE][Relay] -> %s\n", relay ? "true" : "false" );
+	
+	stron = false;
 	
 	// リレーの状態を保存
 	Relay = relay;
@@ -394,6 +396,7 @@ WORD CMTL::Update( void )
 		case PG_P:	// ぴー音の場合
 			// 高音にセット
 			while( length-- ) SndDev::cRing::Put( GetSinCurve( PG_HI ) );
+			stron = true;	// ストリーム更新許可
 			
 			break;
 		case PG_S:	// 無音部の場合
@@ -448,12 +451,11 @@ int CMTL::SoundUpdate( int samples )
 	
 	PRINTD( TAPE_LOG, " -> %d\n", length );
 	
-	if( !length ) return 0;
-	
+	if( length <= 0 ) return 0;
 	
 	for( int i=0; i<length; i++ ){
 		// バッファに書込み
-		SndDev::cRing::Put( Relay ? GetSinCurve( PG_HI ) : 0 );	// 手抜き
+		SndDev::cRing::Put( stron ? GetSinCurve( PG_HI ) : 0 );	// 手抜き
 	}
 	
 	return length;

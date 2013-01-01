@@ -35,9 +35,6 @@ protected:
 	char DiskFile1[PATH_MAX];				// DISK1ファイル名
 	char DiskFile2[PATH_MAX];				// DISK2ファイル名
 	char ImgPath[PATH_MAX];					// スクリーンショット格納パス
-	char FontPath[PATH_MAX];				// フォント格納パス
-	char FontFileZ[PATH_MAX];				// 全角フォントファイル名
-	char FontFileH[PATH_MAX];				// 半角フォントファイル名
 	char PrinterFile[PATH_MAX];				// プリンタファイル名
 	
 	// 定数

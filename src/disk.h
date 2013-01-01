@@ -79,7 +79,8 @@ enum FdcSeek{
 };
 
 struct PD765 {
-BYTE command;		// コマンド
+	BYTE command;		// コマンド
+	
 FdcPhase phase;		// Phase (C/E/R)
 int step;			// Phase内の処理手順
 
@@ -141,8 +142,11 @@ protected:
 	char FilePath[MAXDRV][PATH_MAX];	// ファイルパス
 	cD88 *Dimg[MAXDRV];					// ディスクイメージオブジェクトへのポインタ
 	bool Sys[MAXDRV];					// システムディスクフラグ
+	int waitcnt;						// ウェイトカウンタ
 	
-	bool SetWait( int, int );			// ウェイト設定
+	void ResetWait();					// ウェイトカウンタリセット
+	void AddWait( int );				// ウェイトカウンタ加算
+	bool SetWait( int );				// ウェイト設定
 	
 public:
 	DSK6( VM6 *, const P6ID& );			// コンストラクタ
@@ -244,9 +248,13 @@ private:
 	
 	void PushStatus( BYTE );			// ステータスバッファにデータを入れる
 	BYTE PopStatus();					// ステータスバッファからデータを取り出す
+	
 	void OutFDC( BYTE );				// FDC に書込む
 	BYTE InFDC();						// FDC から読込む
 	void Exec();						// FDC コマンド実行
+	
+	bool SearchSector( BYTE * );		// セクタを探す
+	
 	void ReadDiagnostic();				// Read Diagnostic
 	void Specify();						// Specify
 	void ReadData();					// Read Data

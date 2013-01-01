@@ -1,5 +1,6 @@
 #include "pc6001v.h"
 #include "config.h"
+#include "log.h"
 #include "schedule.h"
 #include "osd.h"
 
@@ -161,6 +162,8 @@ bool cSche::SetHz( P6DEVICE *dev, int id, double hz )
 ////////////////////////////////////////////////////////////////
 void cSche::Update( int clk )
 {
+//	PRINTD( TIC_LOG, "[SCHE][Update] %d clock\n", clk );
+	
 	// クロックを溜め込む
 	SaveClock  += clk;	// 次のイベント発生用
 //	WRClockTmp += clk;	// 実行速度計算用
@@ -211,11 +214,17 @@ void cSche::Update( int clk )
 ////////////////////////////////////////////////////////////////
 void cSche::Reset( P6DEVICE *dev, int id, double ini )
 {
+	PRINTD( TIC_LOG, "[SCHE][Reset] ID:%d %3f%", id, ini );
+	
 	evinfo *e = Find( dev, id );
 	if( e ){
 		// 溜め込んだクロック分を考慮
-        e->Clock = (int)((double)e->Period * min( max( 0.0, ini ), 1.0 )) + SaveClock;
+		e->Clock = (int)((double)e->Period * ( 1.0 - min( max( 0.0, ini ), 1.0 ) )) - SaveClock;
+		
+		PRINTD( TIC_LOG, " -> %d/%d clock", e->Clock, e->Period );
 	}
+	
+	PRINTD( TIC_LOG, "\n" );
 }
 
 
@@ -243,11 +252,15 @@ int cSche::Rest( P6DEVICE *dev, int id )
 ////////////////////////////////////////////////////////////////
 double cSche::Scale( P6DEVICE *dev, int id )
 {
+	PRINTD( TIC_LOG, "[SCHE][Scale] ID:%d", id );
+	
 	evinfo *e = Find( dev, id );
 	// イベントが存在し1周期のクロック数が設定されている?
 	if( e && e->Period > 0 ){
+		PRINTD( TIC_LOG, " %d/%d SAVE:%d\n", e->Clock, e->Period, SaveClock );
+		
 		// 溜め込んだクロックを考慮
-		double sc = (double)( (double)( e->Period - e->Clock + SaveClock ) / (double)e->Period );
+		double sc = (double)( (double)( e->Period - max( e->Clock - SaveClock, 0 ) ) / (double)e->Period );
 		return min( max( 0.0, sc ), 1.0 );
 	}else
 		return 0;
@@ -421,14 +434,14 @@ SCH6::~SCH6( void )
 ////////////////////////////////////////////////////////////////
 void SCH6::OnThread( void *inst )
 {
-	SCH6 *ti;
+    SCH6 *ti;
 	int Vint[VSYNC_HZ];
 	int VintCnt = 0;
 	DWORD now,last;
 	
 	EnableScrUpdate = 0;
 	
-	ti = STATIC_CAST( SCH6 *, inst );	// 自分自身のオブジェクトポインタ取得
+    ti = STATIC_CAST( SCH6 *, inst );	// 自分自身のオブジェクトポインタ取得
 	
 	// 1秒間のインターバル設定
 	for( int i=0; i<VSYNC_HZ; i++ ) Vint[i] = (int)( 1000 / VSYNC_HZ );
@@ -445,7 +458,7 @@ void SCH6::OnThread( void *inst )
 		if( now >= NextWait ){
 			NextWait += Vint[VintCnt++];
 			if( VintCnt >= VSYNC_HZ ) VintCnt -= VSYNC_HZ;
-			ti->WaitReset();
+            ti->WaitReset();
 		}else
 			OSD_Delay( 0 );
 		

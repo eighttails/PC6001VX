@@ -283,11 +283,11 @@ bool SND6::Init( void *cbdata, void (*callback)(void *, BYTE *, int ), int rate,
 	
 	for( int i=0; i<MAXSTREAM; i++ ) RB[i] = NULL;
 	
-    // バッファサイズ(サンプル数)
-    int samples = rate * size / VSYNC_HZ;
+	// バッファサイズ(サンプル数)
+	int samples = rate / VSYNC_HZ;
 	
 	// バッファ初期化
-	if( !this->cRing::InitBuffer( samples ) ) return false;
+	if( !this->cRing::InitBuffer( samples * size ) ) return false;
 	
 	// オーディオデバイスを開く
 	if( !OSD_OpenAudio( cbdata, callback, rate, samples ) ) return false;
@@ -298,7 +298,7 @@ bool SND6::Init( void *cbdata, void (*callback)(void *, BYTE *, int ), int rate,
 	BSize      = size;
 	
 	PRINTD( SND_LOG, " SampleRate : %d\n", rate );
-	PRINTD( SND_LOG, " BufferSize : %d\n", samples );
+	PRINTD( SND_LOG, " BufferSize : %d\n", samples * size );
 	
 	return true;
 }
@@ -368,21 +368,19 @@ void SND6::Pause( void )
 ////////////////////////////////////////////////////////////////
 bool SND6::SetSampleRate( int rate )
 {
-//	if( SampleRate == rate ) return false;
-	
 	SampleRate = rate;
 	
 	bool pflag = OSD_AudioPlaying();
 	OSD_CloseAudio();
 	
 	// バッファサイズ(サンプル数)
-	int samples = rate * BSize / VSYNC_HZ;
+	int samples = rate / VSYNC_HZ;
 	
 	// バッファ初期化
-	if( !this->cRing::InitBuffer( samples ) ) return false;
+	if( !this->cRing::InitBuffer( samples * BSize ) ) return false;
 	
 	for( int i=0; i<MAXSTREAM; i++ )
-		if( RB[i] && !RB[i]->SetSampleRate( rate, samples ) ) return false;
+		if( RB[i] && !RB[i]->SetSampleRate( rate, samples * BSize ) ) return false;
 	
 	// オーディオデバイスを開く
 	if( !OSD_OpenAudio( CbData, CbFunc, rate, samples ) ) return false;
@@ -417,6 +415,18 @@ void SND6::SetVolume( int vol )
 
 
 ////////////////////////////////////////////////////////////////
+// バッファサイズ(倍率)取得
+//
+// 引数:	なし
+// 返値:	int		バッファサイズ(倍率)
+////////////////////////////////////////////////////////////////
+int SND6::GetBufferSize( void )
+{
+	return BSize;
+}
+
+
+////////////////////////////////////////////////////////////////
 // サウンド事前更新関数
 //
 // 引数:	samples		サンプル数
@@ -427,10 +437,14 @@ int SND6::PreUpdate( int samples, cRing *exbuf )
 {
 	int exsam = 0;
 	
-	PRINTD( SND_LOG,"PreUpdate %d %d %d \n", RB[0]->ReadySize(), RB[1]->ReadySize(), RB[2]->ReadySize() );
+	PRINTD( SND_LOG,"PreUpdate" );
 	
 	for( int i=0; i<MAXSTREAM; i++ )
-		if( RB[i] ) exsam = min( max( exsam, RB[i]->ReadySize() ), samples );
+		if( RB[i] ){
+			PRINTD( SND_LOG," [%d]%d", i, RB[i]->ReadySize() );
+			exsam = min( max( exsam, RB[i]->ReadySize() ), samples );
+		}
+	PRINTD( SND_LOG,"\n" );
 	
 	for( int i=0; i<exsam; i++ ){
 		int dat = 0;

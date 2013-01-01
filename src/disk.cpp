@@ -109,16 +109,36 @@ void DSK6::EventCallback( int id, int clock ){}
 
 
 ////////////////////////////////////////////////////////////////
+// ウェイトカウンタリセット
+////////////////////////////////////////////////////////////////
+void DSK6::ResetWait( void )
+{
+	waitcnt = 0;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ウェイトカウンタ加算
+////////////////////////////////////////////////////////////////
+void DSK6::AddWait( int w )
+{
+	waitcnt += w;
+}
+
+
+////////////////////////////////////////////////////////////////
 // ウェイト設定
 ////////////////////////////////////////////////////////////////
-bool DSK6::SetWait( int eid, int wait )
+bool DSK6::SetWait( int eid )
 {
-	PRINTD( DISK_LOG, "[DISK][SetWait] %dus ->", wait );
+	PRINTD( DISK_LOG, "[DISK][SetWait] %dus ->", waitcnt );
 	
-	if( vm->evsc->Add( this, eid, wait, EV_US ) ){
+	if( waitcnt && vm->evsc->Add( this, eid, waitcnt, EV_US ) ){
+		waitcnt = 0;
 		PRINTD( DISK_LOG, "OK\n" );
 		return true;
 	}else{
+		waitcnt = 0;
 		PRINTD( DISK_LOG, "FALSE\n" );
 		return false;
 	}
@@ -290,14 +310,19 @@ void DSK60::EventCallback( int id, int clock )
 		PRINTD( DISK_LOG, "<< [DISK][EventCallback] EID_INIT1 >>\n" );
 		if( DrvNum > 1 ){
 			mdisk.busy = 2;
-			DSK6::SetWait( EID_INIT2, WFDD_INIT );
+			// ウェイト加算
+			DSK6::ResetWait();
+			DSK6::AddWait( WFDD_INIT );
+			DSK6::SetWait( EID_INIT2 );
 			break;
 		}
 	case EID_INIT2:		// 00h イニシャライズ(ドライブ2)
 		PRINTD( DISK_LOG, "<< [DISK][EventCallback] EID_INIT2 >>\n" );
 		if( !(io_D2H&0x10) ){
 			// DAVが立っていなければ待ち
-			DSK6::SetWait( EID_INIT2, WFDD_INIT );
+			DSK6::ResetWait();
+			DSK6::AddWait( WFDD_INIT );
+			DSK6::SetWait( EID_INIT2 );
 		}else{
 			mdisk.busy = 0;
 			mdisk.RFD  = 1;
@@ -428,10 +453,12 @@ void DSK60::FddOut( BYTE dat )
 	PRINTD( DISK_LOG, "[DISK][FddOut]    -> %02X ", dat );
 	
 	int eid  = EID_GETPAR;
-	int wait = WFDD_GETPAR;
 	
 	io_D1H = dat;
 	mdisk.RFD = 0;
+	
+	DSK6::ResetWait();
+	DSK6::AddWait( WFDD_GETPAR );
 	
 	if( mdisk.command == IDLE ){	// コマンドの場合
 		mdisk.command = dat;
@@ -439,7 +466,7 @@ void DSK60::FddOut( BYTE dat )
 		case INIT:					// 00h イニシャライズ
 			PRINTD( DISK_LOG, "INIT" );
 			eid  = EID_INIT1;
-			wait = WFDD_INIT;
+			DSK6::AddWait( WFDD_INIT );
 			
 			mdisk.busy = 1;
 			break;
@@ -526,20 +553,19 @@ void DSK60::FddOut( BYTE dat )
 				
 			case 5:	// 05h:データ書き込み
 				eid  = EID_WRDATEX;
-				wait = 0;
 				mdisk.busy = mdisk.drv + 1;
 				
 				WBuf[mdisk.wsize++] = dat;
 				if( mdisk.wsize >= mdisk.size ){
 					if( Dimg[mdisk.drv] ){
 						// トラックNoを2倍(1D->2D)
-						wait += abs( Dimg[mdisk.drv]->Track() - mdisk.trk*2 ) / 2;
+						DSK6::AddWait( abs( Dimg[mdisk.drv]->Track() - mdisk.trk*2 ) / 2 );
 						Dimg[mdisk.drv]->Seek( mdisk.trk*2 );
 						Dimg[mdisk.drv]->SearchSector( mdisk.trk, 0, mdisk.sct, 1 );
 						// バッファから書込む
 						for( int i=0; i < mdisk.wsize; i++ )
 							Dimg[mdisk.drv]->Put8( WBuf[i] );
-						wait += mdisk.blk * WAIT_SECTOR(1);
+						DSK6::AddWait( mdisk.blk * WAIT_SECTOR(1) );
 					}
 					mdisk.step = 0;
 				}
@@ -569,18 +595,17 @@ void DSK60::FddOut( BYTE dat )
 				mdisk.sct = dat;
 				
 				eid  = EID_RDDATEX;
-				wait = 0;
 				mdisk.busy = mdisk.drv + 1;
 				
 				if( Dimg[mdisk.drv] ){
 					// トラックNoを2倍(1D->2D)
-					wait += abs( Dimg[mdisk.drv]->Track() - mdisk.trk*2 ) / 2;
+					DSK6::AddWait( abs( Dimg[mdisk.drv]->Track() - mdisk.trk*2 ) / 2 );
 					Dimg[mdisk.drv]->Seek( mdisk.trk*2 );
 					Dimg[mdisk.drv]->SearchSector( mdisk.trk, 0, mdisk.sct, 1 );
 					// バッファに読込む
 					for( mdisk.rsize = 0; mdisk.rsize < mdisk.size; mdisk.rsize++ )
 						RBuf[mdisk.rsize] = Dimg[mdisk.drv]->Get8();
-					wait += mdisk.blk * WAIT_SECTOR(1);
+					DSK6::AddWait( mdisk.blk * WAIT_SECTOR(1) );
 					mdisk.ridx = 0;
 				}
 				mdisk.step = 0;
@@ -592,7 +617,7 @@ void DSK60::FddOut( BYTE dat )
 	PRINTD( DISK_LOG, "\n" );
 	
 	// ウェイト設定
-	if( eid ) DSK6::SetWait( eid, wait );
+	if( eid ) DSK6::SetWait( eid );
 }
 
 
@@ -700,11 +725,16 @@ BYTE DSK60::InD2H( int ){ return FddCntIn(); }
 #define ST0_IC_AI					(0xc0)
 
 //************* Result Status 1 *************
-#define ST1_MISSING_ADDRESS_MARK	(0x01)
+#define ST1_MISSING_AM				(0x01)
 #define ST1_NOT_WRITABLE			(0x02)
+#define ST1_NO_DATA					(0x04)
+#define ST1_DATA_ERROR				(0x20)
 
 //************* Result Status 2 *************
-#define ST2_MISSING_ADDRESS_MARK_IN_DATA_FIELD	(0x01)
+#define ST2_MA_IN_DATA_FIELD		(0x01)
+#define ST2_BAD_CYLINDER			(0x02)
+#define ST2_NO_CYLINDER				(0x10)
+#define ST2_DE_IN_DATA_FIELD		(0x20)
 
 //************* Result Status 3 *************
 #define ST3_TRACK0					(0x10)
@@ -712,15 +742,6 @@ BYTE DSK60::InD2H( int ){ return FddCntIn(); }
 #define ST3_WRITE_PROTECT			(0x40)
 #define ST3_FAULT					(0x80)
 
-//************* Disk Bios Status *************
-#define BIOS_READY					(0x00)
-#define BIOS_WRITE_PROTECT			(0x70)
-#define BIOS_ERROR					(0x80)
-#define BIOS_ID_CRC_ERROR			(0xa0)
-#define BIOS_DATA_CRC_ERROR			(0xb0)
-#define BIOS_NO_DATA				(0xc0)
-#define BIOS_MISSING_IAM			(0xe0)
-#define BIOS_MISSING_DAM			(0xf0)
 
 
 
@@ -918,8 +939,9 @@ void DSK66::Exec( void )
 	PRINTD( FDC_LOG, "[DSK66][Exec] Command:%02X", CmdIn.Data[0]&0x1f );
 	
 	CmdOut.Index = 0;
+	fdc.command = CmdIn.Data[0] & 0x1f;
 	
-	switch( CmdIn.Data[0] & 0x1f ){
+	switch( fdc.command ){
 	case 0x02:	// Read Diagnostic
 		PRINTD( FDC_LOG, " Read Diagnostic\n" );
 		ReadDiagnostic();
@@ -992,6 +1014,107 @@ void DSK66::Exec( void )
 	}
 	CmdIn.Index = 0;
 }
+////////////////////////////////////////////////////////////////
+// セクタを探す
+////////////////////////////////////////////////////////////////
+bool DSK66::SearchSector( BYTE *sta )
+{
+	int idxcnt = 0;	// インデックスホール検出回数カウンタ
+	
+	PRINTD( FDC_LOG, "[DSK66][SearchSector] C:%d H:%d R:%d N:%d ", fdc.C, fdc.H, fdc.R, fdc.N );
+	
+	if( Dimg[fdc.US]->SecNum() ){	// 無効トラック(アンフォーマット)?
+		while( 1 ){
+			BYTE c0, h0, r0, n0;
+			
+			// 現在最終セクタ?
+			if( Dimg[fdc.US]->Sector() == Dimg[fdc.US]->SecNum() ){
+				PRINTD( FDC_LOG, "[Final]\n" );
+				Dimg[fdc.US]->GetID( &c0, &h0, &r0, &n0 );
+				DSK6::AddWait( WAIT_GAP4( n0 ) );
+				if( ++idxcnt == 2 ) break;
+				DSK6::AddWait( WAIT_GAP0 );
+			}
+			
+			Dimg[fdc.US]->NextSector();
+			DSK6::AddWait( WAIT_ID );
+			
+			Dimg[fdc.US]->GetID( &c0, &h0, &r0, &n0 );
+			PRINTD( FDC_LOG, "Next C:%d H:%d R:%d N:%d ", c0, h0, r0, n0 );
+			if( ( c0 == fdc.C ) && ( h0 == fdc.H ) && ( r0 == fdc.R ) && ( n0 == fdc.N ) ){
+				*sta = Dimg[fdc.US]->GetSecStatus();
+				
+				// セクタのステータスをチェック
+				switch( *sta ){
+				case BIOS_NO_DATA:
+					fdc.st0 = ST0_IC_AT;
+					fdc.st1 = ST1_NO_DATA;
+					fdc.st2 = 0;
+					if( fdc.C != fdc.PCN[fdc.US] ){
+						fdc.st2 |= ST2_NO_CYLINDER;
+						if( fdc.C == 0xff ) fdc.st2 |= ST2_BAD_CYLINDER;
+					}
+					break;
+					
+				case BIOS_MISSING_IAM:
+					fdc.st0 = ST0_IC_AT;
+					fdc.st1 = ST1_MISSING_AM;
+					fdc.st2 = 0;
+					break;
+					
+				case BIOS_ID_CRC_ERROR:
+					fdc.st0 = ST0_IC_AT;
+					fdc.st1 = ST1_DATA_ERROR;
+					fdc.st2 = 0;
+					break;
+					
+				case BIOS_MISSING_DAM:
+					// Read Data or Read Deleted Data
+					if( (fdc.command == 0x06) || (fdc.command == 0x0c) ){
+						fdc.st0 = ST0_IC_AT;
+						fdc.st1 = ST1_MISSING_AM;
+						fdc.st2 = ST2_MA_IN_DATA_FIELD;
+					}else{
+						fdc.st0 = ST0_IC_NT;
+						fdc.st1 = 0;
+						fdc.st2 = 0;
+					}
+					break;
+					
+				case BIOS_DATA_CRC_ERROR:
+					// Read Data or Read Deleted Data
+					if( (fdc.command == 0x06) || (fdc.command == 0x0c) ){
+						fdc.st0 = ST0_IC_AT;
+						fdc.st1 = ST1_DATA_ERROR;
+						fdc.st2 = ST2_DE_IN_DATA_FIELD;
+					}else{
+						fdc.st0 = ST0_IC_NT;
+						fdc.st1 = 0;
+						fdc.st2 = 0;
+					}
+					break;
+					
+				default:
+					fdc.st0 = ST0_IC_NT;
+					fdc.st1 = 0;
+					fdc.st2 = 0;
+				}
+				PRINTD( FDC_LOG, "-> Found:%02X\n", *sta );
+				return true;
+			}
+			PRINTD( FDC_LOG, "-> Not Found\n" );
+		
+		}
+		
+	}else{
+		PRINTD( FDC_LOG, "-> Unformat\n" );
+		DSK6::AddWait( WAIT_TRACK * 2 );
+	}
+	
+	PRINTD( FDC_LOG, "-> false\n" );
+	*sta = BIOS_MISSING_IAM;
+	return false;
+}
 
 
 ////////////////////////////////////////////////////////////////
@@ -1003,7 +1126,8 @@ void DSK66::ReadDiagnostic( void )
 	PRINTD( FDC_LOG, "[DSK66][ReadDiag] Drv:%d C:%d H:%d R:%d N:%d\n", CmdIn.Data[1]&3, CmdIn.Data[2], CmdIn.Data[3], CmdIn.Data[4], CmdIn.Data[5] );
 	
 	WORD secsize = 0, gap3size, bufad;
-	int wait = 0;
+	
+	DSK6::ResetWait();
 	
 	// Command phase
 	fdc.MT  = (CmdIn.Data[0]&0x80)>>7;	// Multi-track
@@ -1024,7 +1148,7 @@ void DSK66::ReadDiagnostic( void )
 	if( IsMount( fdc.US ) ){
 		// インデックス信号の直後のセクタから読む
 		Dimg[fdc.US]->Seek( Dimg[fdc.US]->Track() );
-		wait = WAIT_GAP0 + WAIT_ID;
+		DSK6::AddWait( WAIT_GAP0 + WAIT_ID );
 		
 		secsize = Dimg[fdc.US]->GetSecSize();
 		
@@ -1045,20 +1169,20 @@ void DSK66::ReadDiagnostic( void )
 			BufWrite( bufad, 0x4e);
 			bufad++;
 		}
-		wait += WAIT_DATA((secsize>>8)&7);
+		DSK6::AddWait( WAIT_DATA((secsize>>8)&7) );
 		
 		// sync読込み(の振り)
 		for( int i=0; i<12; i++ ){
 			BufWrite( bufad, 0x00);
 			bufad++;
 		}
-		wait += WAIT_BYTE*12;
+		DSK6::AddWait( WAIT_BYTE*12 );
 		
 		Dimg[fdc.US]->GetID( &fdc.C, &fdc.H, &fdc.R, &fdc.N );
 		
 	}else{
 		fdc.st0  = ST0_NOT_READY;	// st0  bit3 : media not ready
-		wait     = WAIT_TRACK * 2;
+		DSK6::AddWait( WAIT_TRACK * 2 );
 	}
 	
 	// Result phase
@@ -1076,7 +1200,7 @@ void DSK66::ReadDiagnostic( void )
 	fdc.intr   = false;
 	
 	// ウェイト設定
-	DSK6::SetWait( EID_EXWAIT, wait );
+	DSK6::SetWait( EID_EXWAIT );
 }
 
 
@@ -1104,8 +1228,9 @@ void DSK66::ReadData( void )
 {
 	PRINTD( FDC_LOG, "[DSK66][Read] Drv:%d C:%d H:%d R:%d N:%d size:%d\n", CmdIn.Data[1]&3, CmdIn.Data[2], CmdIn.Data[3], CmdIn.Data[4], CmdIn.Data[5], SendBytes );
 	
-	BYTE imgsta = 0;
-	int wait    = 0;
+	BYTE imgsta = BIOS_READY;
+	
+	DSK6::ResetWait();
 	
 	// Command phase
 	fdc.MT  = (CmdIn.Data[0]&0x80)>>7;	// Multi-track
@@ -1127,32 +1252,38 @@ void DSK66::ReadData( void )
 		int i       = 0;				// 転送済みデータ数
 		int secbyte = 0;				// セクタ内の残りデータ数
 		
-		// セクタをサーチ
-		Dimg[fdc.US]->SearchSector( fdc.C, fdc.H, fdc.R, fdc.N );
 		
-		// データ読込み
-		while( SendBytes > i ){
-			if( secbyte == 0 ){
-				wait += WAIT_SECTOR( fdc.N );
-				if( (imgsta = Dimg[fdc.US]->GetSecStatus()) ) break;
-				secbyte = Dimg[fdc.US]->GetSecSize();
-				Dimg[fdc.US]->GetID( &fdc.C, &fdc.H, &fdc.R, &fdc.N );
-			}
-			BufWrite( i, Dimg[fdc.US]->Get8() );
-			i++;
-			secbyte--;
-		}
-		
-		switch( imgsta ){
-		case BIOS_MISSING_DAM:
-			fdc.st0 = ST0_IC_AT;
-			fdc.st1 = ST1_MISSING_ADDRESS_MARK;
-			fdc.st2 = ST2_MISSING_ADDRESS_MARK_IN_DATA_FIELD;
-			break;
+		do{
+			secbyte = 0;
 			
-		default:
-			fdc.st0 = ST0_IC_NT;
-		}
+			// セクタをサーチ
+			SearchSector( &imgsta );
+			
+			// セクタのステータスをチェック
+			// 状態によりデータ読込みをスキップする
+			switch( imgsta ){
+			case BIOS_NO_DATA:
+			case BIOS_MISSING_IAM:
+			case BIOS_ID_CRC_ERROR:
+			case BIOS_MISSING_DAM:
+				break;
+				
+			case BIOS_DATA_CRC_ERROR:
+			default:
+				secbyte = Dimg[fdc.US]->GetSecSize();
+				DSK6::AddWait( WAIT_DATA( fdc.N ) );
+			}
+			
+			// データ読込み
+			for( ; secbyte; secbyte-- )
+				BufWrite( i++, Dimg[fdc.US]->Get8() );
+			
+			// 最終セクタ?
+			if( fdc.R == fdc.EOT ) i = SendBytes;	// 読込み終了
+			else				   fdc.R++;			// 次のセクタ
+			
+			
+		}while( (SendBytes > i) && (fdc.st0 == ST0_IC_NT) );
 		
 	}else{
 		fdc.st0 = ST0_NOT_READY;	// st0  bit3 : media not ready
@@ -1173,7 +1304,7 @@ void DSK66::ReadData( void )
 	fdc.intr   = false;
 	
 	// ウェイト設定
-	DSK6::SetWait( EID_EXWAIT, wait );
+	DSK6::SetWait( EID_EXWAIT );
 }
 
 
@@ -1184,7 +1315,9 @@ void DSK66::WriteData( void )
 {
 	PRINTD( FDC_LOG, "[DSK66][Write] Drv:%d C:%d H:%d R:%d N:%d size:%d\n", CmdIn.Data[1]&3, CmdIn.Data[2], CmdIn.Data[3], CmdIn.Data[4], CmdIn.Data[5], SendBytes );
 	
-	int wait = 0;
+	BYTE imgsta = BIOS_READY;
+	
+	DSK6::ResetWait();
 	
 	// Command phase
 	fdc.MT  = (CmdIn.Data[0]&0x80)>>7;	// Multi-track
@@ -1206,20 +1339,39 @@ void DSK66::WriteData( void )
 		int i       = 0;				// 転送済みデータ数
 		int secbyte = 0;				// セクタ内の残りデータ数
 		
-		// セクタをサーチ
-		Dimg[fdc.US]->SearchSector( fdc.C, fdc.H, fdc.R, fdc.N );
-		
-		// データ書込み
-		while( SendBytes > i ){
-			if( secbyte == 0 ){
-				wait += WAIT_SECTOR( fdc.N );
-				secbyte = Dimg[fdc.US]->GetSecSize();
-				Dimg[fdc.US]->GetID( &fdc.C, &fdc.H, &fdc.R, &fdc.N );
+		do{
+			secbyte = 0;
+			
+			// セクタをサーチ
+			SearchSector( &imgsta );
+			
+			// セクタのステータスをチェック
+			// 状態によりデータ書込みをスキップする
+			switch( imgsta ){
+			case BIOS_NO_DATA:
+			case BIOS_MISSING_IAM:
+			case BIOS_ID_CRC_ERROR:
+				break;
+				
+			case BIOS_MISSING_DAM:
+			case BIOS_DATA_CRC_ERROR:
+			default:
+				// 書込みサイズ 本当はNで決まるが次セクタの上書き処理とか面倒なので
+				secbyte = min( Dimg[fdc.US]->GetSecSize(), SendBytes - i );
+				DSK6::AddWait( WAIT_DATA( fdc.N ) );
 			}
-			Dimg[fdc.US]->Put8( BufRead( i ) );
-			i++;
-			secbyte--;
-		}
+			
+			// データ書込み
+			for( ; secbyte; secbyte-- )
+				Dimg[fdc.US]->Put8( BufRead( i++ ) );
+			
+			// 最終セクタ?
+			if( fdc.R == fdc.EOT ) i = SendBytes;	// 読込み終了
+			else				   fdc.R++;			// 次のセクタ
+			
+			
+		}while( (SendBytes > i) && (fdc.st0 == ST0_IC_NT) );
+		
 	}else{
 		fdc.st0 = ST0_NOT_READY;	// st0  bit3 : media not ready
 	}
@@ -1239,7 +1391,7 @@ void DSK66::WriteData( void )
 	fdc.intr   = false;
 	
 	// ウェイト設定
-	DSK6::SetWait( EID_EXWAIT, wait );
+	DSK6::SetWait( EID_EXWAIT );
 }
 
 
@@ -1280,7 +1432,9 @@ void DSK66::Seek( void )
 		case 2: eid = EID_SEEK3; break;
 		case 3: eid = EID_SEEK4; break;
 		}
-		DSK6::SetWait( eid, (abs((int)(fdc.NCN[fdc.US]-fdc.PCN[fdc.US]))*fdc.SRT+fdc.HUT+fdc.HLT)*WAIT_SEEK );	// 適当
+		DSK6::ResetWait();
+		DSK6::AddWait( (abs((int)(fdc.NCN[fdc.US]-fdc.PCN[fdc.US]))*fdc.SRT+fdc.HUT+fdc.HLT)*WAIT_SEEK );	// 適当
+		DSK6::SetWait( eid );
 		
 		fdc.SeekSta[fdc.US] = SK_SEEK;
 		fdc.intr            = false;

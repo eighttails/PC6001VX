@@ -87,6 +87,8 @@ public:
 	int GetSampleRate();					// サンプリングレート取得
 	void SetVolume( int );					// マスター音量設定
 	
+	int GetBufferSize();					// バッファサイズ(倍率)取得
+	
 	int PreUpdate( int, cRing * = NULL );	// サウンド事前更新関数
 	void Update( BYTE *, int );				// サウンド更新関数
 };

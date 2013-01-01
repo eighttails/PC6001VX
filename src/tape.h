@@ -23,6 +23,7 @@ private:
 	char FilePath[PATH_MAX];	// TAPEファイルフルパス
 	cP6T *p6t;
 	bool Relay;					// リレーの状態
+	bool stron;					// ストリーム内部処理用
 	
 	bool Boost;					// BoostUp使う? true:使う false:使わない
 	int MaxBoost60;				// BoostUp 最大倍率(N60モード)

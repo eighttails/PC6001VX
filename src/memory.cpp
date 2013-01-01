@@ -18,14 +18,18 @@
 // RomB[5]  : MainRom+0x2000
 // RomB[6]  : MainRom+0x4000
 // RomB[7]  : MainRom+0x6000
-// RomB[8]  : CGRom1
-// RomB[9]  : CGRom2
-// RomB[10] : KanjiRom
-// RomB[11] : KanjiRom+0x2000
-// RomB[12] : KanjiRom+0x4000
-// RomB[13] : KanjiRom+0x6000
-// RomB[14] : VoiceRom
-// RomB[15] : VoiceRom+0x2000
+// RomB[8]  : MainRom+0x8000
+// RomB[9]  : MainRom+0xa000
+// RomB[10] : MainRom+0xc000
+// RomB[11] : MainRom+0xe000
+// RomB[12] : CGRom1
+// RomB[13] : CGRom2
+// RomB[14] : KanjiRom
+// RomB[15] : KanjiRom+0x2000
+// RomB[16] : KanjiRom+0x4000
+// RomB[17] : KanjiRom+0x6000
+// RomB[18] : VoiceRom
+// RomB[19] : VoiceRom+0x2000
 
 // RamB[0]  : IntRam
 // RamB[1]  : IntRam+0x2000
@@ -52,14 +56,18 @@
 #define MAINROM1	(RomB[5])
 #define MAINROM2	(RomB[6])
 #define MAINROM3	(RomB[7])
-#define CGROM1		(RomB[8])
-#define CGROM2		(RomB[9])
-#define KANJIROM0	(RomB[10])
-#define KANJIROM1	(RomB[11])
-#define KANJIROM2	(RomB[12])
-#define KANJIROM3	(RomB[13])
-#define VOICEROM0	(RomB[14])
-#define VOICEROM1	(RomB[15])
+#define MAINROM4	(RomB[8])
+#define MAINROM5	(RomB[9])
+#define MAINROM6	(RomB[10])
+#define MAINROM7	(RomB[11])
+#define CGROM1		(RomB[12])
+#define CGROM2		(RomB[13])
+#define KANJIROM0	(RomB[14])
+#define KANJIROM1	(RomB[15])
+#define KANJIROM2	(RomB[16])
+#define KANJIROM3	(RomB[17])
+#define VOICEROM0	(RomB[18])
+#define VOICEROM1	(RomB[19])
 #define MAINRAM0	(RamB[0])
 #define MAINRAM1	(RamB[1])
 #define MAINRAM2	(RamB[2])
@@ -87,6 +95,10 @@
 #define pMAINROM1	((MemBlock *)&MAINROM1)
 #define pMAINROM2	((MemBlock *)&MAINROM2)
 #define pMAINROM3	((MemBlock *)&MAINROM3)
+#define pMAINROM4	((MemBlock *)&MAINROM4)
+#define pMAINROM5	((MemBlock *)&MAINROM5)
+#define pMAINROM6	((MemBlock *)&MAINROM6)
+#define pMAINROM7	((MemBlock *)&MAINROM7)
 #define pCGROM1		((MemBlock *)&CGROM1)
 #define pCGROM2		((MemBlock *)&CGROM2)
 #define pKANJIROM0	((MemBlock *)&KANJIROM0)

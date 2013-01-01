@@ -1277,6 +1277,8 @@ void OSD_BlitToWindow2( HWINDOW wh, VSurface *src, int x, int y )
 	if( SDL_MUSTLOCK( dst ) ) SDL_UnlockSurface( dst );
 }
 
+
+
 ////////////////////////////////////////////////////////////////
 // イベント取得(イベントが発生するまで待つ)
 //
@@ -1285,147 +1287,147 @@ void OSD_BlitToWindow2( HWINDOW wh, VSurface *src, int x, int y )
 ////////////////////////////////////////////////////////////////
 bool OSD_GetEvent( Event *ev )
 {
-	SDL_Event event;
-	
-	if( !SDL_WaitEvent( &event ) ) return false;
-	
-	switch( event.type ){
-	case SDL_KEYDOWN:
-		ev->type			= EV_KEYDOWN;
-		ev->key.state		= true;
-		#if SDL_VERSION_ATLEAST(2,0,0)
-		ev->key.sym			= OSD_ConvertKeyCode( event.key.keysym.scancode );
-		#else
-		ev->key.sym			= OSD_ConvertKeyCode( event.key.keysym.sym );
-		#endif
-		ev->key.mod			= (PCKEYmod)(
-							  ( event.key.keysym.mod & KMOD_LSHIFT ? KVM_LSHIFT : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RSHIFT ? KVM_RSHIFT : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_LCTRL  ? KVM_LCTRL  : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RCTRL  ? KVM_RCTRL  : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_LALT   ? KVM_LALT   : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RALT   ? KVM_RALT   : KVM_NONE )
-							#if SDL_VERSION_ATLEAST(2,0,0)
-							| ( event.key.keysym.mod & KMOD_LGUI   ? KVM_LMETA  : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RGUI   ? KVM_RMETA  : KVM_NONE )
-							#else
-							| ( event.key.keysym.mod & KMOD_LMETA  ? KVM_LMETA  : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RMETA  ? KVM_RMETA  : KVM_NONE )
-							#endif
-							| ( event.key.keysym.mod & KMOD_NUM    ? KVM_NUM    : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_CAPS   ? KVM_CAPS   : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_MODE   ? KVM_MODE   : KVM_NONE ) );
-		ev->key.unicode		= event.key.keysym.unicode;
-		break;
-		
-	case SDL_KEYUP:
-		ev->type			= EV_KEYUP;
-		ev->key.state		= false;
-		#if SDL_VERSION_ATLEAST(2,0,0)
-		ev->key.sym			= OSD_ConvertKeyCode( event.key.keysym.scancode );
-		#else
-		ev->key.sym			= OSD_ConvertKeyCode( event.key.keysym.sym );
-		#endif
-		ev->key.mod			= (PCKEYmod)(
-							  ( event.key.keysym.mod & KMOD_LSHIFT ? KVM_LSHIFT : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RSHIFT ? KVM_RSHIFT : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_LCTRL  ? KVM_LCTRL  : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RCTRL  ? KVM_RCTRL  : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_LALT   ? KVM_LALT   : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RALT   ? KVM_RALT   : KVM_NONE )
-							#if SDL_VERSION_ATLEAST(2,0,0)
-							| ( event.key.keysym.mod & KMOD_LGUI   ? KVM_LMETA  : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RGUI   ? KVM_RMETA  : KVM_NONE )
-							#else
-							| ( event.key.keysym.mod & KMOD_LMETA  ? KVM_LMETA  : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_RMETA  ? KVM_RMETA  : KVM_NONE )
-							#endif
-							| ( event.key.keysym.mod & KMOD_NUM    ? KVM_NUM    : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_CAPS   ? KVM_CAPS   : KVM_NONE )
-							| ( event.key.keysym.mod & KMOD_MODE   ? KVM_MODE   : KVM_NONE ) );
-		ev->key.unicode		= event.key.keysym.unicode;
-		break;
-		
-	case SDL_MOUSEBUTTONDOWN:
-		ev->type			= EV_MOUSEBUTTONDOWN;
-		ev->mousebt.button	= event.button.button == SDL_BUTTON_LEFT      ? MBT_LEFT      :
-							  event.button.button == SDL_BUTTON_MIDDLE    ? MBT_MIDDLE    :
-							  event.button.button == SDL_BUTTON_RIGHT     ? MBT_RIGHT     :
+    SDL_Event event;
+
+    if( !SDL_WaitEvent( &event ) ) return false;
+
+    switch( event.type ){
+    case SDL_KEYDOWN:
+        ev->type			= EV_KEYDOWN;
+        ev->key.state		= true;
+        #if SDL_VERSION_ATLEAST(2,0,0)
+        ev->key.sym			= OSD_ConvertKeyCode( event.key.keysym.scancode );
+        #else
+        ev->key.sym			= OSD_ConvertKeyCode( event.key.keysym.sym );
+        #endif
+        ev->key.mod			= (PCKEYmod)(
+                              ( event.key.keysym.mod & KMOD_LSHIFT ? KVM_LSHIFT : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RSHIFT ? KVM_RSHIFT : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_LCTRL  ? KVM_LCTRL  : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RCTRL  ? KVM_RCTRL  : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_LALT   ? KVM_LALT   : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RALT   ? KVM_RALT   : KVM_NONE )
+                            #if SDL_VERSION_ATLEAST(2,0,0)
+                            | ( event.key.keysym.mod & KMOD_LGUI   ? KVM_LMETA  : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RGUI   ? KVM_RMETA  : KVM_NONE )
+                            #else
+                            | ( event.key.keysym.mod & KMOD_LMETA  ? KVM_LMETA  : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RMETA  ? KVM_RMETA  : KVM_NONE )
+                            #endif
+                            | ( event.key.keysym.mod & KMOD_NUM    ? KVM_NUM    : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_CAPS   ? KVM_CAPS   : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_MODE   ? KVM_MODE   : KVM_NONE ) );
+        ev->key.unicode		= event.key.keysym.unicode;
+        break;
+
+    case SDL_KEYUP:
+        ev->type			= EV_KEYUP;
+        ev->key.state		= false;
+        #if SDL_VERSION_ATLEAST(2,0,0)
+        ev->key.sym			= OSD_ConvertKeyCode( event.key.keysym.scancode );
+        #else
+        ev->key.sym			= OSD_ConvertKeyCode( event.key.keysym.sym );
+        #endif
+        ev->key.mod			= (PCKEYmod)(
+                              ( event.key.keysym.mod & KMOD_LSHIFT ? KVM_LSHIFT : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RSHIFT ? KVM_RSHIFT : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_LCTRL  ? KVM_LCTRL  : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RCTRL  ? KVM_RCTRL  : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_LALT   ? KVM_LALT   : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RALT   ? KVM_RALT   : KVM_NONE )
+                            #if SDL_VERSION_ATLEAST(2,0,0)
+                            | ( event.key.keysym.mod & KMOD_LGUI   ? KVM_LMETA  : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RGUI   ? KVM_RMETA  : KVM_NONE )
+                            #else
+                            | ( event.key.keysym.mod & KMOD_LMETA  ? KVM_LMETA  : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_RMETA  ? KVM_RMETA  : KVM_NONE )
+                            #endif
+                            | ( event.key.keysym.mod & KMOD_NUM    ? KVM_NUM    : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_CAPS   ? KVM_CAPS   : KVM_NONE )
+                            | ( event.key.keysym.mod & KMOD_MODE   ? KVM_MODE   : KVM_NONE ) );
+        ev->key.unicode		= event.key.keysym.unicode;
+        break;
+
+    case SDL_MOUSEBUTTONDOWN:
+        ev->type			= EV_MOUSEBUTTONDOWN;
+        ev->mousebt.button	= event.button.button == SDL_BUTTON_LEFT      ? MBT_LEFT      :
+                              event.button.button == SDL_BUTTON_MIDDLE    ? MBT_MIDDLE    :
+                              event.button.button == SDL_BUTTON_RIGHT     ? MBT_RIGHT     :
 //							  event.button.button == SDL_BUTTON_WHEELUP   ? MBT_WHEELUP   :
 //							  event.button.button == SDL_BUTTON_WHEELDOWN ? MBT_WHEELDOWN :
-							  MBT_NONE;
-		ev->mousebt.state	= true;
-		ev->mousebt.x		= event.button.x;
-		ev->mousebt.y		= event.button.y;
-		break;
-		
-	case SDL_MOUSEBUTTONUP:
-		ev->type			= EV_MOUSEBUTTONUP;
-		ev->mousebt.button	= event.button.button == SDL_BUTTON_LEFT      ? MBT_LEFT      :
-							  event.button.button == SDL_BUTTON_MIDDLE    ? MBT_MIDDLE    :
-							  event.button.button == SDL_BUTTON_RIGHT     ? MBT_RIGHT     :
+                              MBT_NONE;
+        ev->mousebt.state	= true;
+        ev->mousebt.x		= event.button.x;
+        ev->mousebt.y		= event.button.y;
+        break;
+
+    case SDL_MOUSEBUTTONUP:
+        ev->type			= EV_MOUSEBUTTONUP;
+        ev->mousebt.button	= event.button.button == SDL_BUTTON_LEFT      ? MBT_LEFT      :
+                              event.button.button == SDL_BUTTON_MIDDLE    ? MBT_MIDDLE    :
+                              event.button.button == SDL_BUTTON_RIGHT     ? MBT_RIGHT     :
 //							  event.button.button == SDL_BUTTON_WHEELUP   ? MBT_WHEELUP   :
 //							  event.button.button == SDL_BUTTON_WHEELDOWN ? MBT_WHEELDOWN :
-							  MBT_NONE;
-		ev->mousebt.state	= false;
-		ev->mousebt.x		= event.button.x;
-		ev->mousebt.y		= event.button.y;
-		break;
-		
-	case SDL_JOYAXISMOTION:
-		ev->type			= EV_JOYAXISMOTION;
-		ev->joyax.idx		= event.jaxis.which;
-		ev->joyax.axis		= event.jaxis.axis;
-		ev->joyax.value		= event.jaxis.value;
-		break;
-		
-	case SDL_JOYBUTTONDOWN:
-		ev->type			= EV_JOYBUTTONDOWN;
-		ev->joybt.idx		= event.jbutton.which;
-		ev->joybt.button	= event.jbutton.button;
-		ev->joybt.state		= true;
-		break;
-		
-	case SDL_JOYBUTTONUP:
-		ev->type			= EV_JOYBUTTONUP;
-		ev->joybt.idx		= event.jbutton.which;
-		ev->joybt.button	= event.jbutton.button;
-		ev->joybt.state		= false;
-		break;
-		
-	case SDL_QUIT:
-		ev->type			= EV_QUIT;
-		break;
-		
-	case UEV_RESTART:
-		ev->type			= EV_RESTART;
-		break;
-		
-	case UEV_DOKOLOAD:
-		ev->type			= EV_DOKOLOAD;
-		break;
-		
-	case UEV_REPLAY:
-		ev->type			= EV_REPLAY;
-		break;
-		
-	case UEV_FPSUPDATE:
-		ev->type			= EV_FPSUPDATE;
-		ev->fps.fps			= event.user.code;
-		break;
-		
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	case UEV_DEBUGMODEBP:
-		ev->type			= EV_DEBUGMODEBP;
-		ev->bp.addr			= event.user.code;
-		break;
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-		
-	default:
-		ev->type			= EV_NOEVENT;
-	}
-	
-	return true;
+                              MBT_NONE;
+        ev->mousebt.state	= false;
+        ev->mousebt.x		= event.button.x;
+        ev->mousebt.y		= event.button.y;
+        break;
+
+    case SDL_JOYAXISMOTION:
+        ev->type			= EV_JOYAXISMOTION;
+        ev->joyax.idx		= event.jaxis.which;
+        ev->joyax.axis		= event.jaxis.axis;
+        ev->joyax.value		= event.jaxis.value;
+        break;
+
+    case SDL_JOYBUTTONDOWN:
+        ev->type			= EV_JOYBUTTONDOWN;
+        ev->joybt.idx		= event.jbutton.which;
+        ev->joybt.button	= event.jbutton.button;
+        ev->joybt.state		= true;
+        break;
+
+    case SDL_JOYBUTTONUP:
+        ev->type			= EV_JOYBUTTONUP;
+        ev->joybt.idx		= event.jbutton.which;
+        ev->joybt.button	= event.jbutton.button;
+        ev->joybt.state		= false;
+        break;
+
+    case SDL_QUIT:
+        ev->type			= EV_QUIT;
+        break;
+
+    case UEV_RESTART:
+        ev->type			= EV_RESTART;
+        break;
+
+    case UEV_DOKOLOAD:
+        ev->type			= EV_DOKOLOAD;
+        break;
+
+    case UEV_REPLAY:
+        ev->type			= EV_REPLAY;
+        break;
+
+    case UEV_FPSUPDATE:
+        ev->type			= EV_FPSUPDATE;
+        ev->fps.fps			= event.user.code;
+        break;
+
+    #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+    case UEV_DEBUGMODEBP:
+        ev->type			= EV_DEBUGMODEBP;
+        ev->bp.addr			= event.user.code;
+        break;
+    #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+
+    default:
+        ev->type			= EV_NOEVENT;
+    }
+
+    return true;
 }
 
 
@@ -1438,51 +1440,51 @@ bool OSD_GetEvent( Event *ev )
 ////////////////////////////////////////////////////////////////
 bool OSD_PushEvent( EventType ev, ... )
 {
-	SDL_Event event;
-	
-	va_list args;
-	va_start( args, ev );
-	
-	#if SDL_VERSION_ATLEAST(2,0,0)
-	event.type = SDL_FIRSTEVENT;
-	#else
-	event.type = SDL_NOEVENT;
-	#endif
-	
-	switch( ev ){
-	case EV_QUIT:
-		event.type		= SDL_QUIT;
-		break;
-		
-	case EV_RESTART:
-		event.type		= UEV_RESTART;
-		break;
-		
-	case EV_DOKOLOAD:
-		event.type		= UEV_DOKOLOAD;
-		break;
-		
-	case EV_REPLAY:
-		event.type		= UEV_REPLAY;
-		break;
-		
-	case EV_FPSUPDATE:
-		event.type		= UEV_FPSUPDATE;
-		event.user.code	= va_arg( args, int );
-		break;
-		
-	case EV_DEBUGMODEBP:
-		event.type		= UEV_DEBUGMODEBP;
-		event.user.code	= va_arg( args, int );
-		break;
-		
-	default:
-		return false;
-	}
-	
-	va_end( args );
-	
-	return SDL_PushEvent( &event ) ? false : true;
+    SDL_Event event;
+
+    va_list args;
+    va_start( args, ev );
+
+    #if SDL_VERSION_ATLEAST(2,0,0)
+    event.type = SDL_FIRSTEVENT;
+    #else
+    event.type = SDL_NOEVENT;
+    #endif
+
+    switch( ev ){
+    case EV_QUIT:
+        event.type		= SDL_QUIT;
+        break;
+
+    case EV_RESTART:
+        event.type		= UEV_RESTART;
+        break;
+
+    case EV_DOKOLOAD:
+        event.type		= UEV_DOKOLOAD;
+        break;
+
+    case EV_REPLAY:
+        event.type		= UEV_REPLAY;
+        break;
+
+    case EV_FPSUPDATE:
+        event.type		= UEV_FPSUPDATE;
+        event.user.code	= va_arg( args, int );
+        break;
+
+    case EV_DEBUGMODEBP:
+        event.type		= UEV_DEBUGMODEBP;
+        event.user.code	= va_arg( args, int );
+        break;
+
+    default:
+        return false;
+    }
+
+    va_end( args );
+
+    return SDL_PushEvent( &event ) ? false : true;
 }
 
 
@@ -1495,35 +1497,30 @@ bool OSD_PushEvent( EventType ev, ... )
 ////////////////////////////////////////////////////////////////
 const char *OSD_ColorName( int num )
 {
-	static const char *JColorName[] = {
-		"MODE1,2 黒(ボーダー)",
-		"MODE1 Set1 緑",		"MODE1 Set1 深緑",		"MODE1 Set2 橙",		"MODE1 Set2 深橙",
-		"MODE2 緑",				"MODE2 黄",				"MODE2 青",				"MODE2 赤",
-		"MODE2 白",				"MODE2 シアン",			"MODE2 マゼンタ",		"MODE2 橙",
-		"MODE3 Set1 緑",		"MODE3 Set1 黄",		"MODE3 Set1 青",		"MODE3 Set1 赤",
-		"MODE3 Set2 白",		"MODE3 Set2 シアン",	"MODE3 Set2 マゼンタ",	"MODE3 Set2 橙",
-		"MODE4 Set1 深緑",		"MODE4 Set1 緑",		"MODE4 Set2 黒",		"MODE4 Set2 白",
-		"MODE4 Set1 にじみ 赤",	"MODE4 Set1 にじみ 黄",	"MODE4 Set1 にじみ -",	"MODE4 Set1 にじみ -",
-		"MODE4 Set2 にじみ 赤",	"MODE4 Set2 にじみ 青",	"MODE4 Set2 にじみ 桃",	"MODE4 Set2 にじみ 緑",
-		"mk2〜 透明(黒)",		"mk2〜 橙",				"mk2〜 青緑",			"mk2〜 黄緑",
-		"mk2〜 青紫",			"mk2〜 赤紫",			"mk2〜 空色",			"mk2〜 灰色",
-		"mk2〜 黒",				"mk2〜 赤",				"mk2〜 緑",				"mk2〜 黄",
-        "mk2〜 青",				"mk2〜 マゼンタ",		"mk2〜 シアン",			"mk2〜 白",
-        "MODE4 Set2 にじみ 明るい赤",
-        "MODE4 Set2 にじみ 暗い赤",
-        "MODE4 Set2 にじみ 明るい青",
-        "MODE4 Set2 にじみ 暗い青",
-        "MODE4 Set2 にじみ 明るい桃",
-        "MODE4 Set2 にじみ 暗い桃",
-        "MODE4 Set2 にじみ 明るい緑",
-        "MODE4 Set2 にじみ 暗い緑",
+    static const char *JColorName[] = {
+        "MODE1,2 黒(ボーダー)",
+        "MODE1 Set1 緑",		"MODE1 Set1 深緑",		"MODE1 Set2 橙",		"MODE1 Set2 深橙",
+        "MODE2 緑",				"MODE2 黄",				"MODE2 青",				"MODE2 赤",
+        "MODE2 白",				"MODE2 シアン",			"MODE2 マゼンタ",		"MODE2 橙",
+        "MODE3 Set1 緑",		"MODE3 Set1 黄",		"MODE3 Set1 青",		"MODE3 Set1 赤",
+        "MODE3 Set2 白",		"MODE3 Set2 シアン",	"MODE3 Set2 マゼンタ",	"MODE3 Set2 橙",
+        "MODE4 Set1 深緑",		"MODE4 Set1 緑",		"MODE4 Set2 黒",		"MODE4 Set2 白",
+        "MODE4 Set1 にじみ 赤",		"MODE4 Set1 にじみ 青",		"MODE4 Set1 にじみ 桃",		"MODE4 Set1 にじみ 緑",
+        "MODE4 Set1 にじみ 明赤",	"MODE4 Set1 にじみ 暗赤",	"MODE4 Set1 にじみ 明青",	"MODE4 Set1 にじみ 暗青",
+        "MODE4 Set1 にじみ 明桃",	"MODE4 Set1 にじみ 暗桃",	"MODE4 Set1 にじみ 明緑",	"MODE4 Set1 にじみ 暗緑",
+        "MODE4 Set2 にじみ 赤",		"MODE4 Set2 にじみ 青",		"MODE4 Set2 にじみ 桃",		"MODE4 Set2 にじみ 緑",
+        "MODE4 Set2 にじみ 明赤",	"MODE4 Set2 にじみ 暗赤",	"MODE4 Set2 にじみ 明青",	"MODE4 Set2 にじみ 暗青",
+        "MODE4 Set2 にじみ 明桃",	"MODE4 Set2 にじみ 暗桃",	"MODE4 Set2 にじみ 明緑",	"MODE4 Set2 にじみ 暗緑",
+        "mk2〜 透明(黒)",		"mk2〜 橙",				"mk2〜 青緑",			"mk2〜 黄緑",
+        "mk2〜 青紫",			"mk2〜 赤紫",			"mk2〜 空色",			"mk2〜 灰色",
+        "mk2〜 黒",				"mk2〜 赤",				"mk2〜 緑",				"mk2〜 黄",
+        "mk2〜 青",				"mk2〜 マゼンタ",		"mk2〜 シアン",			"mk2〜 白"
     };
-	
-	if( num < 0 || num >= COUNTOF( JColorName ) ) return NULL;
-	else                                          return JColorName[num];
+
+    if( num < 0 || num >= COUNTOF( JColorName ) ) return NULL;
+    else                                          return JColorName[num];
 
 }
-
 
 ////////////////////////////////////////////////////////////////
 // キーの名前取得
@@ -1668,3 +1665,25 @@ const char *OSD_KeyName( PCKEYsym sym )
 	return str;
 }
 
+////////////////////////////////////////////////////////////////
+// オーディオをロックする
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_LockAudio( void )
+{
+    SDL_LockAudio();
+}
+
+
+////////////////////////////////////////////////////////////////
+// オーディオをアンロックする
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_UnlockAudio( void )
+{
+    SDL_UnlockAudio();
+}

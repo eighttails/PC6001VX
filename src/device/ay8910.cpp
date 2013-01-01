@@ -235,27 +235,40 @@ void cAY8910::_AYWriteReg( BYTE r, BYTE v )
 
 
 // レジスタ書込みメイン
-void cAY8910::AYWriteReg( BYTE r, BYTE v )
+void cAY8910::AYWriteReg( BYTE addr, BYTE v )
 {
-	PRINTD( PSG_LOG, "[PSG][AYWriteReg] -> %02X, %02X\n", r, v );
-	
-	if( r > 15 ) return;
-	if( r == AY_ESHAPE || Regs[r] != v ){
-		// レジスタを変更する前にストリームを更新する
-		PreWriteReg();
+	if( addr & 1 ){	// Data port
+		BYTE r = RegisterLatch;
+		
+		PRINTD( PSG_LOG, "[PSG][AYWriteReg] Data -> %02X, %02X\n", r, v );
+		
+		if( r > 15 ) return;
+		if( r == AY_ESHAPE || Regs[r] != v ){
+			// レジスタを変更する前にストリームを更新する
+			PreWriteReg();
+		}
+		_AYWriteReg( r, v );
+	}else{			// Register port
+		PRINTD( PSG_LOG, "[PSG][AYWriteReg] Latch -> Reg:%02X\n", v );
+		
+		RegisterLatch = v & 0x0f;
 	}
-	_AYWriteReg( r, v );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // レジスタ読込み
 ////////////////////////////////////////////////////////////////
-BYTE cAY8910::AYReadReg( BYTE r )
+BYTE cAY8910::AYReadReg( void )
 {
+	BYTE r = RegisterLatch;
+	
 	PRINTD( PSG_LOG, "[PSG][AYReadReg] -> %02X ", r );
 	
-	if( r > 15 ) return 0;
+	if( r > 15 ){
+		PRINTD( PSG_LOG, "false\n" );
+		return 0;
+	}
 	
 	switch( r ){
 	case AY_PORTA:

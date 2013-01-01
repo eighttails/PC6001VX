@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報,機種名など
 /////////////////////////////////////////////////////////////////////////////
-#define	VERSION		"1.0"
+#define	VERSION		"1.01"
 #define	APPNAME		"PC6001VX"
 #define	P60NAME		"PC-6001"
 #define	P62NAME		"PC-6001mk2"
@@ -30,10 +30,10 @@
 #define	DEFAULT_SAMPLE_RATE		(44100)				/* サンプリングレート */
 #define	SOUND_BUFFER_SIZE		(1)					/* サウンドバッファ長倍率(基本長はVSYNC) */
 #define	DEFAULT_MASTERVOL		(70)				/* マスター音量 */
-#define	DEFAULT_PSGVOL			(40)				/* PSG音量 */
+#define	DEFAULT_PSGVOL			(60)				/* PSG音量 */
 #define	DEFAULT_PSGLPF			(0)					/* PSG LPFカットオフ周波数(0で無効) */
 #define	DEFAULT_VOICEVOL		(100)				/* 音声合成音量 */
-#define	DEFAULT_TAPEVOL			(20)				/* TAPEモニタ音量 */
+#define	DEFAULT_TAPEVOL			(10)				/* TAPEモニタ音量 */
 #define	DEFAULT_TAPELPF			(1540)				/* TAPE LPFカットオフ周波数(0で無効) */
 #define	DEFAULT_TURBO			(true)				/* Turbo TAPE Yes:有効 No:無効 */
 #define	DEFAULT_BOOST			(false)				/* BoostUp Yes:有効 No:無効 */
@@ -42,8 +42,8 @@
 #define	DEFAULT_FDD				(0)					/* FDD接続台数 */
 #define	DEFAULT_COLOR_MODE		(16)				/* カラーモード 8:8bit 16:bit 24:24bit */
 #define	DEFAULT_MODE4_COLOR		(1)					/* モード４カラーモード 0:モノ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク */
-#define	DEFAULT_SCANLINE		(false) 			/* スキャンライン true:あり false:なし */
-#define	DEFAULT_SCANLINEBR		(50)				/* スキャンライン輝度 (0-100)% */
+#define	DEFAULT_SCANLINE		(true) 				/* スキャンライン true:あり false:なし */
+#define	DEFAULT_SCANLINEBR		(75)				/* スキャンライン輝度 (0-100)% */
 #define	DEFAULT_DISPNTSC		(true) 				/* 4:3表示 true:有効 false:無効 */
 #define	DEFAULT_FRAMESKIP		(0)					/* フレームスキップ */
 #define	DEFAULT_OVERCLOCK		(100)				/* オーバークロック率 */

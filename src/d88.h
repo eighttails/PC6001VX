@@ -4,6 +4,14 @@
 #include "typedef.h"
 
 
+// Disk BIOS Status
+#define BIOS_READY					(0x00)
+#define BIOS_WRITE_PROTECT			(0x70)
+#define BIOS_ID_CRC_ERROR			(0xa0)
+#define BIOS_DATA_CRC_ERROR			(0xb0)
+#define BIOS_NO_DATA				(0xc0)
+#define BIOS_MISSING_IAM			(0xe0)
+#define BIOS_MISSING_DAM			(0xf0)
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
@@ -70,6 +78,7 @@ public:
 	bool Put8( BYTE );				// 1byte 書込み
 	bool Seek( int, int = -1 );		// シーク
 	bool SearchSector( BYTE, BYTE, BYTE, BYTE );	// セクタを探す
+	bool NextSector();				// 次のセクタに移動する
 	
 	void GetID( BYTE *, BYTE *, BYTE *, BYTE * );	// 現在のCHRN取得
 	WORD GetSecSize();				// 現在のセクタサイズ取得

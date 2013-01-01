@@ -13,7 +13,8 @@ debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 win32:{
-#Windowsでは極力ライブラリをスタヂ�ヂ�リンクする。Qtプラグインも�示皁�挮�してリンクする�QTPLUGIN += qjpcodecs qico
+#Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
+QTPLUGIN += qjpcodecs qico
 INCLUDEPATH += C:/mingw/include/SDL
 LIBS += -LC:/mingw/lib -Wl,-Bstatic $$system(sh sdl-config --static-libs)
 CONFIG += exceptions

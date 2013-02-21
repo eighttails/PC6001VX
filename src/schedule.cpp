@@ -460,7 +460,7 @@ void SCH6::OnThread( void *inst )
 			if( VintCnt >= VSYNC_HZ ) VintCnt -= VSYNC_HZ;
             ti->WaitReset();
 		}else
-			OSD_Delay( 0 );
+            OSD_Delay( 1000 / VSYNC_HZ );
 		
 		if( now - last >= WRUPDATE ){
 			WRClock     = WRClockTmp;

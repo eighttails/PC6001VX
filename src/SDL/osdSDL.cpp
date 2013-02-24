@@ -1278,7 +1278,6 @@ void OSD_BlitToWindow2( HWINDOW wh, VSurface *src, int x, int y )
 }
 
 
-
 ////////////////////////////////////////////////////////////////
 // イベント取得(イベントが発生するまで待つ)
 //
@@ -1686,4 +1685,17 @@ void OSD_LockAudio( void )
 void OSD_UnlockAudio( void )
 {
     SDL_UnlockAudio();
+}
+
+////////////////////////////////////////////////////////////////
+// 終了処理
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_Quit( void )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_Quit]\n" );
+
+    SDL_Quit();
 }

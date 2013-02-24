@@ -4,10 +4,6 @@
 #include <QSharedMemory>
 #include <string.h>
 
-#include <SDL.h>
-#include <SDL_syswm.h>
-#include <SDL_endian.h>
-
 #include "../log.h"
 #include "../osd.h"
 #include "../common.h"
@@ -74,26 +70,6 @@ void DelDelimiter( char *path )
     if( strlen( path ) > 1 )
         while( ( path[strlen(path)-1] == '/' ) || ( path[strlen(path)-1] == '\\' ) )
             path[strlen(path)-1] = '\0';
-}
-
-
-////////////////////////////////////////////////////////////////
-// 終了処理
-//
-// 引数:	なし
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_Quit( void )
-{
-    PRINTD( OSD_LOG, "[OSD][OSD_Quit]\n" );
-
-    QDir dir(QString::fromUtf8(OSD_GetConfigPath()));
-    QString lockFile("pc6001vx.lock");
-
-    if (dir.exists(lockFile))
-        dir.remove(lockFile);
-
-    SDL_Quit();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -469,6 +445,8 @@ bool OSD_CreateFont( char *hfile, char *zfile, int size )
     return true;
 }
 
+
+
 ///////////////////////////////////////////////////////////
 // アイコン設定
 //
@@ -488,7 +466,8 @@ void OSD_SetIcon( HWINDOW wh, int model )
 
     // アイコン設定
     QImage icon = QImage(iconRes).convertToFormat(QImage::Format_RGB16);
-    SDL_Surface *p6icon = SDL_CreateRGBSurfaceFrom( icon.bits(), icon.width(), icon.height(), icon.depth(), icon.bytesPerLine(), 0, 0, 0, 0 );
-    SDL_WM_SetIcon( p6icon, icon.alphaChannel().bits() );
-    SDL_FreeSurface( p6icon );
+    //#PENDING
+    //    SDL_Surface *p6icon = SDL_CreateRGBSurfaceFrom( icon.bits(), icon.width(), icon.height(), icon.depth(), icon.bytesPerLine(), 0, 0, 0, 0 );
+    //    SDL_WM_SetIcon( p6icon, icon.alphaChannel().bits() );
+    //    SDL_FreeSurface( p6icon );
 }

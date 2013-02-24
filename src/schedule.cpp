@@ -437,8 +437,8 @@ void SCH6::OnThread( void *inst )
     SCH6 *ti;
 	int Vint[VSYNC_HZ];
 	int VintCnt = 0;
-	DWORD now,last;
-	
+    DWORD now,last;
+
 	EnableScrUpdate = 0;
 	
     ti = STATIC_CAST( SCH6 *, inst );	// 自分自身のオブジェクトポインタ取得
@@ -448,26 +448,18 @@ void SCH6::OnThread( void *inst )
 	int Vrem = 1000 - (int)( 1000 / VSYNC_HZ ) * VSYNC_HZ;
 	for( int i=0; i<Vrem; i++ ) Vint[(int)(VSYNC_HZ * i / Vrem)]++;
 	
-	// 最初の待ち時間を設定
-	now  = OSD_GetTicks();
-	last = now;
-	DWORD NextWait = now + Vint[VintCnt++];
-	
-	while( !this->cThread::IsCancel() ){
-		now = OSD_GetTicks();
-		if( now >= NextWait ){
-			NextWait += Vint[VintCnt++];
-			if( VintCnt >= VSYNC_HZ ) VintCnt -= VSYNC_HZ;
-            ti->WaitReset();
-		}else
-            OSD_Delay( 1000 / VSYNC_HZ );
-		
-		if( now - last >= WRUPDATE ){
-			WRClock     = WRClockTmp;
-			WRClockTmp  = 0;
-			last       += WRUPDATE;
-		}
-	}
+    // 最初の待ち時間を設定
+
+    while( !this->cThread::IsCancel() ){
+        ti->WaitReset();
+        OSD_Delay( Vint[VintCnt++] );
+        if( VintCnt >= VSYNC_HZ ) {
+            VintCnt = 0;
+            WRClock     = WRClockTmp;
+            WRClockTmp  = 0;
+            last       += WRUPDATE;
+        }
+    }
 }
 
 

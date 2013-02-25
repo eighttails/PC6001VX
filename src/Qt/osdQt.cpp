@@ -10,13 +10,156 @@
 #include "../pc6001v.h"
 #include "../joystick.h"
 
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-#define	AUDIOFORMAT	AUDIO_S16MSB	// 16ビット符号あり
-#else
-#define	AUDIOFORMAT	AUDIO_S16		// 16ビット符号あり
-#endif
+static std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
 
-//#define USESDLTIMER					// SDLのタイマ使用
+
+static const struct {	// SDLキーコード -> 仮想キーコード定義
+    int InKey;			// SDLのキーコード
+    PCKEYsym VKey;		// 仮想キーコード
+} VKeyDef[] = {
+    { Qt::Key_unknown,          KVC_UNKNOWN },
+
+    { Qt::Key_1,                KVC_1 },			// 1	!
+    { Qt::Key_2,                KVC_2 },			// 2	"
+    { Qt::Key_3,				KVC_3 },			// 3	#
+    { Qt::Key_4,				KVC_4 },			// 4	$
+    { Qt::Key_5,				KVC_5 },			// 5	%
+    { Qt::Key_6,				KVC_6 },			// 6	&
+    { Qt::Key_7,				KVC_7 },			// 7	'
+    { Qt::Key_8,				KVC_8 },			// 8	(
+    { Qt::Key_9,				KVC_9 },			// 9	)
+    { Qt::Key_0,				KVC_0 },			// 0
+
+    { Qt::Key_A,				KVC_A },			// a	A
+    { Qt::Key_B,				KVC_B },			// b	B
+    { Qt::Key_C,				KVC_C },			// c	C
+    { Qt::Key_D,				KVC_D },			// d	D
+    { Qt::Key_E,				KVC_E },			// e	E
+    { Qt::Key_F,				KVC_F },			// f	F
+    { Qt::Key_G,				KVC_G },			// g	G
+    { Qt::Key_H,				KVC_H },			// h	H
+    { Qt::Key_I,				KVC_I },			// i	I
+    { Qt::Key_J,				KVC_J },			// j	J
+    { Qt::Key_K,				KVC_K },			// k	K
+    { Qt::Key_L,				KVC_L },			// l	L
+    { Qt::Key_M,				KVC_M },			// m	M
+    { Qt::Key_N,				KVC_N },			// n	N
+    { Qt::Key_O,				KVC_O },			// o	O
+    { Qt::Key_P,				KVC_P },			// p	P
+    { Qt::Key_Q,				KVC_Q },			// q	Q
+    { Qt::Key_R,				KVC_R },			// r	R
+    { Qt::Key_S,				KVC_S },			// s	S
+    { Qt::Key_T,				KVC_T },			// t	T
+    { Qt::Key_U,				KVC_U },			// u	U
+    { Qt::Key_V,				KVC_V },			// v	V
+    { Qt::Key_W,				KVC_W },			// w	W
+    { Qt::Key_X,				KVC_X },			// x	X
+    { Qt::Key_Y,				KVC_Y },			// y	Y
+    { Qt::Key_Z,				KVC_Z },			// z	Z
+
+    { Qt::Key_F1,				KVC_F1 },			// F1
+    { Qt::Key_F2,				KVC_F2 },			// F2
+    { Qt::Key_F3,				KVC_F3 },			// F3
+    { Qt::Key_F4,				KVC_F4 },			// F4
+    { Qt::Key_F5,				KVC_F5 },			// F5
+    { Qt::Key_F6,				KVC_F6 },			// F6
+    { Qt::Key_F7,				KVC_F7 },			// F7
+    { Qt::Key_F8,				KVC_F8 },			// F8
+    { Qt::Key_F9,				KVC_F9 },			// F9
+    { Qt::Key_F10,				KVC_F10 },			// F10
+    { Qt::Key_F11,				KVC_F11 },			// F11
+    { Qt::Key_F12,				KVC_F12 },			// F12
+
+    { Qt::Key_Minus,			KVC_MINUS },		// -	=
+    { Qt::Key_AsciiCircum,		KVC_CARET },		// ^	~
+    { Qt::Key_Backspace,		KVC_BACKSPACE },	// BackSpace
+    { Qt::Key_At,				KVC_AT },			// @	`
+    { Qt::Key_BracketLeft,		KVC_LBRACKET },		// [	{
+    { Qt::Key_Semicolon,		KVC_SEMICOLON },	// ;	+
+    { Qt::Key_Colon,			KVC_COLON },		// :	*
+    { Qt::Key_Comma,			KVC_COMMA },		// ,	<
+    { Qt::Key_Period,			KVC_PERIOD },		// .	>
+    { Qt::Key_Slash,			KVC_SLASH },		// /	?
+    { Qt::Key_Space,			KVC_SPACE },		// Space
+
+    { Qt::Key_Escape,			KVC_ESC },			// ESC
+    { Qt::Key_Zenkaku_Hankaku,	KVC_HANZEN },		// 半角/全角
+    { Qt::Key_Tab,				KVC_TAB },			// Tab
+    { Qt::Key_CapsLock,		KVC_CAPSLOCK },		// CapsLock
+    { Qt::Key_Enter,			KVC_ENTER },		// Enter
+    { Qt::Key_Control,			KVC_LCTRL },		// L-Ctrl
+    //Qtでは右コントロールキーコードは定義されていない
+    //{ SDLK_RCTRL,			KVC_RCTRL },		// R-Ctrl
+    { Qt::Key_Shift,			KVC_LSHIFT },		// L-Shift
+    //Qtでは右シフトキーコードは定義されていない
+    //{ SDLK_RSHIFT,			KVC_RSHIFT },		// R-Shift
+    { Qt::Key_Alt,			KVC_LALT },			// L-Alt
+    //Qtでは右ALTキーコードは定義されていない
+    //{ SDLK_RALT,			KVC_RALT },			// R-Alt
+    { Qt::Key_Print,			KVC_PRINT },		// PrintScreen
+    { Qt::Key_ScrollLock,		KVC_SCROLLLOCK },	// ScrollLock
+    { Qt::Key_Pause,			KVC_PAUSE },		// Pause
+    { Qt::Key_Insert,			KVC_INSERT },		// Insert
+    { Qt::Key_Delete,			KVC_DELETE },		// Delete
+    { Qt::Key_End,				KVC_END },			// End
+    { Qt::Key_Home,             KVC_HOME },			// Home
+    { Qt::Key_PageUp,			KVC_PAGEUP },		// PageUp
+    { Qt::Key_PageDown,         KVC_PAGEDOWN },		// PageDown
+
+    { Qt::Key_Up,				KVC_UP },			// ↑
+    { Qt::Key_Down,         	KVC_DOWN },			// ↓
+    { Qt::Key_Left,         	KVC_LEFT },			// ←
+    { Qt::Key_Right,			KVC_RIGHT },		// →
+
+    //Qtではテンキーを識別しないため、除外する
+//  { SDLK_KP0,				KVC_P0 },			// [0]
+//  { SDLK_KP1,				KVC_P1 },			// [1]
+//  { SDLK_KP2,				KVC_P2 },			// [2]
+//  { SDLK_KP3,				KVC_P3 },			// [3]
+//  { SDLK_KP4,				KVC_P4 },			// [4]
+//  { SDLK_KP5,				KVC_P5 },			// [5]
+//  { SDLK_KP6,				KVC_P6 },			// [6]
+//  { SDLK_KP7,				KVC_P7 },			// [7]
+//  { SDLK_KP8,				KVC_P8 },			// [8]
+//  { SDLK_KP9,				KVC_P9 },			// [9]
+//  { SDLK_NUMLOCK,			KVC_NUMLOCK },		// NumLock
+//  { SDLK_KP_PLUS,			KVC_P_PLUS },		// [+]
+//  { SDLK_KP_MINUS,		KVC_P_MINUS },		// [-]
+//  { SDLK_KP_MULTIPLY,		KVC_P_MULTIPLY },	// [*]
+//  { SDLK_KP_DIVIDE,		KVC_P_DIVIDE },		// [/]
+//  { SDLK_KP_PERIOD,		KVC_P_PERIOD },		// [.]
+//  { SDLK_KP_ENTER,		KVC_P_ENTER },		// [Enter]
+
+    // 日本語キーボードのみ
+    { Qt::Key_yen,          KVC_YEN },			// ¥	|
+    { Qt::Key_BraceRight,	KVC_RBRACKET },		// ]	}
+    { Qt::Key_Underscore,	KVC_UNDERSCORE },	// ¥	_
+//	{ 				,		KVC_MUHENKAN },		// 無変換
+//	{ 				,		KVC_HENKAN },		// 変換
+//	{ 				,		KVC_HIRAGANA },		// ひらがな
+
+    // 追加キー
+    { Qt::Key_Meta,			KVX_LMETA },		// L-Meta
+    //Qtでは右Metaキーコードは定義されていない
+//    { SDLK_RMETA,			KVX_RMETA },		// R-Meta
+    { Qt::Key_Menu,			KVX_MENU }			// Menu
+};
+
+
+////////////////////////////////////////////////////////////////
+// 初期化
+//
+// 引数:	なし
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_Init( void )
+{
+    // Qtキーコード  -> 仮想キーコード 変換テーブル初期化
+    for( int i=0; i < COUNTOF(VKeyDef); i++ )
+        VKTable[VKeyDef[i].InKey] = VKeyDef[i].VKey;
+
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////
 // パスのデリミタを'/'に変換

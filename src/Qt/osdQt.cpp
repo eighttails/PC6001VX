@@ -8,10 +8,11 @@
 #include "../osd.h"
 #include "../common.h"
 #include "../pc6001v.h"
+#include "../p6el.h"
 #include "../joystick.h"
 
 static std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
-
+static QVector<QRgb> PaletteTable;              //パレットテーブル
 
 static const struct {	// SDLキーコード -> 仮想キーコード定義
     int InKey;			// SDLのキーコード
@@ -159,6 +160,203 @@ bool OSD_Init( void )
         VKTable[VKeyDef[i].InKey] = VKeyDef[i].VKey;
 
     return true;
+}
+
+////////////////////////////////////////////////////////////////
+// OSDキーコード -> 仮想キーコード変換
+//
+// 引数:	scode		環境依存のキーコード
+// 返値:	PCKEYsym	仮想キーコード
+////////////////////////////////////////////////////////////////
+PCKEYsym OSD_ConvertKeyCode( int scode )
+{
+    Q_ASSERT(VKTable.count(scode));
+    return VKTable[scode];
+}
+
+////////////////////////////////////////////////////////////////
+// 指定時間待機
+//
+// 引数:	tms			待機時間(ms)
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_Delay( DWORD tms )
+{
+    //QThread::mleepはスレッドクラスからしか使えないので、仕方なく
+    class MySleepThread : public QThread
+    {
+    public:
+        static void msleep(unsigned long msecs){QThread::msleep(msecs);}
+    };
+    MySleepThread::msleep(tms);
+}
+
+
+////////////////////////////////////////////////////////////////
+// マウスカーソル表示/非表示
+//
+// 引数:	disp		true:表示 false:非表示
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_ShowCursor( bool disp )
+{
+    qApp->setOverrideCursor(disp ? Qt::ArrowCursor : Qt::BlankCursor);
+}
+
+
+////////////////////////////////////////////////////////////////
+// キャプション設定
+//
+// 引数:	wh			ウィンドウハンドル
+//			str			キャプション文字列へのポインタ
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_SetWindowCaption( HWINDOW wh, const char *str )
+{
+    //#PENDING
+}
+
+
+
+////////////////////////////////////////////////////////////////
+// ウィンドウ作成
+//
+// 引数:	pwh			ウィンドウハンドルへのポインタ
+//			w			幅
+//			h			高さ
+//			bpp			色深度
+//			fsflag		true:フルスクリーン false:ウィンドウ
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
+{
+    QGraphicsScene* scene = new QGraphicsScene();
+    QGraphicsView* view = new QGraphicsView(scene);
+    scene->setSceneRect(0, 0, w, h);
+    //#PENDING
+    *pwh = view;
+    return true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ウィンドウ破棄
+//
+// 引数:	wh			ウィンドウハンドル
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_DestroyWindow( HWINDOW wh )
+{
+}
+
+
+////////////////////////////////////////////////////////////////
+// ウィンドウの幅を取得
+//
+// 引数:	wh			ウィンドウハンドル
+// 返値:	int			幅
+////////////////////////////////////////////////////////////////
+int OSD_GetWindowWidth( HWINDOW wh )
+{
+    //QtではSceneRectの幅を返す
+    //#PENDING
+    return 0;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ウィンドウの高さを取得
+//
+// 引数:	wh			ウィンドウハンドル
+// 返値:	int			高さ
+////////////////////////////////////////////////////////////////
+int OSD_GetWindowHeight( HWINDOW wh )
+{
+    //QtではSceneRectの高さを返す
+    //#PENDING
+    return 0;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ウィンドウの色深度を取得
+//
+// 引数:	wh			ウィンドウハンドル
+// 返値:	int			色深度
+////////////////////////////////////////////////////////////////
+int OSD_GetWindowBPP( HWINDOW wh )
+{
+    //内部カラーは8ビット固定
+    return 8;
+}
+
+
+////////////////////////////////////////////////////////////////
+// パレット設定
+//
+// 引数:	wh			ウィンドウハンドル
+//			pal			パレットへのポインタ
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_SetPalette( HWINDOW wh, VPalette *pal )
+{
+    PaletteTable.clear();
+    for (int i=0; i < pal->ncols; i++){
+        COLOR24& col = pal->colors[i];
+        PaletteTable.push_back(qRgb(col.r, col.g, col.b));
+    }
+    return true;
+}
+
+////////////////////////////////////////////////////////////////
+// ウィンドウに転送
+//
+// 引数:	wh			ウィンドウハンドル
+//			src			転送元サーフェス
+//			pal			パレットへのポインタ
+//			x,y			転送先座標
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_BlitToWindow( HWINDOW wh, VSurface *src, int x, int y, VPalette *pal )
+{
+    VRect src1,drc1;
+
+    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
+    Q_ASSERT(view);
+
+    //#PENDING パフォーマンスが悪いようならインスタンスを作らないようにする
+    QImage image(src->Width(), src->Height(), QImage::Format_Indexed8);
+    image.setColorTable(PaletteTable);
+
+    // 転送元範囲設定
+    src1.x = 0;
+    src1.y = 0;
+    src1.w = src->Width();
+    src1.h = src->Height();
+
+    if( src1.w <= 0 || src1.h <= 0 ) return;
+
+    // 転送先範囲設定
+    drc1.x = 0;
+    drc1.y = 0;
+
+    BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x * src->Bpp() / 8;
+
+    for( int i=0; i < src1.h; i++ ){
+        BYTE *pdst = (BYTE *)image.scanLine(i);
+        memcpy( pdst, psrc, image.bytesPerLine() );
+        psrc += src->Pitch();
+    }
+
+    QGraphicsPixmapItem* item = dynamic_cast<QGraphicsPixmapItem*>(view->itemAt(x, y));
+    if(item == NULL){
+        item = new QGraphicsPixmapItem(QPixmap::fromImage(image), NULL, view->scene());
+    } else {
+        item->setPixmap(QPixmap::fromImage(image));
+    }
+    item->setPos(x, y);
+
+    //#PENDING 縦横比調整
 }
 
 ////////////////////////////////////////////////////////////////

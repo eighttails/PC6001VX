@@ -86,7 +86,7 @@
 // 各種ファイル名 初期値
 /////////////////////////////////////////////////////////////////////////////
 #define	IMG_EXT			"png"				/* 画像ファイル拡張子 */
-#define	CONF_FILE		"pc6001vx.ini"		/* 設定ファイル */
+#define	CONF_FILE		"pc6001vx2.ini"		/* 設定ファイル */
 #define	PRINTER_FILE	"printer.txt"		/* プリンタ出力ファイル */
 #define	DOKODEMO_FILE	"dokodemo.dds"		/* どこでもSAVEファイル */
 #define	SERIAL_FILE		"serial.txt"		/* シリアル出力ファイル */

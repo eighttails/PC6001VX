@@ -111,10 +111,6 @@ void OSD_UnlockAudio();
 void OSD_Delay( DWORD );
 // プロセス開始からの経過時間取得
 DWORD OSD_GetTicks();
-// タイマ追加
-HTIMERID OSD_AddTimer( DWORD, CBF_TMR, void * );
-// タイマ削除
-bool OSD_DelTimer( HTIMERID );
 
 // --- ウィンドウ関連関数 ---
 // キャプション設定

@@ -50,8 +50,6 @@ EL6::~EL6( void )
 	if( regw )   delete regw;
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	
-	if( UpDateFPSID ) OSD_DelTimer( UpDateFPSID );
-	
 	if( staw )   delete staw;
 	if( joy )    delete joy;
 	if( snd )    delete snd;
@@ -324,10 +322,11 @@ bool EL6::Init( const CFG6 *config )
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	
 	// FPS表示タイマ設定
-	if( !SetFPSTimer( 1 ) ){
-		Stop();
-		return false;
-	}
+    //#PENDING FPS表示タイマはQtで実装
+    //	if( !SetFPSTimer( 1 ) ){
+    //		Stop();
+    //		return false;
+    //	}
 	
 	// ビデオキャプチャ -----
 	if( !AVI6::Init() ) return false;
@@ -658,34 +657,36 @@ void EL6::StreamUpdate( void *userdata, BYTE *stream, int len )
 ////////////////////////////////////////////////////////////////
 // FPS表示タイマ コールバック関数
 ////////////////////////////////////////////////////////////////
-DWORD EL6::UpDateFPS( DWORD interval, void *obj )
-{
-	EL6 *p6 = STATIC_CAST( EL6 *, obj );	// 自分自身のオブジェクトポインタ取得
+//#PENDING FPSタイマはQtで実装
+//DWORD EL6::UpDateFPS( DWORD interval, void *obj )
+//{
+//	EL6 *p6 = STATIC_CAST( EL6 *, obj );	// 自分自身のオブジェクトポインタ取得
 	
-	OSD_PushEvent( EV_FPSUPDATE, p6->UDFPSCount );
-	p6->UDFPSCount = 0;
+//	OSD_PushEvent( EV_FPSUPDATE, p6->UDFPSCount );
+//	p6->UDFPSCount = 0;
 	
-	return interval;
-}
+//	return interval;
+//}
 
 
 ////////////////////////////////////////////////////////////////
 // FPS表示タイマ設定
 ////////////////////////////////////////////////////////////////
-bool EL6::SetFPSTimer( int fps )
-{
-	// タイマ稼動中なら停止
-	if( UpDateFPSID ){
-		OSD_DelTimer( UpDateFPSID );
-		UpDateFPSID = NULL;
-	}
+//#PENDING FPSタイマはQtで実装
+//bool EL6::SetFPSTimer( int fps )
+//{
+//	// タイマ稼動中なら停止
+//	if( UpDateFPSID ){
+//		OSD_DelTimer( UpDateFPSID );
+//		UpDateFPSID = NULL;
+//	}
 	
-	// タイマ設定
-	if( fps > 0 )
-		UpDateFPSID = OSD_AddTimer( 1000/fps, EL6::UpDateFPS, this );
+//	// タイマ設定
+//	if( fps > 0 )
+//		UpDateFPSID = OSD_AddTimer( 1000/fps, EL6::UpDateFPS, this );
 	
-	return UpDateFPSID ? true : false;
-}
+//	return UpDateFPSID ? true : false;
+//}
 
 
 ////////////////////////////////////////////////////////////////

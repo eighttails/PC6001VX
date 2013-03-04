@@ -75,13 +75,15 @@ protected:
 	bool ScreenUpdate();								// 画面更新
 	int SoundUpdate( int, cRing * = NULL );				// サウンド更新
 	static void StreamUpdate( void *, BYTE *, int);		// ストリーム更新 コールバック関数
-	static DWORD UpDateFPS( DWORD, void * );			// FPS表示タイマ コールバック関数
-	bool SetFPSTimer( int );							// FPS表示タイマ設定
-	
+
+    //#PENDING FPS表示はQtで独自実装
+    //    static DWORD UpDateFPS( DWORD, void * );			// FPS表示タイマ コールバック関数
+//    bool SetFPSTimer( int );							// FPS表示タイマ設定
+
 	int UDFPSCount;				// FPS表示タイマカウンタ
 	int FSkipCount;				// フレームスキップカウンタ
 	
-	void OnThread( void * );				// スレッド関数
+    void OnThread( void * );				// スレッド関数
 	
 	int Emu();								// 1命令実行
 	int EmuVSYNC();							// 1画面分実行

@@ -233,39 +233,30 @@ bool OSD_GetEvent( Event *ev )
 
     return true;
 }
-
 ////////////////////////////////////////////////////////////////
 // イベントをキューにプッシュする
 //
 // 引数:	ev			イベントタイプ
-//			...			イベントタイプに応じた引数
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool OSD_PushEvent( EventType ev, ... )
+bool OSD_PushEvent(EventType ev)
 {
     Event event;
     event.type = ev;
+    return OSD_PushEvent(event);
+}
 
-    va_list args;
-    va_start( args, ev );
-
-    switch( ev ){
-    case EV_FPSUPDATE:
-        event.fps.fps = va_arg( args, int );
-        break;
-
-    case EV_DEBUGMODEBP:
-        event.bp.addr = va_arg( args, int );
-        break;
-
-    default:;
-    }
-
-    va_end( args );
-
+////////////////////////////////////////////////////////////////
+// イベントをキューにプッシュする
+//
+// 引数:	ev			イベント
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_PushEvent(const Event& ev)
+{
     //イベントキューにプッシュ
     eventMutex.lock();
-    eventQueue.push_back(event);
+    eventQueue.push_back(ev);
     eventEmitted.wakeAll();
     eventMutex.unlock();
     return true;

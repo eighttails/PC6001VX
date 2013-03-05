@@ -26,6 +26,7 @@ typedef enum {
 	EV_REPLAY,
 	EV_FPSUPDATE,
 	EV_DEBUGMODEBP,
+    EV_CONTEXTMENU,
 	EndofEvent
 } EventType;
 
@@ -36,7 +37,7 @@ typedef struct {
 	bool state;			// true:ON false:OFF
 	PCKEYsym sym;		// virtual keysym
 	PCKEYmod mod;		// current key modifiers
-	uint16_t unicode;	// translated character
+    uint16_t unicode;	// translated character
 } Event_Keyboard;
 
 // マウスボタン

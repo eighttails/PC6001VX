@@ -9,6 +9,7 @@ class QtP6VXApplication : public QtSingleApplication
 public:
     explicit QtP6VXApplication(int &argc, char **argv);
     
+    virtual bool notify(QObject *receiver, QEvent *event);
 signals:
     
 public slots:

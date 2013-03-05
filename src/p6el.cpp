@@ -111,7 +111,10 @@ void EL6::OnThread( void *inst )
 				if( p6->vm->bp->CheckBreakPoint( BPoint::BP_PC, p6->vm->cpum->GetPC(), 0, NULL ) || p6->vm->bp->IsReqBreak() ){
 					this->cThread::Cancel();	// スレッド終了フラグ立てる
 					p6->vm->bp->ResetBreak();
-					OSD_PushEvent( EV_DEBUGMODEBP, p6->vm->cpum->GetPC() );
+                    Event ev;
+                    ev.type = EV_DEBUGMODEBP;
+                    ev.bp.addr = p6->vm->cpum->GetPC();
+                    OSD_PushEvent( ev );
 				}
 			}
 		}else
@@ -450,17 +453,23 @@ EL6::ReturnCode EL6::EventLoop( void )
 			break;
 			
 		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-		case EV_MOUSEBUTTONUP:	// マウスボタンクリック
-			if( ( event.mousebt.button == MBT_RIGHT ) && ( event.mousebt.state == false ) ){
-				Stop();
-				
-				// ポップアップメニュー表示
-				ShowPopupMenu( event.mousebt.x, event.mousebt.y );
-				
-				Start();
-			}
-			break;
-			
+            //#PENDING 消す
+//        case EV_MOUSEBUTTONUP:	// マウスボタンクリック
+//            if( ( event.mousebt.button == MBT_RIGHT ) && ( event.mousebt.state == false ) ){
+//                Stop();
+
+//                // ポップアップメニュー表示
+//                ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+
+//                Start();
+//            }
+//            break;
+        case EV_CONTEXTMENU:	// コンテキストメニュー
+                Stop();
+                // ポップアップメニュー表示
+                ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+                Start();
+            break;
 		case EV_QUIT:			// 終了
 			if( cfg->GetCkQuit() )
 				if( OSD_Message( MSG_QUIT, MSG_QUITC, OSDM_YESNO | OSDM_ICONQUESTION ) != OSDR_YES )

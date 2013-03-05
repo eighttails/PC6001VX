@@ -80,7 +80,8 @@ SOURCES += \
     src/Qt/qtsingleapplication/qtlockedfile_win.cpp \
     src/Qt/qtsingleapplication/qtsingleapplication.cpp \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
-    src/thread.cpp
+    src/thread.cpp \
+    src/Qt/qtp6vxapplication.cpp
 
 HEADERS  += \
     src/breakpoint.h \
@@ -143,7 +144,8 @@ HEADERS  += \
     src/Qt/qtsingleapplication/qtlocalpeer.h \
     src/Qt/qtsingleapplication/qtlockedfile.h \
     src/Qt/qtsingleapplication/qtsingleapplication.h \
-    src/Qt/qtsingleapplication/qtsinglecoreapplication.h
+    src/Qt/qtsingleapplication/qtsinglecoreapplication.h \
+    src/Qt/qtp6vxapplication.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

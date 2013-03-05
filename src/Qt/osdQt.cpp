@@ -1,8 +1,7 @@
 // OS依存の汎用ルーチン(主にUI用)
 
+#include <QtCore>
 #include <QtGui>
-#include <QSharedMemory>
-#include <string.h>
 
 #include "../log.h"
 #include "../osd.h"
@@ -11,8 +10,16 @@
 #include "../p6el.h"
 #include "../joystick.h"
 
-static std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
-static QVector<QRgb> PaletteTable;              //パレットテーブル
+//エミュレータ内部用イベントキュー
+QMutex eventMutex;
+QQueue<Event> eventQueue;
+QWaitCondition eventEmitted;
+
+//経過時間タイマ
+QElapsedTimer elapsedTimer;
+
+std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
+QVector<QRgb> PaletteTable;              //パレットテーブル
 
 static const struct {	// SDLキーコード -> 仮想キーコード定義
     int InKey;			// SDLのキーコード
@@ -155,6 +162,9 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
 ////////////////////////////////////////////////////////////////
 bool OSD_Init( void )
 {
+    //経過時間タイマーをスタート
+    elapsedTimer.start();
+
     // Qtキーコード  -> 仮想キーコード 変換テーブル初期化
     for( int i=0; i < COUNTOF(VKeyDef); i++ )
         VKTable[VKeyDef[i].InKey] = VKeyDef[i].VKey;
@@ -170,7 +180,9 @@ bool OSD_Init( void )
 ////////////////////////////////////////////////////////////////
 PCKEYsym OSD_ConvertKeyCode( int scode )
 {
-    Q_ASSERT(VKTable.count(scode));
+    if(VKTable.count(scode) == 0){
+        return KVC_UNKNOWN;
+    }
     return VKTable[scode];
 }
 
@@ -190,6 +202,75 @@ void OSD_Delay( DWORD tms )
     };
     MySleepThread::msleep(tms);
 }
+
+
+////////////////////////////////////////////////////////////////
+// プロセス開始からの経過時間取得
+//
+// 引数:	なし
+// 返値:	DWORD		経過時間(ms)
+////////////////////////////////////////////////////////////////
+DWORD OSD_GetTicks( void )
+{
+   return elapsedTimer.elapsed();
+}
+
+
+////////////////////////////////////////////////////////////////
+// イベント取得(イベントが発生するまで待つ)
+//
+// 引数:	ev			イベント情報共用体へのポインタ
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_GetEvent( Event *ev )
+{
+    //イベントが発行されるまで待つ
+    eventMutex.lock();
+    eventEmitted.wait(&eventMutex);
+    *ev = eventQueue.front();
+    eventQueue.pop_front();
+    eventMutex.unlock();
+
+    return true;
+}
+
+////////////////////////////////////////////////////////////////
+// イベントをキューにプッシュする
+//
+// 引数:	ev			イベントタイプ
+//			...			イベントタイプに応じた引数
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_PushEvent( EventType ev, ... )
+{
+    Event event;
+    event.type = ev;
+
+    va_list args;
+    va_start( args, ev );
+
+    switch( ev ){
+    case EV_FPSUPDATE:
+        event.fps.fps = va_arg( args, int );
+        break;
+
+    case EV_DEBUGMODEBP:
+        event.bp.addr = va_arg( args, int );
+        break;
+
+    default:;
+    }
+
+    va_end( args );
+
+    //イベントキューにプッシュ
+    eventMutex.lock();
+    eventQueue.push_back(event);
+    eventEmitted.wakeAll();
+    eventMutex.unlock();
+    return true;
+}
+
 
 
 ////////////////////////////////////////////////////////////////
@@ -233,8 +314,8 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
     QGraphicsScene* scene = new QGraphicsScene();
     QGraphicsView* view = new QGraphicsView(scene);
     scene->setSceneRect(0, 0, w, h);
-    //#PENDING
     *pwh = view;
+    view->show();
     return true;
 }
 
@@ -259,8 +340,10 @@ void OSD_DestroyWindow( HWINDOW wh )
 int OSD_GetWindowWidth( HWINDOW wh )
 {
     //QtではSceneRectの幅を返す
-    //#PENDING
-    return 0;
+    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
+    Q_ASSERT(view);
+
+    return view->scene()->width();
 }
 
 
@@ -272,9 +355,11 @@ int OSD_GetWindowWidth( HWINDOW wh )
 ////////////////////////////////////////////////////////////////
 int OSD_GetWindowHeight( HWINDOW wh )
 {
-    //QtではSceneRectの高さを返す
-    //#PENDING
-    return 0;
+    //QtではSceneRectの幅を返す
+    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
+    Q_ASSERT(view);
+
+    return view->scene()->width();
 }
 
 
@@ -307,6 +392,35 @@ bool OSD_SetPalette( HWINDOW wh, VPalette *pal )
     }
     return true;
 }
+
+////////////////////////////////////////////////////////////////
+// ウィンドウ反映
+//
+// 引数:	wh			ウィンドウハンドル
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_RenderWindow( HWINDOW wh )
+{
+    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
+    Q_ASSERT(view);
+    view->update();
+}
+
+
+////////////////////////////////////////////////////////////////
+// ウィンドウクリア
+//  色は0(黒)で決め打ち
+//
+// 引数:	wh			ウィンドウハンドル
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_ClearWindow( HWINDOW wh )
+{
+    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
+    Q_ASSERT(view);
+    view->scene()->clear();
+}
+
 
 ////////////////////////////////////////////////////////////////
 // ウィンドウに転送

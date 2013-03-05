@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <errno.h>
-#include <QtSingleApplication>
 #include <QFrame>
 #include <QTextCodec>
 #include <QDir>
@@ -20,6 +19,8 @@ Q_IMPORT_PLUGIN(qico)
 #include "../osd.h"
 #include "../p6el.h"
 #include "../p6vm.h"
+
+#include "qtp6vxapplication.h"
 
 //SDLMainとのコンフリクト解消
 #undef main
@@ -84,7 +85,7 @@ int main( int argc, char *argv[] )
     XInitThreads();
 #endif
 
-    QtSingleApplication app(argc, argv);
+    QtP6VXApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 
 	EL6 *P6Core             = NULL;			// オブジェクトポインタ

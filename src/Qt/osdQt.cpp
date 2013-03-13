@@ -302,8 +302,8 @@ void OSD_SetWindowCaption( HWINDOW wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 {
-    QGraphicsScene* scene = new QGraphicsScene();
-    QGraphicsView* view = new QGraphicsView(scene);
+    static QGraphicsScene* scene = new QGraphicsScene(qApp);
+    static QGraphicsView* view = new QGraphicsView(scene);
     scene->setSceneRect(0, 0, w, h);
     *pwh = view;
     view->show();

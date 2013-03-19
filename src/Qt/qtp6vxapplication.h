@@ -2,6 +2,9 @@
 #define QTP6VXAPPLICATION_H
 
 #include <QtSingleApplication>
+#include <QImage>
+
+#include "../typedef.h"
 #include "../p6el.h"
 #include "../p6vm.h"
 #include "../config.h"
@@ -20,6 +23,11 @@ public slots:
     //直接呼び出さずに、Qtのイベントループの中で実行する
     void startup();
 
+    //グラフィックをシーンに配置
+    //QGraphicsSceneの操作はメインスレッドでしかできないため、
+    //ここで実装する
+    void layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image);
+
 signals:
     //前準備終了シグナル
     void prepared();
@@ -32,6 +40,9 @@ private slots:
     void executeEmulation();
     //仮想マシン終了後の処理
     void postExecuteEmulation();
+
+    //仮想マシンを終了させる
+    void terminateEmulation();
 
 private:
     EL6 *P6Core;    			// オブジェクトポインタ

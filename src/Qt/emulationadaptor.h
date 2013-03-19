@@ -12,16 +12,21 @@ class EmulationAdaptor : public QThread
 public:
     explicit EmulationAdaptor(QObject *parent = 0);
     
+    EL6* getEmulationObj(){return P6Core;}
     void setEmulationObj(EL6* el){
         P6Core = el;
     }
+
     EL6::ReturnCode getReturnCode(){return RetCode;}
 
 signals:
+    //エミュレーションイベントループの終了
+    void finished();
 public slots:
+    //エミュレーションイベントループを開始
+    void doEventLoop();
 
 protected:
-    virtual void run();
 
 private:
     EL6* P6Core;

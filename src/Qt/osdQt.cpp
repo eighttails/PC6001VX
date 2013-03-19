@@ -10,6 +10,8 @@
 #include "../p6el.h"
 #include "../joystick.h"
 
+#include "signalproxy.h"
+
 //エミュレータ内部用イベントキュー
 QMutex eventMutex;
 QQueue<Event> eventQueue;
@@ -20,6 +22,10 @@ QElapsedTimer elapsedTimer;
 
 std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
 QVector<QRgb> PaletteTable;              //パレットテーブル
+
+//エミュレータのイベントループから
+//Qtのイベントループにシグナルを送るための仲介スレッド
+SignalProxy signalProxy;
 
 static const struct {	// SDLキーコード -> 仮想キーコード定義
     int InKey;			// SDLのキーコード
@@ -162,6 +168,11 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
 ////////////////////////////////////////////////////////////////
 bool OSD_Init( void )
 {
+    //エミュレータのイベントループから
+    //Qtのイベントループにシグナルを送るための仲介スレッド
+    signalProxy.moveToThread(qApp->thread());
+    QObject::connect(&signalProxy, SIGNAL(imageUpdated(HWINDOW, int, int, double, QImage)), qApp, SLOT(layoutBitmap(HWINDOW, int, int, double, QImage)));
+
     //経過時間タイマーをスタート
     elapsedTimer.start();
 
@@ -302,8 +313,11 @@ void OSD_SetWindowCaption( HWINDOW wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 {
-    static QGraphicsScene* scene = new QGraphicsScene(qApp);
+    //#PENDING sceneのリーク対策
+    static QGraphicsScene* scene = new QGraphicsScene();
     static QGraphicsView* view = new QGraphicsView(scene);
+    scene->moveToThread(qApp->thread());
+    view->moveToThread(qApp->thread());
     scene->setSceneRect(0, 0, w, h);
     *pwh = view;
     view->show();
@@ -426,9 +440,6 @@ void OSD_BlitToWindow( HWINDOW wh, VSurface *src, int x, int y, VPalette *pal )
 {
     VRect src1,drc1;
 
-    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
-    Q_ASSERT(view);
-
     //#PENDING パフォーマンスが悪いようならインスタンスを作らないようにする
     QImage image(src->Width(), src->Height(), QImage::Format_Indexed8);
     image.setColorTable(PaletteTable);
@@ -453,15 +464,9 @@ void OSD_BlitToWindow( HWINDOW wh, VSurface *src, int x, int y, VPalette *pal )
         psrc += src->Pitch();
     }
 
-    QGraphicsPixmapItem* item = dynamic_cast<QGraphicsPixmapItem*>(view->itemAt(x, y));
-    if(item == NULL){
-        item = new QGraphicsPixmapItem(QPixmap::fromImage(image), NULL, view->scene());
-    } else {
-        item->setPixmap(QPixmap::fromImage(image));
-    }
-    item->setPos(x, y);
-
     //#PENDING 縦横比調整
+    double aspect = 1.0;
+    signalProxy.updateImage(wh, x, y, aspect, image);
 }
 
 ////////////////////////////////////////////////////////////////

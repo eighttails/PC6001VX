@@ -82,7 +82,8 @@ SOURCES += \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
     src/thread.cpp \
     src/Qt/qtp6vxapplication.cpp \
-    src/Qt/emulationadaptor.cpp
+    src/Qt/emulationadaptor.cpp \
+    src/Qt/signalproxy.cpp
 
 HEADERS  += \
     src/breakpoint.h \
@@ -147,7 +148,8 @@ HEADERS  += \
     src/Qt/qtsingleapplication/qtsingleapplication.h \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.h \
     src/Qt/qtp6vxapplication.h \
-    src/Qt/emulationadaptor.h
+    src/Qt/emulationadaptor.h \
+    src/Qt/signalproxy.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

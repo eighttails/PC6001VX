@@ -1,5 +1,4 @@
-#include "qtp6vxapplication.h"
-#include <QKeyEvent>
+#include <QtGui>
 
 #include "../event.h"
 #include "../osd.h"
@@ -9,6 +8,8 @@
 #include "../console.h"
 #include "../error.h"
 #include "../osd.h"
+
+#include "qtp6vxapplication.h"
 
 ///////////////////////////////////////////////////////////
 // フォントファイルチェック(無ければ作成する)
@@ -59,9 +60,16 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
     QtSingleApplication(argc, argv)
   , P6Core(NULL)
   , Restart(EL6::Quit)
-  , Adaptor(new EmulationAdaptor(this))
+  , Adaptor(new EmulationAdaptor())
 {
+    qRegisterMetaType<HWINDOW>("HWINDOW");
+
+    QThread* emulationThread = new QThread(this);
+    emulationThread->start();
+    Adaptor->moveToThread(emulationThread);
+
     connect(this, SIGNAL(prepared()), this, SLOT(executeEmulation()), Qt::QueuedConnection);
+    connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()), Qt::QueuedConnection);
     connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()), Qt::QueuedConnection);
 }
 
@@ -115,6 +123,22 @@ void QtP6VXApplication::startup()
     }
 
     emit prepared();
+}
+
+void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image)
+{
+    //QtではSceneRectの幅を返す
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    Q_ASSERT(view);
+    QGraphicsScene* scene = view->scene();
+
+    QGraphicsPixmapItem* item = dynamic_cast<QGraphicsPixmapItem*>(scene->itemAt(x, y));
+    if(item == NULL){
+        item = new QGraphicsPixmapItem(QPixmap::fromImage(image), NULL, scene);
+    } else {
+        item->setPixmap(QPixmap::fromImage(image));
+    }
+    item->setPos(x, y);
 }
 
 //仮想マシンを開始させる
@@ -208,7 +232,7 @@ void QtP6VXApplication::postExecuteEmulation()
     Adaptor->setEmulationObj(NULL);
     P6Core->Stop();
     delete P6Core;	// P6オブジェクトを開放
-
+    P6Core = NULL;
 
     // 再起動ならばINIファイル再読込み
     if( Restart == EL6::Restart ){
@@ -226,6 +250,11 @@ void QtP6VXApplication::postExecuteEmulation()
     } else {
         emit vmRestart();
     }
+}
+
+void QtP6VXApplication::terminateEmulation()
+{
+    OSD_PushEvent( EV_QUIT );
 }
 
 bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )

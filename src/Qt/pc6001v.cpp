@@ -55,7 +55,7 @@ int main( int argc, char *argv[] )
 #endif
 	
 
-    QTimer::singleShot(500, &app, SLOT(startup()));
+    QTimer::singleShot(100, &app, SLOT(startup()));
     app.exec();
 	
 	

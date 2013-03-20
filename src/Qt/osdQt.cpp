@@ -2,6 +2,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QtOpenGL>
 
 #include "../log.h"
 #include "../osd.h"
@@ -100,7 +101,7 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
     { Qt::Key_Zenkaku_Hankaku,	KVC_HANZEN },		// 半角/全角
     { Qt::Key_Tab,				KVC_TAB },			// Tab
     { Qt::Key_CapsLock,		KVC_CAPSLOCK },		// CapsLock
-    { Qt::Key_Enter,			KVC_ENTER },		// Enter
+    { Qt::Key_Return,			KVC_ENTER },		// Enter
     { Qt::Key_Control,			KVC_LCTRL },		// L-Ctrl
     //Qtでは右コントロールキーコードは定義されていない
     //{ SDLK_RCTRL,			KVC_RCTRL },		// R-Ctrl
@@ -192,6 +193,7 @@ bool OSD_Init( void )
 PCKEYsym OSD_ConvertKeyCode( int scode )
 {
     if(VKTable.count(scode) == 0){
+        qDebug("keycode %x unknown\n", scode);
         return KVC_UNKNOWN;
     }
     return VKTable[scode];
@@ -313,12 +315,16 @@ void OSD_SetWindowCaption( HWINDOW wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 {
-    //#PENDING sceneのリーク対策
+    //#PENDING TODO sceneのリーク対策
     static QGraphicsScene* scene = new QGraphicsScene();
     static QGraphicsView* view = new QGraphicsView(scene);
+    static QGLWidget* glw = new QGLWidget(view);
+    glw->setFormat(QGLFormat(QGL::SampleBuffers));
+    view->setViewport(glw);
     scene->moveToThread(qApp->thread());
     view->moveToThread(qApp->thread());
     scene->setSceneRect(0, 0, w, h);
+    view->adjustSize();
     *pwh = view;
     view->show();
     return true;
@@ -364,7 +370,7 @@ int OSD_GetWindowHeight( HWINDOW wh )
     QGraphicsView* view = static_cast<QGraphicsView*>(wh);
     Q_ASSERT(view);
 
-    return view->scene()->width();
+    return view->scene()->height();
 }
 
 

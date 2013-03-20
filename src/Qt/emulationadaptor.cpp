@@ -2,7 +2,7 @@
 #include "../p6el.h"
 
 EmulationAdaptor::EmulationAdaptor(QObject *parent) :
-    QThread(parent)
+    QObject(parent)
   , P6Core(NULL)
   , RetCode(EL6::Quit)
 {

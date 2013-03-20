@@ -68,9 +68,15 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
     emulationThread->start();
     Adaptor->moveToThread(emulationThread);
 
-    connect(this, SIGNAL(prepared()), this, SLOT(executeEmulation()), Qt::QueuedConnection);
-    connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()), Qt::QueuedConnection);
-    connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()), Qt::QueuedConnection);
+    connect(this, SIGNAL(initialized()), this, SLOT(executeEmulation()));
+    connect(this, SIGNAL(vmPrepared()), Adaptor, SLOT(doEventLoop()));
+    connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()));
+    connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()));
+}
+
+QtP6VXApplication::~QtP6VXApplication()
+{
+    Adaptor->deleteLater();
 }
 
 void QtP6VXApplication::startup()
@@ -122,7 +128,7 @@ void QtP6VXApplication::startup()
         }
     }
 
-    emit prepared();
+    emit initialized();
 }
 
 void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image)
@@ -220,9 +226,9 @@ void QtP6VXApplication::executeEmulation()
     }
 
     // VM実行
-    P6Core->Start();
     Adaptor->setEmulationObj(P6Core);
-    Adaptor->start();
+    emit vmPrepared();
+    P6Core->Start();
 }
 
 //仮想マシン終了後の処理
@@ -266,8 +272,9 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
     {
-        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
-        ev.type        = EV_KEYDOWN;
+        QKeyEvent* ke = dynamic_cast<QKeyEvent*>(event);
+        Q_ASSERT(ke);
+        ev.type        = event->type() == QEvent::KeyPress ? EV_KEYDOWN : EV_KEYUP;
         ev.key.state   = event->type() == QEvent::KeyPress ? true : false;
         ev.key.sym     = OSD_ConvertKeyCode( ke->key() );
         ev.key.mod	   = (PCKEYmod)(

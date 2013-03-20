@@ -15,7 +15,8 @@ class QtP6VXApplication : public QtSingleApplication
     Q_OBJECT
 public:
     explicit QtP6VXApplication(int &argc, char **argv);
-    
+    virtual ~QtP6VXApplication();
+
     virtual bool notify(QObject *receiver, QEvent *event);
 
 public slots:
@@ -29,8 +30,11 @@ public slots:
     void layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image);
 
 signals:
-    //前準備終了シグナル
-    void prepared();
+    //初期化終了シグナル
+    void initialized();
+
+    //仮想マシン実行前準備終了シグナル
+    void vmPrepared();
 
     // 仮想マシンの実行終了シグナル
     void vmRestart();

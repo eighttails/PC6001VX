@@ -1,12 +1,12 @@
 #ifndef EMULATIONADAPTOR_H
 #define EMULATIONADAPTOR_H
 
-#include <QThread>
+#include <QObject>
 #include"../p6el.h"
 
 //エミュレーションクラスにQtのシグナル、スロット機能を
 //付加するためのアダプタクラス
-class EmulationAdaptor : public QThread
+class EmulationAdaptor : public QObject
 {
     Q_OBJECT
 public:

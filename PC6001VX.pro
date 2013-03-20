@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT       += core gui network opengl
 
 TARGET = PC6001VX
 TEMPLATE = app

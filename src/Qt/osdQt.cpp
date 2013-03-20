@@ -2,7 +2,6 @@
 
 #include <QtCore>
 #include <QtGui>
-#include <QtOpenGL>
 
 #include "../log.h"
 #include "../osd.h"
@@ -12,6 +11,7 @@
 #include "../joystick.h"
 
 #include "signalproxy.h"
+#include "renderview.h"
 
 //エミュレータ内部用イベントキュー
 QMutex eventMutex;
@@ -317,10 +317,8 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 {
     //#PENDING TODO sceneのリーク対策
     static QGraphicsScene* scene = new QGraphicsScene();
-    static QGraphicsView* view = new QGraphicsView(scene);
-    static QGLWidget* glw = new QGLWidget(view);
-    glw->setFormat(QGLFormat(QGL::SampleBuffers));
-    view->setViewport(glw);
+    static RenderView* view = new RenderView(scene);
+
     scene->moveToThread(qApp->thread());
     view->moveToThread(qApp->thread());
     scene->setSceneRect(0, 0, w, h);

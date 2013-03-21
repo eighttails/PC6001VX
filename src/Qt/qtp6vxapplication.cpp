@@ -141,10 +141,15 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QI
     QGraphicsPixmapItem* item = dynamic_cast<QGraphicsPixmapItem*>(scene->itemAt(x, y));
     if(item == NULL){
         item = new QGraphicsPixmapItem(QPixmap::fromImage(image), NULL, scene);
+        item->setTransformationMode(Qt::SmoothTransformation);
     } else {
         item->setPixmap(QPixmap::fromImage(image));
     }
-    item->setPos(x, y);
+    QTransform trans;
+    trans.translate(x, y);
+    //#PENDING 拡大がうまく行かない理由を調査
+    //trans.scale(1, aspect);
+    item->setTransform(trans);
 }
 
 //仮想マシンを開始させる

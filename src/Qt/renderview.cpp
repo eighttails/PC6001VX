@@ -11,7 +11,10 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     QGLWidget* glw = new QGLWidget(this);
     glw->setFormat(QGLFormat(QGL::SampleBuffers));
     setViewport(glw);
-    setRenderHints(QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    setRenderHints(QPainter::SmoothPixmapTransform |
+                   QPainter::TextAntialiasing |
+                   QPainter::HighQualityAntialiasing);
 }
 
 void RenderView::resizeEvent(QResizeEvent *event)

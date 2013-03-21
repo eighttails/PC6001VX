@@ -4,16 +4,20 @@
 RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     QGraphicsView(scene, parent)
 {
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setBackgroundBrush(Qt::black);
+
     QGLWidget* glw = new QGLWidget(this);
-    glw->setFormat(QGLFormat(QGL::SampleBuffers|QGL::DirectRendering));
+    glw->setFormat(QGLFormat(QGL::SampleBuffers));
     setViewport(glw);
-    setRenderHint(QPainter::SmoothPixmapTransform);
-    setRenderHint(QPainter::HighQualityAntialiasing);
-    fitInView(this->scene()->sceneRect(),Qt::KeepAspectRatio);
+    setRenderHints(QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
 }
 
 void RenderView::resizeEvent(QResizeEvent *event)
 {
-    fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
+    qreal scaleRatio = qMin(width() / scene()->width(), height() / scene()->height());
+    resetMatrix();
+    scale(scaleRatio, scaleRatio);
 }
 

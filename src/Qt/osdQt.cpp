@@ -468,9 +468,9 @@ void OSD_BlitToWindow( HWINDOW wh, VSurface *src, int x, int y, VPalette *pal )
         psrc += src->Pitch();
     }
 
-    //#PENDING 縦横比調整
-    double aspect = 1.0;
-    signalProxy.updateImage(wh, x, y, aspect, image);
+    // 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
+    // シグナルを発行してメインスレッドでSceneを更新する
+    signalProxy.updateImage(wh, x, y, src->GetAspectRatio(), image);
 }
 
 ////////////////////////////////////////////////////////////////

@@ -41,6 +41,7 @@ protected:
 	int w, h;					// 幅,高さ
 	int bpp;					// 1ピクセルのbyte数
 	int pitch;					// 1ラインのbyte数
+    double aspect;              // アスペクト比(幅を1とした場合の高さの比率)
 	void *pixels;				// ピクセルデータへのポインタ
 	
 	VRect rect;					// 描画領域
@@ -56,6 +57,8 @@ public:
 	
 	virtual bool InitSurface( int, int, int );	// 初期化(サーフェスサイズ指定)
 	void SetRect( int, int, int, int );			// 描画領域設定
+    double GetAspectRatio();
+    void SetAspectRatio(double);                // アスペクト比を設定
 	VRect *GetRect();							// 描画領域取得
 	int SetPalette( COLOR24 *, int = 256 );		// パレット設定
 	VPalette *GetPalette();						// パレット取得

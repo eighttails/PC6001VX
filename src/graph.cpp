@@ -257,7 +257,7 @@ void DSP6::DrawScreen( void )
 			// スクリーンサーフェス下端に位置を合わせてblit
 			vm->el->staw->Update();
 			
-			OSD_BlitToWindow( Wh, STATIC_CAST( VSurface *, vm->el->staw ), 0, OSD_GetWindowHeight( Wh ) - vm->el->staw->Height(), Pal );
+            OSD_BlitToWindow( Wh, STATIC_CAST( VSurface *, vm->el->staw ), 0, OSD_GetWindowHeight( Wh ) - vm->el->staw->Height(), Pal );
 		}
 	}
 	
@@ -334,8 +334,8 @@ bool DSP6::UpdateSubBuf( void )
 	
 	if( !RefreshSubBuf() ) return false;
 	
-	if( DISPNTSC ){	// 4:3表示有効の場合
-		PRINTD( GRP_LOG, " -> 4:3" );
+    if( 0 /*DISPNTSC*/ ){	// 4:3表示有効の場合(P6VXでは表示段階でストレッチするのでここはスキップ。)
+        PRINTD( GRP_LOG, " -> 4:3" );
 		if( DISPSCAN ){	// スキャンラインありの場合
 			PRINTD( GRP_LOG, " -> ScanLine" );
 			switch( SBuf->Bpp() ){
@@ -654,7 +654,11 @@ bool DSP6::UpdateSubBuf( void )
 	
 	PRINTD( GRP_LOG, " -> OK\n" );
 	
-	
+    // 4:3表示有効の場合、表示比率を設定する
+    if(DISPNTSC){
+        SBuf->SetAspectRatio(double(HBBUS) / P6WINH);
+    }
+
 	return true;
 }
 

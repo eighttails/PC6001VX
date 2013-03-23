@@ -138,18 +138,28 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QI
     Q_ASSERT(view);
     QGraphicsScene* scene = view->scene();
 
-    QGraphicsPixmapItem* item = dynamic_cast<QGraphicsPixmapItem*>(scene->itemAt(x, y));
-    if(item == NULL){
-        item = new QGraphicsPixmapItem(QPixmap::fromImage(image), NULL, scene);
-        item->setTransformationMode(Qt::SmoothTransformation);
-    } else {
-        item->setPixmap(QPixmap::fromImage(image));
+    // 指定座標に生成済みのQPixmapItemが存在するかチェック
+    // (同一座標にビットマップが重なることはないという前提)
+    QGraphicsItem* item = NULL;
+    QGraphicsPixmapItem* pItem = NULL;
+    foreach(item, scene->items()){
+        if(item->scenePos() == QPointF(x, y)){
+            pItem = dynamic_cast<QGraphicsPixmapItem*>(item);
+            break;
+        }
     }
-    QTransform trans;
-    trans.translate(x, y);
-    //#PENDING 拡大がうまく行かない理由を調査
-    //trans.scale(1, aspect);
-    item->setTransform(trans);
+
+    if(pItem == NULL){
+        // 既存のQPixmapItemが存在しない場合は生成
+        pItem = new QGraphicsPixmapItem(NULL, scene);
+        pItem->setTransformationMode(Qt::SmoothTransformation);
+        QTransform trans;
+        trans.scale(1, aspect);
+        trans.translate(x, y);
+        pItem->setTransform(trans);
+    }
+    pItem->setPixmap(QPixmap::fromImage(image));
+
 }
 
 //仮想マシンを開始させる

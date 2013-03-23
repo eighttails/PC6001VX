@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-VSurface::VSurface( void ) : w(0), h(0), bpp(0), pitch(0), pixels(NULL), palette(NULL),
+VSurface::VSurface( void ) : w(0), h(0), bpp(0), pitch(0), aspect(1.0), pixels(NULL), palette(NULL),
 	rmask(0), gmask(0), bmask(0), rshift(0), gshift(0),bshift(0),
 	rloss(0), gloss(0), bloss(0) {}
 
@@ -115,7 +115,27 @@ void VSurface::SetRect( int xx, int yy, int ww, int hh )
 	r2.w = ww > 0 ? ww : 0;
 	r2.h = hh > 0 ? hh : 0;
 	
-	RectAdd( &rect, &r1, &r2 );
+    RectAdd( &rect, &r1, &r2 );
+}
+
+////////////////////////////////////////////////////////////////
+// アスペクト比取得
+// 引数:	なし
+// 返値:	double アスペクト比(幅を1とした場合の高さの比率)
+////////////////////////////////////////////////////////////////
+double VSurface::GetAspectRatio()
+{
+    return aspect;
+}
+
+////////////////////////////////////////////////////////////////
+// アスペクト比設定
+// 引数:	aspectRatio アスペクト比(幅を1とした場合の高さの比率)
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void VSurface::SetAspectRatio(double aspectRatio)
+{
+    aspect = aspectRatio;
 }
 
 

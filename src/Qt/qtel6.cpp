@@ -1,7 +1,4 @@
-// OS依存の汎用ルーチン(主にUI用)
-
 #include <QtGui>
-#include <new>
 
 #include "../pc6001v.h"
 #include "../p6el.h"
@@ -21,6 +18,17 @@
 
 #include "configdialog.h"
 #include "aboutdialog.h"
+#include "signalproxy.h"
+
+#include "qtel6.h"
+
+///////////////////////////////////////////////////////////
+// ポップアップメニュー表示
+///////////////////////////////////////////////////////////
+void EL6::ShowPopupMenu( int x, int y )
+{
+    signalProxy.showPopupMenu(x, y);
+}
 
 ///////////////////////////////////////////////////////////
 // ローカル関数定義
@@ -105,11 +113,11 @@ QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable =
     action->setCheckable(checkable);
     return action;
 }
+QtEL6::QtEL6()
+{
+}
 
-///////////////////////////////////////////////////////////
-// ポップアップメニュー表示
-///////////////////////////////////////////////////////////
-void EL6::ShowPopupMenu( int x, int y )
+void QtEL6::ShowPopupImpl(int x, int y)
 {
     QAction* selectedAction = NULL;
 

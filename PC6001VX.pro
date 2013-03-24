@@ -63,7 +63,6 @@ SOURCES += \
     src/device/pd8255.cpp \
     src/device/z80.cpp \
     src/device/z80-dbg.cpp \
-    src/Qt/guiQt.cpp \
     src/Qt/osdQt.cpp \
     src/Qt/pc6001v.cpp \
     src/Qt/configdialog.cpp \
@@ -84,7 +83,8 @@ SOURCES += \
     src/Qt/qtp6vxapplication.cpp \
     src/Qt/emulationadaptor.cpp \
     src/Qt/signalproxy.cpp \
-    src/Qt/renderview.cpp
+    src/Qt/renderview.cpp \
+    src/Qt/qtel6.cpp
 
 HEADERS  += \
     src/breakpoint.h \
@@ -151,7 +151,8 @@ HEADERS  += \
     src/Qt/qtp6vxapplication.h \
     src/Qt/emulationadaptor.h \
     src/Qt/signalproxy.h \
-    src/Qt/renderview.h
+    src/Qt/renderview.h \
+    src/Qt/qtel6.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

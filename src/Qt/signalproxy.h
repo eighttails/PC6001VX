@@ -13,8 +13,12 @@ public:
     
 signals:
     void imageUpdated(HWINDOW Wh, int x, int y, double aspect, QImage image);
+    void menuRequested(int x, int y);
 public slots:
     void updateImage(HWINDOW Wh, int x, int y, double aspect, QImage image);
+    void showPopupMenu(int x, int y);
 };
+
+extern SignalProxy signalProxy;
 
 #endif // SIGNALPROXY_H

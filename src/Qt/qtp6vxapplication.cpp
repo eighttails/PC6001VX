@@ -162,6 +162,11 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QI
 
 }
 
+void QtP6VXApplication::showPopupMenu(int x, int y)
+{
+    P6Core->ShowPopupImpl(x, y);
+}
+
 //仮想マシンを開始させる
 void QtP6VXApplication::executeEmulation()
 {
@@ -198,7 +203,7 @@ void QtP6VXApplication::executeEmulation()
     }
 
     // 機種別P6オブジェクト確保
-    P6Core = new EL6;
+    P6Core = new QtEL6;
     if( !P6Core ){
         exit();
     }

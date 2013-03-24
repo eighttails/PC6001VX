@@ -5,9 +5,9 @@
 #include <QImage>
 
 #include "../typedef.h"
-#include "../p6el.h"
 #include "../p6vm.h"
 #include "../config.h"
+#include "qtel6.h"
 #include "emulationadaptor.h"
 
 class QtP6VXApplication : public QtSingleApplication
@@ -29,6 +29,8 @@ public slots:
     //ここで実装する
     void layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image);
 
+    //コンテキストメニューを表示
+    void showPopupMenu(int x, int y);
 signals:
     //初期化終了シグナル
     void initialized();
@@ -49,7 +51,7 @@ private slots:
     void terminateEmulation();
 
 private:
-    EL6 *P6Core;    			// オブジェクトポインタ
+    QtEL6 *P6Core;    			// オブジェクトポインタ
     EL6::ReturnCode Restart;	// 再起動フラグ
     CFG6 Cfg;					// 環境設定オブジェクト
     EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ

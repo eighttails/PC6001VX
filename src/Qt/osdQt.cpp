@@ -173,6 +173,7 @@ bool OSD_Init( void )
     //Qtのイベントループにシグナルを送るための仲介スレッド
     signalProxy.moveToThread(qApp->thread());
     QObject::connect(&signalProxy, SIGNAL(imageUpdated(HWINDOW, int, int, double, QImage)), qApp, SLOT(layoutBitmap(HWINDOW, int, int, double, QImage)));
+    QObject::connect(&signalProxy, SIGNAL(menuRequested(int, int)), qApp, SLOT(showPopupMenu(int, int)));
 
     //経過時間タイマーをスタート
     elapsedTimer.start();
@@ -315,8 +316,7 @@ void OSD_SetWindowCaption( HWINDOW wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 {
-    //#PENDING TODO sceneのリーク対策
-    static QGraphicsScene* scene = new QGraphicsScene();
+    static QGraphicsScene* scene = new QGraphicsScene(qApp);
     static RenderView* view = new RenderView(scene);
 
     scene->moveToThread(qApp->thread());

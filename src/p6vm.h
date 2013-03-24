@@ -27,7 +27,8 @@ class CFG6;
 
 // 基本仮想マシンクラス
 class VM6 {
-	
+    friend class QtEL6;
+
 	friend class EL6;
 	friend class DSP6;
 	

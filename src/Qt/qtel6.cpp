@@ -534,11 +534,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
         dialog.exec();
         break;
     }
-
-    // ダイアログの後始末など、キューに溜まっているイベントを処理する
-    while(QApplication::hasPendingEvents()){
-        QApplication::processEvents();
-    }
 }
 
 

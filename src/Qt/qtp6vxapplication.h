@@ -29,6 +29,9 @@ public slots:
     //ここで実装する
     void layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image);
 
+    //グラフィックシーンをクリア
+    void clearLayout(HWINDOW Wh);
+
     //コンテキストメニューを表示
     void showPopupMenu(int x, int y);
 signals:

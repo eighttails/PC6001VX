@@ -162,6 +162,14 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QI
 
 }
 
+void QtP6VXApplication::clearLayout(HWINDOW Wh)
+{
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    Q_ASSERT(view);
+    Q_ASSERT(view->scene());
+    view->scene()->clear();
+}
+
 void QtP6VXApplication::showPopupMenu(int x, int y)
 {
     P6Core->ShowPopupImpl(x, y);

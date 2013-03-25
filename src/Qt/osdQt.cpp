@@ -282,11 +282,11 @@ void OSD_ShowCursor( bool disp )
 ////////////////////////////////////////////////////////////////
 // キャプション設定
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 //			str			キャプション文字列へのポインタ
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_SetWindowCaption( HWINDOW wh, const char *str )
+void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 {
     //#PENDING
 }
@@ -313,6 +313,9 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
     scene->setSceneRect(0, 0, w, h);
     view->adjustSize();
     *pwh = view;
+
+    OSD_ClearWindow(*pwh);
+
     view->show();
     return true;
 }
@@ -321,10 +324,10 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 ////////////////////////////////////////////////////////////////
 // ウィンドウ破棄
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_DestroyWindow( HWINDOW wh )
+void OSD_DestroyWindow( HWINDOW Wh )
 {
 }
 
@@ -332,13 +335,13 @@ void OSD_DestroyWindow( HWINDOW wh )
 ////////////////////////////////////////////////////////////////
 // ウィンドウの幅を取得
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 // 返値:	int			幅
 ////////////////////////////////////////////////////////////////
-int OSD_GetWindowWidth( HWINDOW wh )
+int OSD_GetWindowWidth( HWINDOW Wh )
 {
     //QtではSceneRectの幅を返す
-    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
 
     return view->scene()->width();
@@ -348,13 +351,13 @@ int OSD_GetWindowWidth( HWINDOW wh )
 ////////////////////////////////////////////////////////////////
 // ウィンドウの高さを取得
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 // 返値:	int			高さ
 ////////////////////////////////////////////////////////////////
-int OSD_GetWindowHeight( HWINDOW wh )
+int OSD_GetWindowHeight( HWINDOW Wh )
 {
     //QtではSceneRectの幅を返す
-    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
 
     return view->scene()->height();
@@ -364,10 +367,10 @@ int OSD_GetWindowHeight( HWINDOW wh )
 ////////////////////////////////////////////////////////////////
 // ウィンドウの色深度を取得
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 // 返値:	int			色深度
 ////////////////////////////////////////////////////////////////
-int OSD_GetWindowBPP( HWINDOW wh )
+int OSD_GetWindowBPP( HWINDOW Wh )
 {
     //内部カラーは8ビット固定
     return 8;
@@ -377,11 +380,11 @@ int OSD_GetWindowBPP( HWINDOW wh )
 ////////////////////////////////////////////////////////////////
 // パレット設定
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 //			pal			パレットへのポインタ
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool OSD_SetPalette( HWINDOW wh, VPalette *pal )
+bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
 {
     PaletteTable.clear();
     for (int i=0; i < pal->ncols; i++){
@@ -394,12 +397,12 @@ bool OSD_SetPalette( HWINDOW wh, VPalette *pal )
 ////////////////////////////////////////////////////////////////
 // ウィンドウ反映
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_RenderWindow( HWINDOW wh )
+void OSD_RenderWindow( HWINDOW Wh )
 {
-    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
     view->update();
 }
@@ -409,27 +412,26 @@ void OSD_RenderWindow( HWINDOW wh )
 // ウィンドウクリア
 //  色は0(黒)で決め打ち
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_ClearWindow( HWINDOW wh )
+void OSD_ClearWindow( HWINDOW Wh )
 {
-    QGraphicsView* view = static_cast<QGraphicsView*>(wh);
-    Q_ASSERT(view);
-    view->scene()->clear();
+    QMetaObject::invokeMethod(qApp, "clearLayout",
+                                  Q_ARG(HWINDOW, Wh));
 }
 
 
 ////////////////////////////////////////////////////////////////
 // ウィンドウに転送
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 //			src			転送元サーフェス
 //			pal			パレットへのポインタ
 //			x,y			転送先座標
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_BlitToWindow( HWINDOW wh, VSurface *src, int x, int y, VPalette *pal )
+void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y, VPalette *pal )
 {
     VRect src1,drc1;
 
@@ -461,7 +463,7 @@ void OSD_BlitToWindow( HWINDOW wh, VSurface *src, int x, int y, VPalette *pal )
     // スロットを呼び出してメインスレッドでSceneを更新する
     // (直接呼び出すと呼び出し側スレッドで実行されてしまう)
     QMetaObject::invokeMethod(qApp, "layoutBitmap",
-                              Q_ARG(HWINDOW, wh),
+                              Q_ARG(HWINDOW, Wh),
                               Q_ARG(int, x),
                               Q_ARG(int, y),
                               Q_ARG(double, src->GetAspectRatio()),
@@ -900,11 +902,11 @@ bool OSD_CreateFont( char *hfile, char *zfile, int size )
 ///////////////////////////////////////////////////////////
 // アイコン設定
 //
-// 引数:	wh			ウィンドウハンドル
+// 引数:	Wh			ウィンドウハンドル
 //			model		機種 60,62,66
 // 返値:	なし
 ///////////////////////////////////////////////////////////
-void OSD_SetIcon( HWINDOW wh, int model )
+void OSD_SetIcon( HWINDOW Wh, int model )
 {
     // 機種別P6オブジェクト確保
     const char* iconRes = NULL;

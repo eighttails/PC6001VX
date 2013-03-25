@@ -61,7 +61,7 @@ DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL), SBuf(NULL), Pal(NULL),
 DSP6::~DSP6( void )
 {
 	if( SBuf ) delete SBuf;
-	if( Wh ) OSD_DestroyWindow( Wh );
+    if( Wh ) OSD_DestroyWindow( Wh );
 }
 
 
@@ -96,7 +96,7 @@ bool DSP6::Init( int bpp, int br, VPalette *pal )
 ////////////////////////////////////////////////////////////////
 void DSP6::SetIcon( int model )
 {
-	OSD_SetIcon( Wh, model );
+    OSD_SetIcon( Wh, model );
 }
 
 
@@ -141,10 +141,10 @@ bool DSP6::SetScreenSurface( void )
 	}
 	
 	// スクリーンサーフェス作成
-	OSD_CreateWindow( &Wh, x, y, Bpp, fsflag );
-	if( !Wh ) return false;
+    OSD_CreateWindow( &Wh, x, y, Bpp, fsflag );
+    if( !Wh ) return false;
 	
-	PRINTD( GRP_LOG, " -> OK ( %d x %d x %d )\n", OSD_GetWindowWidth( Wh ), OSD_GetWindowHeight( Wh ), OSD_GetWindowBPP( Wh ) );
+    PRINTD( GRP_LOG, " -> OK ( %d x %d x %d )\n", OSD_GetWindowWidth( Wh ), OSD_GetWindowHeight( Wh ), OSD_GetWindowBPP( Wh ) );
 	
 	if( DISPFULL ){	// フルスクリーンの時
 		// マウスカーソルを消す
@@ -153,12 +153,12 @@ bool DSP6::SetScreenSurface( void )
 		// マウスカーソルを表示する
 		OSD_ShowCursor( true );
 		// ウィンドウキャプション設定
-		OSD_SetWindowCaption( Wh, vm->el->cfg->GetCaption() );
+        OSD_SetWindowCaption( Wh, vm->el->cfg->GetCaption() );
 	}
 	
 	// スクリーンサーフェスにパレットを選択する
-	if( OSD_GetWindowBPP( Wh ) == 8 )
-		if( !OSD_SetPalette( Wh, Pal ) ) return false;
+    if( OSD_GetWindowBPP( Wh ) == 8 )
+        if( !OSD_SetPalette( Wh, Pal ) ) return false;
 	
 	return true;
 }
@@ -192,12 +192,12 @@ bool DSP6::ResizeScreen( void )
 	}
 	
 	// ウィンドウサイズが不適切なら作り直す
-	if( !Wh || (x != OSD_GetWindowWidth( Wh )) || (y != OSD_GetWindowHeight( Wh )) ){
+    if( !Wh || (x != OSD_GetWindowWidth( Wh )) || (y != OSD_GetWindowHeight( Wh )) ){
 		if( !SetScreenSurface() ) return false;
-		vm->el->staw->Init( OSD_GetWindowWidth( Wh ) );	// ステータスバーも
+        vm->el->staw->Init( OSD_GetWindowWidth( Wh ) );	// ステータスバーも
 	}else
 		// 作り直さない場合は現在のスクリーンサーフェスをクリア
-		OSD_ClearWindow( Wh );
+        OSD_ClearWindow( Wh );
 	
 	return true;
 }
@@ -215,7 +215,7 @@ void DSP6::DrawScreen( void )
 	
 	VSurface *BBuf = vm->vdg;		// バックバッファへのポインタ取得
 	
-	if( !Wh || !BBuf ) return;
+    if( !Wh || !BBuf ) return;
 	
 	// スクリーンサーフェスにblit
 	PRINTD( GRP_LOG, " -> Blit" );
@@ -225,16 +225,16 @@ void DSP6::DrawScreen( void )
 		PRINTD( GRP_LOG, " -> Monitor" );
 		
 		// バックバッファ
-		OSD_BlitToWindow( Wh, BBuf, 0, 0, Pal );
+        OSD_BlitToWindow( Wh, BBuf, 0, 0, Pal );
 		
 		// モニタウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->monw, 0, max( P6WINH, vm->el->regw->Height() + vm->el->memw->Height() ), Pal );
+        OSD_BlitToWindow( Wh, vm->el->monw, 0, max( P6WINH, vm->el->regw->Height() + vm->el->memw->Height() ), Pal );
 		
 		// レジスタウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->regw, P6WINW, 0, Pal );
+        OSD_BlitToWindow( Wh, vm->el->regw, P6WINW, 0, Pal );
 		
 		// メモリウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->memw, P6WINW, vm->el->regw->Height(), Pal );
+        OSD_BlitToWindow( Wh, vm->el->memw, P6WINW, vm->el->regw->Height(), Pal );
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	{
@@ -246,7 +246,7 @@ void DSP6::DrawScreen( void )
             OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() ) / 2, Pal );
         }else{			// フルスクリーンでない
 			PRINTD( GRP_LOG, " -> Window" );
-			OSD_BlitToWindow( Wh, SBuf, 0, 0, Pal );
+            OSD_BlitToWindow( Wh, SBuf, 0, 0, Pal );
 		}
 		
 		// ステータスバー
@@ -264,7 +264,7 @@ void DSP6::DrawScreen( void )
 	PRINTD( GRP_LOG, " -> OK\n" );
 	
 	// フリップ
-	OSD_RenderWindow( Wh );
+    OSD_RenderWindow( Wh );
 }
 
 
@@ -312,7 +312,7 @@ VSurface *DSP6::GetSubBuffer( void )
 ////////////////////////////////////////////////////////////////
 HWINDOW DSP6::GetWindowHandle( void )
 {
-	return (HWINDOW)Wh;
+    return (HWINDOW)Wh;
 }
 
 

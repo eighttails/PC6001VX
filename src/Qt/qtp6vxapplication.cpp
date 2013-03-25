@@ -9,6 +9,7 @@
 #include "../error.h"
 #include "../osd.h"
 
+#include "renderview.h"
 #include "qtp6vxapplication.h"
 
 ///////////////////////////////////////////////////////////
@@ -129,6 +130,24 @@ void QtP6VXApplication::startup()
     }
 
     emit initialized();
+}
+
+void QtP6VXApplication::createWindow(HWINDOW Wh, int w, int h, int bpp, bool fsflag)
+{
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    Q_ASSERT(view);
+    QGraphicsScene* scene = view->scene();
+
+    scene->setSceneRect(0, 0, w, h);
+    view->adjustSize();
+
+    OSD_ClearWindow(Wh);
+
+    if(fsflag){
+        view->showFullScreen();
+    } else {
+        view->show();
+    }
 }
 
 void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image)

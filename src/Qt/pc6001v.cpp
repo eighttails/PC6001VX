@@ -36,6 +36,8 @@ int main( int argc, char *argv[] )
     XInitThreads();
 #endif
 
+    QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
+
     QtP6VXApplication app(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 

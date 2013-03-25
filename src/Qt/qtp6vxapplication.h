@@ -24,6 +24,9 @@ public slots:
     //直接呼び出さずに、Qtのイベントループの中で実行する
     void startup();
 
+    //ウィンドウを生成
+    void createWindow(HWINDOW Wh, int w, int h, int bpp, bool fsflag );
+
     //グラフィックをシーンに配置
     //QGraphicsSceneの操作はメインスレッドでしかできないため、
     //ここで実装する

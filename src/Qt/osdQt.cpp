@@ -310,13 +310,15 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 
     scene->moveToThread(qApp->thread());
     view->moveToThread(qApp->thread());
-    scene->setSceneRect(0, 0, w, h);
-    view->adjustSize();
     *pwh = view;
 
-    OSD_ClearWindow(*pwh);
+    QMetaObject::invokeMethod(qApp, "createWindow",
+                              Q_ARG(HWINDOW, *pwh),
+                              Q_ARG(int, w),
+                              Q_ARG(int, h),
+                              Q_ARG(int, bpp),
+                              Q_ARG(bool, fsflag));
 
-    view->show();
     return true;
 }
 
@@ -402,9 +404,7 @@ bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
 ////////////////////////////////////////////////////////////////
 void OSD_RenderWindow( HWINDOW Wh )
 {
-    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
-    Q_ASSERT(view);
-    view->update();
+    //何もしない
 }
 
 

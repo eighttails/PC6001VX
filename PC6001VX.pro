@@ -82,7 +82,6 @@ SOURCES += \
     src/thread.cpp \
     src/Qt/qtp6vxapplication.cpp \
     src/Qt/emulationadaptor.cpp \
-    src/Qt/signalproxy.cpp \
     src/Qt/renderview.cpp \
     src/Qt/qtel6.cpp
 
@@ -150,7 +149,6 @@ HEADERS  += \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.h \
     src/Qt/qtp6vxapplication.h \
     src/Qt/emulationadaptor.h \
-    src/Qt/signalproxy.h \
     src/Qt/renderview.h \
     src/Qt/qtel6.h
 

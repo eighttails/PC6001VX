@@ -10,7 +10,6 @@
 #include "../p6el.h"
 #include "../joystick.h"
 
-#include "signalproxy.h"
 #include "renderview.h"
 
 //エミュレータ内部用イベントキュー
@@ -23,10 +22,6 @@ QElapsedTimer elapsedTimer;
 
 std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
 QVector<QRgb> PaletteTable;              //パレットテーブル
-
-//エミュレータのイベントループから
-//Qtのイベントループにシグナルを送るための仲介スレッド
-SignalProxy signalProxy;
 
 static const struct {	// SDLキーコード -> 仮想キーコード定義
     int InKey;			// SDLのキーコード
@@ -169,12 +164,6 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
 ////////////////////////////////////////////////////////////////
 bool OSD_Init( void )
 {
-    //エミュレータのイベントループから
-    //Qtのイベントループにシグナルを送るための仲介スレッド
-    signalProxy.moveToThread(qApp->thread());
-    QObject::connect(&signalProxy, SIGNAL(imageUpdated(HWINDOW, int, int, double, QImage)), qApp, SLOT(layoutBitmap(HWINDOW, int, int, double, QImage)));
-    QObject::connect(&signalProxy, SIGNAL(menuRequested(int, int)), qApp, SLOT(showPopupMenu(int, int)));
-
     //経過時間タイマーをスタート
     elapsedTimer.start();
 
@@ -469,8 +458,14 @@ void OSD_BlitToWindow( HWINDOW wh, VSurface *src, int x, int y, VPalette *pal )
     }
 
     // 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
-    // シグナルを発行してメインスレッドでSceneを更新する
-    signalProxy.updateImage(wh, x, y, src->GetAspectRatio(), image);
+    // スロットを呼び出してメインスレッドでSceneを更新する
+    // (直接呼び出すと呼び出し側スレッドで実行されてしまう)
+    QMetaObject::invokeMethod(qApp, "layoutBitmap",
+                              Q_ARG(HWINDOW, wh),
+                              Q_ARG(int, x),
+                              Q_ARG(int, y),
+                              Q_ARG(double, src->GetAspectRatio()),
+                              Q_ARG(QImage, image));
 }
 
 ////////////////////////////////////////////////////////////////

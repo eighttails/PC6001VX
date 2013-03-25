@@ -18,7 +18,6 @@
 
 #include "configdialog.h"
 #include "aboutdialog.h"
-#include "signalproxy.h"
 
 #include "qtel6.h"
 
@@ -27,7 +26,9 @@
 ///////////////////////////////////////////////////////////
 void EL6::ShowPopupMenu( int x, int y )
 {
-    signalProxy.showPopupMenu(x, y);
+    QMetaObject::invokeMethod(qApp, "showPopupMenu",
+                              Q_ARG(int, x),
+                              Q_ARG(int, y));
 }
 
 ///////////////////////////////////////////////////////////

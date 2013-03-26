@@ -327,7 +327,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         ev.key.mod	   = (PCKEYmod)(
                     ( ke->modifiers() & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
                     | ( ke->modifiers() & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )
-                    | ( ke->modifiers() & Qt::AltModifier ? KVM_SHIFT : KVM_NONE )
+                    | ( ke->modifiers() & Qt::AltModifier ? KVM_ALT : KVM_NONE )
                     | ( ke->modifiers() & Qt::MetaModifier ? KVM_META : KVM_NONE )
                     | ( ke->modifiers() & Qt::KeypadModifier ? KVM_NUM : KVM_NONE )
                     //#PENDING CAPSLOCKは検出できない？

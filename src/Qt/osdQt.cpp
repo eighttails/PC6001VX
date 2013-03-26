@@ -7,7 +7,6 @@
 #include "../osd.h"
 #include "../common.h"
 #include "../pc6001v.h"
-#include "../p6el.h"
 #include "../joystick.h"
 
 #include "renderview.h"
@@ -305,10 +304,13 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 {
-    static QGraphicsScene* scene = new QGraphicsScene(qApp);
+    static QGraphicsScene* scene = new QGraphicsScene();
     static RenderView* view = new RenderView(scene);
+    //通常はこういう親子関係は構築しないが、
+    //viewは常に1つしか存在しないので、viewを親にする。
+    //sceneの親をQApplicationにするとクラッシュしてしまう。
+    scene->setParent(view);
 
-    scene->moveToThread(qApp->thread());
     view->moveToThread(qApp->thread());
     *pwh = view;
 

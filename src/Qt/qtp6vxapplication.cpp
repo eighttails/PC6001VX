@@ -69,6 +69,10 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
     emulationThread->start();
     Adaptor->moveToThread(emulationThread);
 
+    //ウィンドウを閉じても終了しない。
+    //終了はEL6::Quitが返ってきた時に行う。
+    setQuitOnLastWindowClosed (false);
+
     connect(this, SIGNAL(initialized()), this, SLOT(executeEmulation()));
     connect(this, SIGNAL(vmPrepared()), Adaptor, SLOT(doEventLoop()));
     connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()));

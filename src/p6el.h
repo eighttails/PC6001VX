@@ -114,7 +114,7 @@ protected:
 	
 public:
 	EL6();									// コンストラクタ
-	~EL6();									// デストラクタ
+    virtual ~EL6();							// デストラクタ
 	
 	bool Init( const CFG6 * );				// 初期化
 	

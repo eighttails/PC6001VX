@@ -226,9 +226,11 @@ DWORD OSD_GetTicks( void )
 ////////////////////////////////////////////////////////////////
 bool OSD_GetEvent( Event *ev )
 {
-    //イベントが発行されるまで待つ
     eventMutex.lock();
-    eventEmitted.wait(&eventMutex);
+    //イベントキューが空の場合、イベントが発行されるまで待つ
+    if(eventQueue.empty()){
+        eventEmitted.wait(&eventMutex);
+    }
     *ev = eventQueue.front();
     eventQueue.pop_front();
     eventMutex.unlock();

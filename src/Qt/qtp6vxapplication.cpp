@@ -144,13 +144,14 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, int w, int h, int bpp, bool fsf
 
     scene->setSceneRect(0, 0, w, h);
     view->adjustSize();
+    view->resize(qMax(int(scene->width()), view->width()), qMax(int(scene->height()), view->height()));
 
     OSD_ClearWindow(Wh);
 
     if(fsflag){
         view->showFullScreen();
     } else {
-        view->show();
+        view->showNormal();
     }
 }
 

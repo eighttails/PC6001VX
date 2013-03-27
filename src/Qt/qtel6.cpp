@@ -120,6 +120,7 @@ QtEL6::QtEL6()
 
 void QtEL6::ShowPopupImpl(int x, int y)
 {
+    OSD_ShowCursor( true );
     QAction* selectedAction = NULL;
 
     QMenu menu;
@@ -221,11 +222,11 @@ void QtEL6::ShowPopupImpl(int x, int y)
     QMenu* colorMenu = settingsMenu->addMenu("MODE4 カラー");
     QActionGroup* colorGroup = new QActionGroup(&menu);
     QStringList colorList = (QStringList()
-                           << "モノクロ"
-                           << "赤/青"
-                           << "青/赤"
-                           << "桃/緑"
-                           << "緑/桃");
+                             << "モノクロ"
+                             << "赤/青"
+                             << "青/赤"
+                             << "桃/緑"
+                             << "緑/桃");
     for( int i = 0; i < 5; i++ ){
         QAction* color = addCommand(colorMenu, colorList[i], MenuCommand(ID_M4MONO + i), true);
         if (vm->vdg->GetMode4Color() == i) color->setChecked(true);
@@ -278,262 +279,266 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
     selectedAction = menu.exec(QCursor::pos());
 
-    if (selectedAction == NULL) return;
+    if (selectedAction != NULL) {
 
 
-    // 項目ごとの処理
-    char str[PATH_MAX];
-    MenuCommand id = selectedAction->property(MENUIDPROPERTY).value<MenuCommand>();
-    switch( id ){
-    case ID_TAPEINSERT:		// TAPE 挿入
-        if( !OSD_FileExist( TapePathTemp ) )
-            strncpy( TapePathTemp, cfg->GetTapePath(), PATH_MAX );
-        if( OSD_FileSelect( NULL, FD_TapeLoad, str, TapePathTemp ) )
-            if( !TapeMount( str ) ) Error::SetError( Error::TapeMountFailed );
-        break;
+        // 項目ごとの処理
+        char str[PATH_MAX];
+        MenuCommand id = selectedAction->property(MENUIDPROPERTY).value<MenuCommand>();
+        switch( id ){
+        case ID_TAPEINSERT:		// TAPE 挿入
+            if( !OSD_FileExist( TapePathTemp ) )
+                strncpy( TapePathTemp, cfg->GetTapePath(), PATH_MAX );
+            if( OSD_FileSelect( NULL, FD_TapeLoad, str, TapePathTemp ) )
+                if( !TapeMount( str ) ) Error::SetError( Error::TapeMountFailed );
+            break;
 
-    case ID_TAPEEJECT:		// TAPE 排出
-        TapeUnmount();
-        break;
+        case ID_TAPEEJECT:		// TAPE 排出
+            TapeUnmount();
+            break;
 
-    case ID_DISKINSERT1:	// DISK1 挿入
-        if( !OSD_FileExist( DiskPathTemp ) )
-            strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
-        if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
-            if( !DiskMount( 0, str ) ) Error::SetError( Error::DiskMountFailed );
-        break;
+        case ID_DISKINSERT1:	// DISK1 挿入
+            if( !OSD_FileExist( DiskPathTemp ) )
+                strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
+            if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
+                if( !DiskMount( 0, str ) ) Error::SetError( Error::DiskMountFailed );
+            break;
 
-    case ID_DISKEJECT1:		// DISK1 排出
-        DiskUnmount( 0 );
-        break;
+        case ID_DISKEJECT1:		// DISK1 排出
+            DiskUnmount( 0 );
+            break;
 
-    case ID_DISKINSERT2:	// DISK2 挿入
-        if( !OSD_FileExist( DiskPathTemp ) )
-            strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
-        if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
-            if( !DiskMount( 1, str ) ) Error::SetError( Error::DiskMountFailed );
-        break;
+        case ID_DISKINSERT2:	// DISK2 挿入
+            if( !OSD_FileExist( DiskPathTemp ) )
+                strncpy( DiskPathTemp, cfg->GetDiskPath(), PATH_MAX );
+            if( OSD_FileSelect( NULL, FD_Disk, str, DiskPathTemp ) )
+                if( !DiskMount( 1, str ) ) Error::SetError( Error::DiskMountFailed );
+            break;
 
-    case ID_DISKEJECT2:		// DISK2 排出
-        DiskUnmount( 1 );
-        break;
+        case ID_DISKEJECT2:		// DISK2 排出
+            DiskUnmount( 1 );
+            break;
 
-    case ID_ROMINSERT:		// 拡張ROM 挿入
-        if( !OSD_FileExist( ExtRomPathTemp ) )
-            strncpy( ExtRomPathTemp, cfg->GetExtRomPath(), PATH_MAX );
-        if( OSD_FileSelect( NULL, FD_ExtRom, str, ExtRomPathTemp ) ){
+        case ID_ROMINSERT:		// 拡張ROM 挿入
+            if( !OSD_FileExist( ExtRomPathTemp ) )
+                strncpy( ExtRomPathTemp, cfg->GetExtRomPath(), PATH_MAX );
+            if( OSD_FileSelect( NULL, FD_ExtRom, str, ExtRomPathTemp ) ){
+                // リセットを伴うのでメッセージ表示
+                OSD_Message( MSG_RESETI, MSG_RESETC, OSDM_OK | OSDM_ICONINFO );
+                if( !vm->mem->MountExtRom( str ) )
+                    Error::SetError( Error::ExtRomMountFailed );
+                else
+                    vm->Reset();
+            }
+            break;
+
+        case ID_ROMEJECT:		// 拡張ROM 排出
             // リセットを伴うのでメッセージ表示
-            OSD_Message( MSG_RESETI, MSG_RESETC, OSDM_OK | OSDM_ICONINFO );
-            if( !vm->mem->MountExtRom( str ) )
-                Error::SetError( Error::ExtRomMountFailed );
-            else
-                vm->Reset();
-        }
-        break;
+            OSD_Message( MSG_RESETE, MSG_RESETC, OSDM_OK | OSDM_ICONINFO );
+            vm->mem->UnmountExtRom();
+            vm->Reset();
+            break;
 
-    case ID_ROMEJECT:		// 拡張ROM 排出
-        // リセットを伴うのでメッセージ表示
-        OSD_Message( MSG_RESETE, MSG_RESETC, OSDM_OK | OSDM_ICONINFO );
-        vm->mem->UnmountExtRom();
-        vm->Reset();
-        break;
+        case ID_JOY101:			// ジョイスティック1
+        case ID_JOY102:
+        case ID_JOY103:
+        case ID_JOY104:
+        case ID_JOY105:
+            joy->Connect( 0, id - ID_JOY101 );
+            break;
 
-    case ID_JOY101:			// ジョイスティック1
-    case ID_JOY102:
-    case ID_JOY103:
-    case ID_JOY104:
-    case ID_JOY105:
-        joy->Connect( 0, id - ID_JOY101 );
-        break;
+        case ID_JOY199:
+            joy->Connect( 0, -1 );
+            break;
 
-    case ID_JOY199:
-        joy->Connect( 0, -1 );
-        break;
+        case ID_JOY201:			// ジョイスティック2
+        case ID_JOY202:
+        case ID_JOY203:
+        case ID_JOY204:
+        case ID_JOY205:
+            joy->Connect( 1, id - ID_JOY201 );
+            break;
 
-    case ID_JOY201:			// ジョイスティック2
-    case ID_JOY202:
-    case ID_JOY203:
-    case ID_JOY204:
-    case ID_JOY205:
-        joy->Connect( 1, id - ID_JOY201 );
-        break;
+        case ID_JOY299:
+            joy->Connect( 1, -1 );
+            break;
 
-    case ID_JOY299:
-        joy->Connect( 1, -1 );
-        break;
+        case ID_CONFIG:			// 環境設定
+            if( ShowConfig() > 0 )
+                // 再起動?
+                if( OSD_Message( MSG_RESTART, MSG_RESTARTC, OSDM_YESNO | OSDM_ICONQUESTION ) == OSDR_YES )
+                    OSD_PushEvent( EV_RESTART );
+            break;
 
-    case ID_CONFIG:			// 環境設定
-        if( ShowConfig() > 0 )
-            // 再起動?
-            if( OSD_Message( MSG_RESTART, MSG_RESTARTC, OSDM_YESNO | OSDM_ICONQUESTION ) == OSDR_YES )
-                OSD_PushEvent( EV_RESTART );
-                        break;
+        case ID_RESET:			// リセット
+            vm->Reset();
+            break;
 
-    case ID_RESET:			// リセット
-        vm->Reset();
-        break;
+        case ID_RESTART:		// 再起動
+            OSD_PushEvent( EV_RESTART );
+            break;
 
-    case ID_RESTART:		// 再起動
-        OSD_PushEvent( EV_RESTART );
-                break;
+        case ID_EXIT:           // 終了
+            OSD_PushEvent( EV_QUIT );
+            break;
 
-    case ID_EXIT:           // 終了
-        OSD_PushEvent( EV_QUIT );
-                break;
+        case ID_DOKOSAVE:		// どこでもSAVE
+            if( OSD_FileSelect( NULL, FD_DokoSave, str, (char *)OSD_GetConfigPath() ) )
+                DokoDemoSave( str );
+            break;
 
-    case ID_DOKOSAVE:		// どこでもSAVE
-        if( OSD_FileSelect( NULL, FD_DokoSave, str, (char *)OSD_GetConfigPath() ) )
-            DokoDemoSave( str );
-        break;
-
-    case ID_DOKOLOAD:		// どこでもLOAD
-        if( OSD_FileSelect( NULL, FD_DokoLoad, str, (char *)OSD_GetConfigPath() ) ){
-            cfg->SetModel( GetDokoModel( str ) );
-            cfg->SetDokoFile( str );
-            OSD_PushEvent( EV_DOKOLOAD );
-        }
-        break;
-
-    case ID_REPLAYSAVE:		// リプレイ保存
-        if( REPLAY::GetStatus() == REP_IDLE ){
-            if( OSD_FileSelect( NULL, FD_RepSave, str, (char *)OSD_GetConfigPath() ) ){
-                if( DokoDemoSave( str ) ) ReplayStartRec( str );
+        case ID_DOKOLOAD:		// どこでもLOAD
+            if( OSD_FileSelect( NULL, FD_DokoLoad, str, (char *)OSD_GetConfigPath() ) ){
+                cfg->SetModel( GetDokoModel( str ) );
+                cfg->SetDokoFile( str );
+                OSD_PushEvent( EV_DOKOLOAD );
             }
-        }else if( REPLAY::GetStatus() == REP_RECORD ){
-            ReplayStopRec();
-        }
-        break;
+            break;
 
-    case ID_REPLAYLOAD:		// リプレイ再生
-        if( REPLAY::GetStatus() == REP_IDLE ){
-            if( OSD_FileSelect( NULL, FD_RepLoad, str, (char *)OSD_GetConfigPath() ) ){
-                ReplayStartPlay( str );
+        case ID_REPLAYSAVE:		// リプレイ保存
+            if( REPLAY::GetStatus() == REP_IDLE ){
+                if( OSD_FileSelect( NULL, FD_RepSave, str, (char *)OSD_GetConfigPath() ) ){
+                    if( DokoDemoSave( str ) ) ReplayStartRec( str );
+                }
+            }else if( REPLAY::GetStatus() == REP_RECORD ){
+                ReplayStopRec();
             }
-        }else if( REPLAY::GetStatus() == REP_REPLAY ){
-            ReplayStopPlay();
-        }
-        break;
+            break;
 
-    case ID_AVISAVE:		// ビデオキャプチャ
-        if( !AVI6::IsAVI() ){
-            if( OSD_FileSelect( NULL, FD_AVISave, str, (char *)OSD_GetConfigPath() ) ){
-                AVI6::StartAVI( str, graph->GetSubBuffer(), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviRle() );
+        case ID_REPLAYLOAD:		// リプレイ再生
+            if( REPLAY::GetStatus() == REP_IDLE ){
+                if( OSD_FileSelect( NULL, FD_RepLoad, str, (char *)OSD_GetConfigPath() ) ){
+                    ReplayStartPlay( str );
+                }
+            }else if( REPLAY::GetStatus() == REP_REPLAY ){
+                ReplayStopPlay();
             }
-        }else{
-            AVI6::StopAVI();
-        }
-        break;
+            break;
 
-    case ID_AUTOTYPE:		// 打込み代行
-        if( OSD_FileSelect( NULL, FD_LoadAll, str, (char *)OSD_GetConfigPath() ) )
-            if( !SetAutoKeyFile( str ) ) Error::SetError( Error::Unknown );
-        break;
+        case ID_AVISAVE:		// ビデオキャプチャ
+            if( !AVI6::IsAVI() ){
+                if( OSD_FileSelect( NULL, FD_AVISave, str, (char *)OSD_GetConfigPath() ) ){
+                    AVI6::StartAVI( str, graph->GetSubBuffer(), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviRle() );
+                }
+            }else{
+                AVI6::StopAVI();
+            }
+            break;
 
-    case ID_QUIT:			// 終了
-        OSD_PushEvent( EV_QUIT );
-                break;
+        case ID_AUTOTYPE:		// 打込み代行
+            if( OSD_FileSelect( NULL, FD_LoadAll, str, (char *)OSD_GetConfigPath() ) )
+                if( !SetAutoKeyFile( str ) ) Error::SetError( Error::Unknown );
+            break;
 
-    case ID_NOWAIT:			// Wait有効無効変更
-        sche->SetWaitEnable( sche->GetWaitEnable() ? false : true );
-        break;
+        case ID_QUIT:			// 終了
+            OSD_PushEvent( EV_QUIT );
+            break;
 
-    case ID_TURBO:			// Turbo TAPE
-        cfg->SetTurboTAPE( cfg->GetTurboTAPE() ? false : true );
-        break;
+        case ID_NOWAIT:			// Wait有効無効変更
+            sche->SetWaitEnable( sche->GetWaitEnable() ? false : true );
+            break;
 
-    case ID_BOOST:			// Boost Up
-        cfg->SetBoostUp( cfg->GetBoostUp() ? false : true );
-        vm->cmtl->SetBoost( vm->cmtl->IsBoostUp() ? false : true );
-        break;
+        case ID_TURBO:			// Turbo TAPE
+            cfg->SetTurboTAPE( cfg->GetTurboTAPE() ? false : true );
+            break;
 
-    case ID_SCANLINE:		// スキャンラインモード変更
-        // ビデオキャプチャ中は無効
-        if( !AVI6::IsAVI() ){
-            cfg->SetScanLine( cfg->GetScanLine() ? false : true );
+        case ID_BOOST:			// Boost Up
+            cfg->SetBoostUp( cfg->GetBoostUp() ? false : true );
+            vm->cmtl->SetBoost( vm->cmtl->IsBoostUp() ? false : true );
+            break;
+
+        case ID_SCANLINE:		// スキャンラインモード変更
+            // ビデオキャプチャ中は無効
+            if( !AVI6::IsAVI() ){
+                cfg->SetScanLine( cfg->GetScanLine() ? false : true );
+                graph->ResizeScreen();	// スクリーンサイズ変更
+            }
+            break;
+
+        case ID_DISP43:			// 4:3表示変更
+            // ビデオキャプチャ中は無効
+            if( !AVI6::IsAVI() ){
+                cfg->SetDispNTSC( cfg->GetDispNTSC() ? false : true );
+                graph->ResizeScreen();	// スクリーンサイズ変更
+            }
+            break;
+
+        case ID_STATUS:			// ステータスバー表示状態変更
+            cfg->SetStatDisp( cfg->GetStatDisp() ? false : true );
             graph->ResizeScreen();	// スクリーンサイズ変更
-        }
-        break;
+            break;
 
-    case ID_DISP43:			// 4:3表示変更
-        // ビデオキャプチャ中は無効
-        if( !AVI6::IsAVI() ){
-            cfg->SetDispNTSC( cfg->GetDispNTSC() ? false : true );
-            graph->ResizeScreen();	// スクリーンサイズ変更
-        }
-        break;
+            // MODE4カラー
+        case ID_M4MONO:		// モノクロ
+            cfg->SetMode4Color( 0 );
+            vm->vdg->SetMode4Color( 0 );
+            break;
+        case ID_M4RDBL:		// 赤/青
+            cfg->SetMode4Color( 1 );
+            vm->vdg->SetMode4Color( 1 );
+            break;
+        case ID_M4BLRD:		// 青/赤
+            cfg->SetMode4Color( 2 );
+            vm->vdg->SetMode4Color( 2 );
+            break;
+        case ID_M4PKGR:		// ピンク/緑
+            cfg->SetMode4Color( 3 );
+            vm->vdg->SetMode4Color( 3 );
+            break;
+        case ID_M4GRPK:		// 緑/ピンク
+            cfg->SetMode4Color( 4 );
+            vm->vdg->SetMode4Color( 4 );
+            break;
 
-    case ID_STATUS:			// ステータスバー表示状態変更
-        cfg->SetStatDisp( cfg->GetStatDisp() ? false : true );
-        graph->ResizeScreen();	// スクリーンサイズ変更
-        break;
+            // フレームスキップ
+            // ビデオキャプチャ中は無効
+        case ID_FSKP0:		// 0
+            if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 0 );
+            break;
+        case ID_FSKP1:		// 1
+            if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 1 );
+            break;
+        case ID_FSKP2:		// 2
+            if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 2 );
+            break;
+        case ID_FSKP3:		// 3
+            if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 3 );
+            break;
+        case ID_FSKP4:		// 4
+            if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 4 );
+            break;
+        case ID_FSKP5:		// 5
+            if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 5 );
+            break;
 
-        // MODE4カラー
-    case ID_M4MONO:		// モノクロ
-        cfg->SetMode4Color( 0 );
-        vm->vdg->SetMode4Color( 0 );
-        break;
-    case ID_M4RDBL:		// 赤/青
-        cfg->SetMode4Color( 1 );
-        vm->vdg->SetMode4Color( 1 );
-        break;
-    case ID_M4BLRD:		// 青/赤
-        cfg->SetMode4Color( 2 );
-        vm->vdg->SetMode4Color( 2 );
-        break;
-    case ID_M4PKGR:		// ピンク/緑
-        cfg->SetMode4Color( 3 );
-        vm->vdg->SetMode4Color( 3 );
-        break;
-    case ID_M4GRPK:		// 緑/ピンク
-        cfg->SetMode4Color( 4 );
-        vm->vdg->SetMode4Color( 4 );
-        break;
-
-        // フレームスキップ
-        // ビデオキャプチャ中は無効
-    case ID_FSKP0:		// 0
-        if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 0 );
-        break;
-    case ID_FSKP1:		// 1
-        if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 1 );
-        break;
-    case ID_FSKP2:		// 2
-        if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 2 );
-        break;
-    case ID_FSKP3:		// 3
-        if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 3 );
-        break;
-    case ID_FSKP4:		// 4
-        if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 4 );
-        break;
-    case ID_FSKP5:		// 5
-        if( !AVI6::IsAVI() ) cfg->SetFrameSkip( 5 );
-        break;
-
-        // サンプリングレート
-    case ID_SPR44:		// 44100Hz
-        cfg->SetSampleRate( 44100 );
-        snd->SetSampleRate( 44100 );
-        break;
-    case ID_SPR22:		// 22050Hz
-        cfg->SetSampleRate( 22050 );
-        snd->SetSampleRate( 22050 );
-        break;
-    case ID_SPR11:		// 11025Hz
-        cfg->SetSampleRate( 11025 );
-        snd->SetSampleRate( 11025 );
-        break;
+            // サンプリングレート
+        case ID_SPR44:		// 44100Hz
+            cfg->SetSampleRate( 44100 );
+            snd->SetSampleRate( 44100 );
+            break;
+        case ID_SPR22:		// 22050Hz
+            cfg->SetSampleRate( 22050 );
+            snd->SetSampleRate( 22050 );
+            break;
+        case ID_SPR11:		// 11025Hz
+            cfg->SetSampleRate( 11025 );
+            snd->SetSampleRate( 11025 );
+            break;
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-    case ID_MONITOR:		// モニターモード
-        ToggleMonitor();
-        break;
+        case ID_MONITOR:		// モニターモード
+            ToggleMonitor();
+            break;
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
-    case ID_VERSION:		// バージョン情報
-        AboutDialog dialog(cfg);
-        dialog.exec();
-        break;
+        case ID_VERSION:		// バージョン情報
+            AboutDialog dialog(cfg);
+            dialog.exec();
+            break;
+        }
+    }
+    if(!cfg->GetMonDisp()  && cfg->GetFullScreen()){
+        OSD_ShowCursor( false );
     }
 }
 

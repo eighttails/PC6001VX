@@ -123,19 +123,13 @@ bool DSP6::SetScreenSurface( void )
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	{
-		if( DISPFULL ){	// フルスクリーン?
-			// Mac のフルスクリーンは 640x480, 800x600, 1024x768 に限られるらしい。by Windyさん
-			// とりあえず問答無用で640x480に固定してみる
-			x      = P6WIFW;
-			y      = P6WIFH;
+        x      = P6WINW * ( DISPSCAN ? 2 : 1 );
+        y      = ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
+        if( DISPFULL ){	// フルスクリーン?
 			fsflag = true;
-			
 			PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d %dbpp)\n", x, y, Bpp );
 		}else{
-			x      = P6WINW * ( DISPSCAN ? 2 : 1 );
-			y      = ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
 			fsflag = false;
-			
 			PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d %dbpp )\n", x, y, Bpp );
 		}
 	}

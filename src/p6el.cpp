@@ -465,10 +465,8 @@ EL6::ReturnCode EL6::EventLoop( void )
 //            }
 //            break;
         case EV_CONTEXTMENU:	// コンテキストメニュー
-                Stop();
                 // ポップアップメニュー表示
                 ShowPopupMenu( event.mousebt.x, event.mousebt.y );
-                Start();
             break;
 		case EV_QUIT:			// 終了
 			if( cfg->GetCkQuit() )

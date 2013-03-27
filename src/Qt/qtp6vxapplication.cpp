@@ -196,7 +196,9 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
 
 void QtP6VXApplication::showPopupMenu(int x, int y)
 {
+    P6Core->Stop();
     P6Core->ShowPopupImpl(x, y);
+    P6Core->Start();
 }
 
 //仮想マシンを開始させる

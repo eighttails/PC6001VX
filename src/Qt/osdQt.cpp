@@ -306,10 +306,9 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 {
     static QGraphicsScene* scene = new QGraphicsScene();
     static RenderView* view = new RenderView(scene);
-    //通常はこういう親子関係は構築しないが、
-    //viewは常に1つしか存在しないので、viewを親にする。
-    //sceneの親をQApplicationにするとクラッシュしてしまう。
-    scene->setParent(view);
+
+    //アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
+    QObject::connect(qApp, SIGNAL(aboutToQuit()), scene, SLOT(deleteLater()));
 
     view->moveToThread(qApp->thread());
     *pwh = view;

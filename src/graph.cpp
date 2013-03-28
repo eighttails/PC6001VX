@@ -30,7 +30,7 @@
 // フルスクリーンモード時はステータスバー表示禁止
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 #define	DISPMON		(vm->el->cfg->GetMonDisp())
-#define	DISPFULL	(!DISPMON  && vm->el->cfg->GetFullScreen())
+#define	DISPFULL	(vm->el->cfg->GetFullScreen())
 #define	DISPSCAN	(!DISPMON  && vm->el->cfg->GetScanLine())
 #define	DISPNTSC	(!DISPMON  && vm->el->cfg->GetDispNTSC())
 #define	DISPSTAT	(!DISPFULL && vm->el->cfg->GetStatDisp())
@@ -117,7 +117,6 @@ bool DSP6::SetScreenSurface( void )
 	if( DISPMON ){	// モニタモード?
 		x      = P6DEBUGW;
 		y      = P6DEBUGH;
-		fsflag = false;
 		
 		PRINTD( GRP_LOG, " -> Monitor Mode ( X:%d Y:%d )\n", x, y );
 	}else
@@ -125,15 +124,16 @@ bool DSP6::SetScreenSurface( void )
 	{
         x      = P6WINW * ( DISPSCAN ? 2 : 1 );
         y      = ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
-        if( DISPFULL ){	// フルスクリーン?
-			fsflag = true;
-			PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d %dbpp)\n", x, y, Bpp );
-		}else{
-			fsflag = false;
-			PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d %dbpp )\n", x, y, Bpp );
-		}
 	}
-	
+
+    if( DISPFULL ){	// フルスクリーン?
+        fsflag = true;
+        PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d %dbpp)\n", x, y, Bpp );
+    }else{
+        fsflag = false;
+        PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d %dbpp )\n", x, y, Bpp );
+    }
+
 	// スクリーンサーフェス作成
     OSD_CreateWindow( &Wh, x, y, Bpp, fsflag );
     if( !Wh ) return false;
@@ -178,8 +178,8 @@ bool DSP6::ResizeScreen( void )
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	{
-		x = ( DISPFULL ? P6WIFW : P6WINW * ( DISPSCAN ? 2 : 1 ) );
-		y = ( DISPFULL ? P6WIFH : ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) );
+        x = ( P6WINW * ( DISPSCAN ? 2 : 1 ) );
+        y = ( ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) );
 		
 		// ステータスバー表示?
 		if( !DISPFULL && DISPSTAT ) y += vm->el->staw->Height();

@@ -56,7 +56,6 @@ SOURCES += \
     src/vdg.cpp \
     src/voice.cpp \
     src/vsurface.cpp \
-    src/semaphore.cpp \
     src/device/ay8910.cpp \
     src/device/mc6847.cpp \
     src/device/pd7752.cpp \
@@ -79,11 +78,12 @@ SOURCES += \
     src/Qt/qtsingleapplication/qtlockedfile_win.cpp \
     src/Qt/qtsingleapplication/qtsingleapplication.cpp \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
-    src/thread.cpp \
     src/Qt/qtp6vxapplication.cpp \
     src/Qt/emulationadaptor.cpp \
     src/Qt/renderview.cpp \
-    src/Qt/qtel6.cpp
+    src/Qt/qtel6.cpp \
+    src/Qt/semaphore.cpp \
+    src/Qt/thread.cpp
 
 HEADERS  += \
     src/breakpoint.h \

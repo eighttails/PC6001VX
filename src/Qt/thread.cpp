@@ -4,21 +4,32 @@
 // Mail Address.    ast@qt-space.com
 // Official HP URL. http://ast.qt-space.com/
 
-#include "thread.h"
+#include "../thread.h"
 
-#ifdef USESDLTHREAD
-#include <SDL.h>
-#else
-#include <windows.h>
-#include <process.h>
-#endif
+#include <QThread>
+//QThreadをcTheradのインターフェースで使えるようにするためのラッパ
+class InternalTherad : public QThread
+{
+public:
+    InternalTherad(cThread* thread, void* param)
+        : thread_(thread)
+        , param_(param){};
+protected:
+    void run(){
+        thread_->OnThread(thread_);
+        thread_->m_hThread = NULL;
+    }
 
+private:
+    cThread* thread_;
+    void* param_;
+};
 
 // Constructer
 cThread::cThread( void )
 {
 	this->m_bCancel			= false;
-	this->m_hThread			= NULL;
+    this->m_hThread			= NULL;
 	this->m_BeginTheadParam	= NULL;
 }
 
@@ -27,12 +38,10 @@ cThread::cThread( void )
 cThread::~cThread( void )
 {
 	bool bWaiting = this->Waiting();
-	if( bWaiting == false )
-		#ifdef USESDLTHREAD
-        SDL_KillThread( (SDL_Thread*)this->m_hThread );
-		#else
-		::TerminateThread( this->m_hThread, 0 );
-		#endif
+    if( m_hThread && bWaiting == false ){
+        ((InternalTherad*)m_hThread)->terminate();
+    }
+    delete ((InternalTherad*)m_hThread);
 }
 
 
@@ -45,20 +54,9 @@ bool cThread::BeginThread ( void *lpVoid )
 		this->m_BeginTheadParam = lpVoid;
 		this->m_bCancel			= false;
 		
-		#ifdef USESDLTHREAD
-                HTHREAD hThread = SDL_CreateThread( (int (*)(void *))ThreadProc, (void *)this );
-		if( hThread >= 0 ){
-			this->m_hThread = hThread;
-			bSuccess = true;
-		}
-		#else
-		HTHREAD hThread = (HTHREAD)::_beginthread(ThreadProc, 0, reinterpret_cast<void*>(this) );
-		if( hThread != (HTHREAD)(unsigned int)-1 ){
-			this->m_hThread = hThread;
-			::SetThreadPriority( hThread, THREAD_PRIORITY_NORMAL );
-			bSuccess = true;
-		}
-		#endif
+        this->m_hThread = new InternalTherad(this, lpVoid);
+        ((InternalTherad*)m_hThread)->start();
+        bSuccess = true;
 	}
 	
 	return bSuccess;
@@ -72,17 +70,8 @@ bool cThread::Waiting( void )
 	bool bSuccess = false;
 	
 	if( this->m_hThread != NULL ){
-		#ifdef USESDLTHREAD
-		int status = 0;
-        SDL_WaitThread( (SDL_Thread*)this->m_hThread, &status );
-		if( !status ){
-		#else
-		DWORD dwRet = ::WaitForSingleObject( this->m_hThread, INFINITE );
-		if( dwRet == WAIT_OBJECT_0 ){
-		#endif
-			this->m_hThread = NULL;
-			bSuccess = true;
-		}
+        bSuccess = ((InternalTherad*)m_hThread)->wait();
+        this->m_hThread = NULL;
 	}else{
 		bSuccess = true;
 	}
@@ -112,10 +101,5 @@ bool cThread::IsCancel()
 // Default thread procedure. Don't call this method in direct!
 void cThread::ThreadProc(void *lpVoid)
 {
-    cThread* ptr = (cThread*)lpVoid;
-    ptr->OnThread( ptr->m_BeginTheadParam );	// virtual Procedure
-    ptr->m_hThread = NULL;
-#ifndef USESDLTHREAD
-    ::_endthread();
-#endif
+    //何もしない(InternalTherad::run()で代替)
 }

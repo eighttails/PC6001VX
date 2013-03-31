@@ -13,6 +13,7 @@
 
 
 class cThread : public cCritical {
+    friend class InternalTherad;
 private:
 	bool m_bCancel;				// for Cancel().
 	HTHREAD m_hThread;			// for Thread Handle.

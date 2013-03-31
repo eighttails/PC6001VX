@@ -888,18 +888,8 @@ int OSD_Message( const char *mes, const char *cap, int type )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateFont( char *hfile, char *zfile, int size )
 {
-    // 半角
-    if(hfile){
-        QImage fonth(":/res/fonth12.png");
-        fonth.save(hfile);
-    }
-
-    // 全角
-    if(zfile){
-        QImage fontz(":/res/fontz12.png");
-        fontz.save(zfile);
-    }
-
+    // 何もしない
+    // フォントファイルはQtのリソースから読み込む
     return true;
 }
 

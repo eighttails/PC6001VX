@@ -109,8 +109,8 @@ void QtP6VXApplication::startup()
 
     // コンソール用フォント読込み
     char FontZ[PATH_MAX], FontH[PATH_MAX];
-    sprintf( FontZ, "%s%s/%s", OSD_GetConfigPath(), FONT_DIR, FONTZ_FILE );
-    sprintf( FontH, "%s%s/%s", OSD_GetConfigPath(), FONT_DIR, FONTH_FILE );
+    sprintf( FontZ, ":/res/%s/%s", FONT_DIR, FONTZ_FILE );
+    sprintf( FontH, ":/res/%s/%s", FONT_DIR, FONTH_FILE );
     if( !JFont::OpenFont( FontZ, FontH ) ){
         Error::SetError( Error::FontLoadFailed );
         OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );

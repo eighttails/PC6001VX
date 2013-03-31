@@ -1,6 +1,7 @@
+#include <QImage>
+
 #include "../log.h"
 #include "../common.h"
-#include "png.h"
 
 #ifdef __APPLE__
 #include <Carbon/Carbon.h>  // add Windy for UTF8 変換
@@ -382,7 +383,6 @@ int Sjis2P6( char *dstr, char *sstr )
 
 ////////////////////////////////////////////////////////////////
 // Img SAVE
-//   情報参照「PNG利用術」 http://gmoon.jp/png/
 //
 // 引数:	filename		保存ファイル名
 //			sur				保存するサーフェスへのポインタ
@@ -393,133 +393,32 @@ bool SaveImg( char *filename, VSurface *sur, VRect *pos )
 {
 	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
 	
-	FILE *fp;
-	png_structp PngPtr;
-	png_infop InfoPtr;
-	png_bytepp image;	// image[HEIGHT][WIDTH]の形式
-	png_colorp Palette = NULL;
-	png_color_8 SigBit = { 8, 8, 8, 0 };
 	VRect rec;
-	int bpp;
-	
-	
-	// ファイルを開く
-	fp = FOPENEN( filename, "wb" );
-	if( !fp ) return false;
-	
-	// 領域設定
-	if( pos ){
-		rec.x = pos->x;	rec.y = pos->y;
-		rec.w = pos->w;	rec.h = pos->h;
-	}else{
-		rec.x =               rec.y = 0;
-		rec.w = sur->Width(); rec.h = sur->Height();
-	}
-	
-	// bit/pixel取得
-	bpp = sur->Bpp();
-	
-	
-	// PngPtr構造体を確保・初期化する
-	PngPtr  = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
-	
-	// InfoPtr構造体を確保・初期化する
-	InfoPtr = png_create_info_struct( PngPtr );
-	
-	// フィルタの設定
-	png_set_filter( PngPtr, 0, PNG_ALL_FILTERS );
-	
-	// 圧縮率の設定
-	png_set_compression_level( PngPtr, 9 );
-	
-	// IHDRチャンク情報を設定する
-	png_set_IHDR( PngPtr, InfoPtr, rec.w, rec.h, 8,
-					bpp == 8 ? PNG_COLOR_TYPE_PALETTE : PNG_COLOR_TYPE_RGB,
-					PNG_INTERLACE_NONE,
-					PNG_COMPRESSION_TYPE_DEFAULT,
-					PNG_FILTER_TYPE_DEFAULT );
-	
-	// イメージデータを2次元配列に配置する
-	image = new png_bytep[rec.h];
-	
-	switch( bpp ){
-	case 8:		// 8bitモード
-		{
-		BYTE *doff = (BYTE *)sur->GetPixels() + rec.x + rec.y * sur->Pitch();
-		for( int i=0; i<rec.h; i++ ){
-			image[i] = new png_byte[rec.w];
-			memcpy( image[i], doff, rec.w );
-			doff += sur->Pitch();
-		}
-		
-		// パレットを作る
-		Palette = ( png_colorp )png_malloc( PngPtr, sur->GetPalette()->ncols * sizeof (png_color) );
-		// サーフェスからパレットを取得
-		for( int i=0; i<sur->GetPalette()->ncols; i++ ){
-			Palette[i].red   = sur->GetPalette()->colors[i].r;
-			Palette[i].green = sur->GetPalette()->colors[i].g;
-			Palette[i].blue  = sur->GetPalette()->colors[i].b;
-		}
-		png_set_PLTE( PngPtr, InfoPtr, Palette, sur->GetPalette()->ncols );
-		}
-		break;
-		
-	case 16:	// 16bitモード
-		{		// PNGには16bitモードがないみたいなので24bitに変換(5:6:5決め打ちで)
-		WORD *doff = (WORD *)sur->GetPixels() + ( rec.x + rec.y * sur->Pitch() ) / sizeof(WORD);
-		for( int i=0; i<rec.h; i++ ){
-			BYTE *ip = image[i] = new png_byte[rec.w * 3];
-			for( int x=0; x<rec.w; x++ ){
-				*(ip++) = BYTE((doff[x]<<3)&0x00f8);
-				*(ip++) = BYTE((doff[x]>>3)&0x00fc);
-				*(ip++) = BYTE((doff[x]>>8)&0x00f8);
-			}
-			doff += sur->Pitch() / sizeof(WORD);
-		}
-		
-		png_set_sBIT( PngPtr, InfoPtr, &SigBit );
-		png_set_bgr( PngPtr );
-		}
-		break;
-		
-	case 24:	// 24bitモード
-		{
-		BYTE *doff = (BYTE *)sur->GetPixels() + rec.x + rec.y * sur->Pitch();
-		doff += rec.x * 3 + rec.y * sur->Pitch();
-		for( int i=0; i<rec.h; i++ ){
-			image[i] = new png_byte[rec.w * 3];
-			memcpy( image[i], doff, rec.w * 3 );
-			doff += sur->Pitch();
-		}
-		
-		png_set_sBIT( PngPtr, InfoPtr, &SigBit );
-		png_set_bgr( PngPtr );
-		}
-		break;
-	}
-	
-	// libpngにfpを知らせる
-	png_init_io( PngPtr, fp );
-	
-	// PNGファイルのヘッダを書き込む
-	png_write_info( PngPtr, InfoPtr );
-	// 画像データを書き込む
-	png_write_image( PngPtr, image );
-	// 残りの情報を書き込む
-	png_write_end( PngPtr, InfoPtr );
-	
-	// ファイルを閉じる
-	fclose( fp );
-	
-	// パレットを開放する
-	if( Palette ) png_free( PngPtr, Palette );
-	
-	// イメージデータを開放する
-	for( int i=0; i<rec.h; i++ ) delete [] image[i];
-	delete [] image;
-	
-	// 2つの構造体のメモリを解放する
-	png_destroy_write_struct( &PngPtr, &InfoPtr );
+
+    // 領域設定
+    if( pos ){
+        rec.x = pos->x;	rec.y = pos->y;
+        rec.w = pos->w;	rec.h = pos->h;
+    }else{
+        rec.x =               rec.y = 0;
+        rec.w = sur->Width(); rec.h = sur->Height();
+    }
+
+    QVector<QRgb> PaletteTable;
+    for (int i=0; i < sur->GetPalette()->ncols; i++){
+        COLOR24& col = sur->GetPalette()->colors[i];
+        PaletteTable.push_back(qRgb(col.r, col.g, col.b));
+    }
+    QImage image(pos->w, pos->h, QImage::Format_Indexed8);
+    image.setColorTable(PaletteTable);
+
+    BYTE *doff = (BYTE *)sur->GetPixels() + rec.x + rec.y * sur->Pitch();
+    for( int i=0; i<rec.h; i++ ){
+        memcpy( image.scanLine(i), doff, rec.w );
+        doff += sur->Pitch();
+    }
+
+    image.save(filename);
 	
 	return true;
 }
@@ -528,7 +427,6 @@ bool SaveImg( char *filename, VSurface *sur, VRect *pos )
 
 ////////////////////////////////////////////////////////////////
 // Img LOAD
-//   情報参照「PNG利用術」 http://gmoon.jp/png/
 //
 // 引数:	filename		読込むファイル名
 // 返値:	VSurface *		読込まれたサーフェスへのポインタ
@@ -537,89 +435,31 @@ VSurface *LoadImg( char *filename )
 {
 	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filename );
 	
-	FILE *fp;
-	png_structp PngPtr;
-	png_infop InfoPtr;
-	png_uint_32 width, height;
-	int BitDepth, ColorType, InterlaceType;
-	png_bytepp image;	// image[HEIGHT][WIDTH]の形式
-	png_colorp Palette;
-	int PaletteCount = 0;
-	
-	VSurface *sur = NULL;
-	COLOR24 PaletteS[256];
-	
-	// ファイルを開く
-	fp = FOPENEN( filename, "rb" );
-	if( !fp ) return NULL;
-	
-	// PNGファイルかどうかを調べる
-	png_byte sig[4];
-	if( fread( sig, 1, 4, fp ) != 4 ){
-		fclose( fp );
-		return NULL;
-	}
-	if( png_sig_cmp( sig, 0, 4 ) ){
-		fclose( fp );
-		return NULL;
-	}
-	fseek( fp, 0, SEEK_SET );
-	
-	// PngPtr構造体を確保・初期化する
-	PngPtr  = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	
-	// InfoPtr構造体を確保・初期化する
-	InfoPtr = png_create_info_struct( PngPtr );
-	
-	// libpngにfpを知らせる
-	png_init_io( PngPtr, fp );
-	
-	// ヘッダを読込む
-	png_read_info( PngPtr, InfoPtr );
-	
-	// IHDRチャンク情報を取得
-	png_get_IHDR( PngPtr, InfoPtr, &width, &height, &BitDepth, &ColorType, &InterlaceType, NULL, NULL );
-	
-	// 2次元配列を確保する
-	image = new png_bytep[height*sizeof( png_bytep )];
-	for( int i=0; i<(int)height; i++ ) image[i] = new png_byte[png_get_rowbytes( PngPtr, InfoPtr )];
-	
-	// 画像データを読込む
-	png_read_image( PngPtr, image );
-	
-	// ファイルを閉じる
-	fclose( fp );
-	
-	
-	// サーフェスを作成
-	sur = new VSurface;
-	sur->InitSurface( width, height, BitDepth );
-	
+    // 画像を読み込む
+    QImage image(filename);
+
+    // サーフェスを作成
+    VSurface* sur = new VSurface;
+    sur->InitSurface( image.width(), image.height(), image.depth() );
+
 	// 画像データを取得
 	BYTE *doff = (BYTE *)sur->GetPixels();
 	for( int i=0; i<(int)sur->Height(); i++ ){
-		memcpy( doff, image[i], sur->Width() * BitDepth / 8 );
+        memcpy( doff, image.scanLine(i), sur->Width() * image.depth() / 8 );
 		doff += sur->Pitch();
 	}
 		
-	if( BitDepth == 8 ){	// 8bitカラー限定
+    COLOR24 PaletteS[256];
+    if( image.depth() == 8 ){	// 8bitカラー限定
 		// パレットを取得
-		png_get_PLTE( PngPtr, InfoPtr, &Palette, &PaletteCount );
-		for( int i=0; i<PaletteCount; i++ ){
-			PaletteS[i].r = Palette[i].red;
-			PaletteS[i].g = Palette[i].green;
-			PaletteS[i].b = Palette[i].blue;
+        QVector<QRgb> Palette = image.colorTable();
+        for( int i=0; i<Palette.count(); i++ ){
+            PaletteS[i].r = qRed(Palette[i]);
+            PaletteS[i].g = qGreen(Palette[i]);
+            PaletteS[i].b = qBlue(Palette[i]);
 		}
-		sur->SetPalette( PaletteS, PaletteCount );
+        sur->SetPalette( PaletteS, Palette.count() );
 	}
-	
-	
-	// イメージデータを開放する
-	for( int i=0; i<(int)height; i++ ) delete [] image[i];
-	delete [] image;
-	
-	// 2つの構造体のメモリを解放する
-	png_destroy_read_struct( &PngPtr, &InfoPtr, (png_infopp)NULL );
 	
 	return sur;
 }
@@ -636,10 +476,10 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 {
 	if( !rr || !r1 || !r2 ) return;
 	
-	int x1 = max( r1->x, r2->x );
-	int y1 = max( r1->y, r2->y );
-	int x2 = min( r1->x + r1->w - 1, r2->x + r2->w - 1);
-	int y2 = min( r1->y + r1->h - 1, r2->y + r2->h - 1);
+    int x1 = qMax( r1->x, r2->x );
+    int y1 = qMax( r1->y, r2->y );
+    int x2 = qMin( r1->x + r1->w - 1, r2->x + r2->w - 1);
+    int y2 = qMin( r1->y + r1->h - 1, r2->y + r2->h - 1);
 	
 	rr->w = x1 > x2 ? 0 : x2 - x1 + 1;
 	rr->h = y1 > y2 ? 0 : y2 - y1 + 1;

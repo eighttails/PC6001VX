@@ -1,7 +1,8 @@
 // OS依存の汎用ルーチン(主にUI用)
 
 #include <QtCore>
-#include <QtGui>
+#include <QtWidgets>
+#include <QtMultimedia>
 
 #include "../log.h"
 #include "../osd.h"
@@ -21,6 +22,10 @@ QElapsedTimer elapsedTimer;
 
 std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
 QVector<QRgb> PaletteTable;              //パレットテーブル
+
+//サウンド関連
+QBuffer* audioBuffer = NULL;
+QAudioOutput* audioOutput = NULL;
 
 static const struct {	// SDLキーコード -> 仮想キーコード定義
     int InKey;			// SDLのキーコード
@@ -1208,6 +1213,147 @@ int OSD_Message( const char *mes, const char *cap, int type )
     }
 }
 
+
+////////////////////////////////////////////////////////////////
+// オーディオデバイスオープン
+//
+// 引数:	obj			自分自身へのオブジェクトポインタ
+//			callback	コールバック関数へのポインタ
+//			rate		サンプリングレート
+//			sample		バッファサイズ(サンプル数)
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
+{
+    QAudioFormat format;
+    format.setCodec("audio/pci");
+    format.setChannelCount(1);
+    format.setSampleRate(rate);
+    format.setSampleType(QAudioFormat::SignedInt);
+
+    if(audioOutput){
+        audioOutput->deleteLater();
+    }
+    audioOutput = new QAudioOutput(format, qApp);
+    audioOutput->setBufferSize(samples);
+
+    audioBuffer = new QBuffer(audioOutput);
+    audioOutput->start(audioBuffer);
+    return true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// オーディオデバイスクローズ
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_CloseAudio( void )
+{
+    audioOutput->stop();
+}
+
+
+////////////////////////////////////////////////////////////////
+// 再生開始
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_StartAudio( void )
+{
+    audioOutput->start();
+}
+
+
+////////////////////////////////////////////////////////////////
+// 再生停止
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_StopAudio( void )
+{
+    audioOutput->suspend();
+}
+
+
+////////////////////////////////////////////////////////////////
+// 再生状態取得
+//
+// 引数:	なし
+// 返値:	bool		true:再生中 false:停止中
+////////////////////////////////////////////////////////////////
+bool OSD_AudioPlaying( void )
+{
+    return audioOutput->state() == QAudio::ActiveState;
+}
+
+
+////////////////////////////////////////////////////////////////
+// Waveファイル読込み
+// 　対応形式は 22050Hz以上,符号付き16bit,1ch
+//
+// 引数:	filepath	ファイルパス
+//			buf			バッファポインタ格納ポインタ
+//			len			ファイル長さ格納ポインタ
+//			freq		サンプリングレート格納ポインタ
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
+{
+    //#PENDING
+//    SDL_AudioSpec ws;
+
+//    if( !SDL_LoadWAV( filepath, &ws, buf, (Uint32 *)len ) ) return false;
+
+//    if( ws.freq < 22050 || ws.format != AUDIO_S16 || ws.channels != 1 ){
+//        SDL_FreeWAV( *buf );
+//        return false;
+//    }
+
+//    *freq    = ws.freq;
+
+    return true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// Waveファイル開放
+//
+// 引数:	buf			バッファへのポインタ
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_FreeWAV( BYTE *buf )
+{
+    //#PENDING SDL_FreeWAV( buf );
+}
+
+
+
+////////////////////////////////////////////////////////////////
+// オーディオをロックする
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_LockAudio( void )
+{
+    //#PENDING SDL_LockAudio();
+}
+
+
+////////////////////////////////////////////////////////////////
+// オーディオをアンロックする
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_UnlockAudio( void )
+{
+    //#PENDING SDL_UnlockAudio();
+}
 
 
 ////////////////////////////////////////////////////////////////

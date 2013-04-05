@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network opengl
+QT       += core gui widgets network opengl multimedia
 
 TARGET = PC6001VX
 TEMPLATE = app

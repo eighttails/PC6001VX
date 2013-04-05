@@ -630,6 +630,8 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 	// サウンドバッファ更新
 	int ret = snd->PreUpdate( size, exbuf );
 	
+    //#PENDING
+    snd->Update();
 	return ret;
 }
 

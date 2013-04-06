@@ -302,13 +302,14 @@ void ZCons::PutCharZ( WORD c )
 ////////////////////////////////////////////////////////////////
 void ZCons::Print( const char *text, ... )
 {
-    BYTE buf[1024];
+    char buf[1024];
     int num = 0;
     va_list ap;
 
     // 可変長引数展開（文字列に変換）
     va_start( ap, text );
-    QString str = QString().vsprintf(text, ap);
+    vsprintf(buf, text, ap);
+    QString str = buf;
     const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
 
     for( int i=0; i<array.size(); i++ ){
@@ -329,13 +330,14 @@ void ZCons::Print( const char *text, ... )
 ////////////////////////////////////////////////////////////////
 void ZCons::Printf( const char *text, ... )
 {
-    BYTE buf[1024];
+    char buf[1024];
     int num = 0;
     va_list ap;
 
     // 可変長引数展開（文字列に変換）
     va_start( ap, text );
-    QString str = QString().vsprintf(text, ap);
+    vsprintf(buf, text, ap);
+    QString str = buf;
     const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
     for( int i=0; i<array.size(); i++ ){
         switch( array[i] ){
@@ -381,7 +383,8 @@ void ZCons::Printfr( const char *text, ... )
 
     // 可変長引数展開（文字列に変換）
     va_start( ap, text );
-    QString str = QString().vsprintf(text, ap);
+    vsprintf(buf, text, ap);
+    QString str = buf;
     const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
 
     if( array.size() > Xmax ) num = Xmax;

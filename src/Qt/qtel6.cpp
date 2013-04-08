@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include "../pc6001v.h"
 #include "../p6el.h"
@@ -114,6 +114,7 @@ QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable =
     action->setCheckable(checkable);
     return action;
 }
+
 QtEL6::QtEL6()
 {
 }

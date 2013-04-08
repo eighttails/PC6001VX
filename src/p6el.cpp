@@ -300,7 +300,7 @@ bool EL6::Init( const CFG6 *config )
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	
 	// サウンド -----
-	if( !snd->Init( this, EL6::StreamUpdate, cfg->GetSampleRate(), cfg->GetSoundBuffer() ) ) return false;
+    if( !snd->Init( this, NULL, cfg->GetSampleRate(), cfg->GetSoundBuffer() ) ) return false;
 	snd->SetVolume( cfg->GetMasterVol() );
 	
 	// 画面描画 -----
@@ -630,7 +630,7 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 	// サウンドバッファ更新
 	int ret = snd->PreUpdate( size, exbuf );
 	
-    //#PENDING
+    // サウンド更新
     snd->Update();
 	return ret;
 }
@@ -644,23 +644,24 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 //			len			バッファサイズ(バイト単位)
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void EL6::StreamUpdate( void *userdata, BYTE *stream, int len )
-{
-	EL6 *p6 = STATIC_CAST( EL6 *, userdata );	// 自分自身のオブジェクトポインタ取得
+//#PENDING 消す
+//void EL6::StreamUpdate( void *userdata, BYTE *stream, int len )
+//{
+//	EL6 *p6 = STATIC_CAST( EL6 *, userdata );	// 自分自身のオブジェクトポインタ取得
 	
-	// サウンドバッファ更新
-	//  もしサンプル数が足りなければここで追加
-	//  ただしビデオキャプチャ中は無視
-	int addsam = len/sizeof(int16_t) - p6->snd->cRing::ReadySize();
+//	// サウンドバッファ更新
+//	//  もしサンプル数が足りなければここで追加
+//	//  ただしビデオキャプチャ中は無視
+//	int addsam = len/sizeof(int16_t) - p6->snd->cRing::ReadySize();
 	
-	p6->snd->Update( stream, min( (int)(len/sizeof(int16_t)), p6->snd->cRing::ReadySize() ) );
+//	p6->snd->Update( stream, min( (int)(len/sizeof(int16_t)), p6->snd->cRing::ReadySize() ) );
 	
-	if( addsam > 0 && !p6->AVI6::IsAVI() ){
-		p6->SoundUpdate( addsam );
-		p6->snd->Update( stream, addsam );
-	}
+//	if( addsam > 0 && !p6->AVI6::IsAVI() ){
+//		p6->SoundUpdate( addsam );
+//		p6->snd->Update( stream, addsam );
+//	}
 	
-}
+//}
 
 
 ////////////////////////////////////////////////////////////////

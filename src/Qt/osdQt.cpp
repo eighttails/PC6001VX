@@ -24,8 +24,8 @@ std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコー�
 QVector<QRgb> PaletteTable;              //パレットテーブル
 
 //サウンド関連
-QBuffer* audioBuffer = NULL;
-QAudioOutput* audioOutput = NULL;
+QPointer<QIODevice> audioBuffer = NULL;
+QPointer<QAudioOutput> audioOutput = NULL;
 
 static const struct {	// SDLキーコード -> 仮想キーコード定義
     int InKey;			// SDLのキーコード
@@ -1226,19 +1226,24 @@ int OSD_Message( const char *mes, const char *cap, int type )
 bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 {
     QAudioFormat format;
-    format.setCodec("audio/pci");
+    format.setCodec("audio/pcm");
     format.setChannelCount(1);
     format.setSampleRate(rate);
+    format.setSampleSize(16);
+    format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::SignedInt);
 
     if(audioOutput){
         audioOutput->deleteLater();
     }
-    audioOutput = new QAudioOutput(format, qApp);
-    audioOutput->setBufferSize(samples);
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+    if (!info.isFormatSupported(format)) {
+        qWarning()<<"raw audio format not supported by backend, cannot play audio.";
+        return false;
+    }
 
-    audioBuffer = new QBuffer(audioOutput);
-    audioOutput->start(audioBuffer);
+    audioOutput = new QAudioOutput(info, format, qApp);
+    audioOutput->setVolume(0.5);
     return true;
 }
 
@@ -1251,7 +1256,9 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 ////////////////////////////////////////////////////////////////
 void OSD_CloseAudio( void )
 {
-    audioOutput->stop();
+    if(audioOutput){
+        audioOutput->stop();
+    }
 }
 
 
@@ -1263,7 +1270,9 @@ void OSD_CloseAudio( void )
 ////////////////////////////////////////////////////////////////
 void OSD_StartAudio( void )
 {
-    audioOutput->start();
+    if(audioOutput){
+        audioBuffer = audioOutput->start();
+    }
 }
 
 
@@ -1275,7 +1284,23 @@ void OSD_StartAudio( void )
 ////////////////////////////////////////////////////////////////
 void OSD_StopAudio( void )
 {
-    audioOutput->suspend();
+    if(audioOutput){
+        audioOutput->suspend();
+    }
+}
+
+////////////////////////////////////////////////////////////////
+// オーディオストリーム書き込み
+//
+// 引数:	stream  書き込むデータへのポインタ
+//      samples 書き込むバイト数
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_WriteAudioStream(BYTE *stream, int samples)
+{
+    if(audioBuffer){
+        audioBuffer->write((const char*)stream, samples);
+    }
 }
 
 
@@ -1340,7 +1365,7 @@ void OSD_FreeWAV( BYTE *buf )
 ////////////////////////////////////////////////////////////////
 void OSD_LockAudio( void )
 {
-    //#PENDING SDL_LockAudio();
+    // 何もしない
 }
 
 
@@ -1352,7 +1377,7 @@ void OSD_LockAudio( void )
 ////////////////////////////////////////////////////////////////
 void OSD_UnlockAudio( void )
 {
-    //#PENDING SDL_UnlockAudio();
+    // 何もしない
 }
 
 

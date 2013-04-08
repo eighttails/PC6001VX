@@ -90,7 +90,7 @@ public:
 	int GetBufferSize();					// バッファサイズ(倍率)取得
 	
 	int PreUpdate( int, cRing * = NULL );	// サウンド事前更新関数
-	void Update( BYTE *, int );				// サウンド更新関数
+    void Update();				// サウンド更新関数
 };
 
 #endif	// SOUND_H_INCLUDED

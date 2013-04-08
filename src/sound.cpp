@@ -1,4 +1,5 @@
 #include <new>
+#include <vector>
 #include <memory.h>
 
 #include "pc6001v.h"
@@ -470,13 +471,14 @@ int SND6::PreUpdate( int samples, cRing *exbuf )
 //			samples		サンプル数
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void SND6::Update( BYTE *stream, int samples )
+void SND6::Update()
 {
-	int16_t *str = (int16_t *)stream;
+    std::vector<int16_t> stream;
 	
 	PRINTD( SND_LOG, "[SND6][Update] Stream:%p Samples:%d / %d\n", stream, samples, this->cRing::ReadySize() );
-	
-	for( int i=0; i<samples; i++ ){
-		*(str++) = (int16_t)this->cRing::Get();
-	}
+    int size = this->cRing::ReadySize();
+    for( int i=0; i<size; i++ ){
+        stream.push_back((int16_t)this->cRing::Get());
+    }
+    OSD_WriteAudioStream((BYTE*)&stream[0], stream.size() * sizeof(int16_t));
 }

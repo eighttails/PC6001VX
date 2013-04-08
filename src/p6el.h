@@ -66,7 +66,7 @@ protected:
 	cWndMem *memw;				// メモリウィンドウ
 	cWndMon *monw;				// モニタウィンドウ
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	
+
 	HTIMERID UpDateFPSID;		// FPS表示タイマID
 	
 	VPalette GPal;				// パレット
@@ -74,7 +74,7 @@ protected:
 	
 	bool ScreenUpdate();								// 画面更新
 	int SoundUpdate( int, cRing * = NULL );				// サウンド更新
-	static void StreamUpdate( void *, BYTE *, int);		// ストリーム更新 コールバック関数
+    //#PENDING static void StreamUpdate( void *, BYTE *, int);		// ストリーム更新 コールバック関数
 
     //#PENDING FPS表示はQtで独自実装
     //    static DWORD UpDateFPS( DWORD, void * );			// FPS表示タイマ コールバック関数
@@ -88,7 +88,7 @@ protected:
 	int Emu();								// 1命令実行
 	int EmuVSYNC();							// 1画面分実行
 	void Wait();							// Wait
-	
+
 	bool CheckFuncKey( int, bool, bool );	// 各種機能キーチェック
 	
 	// 自動キー入力情報構造体

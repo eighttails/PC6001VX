@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include "../event.h"
 #include "../osd.h"
@@ -175,7 +175,8 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QI
 
     if(pItem == NULL){
         // 既存のQPixmapItemが存在しない場合は生成
-        pItem = new QGraphicsPixmapItem(NULL, scene);
+        pItem = new QGraphicsPixmapItem(NULL);
+        scene->addItem(pItem);
         pItem->setTransformationMode(Qt::SmoothTransformation);
         QTransform trans;
         trans.scale(1, aspect);

@@ -93,7 +93,7 @@ void EL6::OnThread( void *inst )
 					p6->vm->key->ScanMatrix();	// キーマトリクススキャン
 					
 					// サウンド更新
-					p6->SoundUpdate( 0 );
+                    p6->SoundUpdate( 0 );
 					// 画面更新
 					if( p6->sche->IsScreenUpdate() ) p6->ScreenUpdate();
 					
@@ -140,7 +140,7 @@ void EL6::OnThread( void *inst )
 			if( AVI6::IsAVI() ){
 				// ビデオキャプチャ中ならここでAVI保存処理
 				// サウンド更新
-				p6->SoundUpdate( 0, AVI6::GetAudioBuffer() );
+                p6->SoundUpdate( 0, AVI6::GetAudioBuffer() );
 				// 画面更新
 				bool update = p6->ScreenUpdate();
 				// 画面更新されていたら AVI1画面保存
@@ -148,7 +148,7 @@ void EL6::OnThread( void *inst )
 			}else{
 				// ビデオキャプチャ中でないなら通常の更新
 				// サウンド更新
-				p6->SoundUpdate( 0 );
+                p6->SoundUpdate( 0 );
 				// 画面更新
 				// 画面更新時期を迎えていたら画面更新
 				// ノーウェイトの時にFPSが変わらないようにする

@@ -54,7 +54,7 @@ void PSG6::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
 ////////////////////////////////////////////////////////////////
 int PSG6::GetUpdateSamples( void )
 {
-	int samples = (int)( (double)SndDev::SampleRate * vm->evsc->Scale( this, EID_PSG ) + 0.5 );
+    int samples = (int)( (double)SndDev::SampleRate * vm->evsc->Scale( this, EID_PSG ) + 0.5 );
 	vm->evsc->Reset( this, EID_PSG );
 	return samples;
 }

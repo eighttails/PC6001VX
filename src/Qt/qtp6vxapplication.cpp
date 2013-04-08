@@ -81,6 +81,7 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
 
 QtP6VXApplication::~QtP6VXApplication()
 {
+    Adaptor->thread()->exit();
     Adaptor->deleteLater();
 }
 

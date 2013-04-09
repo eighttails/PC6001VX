@@ -1241,7 +1241,6 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
     }
 
     audioOutput = new QAudioOutput(info, format, qApp);
-    audioOutput->setVolume(0.5);
     return true;
 }
 
@@ -1270,6 +1269,8 @@ void OSD_StartAudio( void )
 {
     if(audioOutput){
         audioBuffer = audioOutput->start();
+        //#PENDING これではグローバルボリュームを変えてしまう？
+        audioOutput->setVolume(0.3);
     }
 }
 

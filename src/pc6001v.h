@@ -40,7 +40,7 @@
 #define DEFAULT_MAXBOOST60		(8)					/* BoostUp最大倍率(N60モード) */
 #define DEFAULT_MAXBOOST62		(5)					/* BoostUp最大倍率(N60m/N66モード) */
 #define	DEFAULT_FDD				(0)					/* FDD接続台数 */
-#define	DEFAULT_COLOR_MODE		(16)				/* カラーモード 8:8bit 16:bit 24:24bit */
+#define	DEFAULT_COLOR_MODE		(8) 				/* カラーモード 8:8bit 16:bit 24:24bit */
 #define	DEFAULT_MODE4_COLOR		(1)					/* モード４カラーモード 0:モノ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク */
 #define	DEFAULT_SCANLINE		(true) 				/* スキャンライン true:あり false:なし */
 #define	DEFAULT_SCANLINEBR		(75)				/* スキャンライン輝度 (0-100)% */

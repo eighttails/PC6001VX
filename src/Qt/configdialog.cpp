@@ -64,14 +64,6 @@ void ConfigDialog::readConfig()
     ui->checkBoxUseSoldier->setChecked(config->GetUseSoldier());
 
     // 画面------------------------------------------------------
-    // カラーモード
-    switch(config->GetScrBpp()){
-    case  8: ui->radioButtonColor8Bit->setChecked(true);   break;
-    case 16: ui->radioButtonColor16Bit->setChecked(true);  break;
-    case 24: ui->radioButtonColor24Bit->setChecked(true);  break;
-    default:    Q_ASSERT(false);
-    }
-
     // MODE4カラー
     switch(config->GetMode4Color()){
     case 0: ui->radioButtonColorBW->setChecked(true);  break;
@@ -307,11 +299,6 @@ void ConfigDialog::writeConfig()
     config->SetUseSoldier(ui->checkBoxUseSoldier->isChecked());
 
     // 画面---------------------------------------------------------------------
-    // カラーモード
-    if      (ui->radioButtonColor8Bit->isChecked())  config->SetScrBpp(8);
-    else if (ui->radioButtonColor16Bit->isChecked()) config->SetScrBpp(16);
-    else if (ui->radioButtonColor24Bit->isChecked()) config->SetScrBpp(24);
-
     // MODE4カラー
     if      (ui->radioButtonColorBW->isChecked())   config->SetMode4Color(0);   // モノクロ
     else if (ui->radioButtonColorBR->isChecked())   config->SetMode4Color(1);   // 赤/青

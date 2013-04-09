@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>763</width>
-    <height>492</height>
+    <width>754</width>
+    <height>485</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -33,7 +33,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabBasic">
       <attribute name="title">
@@ -90,21 +90,21 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <widget class="QCheckBox" name="checkBoxExtRam">
          <property name="text">
           <string>拡張RAMを使う(&amp;X)</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QCheckBox" name="checkBoxUseSoldier">
          <property name="text">
           <string>戦士のカートリッジを使う(&amp;R)</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="5" column="0">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -117,68 +117,38 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="7">
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBoxFDD">
+         <property name="title">
+          <string>FDD接続数(&amp;N)</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="4">
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QGroupBox" name="groupBoxFDD">
-           <property name="title">
-            <string>FDD接続数(&amp;N)</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-             <widget class="QRadioButton" name="radioButtonFDD0">
-              <property name="text">
-               <string>なし</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioButtonFDD1">
-              <property name="text">
-               <string>1</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioButtonFDD2">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="text">
-               <string>2</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QRadioButton" name="radioButtonFDD0">
+            <property name="text">
+             <string>なし</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonFDD1">
+            <property name="text">
+             <string>1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonFDD2">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>2</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -187,42 +157,25 @@
        <string>画面(&amp;S)</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0" rowspan="2">
-        <widget class="QGroupBox" name="groupBoxColorMode">
-         <property name="title">
-          <string>カラーモード(&amp;C)</string>
+       <item row="4" column="0">
+        <spacer name="verticalSpacer_12">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <widget class="QRadioButton" name="radioButtonColor8Bit">
-            <property name="text">
-             <string>8bit</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColor16Bit">
-            <property name="text">
-             <string>16bit</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColor24Bit">
-            <property name="text">
-             <string>24bit</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
-       <item row="2" column="0">
+       <item row="0" column="0">
         <widget class="QGroupBox" name="groupBoxMode4Color">
          <property name="title">
           <string>モード4カラー(&amp;4)</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QRadioButton" name="radioButtonColorBW">
             <property name="text">
@@ -261,7 +214,7 @@
          </layout>
         </widget>
        </item>
-       <item row="2" column="2">
+       <item row="3" column="0" colspan="3">
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0" colspan="4">
           <widget class="QCheckBox" name="checkBoxScanline">
@@ -342,7 +295,7 @@
          </item>
         </layout>
        </item>
-       <item row="0" column="2">
+       <item row="1" column="0">
         <widget class="QGroupBox" name="groupBoxfps">
          <property name="title">
           <string>フレームスキップ(&amp;K)</string>
@@ -376,32 +329,6 @@
           </item>
          </layout>
         </widget>
-       </item>
-       <item row="1" column="2">
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="3" column="0">
-        <spacer name="verticalSpacer_12">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
@@ -3494,7 +3421,6 @@ border-radius: 1;</string>
   <tabstop>pushButtonColor34</tabstop>
   <tabstop>pushButtonColor35</tabstop>
   <tabstop>pushButtonColor36</tabstop>
-  <tabstop>tabWidget</tabstop>
   <tabstop>radioButtonModel6001</tabstop>
   <tabstop>radioButtonModel6001mk2</tabstop>
   <tabstop>radioButtonModel6601</tabstop>
@@ -3506,13 +3432,6 @@ border-radius: 1;</string>
   <tabstop>checkBoxExtRam</tabstop>
   <tabstop>checkBoxUseSoldier</tabstop>
   <tabstop>buttonBox</tabstop>
-  <tabstop>radioButtonColor8Bit</tabstop>
-  <tabstop>radioButtonColor16Bit</tabstop>
-  <tabstop>radioButtonColor24Bit</tabstop>
-  <tabstop>radioButtonColorBW</tabstop>
-  <tabstop>radioButtonColorRB</tabstop>
-  <tabstop>radioButtonColorBR</tabstop>
-  <tabstop>radioButtonColorPG</tabstop>
   <tabstop>radioButtonColorGP</tabstop>
   <tabstop>horizontalSliderFPS</tabstop>
   <tabstop>checkBoxScanline</tabstop>

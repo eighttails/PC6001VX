@@ -63,8 +63,10 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
   , Restart(EL6::Quit)
   , Adaptor(new EmulationAdaptor())
 {
+    //HWINDOWという型名をシグナルの引数として使えるようにする
     qRegisterMetaType<HWINDOW>("HWINDOW");
 
+    // エミュレーションコア部分用スレッドを生成
     QThread* emulationThread = new QThread(this);
     emulationThread->start();
     Adaptor->moveToThread(emulationThread);

@@ -671,9 +671,7 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 ////////////////////////////////////////////////////////////////
 void OSD_DestroyWindow( HWINDOW Wh )
 {
-    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
-    Q_ASSERT(view);
-    view->deleteLater();
+    // 何もしない
 }
 
 

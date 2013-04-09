@@ -75,6 +75,7 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
 
     connect(this, SIGNAL(initialized()), this, SLOT(executeEmulation()));
     connect(this, SIGNAL(vmPrepared()), Adaptor, SLOT(doEventLoop()));
+    connect(this, SIGNAL(vmRestart()), this, SLOT(executeEmulation()));
     connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()));
     connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()));
 }

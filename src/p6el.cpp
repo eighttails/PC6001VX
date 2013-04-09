@@ -453,17 +453,6 @@ EL6::ReturnCode EL6::EventLoop( void )
 			break;
 			
 		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-            //#PENDING 消す
-//        case EV_MOUSEBUTTONUP:	// マウスボタンクリック
-//            if( ( event.mousebt.button == MBT_RIGHT ) && ( event.mousebt.state == false ) ){
-//                Stop();
-
-//                // ポップアップメニュー表示
-//                ShowPopupMenu( event.mousebt.x, event.mousebt.y );
-
-//                Start();
-//            }
-//            break;
         case EV_CONTEXTMENU:	// コンテキストメニュー
                 // ポップアップメニュー表示
                 ShowPopupMenu( event.mousebt.x, event.mousebt.y );
@@ -618,7 +607,7 @@ bool EL6::ScreenUpdate( void )
 int EL6::SoundUpdate( int samples, cRing *exbuf )
 {
 	// PSG更新
-	vm->psg->SoundUpdate( samples );
+    vm->psg->SoundUpdate( samples );
 	int size = vm->psg->SndDev::cRing::ReadySize();
 	
 	// CMT(LOAD)更新

@@ -37,6 +37,7 @@ public slots:
 
     //コンテキストメニューを表示
     void showPopupMenu(int x, int y);
+
 signals:
     //初期化終了シグナル
     void initialized();

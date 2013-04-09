@@ -117,6 +117,10 @@ QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable =
 
 QtEL6::QtEL6()
 {
+    // FPS更新タイマ
+    QTimer* fpsTimer = new QTimer(this);
+    fpsTimer->start(1000);
+    connect(fpsTimer, SIGNAL(timeout()), this, SLOT(updateFPS()));
 }
 
 void QtEL6::ShowPopupImpl(int x, int y)
@@ -541,6 +545,15 @@ void QtEL6::ShowPopupImpl(int x, int y)
     if(!cfg->GetMonDisp()  && cfg->GetFullScreen()){
         OSD_ShowCursor( false );
     }
+}
+
+void QtEL6::updateFPS()
+{
+    Event ev;
+    ev.type = EV_FPSUPDATE;
+    ev.fps.fps = UDFPSCount;
+    OSD_PushEvent( ev );
+    UDFPSCount = 0;
 }
 
 

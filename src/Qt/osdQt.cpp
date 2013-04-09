@@ -1418,8 +1418,5 @@ void OSD_SetIcon( HWINDOW Wh, int model )
 
     // アイコン設定
     QImage icon = QImage(iconRes).convertToFormat(QImage::Format_RGB16);
-    //#PENDING
-    //    SDL_Surface *p6icon = SDL_CreateRGBSurfaceFrom( icon.bits(), icon.width(), icon.height(), icon.depth(), icon.bytesPerLine(), 0, 0, 0, 0 );
-    //    SDL_WM_SetIcon( p6icon, icon.alphaChannel().bits() );
-    //    SDL_FreeSurface( p6icon );
+    QApplication::setWindowIcon(QIcon(iconRes));
 }

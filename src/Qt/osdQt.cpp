@@ -34,14 +34,23 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
     { Qt::Key_unknown,          KVC_UNKNOWN },
 
     { Qt::Key_1,                KVC_1 },			// 1	!
+    { Qt::Key_Exclam,           KVC_1 },			// 1	!
     { Qt::Key_2,                KVC_2 },			// 2	"
+    { Qt::Key_QuoteDbl,         KVC_2 },			// 2	"
     { Qt::Key_3,				KVC_3 },			// 3	#
+    { Qt::Key_NumberSign,       KVC_3 },			// 3	#
     { Qt::Key_4,				KVC_4 },			// 4	$
+    { Qt::Key_Dollar,           KVC_4 },			// 4	$
     { Qt::Key_5,				KVC_5 },			// 5	%
+    { Qt::Key_Percent,          KVC_5 },			// 5	%
     { Qt::Key_6,				KVC_6 },			// 6	&
+    { Qt::Key_Ampersand,        KVC_6 },			// 6	&
     { Qt::Key_7,				KVC_7 },			// 7	'
+    { Qt::Key_Apostrophe,   	KVC_7 },			// 7	'
     { Qt::Key_8,				KVC_8 },			// 8	(
+    { Qt::Key_ParenLeft,    	KVC_8 },			// 8	(
     { Qt::Key_9,				KVC_9 },			// 9	)
+    { Qt::Key_ParenRight,       KVC_9 },			// 9	)
     { Qt::Key_0,				KVC_0 },			// 0
 
     { Qt::Key_A,				KVC_A },			// a	A
@@ -88,12 +97,19 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
     { Qt::Key_AsciiCircum,		KVC_CARET },		// ^	~
     { Qt::Key_Backspace,		KVC_BACKSPACE },	// BackSpace
     { Qt::Key_At,				KVC_AT },			// @	`
+    { Qt::Key_QuoteLeft,		KVC_AT },			// @	`
     { Qt::Key_BracketLeft,		KVC_LBRACKET },		// [	{
+    { Qt::Key_BraceLeft,		KVC_LBRACKET },		// [	{
     { Qt::Key_Semicolon,		KVC_SEMICOLON },	// ;	+
+    { Qt::Key_Plus,             KVC_SEMICOLON },	// ;	+
     { Qt::Key_Colon,			KVC_COLON },		// :	*
+    { Qt::Key_Asterisk,			KVC_COLON },		// :	*
     { Qt::Key_Comma,			KVC_COMMA },		// ,	<
+    { Qt::Key_Less, 			KVC_COMMA },		// ,	<
     { Qt::Key_Period,			KVC_PERIOD },		// .	>
+    { Qt::Key_Greater, 			KVC_PERIOD },		// .	>
     { Qt::Key_Slash,			KVC_SLASH },		// /	?
+    { Qt::Key_Question,			KVC_SLASH },		// /	?
     { Qt::Key_Space,			KVC_SPACE },		// Space
 
     { Qt::Key_Escape,			KVC_ESC },			// ESC
@@ -145,7 +161,8 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
 //  { SDLK_KP_ENTER,		KVC_P_ENTER },		// [Enter]
 
     // 日本語キーボードのみ
-    { Qt::Key_yen,          KVC_YEN },			// ¥	|
+    { Qt::Key_Backslash,    KVC_YEN },			// ¥	|
+    { Qt::Key_BracketRight,	KVC_RBRACKET },		// ]	}
     { Qt::Key_BraceRight,	KVC_RBRACKET },		// ]	}
     { Qt::Key_Underscore,	KVC_UNDERSCORE },	// ¥	_
 //	{ 				,		KVC_MUHENKAN },		// 無変換
@@ -508,6 +525,17 @@ bool OSD_Init( void )
         VKTable[VKeyDef[i].InKey] = VKeyDef[i].VKey;
 
     return true;
+}
+
+////////////////////////////////////////////////////////////////
+// キーリピート設定
+//
+// 引数:	repeat	キーリピートの間隔(ms) 0で無効
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_SetKeyRepeat( int repeat )
+{
+    QApplication::setKeyboardInputInterval(repeat);
 }
 
 ////////////////////////////////////////////////////////////////

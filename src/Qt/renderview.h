@@ -12,6 +12,10 @@ public:
 signals:
     
 public slots:
+    //シーングラフ全体がウィジェットに収まるように表示倍率を調整
+    //fitInViewだと微妙に倍率が合わないので独自実装
+    void fitContent();
+
 protected:
     virtual void resizeEvent(QResizeEvent* event);
 };

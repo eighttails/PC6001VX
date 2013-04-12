@@ -142,20 +142,22 @@ void QtP6VXApplication::startup()
 
 void QtP6VXApplication::createWindow(HWINDOW Wh, int w, int h, int bpp, bool fsflag)
 {
-    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    qDebug()<<"fullscreen"<< fsflag;
+    RenderView* view = static_cast<RenderView*>(Wh);
     Q_ASSERT(view);
     QGraphicsScene* scene = view->scene();
 
     scene->setSceneRect(0, 0, w, h);
-    view->adjustSize();
-    view->resize(qMax(int(scene->width()), view->width()), qMax(int(scene->height()), view->height()));
 
     OSD_ClearWindow(Wh);
-
     if(fsflag){
         view->showFullScreen();
+        view->fitContent();
     } else {
+        view->resize(qMax(int(scene->width()), view->width()), qMax(int(scene->height()), view->height()));
         view->showNormal();
+        view->adjustSize();
+        view->fitContent();
     }
 }
 

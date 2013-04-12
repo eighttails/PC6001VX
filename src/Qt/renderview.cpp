@@ -18,10 +18,15 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
                    QPainter::HighQualityAntialiasing);
 }
 
-void RenderView::resizeEvent(QResizeEvent *event)
+void RenderView::fitContent()
 {
     qreal scaleRatio = qMin(width() / scene()->width(), height() / scene()->height());
     resetMatrix();
     scale(scaleRatio, scaleRatio);
+}
+
+void RenderView::resizeEvent(QResizeEvent *event)
+{
+    fitContent();
 }
 

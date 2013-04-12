@@ -475,7 +475,6 @@ void SND6::Update()
 {
     std::vector<int16_t> stream;
 	
-	PRINTD( SND_LOG, "[SND6][Update] Stream:%p Samples:%d / %d\n", stream, samples, this->cRing::ReadySize() );
     int size = this->cRing::ReadySize();
     for( int i=0; i<size; i++ ){
         stream.push_back((int16_t)this->cRing::Get());

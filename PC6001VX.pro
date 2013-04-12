@@ -15,16 +15,10 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 win32:{
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
 QTPLUGIN += qjpcodecs qico
-INCLUDEPATH += C:/mingw/include/SDL
-LIBS += -LC:/mingw/lib -Wl,-Bstatic $$system(sh sdl-config --static-libs)
+LIBS += -LC:/mingw/lib -Wl,-Bstatic
 CONFIG += exceptions
-QMAKE_CXXFLAGS += $$system(sh sdl-config --cflags)
 QMAKE_LFLAGS += -static-libgcc
 RC_FILE = src/win32/PC6001VX.rc
-}else{
-DEFINES += USESDLTHREAD USESDLCS USESDLSEMAPHORE USESDLTIMER
-QMAKE_CXXFLAGS += $$system(sdl-config --cflags)
-LIBS += $$system(sdl-config --libs)
 }
 
 SOURCES += \
@@ -71,7 +65,6 @@ SOURCES += \
     src/Qt/console.cpp \
     src/p6el.cpp \
     src/p6vm.cpp \
-    src/SDL/osdSDL.cpp \
     src/Qt/qtsingleapplication/qtlocalpeer.cpp \
     src/Qt/qtsingleapplication/qtlockedfile.cpp \
     src/Qt/qtsingleapplication/qtlockedfile_unix.cpp \

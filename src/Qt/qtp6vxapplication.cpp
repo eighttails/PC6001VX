@@ -333,9 +333,20 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
     {
         QKeyEvent* ke = dynamic_cast<QKeyEvent*>(event);
         Q_ASSERT(ke);
+        int keyCode = ke->key();
+
+        // 「ろ」が入力できない対策
+        quint32 nativeKey = ke->nativeScanCode();
+        //X11の場合
+        if (QGuiApplication::platformName() == QLatin1String("xcb")){
+            if(keyCode == Qt::Key_Backslash){
+                keyCode = nativeKey == 97 ? Qt::Key_Underscore : Qt::Key_Backslash;
+            }
+        }
+
         ev.type        = event->type() == QEvent::KeyPress ? EV_KEYDOWN : EV_KEYUP;
         ev.key.state   = event->type() == QEvent::KeyPress ? true : false;
-        ev.key.sym     = OSD_ConvertKeyCode( ke->key() );
+        ev.key.sym     = OSD_ConvertKeyCode( keyCode );
         ev.key.mod	   = (PCKEYmod)(
                     ( ke->modifiers() & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
                     | ( ke->modifiers() & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )

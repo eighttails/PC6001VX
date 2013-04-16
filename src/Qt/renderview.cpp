@@ -27,6 +27,7 @@ void RenderView::fitContent()
 
 void RenderView::resizeEvent(QResizeEvent *event)
 {
+    QGraphicsView::resizeEvent(event);
     fitContent();
 }
 

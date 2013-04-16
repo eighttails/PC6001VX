@@ -151,14 +151,12 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, int w, int h, int bpp, bool fsf
     OSD_ClearWindow(Wh);
     if(fsflag){
         view->showFullScreen();
-        view->fitContent();
     } else {
         view->showNormal();
         //qDebug("scene:%dx%d view:%dx%d", scene->width(), scene->height(), view->width(), view->height());
-        view->resize(qMax(int(scene->width()), view->width()), qMax(int(scene->height()), view->height()));
-        view->adjustSize();
-        view->fitContent();
+        view->resize(scene->width(), scene->height());
     }
+    view->fitContent();
 }
 
 void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image)

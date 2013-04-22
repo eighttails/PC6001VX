@@ -489,6 +489,11 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 }
 
 #include <QString>
+#include <QByteArray>
+#include <QMutex>
+//文字コード変換用バッファ
+QByteArray array;
+
 ////////////////////////////////////////////////////////////////
 // UTF8->Local(Windowsの場合SJIS,Linuxの場合UTF8)
 //
@@ -497,7 +502,11 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 ////////////////////////////////////////////////////////////////
 char *UTF8toLocal( const char *str )
 {
+    QMutex mutex;
+    QMutexLocker lock(&mutex);
+
     QString qStr = QString::fromUtf8(str);
-    return qStr.toLocal8Bit().data();
+    array = qStr.toLocal8Bit();
+    return array.data();
 }
 

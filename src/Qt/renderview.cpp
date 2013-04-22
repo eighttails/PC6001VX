@@ -10,12 +10,11 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     setBackgroundBrush(Qt::black);
 
     QGLWidget* glw = new QGLWidget(this);
-    glw->setFormat(QGLFormat(QGL::SampleBuffers));
-    setViewport(glw);
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    setRenderHints(QPainter::SmoothPixmapTransform |
-                   QPainter::TextAntialiasing |
-                   QPainter::HighQualityAntialiasing);
+    if(glw->isValid()){
+        setViewport(glw);
+    } else {
+        delete glw;
+    }
 }
 
 void RenderView::fitContent()

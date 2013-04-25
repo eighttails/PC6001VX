@@ -448,11 +448,13 @@ void SCH6::OnThread( void *inst )
 	int Vrem = 1000 - (int)( 1000 / VSYNC_HZ ) * VSYNC_HZ;
 	for( int i=0; i<Vrem; i++ ) Vint[(int)(VSYNC_HZ * i / Vrem)]++;
 	
-    // 最初の待ち時間を設定
 
     while( !this->cThread::IsCancel() ){
+        DWORD start = OSD_GetTicks();
         ti->WaitReset();
-        OSD_Delay( Vint[VintCnt++] );
+        DWORD end = OSD_GetTicks();
+
+        OSD_Delay( Vint[VintCnt++] - (end - start) );
         if( VintCnt >= VSYNC_HZ ) {
             VintCnt = 0;
             WRClock     = WRClockTmp;

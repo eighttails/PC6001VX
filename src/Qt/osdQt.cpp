@@ -4,6 +4,10 @@
 #include <QtWidgets>
 #include <QtMultimedia>
 
+#ifndef NOJOYSTICK
+#include <SDL2/SDL.h>
+#endif
+
 #include "../log.h"
 #include "../osd.h"
 #include "../common.h"
@@ -517,6 +521,11 @@ int stricmp ( const char *s1, const char *s2 )
 ////////////////////////////////////////////////////////////////
 bool OSD_Init( void )
 {
+#ifndef NOJOYSTICK
+    if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
+        return false;
+#endif
+
     //経過時間タイマーをスタート
     elapsedTimer.start();
 
@@ -538,7 +547,9 @@ void OSD_Quit( void )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_Quit]\n" );
 
-    // 何もしない
+#ifndef NOJOYSTICK
+    SDL_Quit();
+#endif
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1464,6 +1475,9 @@ void OSD_SetIcon( HWINDOW Wh, int model )
 }
 
 
+#ifndef NOJOYSTICK
+std::map<int, HJOYINFO> joyMap;
+#endif
 
 ////////////////////////////////////////////////////////////////
 // 利用可能なジョイスティック数取得
@@ -1473,8 +1487,11 @@ void OSD_SetIcon( HWINDOW Wh, int model )
 ////////////////////////////////////////////////////////////////
 int OSD_GetJoyNum( void )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    return SDL_NumJoysticks();
+#else
     return 0;
+#endif
 }
 
 
@@ -1486,8 +1503,11 @@ int OSD_GetJoyNum( void )
 ////////////////////////////////////////////////////////////////
 const char *OSD_GetJoyName( int index )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    return SDL_JoystickNameForIndex( index );
+#else
     return "";
+#endif
 }
 
 
@@ -1499,8 +1519,11 @@ const char *OSD_GetJoyName( int index )
 ////////////////////////////////////////////////////////////////
 bool OSD_OpenedJoy( int index )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    return SDL_JoystickGetAttached( (SDL_Joystick*)joyMap[index] ) ? true : false;
+#else
     return false;
+#endif
 }
 
 
@@ -1512,8 +1535,12 @@ bool OSD_OpenedJoy( int index )
 ////////////////////////////////////////////////////////////////
 HJOYINFO OSD_OpenJoy( int index )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    joyMap[index] = (HJOYINFO)SDL_JoystickOpen( index );
+    return joyMap[index];
+#else
     return (HJOYINFO)NULL;
+#endif
 }
 
 
@@ -1525,7 +1552,10 @@ HJOYINFO OSD_OpenJoy( int index )
 ////////////////////////////////////////////////////////////////
 void OSD_CloseJoy( HJOYINFO jinfo )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    SDL_JoystickClose( (SDL_Joystick *)jinfo );
+#else
+#endif
 }
 
 
@@ -1537,8 +1567,11 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 ////////////////////////////////////////////////////////////////
 int OSD_GetJoyNumAxes( HJOYINFO jinfo )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    return SDL_JoystickNumAxes( (SDL_Joystick *)jinfo );
+#else
     return 1;
+#endif
 }
 
 
@@ -1550,8 +1583,11 @@ int OSD_GetJoyNumAxes( HJOYINFO jinfo )
 ////////////////////////////////////////////////////////////////
 int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    return SDL_JoystickNumButtons( (SDL_Joystick *)jinfo );
+#else
     return 0;
+#endif
 }
 
 
@@ -1564,8 +1600,12 @@ int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 ////////////////////////////////////////////////////////////////
 int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    SDL_JoystickUpdate();
+    return SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
+#else
     return 0;
+#endif
 }
 
 
@@ -1578,7 +1618,10 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 ////////////////////////////////////////////////////////////////
 bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
 {
-    //#PENDING
+#ifndef NOJOYSTICK
+    SDL_JoystickUpdate();
+    return SDL_JoystickGetButton( (SDL_Joystick *)jinfo, num ) ? true : false;
+#else
     return false;
+#endif
 }
-

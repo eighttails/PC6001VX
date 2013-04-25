@@ -19,7 +19,11 @@ LIBS += -LC:/mingw/lib -Wl,-Bstatic
 CONFIG += exceptions
 QMAKE_LFLAGS += -static-libgcc
 RC_FILE = src/win32/PC6001VX.rc
+} else {
+QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
+LIBS += $$system(sdl2-config --libs)
 }
+
 
 SOURCES += \
     src/breakpoint.cpp \

@@ -367,6 +367,8 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         break;
     }
     default:;
+        //ジョイスティックの状態を更新する
+        OSD_PushEvent(EV_JOYAXISMOTION);
     }
 
     if(ev.type == EV_NOEVENT){

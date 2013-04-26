@@ -1558,7 +1558,6 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 #endif
 }
 
-
 ////////////////////////////////////////////////////////////////
 // ジョイスティックの軸の数取得
 //
@@ -1590,6 +1589,19 @@ int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 #endif
 }
 
+////////////////////////////////////////////////////////////////
+// ジョイスティックの状態を更新
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_UpdateJoy()
+{
+#ifndef NOJOYSTICK
+    SDL_JoystickUpdate();
+#else
+#endif
+}
 
 ////////////////////////////////////////////////////////////////
 // ジョイスティックの軸の状態取得
@@ -1601,7 +1613,7 @@ int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
-    SDL_JoystickUpdate();
+
     return SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
 #else
     return 0;
@@ -1619,7 +1631,6 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
-    SDL_JoystickUpdate();
     return SDL_JoystickGetButton( (SDL_Joystick *)jinfo, num ) ? true : false;
 #else
     return false;

@@ -81,6 +81,8 @@ void OSD_CloseJoy( HJOYINFO );
 int OSD_GetJoyNumAxes( HJOYINFO );
 // ジョイスティックのボタンの数取得
 int OSD_GetJoyNumButtons( HJOYINFO );
+// ジョイスティックの状態を更新
+void OSD_UpdateJoy();
 // ジョイスティックの軸の状態取得
 int OSD_GetJoyAxis( HJOYINFO, int );
 // ジョイスティックのボタンの状態取得

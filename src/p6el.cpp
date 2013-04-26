@@ -440,11 +440,13 @@ EL6::ReturnCode EL6::EventLoop( void )
 		case EV_JOYBUTTONDOWN:
 		case EV_JOYBUTTONUP:
 			// リプレイ再生中 or 自動キー入力実行中でなければ
-			if( REPLAY::GetStatus() != REP_REPLAY && !IsAutoKey() )
+            if( REPLAY::GetStatus() != REP_REPLAY && !IsAutoKey() ){
+                OSD_UpdateJoy();
 				// キーマトリクス更新(ジョイスティック)
 				vm->key->UpdateMatrixJoy( joy->GetJoyState( 0 ), joy->GetJoyState( 1 ) );
-			break;
-			
+            }
+            break;
+
 		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 		case EV_DEBUGMODEBP:	// モニタモード変更(ブレークポイント到達時)
 			monw->BreakIn( event.bp.addr );		// ブレークポイントの情報を表示

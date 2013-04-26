@@ -452,6 +452,8 @@ void SCH6::OnThread( void *inst )
     while( !this->cThread::IsCancel() ){
         DWORD start = OSD_GetTicks();
         ti->WaitReset();
+        //ジョイスティックの状態を更新する
+        OSD_PushEvent(EV_JOYAXISMOTION);
         DWORD end = OSD_GetTicks();
 
         OSD_Delay( Vint[VintCnt++] - (end - start) );

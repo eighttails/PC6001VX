@@ -150,7 +150,7 @@ public:
 	void SetStatDisp( bool );				//                       設定
 	int GetFrameSkip();						// フレームスキップ取得
 	void SetFrameSkip( int );				//                 設定
-	
+
 	// ビデオキャプチャ関係
 	bool GetAviRle();						// RLEフラグ取得
 	void SetAviRle( bool );					//          設定

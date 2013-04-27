@@ -45,6 +45,12 @@ VSurface *LoadImg( char * );						// Img LOAD
 ////////////////////////////////////////////////////////////////
 void RectAdd( VRect *, VRect *, VRect * );			// 矩形領域合成
 
-
+enum TiltDirection{
+    NEWTRAL,
+    LEFT,
+    RIGHT,
+};
+// TILTモード用に画面を傾ける
+void TiltScreen(TiltDirection dir);
 
 #endif	// COMMON_H_INCLUDED

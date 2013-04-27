@@ -49,7 +49,7 @@ signals:
     void vmRestart();
     
 private slots:
-    //仮想マシンを開始させる
+    //仮想マシン開始させる
     void executeEmulation();
     //仮想マシン終了後の処理
     void postExecuteEmulation();

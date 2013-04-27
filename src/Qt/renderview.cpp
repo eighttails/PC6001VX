@@ -12,6 +12,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     QGLWidget* glw = new QGLWidget(this);
     if(glw->isValid()){
         setViewport(glw);
+        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     } else {
         delete glw;
     }
@@ -20,13 +21,18 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
 void RenderView::fitContent()
 {
     qreal scaleRatio = qMin(width() / scene()->width(), height() / scene()->height());
-    resetMatrix();
+    resetTransform();
     scale(scaleRatio, scaleRatio);
 }
 
-void RenderView::resizeEvent(QResizeEvent *event)
+void RenderView::paintEvent(QPaintEvent *event)
 {
-    QGraphicsView::resizeEvent(event);
-    fitContent();
+    if(isActiveWindow()){
+        fitContent();
+        if(qApp->property("TILTEnabled").toBool()){
+            rotate(qApp->property("TILT").toReal());
+        }
+    }
+    QGraphicsView::paintEvent(event);
 }
 

@@ -84,6 +84,7 @@ enum MenuCommand{
     ID_TURBO,		// Turbo TAPE
     ID_BOOST,		// Boost Up
     ID_SCANLINE,	// スキャンラインモード変更
+    ID_TILT,        // TILTモード変更
     ID_DISP43,		// 4,3表示変更
     ID_STATUS,		// ステータスバー表示状態変更
     ID_M4MONO,		// モノクロ
@@ -223,6 +224,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
     if (cfg->GetDispNTSC()) disp43->setChecked(true);
     QAction* scanLine = addCommand(settingsMenu, "スキャンライン", ID_SCANLINE, true);
     if (cfg->GetScanLine()) scanLine->setChecked(true);
+    QAction* tiltMode = addCommand(settingsMenu, "TILTモード", ID_TILT, true);
+    if (qApp->property("TILTEnabled").toBool()) tiltMode->setChecked(true);
 
     QMenu* colorMenu = settingsMenu->addMenu("MODE4 カラー");
     QActionGroup* colorGroup = new QActionGroup(&menu);
@@ -459,7 +462,10 @@ void QtEL6::ShowPopupImpl(int x, int y)
                 graph->ResizeScreen();	// スクリーンサイズ変更
             }
             break;
-
+        case ID_TILT:		// TILTモード変更
+            qApp->setProperty("TILTEnabled",
+                              qVariantFromValue(!qApp->property("TILTEnabled").toBool()));
+            break;
         case ID_DISP43:			// 4:3表示変更
             // ビデオキャプチャ中は無効
             if( !AVI6::IsAVI() ){

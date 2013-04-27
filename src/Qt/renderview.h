@@ -17,7 +17,7 @@ public slots:
     void fitContent();
 
 protected:
-    virtual void resizeEvent(QResizeEvent* event);
+    virtual void paintEvent(QPaintEvent* event);
 };
 
 #endif // RENDERVIEW_H

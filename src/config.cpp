@@ -1163,7 +1163,7 @@ int CFG6::GetFrameSkip( void )
 // フレームスキップ設定
 void CFG6::SetFrameSkip( int data )
 {
-	Ini->PutEntry( "DISPLAY", MSINI_FrameSkip, "FrameSkip", "%d", data );
+    Ini->PutEntry( "DISPLAY", MSINI_FrameSkip, "FrameSkip", "%d", data );
 }
 
 // RLEフラグ取得

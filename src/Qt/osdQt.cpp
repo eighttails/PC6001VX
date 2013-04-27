@@ -1,4 +1,5 @@
 // OS依存の汎用ルーチン(主にUI用)
+#include "../typedef.h"
 
 #include <QtCore>
 #include <QtWidgets>
@@ -1613,7 +1614,17 @@ void OSD_UpdateJoy()
 int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
-
+    if(num == 0){
+        // ジョイスティックの左右に対応して画面を傾ける
+        int Xmove = SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
+        if( Xmove < INT16_MIN / 2 ){  // 左
+            TiltScreen(LEFT);
+        } else if( Xmove > INT16_MAX / 2 ){  // 右
+            TiltScreen(RIGHT);
+        } else {
+            TiltScreen(NEWTRAL);
+        }
+    }
     return SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
 #else
     return 0;

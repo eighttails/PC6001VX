@@ -832,7 +832,6 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y, VPalette *pal )
 {
     VRect src1,drc1;
 
-    //#PENDING パフォーマンスが悪いようならインスタンスを作らないようにする
     QImage image(src->Width(), src->Height(), QImage::Format_Indexed8);
     image.setColorTable(PaletteTable);
 
@@ -1290,6 +1289,7 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
     if(audioOutput){
         audioOutput->deleteLater();
     }
+
     QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
     if (!info.isFormatSupported(format)) {
         qWarning()<<"raw audio format not supported by backend, cannot play audio.";

@@ -401,18 +401,11 @@ bool cSche::DokoLoad( cIni *Ini )
 }
 
 
-
-
-
-
-
-
-
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 SCH6::SCH6( int mclock ) : WaitEnable(true), EnableScrUpdate(0),
-	MasterClock(mclock), WRClock(0), WRClockTmp(0) {}
+    MasterClock(mclock), WRClock(0), WRClockTmp(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -420,7 +413,7 @@ SCH6::SCH6( int mclock ) : WaitEnable(true), EnableScrUpdate(0),
 ////////////////////////////////////////////////////////////////
 SCH6::~SCH6( void )
 {
-	Stop();
+    Stop();
 }
 
 
@@ -434,42 +427,41 @@ SCH6::~SCH6( void )
 ////////////////////////////////////////////////////////////////
 void SCH6::OnThread( void *inst )
 {
-        SCH6 *ti;
-        int Vint[VSYNC_HZ];
-        int VintCnt = 0;
-        DWORD now,last;
+    SCH6 *ti;
+    int Vint[VSYNC_HZ];
+    int VintCnt = 0;
+    DWORD now,last;
 
-        EnableScrUpdate = 0;
+    EnableScrUpdate = 0;
 
-        ti = STATIC_CAST( SCH6 *, inst );	// 自分自身のオブジェクトポインタ取得
+    ti = STATIC_CAST( SCH6 *, inst );	// 自分自身のオブジェクトポインタ取得
 
-        // 1秒間のインターバル設定
-        for( int i=0; i<VSYNC_HZ; i++ ) Vint[i] = (int)( 1000 / VSYNC_HZ );
-        int Vrem = 1000 - (int)( 1000 / VSYNC_HZ ) * VSYNC_HZ;
-        for( int i=0; i<Vrem; i++ ) Vint[(int)(VSYNC_HZ * i / Vrem)]++;
+    // 1秒間のインターバル設定
+    for( int i=0; i<VSYNC_HZ; i++ ) Vint[i] = (int)( 1000 / VSYNC_HZ );
+    int Vrem = 1000 - (int)( 1000 / VSYNC_HZ ) * VSYNC_HZ;
+    for( int i=0; i<Vrem; i++ ) Vint[(int)(VSYNC_HZ * i / Vrem)]++;
 
-        // 最初の待ち時間を設定
-        now  = OSD_GetTicks();
-        last = now;
-        DWORD NextWait = now + Vint[VintCnt++];
+    // 最初の待ち時間を設定
+    now  = OSD_GetTicks();
+    last = now;
+    DWORD NextWait = now + Vint[VintCnt++];
 
-        while( !this->cThread::IsCancel() ){
-            now = OSD_GetTicks();
-            if( now >= NextWait ){
-                NextWait += Vint[VintCnt++];
-                if( VintCnt >= VSYNC_HZ ) VintCnt -= VSYNC_HZ;
-                ti->WaitReset();
-                // ジョイスティックをポーリング
-                OSD_PushEvent(EV_JOYAXISMOTION);
-            }else
-                OSD_Delay( 0 );
-
-            if( now - last >= WRUPDATE ){
-                WRClock     = WRClockTmp;
-                WRClockTmp  = 0;
-                last       += WRUPDATE;
-            }
+    while( !this->cThread::IsCancel() ){
+        NextWait += Vint[VintCnt++];
+        if( VintCnt >= VSYNC_HZ ){
+            VintCnt -= VSYNC_HZ;
+            WRClock     = WRClockTmp;
+            WRClockTmp  = 0;
+            last       += WRUPDATE;
         }
+        ti->WaitReset();
+
+        // ジョイスティックをポーリング
+        OSD_PushEvent(EV_JOYAXISMOTION);
+
+        now = OSD_GetTicks();
+        OSD_Delay( NextWait - now );
+    }
 }
 
 

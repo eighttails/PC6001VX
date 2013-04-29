@@ -473,9 +473,11 @@ int SND6::PreUpdate( int samples, cRing *exbuf )
 ////////////////////////////////////////////////////////////////
 void SND6::Update()
 {
-    std::vector<int16_t> stream;
-	
     int size = this->cRing::ReadySize();
+
+    std::vector<int16_t> stream;
+    stream.reserve(size);
+
     for( int i=0; i<size; i++ ){
         stream.push_back((int16_t)this->cRing::Get());
     }

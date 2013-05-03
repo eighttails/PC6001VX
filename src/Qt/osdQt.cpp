@@ -682,10 +682,9 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 {
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
-    view->setWindowTitle(str);
+    QMetaObject::invokeMethod(view, "setWindowTitle",
+                              Q_ARG(QString, str));
 }
-
-
 
 ////////////////////////////////////////////////////////////////
 // ウィンドウ作成

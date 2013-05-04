@@ -700,6 +700,7 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 {
     static QGraphicsScene* scene = new QGraphicsScene();
     static RenderView* view = new RenderView(scene);
+    scene->setSceneRect(0, 0, w, h);
 
     //アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
     QObject::connect(qApp, SIGNAL(aboutToQuit()), scene, SLOT(deleteLater()));
@@ -709,8 +710,6 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 
     QMetaObject::invokeMethod(qApp, "createWindow",
                               Q_ARG(HWINDOW, *pwh),
-                              Q_ARG(int, w),
-                              Q_ARG(int, h),
                               Q_ARG(int, bpp),
                               Q_ARG(bool, fsflag));
 

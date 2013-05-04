@@ -25,7 +25,7 @@ public slots:
     void startup();
 
     //ウィンドウを生成
-    void createWindow(HWINDOW Wh, int w, int h, int bpp, bool fsflag );
+    void createWindow(HWINDOW Wh, int bpp, bool fsflag );
 
     //グラフィックをシーンに配置
     //QGraphicsSceneの操作はメインスレッドでしかできないため、

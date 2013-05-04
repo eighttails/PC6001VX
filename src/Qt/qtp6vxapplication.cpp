@@ -140,13 +140,11 @@ void QtP6VXApplication::startup()
     emit initialized();
 }
 
-void QtP6VXApplication::createWindow(HWINDOW Wh, int w, int h, int bpp, bool fsflag)
+void QtP6VXApplication::createWindow(HWINDOW Wh, int bpp, bool fsflag)
 {
     RenderView* view = static_cast<RenderView*>(Wh);
     Q_ASSERT(view);
     QGraphicsScene* scene = view->scene();
-
-    scene->setSceneRect(0, 0, w, h);
 
     OSD_ClearWindow(Wh);
     if(fsflag){

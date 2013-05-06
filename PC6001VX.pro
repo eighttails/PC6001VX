@@ -13,11 +13,12 @@ debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 win32:{
+DEFINES += NOJOYSTICK
+debug:DEFINES += NOOPENGL
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
-QTPLUGIN += qjpcodecs qico
-LIBS += -LC:/mingw/lib -Wl,-Bstatic
+QTPLUGIN += qico
 CONFIG += exceptions
-QMAKE_LFLAGS += -static-libgcc
+QMAKE_LFLAGS += -static -lpthread
 RC_FILE = src/win32/PC6001VX.rc
 } else {
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)

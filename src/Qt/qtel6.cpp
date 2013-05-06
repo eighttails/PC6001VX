@@ -192,6 +192,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
     QAction* romEject = addCommand(extRomMenu, "取出", ID_ROMEJECT);
     if(!*vm->mem->GetFile()) romEject->setEnabled(false);
 
+#ifndef NOJOYSTICK
     // ジョイスティックメニュー
     QMenu* joystickMenu = menu.addMenu("ジョイスティック");
     //------
@@ -215,6 +216,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
     joyGroup2->addAction(noJoy2);
     if (joy->GetID(0) < 0) noJoy1->setChecked(true);
     if (joy->GetID(1) < 0) noJoy2->setChecked(true);
+#endif
 
     // 設定メニュー
     QMenu* settingsMenu = menu.addMenu("設定");
@@ -224,8 +226,10 @@ void QtEL6::ShowPopupImpl(int x, int y)
     if (cfg->GetDispNTSC()) disp43->setChecked(true);
     QAction* scanLine = addCommand(settingsMenu, "スキャンライン", ID_SCANLINE, true);
     if (cfg->GetScanLine()) scanLine->setChecked(true);
+#ifndef NOJOYSTICK
     QAction* tiltMode = addCommand(settingsMenu, "TILTモード", ID_TILT, true);
     if (qApp->property("TILTEnabled").toBool()) tiltMode->setChecked(true);
+#endif
 
     QMenu* colorMenu = settingsMenu->addMenu("MODE4 カラー");
     QActionGroup* colorGroup = new QActionGroup(&menu);

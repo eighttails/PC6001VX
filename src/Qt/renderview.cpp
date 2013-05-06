@@ -9,6 +9,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setBackgroundBrush(Qt::black);
 
+#ifndef NOOPENGL
     QGLWidget* glw = new QGLWidget(this);
     if(glw->isValid()){
         setViewport(glw);
@@ -16,6 +17,8 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     } else {
         delete glw;
     }
+#endif
+
 }
 
 void RenderView::fitContent()

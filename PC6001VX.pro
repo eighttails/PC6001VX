@@ -9,20 +9,30 @@ QT       += core gui widgets network opengl multimedia
 TARGET = PC6001VX
 TEMPLATE = app
 
+#ジョイスティックが不要な場合はコメントアウトをはずす(SDLが不要になる)
+#DEFINES += NOJOYSTICK
+
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 win32:{
-DEFINES += NOJOYSTICK
 debug:DEFINES += NOOPENGL
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
 QTPLUGIN += qico
 CONFIG += exceptions
 QMAKE_LFLAGS += -static -lpthread
 RC_FILE = src/win32/PC6001VX.rc
+
+!contains(DEFINES, NOJOYSTICK) {
+#Windowsでは環境変数SDL_DIRにSDL2のフォルダパスを定義しておく。
+QMAKE_CXXFLAGS += -I$$(SDL_DIR)/include -Dmain=SDL_main
+LIBS += -L$$(SDL_DIR)/lib -lmingw32 -lSDL2main -lSDL2 -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -luuid
+}
 } else {
+!contains(DEFINES, NOJOYSTICK) {
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
 LIBS += $$system(sdl2-config --libs)
+}
 }
 
 

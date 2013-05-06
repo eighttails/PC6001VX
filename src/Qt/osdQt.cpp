@@ -948,10 +948,6 @@ bool OSD_CreateConfigPath()
     if(!QDir(basePath).mkpath(QString::fromUtf8(IMAGE_DIR)))
         return false;
 
-    // フォント
-    if(!QDir(basePath).mkpath(QString::fromUtf8(FONT_DIR)))
-        return false;
-
     // WAVEファイル
     if(!QDir(basePath).mkpath(QString::fromUtf8(WAVE_DIR)))
         return false;

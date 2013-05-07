@@ -348,7 +348,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         //Windowsの場合
         else if (QGuiApplication::platformName() == QLatin1String("windows")){
             if(keyCode == Qt::Key_Backslash){
-                keyCode = nativeKey == 0xE2 ? Qt::Key_Underscore : Qt::Key_Backslash;
+                keyCode = nativeKey == 115 ? Qt::Key_Underscore : Qt::Key_Backslash;
             }
         }
 

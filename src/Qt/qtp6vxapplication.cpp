@@ -78,7 +78,6 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
     connect(this, SIGNAL(initialized()), this, SLOT(executeEmulation()));
     connect(this, SIGNAL(vmPrepared()), Adaptor, SLOT(doEventLoop()));
     connect(this, SIGNAL(vmRestart()), this, SLOT(executeEmulation()));
-    connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()));
     connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()));
 }
 
@@ -283,6 +282,9 @@ void QtP6VXApplication::executeEmulation()
     default:
         break;
     }
+
+    // 以降、ウィンドウが閉じたらアプリを終了する
+    connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()));
 
     // VM実行
     Adaptor->setEmulationObj(P6Core);

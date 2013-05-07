@@ -345,6 +345,12 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
                 keyCode = nativeKey == 97 ? Qt::Key_Underscore : Qt::Key_Backslash;
             }
         }
+        //Windowsの場合
+        else if (QGuiApplication::platformName() == QLatin1String("windows")){
+            if(keyCode == Qt::Key_Backslash){
+                keyCode = nativeKey == 0xE2 ? Qt::Key_Underscore : Qt::Key_Backslash;
+            }
+        }
 
         ev.type        = event->type() == QEvent::KeyPress ? EV_KEYDOWN : EV_KEYUP;
         ev.key.state   = event->type() == QEvent::KeyPress ? true : false;

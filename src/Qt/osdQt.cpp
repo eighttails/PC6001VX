@@ -587,13 +587,7 @@ PCKEYsym OSD_ConvertKeyCode( int scode )
 ////////////////////////////////////////////////////////////////
 void OSD_Delay( DWORD tms )
 {
-    //QThread::mleepはスレッドクラスからしか使えないので、仕方なく
-    class MySleepThread : public QThread
-    {
-    public:
-        static void msleep(unsigned long msecs){QThread::msleep(msecs);}
-    };
-    MySleepThread::msleep(tms);
+    QThread::msleep(tms);
 }
 
 

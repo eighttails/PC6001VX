@@ -1358,7 +1358,11 @@ void OSD_WriteAudioStream(BYTE *stream, int samples)
 ////////////////////////////////////////////////////////////////
 bool OSD_AudioPlaying( void )
 {
-    return audioOutput->state() == QAudio::ActiveState;
+    if(audioOutput){
+        return audioOutput->state() == QAudio::ActiveState;
+    } else {
+        return false;
+    }
 }
 
 

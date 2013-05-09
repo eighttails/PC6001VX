@@ -1266,6 +1266,9 @@ int OSD_Message( const char *mes, const char *cap, int type )
 ////////////////////////////////////////////////////////////////
 bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 {
+    //実行時に出る警告の抑止
+    qRegisterMetaType<QAudio::State>();
+
     QAudioFormat format;
     format.setCodec("audio/pcm");
     format.setChannelCount(1);

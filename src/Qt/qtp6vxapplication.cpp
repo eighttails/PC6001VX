@@ -90,10 +90,16 @@ QtP6VXApplication::~QtP6VXApplication()
 void QtP6VXApplication::startup()
 {
     // 二重起動禁止
-    if( isRunning() ) exit();
+    if( isRunning() ) {
+        exit();
+        return;
+    }
 
     // 設定ファイルパスを作成
-    if(!OSD_CreateConfigPath()) exit();
+    if(!OSD_CreateConfigPath()){
+        exit();
+        return;
+    }
 
     // OSD関連初期化
     if( !OSD_Init() ){
@@ -101,6 +107,7 @@ void QtP6VXApplication::startup()
         OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
         OSD_Quit();	// 終了処理
         exit();
+        return;
     }
 
     // フォントファイルチェック
@@ -133,6 +140,7 @@ void QtP6VXApplication::startup()
             OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
             OSD_Quit();			// 終了処理
             exit();
+            return;
         }
     }
 
@@ -232,9 +240,11 @@ void QtP6VXApplication::executeEmulation()
                 Restart = EL6::Restart;
             } else {
                 exit();
+                return;
             }
         } else {
             exit();
+            return;
         }
         emit vmRestart();
         return;
@@ -244,6 +254,7 @@ void QtP6VXApplication::executeEmulation()
     P6Core = new QtEL6;
     if( !P6Core ){
         exit();
+        return;
     }
 
     // VM初期化
@@ -314,6 +325,7 @@ void QtP6VXApplication::postExecuteEmulation()
         // 終了処理
         OSD_Quit();
         exit();
+        return;
     } else {
         emit vmRestart();
     }

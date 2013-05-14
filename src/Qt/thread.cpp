@@ -15,8 +15,8 @@ public:
         : thread_(thread)
         , param_(param){};
 protected:
-    void run(){
-        thread_->OnThread(thread_);
+    virtual void run(){
+        thread_->OnThread(param_);
         thread_->m_hThread = NULL;
     }
 

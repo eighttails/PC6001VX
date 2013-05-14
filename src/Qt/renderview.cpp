@@ -15,7 +15,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
         setViewport(glw);
         setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     } else {
-        delete glw;
+        glw->deleteLater();
     }
 #endif
 

@@ -309,7 +309,7 @@ void QtP6VXApplication::postExecuteEmulation()
     Restart = Adaptor->getReturnCode();
     Adaptor->setEmulationObj(NULL);
     P6Core->Stop();
-    delete P6Core;	// P6オブジェクトを開放
+    P6Core->deleteLater();	// P6オブジェクトを開放
     P6Core = NULL;
 
     // 再起動ならばINIファイル再読込み

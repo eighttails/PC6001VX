@@ -460,7 +460,10 @@ void SCH6::OnThread( void *inst )
         OSD_PushEvent(EV_JOYAXISMOTION);
 
         now = OSD_GetTicks();
-        OSD_Delay( NextWait - now );
+        DWORD wait = NextWait - now;
+        if(wait >= 0){
+            OSD_Delay( wait );
+        }
     }
 }
 

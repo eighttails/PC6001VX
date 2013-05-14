@@ -41,7 +41,7 @@ cThread::~cThread( void )
     if( m_hThread && bWaiting == false ){
         ((InternalTherad*)m_hThread)->terminate();
     }
-    delete ((InternalTherad*)m_hThread);
+    ((InternalTherad*)m_hThread)->deleteLater();
 }
 
 

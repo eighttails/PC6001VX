@@ -16,7 +16,6 @@ debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 win32:{
-debug:DEFINES += NOOPENGL
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
 QTPLUGIN += qico
 CONFIG += exceptions

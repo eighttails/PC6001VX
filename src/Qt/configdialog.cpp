@@ -365,71 +365,71 @@ void ConfigDialog::writeConfig()
     // ROMパス
     qStr = ui->lineEditFolderRom->text();
     if(QDir(qStr).exists()){
-        config->SetRomPath(qStr.toUtf8().data());
+        config->SetRomPath(qStr.toUtf8().constData());
     }
 
     // TAPEパス
     qStr = ui->lineEditFolderTape->text();
     if(QDir(qStr).exists()){
-        config->SetTapePath(qStr.toUtf8().data());
+        config->SetTapePath(qStr.toUtf8().constData());
     }
 
     // DISKパス
     qStr = ui->lineEditFolderDisk->text();
     if(QDir(qStr).exists()){
-        config->SetDiskPath(qStr.toUtf8().data());
+        config->SetDiskPath(qStr.toUtf8().constData());
     }
 
     // 拡張ROMパス
     qStr = ui->lineEditFolderExtRom->text();
     if(QDir(qStr).exists()){
-        config->SetExtRomPath(qStr.toUtf8().data());
+        config->SetExtRomPath(qStr.toUtf8().constData());
     }
 
     // IMGパス
     qStr = ui->lineEditFolderImg->text();
     if(QDir(qStr).exists()){
-        config->SetImgPath(qStr.toUtf8().data());
+        config->SetImgPath(qStr.toUtf8().constData());
     }
 
     // WAVEパス
     qStr = ui->lineEditFolderWave->text();
     if(QDir(qStr).exists()){
-        config->SetWavePath(qStr.toUtf8().data());
+        config->SetWavePath(qStr.toUtf8().constData());
     }
 
     // ファイル--------------------------------------------------------
     // 拡張ROMファイル
     qStr = ui->lineEditExtRom->text();
     if(QFile(qStr).exists()){
-        config->SetExtRomFile(qStr.toUtf8().data());
+        config->SetExtRomFile(qStr.toUtf8().constData());
     }
 
     // TAPE(LOAD)ファイル名
     qStr = ui->lineEditLoadTape->text();
     if(QFile(qStr).exists()){
-        config->SetTapeFile(qStr.toUtf8().data());
+        config->SetTapeFile(qStr.toUtf8().constData());
     }
 
     // TAPE(SAVE)ファイル名
     qStr = ui->lineEditSaveTape->text();
-    config->SetSaveFile(qStr.toUtf8().data());
+    config->SetSaveFile(qStr.toUtf8().constData());
 
     // DISK1ファイル名
     qStr = ui->lineEditDisk1->text();
     if(QFile(qStr).exists()){
-        config->SetDiskFile(1, qStr.toUtf8().data());
+        config->SetDiskFile(1, qStr.toUtf8().constData());
     }
 
     // DISK2ファイル名
     qStr = ui->lineEditDisk1->text();
     if(QFile(qStr).exists()){
-        config->SetDiskFile(2, qStr.toUtf8().data());
+        config->SetDiskFile(2, qStr.toUtf8().constData());
     }
 
     // プリンタファイル名
     qStr = ui->lineEditPrinter->text();
-    config->SetPrinterFile(qStr.toUtf8().data());
+    config->SetPrinterFile(qStr.toUtf8().constData());
 
     // 色-----------------------------------------------------------------
     // 16〜72の色IDに対応させる。
@@ -527,7 +527,7 @@ void ConfigDialog::selectFile(QWidget *widget)
             dlg = FD_Printer; path = NULL;
         }
 
-        strncpy(folder, edit->text().toUtf8().data(), PATH_MAX);
+        strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
         Delimiter(folder);
         OSD_FileSelect(NULL, dlg, folder, path);
         UnDelimiter(folder);
@@ -543,7 +543,7 @@ void ConfigDialog::selectFolder(QWidget *widget)
     char folder[PATH_MAX];
     QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
     if(edit){
-        strncpy(folder, edit->text().toUtf8().data(), PATH_MAX);
+        strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
         Delimiter(folder);
         OSD_FolderDiaog(NULL, folder);
         UnDelimiter(folder);

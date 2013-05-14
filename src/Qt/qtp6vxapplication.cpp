@@ -226,7 +226,7 @@ void QtP6VXApplication::executeEmulation()
         if(OSD_Message( QString("ROMファイルが見つかりません。\n"
                                 "ROMフォルダ(%1)にROMファイルをコピーするか、"
                                 "別のROMフォルダを指定してください。\n"
-                                "別のROMフォルダを指定しますか?").arg(Cfg.GetRomPath()).toUtf8().data(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONERROR ) == OSDR_YES){
+                                "別のROMフォルダを指定しますか?").arg(Cfg.GetRomPath()).toUtf8().constData(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONERROR ) == OSDR_YES){
             //ROMフォルダ再設定
             char folder[PATH_MAX];
             strncpy(folder, Cfg.GetRomPath(), PATH_MAX);

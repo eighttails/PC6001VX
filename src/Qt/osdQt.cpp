@@ -867,7 +867,7 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y, VPalette *pal )
 void Delimiter( char *path )
 {
     QString strPath = QDir::fromNativeSeparators(QString::fromUtf8(path));
-    strcpy(path, strPath.toUtf8().data());
+    strcpy(path, strPath.toUtf8().constData());
 }
 
 
@@ -880,7 +880,7 @@ void Delimiter( char *path )
 void UnDelimiter( char *path )
 {
     QString strPath = QDir::toNativeSeparators(QString::fromUtf8(path));
-    strcpy(path, strPath.toUtf8().data());
+    strcpy(path, strPath.toUtf8().constData());
 }
 
 
@@ -967,7 +967,7 @@ const char *OSD_GetConfigPath( void )
 #else
     QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
 #endif
-    sprintf( mpath, "%s", confPath.toUtf8().data() );
+    sprintf( mpath, "%s", confPath.toUtf8().constData() );
     AddDelimiter( mpath );	// 念のため
     UnDelimiter( mpath );
     return mpath;
@@ -984,8 +984,10 @@ const char *OSD_GetFileNamePart( const char *path )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_GetFileNamePart]\n" );
 
+    static QByteArray fileName;
     QFileInfo info(QString::fromUtf8(path));
-    return info.fileName().toUtf8().data();
+    fileName = info.fileName().toUtf8();
+    return fileName.constData();
 }
 
 
@@ -1073,11 +1075,11 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
     if(result.isEmpty())    return NULL;
 
     QDir dir(result);
-    if( path ) strcpy( path, dir.path().toUtf8().data() );
-    if( fullpath ) strcpy( fullpath, result.toUtf8().data() );
+    if( path ) strcpy( path, dir.path().toUtf8().constData() );
+    if( fullpath ) strcpy( fullpath, result.toUtf8().constData() );
 
     QFile file(result);
-    return file.fileName().toUtf8().data();
+    return file.fileName().toUtf8().constData();
 }
 
 

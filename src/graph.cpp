@@ -282,7 +282,8 @@ int DSP6::ScreenX( void )
 ////////////////////////////////////////////////////////////////
 int DSP6::ScreenY( void )
 {
-	return ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 );
+    // P6VXでは4:3モードでもスクリーンサイズは変化しない
+    return ( /*DISPNTSC ? HBBUS :*/ P6WINH ) * ( DISPSCAN ? 2 : 1 );
 }
 
 

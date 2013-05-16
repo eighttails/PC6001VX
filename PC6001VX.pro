@@ -176,7 +176,8 @@ OTHER_FILES += \
     COPYING \
     README.txt \
     src/Qt/res/font/fonth12.png \
-    src/Qt/res/font/fontz12.png
+    src/Qt/res/font/fontz12.png \
+    src/Qt/res/background.png
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

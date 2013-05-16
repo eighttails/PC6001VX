@@ -237,7 +237,7 @@ void DSP6::DrawScreen( void )
 		if( DISPFULL ){	// フルスクリーン
 			PRINTD( GRP_LOG, " -> FullScreen" );
             PRINTD( GRP_LOG, "(Scan line)" );
-            OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() ) / 2, Pal );
+            OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() * SBuf->GetAspectRatio() ) / 2, Pal );
         }else{			// フルスクリーンでない
 			PRINTD( GRP_LOG, " -> Window" );
             OSD_BlitToWindow( Wh, SBuf, 0, 0, Pal );

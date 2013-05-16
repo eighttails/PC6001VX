@@ -469,6 +469,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
         case ID_TILT:		// TILTモード変更
             qApp->setProperty("TILTEnabled",
                               qVariantFromValue(!qApp->property("TILTEnabled").toBool()));
+            graph->ResizeScreen();	// スクリーンサイズ変更
             break;
         case ID_DISP43:			// 4:3表示変更
             // ビデオキャプチャ中は無効

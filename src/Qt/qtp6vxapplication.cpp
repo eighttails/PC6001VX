@@ -154,6 +154,7 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, int bpp, bool fsflag)
     QGraphicsScene* scene = view->scene();
 
     OSD_ClearWindow(Wh);
+
     if(fsflag){
         view->showFullScreen();
     } else {
@@ -203,7 +204,28 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
     Q_ASSERT(view->scene());
-    view->scene()->clear();
+    QGraphicsScene* scene = view->scene();
+    scene->clear();
+
+    // フルスクリーンでTILTモードが有効になっている場合、背景を描く
+    if(view->isFullScreen() && property("TILTEnabled").toBool()){
+        QGraphicsPixmapItem* background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background.png")));
+        background->setTransformationMode(Qt::SmoothTransformation);
+        QTransform trans;
+        //画像の拡大倍率
+        qreal ratio = qMax(scene->width() / background->sceneBoundingRect().width(),
+                           scene->height() / background->sceneBoundingRect().height());
+        qreal scaleRatio = ratio * 1.15;
+
+        int scaledWidth = background->sceneBoundingRect().width() * scaleRatio;
+        int scaledHeight = background->sceneBoundingRect().height() * scaleRatio;
+
+        //画像のオフセットを計算(枠の分だけ左上に移動)
+        trans.translate(-(scaledWidth - scene->width()) / 2, -(scaledHeight - scene->height()) / 2);
+        trans.scale(ratio * 1.15, ratio * 1.15);
+        background->setTransform(trans);
+        scene->addItem(background);
+    }
 }
 
 void QtP6VXApplication::showPopupMenu(int x, int y)

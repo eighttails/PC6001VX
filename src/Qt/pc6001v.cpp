@@ -27,7 +27,10 @@ int main( int argc, char *argv[] )
 
     setlocale(LC_ALL,"Japanese");
 
-    QTimer::singleShot(100, &app, SLOT(startup()));
+    //イベントループが始まったらQtP6VXApplication::startup()を実行
+    QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);
+
+    //イベントループを開始
     app.exec();
 	
 	return true;

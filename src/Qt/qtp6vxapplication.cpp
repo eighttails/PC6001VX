@@ -153,8 +153,6 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, int bpp, bool fsflag)
     Q_ASSERT(view);
     QGraphicsScene* scene = view->scene();
 
-    OSD_ClearWindow(Wh);
-
     if(fsflag){
         view->showFullScreen();
     } else {
@@ -165,6 +163,7 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, int bpp, bool fsflag)
         view->setGeometry(100, 100, scene->width(), scene->height());
     }
     view->fitContent();
+    OSD_ClearWindow(Wh);
 }
 
 void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image)

@@ -230,9 +230,14 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
 
 void QtP6VXApplication::showPopupMenu(int x, int y)
 {
-    P6Core->Stop();
-    P6Core->ShowPopupImpl(x, y);
-    P6Core->Start();
+    //メニュー表示中に右クリックすると二重にメニューが表示されてしまうため、その対処
+    static QMutex mutex;
+    if(mutex.tryLock()){
+        P6Core->Stop();
+        P6Core->ShowPopupImpl(x, y);
+        P6Core->Start();
+        mutex.unlock();
+    }
 }
 
 //仮想マシンを開始させる

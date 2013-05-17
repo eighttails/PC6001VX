@@ -652,6 +652,8 @@ bool DSP6::UpdateSubBuf( void )
     // 4:3表示有効の場合、表示比率を設定する
     if(DISPNTSC){
         SBuf->SetAspectRatio(double(HBBUS) / P6WINH);
+    } else {
+        SBuf->SetAspectRatio(1.0);
     }
 
 	return true;

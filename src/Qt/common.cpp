@@ -409,7 +409,7 @@ bool SaveImg( char *filename, VSurface *sur, VRect *pos )
         COLOR24& col = sur->GetPalette()->colors[i];
         PaletteTable.push_back(qRgb(col.r, col.g, col.b));
     }
-    QImage image(pos->w, pos->h, QImage::Format_Indexed8);
+    QImage image(rec.w, rec.h, QImage::Format_Indexed8);
     image.setColorTable(PaletteTable);
 
     BYTE *doff = (BYTE *)sur->GetPixels() + rec.x + rec.y * sur->Pitch();

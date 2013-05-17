@@ -1549,11 +1549,7 @@ void CFG6::InitIni( cIni *ini, bool over )
 	
 	// IMGパス
 	if( over || !ini->GetString( "PATH", "ImgPath", str, str ) ){
-#ifdef WIN32
         sprintf( str, "%s" IMAGE_DIR, OSD_GetConfigPath() );
-#else
-        strcpy(str, "");
-#endif
         UnDelimiter( str );
 		ini->PutEntry( "PATH",	MSINI_ImgPath,	"ImgPath",	str );
 	}

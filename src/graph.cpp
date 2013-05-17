@@ -719,7 +719,7 @@ void DSP6::SnapShot( char *path )
 	
 	// スナップショットファイル名を決める
 	do{
-		sprintf( img_file, "%s%s%03d.%s", path, img_name, ++Index, IMG_EXT );
+        sprintf( img_file, "%s/%s%03d.%s", path, img_name, ++Index, IMG_EXT );
 	}while( OSD_FileExist( img_file ) || (Index > 999) );
 	
 	// 連番が有効なら画像ファイル保存

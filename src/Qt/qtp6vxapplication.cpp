@@ -208,20 +208,23 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
 
     // フルスクリーンでTILTモードが有効になっている場合、背景を描く
     if(view->isFullScreen() && property("TILTEnabled").toBool()){
+        //画面に対する、枠を含めたサイズの比率
+        const qreal merginRatio = 1.2;
+
         QGraphicsPixmapItem* background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background.png")));
         background->setTransformationMode(Qt::SmoothTransformation);
         QTransform trans;
         //画像の拡大倍率
         qreal ratio = qMax(scene->width() / background->sceneBoundingRect().width(),
                            scene->height() / background->sceneBoundingRect().height());
-        qreal scaleRatio = ratio * 1.15;
+        qreal scaleRatio = ratio * merginRatio;
 
         int scaledWidth = background->sceneBoundingRect().width() * scaleRatio;
         int scaledHeight = background->sceneBoundingRect().height() * scaleRatio;
 
         //画像のオフセットを計算(枠の分だけ左上に移動)
         trans.translate(-(scaledWidth - scene->width()) / 2, -(scaledHeight - scene->height()) / 2);
-        trans.scale(ratio * 1.15, ratio * 1.15);
+        trans.scale(ratio * merginRatio, ratio * merginRatio);
         background->setTransform(trans);
         scene->addItem(background);
     }

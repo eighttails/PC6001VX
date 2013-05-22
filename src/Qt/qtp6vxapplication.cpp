@@ -370,6 +370,11 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
     Event ev;
     ev.type = EV_NOEVENT;
 
+    // エミュレータウィンドウが最前面にある場合のみ入力イベントをエミュレータ側に渡す
+    if(activeWindow() && activeWindow()->metaObject()->className() != QString("RenderView")){
+        return QtSingleApplication::notify(receiver, event);
+    }
+
     switch(event->type()){
     case QEvent::KeyPress:
     case QEvent::KeyRelease:

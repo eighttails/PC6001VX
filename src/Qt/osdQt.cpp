@@ -99,6 +99,7 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
     { Qt::Key_F12,				KVC_F12 },			// F12
 
     { Qt::Key_Minus,			KVC_MINUS },		// -	=
+    { Qt::Key_Equal,			KVC_MINUS },		// -	=
     { Qt::Key_AsciiCircum,		KVC_CARET },		// ^	~
     { Qt::Key_Backspace,		KVC_BACKSPACE },	// BackSpace
     { Qt::Key_At,				KVC_AT },			// @	`
@@ -170,9 +171,9 @@ static const struct {	// SDLキーコード -> 仮想キーコード定義
     { Qt::Key_BracketRight,	KVC_RBRACKET },		// ]	}
     { Qt::Key_BraceRight,	KVC_RBRACKET },		// ]	}
     { Qt::Key_Underscore,	KVC_UNDERSCORE },	// ¥	_
-//	{ 				,		KVC_MUHENKAN },		// 無変換
-//	{ 				,		KVC_HENKAN },		// 変換
-//	{ 				,		KVC_HIRAGANA },		// ひらがな
+    { Qt::Key_Muhenkan,     KVC_MUHENKAN },		// 無変換
+    { Qt::Key_Henkan,       KVC_HENKAN },		// 変換
+    { Qt::Key_Hiragana_Katakana,	KVC_HIRAGANA },		// ひらがな
 
     // 追加キー
     { Qt::Key_Meta,			KVX_LMETA },		// L-Meta

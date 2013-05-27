@@ -308,9 +308,9 @@ const VKeyConv CFG6::KeyIni[] = {	// 仮想キーコード -> P6キーコード�
 	{ KVC_SPACE,		KP6_SPACE },		// Space
 	
 	{ KVC_ESC,			KP6_ESC },			// ESC
-	{ KVC_HANZEN,		KP6_UNKNOWN },		// 半角/全角
+    { KVC_HANZEN,		KP6_UNKNOWN },		// 半角/全角
 	{ KVC_TAB,			KP6_TAB },			// Tab
-	{ KVC_CAPSLOCK,		KP6_UNKNOWN },		// CapsLock
+    { KVC_CAPSLOCK,		KP6_KANA },         // CapsLock
 	{ KVC_ENTER,		KP6_RETURN },		// Enter
 	{ KVC_LCTRL,		KP6_CTRL },			// L-Ctrl
 	{ KVC_RCTRL,		KP6_CTRL },			// R-Ctrl
@@ -355,9 +355,9 @@ const VKeyConv CFG6::KeyIni[] = {	// 仮想キーコード -> P6キーコード�
 	{ KVC_YEN,			KP6_YEN },			// ¥	|
 	{ KVC_RBRACKET,		KP6_RBRACKET },		// ]	}
 	{ KVC_UNDERSCORE,	KP6_UNDERSCORE },	// \	_
-//	{ KVC_MUHENKAN,		KP6_UNKNOWN },		// 無変換
-//	{ KVC_HENKAN,		KP6_UNKNOWN },		// 変換
-//	{ KVC_HIRAGANA,		KP6_UNKNOWN },		// ひらがな
+    { KVC_MUHENKAN,		KP6_UNKNOWN },		// 無変換
+    { KVC_HENKAN,		KP6_UNKNOWN },		// 変換
+    { KVC_HIRAGANA,		KP6_KANA },     	// ひらがな
 	
 	// 英語キーボードのみ
 	{ KVE_BACKSLASH,	KP6_YEN	 },			// 			BackSlash	|

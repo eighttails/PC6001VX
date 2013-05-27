@@ -164,7 +164,6 @@ FORMS    += \
     src/Qt/aboutdialog.ui
 
 OTHER_FILES += \
-    TODO.txt \
     src/Qt/res/PC-6001.ico \
     src/Qt/res/PC-6001mk2.ico \
     src/Qt/res/PC-6001mk2SR.ico \

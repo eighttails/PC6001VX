@@ -1287,7 +1287,7 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
     QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
     if (!info.isFormatSupported(format)) {
         qWarning()<<"raw audio format not supported by backend, cannot play audio.";
-        return false;
+        format = info.nearestFormat(format);
     }
 
     audioOutput = new QAudioOutput(info, format, qApp);

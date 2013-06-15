@@ -676,7 +676,7 @@ void OSD_ShowCursor( bool disp )
 void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 {
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
-    Q_ASSERT(view);
+    if(view == NULL) return;
     QMetaObject::invokeMethod(view, "setWindowTitle",
                               Q_ARG(QString, str));
 }

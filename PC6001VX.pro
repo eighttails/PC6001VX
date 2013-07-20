@@ -12,9 +12,19 @@ TEMPLATE = app
 #ジョイスティックが不要な場合はコメントアウトをはずす(SDLが不要になる)
 #DEFINES += NOJOYSTICK
 
+
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
+#OpenPandora用設定
+pandora:{
+target.path = /media/sddev/pc6001vx
+QTPLUGIN += qico qxcb qgtk2
+INSTALLS += target
+DEFINES += NOJOYSTICK
+}
+
+#Windows用設定
 win32:{
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
 QTPLUGIN += qico

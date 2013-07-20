@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <errno.h>
-#include <QFrame>
-#include <QTextCodec>
-#include <QTimer>
-#include <QDir>
+#include <QtWidgets>
 
 #include "qtp6vxapplication.h"
 

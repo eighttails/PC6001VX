@@ -1,4 +1,7 @@
+#ifndef NOOPENGL
 #include <QtOpenGL>
+#endif
+#include <QtWidgets>
 #include "renderview.h"
 
 RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :

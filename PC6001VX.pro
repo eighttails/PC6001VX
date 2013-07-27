@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets network opengl multimedia
+QT       += core gui widgets network  multimedia
 
 TARGET = PC6001VX
 TEMPLATE = app
@@ -21,7 +21,7 @@ pandora:{
 target.path = /media/sddev/pc6001vx
 QTPLUGIN += qico qxcb qgtk2
 INSTALLS += target
-DEFINES += NOJOYSTICK
+DEFINES += NOJOYSTICK NOOPENGL
 }
 
 #Windows用設定
@@ -44,6 +44,9 @@ LIBS += $$system(sdl2-config --libs)
 }
 }
 
+!contains(DEFINES, NOOPENGL) {
+QT += opengl
+}
 
 SOURCES += \
     src/breakpoint.cpp \

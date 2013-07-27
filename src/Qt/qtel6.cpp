@@ -150,14 +150,22 @@ void QtEL6::ShowPopupImpl(int x, int y)
     QAction* repleyLoad = addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
     // モニタモード or ブレークポインタが設定されている
     // またはリプレイ記録中だったらリプレイ再生無効
-    if( cfg->GetMonDisp() || vm->bp->ExistBreakPoint() || ( REPLAY::GetStatus() == REP_RECORD ) )
+    if(
+        #ifndef NOMONITOR
+            cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+        #endif
+            ( REPLAY::GetStatus() == REP_RECORD ) )
         repleyLoad->setEnabled(false);
 
     QAction* repleySave = addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
     systemMenu->addSeparator();
     // モニタモード or ブレークポインタが設定されている
     // またはリプレイ再生中だったらリプレイ記録無効
-    if( cfg->GetMonDisp() || vm->bp->ExistBreakPoint() || ( REPLAY::GetStatus() == REP_REPLAY ) )
+    if(
+        #ifndef NOMONITOR
+            cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+        #endif
+            ( REPLAY::GetStatus() == REP_REPLAY ) )
         repleySave->setEnabled(false);
 
     // ビデオキャプチャ
@@ -279,11 +287,13 @@ void QtEL6::ShowPopupImpl(int x, int y)
     if (vm->cmtl->IsBoostUp()) boostUp->setChecked(true);
     addCommand(settingsMenu, "環境設定...", ID_CONFIG);
 
+#ifndef NOMONITOR
     // デバッグメニュー
     QMenu* debugMenu = menu.addMenu("デバッグ");
     menu.addSeparator();
     QAction* monitorMode =  addCommand(debugMenu, "モニタモード", ID_MONITOR, true);
     if (cfg->GetMonDisp()) monitorMode->setChecked(true);
+#endif
 
     // ヘルプメニュー
     QMenu* helpMenu = menu.addMenu("ヘルプ");
@@ -553,7 +563,11 @@ void QtEL6::ShowPopupImpl(int x, int y)
             break;
         }
     }
-    if(!cfg->GetMonDisp()  && cfg->GetFullScreen()){
+    if(
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+            !cfg->GetMonDisp()  &&
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+            cfg->GetFullScreen()){
         OSD_ShowCursor( false );
     }
 }

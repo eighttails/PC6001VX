@@ -21,7 +21,7 @@ pandora:{
 target.path = /media/sddev/pc6001vx
 QTPLUGIN += qico qxcb qgtk2
 INSTALLS += target
-DEFINES += NOJOYSTICK NOOPENGL
+DEFINES += NOJOYSTICK NOOPENGL NOMONITOR
 }
 
 #Windows用設定

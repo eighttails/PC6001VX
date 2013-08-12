@@ -154,13 +154,18 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, int bpp, bool fsflag)
     QGraphicsScene* scene = view->scene();
 
     if(fsflag){
-        view->showFullScreen();
+        view->setWindowState(view->windowState() | Qt::WindowFullScreen);
     } else {
-        view->showNormal();
-        //qDebug("scene:%dx%d view:%dx%d", scene->width(), scene->height(), view->width(), view->height());
-        //Windowsではウィンドウ表示が完了しきらないうちにresize()を呼ぶと
-        //タイトルバーが画面からはみ出るので、適当に左上にマージンを取る。
-        view->setGeometry(100, 100, scene->width(), scene->height());
+        view->setWindowState(view->windowState() & ~Qt::WindowFullScreen);
+        if(!view->isVisible()){
+            view->showNormal();
+        }
+        if(!view->isMaximized()){
+            //qDebug("scene:%dx%d view:%dx%d", scene->width(), scene->height(), view->width(), view->height());
+            //Windowsではウィンドウ表示が完了しきらないうちにresize()を呼ぶと
+            //タイトルバーが画面からはみ出るので、適当に左上にマージンを取る。
+            view->setGeometry(100, 100, scene->width(), scene->height());
+        }
     }
     view->fitContent();
     OSD_ClearWindow(Wh);

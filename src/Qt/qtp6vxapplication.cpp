@@ -209,7 +209,7 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
     scene->clear();
 
     // フルスクリーンでTILTモードが有効になっている場合、背景を描く
-    if(view->isFullScreen() && property("TILTEnabled").toBool()){
+    if(view->isFullScreen() && !Cfg.GetMonDisp() && property("TILTEnabled").toBool()){
         //画面に対する、枠を含めたサイズの比率
         const qreal merginRatio = 1.2;
 

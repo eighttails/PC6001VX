@@ -32,6 +32,11 @@ QVector<QRgb> PaletteTable;              //パレットテーブル
 QPointer<QIODevice> audioBuffer = NULL;
 QPointer<QAudioOutput> audioOutput = NULL;
 
+//ジョイスティック関連
+#ifndef NOJOYSTICK
+QMutex joystickMutex;
+#endif
+
 static const struct {	// SDLキーコード -> 仮想キーコード定義
     int InKey;			// SDLのキーコード
     PCKEYsym VKey;		// 仮想キーコード
@@ -1487,6 +1492,7 @@ std::map<int, HJOYINFO> joyMap;
 int OSD_GetJoyNum( void )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     return SDL_NumJoysticks();
 #else
     return 0;
@@ -1503,6 +1509,7 @@ int OSD_GetJoyNum( void )
 const char *OSD_GetJoyName( int index )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     return SDL_JoystickNameForIndex( index );
 #else
     return "";
@@ -1519,6 +1526,7 @@ const char *OSD_GetJoyName( int index )
 bool OSD_OpenedJoy( int index )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     return SDL_JoystickGetAttached( (SDL_Joystick*)joyMap[index] ) ? true : false;
 #else
     return false;
@@ -1535,6 +1543,7 @@ bool OSD_OpenedJoy( int index )
 HJOYINFO OSD_OpenJoy( int index )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     joyMap[index] = (HJOYINFO)SDL_JoystickOpen( index );
     return joyMap[index];
 #else
@@ -1552,6 +1561,7 @@ HJOYINFO OSD_OpenJoy( int index )
 void OSD_CloseJoy( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     SDL_JoystickClose( (SDL_Joystick *)jinfo );
 #else
 #endif
@@ -1566,6 +1576,7 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 int OSD_GetJoyNumAxes( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     return SDL_JoystickNumAxes( (SDL_Joystick *)jinfo );
 #else
     return 1;
@@ -1582,6 +1593,7 @@ int OSD_GetJoyNumAxes( HJOYINFO jinfo )
 int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     return SDL_JoystickNumButtons( (SDL_Joystick *)jinfo );
 #else
     return 0;
@@ -1597,6 +1609,7 @@ int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 void OSD_UpdateJoy()
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     SDL_JoystickUpdate();
 #else
 #endif
@@ -1612,6 +1625,7 @@ void OSD_UpdateJoy()
 int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     if(num == 0){
         // ジョイスティックの左右に対応して画面を傾ける
         int Xmove = SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
@@ -1640,6 +1654,7 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
     return SDL_JoystickGetButton( (SDL_Joystick *)jinfo, num ) ? true : false;
 #else
     return false;

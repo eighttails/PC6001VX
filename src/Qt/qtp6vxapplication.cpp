@@ -161,10 +161,7 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, int bpp, bool fsflag)
             view->showNormal();
         }
         if(!view->isMaximized()){
-            //qDebug("scene:%dx%d view:%dx%d", scene->width(), scene->height(), view->width(), view->height());
-            //Windowsではウィンドウ表示が完了しきらないうちにresize()を呼ぶと
-            //タイトルバーが画面からはみ出るので、適当に左上にマージンを取る。
-            view->setGeometry(100, 100, scene->width(), scene->height());
+            view->resize(scene->width(), scene->height());
         }
     }
     view->fitContent();

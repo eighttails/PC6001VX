@@ -529,8 +529,9 @@ int stricmp ( const char *s1, const char *s2 )
 bool OSD_Init( void )
 {
 #ifndef NOJOYSTICK
-    if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
+    if( SDL_Init( SDL_INIT_JOYSTICK ) )
         return false;
+    SDL_JoystickEventState(SDL_DISABLE);
 #endif
 
     //経過時間タイマーをスタート
@@ -1563,6 +1564,11 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 #ifndef NOJOYSTICK
     QMutexLocker lock(&joystickMutex);
     SDL_JoystickClose( (SDL_Joystick *)jinfo );
+    for (std::map<int, HJOYINFO>::iterator p = joyMap.begin(); p != joyMap.end(); ++p){
+        if((*p).second == jinfo){
+            joyMap.erase(p);
+        }
+    }
 #else
 #endif
 }

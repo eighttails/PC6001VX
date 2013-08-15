@@ -340,7 +340,15 @@ void QtP6VXApplication::postExecuteEmulation()
     Restart = Adaptor->getReturnCode();
     Adaptor->setEmulationObj(NULL);
     P6Core->Stop();
-    P6Core->deleteLater();	// P6オブジェクトを開放
+
+    // P6オブジェクトを解放
+    // 本来QtオブジェクトはdeleteLater()を使うべきであるが、再起動の場合、
+    // オブジェクト解放の遅延により、次のP6Coreインスタンスが生成されてから
+    // デストラクタが呼ばれるため、次のP6Coreインスタンスが初期化時に確保したリソース
+    // (ジョイスティックなど)を解放してしまう。のでやむなくdeleteを使う。
+    // disconnectは解放後に飛んできたシグナルを処理させないため。
+    P6Core->disconnect();
+    delete P6Core;
     P6Core = NULL;
 
     // 再起動ならばINIファイル再読込み

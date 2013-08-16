@@ -161,7 +161,7 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, int bpp, bool fsflag)
             view->showNormal();
         }
         if(!view->isMaximized()){
-            view->resize(scene->width(), scene->height());
+            view->setGeometry(100, 100, scene->width(), scene->height());
         }
     }
     view->fitContent();

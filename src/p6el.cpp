@@ -837,7 +837,11 @@ bool EL6::SetAutoKeyFile( char *filepath )
 ////////////////////////////////////////////////////////////////
 bool EL6::IsMonitor( void )
 {
-	return cfg->GetMonDisp();
+#ifndef NOMONITOR
+    return cfg->GetMonDisp();
+#else
+    return false;
+#endif
 }
 
 

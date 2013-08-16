@@ -331,7 +331,7 @@ bool DSP6::UpdateSubBuf( void )
 	if( !BBuf ) return false;
 	if( !RefreshSubBuf() ) return false;
 	
-	if( !dscan && !dntsc ){	// スキャンラインなし,4:3表示有効の場合
+    if( !dscan /*&& !dntsc*/ ){	// P6VXではスキャンラインのみソフトウェアで処理する。
 		// そのままコピー
 		BBuf->Blit( NULL, SBuf, NULL );
 	}else{

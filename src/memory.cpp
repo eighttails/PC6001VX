@@ -135,45 +135,72 @@
 
 
 ////////////////////////////////////////////////////////////////
+// ROM情報
+////////////////////////////////////////////////////////////////
+// PC-6001                                  ROMファイル名  CRC32
+const MEM6::ROMINFO MEM60::AMAINROM[] = { { "BASICROM.60", 0x54c03109 } };
+const MEM6::ROMINFO MEM60::ACGROM0[]  = { { "CGROM60S.60", 0,         } };
+const MEM6::ROMINFO MEM60::ACGROM1[]  = { { "CGROM60.60",  0xb0142d32 } };
+
+// PC-6001mk2                               ROMファイル名  CRC32
+const MEM6::ROMINFO MEM62::AMAINROM[] = { { "BASICROM.62", 0x950ac401 },	// 前期
+										  { "BASICROM.62", 0xd7e61957 } };	// 後期
+const MEM6::ROMINFO MEM62::ACGROM1[]  = { { "CGROM60.62",  0x81eb5d95 } };
+const MEM6::ROMINFO MEM62::ACGROM2[]  = { { "CGROM60m.62", 0x3ce48c33 } };
+const MEM6::ROMINFO MEM62::AKANJI[]   = { { "KANJIROM.62", 0x20c8f3eb } };
+const MEM6::ROMINFO MEM62::AVOICE[]   = { { "VOICEROM.62", 0x49b4f917 } };
+
+// PC-6601                                  ROMファイル名  CRC32
+const MEM6::ROMINFO MEM66::AMAINROM[] = { { "BASICROM.66", 0xc0b01772 } };
+const MEM6::ROMINFO MEM66::ACGROM1[]  = { { "CGROM60.66",  0xd2434f29 } };
+const MEM6::ROMINFO MEM66::ACGROM2[]  = { { "CGROM66.66",  0x3ce48c33 } };
+const MEM6::ROMINFO MEM66::AKANJI[]   = { { "KANJIROM.66", 0x20c8f3eb } };
+const MEM6::ROMINFO MEM66::AVOICE[]   = { { "VOICEROM.66", 0x91d078c1 } };
+
+// PC-6001mk2SR                             ROMファイル名  CRC32
+// PC-6601SR                                ROMファイル名  CRC32
+
+
+////////////////////////////////////////////////////////////////
 // メモリ情報
 ////////////////////////////////////////////////////////////////
-// 共通
-//                                      ROMファイル名  サイズ   CRC32       初期値 Wait(Read/Write)
-const MEM6::MEMINFO MEM6::IEMPTROM  = { NULL,          0x02000, 0,          0xff,  1, 1 };
-const MEM6::MEMINFO MEM6::IEMPTRAM  = { NULL,          0x02000, 0,          0xff,  0, 0 };
-const MEM6::MEMINFO MEM6::IEXTROM   = { NULL,          0x20000, 0,          0xff,  1, 1 };
-const MEM6::MEMINFO MEM6::IEXTRAM   = { NULL,          0x20000, 0,          0,     0, 0 };
+// 共通                                 ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
+const MEM6::MEMINFO MEM6::IEMPTROM  = { NULL,     0,                 0x02000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM6::IEMPTRAM  = { NULL,     0,                 0x02000, 0xff,  0, 0 };
+const MEM6::MEMINFO MEM6::IEXTROM   = { NULL,     0,                 0x20000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM6::IEXTRAM   = { NULL,     0,                 0x20000, 0x00,  0, 0 };
 										// MEGA-ROM/RAMカートリッジ対応のため
 										// 拡張ROM,RAM領域は128KB確保しておく
 
-// 戦士のカートリッジ ---------------------------------------------------------------------
-const MEM6::MEMINFO MEM6::ISOLRAM   = { NULL,          0x02000, 0,          0xff,  1, 1 };
+// ----------------------------------------------------------------------------------------
+// 戦士のカートリッジ                   ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
+const MEM6::MEMINFO MEM6::ISOLRAM   = { NULL,     0,                 0x02000, 0xff,  1, 1 };
 // ----------------------------------------------------------------------------------------
 
-// PC-6001
-const MEM6::MEMINFO MEM60::IMAINROM = { "BASICROM.60", 0x04000, 0x54c03109, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM60::ICGROM0  = { "CGROM60S.60", 0x00400, 0,          0xff,  0, 0 };
-const MEM6::MEMINFO MEM60::ICGROM1  = { "CGROM60.60",  0x01000, 0xb0142d32, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM60::IINTRAM  = { NULL,          0x04000, 0,          0,     0, 0 };
+// PC-6001                              ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
+const MEM6::MEMINFO MEM60::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x04000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM60::ICGROM0  = { ACGROM0,  COUNTOF(ACGROM0),  0x00400, 0xff,  0, 0 };
+const MEM6::MEMINFO MEM60::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x01000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM60::IINTRAM  = { NULL,     0,                 0x04000, 0x00,  0, 0 };
 
-// PC-6001mk2
-const MEM6::MEMINFO MEM62::IMAINROM = { "BASICROM.62", 0x08000, 0x950ac401, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::ICGROM1  = { "CGROM60.62",  0x02000, 0x81eb5d95, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::ICGROM2  = { "CGROM60m.62", 0x02000, 0x3ce48c33, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::IKANJI   = { "KANJIROM.62", 0x08000, 0x20c8f3eb, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::IVOICE   = { "VOICEROM.62", 0x04000, 0x49b4f917, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::IINTRAM  = { NULL,          0x10000, 0,          0,     0, 0 };
+// PC-6001mk2                           ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
+const MEM6::MEMINFO MEM62::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x08000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM62::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x02000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM62::ICGROM2  = { ACGROM2,  COUNTOF(ACGROM2),  0x02000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM62::IKANJI   = { AKANJI,   COUNTOF(AKANJI),   0x08000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM62::IVOICE   = { AVOICE,   COUNTOF(AVOICE),   0x04000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM62::IINTRAM  = { NULL,     0,                 0x10000, 0x00,  0, 0 };
 
-// PC-6601
-const MEM6::MEMINFO MEM66::IMAINROM = { "BASICROM.66", 0x08000, 0xc0b01772, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::ICGROM1  = { "CGROM60.66",  0x02000, 0xd2434f29, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::ICGROM2  = { "CGROM66.66",  0x02000, 0x3ce48c33, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::IKANJI   = { "KANJIROM.66", 0x08000, 0x20c8f3eb, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::IVOICE   = { "VOICEROM.66", 0x04000, 0x91d078c1, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::IINTRAM  = { NULL,          0x10000, 0,          0,     0, 0 };
+// PC-6601                              ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
+const MEM6::MEMINFO MEM66::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x08000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM66::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x02000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM66::ICGROM2  = { ACGROM2,  COUNTOF(ACGROM2),  0x02000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM66::IKANJI   = { AKANJI,   COUNTOF(AKANJI),   0x08000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM66::IVOICE   = { AVOICE,   COUNTOF(AVOICE),   0x04000, 0xff,  1, 1 };
+const MEM6::MEMINFO MEM66::IINTRAM  = { NULL,     0,                 0x10000, 0x00,  0, 0 };
 
-// PC-6001mk2SR
-// PC-6601SR
+// PC-6001mk2SR                         ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
+// PC-6601SR                            ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
 
 
 
@@ -345,19 +372,13 @@ bool MEM6::MountExtRom( char *filename )
 {
 	PRINTD( MEM_LOG, "[MEM][MountExtRom] -> %s\n", filename );
 	
-//	DWORD LoadSize = 0;
-	
 	UnmountExtRom();	// 一旦開放
 	
 	try{
 		FILE *fp = FOPENEN( filename, "rb" );
 		if( !fp ) throw Error::ExtRomMountFailed;
-//		LoadSize = fread( ExtRom, sizeof(BYTE), IEXTROM.Size, fp );
 		fread( ExtRom, sizeof(BYTE), IEXTROM.Size, fp );
 		fclose( fp );
-		
-		// サイズチェック
-//		if( LoadSize != IEXTROM.Size ) throw Error::RomSizeNG;
 		
 		// ファイルパス保存
 		strncpy( FilePath, filename, PATH_MAX );
@@ -404,50 +425,67 @@ char *MEM6::GetFile( void )
 ////////////////////////////////////////////////////////////////
 bool MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, char *path )
 {
-	PRINTD( MEM_LOG, "[MEM][AllocMemory] -> %s\n", info->FileName );
+	PRINTD( MEM_LOG, "[MEM][AllocMemory] " );
 	
-	BYTE *buffer = NULL;
 	DWORD LoadSize = 0;
+	int i = 0;
+	bool ErrSize = false;
+	bool ErrCrc = false;
 	
 	try{
 		// メモリ確保(最小サイズ8KB)
-		buffer = new BYTE[max( info->Size, 0x2000 )];
-		memset( buffer, info->Init, info->Size );
-		*buf = buffer;
+		if( *buf) delete [] *buf;
+		*buf = new BYTE[max( info->Size, 0x2000 )];
+		memset( *buf, info->Init, info->Size );
 		
-		// ファイル名=NULL ならばRAMまたはNULL
-		if( !info->FileName ) return true;
+		// ROM情報なし ならばRAMまたはNULL
+		if( !info->Rinf ) return true;
 		
-		// ファイルから読込み
-		char fpath[PATH_MAX] = "";
-		if( path ){
-			strncpy( fpath, path, PATH_MAX );
-			AddDelimiter( fpath );
-		}
-		strncat( fpath, info->FileName, PATH_MAX );
+		do{
+			PRINTD( MEM_LOG, "-> %s ", info->Rinf[i].FileName );
+			
+			// ファイルから読込み
+			char fpath[PATH_MAX] = "";
+			if( path ){
+				strncpy( fpath, path, PATH_MAX );
+				AddDelimiter( fpath );
+			}
+			strncat( fpath, info->Rinf[i].FileName, PATH_MAX );
+			
+			FILE *fp = FOPENEN( fpath, "rb" );
+			if( fp ){
+				LoadSize = fread( *buf, sizeof(BYTE), info->Size, fp );
+				fclose( fp );
+				
+				// ファイルサイズチェック
+				if( LoadSize != info->Size )
+					ErrSize = true;
+				// CRCチェック
+				// EnableChkCRC=false または CRC=0の時はチェックしない
+				else if( EnableChkCRC && (info->Rinf[i].Crc != 0) &&
+					( CalcCrc32( *buf, info->Size ) != info->Rinf[i].Crc ) )
+					ErrCrc = true;
+				else{
+					PRINTD( MEM_LOG, "-> OK\n" );
+					return true;
+				}
+			}
+		}while( ++i < info->Rnum );
 		
-		FILE *fp = FOPENEN( fpath, "rb" );
-		if( fp ){
-			LoadSize = fread( buffer, sizeof(BYTE), info->Size, fp );
-			fclose( fp );
-			// サイズチェック
-			if( LoadSize != info->Size ) throw Error::RomSizeNG;
-		}else
-			// CRC=0の時は読込みエラーを無視する
-			if( info->Crc != 0 ) throw Error::NoRom;
-		
-		// CRCチェック
-		if( EnableChkCRC && (info->Crc != 0) ){	// EnableChkCRC=false または CRC=0の時はチェックしない
-			if( CalcCrc32( buffer, info->Size ) !=info->Crc ) throw Error::RomCrcNG;
-		}
+		if     ( ErrCrc )  throw Error::RomCrcNG;
+		else if( ErrSize ) throw Error::RomSizeNG;
+		else               throw Error::NoRom;
 	}
 	// new に失敗した場合
 	catch( std::bad_alloc ){
+		PRINTD( MEM_LOG, "-> MemAlloc Failed\n" );
 		Error::SetError( Error::MemAllocFailed );
 		return false;
 	}
 	// 例外発生
 	catch( Error::Errno i ){
+		PRINTD( MEM_LOG, "-> Failed\n" );
+		
 		Error::SetError( i );
 		
 		switch(i){
@@ -455,13 +493,13 @@ bool MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, char *path )
 		case Error::RomSizeNG:	// サイズが合わない場合
 		case Error::RomCrcNG:	// CRCが合わない場合
 		default:				// メモリを開放
-			delete [] buffer;
+			if( *buf) delete [] *buf;
 			*buf = NULL;
 		}
 		return false;
 	}
 	
-	return true;
+	return false;
 }
 
 

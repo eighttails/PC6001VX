@@ -5,9 +5,9 @@
 
 // [参考] MSDN
 // AVI ファイル フォーマット
-// http://msdn.microsoft.com/library/ja/default.asp?url=/library/ja/directx9_c/directx/htm/avifileformat.asp
+// http://msdn.microsoft.com/ja-jp/library/cc352258.aspx
 // AVI ファイル フォーマットの DV データ(アーカイブコンテンツ)
-// http://msdn.microsoft.com/library/ja/default.asp?url=/library/ja/jpdx8_c/ds/filtdev/DV_Data_AVI_File_Format.asp
+// http://msdn.microsoft.com/ja-jp/library/cc354259.aspx
 
 // 16bitモードについてのメモ
 // SDLは R:G:B=5:6:5 らしいのだがこのフォーマットはQuickTimeで上手く再生できないようなので

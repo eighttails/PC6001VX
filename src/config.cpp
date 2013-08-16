@@ -308,9 +308,9 @@ const VKeyConv CFG6::KeyIni[] = {	// 仮想キーコード -> P6キーコード�
 	{ KVC_SPACE,		KP6_SPACE },		// Space
 	
 	{ KVC_ESC,			KP6_ESC },			// ESC
-    { KVC_HANZEN,		KP6_UNKNOWN },		// 半角/全角
+	{ KVC_HANZEN,		KP6_UNKNOWN },		// 半角/全角
 	{ KVC_TAB,			KP6_TAB },			// Tab
-    { KVC_CAPSLOCK,		KP6_KANA },         // CapsLock
+	{ KVC_CAPSLOCK,		KP6_UNKNOWN },		// CapsLock
 	{ KVC_ENTER,		KP6_RETURN },		// Enter
 	{ KVC_LCTRL,		KP6_CTRL },			// L-Ctrl
 	{ KVC_RCTRL,		KP6_CTRL },			// R-Ctrl
@@ -1139,7 +1139,7 @@ void CFG6::SetFullScreen( bool yn )
 }
 
 // ステータスバー表示状態取得
-bool CFG6::GetStatDisp( void )
+bool CFG6::GetDispStat( void )
 {
 	bool st = true;
 	Ini->GetTruth( "DISPLAY", "DispStatus", &st, st );
@@ -1147,7 +1147,7 @@ bool CFG6::GetStatDisp( void )
 }
 
 // ステータスバー表示状態設定
-void CFG6::SetStatDisp( bool yn )
+void CFG6::SetDispStat( bool yn )
 {
 	Ini->PutEntry( "DISPLAY", MSINI_DispStatus, "DispStatus", "%s", yn ? "Yes" : "No" );
 }
@@ -1163,7 +1163,7 @@ int CFG6::GetFrameSkip( void )
 // フレームスキップ設定
 void CFG6::SetFrameSkip( int data )
 {
-    Ini->PutEntry( "DISPLAY", MSINI_FrameSkip, "FrameSkip", "%d", data );
+	Ini->PutEntry( "DISPLAY", MSINI_FrameSkip, "FrameSkip", "%d", data );
 }
 
 // RLEフラグ取得

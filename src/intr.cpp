@@ -47,12 +47,24 @@ void INT6::EventCallback( int id, int clock )
 ////////////////////////////////////////////////////////////////
 // タイマ割込み周波数設定
 ////////////////////////////////////////////////////////////////
-void INT6::SetTimerIntrHz( BYTE data )
+void INT6::SetTimerIntrHz( BYTE data, BYTE first )
 {
 	TimerCntUp = data;
 	
 	// イベント追加
 	vm->evsc->Add( this, EID_TIMER, (double)(2048)*(TimerCntUp+1), EV_LOOP|EV_STATE );
+	
+	// 初回周期の指定がある場合の処理
+	if( first ){
+		cSche::evinfo e;
+		
+		e.device = this;
+		e.id     = EID_TIMER;
+		
+		vm->evsc->GetEvinfo( &e );
+		e.Clock = (e.Clock*first)/100;
+		vm->evsc->SetEvinfo( &e );
+	}
 }
 
 
@@ -186,12 +198,29 @@ void INT62::SetIntrEnable( BYTE data )
 inline void INT60::OutB0H( int, BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
+	
+	// 割込みOff->Onのタイミングでカウンタはリセットされるらしい
+	if( !(data & 1) && !TimerIntrEnable ){
+		// 初代機は割込み有効後，最初の周期は指定の半分(1ms)になるらしい
+		// (推定) 割込みパルスは1/4CLOCK(約1MHz)をカウンタで2048分周したもの。
+		//        パルスの立ち上がり(L->H)で割込みが発生するがカウンタの初期値がLのため
+		//        初回は半周期で立ち上がってしまう。本来はインバータが必要。
+		SetTimerIntrHz(	TimerCntUp, 50 );
+	}
 	TimerIntrEnable = (data&1 ? false : true);
 }
 
 
 inline void INT62::OutB0H( int, BYTE data )
-{	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
+{
+	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
+	
+	// 割込みOff->Onのタイミングでカウンタはリセットされるらしい
+	if( !(data & 1) && !TimerIntrEnable ){
+		// mk2以降はちゃんと指定の周期になる...はずだけど若干短くなるようだ。
+		// フロッガーで実機と比較しながら調整したら88%くらいだった
+		SetTimerIntrHz(	TimerCntUp, 88 );
+	}
 	TimerIntrEnable  = (data&1 ? false : true);
 }
 

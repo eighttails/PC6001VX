@@ -405,7 +405,7 @@ bool cSche::DokoLoad( cIni *Ini )
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 SCH6::SCH6( int mclock ) : WaitEnable(true), EnableScrUpdate(0),
-    MasterClock(mclock), WRClock(0), WRClockTmp(0) {}
+	MasterClock(mclock), WRClock(0), WRClockTmp(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -413,7 +413,7 @@ SCH6::SCH6( int mclock ) : WaitEnable(true), EnableScrUpdate(0),
 ////////////////////////////////////////////////////////////////
 SCH6::~SCH6( void )
 {
-    Stop();
+	Stop();
 }
 
 

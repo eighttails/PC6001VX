@@ -87,7 +87,7 @@ void ConfigDialog::readConfig()
     ui->checkBoxFullscreen->setChecked(config->GetFullScreen());
 
     // ステータスバー表示状態
-    ui->checkBoxStatDisp->setChecked(config->GetStatDisp());
+    ui->checkBoxStatDisp->setChecked(config->GetDispStat());
 
     // フレームスキップ
     ui->horizontalSliderFPS->setValue(config->GetFrameSkip());
@@ -322,7 +322,7 @@ void ConfigDialog::writeConfig()
     config->SetFullScreen(ui->checkBoxFullscreen->isChecked());
 
     // ステータスバー表示状態
-    config->SetStatDisp(ui->checkBoxStatDisp->isChecked());
+    config->SetDispStat(ui->checkBoxStatDisp->isChecked());
 
     // フレームスキップ
     config->SetFrameSkip(ui->horizontalSliderFPS->value());

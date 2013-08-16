@@ -628,7 +628,7 @@ void cWndMon::Exec( int cmd )
 		
 		
 		while( step-- ){
-			vm->evsc->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
+			vm->evsc->Update( vm->Emu() );	// 1命令実行とイベント更新
 		}
 		
 //		if( CheckBreakPointPC() ) set_emumode( TRACE_BP );
@@ -694,7 +694,7 @@ void cWndMon::Exec( int cmd )
 		vm->cpum->Disasm( DisCode, addr );
 		ZCons::Printf( "%s\n", DisCode );
 		
-		vm->evsc->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
+		vm->evsc->Update( vm->Emu() );	// 1命令実行とイベント更新
 		
 		break;
 	}	
@@ -735,7 +735,7 @@ void cWndMon::Exec( int cmd )
 		vm->cpum->Disasm( DisCode, addr );
 		ZCons::Printf( "%s\n", DisCode );
 		
-		vm->evsc->Update( vm->cpum->Exec() );	// 1命令実行とイベント更新
+		vm->evsc->Update( vm->Emu() );	// 1命令実行とイベント更新
 		
 		break;
 	}	
@@ -905,7 +905,7 @@ void cWndMon::Exec( int cmd )
 		// <addr>
 		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
 		start = argv.Val;
-		Shift();						
+		Shift();
 		
 		// [<addr|#size>]
 		if     ( ArgvIs( ARGV_SIZE ) ) size = argv.Val;
@@ -1002,11 +1002,50 @@ void cWndMon::Exec( int cmd )
 		
 	case MONITOR_LOADMEM:
 	//--------------------------------------------------------------
-	// loadmem <filename> <start-addr> <end-addr>
-	// loadmem <filename> <start-addr> #<size>
+	//  loadmem <filename> <start-addr> <end-addr>
+	//  loadmem <filename> <start-addr> #<size>
 	// ファイルからメモリにロード
 	//--------------------------------------------------------------
+	{
+		char *fname;
+		int start,size;
+		FILE *fp;
+		
+		if( argv.Type == ARGV_END ) ErrorMes();
+		
+		// <filename>
+		if( !ArgvIs( ARGV_STR ) ) ErrorMes();
+		fname = argv.Str;
+		Shift();
+		
+		// <addr>
+		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
+		start = argv.Val;
+		Shift();
+		
+		// [<addr|#size>]
+		if     ( ArgvIs( ARGV_SIZE ) ) size = (argv.Val > 0xffff) ? 0xffff : argv.Val;
+		else if( ArgvIs( ARGV_ADDR ) ) size = (argv.Val < start ) ? (0x10000 | argv.Val) - start + 1 : argv.Val - start + 1;
+		else                           ErrorMes();
+		Shift();
+		
+		if( argv.Type != ARGV_END ) ErrorMes();
+		
+		if( (fp=fopen( fname, "rb" )) != NULL ){
+			int addr = start;
+			for( int i=0; i<size; i++ ){
+				BYTE dat = fgetc( fp );
+				vm->mem->Write( (addr++)&0xffff, dat );
+			}
+			fclose( fp );
+			ZCons::Printf( " Loaded [%s] -> %d bytes\n", fname, addr-start );
+		}else{
+			ZCons::SetColor( FC_RED );
+			ZCons::Printf( "Failed : File open error\n" );
+			ZCons::SetColor( FC_WHITE );
+		}
 		break;
+	}
 		
 	case MONITOR_SAVEMEM:
 	//--------------------------------------------------------------
@@ -1014,7 +1053,50 @@ void cWndMon::Exec( int cmd )
 	//  savemem <filename> <start-addr> #<size>
 	//  メモリをファイルにセーブ
 	//--------------------------------------------------------------
+	{
+		char *fname;
+		int start,size;
+		FILE *fp;
+		
+		if( argv.Type == ARGV_END ) ErrorMes();
+		
+		// <filename>
+		if( !ArgvIs( ARGV_STR ) ) ErrorMes();
+		fname = argv.Str;
+		Shift();
+		
+		// <addr>
+		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
+		start = argv.Val;
+		Shift();
+		
+		// [<addr|#size>]
+		if     ( ArgvIs( ARGV_SIZE ) ) size = (argv.Val > 0xffff) ? 0xffff : argv.Val;
+		else if( ArgvIs( ARGV_ADDR ) ) size = (argv.Val < start ) ? (0x10000 | argv.Val) - start + 1 : argv.Val - start + 1;
+		else                           ErrorMes();
+		Shift();
+		
+		if( argv.Type != ARGV_END ) ErrorMes();
+		
+		if( (fp=fopen( fname, "wb" )) != NULL ){
+			int addr = start;
+			for( int i=0; i<size; i++ ){
+				if( fputc( vm->mem->Read( (addr++)&0xffff ), fp ) == EOF ){
+					ZCons::SetColor( FC_RED );
+					ZCons::Printf( "Failed : Data write error\n" );
+					ZCons::SetColor( FC_WHITE );
+					break;
+				}
+			}
+			fclose( fp );
+			ZCons::Printf( " Saved [%s] -> %d bytes\n", fname, addr-start );
+		}else{
+			ZCons::SetColor( FC_RED );
+			ZCons::Printf( "Failed : File open error\n" );
+			ZCons::SetColor( FC_WHITE );
+		}
 		break;
+	}
 		
 	case MONITOR_RESET:
 	//--------------------------------------------------------------

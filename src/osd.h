@@ -149,8 +149,7 @@ void OSD_SetIcon( HWINDOW, int );
 bool OSD_GetEvent( Event * );
 // イベントをキューにプッシュする
 bool OSD_PushEvent( EventType );
-bool OSD_PushEvent( const Event& ev );
-
+bool OSD_PushEvent(const Event& ev);
 
 // --- その他の雑関数 ---
 // 色の名前取得

@@ -93,7 +93,7 @@ void EL6::OnThread( void *inst )
 					p6->vm->key->ScanMatrix();	// キーマトリクススキャン
 					
 					// サウンド更新
-                    p6->SoundUpdate( 0 );
+					p6->SoundUpdate( 0 );
 					// 画面更新
 					if( p6->sche->IsScreenUpdate() ) p6->ScreenUpdate();
 					
@@ -140,7 +140,7 @@ void EL6::OnThread( void *inst )
 			if( AVI6::IsAVI() ){
 				// ビデオキャプチャ中ならここでAVI保存処理
 				// サウンド更新
-                p6->SoundUpdate( 0, AVI6::GetAudioBuffer() );
+				p6->SoundUpdate( 0, AVI6::GetAudioBuffer() );
 				// 画面更新
 				bool update = p6->ScreenUpdate();
 				// 画面更新されていたら AVI1画面保存
@@ -148,7 +148,7 @@ void EL6::OnThread( void *inst )
 			}else{
 				// ビデオキャプチャ中でないなら通常の更新
 				// サウンド更新
-                p6->SoundUpdate( 0 );
+				p6->SoundUpdate( 0 );
 				// 画面更新
 				// 画面更新時期を迎えていたら画面更新
 				// ノーウェイトの時にFPSが変わらないようにする
@@ -531,7 +531,7 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 	case KVC_F8:			// モード4カラー変更 or ステータスバー表示状態変更
 		if( OnALT ){
 			Stop();
-			cfg->SetStatDisp( cfg->GetStatDisp() ? false : true );
+			cfg->SetDispStat( cfg->GetDispStat() ? false : true );
 			graph->ResizeScreen();	// スクリーンサイズ変更
 			Start();
 		}else{
@@ -609,7 +609,7 @@ bool EL6::ScreenUpdate( void )
 int EL6::SoundUpdate( int samples, cRing *exbuf )
 {
 	// PSG更新
-    vm->psg->SoundUpdate( samples );
+	vm->psg->SoundUpdate( samples );
 	int size = vm->psg->SndDev::cRing::ReadySize();
 	
 	// CMT(LOAD)更新
@@ -826,6 +826,18 @@ bool EL6::SetAutoKeyFile( char *filepath )
 	ak.Seek   = 0;		// 読込みポインタ
 	
 	return true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// モニタモード?
+//
+// 引数:	なし
+// 返値:	bool		true:モニタモード false:実行中
+////////////////////////////////////////////////////////////////
+bool EL6::IsMonitor( void )
+{
+	return cfg->GetMonDisp();
 }
 
 

@@ -32,14 +32,9 @@
 #define WFDD_WRDAT			(100)		// 01h ライト データ
 #define WFDD_RDDAT			(100)		// 02h リード データ
 #define WFDD_SDDAT			(100)		// 03h センド データ
-#define WFDD_COPY			(100)		// 04h コピー
 #define WFDD_FORMAT			(100)		// 05h フォーマット
 #define WFDD_SDRES			(100)		// 06h センド リザルト ステータス
 #define WFDD_SDDRV			(100)		// 07h センド ドライブ ステータス
-#define WFDD_TRN			(100)		// 11h トランスミット
-#define WFDD_RCV			(100)		// 12h レシーブ
-#define WFDD_LOAD			(100)		// 14h ロード
-#define WFDD_SAVE			(100)		// 15h セーブ
 #define WFDD_GETPAR			(100)		// パラメータ受信
 #define WFDD_SEEK			(13000)		// とりあえずSRT=13
 
@@ -377,6 +372,7 @@ void DSK60::Reset( void )
 	ZeroMemory( &mdisk, sizeof( DISK60 ) );
 	mdisk.command = IDLE;	// 受け取ったコマンド
 	mdisk.retdat  = 0xff;	// port D0H から返す値
+	mdisk.error   = false;	// エラーフラグ降ろす
 	
 	io_D1H = 0;
 	io_D2H = 0x08;
@@ -419,7 +415,9 @@ BYTE DSK60::FddIn( void )
 			//	Bit6:読込みバッファにデータ 有:1 無:0
 			//	Bit5-1:-
 			//	Bit0:エラー有:1 無:0
-			mdisk.retdat = mdisk.rsize ? 0x40 : 0;
+			
+			// Bit7はよくわからないので後回し
+			mdisk.retdat = (mdisk.rsize ? 0x40 : 0) | (mdisk.error ? 1 : 0);
 			break;
 			
 		case SEND_DRIVE_STATUS:		// 07h センド ドライブ ステータス
@@ -462,9 +460,10 @@ void DSK60::FddOut( BYTE dat )
 	
 	if( mdisk.command == IDLE ){	// コマンドの場合
 		mdisk.command = dat;
+		mdisk.error   = false;
 		switch( mdisk.command ){
-		case INIT:					// 00h イニシャライズ
-			PRINTD( DISK_LOG, "INIT" );
+		case INITIALIZE:			// 00h イニシャライズ
+			PRINTD( DISK_LOG, "INITIALIZE" );
 			eid  = EID_INIT1;
 			DSK6::AddWait( WFDD_INIT );
 			
@@ -489,10 +488,6 @@ void DSK60::FddOut( BYTE dat )
 			mdisk.step = 1;
 			break;
 			
-		case COPY:					// 04h コピー
-			PRINTD( DISK_LOG, "COPY" );
-			break;
-			
 		case FORMAT:				// 05h フォーマット
 			PRINTD( DISK_LOG, "FORMAT" );
 			break;
@@ -505,22 +500,6 @@ void DSK60::FddOut( BYTE dat )
 		case SEND_DRIVE_STATUS:		// 07h センド ドライブ ステータス
 			PRINTD( DISK_LOG, "SEND_DRIVE_STATUS" );
 			mdisk.step = 1;
-			break;
-			
-		case TRANSMIT:				// 11h トランスミット
-			PRINTD( DISK_LOG, "TRANSMIT" );
-			break;
-			
-		case RECEIVE:				// 12h レシーブ
-			PRINTD( DISK_LOG, "RECEIVE" );
-			break;
-			
-		case LOAD:					// 14h ロード
-			PRINTD( DISK_LOG, "LOAD" );
-			break;
-			
-		case SAVE:					// 15h セーブ
-			PRINTD( DISK_LOG, "SAVE" );
 			break;
 			
 		default:
@@ -560,12 +539,39 @@ void DSK60::FddOut( BYTE dat )
 					if( Dimg[mdisk.drv] ){
 						// トラックNoを2倍(1D->2D)
 						DSK6::AddWait( abs( Dimg[mdisk.drv]->Track() - mdisk.trk*2 ) / 2 );
-						Dimg[mdisk.drv]->Seek( mdisk.trk*2 );
-						Dimg[mdisk.drv]->SearchSector( mdisk.trk, 0, mdisk.sct, 1 );
-						// バッファから書込む
-						for( int i=0; i < mdisk.wsize; i++ )
-							Dimg[mdisk.drv]->Put8( WBuf[i] );
-						DSK6::AddWait( mdisk.blk * WAIT_SECTOR(1) );
+						// 目的のセクタへ移動
+						if( Dimg[mdisk.drv]->Seek( mdisk.trk*2 ) ){
+							if( Dimg[mdisk.drv]->SearchSector( mdisk.trk, 0, mdisk.sct, 1 ) ){
+								switch( Dimg[mdisk.drv]->GetSecStatus() ){
+								case BIOS_ID_CRC_ERROR:
+								case BIOS_MISSING_DAM:
+									DSK6::AddWait( WAIT_RID_ID );
+									
+								case BIOS_WRITE_PROTECT:
+									mdisk.error = true;
+									break;
+									
+								case BIOS_DATA_CRC_ERROR:
+									// (ここでステータスを書換えてCRCエラーを解除する)
+									
+								case BIOS_READY:
+								default:
+									// バッファから書込む
+									for( int i=0; i < mdisk.wsize; i++ )
+										Dimg[mdisk.drv]->Put8( WBuf[i] );
+									DSK6::AddWait( mdisk.blk * WAIT_SECTOR(1) );
+								};
+								
+							}else{
+								// 失敗したらエラーフラグ立てる
+								mdisk.error = true;
+								DSK6::AddWait( WAIT_TRACK*2 );
+							}
+						}else{
+							// 失敗したらエラーフラグ立てる
+							mdisk.error = true;
+							DSK6::AddWait( WAIT_TRACK*2 );
+						}
 					}
 					mdisk.step = 0;
 				}
@@ -600,13 +606,34 @@ void DSK60::FddOut( BYTE dat )
 				if( Dimg[mdisk.drv] ){
 					// トラックNoを2倍(1D->2D)
 					DSK6::AddWait( abs( Dimg[mdisk.drv]->Track() - mdisk.trk*2 ) / 2 );
-					Dimg[mdisk.drv]->Seek( mdisk.trk*2 );
-					Dimg[mdisk.drv]->SearchSector( mdisk.trk, 0, mdisk.sct, 1 );
-					// バッファに読込む
-					for( mdisk.rsize = 0; mdisk.rsize < mdisk.size; mdisk.rsize++ )
-						RBuf[mdisk.rsize] = Dimg[mdisk.drv]->Get8();
-					DSK6::AddWait( mdisk.blk * WAIT_SECTOR(1) );
-					mdisk.ridx = 0;
+					if( Dimg[mdisk.drv]->Seek( mdisk.trk*2 ) ){
+						if( Dimg[mdisk.drv]->SearchSector( mdisk.trk, 0, mdisk.sct, 1 ) ){
+							switch( Dimg[mdisk.drv]->GetSecStatus() ){
+							case BIOS_ID_CRC_ERROR:
+							case BIOS_MISSING_DAM:
+								mdisk.error = true;
+								DSK6::AddWait( WAIT_RID_ID );
+								break;
+								
+							case BIOS_DATA_CRC_ERROR:
+								mdisk.error = true;
+							case BIOS_READY:
+							default:
+								// バッファに読込む
+								for( mdisk.rsize = 0; mdisk.rsize < mdisk.size; mdisk.rsize++ )
+									RBuf[mdisk.rsize] = Dimg[mdisk.drv]->Get8();
+								DSK6::AddWait( mdisk.blk * WAIT_SECTOR(1) );
+								mdisk.ridx = 0;
+							};
+						}else{
+							// 失敗したらエラーフラグ立てる
+							mdisk.error = true;
+							DSK6::AddWait( WAIT_TRACK*2 );
+						}
+					}else
+						// 失敗したらエラーフラグ立てる
+						mdisk.error = true;
+						DSK6::AddWait( WAIT_TRACK*2 );
 				}
 				mdisk.step = 0;
 				break;
@@ -735,6 +762,7 @@ BYTE DSK60::InD2H( int ){ return FddCntIn(); }
 #define ST2_BAD_CYLINDER			(0x02)
 #define ST2_NO_CYLINDER				(0x10)
 #define ST2_DE_IN_DATA_FIELD		(0x20)
+#define ST2_CONTROL_MARK			(0x40)
 
 //************* Result Status 3 *************
 #define ST3_TRACK0					(0x10)
@@ -1546,6 +1574,7 @@ bool DSK60::DokoSave( cIni *Ini )
 	Ini->PutEntry( "P60DISK", NULL, "mdisk_size",		"%d",		mdisk.size );
 	Ini->PutEntry( "P60DISK", NULL, "mdisk_retdat",		"0x%02X",	mdisk.retdat );
 	Ini->PutEntry( "P60DISK", NULL, "mdisk_busy",		"%d",		mdisk.busy );
+	Ini->PutEntry( "P66DISK", NULL, "mdisk_error",		"%s",		mdisk.error ? "Yes" : "No" );
 	
 	Ini->PutEntry( "P60DISK", NULL, "io_D1H",		"0x%02X",	io_D1H );
 	Ini->PutEntry( "P60DISK", NULL, "io_D2H",		"0x%02X",	io_D2H );
@@ -1709,23 +1738,24 @@ bool DSK60::DokoLoad( cIni *Ini )
 	Ini->GetInt( "P60DISK", "DrvNum",	&DrvNum,	DrvNum );
 	
 	// DSK60
-	Ini->GetInt( "P60DISK", "mdisk_DAC",		&mdisk.DAC,		mdisk.DAC );
-	Ini->GetInt( "P60DISK", "mdisk_RFD",		&mdisk.RFD,		mdisk.RFD );
-	Ini->GetInt( "P60DISK", "mdisk_DAV",		&mdisk.DAV,		mdisk.DAV );
-	Ini->GetInt( "P60DISK", "mdisk_command",	&mdisk.command,	mdisk.command );
-	Ini->GetInt( "P60DISK", "mdisk_step",		&mdisk.step,	mdisk.step );
-	Ini->GetInt( "P60DISK", "mdisk_blk",		&mdisk.blk,		mdisk.blk );
-	Ini->GetInt( "P60DISK", "mdisk_drv",		&mdisk.drv,		mdisk.drv );
-	Ini->GetInt( "P60DISK", "mdisk_trk",		&mdisk.trk,		mdisk.trk );
-	Ini->GetInt( "P60DISK", "mdisk_sct",		&mdisk.sct,		mdisk.sct );
-	Ini->GetInt( "P60DISK", "mdisk_rsize",		&mdisk.rsize,	mdisk.rsize );
-	Ini->GetInt( "P60DISK", "mdisk_wsize",		&mdisk.wsize,	mdisk.wsize );
-	Ini->GetInt( "P60DISK", "mdisk_ridx",		&mdisk.ridx,	mdisk.ridx );
-	Ini->GetInt( "P60DISK", "mdisk_size",		&mdisk.size,	mdisk.size );
-	Ini->GetInt( "P60DISK", "mdisk_retdat",		&st,			mdisk.retdat );	mdisk.retdat = st;
-	Ini->GetInt( "P60DISK", "mdisk_busy",		&st,			mdisk.busy );	mdisk.busy = st;
-	Ini->GetInt( "P60DISK", "io_D1H",			&st,			io_D1H );		io_D1H = st;
-	Ini->GetInt( "P60DISK", "io_D2H",			&st,			io_D2H );		io_D2H = st;
+	Ini->GetInt(   "P60DISK", "mdisk_DAC",		&mdisk.DAC,		mdisk.DAC );
+	Ini->GetInt(   "P60DISK", "mdisk_RFD",		&mdisk.RFD,		mdisk.RFD );
+	Ini->GetInt(   "P60DISK", "mdisk_DAV",		&mdisk.DAV,		mdisk.DAV );
+	Ini->GetInt(   "P60DISK", "mdisk_command",	&mdisk.command,	mdisk.command );
+	Ini->GetInt(   "P60DISK", "mdisk_step",		&mdisk.step,	mdisk.step );
+	Ini->GetInt(   "P60DISK", "mdisk_blk",		&mdisk.blk,		mdisk.blk );
+	Ini->GetInt(   "P60DISK", "mdisk_drv",		&mdisk.drv,		mdisk.drv );
+	Ini->GetInt(   "P60DISK", "mdisk_trk",		&mdisk.trk,		mdisk.trk );
+	Ini->GetInt(   "P60DISK", "mdisk_sct",		&mdisk.sct,		mdisk.sct );
+	Ini->GetInt(   "P60DISK", "mdisk_rsize",	&mdisk.rsize,	mdisk.rsize );
+	Ini->GetInt(   "P60DISK", "mdisk_wsize",	&mdisk.wsize,	mdisk.wsize );
+	Ini->GetInt(   "P60DISK", "mdisk_ridx",		&mdisk.ridx,	mdisk.ridx );
+	Ini->GetInt(   "P60DISK", "mdisk_size",		&mdisk.size,	mdisk.size );
+	Ini->GetInt(   "P60DISK", "mdisk_retdat",	&st,			mdisk.retdat );	mdisk.retdat = st;
+	Ini->GetInt(   "P60DISK", "mdisk_busy",		&st,			mdisk.busy );	mdisk.busy = st;
+	Ini->GetTruth( "P66DISK", "fdc_intr",		&mdisk.error,	mdisk.error );
+	Ini->GetInt(   "P60DISK", "io_D1H",			&st,			io_D1H );		io_D1H = st;
+	Ini->GetInt(   "P60DISK", "io_D2H",			&st,			io_D2H );		io_D2H = st;
 	
 	for( i=0; i<4096; i+=64 ){
 		sprintf( stren, "RBuf_%04X", i );

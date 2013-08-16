@@ -245,6 +245,7 @@ bool cD88::Seek( int trackno, int sectno )
 		}
 		
 		PRINTD( D88_LOG, "-> OK\n" );
+		d88.secinfo.status = BIOS_READY;
 		
 		return true;
 	}

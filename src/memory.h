@@ -41,15 +41,27 @@ public:
 
 class MEM6 : public IDoko {
 protected:
-	// メモリ情報構造体
+	// ROM情報構造体
 	typedef struct{
 		const char *FileName;	// ファイル名
-		DWORD Size;				// サイズ
 		DWORD Crc;				// CRC32
+	} ROMINFO;
+	
+	// メモリ情報構造体
+	typedef struct{
+		const ROMINFO *Rinf;	// ROM情報へのポインタ
+		const int Rnum;			// ROM情報の要素数
+		DWORD Size;				// サイズ
 		BYTE Init;				// 初期化データ
 		int WaitR;				// アクセスウェイト(Read)
 		int WaitW;				// アクセスウェイト(Write)
 	} MEMINFO;
+	
+	// ROM情報
+	static const ROMINFO AEMPTROM[];
+	static const ROMINFO AEMPTRAM[];
+	static const ROMINFO AEXTROM[];
+	static const ROMINFO AEXTRAM[];
 	
 	// メモリ情報
 	static const MEMINFO IEXTROM;
@@ -83,7 +95,8 @@ protected:
 	
 	
 	// 戦士のカートリッジ ------------------------------------------
-	static const MEMINFO ISOLRAM;	// RAM情報
+	static const ROMINFO ASOLRAM[];	// ROM情報
+	static const MEMINFO ISOLRAM;	// メモリ情報
 	bool UseSol;					// true:有効 false:無効
 	int SolBank;					// ROMバンク(0-15)
 	void SetSolBank( BYTE );		// ROMバンク設定
@@ -129,6 +142,12 @@ public:
 
 class MEM60 : public MEM6, public Device {
 private:
+	// ROM情報
+	static const ROMINFO AMAINROM[];
+	static const ROMINFO ACGROM0[];
+	static const ROMINFO ACGROM1[];
+	static const ROMINFO AINTRAM[];
+	
 	// メモリ情報
 	static const MEMINFO IMAINROM;
 	static const MEMINFO ICGROM0;
@@ -173,6 +192,14 @@ public:
 
 class MEM62 : public MEM6, public Device {
 protected:
+	// ROM情報
+	static const ROMINFO AMAINROM[];
+	static const ROMINFO ACGROM1[];
+	static const ROMINFO ACGROM2[];
+	static const ROMINFO AKANJI[];
+	static const ROMINFO AVOICE[];
+	static const ROMINFO AINTRAM[];
+	
 	// メモリ情報
 	static const MEMINFO IMAINROM;
 	static const MEMINFO ICGROM1;
@@ -258,6 +285,14 @@ public:
 
 class MEM66 : public MEM62 {
 private:
+	// ROM情報
+	static const ROMINFO AMAINROM[];
+	static const ROMINFO ACGROM1[];
+	static const ROMINFO ACGROM2[];
+	static const ROMINFO AKANJI[];
+	static const ROMINFO AVOICE[];
+	static const ROMINFO AINTRAM[];
+	
 	// メモリ情報
 	static const MEMINFO IMAINROM;
 	static const MEMINFO ICGROM1;

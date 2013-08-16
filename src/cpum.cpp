@@ -7,6 +7,7 @@
 #include "memory.h"
 #include "vdg.h"
 
+#include "p6el.h"
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
@@ -136,7 +137,7 @@ inline int CPU6::GetIntrVector( void )
 ////////////////////////////////////////////////////////////////
 inline bool CPU6::IsBUSREQ( void )
 {
-	return vm->vdg->IsDisp();
+	return vm->el->IsMonitor() ? false : vm->vdg->IsDisp();
 }
 
 

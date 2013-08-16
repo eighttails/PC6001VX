@@ -44,7 +44,7 @@ protected:
 	BYTE TimerAddr;			// タイマ割込みアドレス
 	BYTE TimerCntUp;		// タイマ割込みカウントアップ値
 	
-	void SetTimerIntrHz( BYTE );			// タイマ割込み周波数設定
+	void SetTimerIntrHz( BYTE, BYTE=0 );	// タイマ割込み周波数設定
 	virtual bool IsTimerIntrEnable();		// タイマ割込み許可チェック
 	
 public:

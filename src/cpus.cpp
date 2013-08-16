@@ -18,6 +18,7 @@
 #define	WAIT_INTCHK	(300)
 // ウェイト(Z80ステート数)
 #define	WAIT_DATA	(15)
+#define	WAIT_JOY	(9225)
 
 // 8049動作ステータス
 #define	D8049_IDLE		(0)				/* 何もしていない */
@@ -90,8 +91,10 @@ void SUB6::EventCallback( int id, int clock )
 	switch( id ){
 	case EID_INTCHK:	// 割込みチェック
 		if( (Status8049 == D8049_IDLE) && IntrFlag ){
+			int wt = WAIT_DATA;
+			
 			// 割込み要求を調べる
-			if     ( IntrFlag & IR_JOY )  { Status8049 = D8049_JOY;   }
+			if     ( IntrFlag & IR_JOY )  { Status8049 = D8049_JOY;   wt += WAIT_JOY; }
 			else if( IntrFlag & IR_KEY1 ) { Status8049 = D8049_KEY1;  }
 			else if( IntrFlag & IR_KEY12 ){ Status8049 = D8049_KEY12; }
 			else if( IntrFlag & IR_CMTR ) { Status8049 = D8049_CMTR;  }
@@ -101,7 +104,7 @@ void SUB6::EventCallback( int id, int clock )
 			else if( IntrFlag & IR_SIO )  { Status8049 = D8049_SIO;   }
 			
 			if( Status8049 != D8049_IDLE )
-				vm->evsc->Add( this, EID_VECTOR, WAIT_DATA, EV_LOOP|EV_STATE );
+				vm->evsc->Add( this, EID_VECTOR, wt, EV_LOOP|EV_STATE );
 		}
 		break;
 		

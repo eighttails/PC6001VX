@@ -67,6 +67,7 @@ protected:
 	cWndMon *monw;				// モニタウィンドウ
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
+	
 	HTIMERID UpDateFPSID;		// FPS表示タイマID
 	
 	VPalette GPal;				// パレット
@@ -83,12 +84,13 @@ protected:
 	int UDFPSCount;				// FPS表示タイマカウンタ
 	int FSkipCount;				// フレームスキップカウンタ
 	
-    void OnThread( void * );				// スレッド関数
+	void OnThread( void * );				// スレッド関数
 	
 	int Emu();								// 1命令実行
 	int EmuVSYNC();							// 1画面分実行
 	void Wait();							// Wait
 
+	
 	bool CheckFuncKey( int, bool, bool );	// 各種機能キーチェック
 	
 	// 自動キー入力情報構造体
@@ -136,13 +138,14 @@ public:
 	void ReplayStartPlay( char * );			// リプレイ再生開始
 	void ReplayStopPlay();					// リプレイ再生停止
 	
-	
 	bool IsAutoKey();						// 自動キー入力実行中?
 	bool SetAutoKey( char *, int );			// 自動キー入力文字列設定
 	bool SetAutoKeyFile( char * );			// 自動キー入力文字列設定(ファイルから)
 	
 	void Notify( int, int );				// 変化を通知する(int)
 	void Notify( int, char * );				// 変化を通知する(char *)
+	
+	bool IsMonitor();						// モニタモード?
 	
 	// ------------------------------------------
 	bool DokoDemoSave( char * );	// どこでもSAVE

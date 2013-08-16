@@ -2,7 +2,6 @@
 #define CPUS_H_INCLUDED
 
 #include "typedef.h"
-
 #include "p6device.h"
 
 

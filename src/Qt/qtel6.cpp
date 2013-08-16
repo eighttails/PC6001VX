@@ -229,7 +229,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
     // 設定メニュー
     QMenu* settingsMenu = menu.addMenu("設定");
     QAction* statusBar = addCommand(settingsMenu, "ステータスバー", ID_STATUS, true);
-    if (cfg->GetStatDisp()) statusBar->setChecked(true);
+    if (cfg->GetDispStat()) statusBar->setChecked(true);
     QAction* disp43 = addCommand(settingsMenu, "4:3表示", ID_DISP43, true);
     if (cfg->GetDispNTSC()) disp43->setChecked(true);
     QAction* scanLine = addCommand(settingsMenu, "スキャンライン", ID_SCANLINE, true);
@@ -490,7 +490,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
             break;
 
         case ID_STATUS:			// ステータスバー表示状態変更
-            cfg->SetStatDisp( cfg->GetStatDisp() ? false : true );
+            cfg->SetDispStat( cfg->GetDispStat() ? false : true );
             graph->ResizeScreen();	// スクリーンサイズ変更
             break;
 

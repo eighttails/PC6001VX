@@ -1,5 +1,6 @@
 #include <new>
 
+#include "log.h"
 #include "config.h"
 #include "pc6001v.h"
 #include "p6vm.h"
@@ -80,6 +81,8 @@ VM66::~VM66( void ){}
 ////////////////////////////////////////////////////////////////
 bool VM60::Init( CFG6 *cnfg )
 {
+	PRINTD( VM_LOG, "[VM][Init]\n" );
+	
 	if( !cnfg ) return false;
 	
 	// 各種オブジェクト確保
@@ -231,15 +234,19 @@ bool VM60::Init( CFG6 *cnfg )
 			{ 0xd0, IOBus::portin,  DSK60::inD0H },
 			{ 0xd1, IOBus::portin,  DSK60::inD1H },
 			{ 0xd2, IOBus::portin,  DSK60::inD2H },
+			{ 0xd3, IOBus::portin,  DSK60::inD2H },		// イメージ?
 			{ 0xd4, IOBus::portin,  DSK60::inD0H },		// イメージ
 			{ 0xd5, IOBus::portin,  DSK60::inD1H },		// イメージ
 			{ 0xd6, IOBus::portin,  DSK60::inD2H },		// イメージ
+			{ 0xd7, IOBus::portin,  DSK60::inD2H },		// イメージ?
 			{ 0xd8, IOBus::portin,  DSK60::inD0H },		// イメージ
 			{ 0xd9, IOBus::portin,  DSK60::inD1H },		// イメージ
 			{ 0xda, IOBus::portin,  DSK60::inD2H },		// イメージ
+			{ 0xdb, IOBus::portin,  DSK60::inD2H },		// イメージ?
 			{ 0xdc, IOBus::portin,  DSK60::inD0H },		// イメージ
 			{ 0xdd, IOBus::portin,  DSK60::inD1H },		// イメージ
 			{ 0xde, IOBus::portin,  DSK60::inD2H },		// イメージ
+			{ 0xdf, IOBus::portin,  DSK60::inD2H },		// イメージ?
 			{ 0, 0, 0 }	};
 		if( !iom->Connect( STATIC_CAST( DSK60*, disk ), c_disk ) ) return false;
 		if( !disk->Init( cnfg->GetFddNum() ) ) return false;
@@ -280,6 +287,8 @@ bool VM60::Init( CFG6 *cnfg )
 
 bool VM62::Init( CFG6 *cnfg )
 {
+	PRINTD( VM_LOG, "[VM][Init]\n" );
+	
 	if( !cnfg ) return false;
 	
 	// 各種オブジェクト確保
@@ -430,15 +439,19 @@ bool VM62::Init( CFG6 *cnfg )
 			{ 0xd0, IOBus::portin,  DSK60::inD0H },
 			{ 0xd1, IOBus::portin,  DSK60::inD1H },
 			{ 0xd2, IOBus::portin,  DSK60::inD2H },
+			{ 0xd3, IOBus::portin,  DSK60::inD2H },		// イメージ?
 			{ 0xd4, IOBus::portin,  DSK60::inD0H },		// イメージ
 			{ 0xd5, IOBus::portin,  DSK60::inD1H },		// イメージ
 			{ 0xd6, IOBus::portin,  DSK60::inD2H },		// イメージ
+			{ 0xd7, IOBus::portin,  DSK60::inD2H },		// イメージ?
 			{ 0xd8, IOBus::portin,  DSK60::inD0H },		// イメージ
 			{ 0xd9, IOBus::portin,  DSK60::inD1H },		// イメージ
 			{ 0xda, IOBus::portin,  DSK60::inD2H },		// イメージ
+			{ 0xdb, IOBus::portin,  DSK60::inD2H },		// イメージ?
 			{ 0xdc, IOBus::portin,  DSK60::inD0H },		// イメージ
 			{ 0xdd, IOBus::portin,  DSK60::inD1H },		// イメージ
 			{ 0xde, IOBus::portin,  DSK60::inD2H },		// イメージ
+			{ 0xdf, IOBus::portin,  DSK60::inD2H },		// イメージ?
 			{ 0, 0, 0 }	};
 		if( !iom->Connect( STATIC_CAST( DSK60*, disk ), c_disk ) ) return false;
 		if( !disk->Init( cnfg->GetFddNum() ) ) return false;
@@ -464,6 +477,8 @@ bool VM62::Init( CFG6 *cnfg )
 
 bool VM66::Init( CFG6 *cnfg )
 {
+	PRINTD( VM_LOG, "[VM][Init]\n" );
+	
 	if( !cnfg ) return false;
 	
 	// 各種オブジェクト確保
@@ -645,6 +660,8 @@ bool VM66::Init( CFG6 *cnfg )
 ////////////////////////////////////////////////////////////////
 bool VM6::InitCommon( CFG6 *cnfg  )
 {
+	PRINTD( VM_LOG, "[VM][InitCommon]\n" );
+	
 	// 各種オブジェクト確保
 	evsc   = new cSche( clock * cnfg->GetOverClock() / 100) ;	// イベントスケジューラ
 	iom    = new IO6;											// I/O(Z80)
@@ -719,6 +736,8 @@ bool VM6::InitCommon( CFG6 *cnfg  )
 ////////////////////////////////////////////////////////////////
 void VM6::Reset( void )
 {
+	PRINTD( VM_LOG, "[VM][Reset]\n" );
+	
 	cpum->Reset();
 	intr->Reset();
 	mem->Reset();
@@ -738,6 +757,8 @@ void VM6::Reset( void )
 ////////////////////////////////////////////////////////////////
 int VM6::Emu( void )
 {
+	PRINTD( VM_LOG, "[VM][Emu]\n" );
+	
 	return cpum->Exec();	// CPU 1命令実行
 }
 
@@ -747,5 +768,7 @@ int VM6::Emu( void )
 ////////////////////////////////////////////////////////////////
 int VM6::GetCPUClock( void )
 {
+	PRINTD( VM_LOG, "[VM][GetCPUClock]\n" );
+	
 	return clock;
 }

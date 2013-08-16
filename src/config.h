@@ -146,11 +146,12 @@ public:
 	void SetDispNTSC( bool );				//        設定
 	bool GetFullScreen();					// フルスクリーン取得
 	void SetFullScreen( bool );				//               設定
-	bool GetStatDisp();						// ステータスバー表示状態取得
-	void SetStatDisp( bool );				//                       設定
+	bool GetDispStat();						// ステータスバー表示状態取得
+	void SetDispStat( bool );				//                       設定
 	int GetFrameSkip();						// フレームスキップ取得
 	void SetFrameSkip( int );				//                 設定
 
+	
 	// ビデオキャプチャ関係
 	bool GetAviRle();						// RLEフラグ取得
 	void SetAviRle( bool );					//          設定

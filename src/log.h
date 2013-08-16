@@ -28,8 +28,9 @@
 #define WIN_LOG		0	// ウィンドウ関係
 #define CONST_LOG	0	// コンストラクタ・デストラクタ関係
 #define VOI_LOG		0	// 音声合成関係
+#define VM_LOG		0	// 仮想マシンコア関係
 
-#if KEY_LOG || MEM_LOG || TAPE_LOG || P6T2_LOG || DISK_LOG || D88_LOG || FDC_LOG || PSG_LOG || INTR_LOG || CPU_LOG || SUB_LOG || PPI_LOG || SND_LOG || GRP_LOG || OSD_LOG || TIC_LOG || INI_LOG || CON_LOG || IO_LOG || WIN_LOG || CONST_LOG || VOI_LOG
+#if KEY_LOG || MEM_LOG || TAPE_LOG || P6T2_LOG || DISK_LOG || D88_LOG || FDC_LOG || PSG_LOG || INTR_LOG || CPU_LOG || SUB_LOG || PPI_LOG || SND_LOG || GRP_LOG || OSD_LOG || TIC_LOG || INI_LOG || CON_LOG || IO_LOG || WIN_LOG || CONST_LOG || VOI_LOG || VM_LOG
 
 #include <stdio.h>
 #define PRINTD(m,...)	{ if( m ){ fprintf( stdout, __VA_ARGS__ );	fflush( stdout ); } }

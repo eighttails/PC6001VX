@@ -12,21 +12,16 @@
 #define	MAXDRV	4
 
 // コマンド
-// 実際には PC-80S31 のコマンドだけど大体同じ？
+// PC-6031準拠(えすびさん調査ベース)
 enum FddCommand
 {
-	INIT				= 0x00,
+	INITIALIZE			= 0x00,
 	WRITE_DATA			= 0x01,
 	READ_DATA			= 0x02,
 	SEND_DATA			= 0x03,
-	COPY				= 0x04,
 	FORMAT				= 0x05,
 	SEND_RESULT_STATUS	= 0x06,
 	SEND_DRIVE_STATUS	= 0x07,
-	TRANSMIT			= 0x11,
-	RECEIVE				= 0x12,
-	LOAD				= 0x14,
-	SAVE				= 0x15,
 	
 	IDLE				= 0xff,	// 処理待ちの状態
 	EndofFdcCmd
@@ -56,12 +51,14 @@ struct DISK60 {
 	
 	BYTE busy;			// ドライブBUSY 1:ドライブ1 2:ドライブ2
 	
+	bool error;			// エラーフラグ true:エラーあり false:エラーなし
+	
 	DISK60() :
 		DAC(0), RFD(0), DAV(0),
 		command(IDLE), step(0),
 		blk(0), drv(0), trk(0), sct(0),
 		size(0),
-		retdat(0xff), busy(0) {}
+		retdat(0xff), busy(0), error(false) {}
 };
 
 

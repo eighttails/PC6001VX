@@ -1,10 +1,10 @@
 #include "config.h"
+#include "common.h"
 #include "pio.h"
 #include "cpus.h"
 #include "intr.h"
 #include "memory.h"
 #include "vdg.h"
-#include "common.h"
 
 /*
 BASIC ROM内ルーチン

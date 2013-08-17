@@ -170,7 +170,8 @@ HEADERS  += \
     src/Qt/qtp6vxapplication.h \
     src/Qt/emulationadaptor.h \
     src/Qt/renderview.h \
-    src/Qt/qtel6.h
+    src/Qt/qtel6.h \
+    src/Qt/qtutil.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

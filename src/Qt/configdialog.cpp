@@ -27,6 +27,7 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent) :
     connect(this, SIGNAL(accepted()), this, SLOT(writeConfig()));
 
     readConfig();
+    adjustSize();
 }
 
 ConfigDialog::~ConfigDialog()

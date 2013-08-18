@@ -14,7 +14,8 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
 
 #ifndef NOOPENGL
     QGLWidget* glw = new QGLWidget(this);
-    if(glw->isValid()){
+    // QGraphicsViewに使うにはOpenGL2以上が必要
+    if(glw->format().majorVersion() >= 2){
         setViewport(glw);
         setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     } else {

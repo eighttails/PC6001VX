@@ -579,8 +579,13 @@ bool MEM60::Init( char *path, bool chkcrc, bool usesol )
 	
 	// メモリ確保
 	if( !AllocMemory( &MainRom, &IMAINROM, path ) ) return false;
-	if( !AllocMemory( &CGRom0,  &ICGROM0,  path ) ) return false;
-	if( !AllocMemory( &CGRom1,  &ICGROM1,  path ) ) return false;
+    // CGROM60S.60は読み込めなくてもエラーにしない
+    //if( !AllocMemory( &CGRom0,  &ICGROM0,  path ) ) return false;
+    if( !AllocMemory( &CGRom0,  &ICGROM0,  path ) ){
+        CGRom0 = new BYTE[ICGROM0.Size];
+        ZeroMemory(CGRom0, ICGROM0.Size);
+    }
+    if( !AllocMemory( &CGRom1,  &ICGROM1,  path ) ) return false;
 	if( !AllocMemory( &IntRam,  &IINTRAM,  path ) ) return false;
 	
 	

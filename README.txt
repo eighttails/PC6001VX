@@ -45,7 +45,7 @@ GUIに関してもオリジナルを極力忠実に再現しましたので、
 ・P6V1.19ベースに更新
 ・OpenGLの機能チェックを改善
 　Windows上でのIntelGPUなど、QtでOpenGLを使うための機能要件を満たさない場合、
-  ソフトウェアレンダリングになります。
+  自動的にソフトウェアレンダリングになります。
 ・設定ダイアログを、より小さな画面に収まるようにレイアウトを修正
 ・「=」が入力できないのを修正
 ・「カタカナ/ひらがな」キーをかなキーにマップした(X11でPAUSEが効きにくい対策)
@@ -53,6 +53,7 @@ GUIに関してもオリジナルを極力忠実に再現しましたので、
 　ウィンドウサイズが変わる操作をした場合に表示倍率が維持されないのを修正。
 ・TILTモード中にモニタモードに入った場合ディスプレイ枠を消すようにした。
 ・再起動時にジョイスティックが使えなくなるのを修正
+・(Windows)ビルドにQt5.1を使用
 
 2.0Alpha2 2013/05/25(オフ会記念リリース)
 ・TILTモードにディスプレイの枠が表示されるようになった(フルスクリーン時のみ)
@@ -128,7 +129,7 @@ GUIに関してもオリジナルを極力忠実に再現しましたので、
 
 
 【開発者情報】
-　ビルドにはQt5(執筆時点の最新は5.0.2)が必要です。
+　ビルドにはQt5(執筆時点の最新は5.1)が必要です。
 　Qt5はまだ品質的に成熟しておらず、諸々の不具合を抱えていると心得ましょう。
 ・Windows
 　Qt-buildsというスクリプトを用いて、開発環境込みで全て自前でビルドします。
@@ -137,7 +138,7 @@ GUIに関してもオリジナルを極力忠実に再現しましたので、
 　　VC++はサポートしていません。
   2.解凍したフォルダ内のMSYS.batを実行し、MinGWShellを立ち上げる。
 　3."cd && git clone git://github.com/Alexpux/Qt-builds.git && cd Qt-builds && git checkout develop" と入力
-　4."./buildall x32 --opengl-desktop" と入力し、DLL版Qt(執筆時点で5.0.2)とQtCreatorをビルド
+　4."./buildall x32 --opengl-desktop" と入力し、DLL版Qt(執筆時点で5.1)とQtCreatorをビルド
 　5."./buildall x32 --opengl-desktop --static-qt" と入力し、スタッティック版Qtをビルド
 　6."cd && wget http://www.libsdl.org/tmp/SDL-2.0.zip && unzip SDL-2.0.zip"と入力
 　7."cd SDL2.0.0-(バージョン) && ./configure && make install"と入力
@@ -151,13 +152,9 @@ GUIに関してもオリジナルを極力忠実に再現しましたので、
 　　ジョイスティックが使えない代わりに6〜9の手順は不要です。
 
 ・Linux（Debian Sidの例　Ubuntuでもほぼ同様でしょう。）
-　1."apt-get install build-essential mesa-common-dev libsdl2-dev" を実行。
-　2.まだQt5パッケージが提供されているディストリはないと思うので、公式からバイナリをダウロードします。
-　　http://qt-project.org/downloadsから、Qt5.0.2とQt-Creator2.7をダウンロードしてインストールしてください。
-　　Qt5.0.2に含まれているQtCreatorではなぜか日本語が入力できないので、
-　　QtCreatorは単体版をを別途インストールしてください。
-　3.ダウンロードしたPC6001VXのソースを解凍してください。
-　4.PC6001VX.proをQtCreatorで開いてビルドしてください。
+　1."apt-get install build-essential mesa-common-dev libsdl2-dev qtcreator qt5-dev" を実行。
+　2.ダウンロードしたPC6001VXのソースを解凍してください。
+　3.PC6001VX.proをQtCreatorで開いてビルドしてください。
 　　IDEが嫌な人はQtCreatorの代わりにqmakeとqtライブラリを揃えればビルドできるでしょう。
 
 

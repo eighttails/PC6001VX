@@ -37,8 +37,8 @@ QPointer<QAudioOutput> audioOutput = NULL;
 QMutex joystickMutex;
 #endif
 
-static const struct {	// SDLキーコード -> 仮想キーコード定義
-    int InKey;			// SDLのキーコード
+static const struct {	// Qtキーコード -> 仮想キーコード定義
+    int InKey;			// Qtのキーコード
     PCKEYsym VKey;		// 仮想キーコード
 } VKeyDef[] = {
     { Qt::Key_unknown,          KVC_UNKNOWN },

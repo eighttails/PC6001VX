@@ -152,7 +152,7 @@ GUIに関してもオリジナルを極力忠実に再現しましたので、
 　　ジョイスティックが使えない代わりに6〜9の手順は不要です。
 
 ・Linux（Debian Sidの例　Ubuntuでもほぼ同様でしょう。）
-　1."apt-get install build-essential mesa-common-dev libsdl2-dev qtcreator qt5-dev" を実行。
+　1."apt-get install build-essential mesa-common-dev libsdl2-dev qt5-sdk qtcreator libqt5multimedia5-plugins" を実行。
 　2.ダウンロードしたPC6001VXのソースを解凍してください。
 　3.PC6001VX.proをQtCreatorで開いてビルドしてください。
 　　IDEが嫌な人はQtCreatorの代わりにqmakeとqtライブラリを揃えればビルドできるでしょう。

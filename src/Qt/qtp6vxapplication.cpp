@@ -192,6 +192,7 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QI
         scene->addItem(pItem);
         pItem->setTransformationMode(Qt::SmoothTransformation);
         QTransform trans;
+        // アスペクト比に従って縦サイズを調整
         trans.scale(1, aspect);
         trans.translate(x, y);
         pItem->setTransform(trans);

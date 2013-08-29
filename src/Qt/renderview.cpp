@@ -27,6 +27,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
 
 void RenderView::fitContent()
 {
+    //ウィンドウ全体に表示されるように表示倍率を調整
     qreal scaleRatio = qMin(width() / scene()->width(), height() / scene()->height());
     resetTransform();
     scale(scaleRatio, scaleRatio);
@@ -37,6 +38,7 @@ void RenderView::paintEvent(QPaintEvent *event)
     if(isActiveWindow()){
         fitContent();
         if(qApp->property("TILTEnabled").toBool()){
+            //TILTモードの回転
             rotate(qApp->property("TILT").toReal());
         }
     }

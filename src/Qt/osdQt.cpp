@@ -264,6 +264,7 @@ const char *MsgIni[] = {
     "スナップショット格納パス",
     "WAVEファイル格納パス",
     "FONT格納パス",
+    "どこでもSAVE格納パス",
     // [CHECK]
     "終了時確認 Yes:する No:しない",
     "終了時INIファイルを保存 Yes:する No:しない",
@@ -951,6 +952,10 @@ bool OSD_CreateConfigPath()
 
     // WAVEファイル
     if(!QDir(basePath).mkpath(QString::fromUtf8(WAVE_DIR)))
+        return false;
+
+    // どこでもSAVEファイル
+    if(!QDir(basePath).mkpath(QString::fromUtf8(DOKOSAVE_DIR)))
         return false;
 
     return true;

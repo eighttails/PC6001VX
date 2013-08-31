@@ -247,6 +247,16 @@ void ConfigDialog::readConfig()
     connect(ui->pushButtonRefFolderWave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderWave, ui->lineEditFolderWave);
 
+    // どこでもSAVEパス
+    strncpy( str, config->GetDokoSavePath(), PATH_MAX );
+    DelDelimiter( str );
+    UnDelimiter( str );
+    ui->lineEditFolderDokoSave->setText(str);
+    connect(ui->pushButtonClearFolderDokoSave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+    folderClearMap->setMapping(ui->pushButtonClearFolderDokoSave, ui->lineEditFolderDokoSave);
+    connect(ui->pushButtonRefFolderDokoSave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+    folderRefMap->setMapping(ui->pushButtonRefFolderDokoSave, ui->lineEditFolderDokoSave);
+
     // 色--------------------------------------------------------------------------
     // 16〜72の色IDに対応させる。
     for (int id = 16; id <= 80; id++){
@@ -412,6 +422,12 @@ void ConfigDialog::writeConfig()
     qStr = ui->lineEditFolderWave->text();
     if(QDir(qStr).exists()){
         config->SetWavePath(qStr.toUtf8().constData());
+    }
+
+    // どこでもSAVEパス
+    qStr = ui->lineEditFolderDokoSave->text();
+    if(QDir(qStr).exists()){
+        config->SetDokoSavePath(qStr.toUtf8().constData());
     }
 
     // ファイル--------------------------------------------------------

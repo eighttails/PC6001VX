@@ -80,6 +80,7 @@
 #define	IMAGE_DIR		"img"				/* スナップショット */
 #define	FONT_DIR		"font"				/* フォント */
 #define	WAVE_DIR		"wave"				/* WAVEファイル */
+#define	DOKOSAVE_DIR	"doko"				/* どこでもSAVEファイル */
 
 
 /////////////////////////////////////////////////////////////////////////////

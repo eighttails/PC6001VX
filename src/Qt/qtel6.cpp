@@ -405,12 +405,12 @@ void QtEL6::ShowPopupImpl(int x, int y)
             break;
 
         case ID_DOKOSAVE:		// どこでもSAVE
-            if( OSD_FileSelect( NULL, FD_DokoSave, str, (char *)OSD_GetConfigPath() ) )
+            if( OSD_FileSelect( NULL, FD_DokoSave, str, (char *)cfg->GetDokoSavePath() ) )
                 DokoDemoSave( str );
             break;
 
         case ID_DOKOLOAD:		// どこでもLOAD
-            if( OSD_FileSelect( NULL, FD_DokoLoad, str, (char *)OSD_GetConfigPath() ) ){
+            if( OSD_FileSelect( NULL, FD_DokoLoad, str, (char *)cfg->GetDokoSavePath() ) ){
                 cfg->SetModel( GetDokoModel( str ) );
                 cfg->SetDokoFile( str );
                 OSD_PushEvent( EV_DOKOLOAD );

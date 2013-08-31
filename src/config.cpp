@@ -507,6 +507,7 @@ CFG6::CFG6( void ) : Ini(NULL)
 	INITARRAY( ImgPath, '\0' );		// スクリーンショット格納パス
 	INITARRAY( WavePath, '\0' );	// WAVE格納パス
 	INITARRAY( PrinterFile, '\0' );	// プリンタファイル名
+    INITARRAY( DokoSavePath, '\0' );// どこでもSAVEパス
 
 }
 
@@ -838,6 +839,24 @@ void CFG6::SetWavePath( const char *str )
 	UnDelimiter( temp );
 	DelDelimiter( temp );
 	Ini->PutEntry( "PATH", MSINI_WavePath, "WavePath", temp );
+}
+
+// どこでもSAVEパス取得
+char *CFG6::GetDokoSavePath( void )
+{
+    Ini->GetString( "PATH", "DokoSavePath", DokoSavePath, DokoSavePath );
+    Delimiter( DokoSavePath );
+    return DokoSavePath;
+}
+
+// どこでもSAVEパス設定
+void CFG6::SetDokoSavePath( const char *str )
+{
+    char temp[PATH_MAX];
+    strncpy( temp, str, PATH_MAX );
+    UnDelimiter( temp );
+    DelDelimiter( temp );
+    Ini->PutEntry( "PATH", MSINI_DokoSavePath, "DokoSavePath", temp );
 }
 
 // 音声合成音量取得
@@ -1546,15 +1565,22 @@ void CFG6::InitIni( cIni *ini, bool over )
         UnDelimiter( str );
 		ini->PutEntry( "PATH",	MSINI_WavePath,	"WavePath",	str );
 	}
-	
-	// IMGパス
-	if( over || !ini->GetString( "PATH", "ImgPath", str, str ) ){
+
+    // IMGパス
+    if( over || !ini->GetString( "PATH", "ImgPath", str, str ) ){
         sprintf( str, "%s" IMAGE_DIR, OSD_GetConfigPath() );
         UnDelimiter( str );
-		ini->PutEntry( "PATH",	MSINI_ImgPath,	"ImgPath",	str );
-	}
-	
-	// [CHECK]
+        ini->PutEntry( "PATH",	MSINI_ImgPath,	"ImgPath",	str );
+    }
+
+    // どこでもSAVEパス
+    if( over || !ini->GetString( "PATH", "DokoSavePath", str, str ) ){
+        sprintf( str, "%s" DOKOSAVE_DIR, OSD_GetConfigPath() );
+        UnDelimiter( str );
+        ini->PutEntry( "PATH",	MSINI_DokoSavePath,	"DokoSavePath",	str );
+    }
+
+    // [CHECK]
 	// 終了時確認
 	if( over || !ini->GetString( "CHECK", "CkQuit", str, str ) )
 		ini->PutEntry( "CHECK", MSINI_CkQuit,		"CkQuit",		"%s",	DEFAULT_CKQUIT ? "Yes" : "No" );

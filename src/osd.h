@@ -253,14 +253,15 @@ extern const char *MsgIni[];
 #define	MSINI_ImgPath		MsgIni[39]	// " スナップショット格納パス"
 #define	MSINI_WavePath		MsgIni[40]	// " WAVEファイル格納パス"
 #define	MSINI_FontPath		MsgIni[41]	// " FONT格納パス"
+#define	MSINI_DokoSavePath	MsgIni[42]	// " どこでもSAVE格納パス"
 // [CHECK]
-#define	MSINI_CkQuit		MsgIni[42]	// " 終了時確認 Yes:する No:しない"
-#define	MSINI_SaveQuit		MsgIni[43]	// " 終了時INIファイルを保存 Yes:する No:しない"
+#define	MSINI_CkQuit		MsgIni[43]	// " 終了時確認 Yes:する No:しない"
+#define	MSINI_SaveQuit		MsgIni[44]	// " 終了時INIファイルを保存 Yes:する No:しない"
 // [KEY]
-#define	MSINI_KeyRepeat		MsgIni[44]	// " キーリピートの間隔(単位:ms 0で無効)"
-#define	MSINI_UsePS2KBD		MsgIni[45]	// " PS/2キーボード使う? Yes:PS/2 No:USB"
+#define	MSINI_KeyRepeat		MsgIni[45]	// " キーリピートの間隔(単位:ms 0で無効)"
+#define	MSINI_UsePS2KBD		MsgIni[46]	// " PS/2キーボード使う? Yes:PS/2 No:USB"
 // [OPTION]
-#define	MSINI_UseSoldier	MsgIni[46]	// " 戦士のカートリッジ Yes:有効 No:無効"
+#define	MSINI_UseSoldier	MsgIni[47]	// " 戦士のカートリッジ Yes:有効 No:無効"
 
 
 // どこでもSAVE用メッセージ ------

@@ -36,7 +36,8 @@ protected:
 	char DiskFile2[PATH_MAX];				// DISK2ファイル名
 	char ImgPath[PATH_MAX];					// スクリーンショット格納パス
 	char PrinterFile[PATH_MAX];				// プリンタファイル名
-	
+    char DokoSavePath[PATH_MAX];			// どこでもSAVEパス
+
 	// 定数
 	static const P6KeyName P6KeyNameDef[];	// P6キーコード 名称定義
 	static const PCKeyName PCKeyNameDef[];	// 仮想キーコード 名称定義
@@ -80,7 +81,6 @@ public:
 	void SetCheckCRC( bool );				//            設定
 	bool GetRomPatch();						// ROMパッチ取得
 	void SetRomPatch( bool );				//          設定
-	
 	// キーボード関係
 	int GetKeyRepeat();						// キーリピート取得
 	void SetKeyRepeat( int );				//             設定
@@ -188,7 +188,10 @@ public:
 	// ------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+    // ------------------------------------------
+    char *GetDokoSavePath();                    // どこでもSAVEパス取得
+    void SetDokoSavePath( const char * );		//                 設定
+
 };
 
 #endif	// CONFIG_H_INCLUDED

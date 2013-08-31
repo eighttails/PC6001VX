@@ -926,7 +926,7 @@
           <string>DISK2(&amp;J):</string>
          </property>
          <property name="buddy">
-          <cstring>lineEditDisk1</cstring>
+          <cstring>lineEditDisk2</cstring>
          </property>
         </widget>
        </item>
@@ -947,111 +947,7 @@
        <string>フォルダ(&amp;L)</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_12">
-       <item row="4" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderExtRom">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_50">
-         <property name="text">
-          <string>ROM(&amp;R):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditExtRom</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEditFolderRom"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderRom">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_51">
-         <property name="text">
-          <string>TAPE(&amp;T):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditLoadTape</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEditFolderTape"/>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEditFolderDisk"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderTape">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_48">
-         <property name="text">
-          <string>DISK(&amp;K):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditDisk1</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderDisk">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_52">
-         <property name="text">
-          <string>SnapShot(&amp;H):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditPrinter</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QLineEdit" name="lineEditFolderImg"/>
-       </item>
-       <item row="6" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderImg">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_49">
-         <property name="text">
-          <string>WAVE(&amp;W)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QLineEdit" name="lineEditFolderWave"/>
-       </item>
-       <item row="7" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderWave">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
+       <item row="9" column="0">
         <spacer name="verticalSpacer_13">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1070,7 +966,7 @@
           <string>拡張ROM(&amp;X):</string>
          </property>
          <property name="buddy">
-          <cstring>lineEditExtRom</cstring>
+          <cstring>lineEditFolderExtRom</cstring>
          </property>
         </widget>
        </item>
@@ -1116,6 +1012,140 @@
         <widget class="QPushButton" name="pushButtonClearFolderWave">
          <property name="text">
           <string>クリア</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_100">
+         <property name="text">
+          <string>どこでもSAVE(&amp;V)</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditFolderDokoSave</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="lineEditFolderRom"/>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="pushButtonRefFolderRom">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_51">
+         <property name="text">
+          <string>TAPE(&amp;T):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditFolderTape</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEditFolderTape"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEditFolderDisk"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="pushButtonRefFolderTape">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_48">
+         <property name="text">
+          <string>DISK(&amp;K):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditFolderDisk</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QPushButton" name="pushButtonRefFolderDisk">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_52">
+         <property name="text">
+          <string>SnapShot(&amp;H):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditFolderImg</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="lineEditFolderImg"/>
+       </item>
+       <item row="6" column="3">
+        <widget class="QPushButton" name="pushButtonRefFolderImg">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_49">
+         <property name="text">
+          <string>WAVE(&amp;W)</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditFolderWave</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLineEdit" name="lineEditFolderWave"/>
+       </item>
+       <item row="7" column="3">
+        <widget class="QPushButton" name="pushButtonRefFolderWave">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QPushButton" name="pushButtonRefFolderExtRom">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_50">
+         <property name="text">
+          <string>ROM(&amp;R):</string>
+         </property>
+         <property name="buddy">
+          <cstring>lineEditFolderRom</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QPushButton" name="pushButtonClearFolderDokoSave">
+         <property name="text">
+          <string>クリア</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLineEdit" name="lineEditFolderDokoSave"/>
+       </item>
+       <item row="8" column="3">
+        <widget class="QPushButton" name="pushButtonRefFolderDokoSave">
+         <property name="text">
+          <string>参照...</string>
          </property>
         </widget>
        </item>

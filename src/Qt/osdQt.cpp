@@ -1081,12 +1081,18 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
     QString pathStr = strlen(path) ? path : QDir::homePath();
     if(mode == FM_Save){
         result = QFileDialog::getSaveFileName(NULL, title, pathStr, filter);
+        // 入力されたファイル名に拡張子がついていない場合は付与する
+        QFileInfo info(result);
+        if(info.suffix() != ext){
+            result += QString(".") + ext;
+        }
     } else {
         result = QFileDialog::getOpenFileName(NULL, title, pathStr, filter);
     }
     if(result.isEmpty())    return NULL;
 
     QDir dir(result);
+
     if( path ) strcpy( path, dir.path().toUtf8().constData() );
     if( fullpath ) strcpy( fullpath, result.toUtf8().constData() );
 
@@ -1173,7 +1179,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
     case FD_DokoLoad:	// どこでもLOADファイル選択
         mode   = FM_Load;
         title  = "どこでもLOADファイル選択";
-        filter = "どこでもSAVEファイル(*.dds *.ddr);;"
+        filter = "どこでもSAVEファイル (*.dds *.ddr);;"
                 "どこでもSAVE形式 (*.dds);;"
                 "リプレイファイル (*.ddr);;"
                 "全てのファイル (*.*)";

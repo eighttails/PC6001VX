@@ -24,6 +24,7 @@ private:
     QSignalMapper* sliderLabelMap;
     QSignalMapper* fileRefMap;
     QSignalMapper* folderRefMap;
+    QSignalMapper* folderClearMap;
 
 private slots:
     void readConfig();
@@ -32,6 +33,7 @@ private slots:
     void dispValue(QWidget* widget);
     void selectFile(QWidget* widget);
     void selectFolder(QWidget* widget);
+    void clearFolder(QWidget* widget);
 };
 
 #endif // CONFIGDIALOG_H

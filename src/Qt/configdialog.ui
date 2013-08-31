@@ -947,6 +947,13 @@
        <string>フォルダ(&amp;L)</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_12">
+       <item row="4" column="3">
+        <widget class="QPushButton" name="pushButtonRefFolderExtRom">
+         <property name="text">
+          <string>参照...</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_50">
          <property name="text">
@@ -960,7 +967,7 @@
        <item row="0" column="1">
         <widget class="QLineEdit" name="lineEditFolderRom"/>
        </item>
-       <item row="0" column="2">
+       <item row="0" column="3">
         <widget class="QPushButton" name="pushButtonRefFolderRom">
          <property name="text">
           <string>参照...</string>
@@ -983,7 +990,7 @@
        <item row="2" column="1">
         <widget class="QLineEdit" name="lineEditFolderDisk"/>
        </item>
-       <item row="1" column="2">
+       <item row="1" column="3">
         <widget class="QPushButton" name="pushButtonRefFolderTape">
          <property name="text">
           <string>参照...</string>
@@ -1000,7 +1007,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="2">
+       <item row="2" column="3">
         <widget class="QPushButton" name="pushButtonRefFolderDisk">
          <property name="text">
           <string>参照...</string>
@@ -1020,7 +1027,7 @@
        <item row="6" column="1">
         <widget class="QLineEdit" name="lineEditFolderImg"/>
        </item>
-       <item row="6" column="2">
+       <item row="6" column="3">
         <widget class="QPushButton" name="pushButtonRefFolderImg">
          <property name="text">
           <string>参照...</string>
@@ -1037,7 +1044,7 @@
        <item row="7" column="1">
         <widget class="QLineEdit" name="lineEditFolderWave"/>
        </item>
-       <item row="7" column="2">
+       <item row="7" column="3">
         <widget class="QPushButton" name="pushButtonRefFolderWave">
          <property name="text">
           <string>参照...</string>
@@ -1070,10 +1077,45 @@
        <item row="4" column="1">
         <widget class="QLineEdit" name="lineEditFolderExtRom"/>
        </item>
-       <item row="4" column="2">
-        <widget class="QPushButton" name="pushButtonRefFolderExtRom">
+       <item row="0" column="2">
+        <widget class="QPushButton" name="pushButtonClearFolderRom">
          <property name="text">
-          <string>参照...</string>
+          <string>クリア</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="pushButtonClearFolderTape">
+         <property name="text">
+          <string>クリア</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pushButtonClearFolderDisk">
+         <property name="text">
+          <string>クリア</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QPushButton" name="pushButtonClearFolderExtRom">
+         <property name="text">
+          <string>クリア</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QPushButton" name="pushButtonClearFolderImg">
+         <property name="text">
+          <string>クリア</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QPushButton" name="pushButtonClearFolderWave">
+         <property name="text">
+          <string>クリア</string>
          </property>
         </widget>
        </item>

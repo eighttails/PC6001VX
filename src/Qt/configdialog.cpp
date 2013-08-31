@@ -12,6 +12,7 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent) :
     sliderLabelMap(new QSignalMapper(this)),
     fileRefMap(new QSignalMapper(this)),
     folderRefMap(new QSignalMapper(this)),
+    folderClearMap(new QSignalMapper(this)),
     ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
@@ -22,6 +23,8 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent) :
     connect(fileRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFile(QWidget*)));
     // 参照ボタンを押したらファイル、フォルダ選択ダイアログを出し、ラインエディットに反映
     connect(folderRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFolder(QWidget*)));
+    // クリアボタンを押したらラインエディットをクリア
+    connect(folderClearMap, SIGNAL(mapped(QWidget*)), this, SLOT(clearFolder(QWidget*)));
 
     // OKボタンを押したら設定に書き込む
     connect(this, SIGNAL(accepted()), this, SLOT(writeConfig()));
@@ -189,6 +192,8 @@ void ConfigDialog::readConfig()
     DelDelimiter( str );
     UnDelimiter( str );
     ui->lineEditFolderRom->setText(str);
+    connect(ui->pushButtonClearFolderRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+    folderClearMap->setMapping(ui->pushButtonClearFolderRom, ui->lineEditFolderRom);
     connect(ui->pushButtonRefFolderRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderRom, ui->lineEditFolderRom);
 
@@ -197,6 +202,8 @@ void ConfigDialog::readConfig()
     DelDelimiter( str );
     UnDelimiter( str );
     ui->lineEditFolderTape->setText(str);
+    connect(ui->pushButtonClearFolderTape, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+    folderClearMap->setMapping(ui->pushButtonClearFolderTape, ui->lineEditFolderTape);
     connect(ui->pushButtonRefFolderTape, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderTape, ui->lineEditFolderTape);
 
@@ -205,6 +212,8 @@ void ConfigDialog::readConfig()
     DelDelimiter( str );
     UnDelimiter( str );
     ui->lineEditFolderDisk->setText(str);
+    connect(ui->pushButtonClearFolderDisk, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+    folderClearMap->setMapping(ui->pushButtonClearFolderDisk, ui->lineEditFolderDisk);
     connect(ui->pushButtonRefFolderDisk, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderDisk, ui->lineEditFolderDisk);
 
@@ -213,6 +222,8 @@ void ConfigDialog::readConfig()
     DelDelimiter( str );
     UnDelimiter( str );
     ui->lineEditFolderExtRom->setText(str);
+    connect(ui->pushButtonClearFolderExtRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+    folderClearMap->setMapping(ui->pushButtonClearFolderExtRom, ui->lineEditFolderExtRom);
     connect(ui->pushButtonRefFolderExtRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderExtRom, ui->lineEditFolderExtRom);
 
@@ -221,6 +232,8 @@ void ConfigDialog::readConfig()
     DelDelimiter( str );
     UnDelimiter( str );
     ui->lineEditFolderImg->setText(str);
+    connect(ui->pushButtonClearFolderImg, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+    folderClearMap->setMapping(ui->pushButtonClearFolderImg, ui->lineEditFolderImg);
     connect(ui->pushButtonRefFolderImg, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderImg, ui->lineEditFolderImg);
 
@@ -229,6 +242,8 @@ void ConfigDialog::readConfig()
     DelDelimiter( str );
     UnDelimiter( str );
     ui->lineEditFolderWave->setText(str);
+    connect(ui->pushButtonClearFolderWave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+    folderClearMap->setMapping(ui->pushButtonClearFolderWave, ui->lineEditFolderWave);
     connect(ui->pushButtonRefFolderWave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
     folderRefMap->setMapping(ui->pushButtonRefFolderWave, ui->lineEditFolderWave);
 
@@ -551,6 +566,14 @@ void ConfigDialog::selectFolder(QWidget *widget)
         if(strlen(folder) > 0){
             edit->setText(QString::fromUtf8(folder));
         }
+    }
+}
+
+void ConfigDialog::clearFolder(QWidget *widget)
+{
+    QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
+    if(edit){
+        edit->setText(QString());
     }
 }
 

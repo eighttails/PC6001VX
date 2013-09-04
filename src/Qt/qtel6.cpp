@@ -74,7 +74,13 @@ enum MenuCommand{
     ID_RESTART,		// 再起動
     ID_EXIT,        // 終了
     ID_DOKOSAVE,	// どこでもSAVE
+    ID_DOKOSAVE1,	// どこでもSAVE1
+    ID_DOKOSAVE2,	// どこでもSAVE2
+    ID_DOKOSAVE3,	// どこでもSAVE3
     ID_DOKOLOAD,	// どこでもLOAD
+    ID_DOKOLOAD1,	// どこでもLOAD1
+    ID_DOKOLOAD2,	// どこでもLOAD2
+    ID_DOKOLOAD3,	// どこでもLOAD3
     ID_REPLAYSAVE,	// リプレイ保存
     ID_REPLAYLOAD,	// リプレイ再生
     ID_AVISAVE,		// ビデオキャプチャ
@@ -139,10 +145,17 @@ void QtEL6::ShowPopupImpl(int x, int y)
     systemMenu->addSeparator();
 
     // どこでもLOAD,SAVEメニュー
-    QMenu* dokoMenu = systemMenu->addMenu("どこでも");
+    QMenu* dokoLoadMenu = systemMenu->addMenu("どこでもLOAD");
+    QMenu* dokoSaveMenu = systemMenu->addMenu("どこでもSAVE");
     systemMenu->addSeparator();
-    addCommand(dokoMenu, "LOAD...", ID_DOKOLOAD);
-    addCommand(dokoMenu, "SAVE...", ID_DOKOSAVE);
+    addCommand(dokoLoadMenu, "LOAD...", ID_DOKOLOAD);
+    addCommand(dokoLoadMenu, "1", ID_DOKOLOAD1);
+    addCommand(dokoLoadMenu, "2", ID_DOKOLOAD2);
+    addCommand(dokoLoadMenu, "3", ID_DOKOLOAD3);
+    addCommand(dokoSaveMenu, "SAVE...", ID_DOKOSAVE);
+    addCommand(dokoSaveMenu, "1", ID_DOKOSAVE1);
+    addCommand(dokoSaveMenu, "2", ID_DOKOSAVE2);
+    addCommand(dokoSaveMenu, "3", ID_DOKOSAVE3);
 
     // リプレイメニュー
     QMenu* replayMenu = systemMenu->addMenu("リプレイ");
@@ -409,8 +422,26 @@ void QtEL6::ShowPopupImpl(int x, int y)
                 DokoDemoSave( str );
             break;
 
+        case ID_DOKOSAVE1:		// どこでもSAVE1
+        case ID_DOKOSAVE2:		// どこでもSAVE2
+        case ID_DOKOSAVE3:		// どこでもSAVE3
+            strncpy( str, QString("%1/.%2.dds").arg(cfg->GetDokoSavePath()).arg(id - ID_DOKOSAVE).toLocal8Bit().data(), PATH_MAX );
+            DokoDemoSave( str );
+            break;
+
         case ID_DOKOLOAD:		// どこでもLOAD
             if( OSD_FileSelect( NULL, FD_DokoLoad, str, (char *)cfg->GetDokoSavePath() ) ){
+                cfg->SetModel( GetDokoModel( str ) );
+                cfg->SetDokoFile( str );
+                OSD_PushEvent( EV_DOKOLOAD );
+            }
+            break;
+
+        case ID_DOKOLOAD1:		// どこでもLOAD1
+        case ID_DOKOLOAD2:		// どこでもLOAD2
+        case ID_DOKOLOAD3:		// どこでもLOAD3
+            strncpy( str, QString("%1/.%2.dds").arg(cfg->GetDokoSavePath()).arg(id - ID_DOKOLOAD).toLocal8Bit().data(), PATH_MAX );
+            if( OSD_FileExist( str ) ){
                 cfg->SetModel( GetDokoModel( str ) );
                 cfg->SetDokoFile( str );
                 OSD_PushEvent( EV_DOKOLOAD );

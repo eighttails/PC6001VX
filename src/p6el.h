@@ -72,7 +72,8 @@ protected:
 	
 	VPalette GPal;				// パレット
 	
-	
+    bool isPause;               // ポーズ中フラグ
+
 	bool ScreenUpdate();								// 画面更新
 	int SoundUpdate( int, cRing * = NULL );				// サウンド更新
     //#PENDING static void StreamUpdate( void *, BYTE *, int);		// ストリーム更新 コールバック関数

@@ -35,7 +35,7 @@ EL6::EL6( void ) : vm(NULL), cfg(NULL), sche(NULL), graph(NULL), snd(NULL), joy(
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	regw(NULL), memw(NULL), monw(NULL),
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	UpDateFPSID(NULL), UDFPSCount(0), FSkipCount(0)
+    UpDateFPSID(NULL), UDFPSCount(0), FSkipCount(0), isPause(false)
 {}
 
 
@@ -540,7 +540,17 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 			vm->vdg->SetMode4Color( c );
 		}
 		break;
-		
+
+    case KVC_F9:			// ポーズ
+        if(isPause){
+            isPause = false;
+            Start();
+        } else {
+            isPause = true;
+            Stop();
+        }
+        break;
+
 	case KVC_F10:			// Wait有効無効変更
 		if( OnALT ){
 		}else{

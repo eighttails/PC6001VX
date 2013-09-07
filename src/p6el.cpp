@@ -35,7 +35,7 @@ EL6::EL6( void ) : vm(NULL), cfg(NULL), sche(NULL), graph(NULL), snd(NULL), joy(
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	regw(NULL), memw(NULL), monw(NULL),
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-    UpDateFPSID(NULL), UDFPSCount(0), FSkipCount(0), isPause(false)
+    UpDateFPSID(NULL), UDFPSCount(0), FSkipCount(0), isWorking(false)
 {}
 
 
@@ -376,7 +376,8 @@ bool EL6::Start( void )
 	sche->Start();
 	snd->Play();
 	
-	return true;
+    isWorking = true;
+    return true;
 }
 
 
@@ -390,6 +391,8 @@ void EL6::Stop( void )
 	
 	snd->Pause();
 	sche->Stop();
+
+    isWorking = false;
 }
 
 
@@ -542,12 +545,10 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 		break;
 
     case KVC_F9:			// ポーズ
-        if(isPause){
-            isPause = false;
-            Start();
-        } else {
-            isPause = true;
+        if(isWorking){
             Stop();
+        } else {
+            Start();
         }
         break;
 

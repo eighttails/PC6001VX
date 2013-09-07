@@ -72,7 +72,7 @@ protected:
 	
 	VPalette GPal;				// パレット
 	
-    bool isPause;               // ポーズ中フラグ
+    bool isWorking;               // ポーズ中フラグ
 
 	bool ScreenUpdate();								// 画面更新
 	int SoundUpdate( int, cRing * = NULL );				// サウンド更新

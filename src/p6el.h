@@ -148,6 +148,8 @@ public:
 	
 	bool IsMonitor();						// モニタモード?
 	
+    bool IsWorking();                       // エミュレーション動作中？
+
 	// ------------------------------------------
 	bool DokoDemoSave( char * );	// どこでもSAVE
 	bool DokoDemoLoad( char * );	// どこでもLOAD

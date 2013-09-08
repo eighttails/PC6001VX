@@ -385,11 +385,6 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
     Event ev;
     ev.type = EV_NOEVENT;
 
-    // エミュレータウィンドウが最前面にある場合のみ入力イベントをエミュレータ側に渡す
-    if(activeWindow() && activeWindow()->metaObject()->className() != QString("RenderView")){
-        return QtSingleApplication::notify(receiver, event);
-    }
-
     switch(event->type()){
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
@@ -397,6 +392,26 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         QKeyEvent* ke = dynamic_cast<QKeyEvent*>(event);
         Q_ASSERT(ke);
         int keyCode = ke->key();
+
+        // 以下の場合は入力イベントをエミュレータ側に渡さず、Qtに渡す
+        // (メニューやダイアログでキーボードを使えるようにするため)
+        bool processKeyEventInQt = false;
+        // ・エミュレーションポーズ中
+        // 　例外としてF9キー(ポーズ解除)とF12(スナップショット)は
+        // 　エミュレータで受け付ける
+        if(!(P6Core && P6Core->IsWorking())
+                && keyCode != Qt::Key_F9
+                && keyCode != Qt::Key_F12){
+            processKeyEventInQt = true;
+        }
+        // ・エミュレータウィンドウ以外のウィンドウ(Aboutダイアログ、環境設定ダイアログ)が
+        // 　最前面にある場合
+        if(activeWindow() && activeWindow()->metaObject()->className() != QString("RenderView")){
+            processKeyEventInQt = true;
+        }
+        if(processKeyEventInQt){
+            return QtSingleApplication::notify(receiver, event);
+        }
 
         // 「ろ」が入力できない対策
         quint32 nativeKey = ke->nativeScanCode();

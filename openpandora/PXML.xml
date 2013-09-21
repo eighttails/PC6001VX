@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is an example how a "common" pnd with just one application could look. Most of the information for the <package> block can in this case directly be copied over from the respective parts in the <application> block.-->
+<PXML xmlns="http://openpandora.org/namespaces/PXML">
+  <package id="PC6001VX-eighttails">
+    <version major="2" minor="0" release="Alpha" build="3"/>
+    <author name="eighttails" website="http://eighttails.seesaa.net"/>
+    <titles>
+      <title lang="en_US">PC6001VX</title>
+    </titles>
+    <descriptions>
+      <description lang="en_US">NEC PC-6001 Emulator</description>
+    </descriptions>
+    <icon src="PC-6001.png"/>
+  </package>
+  
+  <application id="PC6001VX">
+    <exec command="PC6001VX.sh" x11="req"/>
+    <version major="2" minor="0" release="Alpha" build="3"/>
+    <author name="eighttails" website="http://eighttails.seesaa.net"/>
+    <titles>
+      <title lang="en_US">PC6001VX</title>
+    </titles>
+    <title lang="en_US">PC6001VX</title> <!--Extra block for compatibility with OS versions before HF6-->
+    <descriptions>
+      <description lang="en_US">NEC PC-6001 Emulator</description>
+    </descriptions>
+   <description lang="en_US">NEC PC-6001 Emulator</description><!--Extra block for compatibility with OS versions before HF6-->
+   <icon src="PC-6001.png"/>
+    <licenses>
+      <license name="LGPLv2.1" url="http://www.gnu.org/licenses/lgpl-2.1.html"/>
+    </licenses>
+    <previewpics>
+    </previewpics>
+    <info name="PC6001VX Readme" type="text/html" src="README.txt"/>
+    <categories>
+      <category name="Emulator">
+        <!--<subcategory name="StrategyGame"/>-->
+      </category>
+    </categories>
+  </application>
+</PXML>

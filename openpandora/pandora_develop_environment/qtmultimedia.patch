@@ -1,0 +1,12 @@
+diff -ru qt-everywhere-opensource-src-5.1.0/qtmultimedia/src/multimedia/audio/qaudiodeviceinfo_alsa_p.cpp qt-everywhere-opensource-src-5.1.0p/qtmultimedia/src/multimedia/audio/qaudiodeviceinfo_alsa_p.cpp
+--- qt-everywhere-opensource-src-5.1.0/qtmultimedia/src/multimedia/audio/qaudiodeviceinfo_alsa_p.cpp	2013-07-02 16:10:25.000000000 +0900
++++ qt-everywhere-opensource-src-5.1.0p/qtmultimedia/src/multimedia/audio/qaudiodeviceinfo_alsa_p.cpp	2013-07-26 21:31:09.480795032 +0900
+@@ -470,7 +470,7 @@
+     }
+ #endif
+ 
+-    if (devices.size() > 0)
++    if (devices.size() == 0)
+         devices.append("default");
+ 
+     return devices;

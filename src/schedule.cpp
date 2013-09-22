@@ -456,8 +456,10 @@ void SCH6::OnThread( void *inst )
         }
         ti->WaitReset();
 
+#ifndef NOJOYSTICK
         // ジョイスティックをポーリング
         OSD_PushEvent(EV_JOYAXISMOTION);
+#endif
 
         now = OSD_GetTicks();
         if(NextWait >= now){

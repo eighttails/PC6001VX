@@ -171,7 +171,8 @@ HEADERS  += \
     src/Qt/emulationadaptor.h \
     src/Qt/renderview.h \
     src/Qt/qtel6.h \
-    src/Qt/qtutil.h
+    src/Qt/qtutil.h \
+    openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h
 
 FORMS    += \
     src/Qt/configdialog.ui \
@@ -190,7 +191,16 @@ OTHER_FILES += \
     README.txt \
     src/Qt/res/font/fonth12.png \
     src/Qt/res/font/fontz12.png \
-    src/Qt/res/background.png
+    src/Qt/res/background.png \
+    openpandora/create_pnd.sh \
+    openpandora/PXML.xml \
+    openpandora/PC-6001.png \
+    openpandora/PC6001VX.sh \
+    openpandora/pandora_develop_environment/sdk_installer_openpandora_toolchain.sh \
+    openpandora/pandora_develop_environment/qtmultimedia.patch \
+    openpandora/pandora_develop_environment/pandora_develop_environment.sh \
+    openpandora/pandora_develop_environment/environment_build.log \
+    openpandora/pandora_develop_environment/linux-pandora-g++/qmake.conf
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

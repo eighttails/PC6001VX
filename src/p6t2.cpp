@@ -1,8 +1,8 @@
 #include "pc6001v.h"
-#include "log.h"
-#include "p6t2.h"
 #include "common.h"
+#include "log.h"
 #include "osd.h"
+#include "p6t2.h"
 
 
 // P6T形式フォーマットVer.2
@@ -79,6 +79,24 @@ cP6DATA *cP6DATA::LastBlock( void )
 
 
 ////////////////////////////////////////////////////////////////
+// 次のブロックへのポインタを返す
+////////////////////////////////////////////////////////////////
+cP6DATA *cP6DATA::Next( void )
+{
+	return next;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 前のブロックへのポインタを返す
+////////////////////////////////////////////////////////////////
+cP6DATA *cP6DATA::Before( void )
+{
+	return before;
+}
+
+
+////////////////////////////////////////////////////////////////
 // 新規DATAブロック追加
 ////////////////////////////////////////////////////////////////
 cP6DATA *cP6DATA::New( void )
@@ -128,6 +146,15 @@ cP6DATA *cP6DATA::Clones( void )
 
 
 ////////////////////////////////////////////////////////////////
+// P6T ブロック情報取得
+////////////////////////////////////////////////////////////////
+P6TBLKINFO *cP6DATA::GetInfo( void )
+{
+	return &Info;
+}
+
+
+////////////////////////////////////////////////////////////////
 // データセット
 ////////////////////////////////////////////////////////////////
 int cP6DATA::SetData( FILE *fp, int num )
@@ -162,18 +189,6 @@ void cP6DATA::SetPeriod( int stime, int ptime )
 
 
 ////////////////////////////////////////////////////////////////
-// P6T ブロック情報取得
-////////////////////////////////////////////////////////////////
-void cP6DATA::GetInfo( P6TBLKINFO *info )
-{
-	info->STime  = Info.STime;	// 無音部の時間(ms)
-	info->PTime  = Info.PTime;	// ぴー音の時間(ms)
-	info->Offset = Info.Offset;	// ベタイメージ先頭からのオフセット
-	info->DNum   = Info.DNum;	// データサイズ
-}
-
-
-////////////////////////////////////////////////////////////////
 // 1Byte読込み
 ////////////////////////////////////////////////////////////////
 BYTE cP6DATA::Read( int num )
@@ -199,10 +214,7 @@ int cP6DATA::Writefd( FILE *fp )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cP6PART::cP6PART( void ) : 	ID(0), Baud(1200), Data(NULL), next(NULL), before(NULL)
-{
-	INITARRAY( Name, 0 );
-}
+cP6PART::cP6PART( void ) : Data(NULL), next(NULL), before(NULL) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -241,6 +253,41 @@ cP6PART *cP6PART::LastPart( void )
 
 
 ////////////////////////////////////////////////////////////////
+// ID番号リナンバー
+////////////////////////////////////////////////////////////////
+BYTE cP6PART::Renumber( void )
+{
+	cP6PART *part = TopPart();
+	
+	part->Info.ID = 0;
+	while( part->next ){
+		part->next->Info.ID = part->Info.ID + 1;
+		part = part->next;
+	}
+	
+	return LastPart()->Info.ID;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 次のPARTへのポインタを返す
+////////////////////////////////////////////////////////////////
+cP6PART *cP6PART::Next( void )
+{
+	return next;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 前のPARTへのポインタを返す
+////////////////////////////////////////////////////////////////
+cP6PART *cP6PART::Before( void )
+{
+	return before;
+}
+
+
+////////////////////////////////////////////////////////////////
 // 任意のPARTへのポインタを返す
 ////////////////////////////////////////////////////////////////
 cP6PART *cP6PART::Part( int num )
@@ -253,23 +300,6 @@ cP6PART *cP6PART::Part( int num )
 	}
 	
 	return part;
-}
-
-
-////////////////////////////////////////////////////////////////
-// ID番号リナンバー
-////////////////////////////////////////////////////////////////
-BYTE cP6PART::Renumber( void )
-{
-	cP6PART *part = TopPart();
-	
-	part->ID = 0;
-	while( part->next ){
-		part->next->ID = part->ID + 1;
-		part = part->next;
-	}
-	
-	return LastPart()->ID;
 }
 
 
@@ -352,7 +382,7 @@ int cP6PART::GetSize( void )
 	
 	cP6DATA *data = Data;
 	while( data ){
-		size += data->GetSize();
+		size += data->GetInfo()->DNum;
 		data  = data->Next();
 	}
 	
@@ -360,14 +390,39 @@ int cP6PART::GetSize( void )
 }
 
 ////////////////////////////////////////////////////////////////
+// 先頭DATAブロックへのポインタ取得
+////////////////////////////////////////////////////////////////
+cP6DATA *cP6PART::FirstData( void )
+{
+	return Data;
+}
+
+
+////////////////////////////////////////////////////////////////
+// P6T PART情報取得
+////////////////////////////////////////////////////////////////
+P6TPRTINFO *cP6PART::GetInfo( void )
+{
+	return &Info;
+}
+////////////////////////////////////////////////////////////////
 // データ名設定
 ////////////////////////////////////////////////////////////////
 int cP6PART::SetName( const char *name )
 {
-	ZeroMemory( Name, sizeof(Name) );
-	strncpy( Name, name, sizeof(Name)-1 );
+	ZeroMemory( Info.Name, sizeof(Info.Name) );
+	strncpy( Info.Name, name, sizeof(Info.Name)-1 );
 	
-	return strlen( Name );
+	return strlen( Info.Name );
+}
+
+
+////////////////////////////////////////////////////////////////
+// ボーレート設定
+////////////////////////////////////////////////////////////////
+void cP6PART::SetBaud( int baud )
+{
+	Info.Baud = baud;
 }
 
 
@@ -387,18 +442,20 @@ bool cP6PART::Readf( FILE *fp )
 		BYTE NextID = fgetc( fp );	// ID番号
 		
 		// 既にDATAブロックがあり,IDが異なるなら新規PARTを追加
-		if( LastPart()->Data && ( LastPart()->ID != NextID ) ){
+		if( LastPart()->Data && ( LastPart()->Info.ID != NextID ) ){
 			New();
-			LastPart()->ID = NextID;
+			LastPart()->Info.ID = NextID;
 		}
 		
 		// 既にDATAブロックがある?
 		if( LastPart()->Data )
 			// 継続PARTならデータ名とボーレートを読み飛ばす
-			fseek( fp, sizeof(Name)+sizeof(Baud)-1, SEEK_CUR );
+			fseek( fp, sizeof(Info.Name)+sizeof(Info.Baud)-1, SEEK_CUR );
 		else{
-			fread( LastPart()->Name, sizeof(BYTE), sizeof(Name)-1, fp );	// データ名
-			LastPart()->Baud = FGETWORD( fp );								// ボーレート
+			// データ名
+			fread( LastPart()->Info.Name, sizeof(BYTE), sizeof(Info.Name)-1, fp );
+			// ボーレート
+			LastPart()->Info.Baud = FGETWORD( fp );
 		}
 		// DATAブロック追加
 		cP6DATA *NewBlk = LastPart()->NewBlock();
@@ -459,16 +516,15 @@ bool cP6PART::Writeff( FILE *fp )
 	do{
 		fputc( 'T', fp );
 		fputc( 'I', fp );
-		fputc( ID, fp );
-		fwrite( Name, sizeof(BYTE), 16, fp );
-		FPUTWORD( Baud, fp )
+		fputc( Info.ID, fp );
+		fwrite( Info.Name, sizeof(BYTE), 16, fp );
+		FPUTWORD( Info.Baud, fp )
 		
-		P6TBLKINFO info;
-		data->GetInfo( &info );
-		FPUTWORD( info.STime, fp );
-		FPUTWORD( info.PTime, fp );
-		FPUTDWORD( info.Offset, fp );
-		FPUTDWORD( info.DNum, fp );
+		P6TBLKINFO *info = data->GetInfo();
+		FPUTWORD( info->STime, fp );
+		FPUTWORD( info->PTime, fp );
+		FPUTDWORD( info->Offset, fp );
+		FPUTDWORD( info->DNum, fp );
 		
 		data = data->Next();
 	}while( data );
@@ -482,8 +538,7 @@ bool cP6PART::Writeff( FILE *fp )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cP6T::cP6T( void ) : Version(0), Start(false), BASIC(1), Page(1), ASKey(0),
-						EHead(0), ask(NULL), exh(NULL), Part(NULL), Boost(1),
+cP6T::cP6T( void ) : Version(0), EHead(0), exh(NULL), Part(NULL),
 						rpart(NULL), rdata(NULL), rpt(0), swait(0), pwait(0)
 {
 	INITARRAY( Name, 0 );
@@ -496,7 +551,7 @@ cP6T::cP6T( void ) : Version(0), Start(false), BASIC(1), Page(1), ASKey(0),
 cP6T::~cP6T( void )
 {
 	if( Part ) delete Part;
-	if( ask ) delete [] ask;
+	if( Ainfo.ask ) delete [] Ainfo.ask;
 	if( exh ) delete [] exh;
 }
 
@@ -536,6 +591,15 @@ int cP6T::GetParts( void )
 
 
 ////////////////////////////////////////////////////////////////
+// 任意PARTへのポインタ取得
+////////////////////////////////////////////////////////////////
+cP6PART *cP6T::GetPart( int num )
+{
+	return Part->Part( num );
+}
+
+
+////////////////////////////////////////////////////////////////
 // ベタイメージサイズ取得
 ////////////////////////////////////////////////////////////////
 int cP6T::GetSize( void )
@@ -557,8 +621,6 @@ int cP6T::GetSize( void )
 ////////////////////////////////////////////////////////////////
 int cP6T::SetName( const char *name )
 {
-//	ZeroMemory( Name, sizeof(Name) );
-//	strncpy( Name, name, sizeof(Name)-1 );
 	ZeroMemory( Name, 16 );
 	strncpy( Name, name, 16 );
 	
@@ -567,19 +629,35 @@ int cP6T::SetName( const char *name )
 
 
 ////////////////////////////////////////////////////////////////
+// データ名取得
+////////////////////////////////////////////////////////////////
+const char *cP6T::GetName( void )
+{
+	return Name;
+}
+
+
+////////////////////////////////////////////////////////////////
+// オートスタート情報取得
+////////////////////////////////////////////////////////////////
+P6TAUTOINFO *cP6T::GetAutoStartInfo( void )
+{
+	return &Ainfo;
+}
+
+
+////////////////////////////////////////////////////////////////
 // 1文字読込み
 ////////////////////////////////////////////////////////////////
 BYTE cP6T::ReadOne( void )
 {
-	P6TBLKINFO binfo;
-	
 	BYTE data = rdata->Read( rpt++ );
 	
 	PRINTD( P6T2_LOG, "[cP6T][ReadOne] -> %02X\n", data );
 	
 	// ブロック情報取得
-	rdata->GetInfo( &binfo );
-	if( rpt >= binfo.DNum ){	// データ最後?
+	P6TBLKINFO *binfo = rdata->GetInfo();
+	if( rpt >= binfo->DNum ){	// データ最後?
 		rpt = 0;
 		if( !( rdata = rdata->Next() ) ){	// DATAブロック最後?
 			if( !( rpart = rpart->Next() ) ){	// PART最後?
@@ -588,9 +666,9 @@ BYTE cP6T::ReadOne( void )
 			rdata = rpart->FirstData();
 		}
 		// 次のブロック情報取得
-		rdata->GetInfo( &binfo );
-		swait = ( binfo.STime * DEFAULT_CMT_HZ * Boost )/1000;
-		pwait = ( binfo.PTime * DEFAULT_CMT_HZ * Boost )/1000;
+		binfo = rdata->GetInfo();
+		swait = ( binfo->STime * DEFAULT_CMT_HZ  )/1000;
+		pwait = ( binfo->PTime * DEFAULT_CMT_HZ  )/1000;
 	}
 	
 	return data;
@@ -631,27 +709,16 @@ void cP6T::Reset( void )
 	rdata = Part->FirstData();	// 現在の読込みDATAブロック
 	rpt   = 0;					// 現在の読込みポインタ
 	
-	P6TBLKINFO binfo;
-	
-	rdata->GetInfo( &binfo );
-	swait = ( binfo.STime * DEFAULT_CMT_HZ * Boost )/1000;	// 無音部の待ち回数
-	pwait = ( binfo.PTime * DEFAULT_CMT_HZ * Boost )/1000;	// ぴー音の待ち回数
-}
-
-
-////////////////////////////////////////////////////////////////
-// ボーレート倍率設定
-////////////////////////////////////////////////////////////////
-void cP6T::SetBoost( int boost )
-{
-	Boost = boost;
+	P6TBLKINFO *binfo = rdata->GetInfo();
+	swait = ( binfo->STime * DEFAULT_CMT_HZ  )/1000;	// 無音部の待ち回数
+	pwait = ( binfo->PTime * DEFAULT_CMT_HZ  )/1000;	// ぴー音の待ち回数
 }
 
 
 ////////////////////////////////////////////////////////////////
 // ファイルから読込み
 ////////////////////////////////////////////////////////////////
-bool cP6T::Readf( char *filename )
+bool cP6T::Readf( const char *filename )
 {
 	PRINTD( P6T2_LOG, "[cP6T][Readf] [%s]\n", filename );
 	
@@ -669,7 +736,7 @@ bool cP6T::Readf( char *filename )
 ////////////////////////////////////////////////////////////////
 // ファイルに書込み
 ////////////////////////////////////////////////////////////////
-bool cP6T::Writef( char *filename )
+bool cP6T::Writef( const char *filename )
 {
 	PRINTD( P6T2_LOG, "[cP6T][Writef] [%s]\n", filename );
 	
@@ -704,11 +771,11 @@ bool cP6T::Writef( char *filename )
 	fputc( '6', fp );
 	fputc( Version, fp );
 	fputc( GetBlocks(), fp );
-	fputc( Start ? 1 : 0, fp );
-	fputc( BASIC, fp );
-	fputc( Page, fp );
-	FPUTWORD( ASKey, fp );
-	if( ASKey ) fwrite( ask, sizeof(char), ASKey, fp );
+	fputc( Ainfo.Start ? 1 : 0, fp );
+	fputc( Ainfo.BASIC, fp );
+	fputc( Ainfo.Page, fp );
+	FPUTWORD( Ainfo.ASKey, fp );
+	if( Ainfo.ASKey ) fwrite( Ainfo.ask, sizeof(char), Ainfo.ASKey, fp );
 	FPUTWORD( EHead, fp );
 	if( EHead ) fwrite( exh, sizeof(char), EHead, fp );
 	
@@ -751,17 +818,17 @@ bool cP6T::ReadP6T( const char *filename )
 	WORD Header = FGETWORD( fp );
 	if( Header != 0x3650 ){ fclose( fp ); return false; }
 	
-	Version = fgetc( fp );					// バージョン
-	fgetc( fp );							// 含まれるDATAブロック数
-	Start   = fgetc( fp ) ? true : false;	// オートスタートフラグ
-	BASIC   = fgetc( fp );					// BASICモード
-	Page    = fgetc( fp );					// ページ数
+	Version = fgetc( fp );						// バージョン
+	fgetc( fp );								// 含まれるDATAブロック数
+	Ainfo.Start   = fgetc( fp ) ? true : false;	// オートスタートフラグ
+	Ainfo.BASIC   = fgetc( fp );				// BASICモード
+	Ainfo.Page    = fgetc( fp );				// ページ数
 	
 	// オートスタートコマンド
-	ASKey = FGETWORD( fp );
-	if( ASKey ){
-		ask = new char[ASKey];
-		fread( ask, sizeof(char), ASKey, fp );
+	Ainfo.ASKey = FGETWORD( fp );
+	if( Ainfo.ASKey ){
+		Ainfo.ask = new char[Ainfo.ASKey];
+		fread( Ainfo.ask, sizeof(char), Ainfo.ASKey, fp );
 	}
 	
 	// 拡張情報
@@ -801,13 +868,13 @@ bool cP6T::ConvP6T( const char *filename )
 	// P6T情報設定
 	SetName( OSD_GetFileNamePart( filename ) );	// データ名(16文字+'00H')はファイル名
 	Version = 2;								// バージョン(とりあえず2)
-	Start   = false;							// オートスタートフラグ(無効)
-	BASIC   = 1;								// BASICモード(PC-6001の場合は無意味)(とりあえず1だが無意味)
-	Page    = 1;								// ページ数(とりあえず1だが無意味)
-	ASKey   = 0;								// オートスタートコマンドサイズ(0:無効)
-	EHead   = 0;								// 拡張情報サイズ(0:なし)
-	ask     = NULL;								// オートスタートコマンド格納領域へのポインタ
-	exh     = NULL;								// 拡張情報格納領域へのポインタ
+	Ainfo.Start = false;						// オートスタートフラグ(無効)
+	Ainfo.BASIC = 1;							// BASICモード(PC-6001の場合は無意味)(とりあえず1だが無意味)
+	Ainfo.Page  = 1;							// ページ数(とりあえず1だが無意味)
+	Ainfo.ASKey = 0;							// オートスタートコマンドサイズ(0:無効)
+	Ainfo.ask   = NULL;							// オートスタートコマンド格納領域へのポインタ
+	EHead       = 0;							// 拡張情報サイズ(0:なし)
+	exh         = NULL;							// 拡張情報格納領域へのポインタ
 	
 	// PARTを作成
 	Part = new cP6PART;
@@ -832,10 +899,7 @@ int cP6T::GetCount( void )
 {
 	if( !rdata ) return 0;
 	
-	P6TBLKINFO info;
-	rdata->GetInfo( &info );
-	
-	return info.Offset + rpt;
+	return rdata->GetInfo()->Offset + rpt;
 }
 
 
@@ -856,15 +920,12 @@ void cP6T::SetCount( int cnt )
 	}
 	// 次にDATAをチェック
 	rdata = rpart->FirstData();
-	while( off+rdata->GetSize() <= cnt ){
-		off   += rdata->GetSize();
+	while( off+rdata->GetInfo()->DNum <= cnt ){
+		off   += rdata->GetInfo()->DNum;
 		rdata  = rdata->Next();
 	}
 	
-	P6TBLKINFO info;
-	rdata->GetInfo( &info );
-	
-	rpt = cnt - info.Offset;
+	rpt = cnt - rdata->GetInfo()->Offset;
 }
 
 

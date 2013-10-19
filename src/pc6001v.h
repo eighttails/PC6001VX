@@ -12,9 +12,10 @@
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報,機種名など
 /////////////////////////////////////////////////////////////////////////////
-#define	VERSION		"2.0Alpha3"
+#define	VERSION		"2.0Beta1"
 #define	APPNAME		"PC6001VX"
 #define	P60NAME		"PC-6001"
+#define	P61NAME		"PC-6001A"
 #define	P62NAME		"PC-6001mk2"
 #define	P66NAME		"PC-6601"
 #define	P64NAME		"PC-6001mk2SR"
@@ -40,9 +41,8 @@
 #define DEFAULT_MAXBOOST60		(8)					/* BoostUp最大倍率(N60モード) */
 #define DEFAULT_MAXBOOST62		(5)					/* BoostUp最大倍率(N60m/N66モード) */
 #define	DEFAULT_FDD				(0)					/* FDD接続台数 */
-#define	DEFAULT_COLOR_MODE		(8) 				/* カラーモード 8:8bit 16:bit 24:24bit */
 #define	DEFAULT_MODE4_COLOR		(1)					/* モード４カラーモード 0:モノ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク */
-#define	DEFAULT_SCANLINE		(false) 				/* スキャンライン true:あり false:なし */
+#define	DEFAULT_SCANLINE		(true) 				/* スキャンライン true:あり false:なし */
 #define	DEFAULT_SCANLINEBR		(75)				/* スキャンライン輝度 (0-100)% */
 #define	DEFAULT_DISPNTSC		(true) 				/* 4:3表示 true:有効 false:無効 */
 #define	DEFAULT_FRAMESKIP		(0)					/* フレームスキップ */
@@ -51,7 +51,7 @@
 #define	DEFAULT_ROMPATCH		(true) 				/* ROMパッチ */
 #define	DEFAULT_FULLSCREEN		(false) 			/* フルスクリーン */
 #define	DEFAULT_DISPSTATUS		(true) 				/* ステータスバー表示状態 */
-#define	DEFAULT_AVIRLE			(true) 				/* RLEフラグ */
+#define	DEFAULT_AVIBPP			(24) 				/* ビデオキャプチャ色深度 */
 #define	DEFAULT_CKQUIT			(false) 			/* 終了時確認 */
 #define	DEFAULT_SAVEQUIT		(true) 				/* 終了時INI保存 */
 #define	DEFAULT_SOLDIER			(false) 			/* 戦士のカートリッジ使うフラグ */
@@ -94,9 +94,9 @@
 #define	SAVE_FILE		"_csave.p6t"		/* TAPE(CSAVE)ファイル */
 #define	FONTZ_FILE		"fontz12."IMG_EXT	/* 半角フォントファイル */
 #define	FONTH_FILE		"fonth12."IMG_EXT	/* 全角フォントファイル */
-#define	FONTV_FILE		"cgrom60s.60"		/* VDGフォントファイル */
 
 #define	SUBCPU60		"subcpu.60"			/* サブCPU ROM(PC-6001) */
+#define	SUBCPU61		"subcpu.61"			/* サブCPU ROM(PC-6001A) */
 #define	SUBCPU62		"subcpu.62"			/* サブCPU ROM(PC-6001mk2) */
 #define	SUBCPU66		"subcpu.66"			/* サブCPU ROM(PC-6601) */
 #define	SUBCPU64		"subcpu.64"			/* サブCPU ROM(PC-6001mk2SR) */

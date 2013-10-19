@@ -3,6 +3,7 @@
 
 #include <QtSingleApplication>
 #include <QImage>
+#include <QMutex>
 
 #include "../typedef.h"
 #include "../p6vm.h"
@@ -25,7 +26,7 @@ public slots:
     void startup();
 
     //ウィンドウを生成
-    void createWindow(HWINDOW Wh, int bpp, bool fsflag );
+    void createWindow(HWINDOW Wh, bool fsflag );
 
     //グラフィックをシーンに配置
     //QGraphicsSceneの操作はメインスレッドでしかできないため、
@@ -62,6 +63,7 @@ private:
     EL6::ReturnCode Restart;	// 再起動フラグ
     CFG6 Cfg;					// 環境設定オブジェクト
     EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ
+    QMutex MenuMutex;           // メニュー表示中にロックされるMutex
 };
 
 #endif // QTP6VXAPPLICATION_H

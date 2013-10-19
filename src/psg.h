@@ -5,14 +5,13 @@
 #include "device.h"
 #include "ini.h"
 #include "sound.h"
-#include "p6device.h"
 #include "device/ay8910.h"
 
 
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class PSG6 : public P6DEVICE, public Device, public cAY8910, public SndDev, public IDoko {
+class PSG6 : public Device, public cAY8910, public SndDev, public IDoko {
 private:
 	BYTE JoyNo;							// 読取るジョイスティックの番号(0-1)
 	int Clock;							// クロック

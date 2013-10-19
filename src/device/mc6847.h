@@ -7,12 +7,12 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class cMC6847core {
+class MC6847core {
 protected:
-	BYTE COL_AN[5];			// カラーコード(アルファニューメリック)
-	BYTE COL_SG[9];			// カラーコード(セミグラフィック)
-	BYTE COL_CG[10][8];		// カラーコード(カラーグラフィック)
-	BYTE COL_RG[2][2];		// カラーコード(モノクログラフィック)
+	DWORD COL_AN[5];		// カラーコード(アルファニューメリック)
+	DWORD COL_SG[9];		// カラーコード(セミグラフィック)
+	DWORD COL_CG[10][8];	// カラーコード(カラーグラフィック)
+	DWORD COL_RG[2][2];		// カラーコード(モノクログラフィック)
 
 	BYTE NIJIMI_TBL[64][2];	// 色にじみカラーコードテーブル
 	
@@ -48,8 +48,8 @@ protected:
 	virtual BYTE GetFont1( WORD ) = 0;			// Font1データ取得
 	
 public:
-	cMC6847core();								// コンストラクタ
-	virtual ~cMC6847core();						// デストラクタ
+	MC6847core();								// コンストラクタ
+	virtual ~MC6847core();						// デストラクタ
 	
 	virtual void UpdateBackBuf() = 0;			// バックバッファ更新
 	
@@ -62,26 +62,27 @@ public:
 };
 
 
-class cMC6847_1 : public virtual cMC6847core {
+class MC6847 : public virtual MC6847core {
 protected:
-	virtual BYTE GetFont0( WORD ) = 0;			// Font0(VDG Font)データ取得
-	BYTE GetBcol();								// ボーダーカラー取得
+	static const BYTE VDGfont[];				// VDG Font data
+	
+	DWORD GetBcol();							// ボーダーカラー取得
 	
 	void Draw1line1( int );						// 1ライン描画(N60)
 	
 public:
-	cMC6847_1();								// コンストラクタ
-	virtual ~cMC6847_1();						// デストラクタ
+	MC6847();									// コンストラクタ
+	virtual ~MC6847();							// デストラクタ
 	
 	void UpdateBackBuf();						// バックバッファ更新
 };
 
 
-class cMC6847_2 : public virtual cMC6847core {
+class PCZ80_07 : public virtual MC6847core {
 protected:
-	BYTE COL_AN2[16];		// カラーコード(アルファニューメリック 60m)
-	BYTE COL_CG3[2][16];	// カラーコード(カラーグラフィック 60m モード3)
-	BYTE COL_CG4[2][16];	// カラーコード(カラーグラフィック 60m モード4)
+	DWORD COL_AN2[16];		// カラーコード(アルファニューメリック 60m)
+	DWORD COL_CG3[2][16];	// カラーコード(カラーグラフィック 60m モード3)
+	DWORD COL_CG4[2][16];	// カラーコード(カラーグラフィック 60m モード4)
 	
 	bool Mk2CharMode;		// mk2 表示モード true:キャラクタ false:グラフィック
 	bool Mk2GraphMode;		// mk2 グラフィック解像度 true:160*200 false:320*200
@@ -91,14 +92,14 @@ protected:
 	int Css3;
 	
 	virtual BYTE GetFont2( WORD ) = 0;			// Font2データ取得
-	BYTE GetBcol();								// ボーダーカラー取得
+	DWORD GetBcol();							// ボーダーカラー取得
 	
 	void Draw1line1( int );						// 1ライン描画(N60)
 	void Draw1line2( int );						// 1ライン描画(N60m)
 	
 public:
-	cMC6847_2();								// コンストラクタ
-	virtual ~cMC6847_2();						// デストラクタ
+	PCZ80_07();									// コンストラクタ
+	virtual ~PCZ80_07();						// デストラクタ
 	
 	void UpdateBackBuf();						// バックバッファ更新
 };

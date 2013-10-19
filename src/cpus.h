@@ -1,8 +1,8 @@
 #ifndef CPUS_H_INCLUDED
 #define CPUS_H_INCLUDED
 
-#include "typedef.h"
-#include "p6device.h"
+#include "device.h"
+#include "ini.h"
 
 
 // CMTステータス
@@ -21,7 +21,7 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class SUB6 : public P6DEVICE, public IDoko {
+class SUB6 : public Device, public IDoko {
 protected:
 	int CmtStatus;						// CMTステータス
 	int Status8049;						// 8049動作ステータス
@@ -46,10 +46,12 @@ protected:
 	void OutVector();					// 割込みベクタ出力
 	void OutData()	;					// 割込みデータ出力
 	
+	void ReqJoyIntr();					// ゲーム用キー割込み要求
+	
 	virtual void ExtIntrExec( BYTE ) = 0;	// 外部割込み処理
 	
 public:
-	SUB6( VM6 *, const P6ID& );			// コンストラクタ
+	SUB6( VM6 *, const ID& );			// コンストラクタ
 	virtual ~SUB6();					// デストラクタ
 	
 	void EventCallback( int, int );		// イベントコールバック関数
@@ -58,7 +60,6 @@ public:
 	
 	// キーボード関連
 	void ReqKeyIntr( int, BYTE );		// キー割込み要求
-	void ReqJoyIntr();					// ゲーム用キー割込み要求
 	
 	// CMT関連
 	void ReqCmtIntr( BYTE );			// CMT READ割込み要求
@@ -77,7 +78,7 @@ protected:
 	void ExtIntrExec( BYTE );			// 外部割込み処理
 	
 public:
-	SUB60( VM6 *, const P6ID& );		// コンストラクタ
+	SUB60( VM6 *, const ID& );			// コンストラクタ
 	~SUB60();							// デストラクタ
 };
 
@@ -87,7 +88,7 @@ protected:
 	void ExtIntrExec( BYTE );			// 外部割込み処理
 	
 public:
-	SUB62( VM6 *, const P6ID& );		// コンストラクタ
+	SUB62( VM6 *, const ID& );			// コンストラクタ
 	~SUB62();							// デストラクタ
 };
 

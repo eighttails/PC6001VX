@@ -2,10 +2,10 @@
 #define KEYBOARD_H_INCLUDED
 
 #include "typedef.h"
+#include "device.h"
 #include "ini.h"
 #include "keydef.h"
 
-#include "p6device.h"
 
 
 // キーボードインジケータ状態
@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class KEY6 : public P6DEVICE, public IDoko {
+class KEY6 : public Device, public IDoko {
 protected:
 	P6KEYsym K6Table[KVC_LAST];		// 仮想キーコード -> P6キーコード 変換テーブル
 	BYTE MatTable[KP6_LAST];		// P6キーコード -> マトリクス 変換テーブル
@@ -36,7 +36,7 @@ protected:
 								//  いずれも末尾の2byteはジョイスティックの状態保存用
 
 public:
-	KEY6( VM6 *, const P6ID& );			// コンストラクタ
+	KEY6( VM6 *, const ID& );			// コンストラクタ
 	virtual ~KEY6();					// デストラクタ
 	
 	bool Init( int );					// 初期化
@@ -68,7 +68,7 @@ public:
 
 class KEY60 : public KEY6 {
 public:
-	KEY60( VM6 *, const P6ID& );		// コンストラクタ
+	KEY60( VM6 *, const ID& );		// コンストラクタ
 	~KEY60();							// デストラクタ
 };
 

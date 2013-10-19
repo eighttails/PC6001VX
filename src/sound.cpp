@@ -3,10 +3,10 @@
 #include <memory.h>
 
 #include "pc6001v.h"
-#include "log.h"
-#include "sound.h"
 #include "error.h"
+#include "log.h"
 #include "osd.h"
+#include "sound.h"
 
 
 // バッファサイズの倍率

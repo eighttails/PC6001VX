@@ -5,7 +5,6 @@
 
 #include "device.h"
 #include "ini.h"
-#include "p6device.h"
 #include "thread.h"
 
 
@@ -22,55 +21,60 @@
 #define	EV_MS		(0x04)	/* ms */
 #define	EV_STATE	(0x08)	/* CPUステート数 */
 
+// 処理速度計算用保存領域サイズ
+#define	SPDCNT		(5)
 
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class cSche : public IDoko {
+// VMイベントスケジューラクラス
+class EVSC : public IDoko {
 public:
 	// イベント情報構造体
 	struct evinfo {
-		P6DEVICE* device;	// イベントデバイスオブジェクトポインタ
-		int id;				// イベントID
-		bool Active;		// イベント有効フラグ true:有効 false:停止
-		int Period;			// 1周期のクロック数
-		int Clock;			// 残りクロック数
-		double nps;			// イベント発生周波数(Hz)
+		Device::ID devid;		// イベントデバイスオブジェクトID
+		int id;					// イベントID
+		bool Active;			// イベント有効フラグ true:有効 false:停止
+		int Period;				// 1周期のクロック数
+		int Clock;				// 残りクロック数
+		double nps;				// イベント発生周波数(Hz)
 		
-		evinfo () : device(NULL), id(0), Active(false), Period(0), Clock(0), nps(0) {}
+		evinfo() : devid(0), id(0), Active(false), Period(0), Clock(0), nps(0) {}
 	};
 	
 protected:
-	evinfo ev[MAXEVENT];	// イベント情報
+	evinfo ev[MAXEVENT];		// イベント情報
+	DeviceList devlist;			// デバイスリスト
 	
-	bool VSYNC;				// VSYNCフラグ true:VSYNCに達した false:達してない
+	bool VSYNC;					// VSYNCフラグ true:VSYNCに達した false:達してない
 	
-	int MasterClock;		// マスタクロック数(基本的にはCPUステート数/秒になるはず)
-	int NextEvent;			// 次のイベントが発生するまでのクロック数
-	int SaveClock;			// クロックを溜め込む
+	int MasterClock;			// マスタクロック数(基本的にはCPUステート数/秒になるはず)
+	int NextEvent;				// 次のイベントが発生するまでのクロック数
+	int SaveClock;				// クロックを溜め込む
 	
-	evinfo *Find( P6DEVICE *, int );			// イベント検索
-	void SetMasterClock( int );					// マスタクロック数を設定
+	evinfo *Find( Device::ID, int );			// イベント検索
 	
 public:
-	cSche( int );								// コンストラクタ
-	virtual ~cSche();							// デストラクタ
+	EVSC( int );								// コンストラクタ
+	virtual ~EVSC();							// デストラクタ
 	
-	bool Add( P6DEVICE *, int, double, int );	// イベント追加
-	bool Del( P6DEVICE *, int );				// イベント削除
+	bool Entry( Device * );						// 接続するデバイス候補を登録する
+	bool Add( Device *, int, double, int );		// イベント追加
+	bool Del( Device *, int );					// イベント削除
 	
-	bool SetHz( P6DEVICE *, int, double );		// イベント発生周波数設定
+	bool SetHz( Device::ID, int, double );		// イベント発生周波数設定
 	
 	void Update( int );							// イベント更新
-	void Reset( P6DEVICE *, int, double=0 );	// 指定イベントをリセットする
+	void Reset( Device::ID, int, double=0 );	// 指定イベントをリセットする
 	
-	int Rest( P6DEVICE *, int );				// イベント発生までの残りクロック数を求める
-	double Scale( P6DEVICE *, int );			// イベントの進行率を求める
+	int Rest( Device::ID, int );				// イベント発生までの残りクロック数を求める
+	double Scale( Device::ID, int );			// イベントの進行率を求める
 	
 	bool GetEvinfo( evinfo * );					// イベント情報取得
 	bool SetEvinfo( evinfo * );					// イベント情報設定
 	
-	int GetMasterClock();						// マスタークロック取得
+	void SetMasterClock( int );					// マスタクロック設定
+	int GetMasterClock();						// マスタクロック取得
 	
 	bool IsVSYNC();								// VSYNCに達した?
 	void OnVSYNC();								// VSYNCを通知する
@@ -82,15 +86,20 @@ public:
 	// ------------------------------------------
 };
 
+// エミュレータスケジューラクラス
 class SCH6 : public cThread, public cSemaphore {
 protected:
 	bool WaitEnable;		// Wait有効フラグ
+	bool PauseEnable;		// ポーズ有効フラグ
 	int EnableScrUpdate;	// 画面更新フラグ
+	
+	int SpeedRatio;			// 実行速度
+	int SpeedCnt1;			// 実行速度調整用カウンタ1
+	int SpeedCnt2;			// 実行速度調整用カウンタ2
 	
 	// 処理速度計算用
 	int MasterClock;		// マスタクロック数
-	DWORD WRClock;			// 処理クロック保存(計測完了)
-	DWORD WRClockTmp;		// 処理クロック保存(計測中)
+	DWORD WRClock[SPDCNT];	// 処理クロック保存
 	
 	void OnThread( void * );					// スレッド関数
 	
@@ -104,10 +113,16 @@ public:
 	void Stop();								// 動作停止
 	
 	bool GetWaitEnable();						// Wait有効フラグ取得
-	void SetWaitEnable( bool );					// Wait有効フラグ設定
+	void SetWaitEnable( bool );					//               設定
+	
+	bool GetPauseEnable();						// ポーズ有効フラグ取得
+	void SetPauseEnable( bool );				//                 設定
 	
 	void VWait();								// VSYNC Wait
 	void WaitReset();							// Waitを解除する
+	
+	void SetSpeedRatio( int );					// 実行速度設定
+	int GetSpeedRatio();						//         取得
 	
 	void Update( int );							// イベント更新
 	int GetRatio();								// 実行速度比取得

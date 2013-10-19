@@ -1,18 +1,12 @@
 #include "config.h"
-#include "log.h"
 #include "cpum.h"
-#include "breakpoint.h"
-#include "intr.h"
-#include "io.h"
-#include "memory.h"
-#include "vdg.h"
 
-#include "p6el.h"
+#include "p6vm.h"
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-CPU6::CPU6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id) {}
+CPU6::CPU6( VM6 *vm, const ID& id ) : Device(vm,id) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -24,120 +18,68 @@ CPU6::~CPU6( void ){}
 ////////////////////////////////////////////////////////////////
 // フェッチ(M1)
 ////////////////////////////////////////////////////////////////
-inline BYTE CPU6::Fetch( WORD addr, int *m1wait )
+BYTE CPU6::Fetch( WORD addr, int *m1wait )
 {
-	BYTE data = vm->mem->Fetch( addr, m1wait );
-	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	// ブレークポイントチェック
-	if( vm->bp->CheckBreakPoint( BPoint::BP_READ, addr, data, NULL ) ){
-		PRINTD( MEM_LOG, " -> Break!" );
-	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	PRINTD( MEM_LOG, "\n" );
-	
-	return data;
+	return vm->MemFetch( addr, m1wait );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // メモリアクセス(ウェイトなし)
 ////////////////////////////////////////////////////////////////
-inline BYTE CPU6::ReadMemNW( WORD addr )
+BYTE CPU6::ReadMemNW( WORD addr )
 {
-	BYTE data = vm->mem->Read( addr );
-	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	// ブレークポイントチェック
-	if( vm->bp->CheckBreakPoint( BPoint::BP_READ, addr, data, NULL ) ){
-		PRINTD( MEM_LOG, " -> Break!" );
-	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	PRINTD( MEM_LOG, "\n" );
-	
-	return data;
+	return vm->MemRead( addr );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // メモリアクセス(ウェイトあり)
 ////////////////////////////////////////////////////////////////
-inline BYTE CPU6::ReadMem( WORD addr )
+BYTE CPU6::ReadMem( WORD addr )
 {
-	BYTE data = vm->mem->Read( addr, &mstate );
-	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	// ブレークポイントチェック
-	if( vm->bp->CheckBreakPoint( BPoint::BP_READ, addr, data, NULL ) ){
-		PRINTD( MEM_LOG, " -> Break!" );
-	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	PRINTD( MEM_LOG, "\n" );
-	
-	return data;
+	return vm->MemRead( addr, &mstate );
 }
 
-inline void CPU6::WriteMem( WORD addr, BYTE data)
+void CPU6::WriteMem( WORD addr, BYTE data)
 {
-	vm->mem->Write( addr, data, &mstate );
-	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	// ブレークポイントチェック
-	if( vm->bp->CheckBreakPoint( BPoint::BP_WRITE, addr, data, NULL ) ){
-		PRINTD( MEM_LOG, " -> Break!" );
-	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	PRINTD( MEM_LOG, "\n" );
+	vm->MemWrite( addr, data, &mstate );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // I/Oポートアクセス
 ////////////////////////////////////////////////////////////////
-inline BYTE CPU6::ReadIO( int addr )
+BYTE CPU6::ReadIO( int addr )
 {
-	BYTE data = vm->iom->In( addr, &mstate );
-	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	// ブレークポイントチェック
-	if( vm->bp->CheckBreakPoint( BPoint::BP_IN, addr&0xff, data, NULL ) ){
-		PRINTD( IO_LOG, " -> Break!" );
-	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	PRINTD( IO_LOG, "\n" );
-	
-	return data;
+	return vm->IomIn( addr, &mstate );
 }
 
-inline void CPU6::WriteIO( int addr, BYTE data )
+void CPU6::WriteIO( int addr, BYTE data )
 {
-	vm->iom->Out( addr, data, &mstate );
-	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	// ブレークポイントチェック
-	if( vm->bp->CheckBreakPoint( BPoint::BP_OUT, addr&0xff, data, NULL ) ){
-		PRINTD( IO_LOG, " -> Break!" );
-	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	PRINTD( IO_LOG, "\n" );
+	vm->IomOut( addr, data, &mstate );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 割込みベクタ取得
 ////////////////////////////////////////////////////////////////
-inline int CPU6::GetIntrVector( void )
+int CPU6::GetIntrVector( void )
 {
-	return vm->intr->IntrCheck();
+	return vm->IntIntrCheck();
 }
 
 
 ////////////////////////////////////////////////////////////////
 // BUSREQ取得
 ////////////////////////////////////////////////////////////////
-inline bool CPU6::IsBUSREQ( void )
+bool CPU6::IsBUSREQ( void )
 {
-	return vm->el->IsMonitor() ? false : vm->vdg->IsDisp();
+	return
+		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		vm->ElIsMonitor() ? false :
+		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		vm->VdgIsDisp();
 }
 
 

@@ -1,11 +1,12 @@
 #include <stdarg.h>
 #include <ctype.h>
 
+#include <QTextCodec>
+
 #include "../log.h"
 #include "../console.h"
 #include "../common.h"
 
-#include <QTextCodec>
 
 #define	BLNKW	(2)	/* 横方向の余白 */
 #define	BLNKH	(2)	/* 縦方向の余白 */
@@ -35,12 +36,16 @@ JFont::~JFont( void ){}
 ////////////////////////////////////////////////////////////////
 bool JFont::OpenFont( char *zfilename, char *hfilename )
 {
+	VRect ff;
+	
 	// 既に読込まれていたら破棄する
 	CloseFont();
 	
 	// とりあえずサイズ指定
 	hWidth  = FSIZE;
-	hHeight = hWidth * 2;
+	hHeight = FSIZE * 2;
+	zWidth  = FSIZE * 2;
+	zHeight = FSIZE * 2;
 	
 	// フォントファイル読み込み
 	HFont = LoadImg( hfilename );
@@ -49,16 +54,16 @@ bool JFont::OpenFont( char *zfilename, char *hfilename )
 	// フォントファイルが無ければダミー作成
 	if( !HFont ){
 		HFont = new VSurface;
-		HFont->InitSurface( hWidth*96*2, hHeight* 2, 8 );
+        HFont->InitSurface( hWidth*96*2, hHeight* 2 );
 	}
 	if( !ZFont ){
 		ZFont = new VSurface;
-		ZFont->InitSurface( zWidth*96*2, zHeight*96, 8 );
+        ZFont->InitSurface( zWidth*96*2, zHeight*96 );
 	}
 	
 	// 半角と全角でサイズが異なった場合は小さいほうに合わせる(当然表示がズレる)
-        hWidth  = std::min( HFont->Width(), ZFont->Width() ) / 96 / 2;
-        hHeight = std::min( HFont->Height() / 2, ZFont->Height() / 96 );
+	hWidth  = min( HFont->Width(), ZFont->Width() ) / 96 / 2;
+	hHeight = min( HFont->Height() / 2, ZFont->Height() / 96 );
 	zWidth  = hWidth * 2;
 	zHeight = hHeight;
 	
@@ -85,7 +90,7 @@ void JFont::CloseFont( void )
 ////////////////////////////////////////////////////////////////
 // 半角文字描画
 ////////////////////////////////////////////////////////////////
-void JFont::PutCharh( VSurface *dst, int dx, int dy, BYTE txt, BYTE fg, BYTE bg )
+void JFont::PutCharh( VSurface *dst, int dx, int dy, BYTE txt, DWORD fg, DWORD bg )
 {
 	PRINTD( GRP_LOG, "[JFont][PutCharh]\n" );
 	
@@ -103,14 +108,14 @@ void JFont::PutCharh( VSurface *dst, int dx, int dy, BYTE txt, BYTE fg, BYTE bg 
 	// 転送
 	for( int y=0; y<sr.h; y++ )
 		for( int x=0; x<sr.w; x++ )
-			dst->PSet( dr.x + x, dr.y + y, (DWORD)( HFont && HFont->PGet( sr.x + x, sr.y + y ) ? fg : bg ) );
+			dst->PSet( dr.x + x, dr.y + y, HFont && HFont->PGet( sr.x + x, sr.y + y )&(RMASK32|GMASK32||BMASK32) ? fg : bg );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 全角文字描画
 ////////////////////////////////////////////////////////////////
-void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, BYTE fg, BYTE bg )
+void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, DWORD fg, DWORD bg )
 {
 	PRINTD( GRP_LOG, "[JFont][PutCharz]\n" );
 	
@@ -132,7 +137,7 @@ void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, BYTE fg, BYTE bg 
 	// 転送
 	for( int y=0; y<sr.h; y++ )
 		for( int x=0; x<sr.w; x++ )
-			dst->PSet( dr.x + x, dr.y + y, (DWORD)( ZFont && ZFont->PGet( sr.x + x, sr.y + y ) ? fg : bg ) );
+			dst->PSet( dr.x + x, dr.y + y, ZFont && ZFont->PGet( sr.x + x, sr.y + y )&(RMASK32|GMASK32||BMASK32) ? fg : bg );
 }
 
 
@@ -144,12 +149,9 @@ void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, BYTE fg, BYTE bg 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-ZCons::ZCons( void )
+ZCons::ZCons( void ) : Xmax(0), Ymax(0), x(0), y(0), fgc(FC_WHITE), bgc(FC_BLACK)
 {
-	Xmax = Ymax = x = y = 0;
-	fgc = FC_WHITE;
-	bgc = FC_BLACK;
-	*Caption = '\0';
+	INITARRAY( Caption, '\0' );
 }
 
 ////////////////////////////////////////////////////////////////
@@ -162,7 +164,7 @@ ZCons::~ZCons( void ){}
 ////////////////////////////////////////////////////////////////
 // コンソール作成(文字数でサイズ指定)
 ////////////////////////////////////////////////////////////////
-bool ZCons::Init( int winx, int winy, const char *caption, int fcol, int bcol )
+bool ZCons::Init( int winx, int winy, const char *caption, DWORD fcol, DWORD bcol )
 {
 	int winxr = winx * hWidth  + BLNKW * 2;
 	int winyr = winy * hHeight + BLNKH * 2;
@@ -174,13 +176,16 @@ bool ZCons::Init( int winx, int winy, const char *caption, int fcol, int bcol )
 ////////////////////////////////////////////////////////////////
 // コンソール作成(解像度でサイズ指定)
 ////////////////////////////////////////////////////////////////
-bool ZCons::InitRes( int winx, int winy, const char *caption, int fcol, int bcol )
+bool ZCons::InitRes( int winx, int winy, const char *caption, DWORD fcol, DWORD bcol )
 {
 	// サーフェス作成
-	if( !VSurface::InitSurface( winx, winy, 8 ) ) return false;
+	if( !VSurface::InitSurface( winx, winy ) ) return false;
+	
+	fgc = fcol;
+	bgc = bcol;
 	
 	// サーフェス全体を背景色で塗りつぶす
-	VSurface::Fill( bcol );
+	VSurface::Fill( bgc );
 	
 	// 縦横最大文字数設定
 	Xmax = ( winx - BLNKW * 2 ) / hWidth;
@@ -194,7 +199,7 @@ bool ZCons::InitRes( int winx, int winy, const char *caption, int fcol, int bcol
 	
 	if( caption ){	// キャプションあり(フレームあり)の場合
 		// キャプション保存
-                strncpy( Caption, caption, std::min( Xmax-2, (int)sizeof(Caption)-1 ) );
+		strncpy( Caption, caption, min( Xmax-2, (int)sizeof(Caption)-1 ) );
 		
 		// フレーム描画
 		DrawFrame();
@@ -249,13 +254,13 @@ void ZCons::LocateR( int xx, int yy )
 ////////////////////////////////////////////////////////////////
 // 描画色設定
 ////////////////////////////////////////////////////////////////
-void ZCons::SetColor( BYTE fg, BYTE bg )
+void ZCons::SetColor( DWORD fg, DWORD bg )
 {
 	fgc = fg;
 	bgc = bg;
 }
 
-void ZCons::SetColor( BYTE fg )
+void ZCons::SetColor( DWORD fg )
 {
 	fgc = fg;
 }

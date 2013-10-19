@@ -3,7 +3,6 @@
 
 #include "typedef.h"
 #include "device.h"
-#include "p6device.h"
 #include "device/pd8255.h"
 
 
@@ -23,7 +22,7 @@ public:
 	cPRT();							// コンストラクタ
 	~cPRT();						// デストラクタ
 	
-	void Init( char * );			// 初期化
+	void Init( const char * );		// 初期化
 	void SetData( BYTE );			// 印刷するデータを受付
 	void Strobe( bool );			// ストローブ受付
 };
@@ -31,7 +30,7 @@ public:
 
 
 
-class PIO6 : public P6DEVICE, public Device, public cD8255, public cPRT, public IDoko {
+class PIO6 : public Device, public cD8255, public cPRT, public IDoko {
 private:
 	// 入出力処理関数
 	void JobWriteA( BYTE );

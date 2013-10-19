@@ -4,8 +4,8 @@
 #include "cpus.h"
 #include "disk.h"
 #include "keyboard.h"
+#include "osd.h"
 #include "replay.h"
-#include "tape.h"
 
 
 //------------------------------------------------------
@@ -14,17 +14,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndStat::cWndStat( VM6 *pvm ) : vm(pvm),TapeIsAutoStart(false),
-	TapeIsOpen(false), TapeSize(0), TapeCount(0), DrvNum(0),
-	KeyIndicator(0), ReplayStatus(0)
-{
-	INITARRAY( TapeName, '\0' );
-	INITARRAY( DiskName[0], '\0' );
-	INITARRAY( DiskName[1], '\0' );
-	INITARRAY( DiskIsSystem, false );
-	INITARRAY( DiskIsProtect, false );
-	INITARRAY( DiskIsAccess, false );
-}
+cWndStat::cWndStat( VM6 *pvm ) : vm(pvm), DrvNum(0), ReplayStatus(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -57,46 +47,41 @@ void cWndStat::Update( void )
 	const BYTE Kana[]  = { 0x96, 0xe5, 0 };	// かな
 	const BYTE KKana[] = { 0xb6, 0xc5, 0 };	// カナ
 	
-	
-	TapeIsOpen   = ( vm->cpus->GetCmtStatus() == LOADOPEN );
-	TapeCount    = vm->cmtl->GetCount();
-	KeyIndicator = vm->key->GetKeyIndicator();
-	
 	ZCons::Cls();
 	ZCons::SetColor( FC_WHITE );
 	
 	// TAPE
 	ZCons::Locate( 0, 0 );
 	ZCons::Printf( "[TAPE]" );
-	if( strlen( TapeName ) ){
-		ZCons::SetColor( TapeIsAutoStart ? FC_YELLOW : FC_WHITE );
-		ZCons::Printf( " %-16s", TapeName );
+	if( vm->CmtlIsMount() ){
+		ZCons::SetColor( vm->CmtlIsAutoStart() ? FC_YELLOW : FC_WHITE );
+		ZCons::Printf( " %-16s", *vm->CmtlGetName() ? vm->CmtlGetName() : OSD_GetFileNamePart( vm->CmtlGetFile() ) );
 		ZCons::SetColor( FC_WHITE );
 		ZCons::Locate( ZCons::GetXline()-19, 0 );
-		if( TapeIsOpen ) ZCons::SetColor( FC_WHITE, FC_MAGENTA );
-		ZCons::Printf( "[%05d/%05d]", TapeCount, TapeSize );
+		if( vm->CpusIsCmtIntrReady() == LOADOPEN ) ZCons::SetColor( FC_WHITE, FC_MAGENTA );
+		ZCons::Printf( "[%05d/%05d]", vm->CmtlGetCount(), vm->CmtlGetSize() );
 		ZCons::SetColor( FC_WHITE, FC_GRAY );
 	}
 	
 	// DISK
 	if( DrvNum > 0 ){
-		if( vm->disk->InAccess( 0 ) ) ZCons::SetColor( FC_WHITE, FC_RED );
-		else						  ZCons::SetColor( FC_WHITE, FC_GRAY );
+		if( vm->DskInAccess( 0 ) ) ZCons::SetColor( FC_WHITE, FC_RED );
+		else					   ZCons::SetColor( FC_WHITE, FC_GRAY );
 		ZCons::Locate( 0, 1 );
 		ZCons::Printf( "[DRV1]" );
-		if( strlen( DiskName[0] ) ){
-			ZCons::SetColor( DiskIsSystem[0] ? FC_YELLOW : FC_WHITE, DiskIsProtect[0] ? FC_DRED : FC_GRAY );
-			ZCons::Printf( " %-16s", DiskName[0] );
+		if( vm->DskIsMount( 0 ) ){
+			ZCons::SetColor( vm->DskIsSystem( 0 ) ? FC_YELLOW : FC_WHITE, vm->DskIsProtect( 0 ) ? FC_DRED : FC_GRAY );
+			ZCons::Printf( " %-16s", *vm->DskGetName( 0 ) ? vm->DskGetName( 0 ) : OSD_GetFileNamePart( vm->DskGetFile( 0 ) ) );
 		}
 	}
 	if( DrvNum > 1 ){
-		if( vm->disk->InAccess( 1 ) ) ZCons::SetColor( FC_WHITE, FC_RED );
-		else						  ZCons::SetColor( FC_WHITE, FC_GRAY );
+		if( vm->DskInAccess( 1 ) ) ZCons::SetColor( FC_WHITE, FC_RED );
+		else					   ZCons::SetColor( FC_WHITE, FC_GRAY );
 		ZCons::Locate( 0, 2 );
 		ZCons::Printf( "[DRV2]" );
-		if( strlen( DiskName[1] ) ){
-			ZCons::SetColor( DiskIsSystem[1] ? FC_YELLOW : FC_WHITE, DiskIsProtect[1] ? FC_DRED : FC_GRAY );
-			ZCons::Printf( " %-16s", DiskName[1] );
+		if( vm->DskIsMount( 1 ) ){
+			ZCons::SetColor( vm->DskIsSystem( 1 ) ? FC_YELLOW : FC_WHITE, vm->DskIsProtect( 1 ) ? FC_DRED : FC_GRAY );
+			ZCons::Printf( " %-16s", *vm->DskGetName( 1 ) ? vm->DskGetName( 1 ) : OSD_GetFileNamePart( vm->DskGetFile( 1 ) ) );
 		}
 		// アクセスランプ
 	}
@@ -104,7 +89,7 @@ void cWndStat::Update( void )
 	
 	// かなキー
 	ZCons::Locate( -5, 0 );
-	switch( KeyIndicator&3 ){
+	switch( vm->KeyGetKeyIndicator() & 3 ){
 	case KI_KANA:	// かな
 		ZCons::PutCharH( Kana[0] );
 		ZCons::PutCharH( Kana[1] );
@@ -115,8 +100,8 @@ void cWndStat::Update( void )
 	}
 	
 	// CAPSキー
-	if( KeyIndicator&4 ) ZCons::Printfr( "ABC" );	// ABC
-	else                 ZCons::Printfr( "abc" );	// abc
+	if( vm->KeyGetKeyIndicator() & 4 ) ZCons::Printfr( "ABC" );	// ABC
+	else                               ZCons::Printfr( "abc" );	// abc
 	
 	// リプレイステータス
 	ZCons::Locate( -2, 0 );
@@ -130,71 +115,6 @@ void cWndStat::Update( void )
 		ZCons::Print( "■" );
 		break;
 	}
-}
-
-
-
-////////////////////////////////////////////////////////////////
-// TAPE マウント
-//
-// 引数:	filename	ファイル名
-//			astart		オートスタート?
-//			size		サイズ
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void cWndStat::TapeMount( char *filename, bool astart, int size )
-{
-	strcpy( TapeName, filename );
-	TapeIsAutoStart = astart;
-	TapeSize        = size;
-}
-
-
-////////////////////////////////////////////////////////////////
-// TAPE アンマウント
-//
-// 引数:	なし
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void cWndStat::TapeUnmount( void )
-{
-	*TapeName = '\0';
-	TapeIsAutoStart = false;
-	TapeIsOpen      = false;
-	TapeSize        = 0;
-	TapeCount       = 0;
-}
-
-
-////////////////////////////////////////////////////////////////
-// DISK マウント
-//
-// 引数:	drv			ドライブ番号
-//			filename	ファイル名
-//			sys			システムディスク?
-//			prot		プロテクト?
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void cWndStat::DiskMount( int drv, char *filename, bool sys, bool prot )
-{
-	strcpy( DiskName[drv], filename );
-	DiskIsSystem[drv]  = sys;
-	DiskIsProtect[drv] = prot;
-}
-
-
-////////////////////////////////////////////////////////////////
-// DISK アンマウント
-//
-// 引数:	drv			ドライブ番号
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void cWndStat::DiskUnmount( int drv )
-{
-	*DiskName[drv] = '\0';
-	DiskIsSystem[drv]  = false;
-	DiskIsProtect[drv] = false;
-	DiskIsAccess[drv]  = false;
 }
 
 

@@ -13,20 +13,7 @@ class cWndStat : public ZCons {
 private:
 	VM6* vm;
 	
-	char TapeName[MAX_PATH];			// ファイル名
-	bool TapeIsAutoStart;				// オートスタート?
-	bool TapeIsOpen;					// オープン?
-	int TapeSize;						// サイズ
-	int TapeCount;						// カウンタ
-	
 	int DrvNum;							// ドライブ数
-	char DiskName[2][MAX_PATH];			// ファイル名
-	bool DiskIsSystem[2];				// システムディスク?
-	bool DiskIsProtect[2];				// プロテクト?
-	bool DiskIsAccess[2];				// アクセス中?
-	
-	int	KeyIndicator;					// かな&CAPS インジケータ
-	
 	int	ReplayStatus;					// リプレイステータス
 	
 public:
@@ -36,13 +23,7 @@ public:
 	bool Init( int, int = -1 );			// 初期化
 	void Update();						// ウィンドウ更新
 	
-	void TapeMount( char *, bool, int );		// TAPE マウント
-	void TapeUnmount();							// TAPE アンマウント
-	
-	void DiskMount( int, char *, bool, bool );	// DISK マウント
-	void DiskUnmount( int );					// DISK アンマウント
-	
-	void SetReplayStatus( int );				// リプレイステータスセット
+	void SetReplayStatus( int );		// リプレイステータスセット
 };
 
 #endif	// STATUS_H_INCLUDED

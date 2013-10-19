@@ -81,6 +81,7 @@ public:
 	void SetCheckCRC( bool );				//            設定
 	bool GetRomPatch();						// ROMパッチ取得
 	void SetRomPatch( bool );				//          設定
+	
 	// キーボード関係
 	int GetKeyRepeat();						// キーリピート取得
 	void SetKeyRepeat( int );				//             設定
@@ -134,8 +135,6 @@ public:
 	// 画面関係
 	char *GetImgPath();						// スクリーンショット格納パス取得
 	void SetImgPath( const char * );		//                           設定
-	int GetScrBpp();						// カラーモード取得
-	void SetScrBpp( int );					//             設定
 	int GetMode4Color();					// モード4カラーモード取得
 	void SetMode4Color( int );				//                    設定
 	bool GetScanLine();						// スキャンライン取得
@@ -153,8 +152,8 @@ public:
 
 	
 	// ビデオキャプチャ関係
-	bool GetAviRle();						// RLEフラグ取得
-	void SetAviRle( bool );					//          設定
+	int GetAviBpp();						// 色深度取得
+	void SetAviBpp( int );					//       設定
 	
 	// プリンタ関係
 	char *GetPrinterFile();					// プリンタファイル名取得

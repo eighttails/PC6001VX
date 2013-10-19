@@ -97,11 +97,9 @@ protected:
 	MAINAVIHEADER6 vmh;
 	AVISTRMHEADER6 vsh, ash;
 	BMPINFOHEADER6 vbf;
-	RGBPAL6 pal[256];
 	WAVEFORMATEX6 awf;
 	
-	int ABPP;					// bpp (8,16,24)
-	bool AVIRLE;				// RLEフラグ  true:RLE  false:ベタ
+	int ABPP;					// 色深度 (16,24,32)
 	
 	DWORD PosMOVI;
 	
@@ -126,7 +124,7 @@ public:
 	
 	bool Init();							// 初期化
 	
-	bool StartAVI( char *, VSurface *, int, int, bool );	// ビデオキャプチャ開始
+	bool StartAVI( const char *, VSurface *, int, int, int );	// ビデオキャプチャ開始
 	
 	void StopAVI();							// ビデオキャプチャ停止
 	bool IsAVI();							// ビデオキャプチャ中?

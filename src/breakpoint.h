@@ -28,7 +28,7 @@ private:
 	int BPNo;
 	WORD BPAddr;
 	BYTE BPData;
-	char *BPStr;
+	const char *BPStr;
 	
 	// ブレーク要求
 	bool ReqBreak;
@@ -39,13 +39,13 @@ public:
 	~BPoint();
 	
 	bool ExistBreakPoint();								// ブレークポイントの有無をチェック
-	bool CheckBreakPoint( BPtype, WORD, BYTE, char * );	// ブレークポイントをチェック
+	bool CheckBreakPoint( BPtype, WORD, BYTE, const char * );	// ブレークポイントをチェック
 	
 	void ClearStatus();									// ブレークポイントの情報をクリア
 	
 	BPtype GetType( int );								// ブレークポイントのタイプを取得
-	WORD GetAddr( int );								// ブレークポイントのアドレスを取得
 	void SetType( int, BPtype );						// ブレークポイントのタイプを設定
+	WORD GetAddr( int );								// ブレークポイントのアドレスを取得
 	void SetAddr( int, WORD );							// ブレークポイントのアドレスを設定
 	
 	bool IsReqBreak();									// ブレーク要求あり?

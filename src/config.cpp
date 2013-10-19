@@ -491,7 +491,7 @@ CFG6::CFG6( void ) : Ini(NULL)
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 {
 	// INIファイルのパスを設定
-    sprintf( IniPath, "%s" CONF_FILE, OSD_GetConfigPath() );
+	sprintf( IniPath, "%s" CONF_FILE, OSD_GetModulePath() );
 	
 	INITARRAY( Caption, '\0' );		// ウィンドウキャプション
 	INITARRAY( DokoFile, '\0' );	// どこでもSAVEファイルパス
@@ -608,6 +608,7 @@ void CFG6::SetModel( int data )
 char *CFG6::GetCaption( void )
 {
 	switch( GetModel() ){	// 機種取得
+	case 61: sprintf( Caption, APPNAME " (" P61NAME ") Ver." VERSION ); break;
 	case 62: sprintf( Caption, APPNAME " (" P62NAME ") Ver." VERSION ); break;
 	case 66: sprintf( Caption, APPNAME " (" P66NAME ") Ver." VERSION ); break;
 	case 64: sprintf( Caption, APPNAME " (" P64NAME ") Ver." VERSION ); break;
@@ -1073,19 +1074,6 @@ void CFG6::SetImgPath( const char *str )
 	Ini->PutEntry( "PATH", MSINI_ImgPath, "ImgPath", temp );
 }
 
-// カラーモード取得
-int CFG6::GetScrBpp( void )
-{
-	int st = DEFAULT_COLOR_MODE;
-	Ini->GetInt( "DISPLAY", "ScrBpp", &st, st );
-	return st;
-}
-
-// カラーモード設定
-void CFG6::SetScrBpp( int data )
-{
-	Ini->PutEntry( "DISPLAY", MSINI_ScrBpp, "ScrBpp", "%d", data );
-}
 
 // モード4カラーモード取得
 int CFG6::GetMode4Color( void )
@@ -1185,18 +1173,18 @@ void CFG6::SetFrameSkip( int data )
 	Ini->PutEntry( "DISPLAY", MSINI_FrameSkip, "FrameSkip", "%d", data );
 }
 
-// RLEフラグ取得
-bool CFG6::GetAviRle()
+// ビデオキャプチャ色深度取得
+int CFG6::GetAviBpp()
 {
-	bool st = true;
-	Ini->GetTruth( "MOVIE", "AviRle", &st, st );
+	int st = 24;
+	Ini->GetInt( "MOVIE", "AviBpp", &st, st );
 	return st;
 }
 
-// RLEフラグ設定
-void CFG6::SetAviRle( bool yn )
+// ビデオキャプチャ色深度設定
+void CFG6::SetAviBpp( int bpp )
 {
-	Ini->PutEntry( "MOVIE", MSINI_AviRle, "AviRle", "%s", yn ? "Yes" : "No" );
+	Ini->PutEntry( "MOVIE", MSINI_AviBpp, "AviBpp", "%d", bpp );
 }
 
 // プリンタファイル名取得
@@ -1268,13 +1256,15 @@ COLOR24 *CFG6::GetColor( int num, COLOR24 *col )
 		sprintf( str,   "%02X%02X%02X", STDColor[num].r, STDColor[num].g, STDColor[num].b );
 		Ini->GetString( "COLOR", strin, str, str );
 		int st = strtol( str, NULL, 16 );
-		col->r = (st>>16)&0xff;
-		col->g = (st>> 8)&0xff;
-		col->b = (st    )&0xff;
+		col->r        = (st>>16)&0xff;
+		col->g        = (st>> 8)&0xff;
+		col->b        = (st    )&0xff;
+		col->reserved = 0;
 	}else{
-		col->r = 0;
-		col->g = 0;
-		col->b = 0;
+		col->r        = 0;
+		col->g        = 0;
+		col->b        = 0;
+		col->reserved = 0;
 	}
 	return col;
 }
@@ -1414,10 +1404,6 @@ void CFG6::InitIni( cIni *ini, bool over )
 		ini->PutEntry( "CONFIG", MSINI_RomPatch,	"RomPatch",		"%s",	DEFAULT_ROMPATCH ? "Yes" : "No" );
 	
 	// [DISPLAY]
-	// カラーモード
-	if( over || !ini->GetString( "DISPLAY", "ScrBpp", str, str ) )
-		ini->PutEntry( "DISPLAY", MSINI_ScrBpp,		"ScrBpp",		"%d",	DEFAULT_COLOR_MODE );
-	
 	// MODE4カラー
 	if( over || !ini->GetString( "DISPLAY", "Mode4Color", str, str ) )
 		ini->PutEntry( "DISPLAY", MSINI_Mode4Color,	"Mode4Color",	"%d",	DEFAULT_MODE4_COLOR );
@@ -1478,9 +1464,9 @@ void CFG6::InitIni( cIni *ini, bool over )
 	
 	
 	// [MOVIE]
-	// RLEフラグ
-	if( over || !ini->GetString( "MOVIE", "AviRle", str, str ) )
-		ini->PutEntry( "MOVIE", MSINI_AviRle,		"AviRle",		"%s",	DEFAULT_AVIRLE ? "Yes" : "No" );
+	// ビデオキャプチャ色深度
+	if( over || !ini->GetString( "MOVIE", "AviBpp", str, str ) )
+		ini->PutEntry( "MOVIE", MSINI_AviBpp,	    "AviBpp",		"%d",	DEFAULT_AVIBPP );
 	
 	
 	//[FILES]
@@ -1494,7 +1480,7 @@ void CFG6::InitIni( cIni *ini, bool over )
 	
 	// TAPE(SAVE)ファイル名(SAVE時に自動マウント)
 	if( over || !ini->GetString( "FILES", "save", str, str ) ){
-		sprintf( str, "%s%s/%s", OSD_GetConfigPath(), TAPE_DIR, SAVE_FILE );
+		sprintf( str, "%s%s/%s", OSD_GetModulePath(), TAPE_DIR, SAVE_FILE );
 		UnDelimiter( str );
 		ini->PutEntry( "FILES",	MSINI_save,		"save",		str );
 	}
@@ -1509,7 +1495,7 @@ void CFG6::InitIni( cIni *ini, bool over )
 	
 	// プリンタファイル名
 	if( over || !ini->GetString( "FILES", "printer", str, str ) ){
-		sprintf( str, "%s" PRINTER_FILE, OSD_GetConfigPath() );
+		sprintf( str, "%s" PRINTER_FILE, OSD_GetModulePath() );
 		UnDelimiter( str );
 		ini->PutEntry( "FILES",	MSINI_printer,	"printer",	str );
 	}
@@ -1517,7 +1503,7 @@ void CFG6::InitIni( cIni *ini, bool over )
 	// [PATH]
 	// ROMパス
 	if( over || !ini->GetString( "PATH", "RomPath", str, str ) ){
-		sprintf( str, "%s" ROM_DIR, OSD_GetConfigPath() );
+		sprintf( str, "%s" ROM_DIR, OSD_GetModulePath() );
 		UnDelimiter( str );
 		ini->PutEntry( "PATH",	MSINI_RomPath,	"RomPath",	str );
 	}
@@ -1525,18 +1511,18 @@ void CFG6::InitIni( cIni *ini, bool over )
 	// TAPEパス
 	if( over || !ini->GetString( "PATH", "TapePath", str, str ) ){
 #ifdef WIN32
-        sprintf( str, "%s" TAPE_DIR, OSD_GetConfigPath() );
+        sprintf( str, "%s" TAPE_DIR, OSD_GetModulePath() );
 #else
         strcpy(str, "");
 #endif
 		UnDelimiter( str );
-        ini->PutEntry( "PATH",	MSINI_TapePath,	"TapePath",	str );
+		ini->PutEntry( "PATH",	MSINI_TapePath,	"TapePath",	str );
 	}
 	
 	// DISKパス
 	if( over || !ini->GetString( "PATH", "DiskPath", str, str ) ){
 #ifdef WIN32
-        sprintf( str, "%s" DISK_DIR, OSD_GetConfigPath() );
+        sprintf( str, "%s" DISK_DIR, OSD_GetModulePath() );
 #else
         strcpy(str, "");
 #endif
@@ -1547,7 +1533,7 @@ void CFG6::InitIni( cIni *ini, bool over )
 	// 拡張ROMパス
 	if( over || !ini->GetString( "PATH", "ExtRomPath", str, str ) ){
 #ifdef WIN32
-        sprintf( str, "%s" EXTROM_DIR, OSD_GetConfigPath() );
+        sprintf( str, "%s" EXTROM_DIR, OSD_GetModulePath() );
 #else
         strcpy(str, "");
 #endif
@@ -1558,7 +1544,7 @@ void CFG6::InitIni( cIni *ini, bool over )
 	// WAVEパス
 	if( over || !ini->GetString( "PATH", "WavePath", str, str ) ){
 #ifdef WIN32
-        sprintf( str, "%s" WAVE_DIR, OSD_GetConfigPath() );
+        sprintf( str, "%s" WAVE_DIR, OSD_GetModulePath() );
 #else
         strcpy(str, "");
 #endif
@@ -1568,14 +1554,14 @@ void CFG6::InitIni( cIni *ini, bool over )
 
     // IMGパス
     if( over || !ini->GetString( "PATH", "ImgPath", str, str ) ){
-        sprintf( str, "%s" IMAGE_DIR, OSD_GetConfigPath() );
+        sprintf( str, "%s" IMAGE_DIR, OSD_GetModulePath() );
         UnDelimiter( str );
         ini->PutEntry( "PATH",	MSINI_ImgPath,	"ImgPath",	str );
     }
 
     // どこでもSAVEパス
     if( over || !ini->GetString( "PATH", "DokoSavePath", str, str ) ){
-        sprintf( str, "%s" DOKOSAVE_DIR, OSD_GetConfigPath() );
+        sprintf( str, "%s" DOKOSAVE_DIR, OSD_GetModulePath() );
         UnDelimiter( str );
         ini->PutEntry( "PATH",	MSINI_DokoSavePath,	"DokoSavePath",	str );
     }
@@ -1713,8 +1699,13 @@ bool CFG6::DokoSave( cIni *Ini )
 	if( !Ini ) return false;
 	
 	// 共通
-	Ini->PutEntry( "GLOBAL", NULL, "Version",	VERSION );
-	Ini->PutEntry( "GLOBAL", NULL, "P6Model",	"%02d",	GetModel() );
+	Ini->PutEntry( "GLOBAL", NULL, "Version",		VERSION );
+	Ini->PutEntry( "GLOBAL", NULL, "Model",			"%02d",	GetModel() );
+	Ini->PutEntry( "GLOBAL", NULL, "FDD",			"%d",	GetFddNum() );
+	Ini->PutEntry( "GLOBAL", NULL, "ExtRam",		"%s",	GetUseExtRam()  ? "Yes" : "No" );
+	Ini->PutEntry( "GLOBAL", NULL, "RomPatch",		"%s",	GetRomPatch()   ? "Yes" : "No" );
+	// OPTION
+	Ini->PutEntry( "OPTION", NULL, "UseSoldier",	"%s",	GetUseSoldier() ? "Yes" : "No" );
 	
 	return true;
 }
@@ -1729,6 +1720,7 @@ bool CFG6::DokoSave( cIni *Ini )
 bool CFG6::DokoLoad( cIni *Ini )
 {
 	int st;
+	bool yn;
 	char strva[256];
 	
 	if( !Ini ) return false;
@@ -1740,7 +1732,11 @@ bool CFG6::DokoLoad( cIni *Ini )
 		return false;
 	}
 	
-	Ini->GetInt( "GLOBAL", "P6Model",	&st, 0 );	SetModel( st );
+	Ini->GetInt(   "GLOBAL", "Model",      &st, GetModel() );		SetModel( st );
+	Ini->GetInt(   "GLOBAL", "FDD",        &st, GetFddNum() );		SetFddNum( st );
+	Ini->GetTruth( "GLOBAL", "ExtRam",     &yn, GetUseExtRam() );	SetUseExtRam( yn );
+	Ini->GetTruth( "GLOBAL", "RomPatch",   &yn, GetRomPatch() );	SetRomPatch( yn );
+	Ini->GetTruth( "OPTION", "UseSoldier", &yn, GetUseSoldier() );	SetUseSoldier( yn );
 	
 	return true;
 }

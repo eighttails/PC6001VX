@@ -16,9 +16,6 @@ protected:
 	
 	HWINDOW Wh;				// ウィンドウハンドル
 	VSurface *SBuf;			// サブバッファポインタ
-	VPalette *Pal;			// パレットへのポインタ
-	int Bpp;				// カラーモード
-	int SLBr;				// スキャンライン輝度
 	
 	bool SetScreenSurface();				// スクリーンサーフェス作成
 	bool UpdateSubBuf();					// サブバッファ更新
@@ -29,13 +26,13 @@ public:
 	DSP6( VM6 * );							// コンストラクタ
 	~DSP6();								// デストラクタ
 	
-	bool Init( int, int, VPalette * );		// 初期化
+	bool Init();							// 初期化
 	void SetIcon( int );					// アイコン設定
 	
 	bool ResizeScreen();					// スクリーンサイズ変更
 	
 	void DrawScreen();						// 画面更新
-	void SnapShot( char * );				// スナップショット
+	void SnapShot( const char * );			// スナップショット
 	
 	int ScreenX();							// 有効スクリーン幅取得
 	int ScreenY();							// 有効スクリーン高さ取得

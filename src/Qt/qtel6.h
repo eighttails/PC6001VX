@@ -10,6 +10,7 @@ class QtEL6 : public QObject, public EL6
 public:
     QtEL6();
     void ShowPopupImpl(int x, int y);
+    bool GetPauseEnable();
 public slots:
     void updateFPS();
 };

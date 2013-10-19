@@ -1,11 +1,11 @@
 #include "pc6001v.h"
-#include "p6el.h"
-#include "log.h"
-#include "intr.h"
 #include "cpus.h"
+#include "intr.h"
+#include "log.h"
 #include "schedule.h"
-#include "pio.h"
 
+#include "p6el.h"
+#include "p6vm.h"
 
 // イベントID
 #define	EID_TIMER	(1)
@@ -14,10 +14,10 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-INT6::INT6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id),
+INT6::INT6( VM6 *vm, const ID& id ) : Device(vm,id),
 	IntrFlag(0), TimerIntrEnable(false), TimerAddr(0), TimerCntUp(0) {}
-INT60::INT60( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id) {}
-INT62::INT62( VM6 *vm, const ID& id ) : INT6(vm,id), Device(id),
+INT60::INT60( VM6 *vm, const ID& id ) : INT6(vm,id) {}
+INT62::INT62( VM6 *vm, const ID& id ) : INT6(vm,id),
 	TimerIntrEnable2(false), Int1IntrEnable(false), Int2IntrEnable(false),
 	Int1AddrOutput(false), Int2AddrOutput(false), Int1Addr(0), Int2Addr(0) {}
 
@@ -52,18 +52,18 @@ void INT6::SetTimerIntrHz( BYTE data, BYTE first )
 	TimerCntUp = data;
 	
 	// イベント追加
-	vm->evsc->Add( this, EID_TIMER, (double)(2048)*(TimerCntUp+1), EV_LOOP|EV_STATE );
+	vm->EventAdd( this, EID_TIMER, (double)(2048)*(TimerCntUp+1), EV_LOOP|EV_STATE );
 	
 	// 初回周期の指定がある場合の処理
 	if( first ){
-		cSche::evinfo e;
+		EVSC::evinfo e;
 		
-		e.device = this;
-		e.id     = EID_TIMER;
+		e.devid = this->Device::GetID();
+		e.id    = EID_TIMER;
 		
-		vm->evsc->GetEvinfo( &e );
+		vm->EventGetInfo( &e );
 		e.Clock = (e.Clock*first)/100;
-		vm->evsc->SetEvinfo( &e );
+		vm->EventSetInfo( &e );
 	}
 }
 
@@ -132,7 +132,7 @@ int INT6::IntrCheck( void )
 		PRINTD( INTR_LOG, "[INTR][IntrCheck](8049)\n" );
 		
 		CancelIntr( IREQ_8049 );
-		IntrNo = vm->pio->ReadA() / 2;
+		IntrNo = vm->PioReadA() / 2;
 	}
 	
 	if( IntrNo >= 0 ){
@@ -195,7 +195,7 @@ void INT62::SetIntrEnable( BYTE data )
 ////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
-inline void INT60::OutB0H( int, BYTE data )
+void INT60::OutB0H( int, BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
 	
@@ -211,7 +211,7 @@ inline void INT60::OutB0H( int, BYTE data )
 }
 
 
-inline void INT62::OutB0H( int, BYTE data )
+void INT62::OutB0H( int, BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
 	
@@ -224,59 +224,59 @@ inline void INT62::OutB0H( int, BYTE data )
 	TimerIntrEnable  = (data&1 ? false : true);
 }
 
-inline void INT62::OutF3H( int, BYTE data )
+void INT62::OutF3H( int, BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][OutF3H] %02X\n", data );
 	SetIntrEnable( data );
 }
 
-inline void INT62::OutF4H( int, BYTE data )
+void INT62::OutF4H( int, BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][OutF4H] %02X\n", data );
 	Int1Addr = data;
 }
 
-inline void INT62::OutF5H( int, BYTE data )
+void INT62::OutF5H( int, BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][OutF5H] %02X\n", data );
 	Int2Addr = data;
 }
 
-inline void INT62::OutF6H( int, BYTE data )
+void INT62::OutF6H( int, BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][OutF6H] %02X\n", data );
 	SetTimerIntrHz( data );
 }
 
-inline void INT62::OutF7H( int, BYTE data )
+void INT62::OutF7H( int, BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][OutF7H] %02X\n", data );
 	TimerAddr = data;
 }
 
-inline BYTE INT62::InF3H( int )
+BYTE INT62::InF3H( int )
 {
 	return (Int1IntrEnable   ? 0 : 0x01) | (Int2IntrEnable ? 0 : 0x02) |
 	       (TimerIntrEnable2 ? 0 : 0x04) | (Int1AddrOutput ? 0 : 0x08) |
 		   (Int2AddrOutput   ? 0 : 0x10) | 0xe0;
 }
 
-inline BYTE INT62::InF4H( int )
+BYTE INT62::InF4H( int )
 {
 	return Int1Addr;
 }
 
-inline BYTE INT62::InF5H( int )
+BYTE INT62::InF5H( int )
 {
 	return Int2Addr;
 }
 
-inline BYTE INT62::InF6H( int )
+BYTE INT62::InF6H( int )
 {
 	return TimerCntUp;
 }
 
-inline BYTE INT62::InF7H( int )
+BYTE INT62::InF7H( int )
 {
 	PRINTD( INTR_LOG, "[INTR][InF7H] %02X\n", TimerAddr );
 	return TimerAddr;
@@ -288,24 +288,12 @@ inline BYTE INT62::InF7H( int )
 ////////////////////////////////////////////////////////////////
 bool INT6::DokoSave( cIni *Ini )
 {
-	cSche::evinfo e;
-	char stren[16];
-	
-	e.device = this;
-	
 	if( !Ini ) return false;
 	
 	Ini->PutEntry( "INTR", NULL, "IntrFlag",			"0x%08X",	IntrFlag );
 	Ini->PutEntry( "INTR", NULL, "TimerIntrEnable",		"%s",		TimerIntrEnable ? "Yes" : "No" );
 	Ini->PutEntry( "INTR", NULL, "TimerAddr",			"0x%02X",	TimerAddr );
 	Ini->PutEntry( "INTR", NULL, "TimerCntUp",			"%d",		TimerCntUp );
-	
-	// イベント
-	e.id = EID_TIMER;
-	if( vm->evsc->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "INTR", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
 	
 	return true;
 }
@@ -332,12 +320,7 @@ bool INT62::DokoSave( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 bool INT6::DokoLoad( cIni *Ini )
 {
-	int st,yn;
-	cSche::evinfo e;
-	char stren[16];
-	char strrs[64];
-	
-	e.device = this;
+	int st;
 	
 	if( !Ini ) return false;
 	
@@ -346,15 +329,6 @@ bool INT6::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "INTR", "TimerAddr",			&st,				TimerAddr );		TimerAddr = st;
 	Ini->GetInt(   "INTR", "TimerCntUp",		&st,				TimerCntUp );		TimerCntUp = st;
 	
-	// イベント
-	e.id = EID_TIMER;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "INTR", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? true : false;
-		if( !vm->evsc->SetEvinfo( &e ) ) return false;
-	}
-	
 	return true;
 }
 
@@ -362,7 +336,7 @@ bool INT62::DokoLoad( cIni *Ini )
 {
 	int st;
 	
-	if( !Ini ) return false;
+	if( !Ini || !INT6::DokoLoad( Ini ) ) return false;
 	
 	Ini->GetTruth( "INTR", "TimerIntrEnable2",	&TimerIntrEnable2,	TimerIntrEnable2 );
 	Ini->GetTruth( "INTR", "Int1IntrEnable",	&Int1IntrEnable,	Int1IntrEnable );
@@ -372,7 +346,7 @@ bool INT62::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "INTR", "Int1Addr",			&st,				Int1Addr );		Int1Addr = st;
 	Ini->GetInt(   "INTR", "Int2Addr",			&st,				Int2Addr );		Int2Addr = st;
 	
-	return INT6::DokoLoad( Ini );
+	return true;
 }
 
 

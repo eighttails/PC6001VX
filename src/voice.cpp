@@ -1,11 +1,13 @@
 #include <string.h>
 
-#include "p6el.h"
 #include "pc6001v.h"
 #include "log.h"
-#include "voice.h"
 #include "osd.h"
 #include "schedule.h"
+#include "voice.h"
+
+#include "p6el.h"
+#include "p6vm.h"
 
 
 // イベントID
@@ -16,7 +18,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-VCE6::VCE6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id),
+VCE6::VCE6( VM6 *vm, const ID& id ) : Device(vm,id),
 	io_E0H(0), io_E2H(0), io_E3H(0), VStat(D7752E_IDL),
 	IVLen(0), IVBuf(NULL), IVPos(0), Pnum(0), Fnum(0), PReady(false), Fbuf(NULL)
 {
@@ -126,7 +128,7 @@ void VCE6::VSetCommand( BYTE comm )
 		VStat = D7752E_BSY;
 		
 		// フレームイベントをセットする
-		vm->evsc->Add( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
+		vm->EventAdd( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
 		
 		break;
 		
@@ -139,7 +141,7 @@ void VCE6::VSetCommand( BYTE comm )
 		VStat = D7752E_BSY | D7752E_EXT | D7752E_REQ;
 		
 		// フレームイベントをセットする
-		vm->evsc->Add( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
+		vm->EventAdd( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
 		
 		break;
 		
@@ -205,7 +207,7 @@ void VCE6::AbortVoice( void )
 	PRINTD( VOI_LOG, "[VOICE][AbortVoice]\n" );
 	
 	// フレームイベント停止
-	vm->evsc->Del( this, EID_FRAME );
+	vm->EventDel( this, EID_FRAME );
 	
 	// 残りのパラメータはキャンセル
 	Pnum = Fnum = 0;
@@ -316,7 +318,7 @@ void VCE6::FreeVoice( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-bool VCE6::Init( int srate, char *path )
+bool VCE6::Init( int srate, const char *path )
 {
 	PRINTD( VOI_LOG, "[VOICE][Init] BufferSize:" );
 	
@@ -373,12 +375,12 @@ int VCE6::SoundUpdate( int samples )
 ////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
-inline void VCE6::OutE0H( int, BYTE data ){ VSetData( data ); }
-inline void VCE6::OutE2H( int, BYTE data ){ VSetMode( data ); }
-inline void VCE6::OutE3H( int, BYTE data ){ VSetCommand( data ); }
-inline BYTE VCE6::InE0H( int ){ return VGetStatus(); }
-inline BYTE VCE6::InE2H( int ){ return io_E2H; }
-inline BYTE VCE6::InE3H( int ){ return io_E3H; }
+void VCE6::OutE0H( int, BYTE data ){ VSetData( data ); }
+void VCE6::OutE2H( int, BYTE data ){ VSetMode( data ); }
+void VCE6::OutE3H( int, BYTE data ){ VSetCommand( data ); }
+BYTE VCE6::InE0H( int ){ return VGetStatus(); }
+BYTE VCE6::InE2H( int ){ return io_E2H; }
+BYTE VCE6::InE3H( int ){ return io_E3H; }
 
 
 ////////////////////////////////////////////////////////////////
@@ -389,11 +391,6 @@ inline BYTE VCE6::InE3H( int ){ return io_E3H; }
 ////////////////////////////////////////////////////////////////
 bool VCE6::DokoSave( cIni *Ini )
 {
-	cSche::evinfo e;
-	char stren[16];
-	
-	e.device = this;
-	
 	if( !Ini ) return false;
 	
 	Ini->PutEntry( "VOICE", NULL, "io_E0H",		"0x%02X",	io_E0H );
@@ -419,13 +416,6 @@ bool VCE6::DokoSave( cIni *Ini )
 	
 //	D7752_SAMPLE *Fbuf;				// フレームバッファポインタ(10kHz 1フレーム)
 	
-	// イベント
-	e.id = EID_FRAME;
-	if( vm->evsc->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "VOICE", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
-	
 	return true;
 }
 
@@ -439,10 +429,6 @@ bool VCE6::DokoSave( cIni *Ini )
 bool VCE6::DokoLoad( cIni *Ini )
 {
 	int st;
-	cSche::evinfo e;
-	char stren[16];
-	
-	e.device = this;
 	
 	if( !Ini ) return false;
 	
@@ -466,13 +452,6 @@ bool VCE6::DokoLoad( cIni *Ini )
 	Ini->GetTruth( "VOICE", "PReady",		&PReady,	PReady );
 	
 //	D7752_SAMPLE *Fbuf;				// フレームバッファポインタ(10kHz 1フレーム)
-	
-	// イベント
-	e.id = EID_FRAME;
-	if( vm->evsc->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "VOICE", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
 	
 	return true;
 }

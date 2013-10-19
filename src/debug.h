@@ -2,8 +2,8 @@
 #define DEBUG_H_INCLUDED
 
 #include "typedef.h"
+#include "device.h"
 #include "console.h"
-#include "p6device.h"
 
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
@@ -23,12 +23,12 @@
 //------------------------------------------------------
 //  メモリダンプウィンドウクラス
 //------------------------------------------------------
-class cWndMem : public P6DEVICE, public ZCons {
+class cWndMem : public Device, public ZCons {
 private:
 	WORD Addr;							// 表示アドレス
 	
 public:
-	cWndMem( VM6 *, const P6ID& );		// コンストラクタ
+	cWndMem( VM6 *, const ID& );		// コンストラクタ
 	~cWndMem();							// デストラクタ
 	
 	bool Init();						// 初期化
@@ -42,11 +42,11 @@ public:
 //------------------------------------------------------
 //  レジスタウィンドウクラス
 //------------------------------------------------------
-class cWndReg : public P6DEVICE, public ZCons {
+class cWndReg : public Device, public ZCons {
 private:
 	
 public:
-	cWndReg( VM6 *, const P6ID& );		// コンストラクタ
+	cWndReg( VM6 *, const ID& );		// コンストラクタ
 	~cWndReg();							// デストラクタ
 	
 	bool Init();						// 初期化
@@ -57,7 +57,7 @@ public:
 //------------------------------------------------------
 //  モニタウィンドウクラス
 //------------------------------------------------------
-class cWndMon : public P6DEVICE, public ZCons {
+class cWndMon : public Device, public ZCons {
 private:
 	char KeyBuf[MAX_CHRS];				// キー入力バッファ
 	char HisBuf[MAX_HIS][MAX_CHRS];		// キー入力ヒストリバッファ
@@ -78,7 +78,7 @@ private:
 	void Help( int );					// ヘルプ表示
 	
 public:
-	cWndMon( VM6 *, const P6ID& );		// コンストラクタ
+	cWndMon( VM6 *, const ID& );		// コンストラクタ
 	~cWndMon();							// デストラクタ
 	
 	bool Init();						// 初期化

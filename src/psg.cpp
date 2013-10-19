@@ -1,11 +1,11 @@
 #include "pc6001v.h"
-#include "p6el.h"
 #include "log.h"
-#include "psg.h"
 #include "osd.h"
-#include "keyboard.h"
+#include "psg.h"
 #include "schedule.h"
 
+#include "p6el.h"
+#include "p6vm.h"
 // イベントID
 #define	EID_PSG		(1)
 
@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-PSG6::PSG6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id), JoyNo(0), Clock(0) {}
+PSG6::PSG6( VM6 *vm, const ID& id ) : Device(vm,id), JoyNo(0), Clock(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ void PSG6::EventCallback( int id, int clock )
 ////////////////////////////////////////////////////////////////
 // ポートアクセス関数
 ////////////////////////////////////////////////////////////////
-BYTE PSG6::PortAread( void ){ return vm->key->GetJoy( JoyNo ); }
+BYTE PSG6::PortAread( void ){ return vm->KeyGetJoy( JoyNo ); }
 void PSG6::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
 
 
@@ -54,8 +54,8 @@ void PSG6::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
 ////////////////////////////////////////////////////////////////
 int PSG6::GetUpdateSamples( void )
 {
-	int samples = (int)( (double)SndDev::SampleRate * vm->evsc->Scale( this, EID_PSG ) + 0.5 );
-	vm->evsc->Reset( this, EID_PSG );
+	int samples = (int)( (double)SndDev::SampleRate * vm->EventScale( this->Device::GetID(), EID_PSG ) + 0.5 );
+	vm->EventReset( this->Device::GetID(), EID_PSG );
 	return samples;
 }
 
@@ -89,7 +89,7 @@ bool PSG6::Init( int clock, int srate )
 	cAY8910::Reset();
 	
 	// 少なくとも1秒に1回くらいは更新するだろうという前提
-	if( !vm->evsc->Add( this, EID_PSG, 1000, EV_LOOP|EV_MS ) ) return false;
+	if( !vm->EventAdd( this, EID_PSG, 1000, EV_LOOP|EV_MS ) ) return false;
 	
 	Clock = clock;
 	
@@ -149,22 +149,22 @@ int PSG6::SoundUpdate( int samples )
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
 // PSGレジスタアドレスラッチ
-inline void PSG6::OutA0H( int, BYTE data )
+void PSG6::OutA0H( int, BYTE data )
 {
 	cAY8910::AYWriteReg( 0, data );
 }
 
 // PSGライトデータ
-inline void PSG6::OutA1H( int, BYTE data )
+void PSG6::OutA1H( int, BYTE data )
 {
 	cAY8910::AYWriteReg( 1, data );
 }
 
 // PSGインアクティブ
-inline void PSG6::OutA3H( int, BYTE data ){}
+void PSG6::OutA3H( int, BYTE data ){}
 
 // PSGリードデータ
-inline BYTE PSG6::InA2H( int )
+BYTE PSG6::InA2H( int )
 {
 	return cAY8910::AYReadReg();
 }
@@ -178,11 +178,6 @@ inline BYTE PSG6::InA2H( int )
 ////////////////////////////////////////////////////////////////
 bool PSG6::DokoSave( cIni *Ini )
 {
-	cSche::evinfo e;
-	char stren[16];
-	
-	e.device = this;
-	
 	if( !Ini ) return false;
 	
 	// cAY8910
@@ -221,13 +216,6 @@ bool PSG6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "PSG", NULL, "Holding",		"0x%02X",	Holding );
 	Ini->PutEntry( "PSG", NULL, "RNG",			"%d",		RNG );
 	
-	// イベント
-	e.id = EID_PSG;
-	if( vm->evsc->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "PSG", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
-	
 	return true;
 }
 
@@ -240,12 +228,7 @@ bool PSG6::DokoSave( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 bool PSG6::DokoLoad( cIni *Ini )
 {
-	int st,yn;
-	cSche::evinfo e;
-	char stren[16];
-	char strrs[64];
-	
-	e.device = this;
+	int st;
 	
 	if( !Ini ) return false;
 	
@@ -284,15 +267,6 @@ bool PSG6::DokoLoad( cIni *Ini )
 	Ini->GetInt( "PSG", "Attack",		&st,			Attack );		Attack = st;
 	Ini->GetInt( "PSG", "Holding",		&st,			Holding );		Holding = st;
 	Ini->GetInt( "PSG", "RNG",			&RNG,			RNG );
-	
-	// イベント
-	e.id = EID_PSG;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "PSG", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? true : false;
-		if( !vm->evsc->SetEvinfo( &e ) ) return false;
-	}
 	
 	return true;
 }

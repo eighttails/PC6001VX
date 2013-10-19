@@ -52,18 +52,18 @@ bool JOY6::Init( void )
 ////////////////////////////////////////////////////////////////
 bool JOY6::Connect( int jno, int index )
 {
-	if( ( jno == 0 || jno == 1 ) && index >= 0 && index < min( OSD_GetJoyNum(), MAX_JOY ) ){
-		if( !OSD_OpenedJoy( index ) )
-			Jinfo[index] = OSD_OpenJoy( index );
-		
-		if( OSD_OpenedJoy( index ) ){
-			JID[jno] = index;
-			return true;
+	if( jno == 0 || jno == 1 ){
+		if( index >= 0 && index < min( OSD_GetJoyNum(), MAX_JOY ) ){
+			if( !OSD_OpenedJoy( index ) )
+				Jinfo[index] = OSD_OpenJoy( index );
+			
+			if( OSD_OpenedJoy( index ) ){
+				JID[jno] = index;
+				return true;
+			}
 		}
 		JID[jno] = -1;
-		Jinfo[index] = NULL;
 	}
-	
 	return false;
 }
 

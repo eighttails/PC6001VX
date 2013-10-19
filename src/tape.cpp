@@ -1,13 +1,13 @@
-#include "p6el.h"
 #include "pc6001v.h"
-#include "log.h"
-#include "tape.h"
 #include "common.h"
-#include "cpus.h"
 #include "disk.h"
 #include "intr.h"
+#include "log.h"
 #include "schedule.h"
-#include "vdg.h"
+#include "tape.h"
+
+#include "p6el.h"
+#include "p6vm.h"
 
 
 // P6T形式フォーマットVer.2
@@ -50,7 +50,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-CMTL::CMTL( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id),
+CMTL::CMTL( VM6 *vm, const ID& id ) : Device(vm,id),
 	p6t(NULL), Relay(false), stron(false), Boost(DEFAULT_BOOST),
 	MaxBoost60(DEFAULT_MAXBOOST60), MaxBoost62(DEFAULT_MAXBOOST62)
 {
@@ -79,12 +79,12 @@ void CMTL::EventCallback( int id, int clock )
 	switch( id ){
 	case EID_TAPE:	// CMT割込み処理
 		// 割込み処理中でない?
-		if( vm->cpus->IsCmtIntrReady() ){
+		if( vm->CpusIsCmtIntrReady() ){
 			// CMTアップデート
 			WORD rd = Update();
 			// データならCMT割込み発生
 			if( rd & PG_D ){
-				vm->cpus->ReqCmtIntr( rd & 0xff );
+				vm->CpusReqCmtIntr( rd & 0xff );
 			}
 		}
 		break;
@@ -109,13 +109,11 @@ bool CMTL::Remote( bool relay )
 		// 画面サイズによりBoostUp最大倍率設定
 		// 本当はBASICモード(N60,N60m/N66)によって判断するべき
 		// あまり厳密ではないけどいいことにする
-		int bst = Boost ? ( vm->vdg->GetWinSize() ? MaxBoost60 : MaxBoost62 ) : 1;
+		int bst = Boost ? ( vm->VdgGetWinSize() ? MaxBoost60 : MaxBoost62 ) : 1;
 		
-		if( IsMount() ) p6t->SetBoost( bst );
-		
-		if( !vm->evsc->Add( this, EID_TAPE, DEFAULT_CMT_HZ * bst, EV_LOOP|EV_HZ ) ) return false;
+		if( !vm->EventAdd( this, EID_TAPE, DEFAULT_CMT_HZ * bst, EV_LOOP|EV_HZ ) ) return false;
 	}else{			// OFF
-		if( !vm->evsc->Del( this, EID_TAPE ) ) return false;
+		if( !vm->EventDel( this, EID_TAPE ) ) return false;
 	}
 	return true;
 }
@@ -144,62 +142,9 @@ void CMTL::Reset( void )
 
 
 ////////////////////////////////////////////////////////////////
-// オートスタート文字列設定
-////////////////////////////////////////////////////////////////
-void CMTL::SetAutoStart( int model )
-{
-	// オートスタート有効?
-	if( p6t && p6t->GetStart() ){
-		char buf[256] = "";
-		
-		// キーバッファに書込み
-		switch( model ){
-		case 60:	// PC-6001
-			sprintf( buf, "%c%c", p6t->GetPage()+'0', 0x0d );
-			break;
-		case 62:	// PC-6001mk2
-			switch( p6t->GetBASIC() ){
-			case 3:
-			case 4:
-			case 5:
-				if( vm->disk->GetDrives() )	// ??? 実際は?
-					sprintf( buf, "%c%c%c%c%c%c%c%c%c%c", 0x17, 50, p6t->GetBASIC()+'0', 0x17, 20, 0x0d, p6t->GetPage()+'0', 0x0d, 0x17, 110 );
-				else
-					sprintf( buf, "%c%c%c%c%c%c%c%c%c",   0x17, 50, p6t->GetBASIC()+'0', 0x17, 20,       p6t->GetPage()+'0', 0x0d, 0x17, 110 );
-				break;
-			default:
-				sprintf( buf, "%c%c%c%c%c%c%c%c%c", 0x17, 50, p6t->GetBASIC()+'0', 0x17, 20, p6t->GetPage()+'0', 0x0d, 0x17, 10 );
-			}
-			break;
-		case 66:	// PC-6601
-			switch( p6t->GetBASIC() ){
-			case 3:
-			case 4:
-			case 5:
-				if( vm->disk->IsMount( 0 ) )
-					sprintf( buf, "%c%c%c%c%c%c%c%c%c%c", 0x17, 50, p6t->GetBASIC()+'0', 0x17, 20, 0x0d, p6t->GetPage()+'0', 0x0d, 0x17, 110 );
-				else
-					sprintf( buf, "%c%c%c%c%c%c%c%c%c",   0x17, 50, p6t->GetBASIC()+'0', 0x17, 20,       p6t->GetPage()+'0', 0x0d, 0x17, 110 );
-				break;
-			default:
-				sprintf( buf, "%c%c%c%c%c%c%c%c%c", 0x17, 50, p6t->GetBASIC()+'0', 0x17, 20, p6t->GetPage()+'0', 0x0d, 0x17, 10 );
-			}
-			break;
-//		case 64:	// PC-6001mk2SR
-//		case 68:	// PC-6601SR
-		}
-		memcpy( &buf[strlen(buf)], p6t->GetAutoStartStr(), p6t->GetAutoStartLen() );
-		
-		// 自動キー入力設定
-		if( vm->el->SetAutoKey( buf, strlen(buf) ) );
-	}
-}
-
-
-////////////////////////////////////////////////////////////////
 // TAPEマウント
 ////////////////////////////////////////////////////////////////
-bool CMTL::Mount( char *filename )
+bool CMTL::Mount( const char *filename )
 {
 	PRINTD( TAPE_LOG, "[TAPE][Mount] %s\n", filename  );
 	
@@ -287,7 +232,7 @@ bool CMTL::IsMount( void )
 ////////////////////////////////////////////////////////////////
 bool CMTL::IsAutoStart( void )
 {
-	if( p6t ) return p6t->GetStart();
+	if( p6t ) return p6t->GetAutoStartInfo()->Start;
 	else      return false;
 }
 
@@ -295,7 +240,7 @@ bool CMTL::IsAutoStart( void )
 ////////////////////////////////////////////////////////////////
 // ファイルパス取得
 ////////////////////////////////////////////////////////////////
-char *CMTL::GetFile()
+const char *CMTL::GetFile()
 {
 	return FilePath;
 }
@@ -304,10 +249,10 @@ char *CMTL::GetFile()
 ////////////////////////////////////////////////////////////////
 // TAPE名取得
 ////////////////////////////////////////////////////////////////
-char *CMTL::GetName( void )
+const char *CMTL::GetName( void )
 {
 	if( p6t ) return p6t->GetName();
-	else      return (char *)"";
+	else      return (const char *)"";
 }
 
 
@@ -372,6 +317,15 @@ void CMTL::SetMaxBoost( int max60, int max62 )
 bool CMTL::IsBoostUp( void )
 {
 	return Boost;
+}
+
+
+////////////////////////////////////////////////////////////////
+// オートスタート情報取得
+////////////////////////////////////////////////////////////////
+P6TAUTOINFO *CMTL::GetAutoStartInfo( void )
+{
+	return p6t->GetAutoStartInfo();
 }
 
 
@@ -493,7 +447,7 @@ int CMTL::GetSinCurve( int fq )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-CMTS::CMTS( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), fp(NULL), Baud(1200)
+CMTS::CMTS( VM6 *vm, const ID& id ) : Device(vm,id), fp(NULL), Baud(1200)
 {
 	INITARRAY( FilePath, '\0' );
 }
@@ -511,7 +465,7 @@ CMTS::~CMTS( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-bool CMTS::Init( char *filename )
+bool CMTS::Init( const char *filename )
 {
 	if( *filename ){
 		// ファイルパス保存
@@ -613,22 +567,10 @@ void CMTL::OutB0H( int, BYTE data ){ Remote( data&0x08 ? true : false ); }
 ////////////////////////////////////////////////////////////////
 bool CMTL::DokoSave( cIni *Ini )
 {
-	cSche::evinfo e;
-	char stren[16];
-	
-	e.device = this;
-	
 	if( !Ini ) return false;
 	
 	Ini->PutEntry( "TAPE", NULL, "Relay",	"%s",	Relay ? "Yes" : "No" );
 	Ini->PutEntry( "TAPE", NULL, "BoostUp",	"%s",	Boost ? "Yes" : "No" );
-	
-	// イベント
-	e.id = EID_TAPE;
-	if( vm->evsc->GetEvinfo( &e ) ){
-		sprintf( stren, "Event%08X", e.id );
-		Ini->PutEntry( "TAPE", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-	}
 	
 	// TAPEがマウントされてなければ何もしないで戻る
 	if( !p6t ) return true;
@@ -645,26 +587,10 @@ bool CMTL::DokoSave( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 bool CMTL::DokoLoad( cIni *Ini )
 {
-	int yn;
-	cSche::evinfo e;
-	char stren[16];
-	char strrs[64];
-	
-	e.device = this;
-	
 	if( !Ini ) return false;
 	
 	Ini->GetTruth( "TAPE", "Relay",		&Relay,	Relay );
 	Ini->GetTruth( "TAPE", "BoostUp",	&Boost,	Boost );
-	
-	// イベント
-	e.id = EID_TAPE;
-	sprintf( stren, "Event%08X", e.id );
-	if( Ini->GetString( "TAPE", stren, strrs, "" ) ){
-		sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-		e.Active = yn ? true : false;
-		if( !vm->evsc->SetEvinfo( &e ) ) return false;
-	}
 	
 	Ini->GetString( "TAPE", "FilePath", FilePath, "" );
 	if( *FilePath ){

@@ -14,7 +14,7 @@ class AboutDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AboutDialog(CFG6* cfg, QWidget *parent = 0);
+    explicit AboutDialog(int mdl, QWidget *parent = 0);
     ~AboutDialog();
 
 private:

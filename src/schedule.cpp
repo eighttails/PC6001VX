@@ -1,55 +1,52 @@
 #include "pc6001v.h"
 #include "config.h"
 #include "log.h"
-#include "schedule.h"
 #include "osd.h"
+#include "schedule.h"
 
 
-#define WRUPDATE	(1000)	/* 処理速度更新間隔(ms) */
+#define WRUPDATE	(1000/SPDCNT)	/* 処理速度更新間隔(ms) */
 
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cSche::cSche( int mclock ) : VSYNC(false), MasterClock(mclock), NextEvent(-1), SaveClock(0) {}
+EVSC::EVSC( int mclock ) : VSYNC(false), MasterClock(mclock), NextEvent(-1), SaveClock(0) {}
 
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
 ////////////////////////////////////////////////////////////////
-cSche::~cSche( void ){}
+EVSC::~EVSC( void ){}
 
 
 ////////////////////////////////////////////////////////////////
 // イベント検索
 //
-// 引数:	dev			デバイスオブジェクトポインタ
+// 引数:	devid		デバイスオブジェクトID
 //			id			イベントID
 // 返値:	evinfo *	イベント情報ポインタ(存在しなければNULL)
 ////////////////////////////////////////////////////////////////
-cSche::evinfo *cSche::Find( P6DEVICE *dev, int id )
+EVSC::evinfo *EVSC::Find( Device::ID devid, int id )
 {
 	for( int i=0; i<MAXEVENT; i++ )
-		if( ev[i].device == dev && ev[i].id == id ) return &ev[i];
+		if( ev[i].devid == devid && ev[i].id == id ) return &ev[i];
 	
 	return NULL;
 }
 
 
 ////////////////////////////////////////////////////////////////
-// マスタクロック数を設定
+// 接続するデバイス候補を登録する
 //
-// 引数:	clock	マスタクロック数
-// 返値:	なし
+// 引数:	dev		デバイスオブジェクトポインタ
+// 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-void cSche::SetMasterClock( int clock )
+bool EVSC::Entry( Device *dev )
 {
-	MasterClock = clock;
-	for( int i=0; i<MAXEVENT; i++ )
-		if( ev[i].device && ev[i].nps > 0 && ev[i].Period > 0 ){
-			ev[i].Period = (int)((double)clock / ev[i].nps);
-			if( ev[i].Period < 1 ) ev[i].Period = 1;
-		}
+	// 追加&削除してデバイスリストに候補を登録する
+	if( !dev || !Add( dev, 0, 0, 0 ) || !Del( dev, 0 ) ) return false;
+	return true;
 
 }
 
@@ -66,15 +63,17 @@ void cSche::SetMasterClock( int clock )
 //				bit2,3,4: 周期指定単位 000:Hz 001:us 010:ms 100:CPUステート数
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool cSche::Add( P6DEVICE *dev, int id, double hz, int flag )
+bool EVSC::Add( Device *dev, int id, double hz, int flag )
 {
 	// 登録済みの場合は一旦削除して再登録
-	evinfo *e = Find( dev, id );
-	if( e ) Del( e->device, e->id );
+	evinfo *e = Find( dev->GetID(), id );
+	if( e ) Del( (Device *)devlist.Find( e->devid ), e->id );
 	
 	for( int i=0; i<MAXEVENT; i++ ){
-		if( !ev[i].device ){
-			ev[i].device = dev;
+		if( !ev[i].devid ){
+			devlist.Add( dev );
+			
+			ev[i].devid  = dev->GetID();
 			ev[i].id     = id;
 			ev[i].Active = true;
 			
@@ -122,11 +121,14 @@ bool cSche::Add( P6DEVICE *dev, int id, double hz, int flag )
 //			id		イベントID
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool cSche::Del( P6DEVICE *dev, int id )
+bool EVSC::Del( Device *dev, int id )
 {
-	evinfo *e = Find( dev, id );
+	evinfo *e = Find( dev->GetID(), id );
 	if( e ){
-		e->device = NULL;
+		devlist.Del( dev );
+		
+		e->devid  = 0;
+		e->id     = 0;
 		e->Active = false;
 		return true;
 	}else
@@ -137,14 +139,14 @@ bool cSche::Del( P6DEVICE *dev, int id )
 ////////////////////////////////////////////////////////////////
 // イベント発生周波数設定
 //
-// 引数:	dev		デバイスオブジェクトポインタ
+// 引数:	devid	デバイスオブジェクトID
 //			id		イベントID
 //			hz		イベント発生周波数
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool cSche::SetHz( P6DEVICE *dev, int id, double hz )
+bool EVSC::SetHz( Device::ID devid, int id, double hz )
 {
-	evinfo *e = Find( dev, id );
+	evinfo *e = Find( devid, id );
 	if( e ){
 		e->nps    = hz;
 		e->Period = (int)((double)MasterClock / hz);
@@ -160,13 +162,12 @@ bool cSche::SetHz( P6DEVICE *dev, int id, double hz )
 // 引数:	clk		進めるクロック数
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void cSche::Update( int clk )
+void EVSC::Update( int clk )
 {
-//	PRINTD( TIC_LOG, "[SCHE][Update] %d clock\n", clk );
+	PRINTD( TIC_LOG, "[SCHE][Update] %d clock\n", clk );
 	
 	// クロックを溜め込む
 	SaveClock  += clk;	// 次のイベント発生用
-//	WRClockTmp += clk;	// 実行速度計算用
 	
 	// 次のイベント発生クロックに達していなかったら戻る
 	// ただし clk=0 の場合は更新を行う
@@ -184,13 +185,13 @@ void cSche::Update( int clk )
 				// とりあえず全てこなすまで繰り返すってことでいいのか?
 				if( ev[i].Clock <= 0 ){
 					// イベントコールバックを実行
-					ev[i].device->EventCallback( ev[i].id, ev[i].Clock );
+					devlist.Find( ev[i].devid )->EventCallback( ev[i].id, ev[i].Clock );
 					
 					if( ev[i].Period > 0 ){	// ループイベント
 						ev[i].Clock += ev[i].Period;
 						if( ev[i].Clock <= 0 ) cnt++;	// 次のイベントも発生していたらカウント
 					}else{					// ワンタイムイベント
-						Del( ev[i].device, ev[i].id );
+						Del( (Device *)devlist.Find( ev[i].devid ), ev[i].id );
 						break;
 					}
 				}
@@ -207,16 +208,16 @@ void cSche::Update( int clk )
 ////////////////////////////////////////////////////////////////
 // 指定イベントをリセットする
 //
-// 引数:	dev		デバイスオブジェクトポインタ
+// 引数:	devid	デバイスオブジェクトID
 //			id		イベントID
 //			ini		カウンタ初期値(進行率で指定 1.0=100%)
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void cSche::Reset( P6DEVICE *dev, int id, double ini )
+void EVSC::Reset( Device::ID devid, int id, double ini )
 {
 	PRINTD( TIC_LOG, "[SCHE][Reset] ID:%d %3f%", id, ini );
 	
-	evinfo *e = Find( dev, id );
+	evinfo *e = Find( devid, id );
 	if( e ){
 		// 溜め込んだクロック分を考慮
 		e->Clock = (int)((double)e->Period * ( 1.0 - min( max( 0.0, ini ), 1.0 ) )) - SaveClock;
@@ -231,13 +232,13 @@ void cSche::Reset( P6DEVICE *dev, int id, double ini )
 ////////////////////////////////////////////////////////////////
 // イベント発生までの残りクロック数を求める
 //
-// 引数:	dev		デバイスオブジェクトポインタ
+// 引数:	devid	デバイスオブジェクトID
 //			id		イベントID
 // 返値:	int		残りステート数(IDが無効なら0)
 ////////////////////////////////////////////////////////////////
-int cSche::Rest( P6DEVICE *dev, int id )
+int EVSC::Rest( Device::ID devid, int id )
 {
-	evinfo *e = Find( dev, id );
+	evinfo *e = Find( devid, id );
 	if( e ) return e->Clock;
 	else    return 0;
 }
@@ -246,15 +247,15 @@ int cSche::Rest( P6DEVICE *dev, int id )
 ////////////////////////////////////////////////////////////////
 // イベントの進行率を求める
 //
-// 引数:	dev		デバイスオブジェクトポインタ
+// 引数:	devid	デバイスオブジェクトID
 //			id		イベントID
 // 返値:	double	イベント進行率(1.0=100%)
 ////////////////////////////////////////////////////////////////
-double cSche::Scale( P6DEVICE *dev, int id )
+double EVSC::Scale( Device::ID devid, int id )
 {
 	PRINTD( TIC_LOG, "[SCHE][Scale] ID:%d", id );
 	
-	evinfo *e = Find( dev, id );
+	evinfo *e = Find( devid, id );
 	// イベントが存在し1周期のクロック数が設定されている?
 	if( e && e->Period > 0 ){
 		PRINTD( TIC_LOG, " %d/%d SAVE:%d\n", e->Clock, e->Period, SaveClock );
@@ -270,14 +271,14 @@ double cSche::Scale( P6DEVICE *dev, int id )
 ////////////////////////////////////////////////////////////////
 // イベント情報取得
 //
-// 引数:	evinfo *	イベント情報構造体へのポインタ(device,id をセットしておく)
+// 引数:	evinfo *	イベント情報構造体へのポインタ(devid,id をセットしておく)
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool cSche::GetEvinfo( evinfo *info )
+bool EVSC::GetEvinfo( evinfo *info )
 {
 	if( !info ) return false;
 	
-	evinfo *e = Find( info->device, info->id );
+	evinfo *e = Find( info->devid, info->id );
 	if( e ){
 		info->Active = e->Active;
 		info->Period = e->Period;
@@ -292,17 +293,17 @@ bool cSche::GetEvinfo( evinfo *info )
 ////////////////////////////////////////////////////////////////
 // イベント情報設定
 //
-// 引数:	evinfo *	イベント情報構造体へのポインタ
+// 引数:	evinfo *	イベント情報構造体へのポインタ(devid,id をセットしておく)
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool cSche::SetEvinfo( evinfo *info )
+bool EVSC::SetEvinfo( evinfo *info )
 {
 	if( !info ) return false;
 	
 	// 問答無用で追加
-	if( !Add( info->device, info->id, 1, EV_HZ ) ) return false;
+	if( !Add( (Device *)devlist.Find( info->devid ), info->id, 1, EV_HZ ) ) return false;
 	
-	evinfo *e = Find( info->device, info->id );
+	evinfo *e = Find( info->devid, info->id );
 	if( e ){
 		e->Active = info->Active;
 		e->Period = info->Period;
@@ -315,12 +316,30 @@ bool cSche::SetEvinfo( evinfo *info )
 
 
 ////////////////////////////////////////////////////////////////
-// マスタークロック取得
+// マスタクロック設定
+//
+// 引数:	clock	マスタクロック数
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void EVSC::SetMasterClock( int clock )
+{
+	MasterClock = clock;
+	for( int i=0; i<MAXEVENT; i++ )
+		if( ev[i].devid && ev[i].nps > 0 && ev[i].Period > 0 ){
+			ev[i].Period = (int)((double)clock / ev[i].nps);
+			if( ev[i].Period < 1 ) ev[i].Period = 1;
+		}
+
+}
+
+
+////////////////////////////////////////////////////////////////
+// マスタクロック取得
 //
 // 引数:	なし
-// 返値:	int		マスタークロック数
+// 返値:	int		マスタクロック数
 ////////////////////////////////////////////////////////////////
-int cSche::GetMasterClock( void )
+int EVSC::GetMasterClock( void )
 {
 	return MasterClock;
 }
@@ -331,7 +350,7 @@ int cSche::GetMasterClock( void )
 // 引数:	なし
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-bool cSche::IsVSYNC( void )
+bool EVSC::IsVSYNC( void )
 {
 	return VSYNC;
 }
@@ -342,7 +361,7 @@ bool cSche::IsVSYNC( void )
 // 引数:	なし
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void cSche::OnVSYNC( void )
+void EVSC::OnVSYNC( void )
 {
 	VSYNC = true;
 }
@@ -352,7 +371,7 @@ void cSche::OnVSYNC( void )
 // 引数:	なし
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void cSche::ReVSYNC( void )
+void EVSC::ReVSYNC( void )
 {
 	VSYNC = false;
 }
@@ -362,7 +381,7 @@ void cSche::ReVSYNC( void )
 // 引数:	Ini		INIオブジェクトポインタ
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool cSche::DokoSave( cIni *Ini )
+bool EVSC::DokoSave( cIni *Ini )
 {
 	if( !Ini ) return false;
 	
@@ -370,6 +389,19 @@ bool cSche::DokoSave( cIni *Ini )
 	Ini->PutEntry( "SCHEDULE", NULL, "VSYNC",		"%s",	VSYNC ? "Yes" : "No" );
 	Ini->PutEntry( "SCHEDULE", NULL, "NextEvent",	"%d",	NextEvent );
 	Ini->PutEntry( "SCHEDULE", NULL, "SaveClock",	"%d",	SaveClock );
+	
+	
+	// イベント
+	char stren[16];
+	int i = 0;
+	
+	while( ev[i].devid ){
+		BYTE id1,id2,id3,id4;
+		DWTOB( ev[i].devid, id4, id3, id2, id1 );
+		sprintf( stren, "Event%02X", i );
+		Ini->PutEntry( "SCHEDULE", NULL, stren, "%c%c%c%c %d %d %d %d %lf", id1, id2, id3, id4, ev[i].id, ev[i].Active ? 1 : 0, ev[i].Period, ev[i].Clock, ev[i].nps );
+		i++;
+	}
 	
 	return true;
 }
@@ -381,21 +413,44 @@ bool cSche::DokoSave( cIni *Ini )
 // 引数:	Ini		INIオブジェクトポインタ
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool cSche::DokoLoad( cIni *Ini )
+bool EVSC::DokoLoad( cIni *Ini )
 {
 	if( !Ini ) return false;
 	
 	// 全てのイベントをひとまず無効にする
-	// イベント情報は各モジュール毎に再設定する
 	for( int i=0; i<MAXEVENT; i++ ){
-		ev[i].device = NULL;
+		ev[i].devid  = 0;
+		ev[i].id     = 0;
 		ev[i].Active = false;
+		ev[i].Period = 0;
+		ev[i].Clock  = 0;
+		ev[i].nps    = 0;
 	}
 	
 	Ini->GetInt(    "SCHEDULE", "MasterClock",	&MasterClock,	MasterClock );
 	Ini->GetTruth(  "SCHEDULE", "VSYNC",		&VSYNC, 		VSYNC );
 	Ini->GetInt(    "SCHEDULE", "NextEvent",	&NextEvent,		NextEvent );	// イベント再設定時に再現される?
 	Ini->GetInt(    "SCHEDULE", "SaveClock",	&SaveClock,		SaveClock );
+	
+	
+	// イベント
+	char stren[16];
+	char strrs[64];
+	
+	for( int i=0; i<MAXEVENT; i++ ){
+		sprintf( stren, "Event%02X", i );
+		if( Ini->GetString( "SCHEDULE", stren, strrs, "" ) ){
+			evinfo e;
+			BYTE id1,id2,id3,id4;
+			int yn;
+			
+			sscanf( strrs,"%c%c%c%c %d %d %d %d %lf", &id1, &id2, &id3, &id4, &e.id, &yn, &e.Period, &e.Clock, &e.nps );
+			e.devid = BTODW( id1, id2, id3, id4 );
+			e.Active = yn ? true : false;
+			if( !SetEvinfo( &e ) ) return false;
+		}else
+			break;
+	}
 	
 	return true;
 }
@@ -404,8 +459,11 @@ bool cSche::DokoLoad( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-SCH6::SCH6( int mclock ) : WaitEnable(true), EnableScrUpdate(0),
-	MasterClock(mclock), WRClock(0), WRClockTmp(0) {}
+SCH6::SCH6( int mclock ) : WaitEnable(true), PauseEnable(false),
+	EnableScrUpdate(0),	SpeedRatio(100), SpeedCnt1(1), SpeedCnt2(1), MasterClock(mclock)
+{
+	INITARRAY( WRClock, 0 );
+}
 
 
 ////////////////////////////////////////////////////////////////
@@ -450,20 +508,25 @@ void SCH6::OnThread( void *inst )
         NextWait += Vint[VintCnt++];
         if( VintCnt >= VSYNC_HZ ){
             VintCnt -= VSYNC_HZ;
-            WRClock     = WRClockTmp;
-            WRClockTmp  = 0;
-            last       += WRUPDATE;
         }
         ti->WaitReset();
+
+        // 画面更新フラグを立てる
+        EnableScrUpdate++;
 
 #ifndef NOJOYSTICK
         // ジョイスティックをポーリング
         OSD_PushEvent(EV_JOYAXISMOTION);
 #endif
-
         now = OSD_GetTicks();
         if(NextWait >= now){
             OSD_Delay( NextWait - now );
+        }
+        if( now - last >= WRUPDATE ){
+            for( int i=SPDCNT-1; i>0; i-- )
+                WRClock[i] = WRClock[i-1];
+            WRClock[0] = 0;
+            last       += WRUPDATE;
         }
     }
 }
@@ -494,7 +557,7 @@ void SCH6::Stop( void )
 	this->cThread::Cancel();	// スレッド終了フラグ立てる
 	this->cThread::Waiting();	// スレッド終了まで待つ
 	
-	WRClock = WRClockTmp = 0;
+	INITARRAY( WRClock, 0 );
 }
 
 
@@ -513,12 +576,36 @@ bool SCH6::GetWaitEnable( void )
 ////////////////////////////////////////////////////////////////
 // Wait有効フラグ設定
 //
-// 引数:	Wait有効フラグ 有効:true 無効:false
+// 引数:	en		Wait有効フラグ 有効:true 無効:false
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void SCH6::SetWaitEnable( bool we )
+void SCH6::SetWaitEnable( bool en )
 {
-	WaitEnable = we;
+	WaitEnable = en;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ポーズ有効フラグ取得
+//
+// 引数:	なし
+// 返値:	有効:true 無効:false
+////////////////////////////////////////////////////////////////
+bool SCH6::GetPauseEnable( void )
+{
+	return PauseEnable;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ポーズ有効フラグ設定
+//
+// 引数:	en		ポーズ有効フラグ 有効:true 無効:false
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void SCH6::SetPauseEnable( bool en )
+{
+	PauseEnable = en;
 }
 
 
@@ -530,7 +617,14 @@ void SCH6::SetWaitEnable( bool we )
 ////////////////////////////////////////////////////////////////
 void SCH6::VWait( void )
 {
-	if( WaitEnable ) cSemaphore::Wait();
+	if( !WaitEnable ) return;
+	
+	SpeedCnt1++;
+	
+	if( (SpeedRatio > 100 ) && ( (SpeedCnt1 * 100) / SpeedCnt2 < SpeedRatio ) )
+		return;
+	
+	cSemaphore::Wait();
 }
 
 
@@ -542,10 +636,47 @@ void SCH6::VWait( void )
 ////////////////////////////////////////////////////////////////
 void SCH6::WaitReset( void )
 {
+	if( (SpeedCnt1 > 0xffffff) || (SpeedCnt2 > 0xffffff) ){
+		SpeedCnt1 /= 2;
+		SpeedCnt2 /= 2;
+	}
+	
+	SpeedCnt2++;
+	
+	if( (SpeedRatio < 100 ) && ( (SpeedCnt1 * 100) / SpeedCnt2 >= SpeedRatio ) )
+		return;
+	
 	if( !cSemaphore::Value() ) cSemaphore::Post();
 	
-	// 画面更新フラグを立てる
-	EnableScrUpdate++;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 実行速度設定
+//
+// 引数:	spd		+:UP -:DOWN 0:等速
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void SCH6::SetSpeedRatio( int spd )
+{
+	if     ( spd > 0 && SpeedRatio < 2000 ) SpeedRatio += SpeedRatio <  200 ? 10 : 100;
+	else if( spd < 0 && SpeedRatio >   10 ) SpeedRatio -= SpeedRatio <= 200 ? 10 : 100;
+	else if( spd == 0 )                     SpeedRatio = 100;
+	
+	SpeedCnt2 = VSYNC_HZ * 1000;
+	SpeedCnt1 = (SpeedCnt2 * SpeedRatio) / 100;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 実行速度取得
+//
+// 引数:	なし
+// 返値:	int		実行速度(%)
+////////////////////////////////////////////////////////////////
+int SCH6::GetSpeedRatio( void )
+{
+	return SpeedRatio;
 }
 
 
@@ -557,7 +688,12 @@ void SCH6::WaitReset( void )
 ////////////////////////////////////////////////////////////////
 int SCH6::GetRatio( void )
 {
-	return (int)(double)( WRClock * 100.0 / MasterClock * 1000.0 / WRUPDATE + 0.5 );
+	DWORD sum = 0;
+	
+	for( int i=1; i<SPDCNT; i++ )
+		sum += WRClock[i];
+	
+	return (int)(double)( sum * 100.0 / MasterClock * 1000.0 / (WRUPDATE*(SPDCNT-1)) + 0.5 );
 }
 
 
@@ -569,7 +705,7 @@ int SCH6::GetRatio( void )
 ////////////////////////////////////////////////////////////////
 void SCH6::Update( int clk )
 {
-	WRClockTmp += clk;	// 実行速度計算用
+	WRClock[0] += clk;	// 実行速度計算用
 }
 
 
@@ -667,7 +803,7 @@ CpuState = CpuClock;
 //	CpuState = CpuState * 86 / 100;
 	
 	// マスタクロック数を設定
-	cSche::SetMasterClock( CpuState );
+	EVSC::SetMasterClock( CpuState );
 }
 */
 

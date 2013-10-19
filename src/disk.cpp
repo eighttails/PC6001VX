@@ -8,6 +8,7 @@
 #include "error.h"
 #include "schedule.h"
 
+#include "p6vm.h"
 // イベントID
 // --- mini FDD ---
 #define EID_INIT1	(1)		// 00h イニシャライズ(ドライブ1)
@@ -73,7 +74,7 @@ static const int Gap4size[] = { 488, 152, 182,  94, 1584, 1760, 2242, 4144 };
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSK6::DSK6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), DrvNum(0)
+DSK6::DSK6( VM6 *vm, const ID& id ) : Device(vm,id), DrvNum(0)
 {
 	for( int i=0; i<MAXDRV; i++ ){
 		ZeroMemory( FilePath[i], PATH_MAX );
@@ -128,7 +129,7 @@ bool DSK6::SetWait( int eid )
 {
 	PRINTD( DISK_LOG, "[DISK][SetWait] %dus ->", waitcnt );
 	
-	if( waitcnt && vm->evsc->Add( this, eid, waitcnt, EV_US ) ){
+	if( waitcnt && vm->EventAdd( this, eid, waitcnt, EV_US ) ){
 		waitcnt = 0;
 		PRINTD( DISK_LOG, "OK\n" );
 		return true;
@@ -143,7 +144,7 @@ bool DSK6::SetWait( int eid )
 ////////////////////////////////////////////////////////////////
 // DISK マウント
 ////////////////////////////////////////////////////////////////
-bool DSK6::Mount( int drvno, char *filename )
+bool DSK6::Mount( int drvno, const char *filename )
 {
 	PRINTD( DISK_LOG, "[DISK][Mount] Drive : %d\n", drvno );
 	
@@ -278,7 +279,7 @@ const char *DSK6::GetName( int drvno )
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 DSK60::DSK60( VM6 *vm, const ID& id ) :
-	DSK6(vm,id), Device(id), io_D1H(0), io_D2H(0x08)
+	DSK6(vm,id), io_D1H(0), io_D2H(0x08)
 {
 	INITARRAY( RBuf, 0 );
 	INITARRAY( WBuf, 0 );
@@ -718,7 +719,6 @@ BYTE DSK60::InD0H( int ){ return FddIn(); }
 BYTE DSK60::InD1H( int ){ return io_D1H; }
 BYTE DSK60::InD2H( int ){ return FddCntIn(); }
 
-	
 
 
 
@@ -779,7 +779,7 @@ BYTE DSK60::InD2H( int ){ return FddCntIn(); }
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSK66::DSK66( VM6 *vm, const ID& id ) : DSK6(vm,id), Device(id),
+DSK66::DSK66( VM6 *vm, const ID& id ) : DSK6(vm,id),
 	SendBytes(0), DIO(false), B2Dir(false)
 {
 	INITARRAY( FDDBuf, 0 );
@@ -1545,18 +1545,34 @@ BYTE DSK66::InDDH( int ){ return InFDC(); }								// FDC データレジスタ
 ////////////////////////////////////////////////////////////////
 // どこでもSAVE
 ////////////////////////////////////////////////////////////////
+bool DSK6::DokoSave( cIni *Ini )
+{
+	if( !Ini ) return false;
+	
+	Ini->PutEntry( "DISK", NULL, "DrvNum",  "%d", DrvNum );
+	Ini->PutEntry( "DISK", NULL, "WaitCnt", "%d", waitcnt );
+	
+	// ディスクイメージオブジェクト
+	for( int i=0; i<DrvNum; i++ ){
+		if( Dimg[i] ){
+			char stren[16];
+			sprintf( stren, "DISK_%d_FileName", i );
+			Ini->PutEntry( "DISK", NULL, stren,	"%s", Dimg[i]->GetFileName() );
+			sprintf( stren, "DISK_%d_trkno", i );
+			Ini->PutEntry( "DISK", NULL, stren,	"%d", Dimg[i]->Track() );
+			sprintf( stren, "DISK_%d_secno", i );
+			Ini->PutEntry( "DISK", NULL, stren,	"%d", Dimg[i]->Sector() );
+		}
+	}
+	
+	return true;
+}
 bool DSK60::DokoSave( cIni *Ini )
 {
-	cSche::evinfo e;
 	char stren[16],strva[256];
 	int i,j;
 	
-	e.device = this;
-	
-	if( !Ini ) return false;
-	
-	// DSK6
-	Ini->PutEntry( "P60DISK", NULL, "DrvNum", "%d", DrvNum );
+	if( !Ini || !DSK6::DokoSave( Ini ) ) return false;
 	
 	// DSK60
 	Ini->PutEntry( "P60DISK", NULL, "mdisk_DAC",		"%d",		mdisk.DAC );
@@ -1576,8 +1592,8 @@ bool DSK60::DokoSave( cIni *Ini )
 	Ini->PutEntry( "P60DISK", NULL, "mdisk_busy",		"%d",		mdisk.busy );
 	Ini->PutEntry( "P66DISK", NULL, "mdisk_error",		"%s",		mdisk.error ? "Yes" : "No" );
 	
-	Ini->PutEntry( "P60DISK", NULL, "io_D1H",		"0x%02X",	io_D1H );
-	Ini->PutEntry( "P60DISK", NULL, "io_D2H",		"0x%02X",	io_D2H );
+	Ini->PutEntry( "P60DISK", NULL, "io_D1H",			"0x%02X",	io_D1H );
+	Ini->PutEntry( "P60DISK", NULL, "io_D2H",			"0x%02X",	io_D2H );
 	
 	for( i=0; i<4096; i+=64 ){
 		sprintf( stren, "RBuf_%04X", i );
@@ -1590,46 +1606,15 @@ bool DSK60::DokoSave( cIni *Ini )
 		Ini->PutEntry( "P60DISK", NULL, stren, "%s", strva );
 	}
 	
-	// イベント
-	int eid[] = { EID_INIT1, EID_INIT2, EID_WRDATEX, EID_RDDATEX, EID_GETPAR, 0 };
-	i = 0;
-	
-	while( eid[i] ){
-		e.id = eid[i++];
-		if( vm->evsc->GetEvinfo( &e ) ){
-			sprintf( stren, "Event%08X", e.id );
-			Ini->PutEntry( "P60DISK", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-		}
-	}
-	
-	// ディスクイメージオブジェクト
-	for( i=0; i<DrvNum; i++ ){
-		if( Dimg[i] ){
-			char stren[16];
-			sprintf( stren, "DISK_%d_FileName", i );
-			Ini->PutEntry( "P60DISK", NULL, stren,	"%s", Dimg[i]->GetFileName() );
-			sprintf( stren, "DISK_%d_trkno", i );
-			Ini->PutEntry( "P60DISK", NULL, stren,	"%d", Dimg[i]->Track() );
-			sprintf( stren, "DISK_%d_secno", i );
-			Ini->PutEntry( "P60DISK", NULL, stren,	"%d", Dimg[i]->Sector() );
-		}
-	}
-	
 	return true;
 }
 
 bool DSK66::DokoSave( cIni *Ini )
 {
-	cSche::evinfo e;
 	char stren[16],strva[256];
 	int i,j,k;
 	
-	e.device = this;
-	
-	if( !Ini ) return false;
-	
-	// DSK6
-	Ini->PutEntry( "P66DISK", NULL, "DrvNum", "%d", DrvNum );
+	if( !Ini || !DSK6::DokoSave( Ini ) ) return false;
 	
 	// DSK66
 	for( i=0; i<10; i++ ){
@@ -1688,31 +1673,6 @@ bool DSK66::DokoSave( cIni *Ini )
 		}
 	}
 	
-	// イベント
-	int eid[] = { EID_SEEK1, EID_SEEK2, EID_SEEK3, EID_SEEK4, EID_EXWAIT, 0 };
-	i = 0;
-	
-	while( eid[i] ){
-		e.id = eid[i++];
-		if( vm->evsc->GetEvinfo( &e ) ){
-			sprintf( stren, "Event%08X", e.id );
-			Ini->PutEntry( "P66DISK", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-		}
-	}
-	
-	// ディスクイメージオブジェクト
-	for( i=0; i<DrvNum; i++ ){
-		if( Dimg[i] ){
-			char stren[16];
-			sprintf( stren, "DISK_%d_FileName", i );
-			Ini->PutEntry( "P66DISK", NULL, stren,	"%s", Dimg[i]->GetFileName() );
-			sprintf( stren, "DISK_%d_trkno", i );
-			Ini->PutEntry( "P66DISK", NULL, stren,	"%d", Dimg[i]->Track() );
-			sprintf( stren, "DISK_%d_secno", i );
-			Ini->PutEntry( "P66DISK", NULL, stren,	"%d", Dimg[i]->Sector() );
-		}
-	}
-	
 	return true;
 }
 
@@ -1720,22 +1680,40 @@ bool DSK66::DokoSave( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 // どこでもLOAD
 ////////////////////////////////////////////////////////////////
-bool DSK60::DokoLoad( cIni *Ini )
+bool DSK6::DokoLoad( cIni *Ini )
 {
-	int st,yn,i,j;
-	cSche::evinfo e;
-	char stren[16], strva[256];
-	char strrs[64];
-	
-	e.device = this;
-	
 	if( !Ini ) return false;
 	
 	// とりあえず全部アンマウント
-	for( i=0; i<DrvNum; i++ ) if( Dimg[i] ) Unmount( i) ;
+	for( int i=0; i<DrvNum; i++ ) if( Dimg[i] ) Unmount( i) ;
 	
-	// DSK6
-	Ini->GetInt( "P60DISK", "DrvNum",	&DrvNum,	DrvNum );
+	Ini->GetInt( "DISK", "DrvNum",	&DrvNum,	DrvNum );
+	Ini->GetInt( "DISK", "WaitCnt",	&waitcnt,	waitcnt );
+	
+	// ディスクイメージオブジェクト
+	for( int i=0; i<DrvNum; i++ ){
+		char stren[16], strva[256];
+		sprintf( stren, "DISK_%d_FileName", i );
+		if( Ini->GetString( "DISK", stren, strva, "" ) && Mount( i, strva ) ){
+			int tr,sc;
+			sprintf( stren, "DISK_%d_trkno", i );
+			Ini->GetInt( "DISK", stren,	&tr,	0 );
+			sprintf( stren, "DISK_%d_secno", i );
+			Ini->GetInt( "DISK", stren,	&sc,	0 );
+			Dimg[i]->Seek( tr, sc );
+		}
+	}
+	
+	return true;
+}
+
+
+bool DSK60::DokoLoad( cIni *Ini )
+{
+	int st,i,j;
+	char stren[16], strva[256];
+	
+	if( !Ini || !DSK6::DokoLoad( Ini ) ) return false;
 	
 	// DSK60
 	Ini->GetInt(   "P60DISK", "mdisk_DAC",		&mdisk.DAC,		mdisk.DAC );
@@ -1780,52 +1758,15 @@ bool DSK60::DokoLoad( cIni *Ini )
 		}
 	}
 	
-	// イベント
-	int eid[] = { EID_INIT1, EID_INIT2, EID_WRDATEX, EID_RDDATEX, EID_GETPAR, 0 };
-	i = 0;
-	
-	while( eid[i] ){
-		e.id = eid[i++];
-		sprintf( stren, "Event%08X", e.id );
-		if( Ini->GetString( "P60DISK", stren, strrs, "" ) ){
-			sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-			e.Active = yn ? true : false;
-			if( !vm->evsc->SetEvinfo( &e ) ) return false;
-		}
-	}
-	
-	// ディスクイメージオブジェクト
-	for( i=0; i<DrvNum; i++ ){
-		sprintf( stren, "DISK_%d_FileName", i );
-		if( Ini->GetString( "P60DISK", stren, strva, "" ) && Mount( i, strva ) ){
-			int tr,sc;
-			sprintf( stren, "DISK_%d_trkno", i );
-			Ini->GetInt( "P60DISK", stren,	&tr,	0 );
-			sprintf( stren, "DISK_%d_secno", i );
-			Ini->GetInt( "P60DISK", stren,	&sc,	0 );
-			Dimg[i]->Seek( tr, sc );
-		}
-	}
-	
 	return true;
 }
 
 bool DSK66::DokoLoad( cIni *Ini )
 {
-	int st,yn,i,j,k;
-	cSche::evinfo e;
+	int st,i,j,k;
 	char stren[16], strva[256];
-	char strrs[64];
 	
-	e.device = this;
-	
-	if( !Ini ) return false;
-	
-	// とりあえず全部アンマウント
-	for( i=0; i<DrvNum; i++ ) if( Dimg[i] ) Unmount( i) ;
-	
-	// DSK6
-	Ini->GetInt( "P66DISK", "DrvNum",	&DrvNum,	DrvNum );
+	if( !Ini || !DSK6::DokoLoad( Ini ) ) return false;
 	
 	// DSK66
 	for( i=0; i<10; i++ ){
@@ -1886,33 +1827,6 @@ bool DSK66::DokoLoad( cIni *Ini )
 				strncpy( dt, &strva[k*2], 2 );
 				FDDBuf[i*256+j+k] = strtol( dt, NULL, 16 );
 			}
-		}
-	}
-	
-	// イベント
-	int eid[] = { EID_SEEK1, EID_SEEK2, EID_SEEK3, EID_SEEK4, EID_EXWAIT, 0 };
-	i = 0;
-	
-	while( eid[i] ){
-		e.id = eid[i++];
-		sprintf( stren, "Event%08X", e.id );
-		if( Ini->GetString( "P66DISK", stren, strrs, "" ) ){
-			sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-			e.Active = yn ? true : false;
-			if( !vm->evsc->SetEvinfo( &e ) ) return false;
-		}
-	}
-	
-	// ディスクイメージオブジェクト
-	for( i=0; i<DrvNum; i++ ){
-		sprintf( stren, "DISK_%d_FileName", i );
-		if( Ini->GetString( "P66DISK", stren, strva, "" ) && Mount( i, strva ) ){
-			int tr,sc;
-			sprintf( stren, "DISK_%d_trkno", i );
-			Ini->GetInt( "P66DISK", stren,	&tr,	0 );
-			sprintf( stren, "DISK_%d_secno", i );
-			Ini->GetInt( "P66DISK", stren,	&sc,	0 );
-			Dimg[i]->Seek( tr, sc );
 		}
 	}
 	

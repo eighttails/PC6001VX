@@ -5,7 +5,6 @@
 #include "device.h"
 #include "ini.h"
 
-#include "p6device.h"
 
 // 割込み要求フラグ
 //  0 RS232S 受信 割込み
@@ -36,7 +35,7 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class INT6 : public P6DEVICE, public IDoko {
+class INT6 : public Device, public IDoko {
 protected:
 	DWORD IntrFlag;			// 割込み要求フラグ
 	
@@ -48,7 +47,7 @@ protected:
 	virtual bool IsTimerIntrEnable();		// タイマ割込み許可チェック
 	
 public:
-	INT6( VM6 *, const P6ID& );				// コンストラクタ
+	INT6( VM6 *, const ID& );				// コンストラクタ
 	virtual ~INT6();						// デストラクタ
 	
 	void EventCallback( int, int );			// イベントコールバック関数
@@ -67,7 +66,7 @@ public:
 };
 
 
-class INT60 : public INT6, public Device {
+class INT60 : public INT6 {
 private:
 	// デバイス定義
 	static const Descriptor descriptor;
@@ -90,7 +89,7 @@ public:
 };
 
 
-class INT62 : public INT6, public Device {
+class INT62 : public INT6 {
 private:
 	bool TimerIntrEnable2;	// タイマ割込み許可フラグ(PortF3H mk2以降)
 	bool Int1IntrEnable;	// INT1割込み許可フラグ

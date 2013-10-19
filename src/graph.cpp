@@ -1,8 +1,9 @@
 #include "pc6001v.h"
+#include "common.h"
+#include "config.h"
+#include "debug.h"
 #include "graph.h"
 #include "log.h"
-#include "common.h"
-#include "debug.h"
 #include "osd.h"
 #include "status.h"
 #include "vdg.h"
@@ -10,26 +11,26 @@
 #include "p6el.h"
 
 // 通常ウィンドウサイズ
-#define	P6WINW		(vm->vdg->Width())
-#define	P6WINH		(vm->vdg->Height())
+#define	P6WINW		vm->vdg->Width()*2
+#define	P6WINH		vm->vdg->Height()*2
 
-#define	HBBUS		(282-12)	/* 4:3表示時画面高さ */
+#define	HBBUS		((282-12)*2)	/* 4:3表示時画面高さ */
 
 // フルスクリーンウィンドウサイズ
-#define	P6WIFW		(640)
-#define	P6WIFH		(480)
+#define	P6WIFW		640
+#define	P6WIFH		480
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 // デバッグモードウィンドウサイズ
-#define	P6DEBUGW	(P6WINW+vm->el->regw->Width())
-#define	P6DEBUGH	(max(P6WINH,vm->el->regw->Height()+vm->el->memw->Height())+vm->el->monw->Height())
+#define	P6DEBUGW	(P6WINW/2+vm->el->regw->Width())
+#define	P6DEBUGH	(max(P6WINH/2,vm->el->regw->Height()+vm->el->memw->Height())+vm->el->monw->Height())
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
 
 // モニタモード時はスキャンライン，4:3表示禁止
 // フルスクリーンモード時はステータスバー表示禁止
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-#define	DISPMON		(vm->el->IsMonitor())
+#define	DISPMON		vm->el->IsMonitor()
 #define	DISPFULL	(vm->el->cfg->GetFullScreen())
 #define	DISPSCAN	(!DISPMON  && vm->el->cfg->GetScanLine())
 #define	DISPNTSC	(!DISPMON  && vm->el->cfg->GetDispNTSC())
@@ -37,10 +38,10 @@
 
 #else
 
-#define	DISPFULL	(vm->el->cfg->GetFullScreen())
-#define	DISPSCAN	(vm->el->cfg->GetScanLine())
-#define	DISPNTSC	(vm->el->cfg->GetDispNTSC())
-#define	DISPSTAT	(vm->el->cfg->GetDispStat())
+#define	DISPFULL	vm->el->cfg->GetFullScreen()
+#define	DISPSCAN	vm->el->cfg->GetScanLine()
+#define	DISPNTSC	vm->el->cfg->GetDispNTSC()
+#define	DISPSTAT	vm->el->cfg->GetDispStat()
 
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 
@@ -51,8 +52,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL), SBuf(NULL), Pal(NULL),
-							Bpp(DEFAULT_COLOR_MODE), SLBr(DEFAULT_SCANLINEBR) {}
+DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL), SBuf(NULL) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -68,18 +68,12 @@ DSP6::~DSP6( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 //
-// 引数:	bpp		1ピクセルのbit数
-//			br		スキャンライン輝度
-//			pal		パレットへのポインタ
+// 引数:	なし
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool DSP6::Init( int bpp, int br, VPalette *pal )
+bool DSP6::Init( void )
 {
 	PRINTD( GRP_LOG, "[GRP][Init]\n" );
-	
-	Bpp  = bpp;
-	SLBr = br;
-	Pal  = pal;
 	
 	// スクリーンサーフェス作成
 	if( !SetScreenSurface() ) return false;
@@ -117,13 +111,14 @@ bool DSP6::SetScreenSurface( void )
 	if( DISPMON ){	// モニタモード?
 		x      = P6DEBUGW;
 		y      = P6DEBUGH;
+		fsflag = false;
 		
 		PRINTD( GRP_LOG, " -> Monitor Mode ( X:%d Y:%d )\n", x, y );
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	{
-        x      = P6WINW * ( DISPSCAN ? 2 : 1 );
-        y      = ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
+			x      = P6WINW;
+			y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
 	}
 
     if( DISPFULL ){	// フルスクリーン?
@@ -135,12 +130,12 @@ bool DSP6::SetScreenSurface( void )
     }
 
 	// スクリーンサーフェス作成
-	OSD_CreateWindow( &Wh, x, y, Bpp, fsflag );
+	OSD_CreateWindow( &Wh, x, y, fsflag );
 	if( !Wh ){
 		PRINTD( GRP_LOG, " -> Failed\n" );
 		return false;
 	}else
-		PRINTD( GRP_LOG, " -> OK ( %d x %d x %d )\n", OSD_GetWindowWidth( Wh ), OSD_GetWindowHeight( Wh ), OSD_GetWindowBPP( Wh ) );
+		PRINTD( GRP_LOG, " -> OK ( %d x %d )\n", OSD_GetWindowWidth( Wh ), OSD_GetWindowHeight( Wh ) );
 	
 	if( DISPFULL ){	// フルスクリーンの時
 		// マウスカーソルを消す
@@ -151,10 +146,6 @@ bool DSP6::SetScreenSurface( void )
 		// ウィンドウキャプション設定
 		OSD_SetWindowCaption( Wh, vm->el->cfg->GetCaption() );
 	}
-	
-	// スクリーンサーフェスにパレットを選択する
-	if( OSD_GetWindowBPP( Wh ) == 8 )
-		if( !OSD_SetPalette( Wh, Pal ) ) return false;
 	
 	return true;
 }
@@ -180,8 +171,8 @@ bool DSP6::ResizeScreen( void )
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	{
-        x = ( P6WINW * ( DISPSCAN ? 2 : 1 ) );
-        y = ( ( DISPNTSC ? HBBUS : P6WINH ) * ( DISPSCAN ? 2 : 1 ) );
+		x      = P6WINW;
+		y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
 		
 		// ステータスバー表示?
 		if( !DISPFULL && DISPSTAT ) y += vm->el->staw->Height();
@@ -221,28 +212,27 @@ void DSP6::DrawScreen( void )
 		PRINTD( GRP_LOG, " -> Monitor" );
 		
 		// バックバッファ
-		OSD_BlitToWindow( Wh, BBuf, 0, 0, Pal );
+		OSD_BlitToWindow( Wh, BBuf, 0, 0 );
 		
 		// モニタウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->monw, 0, max( P6WINH, vm->el->regw->Height() + vm->el->memw->Height() ), Pal );
+		OSD_BlitToWindow( Wh, vm->el->monw, 0, max( P6WINH/2, vm->el->regw->Height() + vm->el->memw->Height() ) );
 		
 		// レジスタウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->regw, P6WINW, 0, Pal );
+		OSD_BlitToWindow( Wh, vm->el->regw, P6WINW/2, 0 );
 		
 		// メモリウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->memw, P6WINW, vm->el->regw->Height(), Pal );
+		OSD_BlitToWindow( Wh, vm->el->memw, P6WINW/2, vm->el->regw->Height() );
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	{
 		UpdateSubBuf();	// サブバッファ更新
 		
-		if( DISPFULL ){	// フルスクリーン
+		if( DISPFULL ){	// フルスクリーン表示
 			PRINTD( GRP_LOG, " -> FullScreen" );
-            PRINTD( GRP_LOG, "(Scan line)" );
-            OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() * SBuf->GetAspectRatio() ) / 2, Pal );
-        }else{			// フルスクリーンでない
+			OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() ) / 2 );
+		}else{			// ウィンドウ表示
 			PRINTD( GRP_LOG, " -> Window" );
-            OSD_BlitToWindow( Wh, SBuf, 0, 0, Pal );
+			OSD_BlitToWindow( Wh, SBuf, 0, 0 );
 		}
 		
 		// ステータスバー
@@ -253,7 +243,7 @@ void DSP6::DrawScreen( void )
 			// スクリーンサーフェス下端に位置を合わせてblit
 			vm->el->staw->Update();
 			
-			OSD_BlitToWindow( Wh, STATIC_CAST( VSurface *, vm->el->staw ), 0, OSD_GetWindowHeight( Wh ) - vm->el->staw->Height(), Pal );
+			OSD_BlitToWindow( Wh, vm->el->staw, 0, OSD_GetWindowHeight( Wh ) - vm->el->staw->Height() );
 		}
 	}
 	
@@ -272,7 +262,7 @@ void DSP6::DrawScreen( void )
 ////////////////////////////////////////////////////////////////
 int DSP6::ScreenX( void )
 {
-	return P6WINW * ( DISPSCAN ? 2 : 1 );
+	return P6WINW;
 }
 
 
@@ -285,7 +275,7 @@ int DSP6::ScreenX( void )
 int DSP6::ScreenY( void )
 {
     // P6VXでは4:3モードでもスクリーンサイズは変化しない
-    return ( /*DISPNTSC ? HBBUS :*/ P6WINH ) * ( DISPSCAN ? 2 : 1 );
+    return P6WINH;
 }
 
 
@@ -319,140 +309,58 @@ HWINDOW DSP6::GetWindowHandle( void )
 // 引数:	なし
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-#define	RESO43		(8)		/* 中間色計算用分解能(1ラインをRESO43分割する) */
+#define	RESO43		256		/* 中間色計算用分解能(1ラインをRESO43分割する) */
 bool DSP6::UpdateSubBuf( void )
 {
 	PRINTD( GRP_LOG, "[GRP][UpdateSubBuf]\n" );
 	
 	VSurface *BBuf = vm->vdg;
-	bool dscan = DISPSCAN;
 	bool dntsc = DISPNTSC;
+	bool dscan = DISPSCAN;
+	int brscan = vm->el->cfg->GetScanLineBr();
 	
 	if( !BBuf ) return false;
 	if( !RefreshSubBuf() ) return false;
 	
-    if( !dscan /*&& !dntsc*/ ){	// P6VXではスキャンラインのみソフトウェアで処理する。
-		// そのままコピー
-		BBuf->Blit( NULL, SBuf, NULL );
-	}else{
-		switch( SBuf->Bpp() ){
-		case 8:		// 8bitモード
-			PRINTD( GRP_LOG, " -> 8bit" );
-			for( int y=0; y<SBuf->Height(); y += dscan ? 2 : 1 ){
-				int y0 = ( y * BBuf->Height() ) / SBuf->Height();
-				
-				DWORD *soff = (DWORD *)BBuf->GetPixels() + BBuf->Pitch()/sizeof(DWORD) * y0;
-				DWORD *doff = (DWORD *)SBuf->GetPixels() + SBuf->Pitch()/sizeof(DWORD) * y;
-				DWORD *eoff = doff + SBuf->Pitch()/sizeof(DWORD);
-				
-				// 8bitの時は中間色処理なし
-				for( int x=0; x<BBuf->Width()/(int)sizeof(DWORD); x++ ){
-					if( dscan ){
-						BYTE b1,b2,b3,b4;
-						
-						DWORD s = *soff++;
-						DWTOB( s, b1, b2, b3, b4 );
-						DWORD d = BTODW( b4, b4, b3, b3 );
-						*doff++ = d;
-						*eoff++ = d|0x80808080;
-						d = BTODW( b2, b2, b1, b1 );
-						*doff++ = d;
-						*eoff++ = d|0x80808080;
-					}else{
-						*doff++ = *soff++;
-					}
-				}
-			}
-			break;
+	for( int y=0; y<SBuf->Height(); y++ ){
+		DWORD y0 = ( y * BBuf->Height() ) / SBuf->Height();
+		DWORD a1 = ( y * BBuf->Height() * RESO43 ) / SBuf->Height() - y0 * RESO43;
+		DWORD a2 = RESO43 - a1;
+		
+		DWORD *sof1 = (DWORD *)BBuf->GetPixels() + BBuf->Pitch()/sizeof(DWORD) * y0;
+		DWORD *sof2 = sof1 + ( y0 < (DWORD)BBuf->Height()-1 ? BBuf->Pitch()/sizeof(DWORD) : 0 );
+		DWORD *doff = (DWORD *)SBuf->GetPixels() + SBuf->Pitch()/sizeof(DWORD) * y ;
+		
+		for( int x=0; x<(int)BBuf->Width(); x++ ){
+			DWORD r,g,b;
+			DWORD d1 = *sof1++;
+			DWORD d2 = *sof2++;
 			
-		case 16:	// 16bitモード
-			PRINTD( GRP_LOG, " -> 16bit" );
-			for( int y=0; y<SBuf->Height(); y += dscan ? 2 : 1 ){
-				int y0 = ( y * BBuf->Height() ) / SBuf->Height();
-				int a1 = ( y * BBuf->Height() * RESO43 ) / SBuf->Height() - y0 * RESO43;
-				int a2 = RESO43 - a1;
-				
-				BYTE *soff = (BYTE *)BBuf->GetPixels() + BBuf->Pitch() * y0;
-				DWORD *doff = (DWORD *)SBuf->GetPixels() + ( SBuf->Pitch() * y ) / sizeof(DWORD);
-				DWORD *eoff = doff + SBuf->Pitch() / sizeof(DWORD);
-				
-				for( int x=0; x<(int)BBuf->Width(); x += dscan ? 1 : 2 ){
-					BYTE d1 = *(soff);
-					BYTE d2 = *((soff++)+BBuf->Pitch());
-					
-					BYTE r = ( Pal->colors[d1].r * a2 + Pal->colors[d2].r * a1 ) / RESO43;
-					BYTE g = ( Pal->colors[d1].g * a2 + Pal->colors[d2].g * a1 ) / RESO43;
-					BYTE b = ( Pal->colors[d1].b * a2 + Pal->colors[d2].b * a1 ) / RESO43;
-					
-					DWORD dd = ( (DWORD)( r & 0xf8 ) << 8 ) | ( (DWORD)( g & 0xfc ) << 3 ) | ( (DWORD)( b & 0xf8 ) >> 3 );
-					
-					if( dscan ){
-						dd |= dd << 16;
-						*(doff++) = dd;
-						
-						r = ( r * SLBr ) / 100;
-						g = ( g * SLBr ) / 100;
-						b = ( b * SLBr ) / 100;
-						
-						DWORD ed = ( (DWORD)( r & 0xf8 ) << 8 ) | ( (DWORD)( g & 0xfc ) << 3 ) | ( (DWORD)( b & 0xf8 ) >> 3 );
-						
-						ed |= ed << 16;
-						*(eoff++) = ed;
-					}else{
-						d1 = *(soff);
-						d2 = *((soff++)+BBuf->Pitch());
-						r = ( Pal->colors[d1].r * a2 + Pal->colors[d2].r * a1 ) / RESO43;
-						g = ( Pal->colors[d1].g * a2 + Pal->colors[d2].g * a1 ) / RESO43;
-						b = ( Pal->colors[d1].b * a2 + Pal->colors[d2].b * a1 ) / RESO43;
-						
-						dd |= ( (DWORD)( r & 0xf8 ) << 24 ) | ( (DWORD)( g & 0xfc ) << 19 ) | ( (DWORD)( b & 0xf8 ) << 13 );
-						
-						*(doff++) = dd;
-					}
-				}
+			if( dntsc ){
+				r = ( ( ( (d1>>RSHIFT32)&0xff ) * a2 + ( (d2>>RSHIFT32)&0xff ) * a1 ) / RESO43 ) & 0xff;
+				g = ( ( ( (d1>>GSHIFT32)&0xff ) * a2 + ( (d2>>GSHIFT32)&0xff ) * a1 ) / RESO43 ) & 0xff;
+				b = ( ( ( (d1>>BSHIFT32)&0xff ) * a2 + ( (d2>>BSHIFT32)&0xff ) * a1 ) / RESO43 ) & 0xff;
+			}else{
+				r = (d1>>RSHIFT32)&0xff;
+				g = (d1>>GSHIFT32)&0xff;
+				b = (d1>>BSHIFT32)&0xff;
 			}
-			break;
 			
-		case 24:	// 24bitモード
-			PRINTD( GRP_LOG, " -> 24bit" );
-			for( int y=0; y<SBuf->Height(); y += dscan ? 2 : 1 ){
-				int y0 = ( y * BBuf->Height() ) / SBuf->Height();
-				int a1 = ( y * BBuf->Height() * RESO43 ) / SBuf->Height() - y0 * RESO43;
-				int a2 = RESO43 - a1;
-				
-				BYTE *soff = (BYTE *)BBuf->GetPixels() + BBuf->Pitch() * y0;
-				BYTE *doff = (BYTE *)SBuf->GetPixels() + SBuf->Pitch() * y;
-				BYTE *eoff = doff + SBuf->Pitch();
-				
-				for( int x=0; x<(int)BBuf->Width(); x++ ){
-					BYTE d1 = *(soff);
-					BYTE d2 = *((soff++)+BBuf->Pitch());
-					
-					BYTE r = ( Pal->colors[d1].r * a2 + Pal->colors[d2].r * a1 ) / RESO43;
-					BYTE g = ( Pal->colors[d1].g * a2 + Pal->colors[d2].g * a1 ) / RESO43;
-					BYTE b = ( Pal->colors[d1].b * a2 + Pal->colors[d2].b * a1 ) / RESO43;
-					
-					PUT3BYTE( b, g, r, doff );
-					if( dscan ){
-						PUT3BYTE( b, g, r, doff );
-						
-						r = ( r * SLBr ) / 100;
-						g = ( g * SLBr ) / 100;
-						b = ( b * SLBr ) / 100;
-						
-						PUT3BYTE( b, g, r, eoff );
-						PUT3BYTE( b, g, r, eoff );
-					}
-				}
+			if( dscan && y&1 ){
+				r = ( ( r * brscan ) / 100 ) & 0xff;
+				g = ( ( g * brscan ) / 100 ) & 0xff;
+				b = ( ( b * brscan ) / 100 ) & 0xff;
 			}
+			*doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
+			*doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
 		}
 	}
 	
-	PRINTD( GRP_LOG, " -> %sScanLine -> OK\n", dscan ? "" : "No " );
+	PRINTD( GRP_LOG, " -> %sScanLine -> OK\n", DISPSCAN ? "" : "No " );
 	
     // 4:3表示有効の場合、表示比率を設定する
     if(DISPNTSC){
-        SBuf->SetAspectRatio(double(HBBUS) / P6WINH);
+        SBuf->SetAspectRatio(double(HBBUS) / (P6WINH));
     } else {
         SBuf->SetAspectRatio(1.0);
     }
@@ -484,18 +392,15 @@ bool DSP6::RefreshSubBuf( void )
 	}
 	
 	// サブバッファ作成
-	PRINTD( GRP_LOG, " Create SubBuffer X:%d Y:%d BPP:%d\n", ScreenX(), ScreenY(), Bpp );
+	PRINTD( GRP_LOG, " Create SubBuffer X:%d Y:%d\n", ScreenX(), ScreenY() );
 	SBuf = new VSurface;
 	if( !SBuf ) return false;
 	
-	if( !SBuf->InitSurface( ScreenX(), ScreenY(), Bpp ) ){
+	if( !SBuf->InitSurface( ScreenX(), ScreenY() ) ){
 		delete SBuf;
 		SBuf = NULL;
 		return false;
 	}
-	
-	// パレット設定
-	if( Bpp == 8 ) SBuf->SetPalette( Pal->colors );
 	
 	return true;
 }
@@ -507,7 +412,7 @@ bool DSP6::RefreshSubBuf( void )
 // 引数:	path	スクリーンショット格納パス
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void DSP6::SnapShot( char *path )
+void DSP6::SnapShot( const char *path )
 {
 	PRINTD( GRP_LOG, "[GRP][SnapShot]\n" );
 	
@@ -520,7 +425,7 @@ void DSP6::SnapShot( char *path )
 	
 	// スナップショットファイル名を決める
 	do{
-		sprintf( img_file, "%s/%s%03d.%s", path, img_name, ++Index, IMG_EXT );
+		sprintf( img_file, "%s%s%03d.%s", path, img_name, ++Index, IMG_EXT );
 	}while( OSD_FileExist( img_file ) || (Index > 999) );
 	
 	// 連番が有効なら画像ファイル保存
@@ -528,13 +433,3 @@ void DSP6::SnapShot( char *path )
 }
 
 
-// [メモ] http://www.joochan.net/rgb-convert.html
-// RGB <-> YIQ
-
-// Y =  0.2989 * R + 0.5866 * G + 0.1145 * B
-// I =  0.5959 * R - 0.2750 * G - 0.3210 * B
-// Q =  0.2065 * R - 0.4969 * G + 0.2904 * B
-
-// R = Y + 0.9489 * I + 0.6561 * Q
-// G = Y - 0.2645 * I - 0.6847 * Q
-// B = Y - 1.1270 * I + 1.8050 * Q

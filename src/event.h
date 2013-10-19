@@ -1,7 +1,7 @@
 #ifndef EVENT_H_INCLUDED
 #define EVENT_H_INCLUDED
 
-#include <stdint.h>
+#include "typedef.h"
 
 #include "keydef.h"
 
@@ -26,6 +26,7 @@ typedef enum {
 	EV_REPLAY,
 	EV_FPSUPDATE,
 	EV_DEBUGMODEBP,
+	EV_DROPFILE,
     EV_CONTEXTMENU,
 	EndofEvent
 } EventType;
@@ -96,6 +97,11 @@ typedef struct {
 	uint16_t addr;
 } Event_BreakPoint;
 
+// Drag & Drop
+typedef struct {
+	EventType type;		// EV_DROPFILE
+	char *file;			// イベント処理後に必ずメモリを開放する
+} Event_Drop;
 
 // イベント情報共用体
 typedef union Event {
@@ -110,6 +116,7 @@ typedef union Event {
 	Event_Replay replay;
 	Event_FPSUpdate fps;
 	Event_BreakPoint bp;
+	Event_Drop drop;
 } Event;
 
 

@@ -4,7 +4,6 @@
 #include "typedef.h"
 #include "device.h"
 #include "ini.h"
-#include "p6device.h"
 #include "vsurface.h"
 #include "device/mc6847.h"
 
@@ -12,7 +11,7 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class VDG6 : public P6DEVICE, public VSurface, public virtual cMC6847core, public IDoko {
+class VDG6 : public Device, public VSurface, public virtual MC6847core, public IDoko {
 protected:
 	static const BYTE NJM6_TBL[][2];			// 色にじみカラーコードテーブル
 	
@@ -38,25 +37,29 @@ protected:
 	virtual WORD GerAttrAddr() = 0;				// ATTRアドレス取得
 	
 public:
-	VDG6( VM6 *, const P6ID& );					// コンストラクタ
+	VDG6( VM6 *, const ID& );					// コンストラクタ
 	virtual ~VDG6();							// デストラクタ
 	
 	void EventCallback( int, int );				// イベントコールバック関数
 	
 	virtual bool Init();						// 初期化
 	bool IsDisp();								// 表示区間フラグ取得
+	virtual void SetColors( VPalette * ) = 0;	// カラーテーブル設定
+	
+	// ------------------------------------------
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
+	// ------------------------------------------
 };
 
 
-class VDG60 : public VDG6, public cMC6847_1, public Device {
+class VDG60 : public VDG6, public MC6847 {
 protected:
 	// カラーコード
 	static const BYTE COL60_AN[];
 	static const BYTE COL60_SG[];
 	static const BYTE COL60_CG[][8];
 	static const BYTE COL60_RG[][2];
-	
-	BYTE GetFont0( WORD );						// Font0(VDG Font)データ取得
 	
 	WORD GerVramAddr();							// VRAMアドレス取得
 	WORD GerAttrAddr();							// ATTRアドレス取得
@@ -74,6 +77,8 @@ public:
 	VDG60( VM6 *, const ID& );					// コンストラクタ
 	virtual  ~VDG60();							// デストラクタ
 	
+	void SetColors( VPalette * );				// カラーテーブル設定
+	
 	// デバイスID
 	enum IDOut{ outB0H=0 };
 	enum IDIn {};
@@ -86,7 +91,7 @@ public:
 
 
 
-class VDG62 : public VDG6, public cMC6847_2, public Device {
+class VDG62 : public VDG6, public PCZ80_07 {
 protected:
 	// カラーコード
 	static const BYTE COL62_AN[];
@@ -118,8 +123,10 @@ protected:
 	BYTE InC1H( int );
 	
 public:
-	VDG62( VM6 *, const P6ID& );				// コンストラクタ
+	VDG62( VM6 *, const ID& );					// コンストラクタ
 	virtual  ~VDG62();							// デストラクタ
+	
+	void SetColors( VPalette * );				// カラーテーブル設定
 	
 	// デバイスID
 	enum IDOut{ outB0H=0, outC0H, outC1H };

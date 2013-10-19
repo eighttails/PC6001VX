@@ -21,7 +21,7 @@ pandora:{
 target.path = /media/sddev/pc6001vx
 QTPLUGIN += qico qxcb qgtk2
 INSTALLS += target
-DEFINES += NOJOYSTICK NOOPENGL NOMONITOR
+DEFINES += NOJOYSTICK NOOPENGL
 }
 
 #Windows用設定
@@ -128,7 +128,6 @@ HEADERS  += \
     src/memory.h \
     src/movie.h \
     src/osd.h \
-    src/p6device.h \
     src/p6t2.h \
     src/pc6001v.h \
     src/pio.h \
@@ -172,7 +171,8 @@ HEADERS  += \
     src/Qt/renderview.h \
     src/Qt/qtel6.h \
     src/Qt/qtutil.h \
-    openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h
+    openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
+    src/id_menu.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

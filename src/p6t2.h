@@ -32,31 +32,39 @@ public:
 	cP6DATA();							// コンストラクタ
 	~cP6DATA();							// デストラクタ
 	
-	cP6DATA *Next()  { return next; }	// 次のブロックへのポインタを返す
-	cP6DATA *Before(){ return before; }	// 前のブロックへのポインタを返す
-	
-	int SetData( FILE *, int );			// データセット
-	void SetPeriod( int, int );			// 無音部,ぴー音時間セット
-	
-	void GetInfo( P6TBLKINFO * );		// P6T ブロック情報取得
-	int GetSize(){ return Info.DNum; }	// DATAブロックサイズ取得
-	
-	BYTE Read( int );					// 1Byte読込み
+	cP6DATA *Next();					// 次のブロックへのポインタを返す
+	cP6DATA *Before();					// 前のブロックへのポインタを返す
 	
 	cP6DATA *New();						// 新規DATAブロック追加
 	cP6DATA *Clone();					// コピー作成
 	cP6DATA *Clones();					// 全コピー作成
 	
+	P6TBLKINFO *GetInfo();				// P6T ブロック情報取得
+	
+	int SetData( FILE *, int );			// データセット
+	void SetPeriod( int, int );			// 無音部,ぴー音時間セット
+	
+	BYTE Read( int );					// 1Byte読込み
+	
 	int Writefd( FILE * );				// ファイルに書込み(データ)
 };
 
 
+// P6T PART情報
+struct P6TPRTINFO {
+	BYTE ID;				// ID番号
+	char Name[17];			// データ名(16文字+'00H')
+	WORD Baud;				// ボーレート(600/1200)
+	
+	P6TPRTINFO() : ID(0), Baud(1200)
+	{
+		INITARRAY( Name, 0 );
+	}
+};
 // PARTクラス
 class cP6PART {
 private:
-	BYTE ID;								// ID番号
-	char Name[17];							// データ名(16文字+'00H')
-	WORD Baud;								// ボーレート(600/1200)
+	P6TPRTINFO Info;						// P6T PART情報
 	cP6DATA *Data;							// 先頭DATAブロックへのポインタ
 	
 	cP6PART *next;							// 次のPARTへのポインタ
@@ -71,26 +79,25 @@ public:
 	cP6PART();								// コンストラクタ
 	~cP6PART();								// デストラクタ
 	
-	cP6PART *Next()  { return next; }		// 次のPARTへのポインタを返す
-	cP6PART *Before(){ return before; }		// 前のPARTへのポインタを返す
+	cP6PART *Next();						// 次のPARTへのポインタを返す
+	cP6PART *Before();						// 前のPARTへのポインタを返す
 	cP6PART *Part( int );					// 任意のPARTへのポインタを返す
 	
 	cP6PART *New();							// 新規PART追加
-	cP6PART *Link( cP6PART * );				// 末尾にPART連結
 	cP6PART *Clone();						// コピー作成
-	
-	cP6DATA *FirstData(){ return Data; }	// 先頭DATAブロックへのポインタ取得
-	BYTE GetID()   { return ID; }			// ID番号取得
-	const char *GetName(){ return Name; }	// データ名取得
-	WORD GetBaud() { return Baud; }			// ボーレート取得
+	cP6PART *Link( cP6PART * );				// 末尾にPART連結
 	
 	cP6DATA *NewBlock();					// 新規DATAブロック追加
 	
 	int GetBlocks();						// 全DATAブロック数を取得
 	int GetSize();							// PARTサイズ取得
 	
+	cP6DATA *FirstData();					// 先頭DATAブロックへのポインタ取得
+	
+	P6TPRTINFO *GetInfo();					// P6T PART情報取得
+	
 	int SetName( const char * );			// データ名設定
-	void SetBaud( int baud ){ Baud = baud; }	// ボーレート設定
+	void SetBaud( int );					// ボーレート設定
 	
 	bool Readf( FILE * );					// ファイルから全PARTを読込み
 	int Writefd( FILE * );					// ファイルに書込み(データ)
@@ -98,24 +105,28 @@ public:
 };
 
 
+// オートスタート情報
+struct P6TAUTOINFO {
+	bool Start;				// オートスタートフラグ
+	BYTE BASIC;				// BASICモード(PC-6001の場合は無意味)
+	BYTE Page;				// ページ数
+	WORD ASKey;				// オートスタートコマンドサイズ
+	char *ask;				// オートスタートコマンド格納領域へのポインタ
+	
+	P6TAUTOINFO() : Start(false), BASIC(1), Page(1), ASKey(0), ask(NULL) {}
+};
 // P6Tクラス
 class cP6T : public IDoko {
 private:
 	char Name[17];							// データ名(16文字+'00H')
 	BYTE Version;							// バージョン
 	
-	bool Start;								// オートスタートフラグ
-	BYTE BASIC;								// BASICモード(PC-6001の場合は無意味)
-	BYTE Page;								// ページ数
-	WORD ASKey;								// オートスタートコマンドサイズ
-	WORD EHead;								// 拡張情報サイズ(64KBまで)
+	P6TAUTOINFO Ainfo;						// オートスタート情報
 	
-	char *ask;								// オートスタートコマンド格納領域へのポインタ
+	WORD EHead;								// 拡張情報サイズ(64KBまで)
 	char *exh;								// 拡張情報格納領域へのポインタ
 	
 	cP6PART *Part;							// 先頭PARTへのポインタ
-	
-	int Boost;								// ボーレート倍率(標準が1)
 	
 	// 読込み関係ワーク
 	cP6PART *rpart;							// 現在の読込みPART
@@ -134,33 +145,27 @@ public:
 	int GetBlocks();						// 全DATAブロック数を取得
 	int GetParts();							// 全PART数を取得
 	
-	cP6PART *GetPart( int num ){ return Part->Part(num); }	// 任意PARTへのポインタ取得
+	cP6PART *GetPart( int );				// 任意PARTへのポインタ取得
 	
 	int SetName( const char * );			// データ名設定
-	char *GetName(){ return Name; }			//         取得
-	bool GetStart(){ return Start; }		// オートスタートフラグ取得
-	BYTE GetBASIC(){ return BASIC; }		// BASICモード取得
-	BYTE GetPage() { return Page; }			// ページ数取得
+	const char *GetName();					//         取得
+	
+	P6TAUTOINFO *GetAutoStartInfo();		// オートスタート情報取得
 	
 	int GetSize();							// ベタイメージサイズ取得
-	
-	char *GetAutoStartStr(){ return ask; }	// オートスタート文字列取得
-	WORD GetAutoStartLen(){ return ASKey; }	// オートスタート文字数取得
 	
 	BYTE ReadOne();							// 1文字読込み
 	
 	bool IsSWaiting();						// 無音部待ち?
 	bool IsPWaiting();						// ぴー音待ち?
 	
-	bool Readf( char * );					// ファイルから読込み
-	bool Writef( char * );					// ファイルに書込み
+	bool Readf( const char * );				// ファイルから読込み
+	bool Writef( const char * );			// ファイルに書込み
 	
 	int GetCount();							// TAPEカウンタ取得
 	void SetCount( int );					//             設定
 	
 	void Reset();							// リセット(読込み関係ワーク初期化)
-	
-	void SetBoost( int );					// ボーレート倍率設定
 	
 	// ------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE

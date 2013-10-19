@@ -5,9 +5,9 @@
 #include "config.h"
 #include "log.h"
 #include "keyboard.h"
-#include "cpus.h"
 #include "osd.h"
 
+#include "p6vm.h"
 
 #define	NOM	( COUNTOF( P6Matrix ) / 2 )
 
@@ -384,7 +384,7 @@ enum KeyGroup
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-KEY6::KEY6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id),
+KEY6::KEY6( VM6 *vm, const ID& id ) : Device(vm,id),
 	ON_SHIFT(false), ON_GRAPH(false), ON_KANA(false), ON_KKANA(false),
 	ON_CTRL(false), ON_STOP(false), ON_CAPS(false)
 {
@@ -401,7 +401,7 @@ KEY6::KEY6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id),
 	INITARRAY( P6Mtrx,   0xff );
 }
 
-KEY60::KEY60( VM6 *vm, const P6ID& id ) : KEY6(vm,id)
+KEY60::KEY60( VM6 *vm, const ID& id ) : KEY6(vm,id)
 {
 	// MODE と CAPS 無効化
 	MatTable[KP6_MODE] = 0;
@@ -634,7 +634,7 @@ bool KEY6::ScanMatrix( void )
 			// bit 2 : ON_FUNC
 			
 			PRINTD( KEY_LOG, "[Intr] %02X", KeyData );
-			vm->cpus->ReqKeyIntr( ON_STOP ? 1 : 0 | ON_GRAPH ? 2 : 0 | ON_FUNC ? 4 : 0, KeyData );
+			vm->CpusReqKeyIntr( ON_STOP ? 1 : 0 | ON_GRAPH ? 2 : 0 | ON_FUNC ? 4 : 0, KeyData );
 			ON_STOP = false;
 		}
 	}

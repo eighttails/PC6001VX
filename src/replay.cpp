@@ -72,7 +72,7 @@ int REPLAY::GetStatus( void )
 // 引数:	filename	出力ファイル名
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool REPLAY::StartRecord( char *filename )
+bool REPLAY::StartRecord( const char *filename )
 {
 	// とりあえずエラー設定
 	Error::SetError( Error::ReplayPlayError );
@@ -99,7 +99,7 @@ bool REPLAY::StartRecord( char *filename )
 	RepST  = REP_RECORD;
 	
 	// 無事だったのでエラーなし
-	Error::SetError( Error::NoError );
+	Error::Reset();
 	
 	return true;
 }
@@ -161,7 +161,7 @@ bool REPLAY::ReplayWriteFrame( BYTE *mt, bool chg )
 // 引数:	filename	入力ファイル名
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool REPLAY::StartReplay( char *filename )
+bool REPLAY::StartReplay( const char *filename )
 {
 	// とりあえずエラー設定
 	Error::SetError( Error::ReplayPlayError );
@@ -189,11 +189,11 @@ bool REPLAY::StartReplay( char *filename )
 	
 	memset( Matrix, 0xff, MSize );	// キーマトリクスバッファクリア
 	
-	RepFrm = 0;
+	RepFrm = 1;
 	RepST  = REP_REPLAY;
 	
 	// 無事だったのでエラーなし
-	Error::SetError( Error::NoError );
+	Error::Reset();
 	
 	return true;
 }

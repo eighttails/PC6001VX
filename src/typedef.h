@@ -26,6 +26,7 @@ typedef void *HCRSECT;				// クリティカルセクション
 typedef void *HSEMAPHORE;			// セマフォ
 typedef void *HTIMERID;				// タイマID
 typedef void *HWINDOW;				// ウィンドウハンドル的な
+typedef void *HSURFACE;				// サーフェス的な
 typedef void *HJOYINFO;				// ジョイスティック
 
 // OSD関連コールバック関数へのポインタ
@@ -118,12 +119,6 @@ typedef DWORD (*CBF_TMR)( DWORD, void * );		// タイマ
 #define min(a,b) ((a)<(b)?(a):(b))
 #endif
 
-// Mac用文字コード変換 ShiftJIS -> UTF-8
-#ifdef __APPLE__
-#define FOPENEN(a,b)	fopen(Sjis2UTF8(a),b)
-#else
-#define FOPENEN(a,b)	fopen(UTF8toLocal(a),b)
-#endif
 
 
 #endif	// TYPEDEF_H_INCLUDED

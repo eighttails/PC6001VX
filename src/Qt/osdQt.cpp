@@ -14,8 +14,18 @@
 #include "../common.h"
 #include "../pc6001v.h"
 #include "../joystick.h"
+#include "../config.h"
+#include "../error.h"
+#include "configdialog.h"
+#include "aboutdialog.h"
 
 #include "renderview.h"
+
+///////////////////////////////////////////////////////////
+// 仕方なしにスタティック変数
+///////////////////////////////////////////////////////////
+static CFG6 *ccfg = NULL;				// 環境設定オブジェクトポインタ
+static CFG6 *ecfg = NULL;				// 環境設定オブジェクトポインタ(編集用)
 
 //エミュレータ内部用イベントキュー
 QMutex eventMutex;
@@ -26,7 +36,6 @@ QWaitCondition eventEmitted;
 QElapsedTimer elapsedTimer;
 
 std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
-QVector<QRgb> PaletteTable;              //パレットテーブル
 
 //サウンド関連
 QPointer<QIODevice> audioBuffer = NULL;
@@ -698,7 +707,7 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 //			fsflag		true:フルスクリーン false:ウィンドウ
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
+bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
 {
     static QGraphicsScene* scene = new QGraphicsScene();
     static RenderView* view = new RenderView(scene);
@@ -712,7 +721,6 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, int bpp, bool fsflag )
 
     QMetaObject::invokeMethod(qApp, "createWindow",
                               Q_ARG(HWINDOW, *pwh),
-                              Q_ARG(int, bpp),
                               Q_ARG(bool, fsflag));
 
     return true;
@@ -777,23 +785,6 @@ int OSD_GetWindowBPP( HWINDOW Wh )
 
 
 ////////////////////////////////////////////////////////////////
-// パレット設定
-//
-// 引数:	Wh			ウィンドウハンドル
-//			pal			パレットへのポインタ
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
-{
-    PaletteTable.clear();
-    for (int i=0; i < pal->ncols; i++){
-        COLOR24& col = pal->colors[i];
-        PaletteTable.push_back(qRgb(col.r, col.g, col.b));
-    }
-    return true;
-}
-
-////////////////////////////////////////////////////////////////
 // ウィンドウ反映
 //
 // 引数:	Wh			ウィンドウハンドル
@@ -828,12 +819,11 @@ void OSD_ClearWindow( HWINDOW Wh )
 //			x,y			転送先座標
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y, VPalette *pal )
+void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
 {
     VRect src1,drc1;
 
-    QImage image(src->Width(), src->Height(), QImage::Format_Indexed8);
-    image.setColorTable(PaletteTable);
+    QImage image(src->Width(), src->Height(), QImage::Format_ARGB32_Premultiplied);
 
     // 転送元範囲設定
     src1.x = 0;
@@ -847,7 +837,7 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y, VPalette *pal )
     drc1.x = 0;
     drc1.y = 0;
 
-    BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x * src->Bpp() / 8;
+    BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x * 4;
 
     for( int i=0; i < src1.h; i++ ){
         BYTE *pdst = (BYTE *)image.scanLine(i);
@@ -926,9 +916,9 @@ void DelDelimiter( char *path )
 // 引数:	なし
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-bool OSD_CreateConfigPath()
+bool OSD_CreateModulePath()
 {
-    QString basePath = QString::fromUtf8(OSD_GetConfigPath());
+    QString basePath = QString::fromUtf8(OSD_GetModulePath());
 
     // ROMイメージ
     if(!QDir(basePath).mkpath(QString::fromUtf8(ROM_DIR)))
@@ -967,7 +957,7 @@ bool OSD_CreateConfigPath()
 // 引数:	なし
 // 返値:	char *		取得した文字列へのポインタ
 ////////////////////////////////////////////////////////////////
-const char *OSD_GetConfigPath( void )
+const char *OSD_GetModulePath( void )
 {
     PRINTD( OSD_LOG, "[OSD][OSD_GetModulePath]\n" );
     static char mpath[PATH_MAX] = "";	// モジュールパス取得用
@@ -1002,6 +992,21 @@ const char *OSD_GetFileNamePart( const char *path )
     return fileName.constData();
 }
 
+////////////////////////////////////////////////////////////////
+// フルパスから拡張子名を取得
+//
+// 引数:	path		フルパス格納バッファポインタ
+// 返値:	char *		拡張子名の開始ポインタ
+////////////////////////////////////////////////////////////////
+const char *OSD_GetFileNameExt( const char *path )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_GetFileNameExt]\n" );
+
+    static QByteArray ext;
+    QFileInfo info(QString::fromUtf8(path));
+    ext = info.suffix().toUtf8();
+    return ext.constData();
+}
 
 ////////////////////////////////////////////////////////////////
 // ファイルの存在チェック
@@ -1459,7 +1464,7 @@ void OSD_UnlockAudio( void )
 //			size		文字サイズ(半角文字幅ピクセル数)
 // 返値:	bool		true:作成成功 false:作成失敗
 ////////////////////////////////////////////////////////////////
-bool OSD_CreateFont( char *hfile, char *zfile, int size )
+bool OSD_CreateFont( const char *hfile, const char *zfile, int size )
 {
     // 何もしない
     // フォントファイルはQtのリソースから読み込む
@@ -1676,4 +1681,53 @@ bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
 #else
     return false;
 #endif
+}
+
+///////////////////////////////////////////////////////////
+// 環境設定ダイアログ表示
+//
+// 引数:	hwnd		ウィンドウハンドル
+// 返値:	int			1:OK 0:CANCEL -1:ERROR
+///////////////////////////////////////////////////////////
+int OSD_ConfigDialog( HWINDOW hwnd )
+{
+    // INIファイルを開く
+    try{
+        ecfg = new CFG6();
+        if( !ecfg->Init() ) throw Error::IniReadFailed;
+    }
+    // new に失敗した場合
+    catch( std::bad_alloc ){
+        return -1;
+    }
+    // 例外発生
+    catch( Error::Errno i ){
+        delete ecfg;
+        ecfg = NULL;
+        return -1;
+    }
+
+    ConfigDialog dialog(ecfg);
+    dialog.exec();
+    int ret = dialog.result();
+    // OKボタンが押されたならINIファイル書込み
+    if( ret == QDialog::Accepted) ecfg->Write();
+
+    delete ecfg;
+    ecfg = NULL;
+
+    return ret;
+}
+
+///////////////////////////////////////////////////////////
+// バージョン情報表示
+//
+// 引数:	hwnd		ウィンドウハンドル
+//			mdl			機種
+// 返値:	なし
+///////////////////////////////////////////////////////////
+void OSD_VersionDialog( HWINDOW hwnd, int mdl )
+{
+    AboutDialog dialog(mdl);
+    dialog.exec();
 }

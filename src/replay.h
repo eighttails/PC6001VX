@@ -32,11 +32,11 @@ public:
 	
 	int GetStatus();						// ステータス取得
 	
-	bool StartRecord( char * );				// リプレイ記録開始
+	bool StartRecord( const char * );		// リプレイ記録開始
 	void StopRecord();						// リプレイ記録停止
 	bool ReplayWriteFrame( BYTE *, bool );	// リプレイ1フレーム書出し
 	
-	bool StartReplay( char * );				// リプレイ再生開始
+	bool StartReplay( const char * );		// リプレイ再生開始
 	void StopReplay();						// リプレイ再生止
 	bool ReplayReadFrame( BYTE * );			// リプレイ1フレーム読込み
 	

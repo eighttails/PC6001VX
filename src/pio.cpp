@@ -1,10 +1,8 @@
 #include "config.h"
-#include "common.h"
 #include "pio.h"
-#include "cpus.h"
 #include "intr.h"
-#include "memory.h"
-#include "vdg.h"
+#include "p6vm.h"
+#include "common.h"
 
 /*
 BASIC ROM内ルーチン
@@ -111,7 +109,7 @@ cPRT::~cPRT()
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-void cPRT::Init( char *filename )
+void cPRT::Init( const char *filename )
 {
 	if( filename && *filename ){
 		// ファイルパス保存
@@ -156,7 +154,7 @@ void cPRT::Strobe( bool st )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-PIO6::PIO6( VM6 *vm, const ID& id ) : P6DEVICE(vm,id), Device(id){}
+PIO6::PIO6( VM6 *vm, const ID& id ) : Device(vm,id) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -175,7 +173,7 @@ void PIO6::JobWriteA( BYTE data )
 {
 	// モード2で DAK=H,OBF=L(つまりWR0立上り) なら8049に対して割込み要求
 	if( ModeA == 2 && HSDAK0 && !HSOBF0 )
-		vm->cpus->ExtIntr();
+		vm->CpusExtIntr();
 }
 
 
@@ -204,10 +202,10 @@ void PIO6::JobWriteC1( BYTE data )
 	cPRT::Strobe( data&1 ? false : true );
 	
 	// CRT表示切替
-	vm->vdg->SetCrtDisp( data&2 ? true : false );
+	vm->VdgSetCrtDisp( data&2 ? true : false );
 	
 	// CG ROM BANK 切替
-	vm->mem->SetCGBank( data&4 ? false : true );
+	vm->MemSetCGBank( data&4 ? false : true );
 }
 
 
@@ -226,11 +224,11 @@ void PIO6::JobWriteD( BYTE data )
 		break;
 		
 	case 1: // CRT表示切替
-		vm->vdg->SetCrtDisp( data&1 ? true : false );
+		vm->VdgSetCrtDisp( data&1 ? true : false );
 		break;
 		
 	case 2: // CG ROM BANK 切替
-		vm->mem->SetCGBank( data&1 ? false : true );
+		vm->MemSetCGBank( data&1 ? false : true );
 		break;
 	}
 }
@@ -239,18 +237,18 @@ void PIO6::JobWriteD( BYTE data )
 ////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
-inline void PIO6::Out90H( int, BYTE data ){ WriteA( data ); }
-inline void PIO6::Out91H( int, BYTE data ){ WriteB( data ); }
-inline void PIO6::Out92H( int, BYTE data ){ WriteC( data ); }
-inline void PIO6::Out93H( int, BYTE data ){ WriteD( data ); }
-inline BYTE PIO6::In90H( int ){ return ReadA(); }
-inline BYTE PIO6::In92H( int ){ return ReadC(); }
-inline BYTE PIO6::In93H( int ){ return 0xff; }
+void PIO6::Out90H( int, BYTE data ){ WriteA( data ); }
+void PIO6::Out91H( int, BYTE data ){ WriteB( data ); }
+void PIO6::Out92H( int, BYTE data ){ WriteC( data ); }
+void PIO6::Out93H( int, BYTE data ){ WriteD( data ); }
+BYTE PIO6::In90H( int ){ return ReadA(); }
+BYTE PIO6::In92H( int ){ return ReadC(); }
+BYTE PIO6::In93H( int ){ return 0xff; }
 
-inline void PIO6::OutPBH( int, BYTE data ){ WriteAE( data ); }
-inline BYTE PIO6::InPBH( int ){ return ReadAE(); }
-inline BYTE PIO6::InIBF( int ){ return GetIBF() ? 1 : 0; }
-inline BYTE PIO6::InOBF( int ){ return GetOBF() ? 1 : 0; }
+void PIO6::OutPBH( int, BYTE data ){ WriteAE( data ); }
+BYTE PIO6::InPBH( int ){ return ReadAE(); }
+BYTE PIO6::InIBF( int ){ return GetIBF() ? 1 : 0; }
+BYTE PIO6::InOBF( int ){ return GetOBF() ? 1 : 0; }
 
 
 ////////////////////////////////////////////////////////////////

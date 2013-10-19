@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-AVI6::AVI6( void ) : vfp(NULL), ABPP(8), AVIRLE(true), PosMOVI(0),
+AVI6::AVI6( void ) : vfp(NULL), ABPP(32), PosMOVI(0),
 						RiffSize(0), MoviSize(0), anum(0) {}
 
 
@@ -135,11 +135,9 @@ bool AVI6::Init( void )
 	ZeroMemory( &vsh, sizeof(AVISTRMHEADER6) );
 	ZeroMemory( &ash, sizeof(AVISTRMHEADER6) );
 	ZeroMemory( &vbf, sizeof(BMPINFOHEADER6) );
-	ZeroMemory( &pal, sizeof(RGBPAL6)*256 );
 	ZeroMemory( &awf, sizeof(WAVEFORMATEX6) );
 	
-	ABPP     = 8;
-	AVIRLE   = true;
+	ABPP     = 32;
 	
 	PosMOVI  = 0;
 	
@@ -157,21 +155,17 @@ bool AVI6::Init( void )
 //			sbuf		サブバッファへのポインタ
 //			vrate		フレームレート(fps)
 //			arate		音声サンプリングレート(Hz)
-//			rle			true:RLE使う false:RLE使わない
+//			bpp			色深度(16,24,32)
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool AVI6::StartAVI( char *filename, VSurface *sbuf, int vrate, int arate, bool rle )
+bool AVI6::StartAVI( const char *filename, VSurface *sbuf, int vrate, int arate, int bpp )
 {
 	Init();
 	
 	vfp = FOPENEN( filename, "w+b" );
 	if( !vfp ) return false;
 	
-	switch( sbuf->Bpp() ){
-	case 24: ABPP = 24; AVIRLE = false; break;
-	case 16: ABPP = 16; AVIRLE = false; break;
-	default: ABPP =  8; AVIRLE = rle;
-	}
+	ABPP = bpp;
 	
 	// AVIメインヘッダーの設定
 	// フレーム間の間隔をマイクロ秒単位で指定する。この値はファイルの全体のタイミングを示す。
@@ -224,7 +218,7 @@ bool AVI6::StartAVI( char *filename, VSurface *sbuf, int vrate, int arate, bool 
 	ash.fccType = CIDAUDS;
 	// 特定のデータハンドラを示す FOURCC を含む (オプション)。データハンドラは,ストリームに対して適切なハンドラである。
 	// オーディオおよびビデオストリームの場合は,インストール可能なコンプレッサまたはデコンプレッサを指定する。
-	vsh.fccHandler = ( (ABPP==8) && AVIRLE ) ? CIDRLE  : CIDDIB;
+	vsh.fccHandler = CIDDIB;
 	ash.fccHandler = 0x00000001;	//(PCM)
 	// データ ストリームに対するフラグを含む。これらのフラグの上位ワードのビットは,ストリームに含まれるデータのタイプに固有である。
 	// 以下の標準フラグが定義されている。
@@ -300,13 +294,7 @@ bool AVI6::StartAVI( char *filename, VSurface *sbuf, int vrate, int arate, bool 
 	vbf.biBitCount = ABPP;
 	// 使用されている,または要求されている圧縮のタイプを指定する。既存の圧縮フォーマットと新しい圧縮フォーマットの両方で
 	// このメンバを使用する。
-	switch( ABPP ){
-	case 16:
-	case 24: vbf.biCompression = 0; break;	// 0:BI_RGB
-	default:
-		if( AVIRLE ) vbf.biCompression = 1;	// 1:BI_RLE8
-		else         vbf.biCompression = 0; // 0:BI_RGB
-	}
+	vbf.biCompression = 0;	// 0:BI_RGB
 	// イメージのサイズをバイト単位で指定する。非圧縮RGBビットマップの場合は,0 に設定できる。
 	vbf.biSizeImage = sbuf->Width() * sbuf->Height() * ( ABPP / 8 );
 	// ビットマップのターゲットデバイスの水平解像度を 1メートルあたりのピクセル単位で指定する。アプリケーションはこの値を
@@ -318,23 +306,9 @@ bool AVI6::StartAVI( char *filename, VSurface *sbuf, int vrate, int arate, bool 
 	// ゼロの場合,ビットマップは,biCompression で指定される圧縮モードに対して,biBitCount メンバの値に対応する最大色数を使用する。
 	// Macの場合は256でないと色がおかしくなるらしい。(by 西田さん&Windyさん)
 	// でも24bitの時は0にしておかないとちゃんと再生されないみたい。
-	switch( ABPP ){
-	case 24: vbf.biClrUsed =   0; break;
-	case 16: vbf.biClrUsed =   0; break;
-	default: vbf.biClrUsed = 256;
-	}
+	vbf.biClrUsed = 0;
 	// ビットマップを表示するために重要とみなされるカラーインデックス数を指定する。この値がゼロの場合は,すべての色が重要とみなされる。
 	vbf.biClrImportant = 0;
-	
-	// パレット取得
-	if( ABPP == 8 ){
-		for( int i=0; i<sbuf->GetPalette()->ncols; i++ ){
-			pal[i].b        = sbuf->GetPalette()->colors[i].b;
-			pal[i].g        = sbuf->GetPalette()->colors[i].g;
-			pal[i].r        = sbuf->GetPalette()->colors[i].r;
-			pal[i].reserved = 0;
-		}
-	}
 	
 	// WAVEFORMATEX6構造体の設定
 	// オーディオストリームのオーディオ波形タイプを定義する。フォーマットタグの完全なリストは,Microsoft Visual C++ および
@@ -427,11 +401,11 @@ bool AVI6::AVIWriteFrame( VSurface *sbuf )
 	int xx = min( sbuf->Width(),  vbf.biWidth  );
 	int yy = min( sbuf->Height(), vbf.biHeight );
 	
-	FPUTDWORD( ( (ABPP==8) && AVIRLE ) ? CID00DC : CID00DB, vfp );
+	FPUTDWORD( CID00DB, vfp );
 	FPUTDWORD( vbf.biSizeImage, vfp );
 	
 	switch( ABPP ){
-	case 8:		// 8bitの場合
+/*	case 8:		// 8bitの場合
 		if( AVIRLE ){	// RLEの場合
 			long fnum = 0;
 			for( int y = yy - 1; y >= 0; y-- ){
@@ -460,14 +434,14 @@ bool AVI6::AVIWriteFrame( VSurface *sbuf )
 				fwrite( (BYTE *)sbuf->GetPixels() + sbuf->Pitch() * y, sizeof(BYTE), xx, vfp );
 		}
 		break;
-		
+*/		
 	case 16:	// 16bitの場合
 		for( int y = yy - 1; y >= 0; y-- ){
-			WORD *src = (WORD *)sbuf->GetPixels() + sbuf->Pitch() * y/sizeof(WORD);
+			DWORD *src = (DWORD *)sbuf->GetPixels() + sbuf->Pitch()/sizeof(DWORD) * y;
 			for( int x=0; x < xx; x++ ){
-				WORD dat = (((((*src)&sbuf->Rmask())>>sbuf->Rshift())<<sbuf->Rloss())&0xf8) << 7 |
-						   (((((*src)&sbuf->Gmask())>>sbuf->Gshift())<<sbuf->Gloss())&0xf8) << 2 |
-						   (((((*src)&sbuf->Bmask())>>sbuf->Bshift())<<sbuf->Bloss())&0xf8) >> 3;
+				WORD dat = (((*src)&RMASK32)>>(RSHIFT32+3))<<10 |
+						   (((*src)&GMASK32)>>(GSHIFT32+3))<<5 |
+						   (((*src)&BMASK32)>>(BSHIFT32+3));
 				FPUTWORD( dat, vfp );
 				src++;
 			}
@@ -476,14 +450,21 @@ bool AVI6::AVIWriteFrame( VSurface *sbuf )
 		
 	case 24:	// 24bitの場合
 		for( int y = yy - 1; y >= 0; y-- ){
-			BYTE *src = (BYTE *)sbuf->GetPixels() + sbuf->Pitch() * y;
+			DWORD *src = (DWORD *)sbuf->GetPixels() + sbuf->Pitch()/sizeof(DWORD) * y;
 			for( int x=0; x < xx; x++ ){
-				BYTE r,g,b;
-				GET3BYTE( b, g, r, src );
-				FPUTBYTE( b, vfp ); FPUTBYTE( g, vfp ); FPUTBYTE( r, vfp );
+				FPUTBYTE( ((*src)&BMASK32)>>BSHIFT32, vfp );
+				FPUTBYTE( ((*src)&GMASK32)>>GSHIFT32, vfp );
+				FPUTBYTE( ((*src)&RMASK32)>>RSHIFT32, vfp );
+				src++;
 			}
 		}
+		break;
+		
+	case 32:	// 32bitの場合
+		for( int y = yy - 1; y >= 0; y-- )
+			fwrite( (BYTE *)sbuf->GetPixels() + sbuf->Pitch() * y, sizeof(DWORD), xx, vfp );
 	}
+	
 	// 総フレーム数を1増やす
 	vmh.dwTotalFrames++;
 	
@@ -550,18 +531,8 @@ bool AVI6::WriteHeader( void )
 					putAVISTRMHEADER6( &vsh );
 					
 					fputs( "strf", vfp );
-					switch( ABPP ){
-					case 8:		// 8bitの場合
-						FPUTDWORD( sizeof(BMPINFOHEADER6) + sizeof(RGBPAL6)*256, vfp );
-						putBMPINFOHEADER6( &vbf );
-						fwrite( &pal, sizeof(BYTE), sizeof(RGBPAL6)*256, vfp );
-						break;
-						
-					case 16:	// 16bitの場合
-					case 24:	// 24bitの場合
-						FPUTDWORD( sizeof(BMPINFOHEADER6), vfp );
-						putBMPINFOHEADER6( &vbf );
-					}
+					FPUTDWORD( sizeof(BMPINFOHEADER6), vfp );
+					putBMPINFOHEADER6( &vbf );
 					
 				// オーディオ
 				fputs( "LIST", vfp );

@@ -46,7 +46,7 @@ public:
 	cIni();						// コンストラクタ
 	virtual ~cIni();			// デストラクタ
 	
-	bool Init( char * );		// 初期化
+	bool Init( const char * );	// 初期化
 	
 	bool IsReady(){ return Ready; }
 	

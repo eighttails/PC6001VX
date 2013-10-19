@@ -20,10 +20,10 @@ bool CheckFont( void )
     char FontFile[PATH_MAX];
     bool ret = true;
 
-    sprintf( FontFile, "%s%s/%s", OSD_GetConfigPath(), FONT_DIR, FONTH_FILE );
+    sprintf( FontFile, "%s%s/%s", OSD_GetModulePath(), FONT_DIR, FONTH_FILE );
     ret |= ( !OSD_FileExist( FontFile ) && !OSD_CreateFont( FontFile, NULL, FSIZE ) );
 
-    sprintf( FontFile, "%s%s/%s", OSD_GetConfigPath(), FONT_DIR, FONTZ_FILE );
+    sprintf( FontFile, "%s%s/%s", OSD_GetModulePath(), FONT_DIR, FONTZ_FILE );
     ret |= ( !OSD_FileExist( FontFile ) && !OSD_CreateFont( NULL, FontFile, FSIZE ) );
 
     return ret;
@@ -96,7 +96,7 @@ void QtP6VXApplication::startup()
     }
 
     // 設定ファイルパスを作成
-    if(!OSD_CreateConfigPath()){
+    if(!OSD_CreateModulePath()){
         exit();
         return;
     }
@@ -147,7 +147,7 @@ void QtP6VXApplication::startup()
     emit initialized();
 }
 
-void QtP6VXApplication::createWindow(HWINDOW Wh, int bpp, bool fsflag)
+void QtP6VXApplication::createWindow(HWINDOW Wh, bool fsflag)
 {
     RenderView* view = static_cast<RenderView*>(Wh);
     Q_ASSERT(view);
@@ -240,12 +240,11 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
 void QtP6VXApplication::showPopupMenu(int x, int y)
 {
     //メニュー表示中に右クリックすると二重にメニューが表示されてしまうため、その対処
-    static QMutex mutex;
-    if(mutex.tryLock()){
+    if(MenuMutex.tryLock()){
         P6Core->Stop();
         P6Core->ShowPopupImpl(x, y);
         P6Core->Start();
-        mutex.unlock();
+        MenuMutex.unlock();
     }
 }
 
@@ -399,7 +398,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         // ・エミュレーションポーズ中
         // 　例外としてF9キー(ポーズ解除)とF12(スナップショット)は
         // 　エミュレータで受け付ける
-        if(!(P6Core && P6Core->IsWorking())
+        if(!(P6Core && !P6Core->GetPauseEnable())
                 && keyCode != Qt::Key_F9
                 && keyCode != Qt::Key_F12){
             processKeyEventInQt = true;
@@ -408,6 +407,12 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         // 　最前面にある場合
         if(activeWindow() && activeWindow()->metaObject()->className() != QString("RenderView")){
             processKeyEventInQt = true;
+        }
+        // メニュー表示中の場合
+        if(!MenuMutex.tryLock()){
+            processKeyEventInQt = true;
+        } else {
+            MenuMutex.unlock();
         }
         if(processKeyEventInQt){
             return QtSingleApplication::notify(receiver, event);

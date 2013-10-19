@@ -3,14 +3,14 @@
 #include "../config.h"
 #include "../pc6001v.h"
 
-AboutDialog::AboutDialog(CFG6* cfg, QWidget *parent) :
+AboutDialog::AboutDialog(int mdl, QWidget *parent) :
     QDialog(parent),
-    config(cfg),
     ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
-    switch( config->GetModel() ){
+    switch( mdl ){
     case 60:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6001.ico"));      break;
+    case 61:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6001.ico"));      break;
     case 62:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6001mk2.ico"));   break;
     case 64:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6001mk2SR.ico")); break;
     case 66:    ui->labelIcon->setPixmap(QPixmap(":/res/PC-6601.ico"));      break;

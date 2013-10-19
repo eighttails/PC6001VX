@@ -289,7 +289,7 @@ void ConfigDialog::readConfig()
     ui->lineEditBoost66->setText(QString::number(qMin(qMax(1, config->GetMaxBoost2()), 100)));
 
     // ビデオキャプチャ RLE
-    ui->checkBoxAviRLE->setChecked(config->GetAviRle());
+    ui->checkBoxAviRLE->setChecked(config->GetAviBpp());
 
     // 終了時 確認する
     ui->checkBoxCkQuit->setChecked(config->GetCkQuit());
@@ -504,7 +504,7 @@ void ConfigDialog::writeConfig()
     }
 
     // ビデオキャプチャ RLE
-    config->SetAviRle(ui->checkBoxAviRLE->isChecked());
+    config->SetAviBpp(ui->checkBoxAviRLE->isChecked());
 
     // 終了時 確認する
     config->SetCkQuit(ui->checkBoxCkQuit->isChecked());

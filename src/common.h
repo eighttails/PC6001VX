@@ -25,19 +25,25 @@ void Jis2Sjis( BYTE *, BYTE * );					// JIS  -> SJIS
 void Convert2Jis( BYTE *, BYTE * );					// 文字コード形式変換(SJIS,EUC -> JIS)
 
 #ifdef __APPLE__
-char *Sjis2UTF8( const char * );					// SJIS -> UTF8
+const char *Sjis2UTF8( const char * );				// SJIS -> UTF8
 #endif
 char *UTF8toLocal( const char * );                  // Utf8 -> システム文字コード
 
 
-int Sjis2P6( char *, char * );						// SJIS -> P6
+int Sjis2P6( char *, const char * );				// SJIS -> P6
 
+// Mac用文字コード変換 ShiftJIS -> UTF-8
+#ifdef __APPLE__
+#define FOPENEN(a,b)	fopen(Sjis2UTF8(a),b)
+#else
+#define FOPENEN(a,b)	fopen(UTF8toLocal(a),b)
+#endif
 
 ////////////////////////////////////////////////////////////////
 // 画像ファイル操作関数
 ////////////////////////////////////////////////////////////////
-bool SaveImg( char *, VSurface *, VRect * );		// Img SAVE
-VSurface *LoadImg( char * );						// Img LOAD
+bool SaveImg( const char *, VSurface *, VRect * );	// Img SAVE
+VSurface *LoadImg( const char * );					// Img LOAD
 
 
 ////////////////////////////////////////////////////////////////

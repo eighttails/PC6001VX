@@ -4,7 +4,6 @@
 #include "typedef.h"
 #include "device.h"
 #include "sound.h"
-#include "p6device.h"
 #include "device/pd7752.h"
 
 // [OUT]
@@ -53,7 +52,7 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class VCE6 : public P6DEVICE, public Device, public cD7752, public SndDev, public IDoko {
+class VCE6 : public Device, public cD7752, public SndDev, public IDoko {
 private:
 	char FilePath[PATH_MAX];		// WAVEファイル格納パス
 	
@@ -105,7 +104,7 @@ public:
 	
 	void EventCallback( int, int );	// イベントコールバック関数
 	
-	bool Init( int, char * );		// 初期化
+	bool Init( int, const char * );	// 初期化
 	void Reset( void );				// リセット
 	
 	int SoundUpdate( int );			// ストリーム更新

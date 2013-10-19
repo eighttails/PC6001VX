@@ -4,11 +4,18 @@
 #include "typedef.h"
 
 // サーフェスの仕様
-//  色深度は8,16,24bit
-//  8bitの時のみパレットを持つ
-//  1ラインのメモリサイズは4byte(DWORD)の倍数とする
+//  色深度は32bitのみ
 //  最大サイズは65536x65536
 
+#define	AMASK32		0xff000000
+#define	RMASK32		0x00ff0000
+#define	GMASK32		0x0000ff00
+#define	BMASK32		0x000000ff
+
+#define	ASHIFT32	24
+#define	RSHIFT32	16
+#define	GSHIFT32	8
+#define	BSHIFT32	0
 
 struct COLOR24 {
 	BYTE r;
@@ -32,6 +39,7 @@ struct VPalette{
 	VPalette() : ncols(0), colors(NULL) {}
 };
 
+#define COL2DW(c)	(DWORD)(((DWORD)c.reserved<<ASHIFT32)|((DWORD)c.r<<RSHIFT32)|((DWORD)c.g<<GSHIFT32)|((DWORD)c.b<<BSHIFT32))
 
 ////////////////////////////////////////////////////////////////
 // クラス定義
@@ -39,44 +47,24 @@ struct VPalette{
 class VSurface {
 protected:
 	int w, h;					// 幅,高さ
-	int bpp;					// 1ピクセルのbyte数
 	int pitch;					// 1ラインのbyte数
     double aspect;              // アスペクト比(幅を1とした場合の高さの比率)
 	void *pixels;				// ピクセルデータへのポインタ
 	
 	VRect rect;					// 描画領域
-	VPalette *palette;			// パレット(8bppのみ)
-	
-	DWORD rmask, gmask, bmask;	// マスク
-	int rshift, gshift, bshift;	// 右シフト数
-	int rloss, gloss, bloss;	// 左シフト数
 	
 public:
 	VSurface();									// コンストラクタ
 	virtual ~VSurface();						// デストラクタ
 	
-	virtual bool InitSurface( int, int, int );	// 初期化(サーフェスサイズ指定)
+	virtual bool InitSurface( int, int );		// 初期化(サーフェスサイズ指定)
 	void SetRect( int, int, int, int );			// 描画領域設定
     double GetAspectRatio();
     void SetAspectRatio(double);                // アスペクト比を設定
 	VRect *GetRect();							// 描画領域取得
-	int SetPalette( COLOR24 *, int = 256 );		// パレット設定
-	VPalette *GetPalette();						// パレット取得
-	
-	void SetMask( DWORD, DWORD, DWORD );		// カラーマスク設定
-	DWORD Rmask();								// Rマスク取得
-	DWORD Gmask();								// Gマスク取得
-	DWORD Bmask();								// Bマスク取得
-	int Rshift();								// R右シフト数取得
-	int Gshift();								// G右シフト数取得
-	int Bshift();								// B右シフト数取得
-	int Rloss();								// R左シフト数取得
-	int Gloss();								// G左シフト数取得
-	int Bloss();								// B左シフト数取得
 	
 	int Width();								// 幅取得
 	int Height();								// 高さ取得
-	int Bpp();									// 1ピクセルのbyte数取得
 	int Pitch();								// 1ラインのbyte数取得
 	void *GetPixels();							// ピクセルデータへのポインタ取得
 	

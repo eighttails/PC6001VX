@@ -2,11 +2,8 @@
 #include "log.h"
 #include "cpus.h"
 #include "intr.h"
-#include "io.h"
-#include "keyboard.h"
-#include "memory.h"
 #include "schedule.h"
-#include "tape.h"
+#include "p6vm.h"
 
 
 // イベントID
@@ -64,12 +61,12 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-SUB6::SUB6( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id),
+SUB6::SUB6( VM6 *vm, const ID& id ) : Device(vm,id),
 	CmtStatus(CMTCLOSE), Status8049(D8049_IDLE),
 	IntrFlag(0), KeyCode(0), JoyCode(0), CmtData(0), SioData(0) {}
 
-SUB60::SUB60( VM6 *vm, const P6ID& id ) : SUB6(vm,id){}
-SUB62::SUB62( VM6 *vm, const P6ID& id ) : SUB6(vm,id){}
+SUB60::SUB60( VM6 *vm, const ID& id ) : SUB6(vm,id){}
+SUB62::SUB62( VM6 *vm, const ID& id ) : SUB6(vm,id){}
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
@@ -104,28 +101,28 @@ void SUB6::EventCallback( int id, int clock )
 			else if( IntrFlag & IR_SIO )  { Status8049 = D8049_SIO;   }
 			
 			if( Status8049 != D8049_IDLE )
-				vm->evsc->Add( this, EID_VECTOR, wt, EV_LOOP|EV_STATE );
+				vm->EventAdd( this, EID_VECTOR, wt, EV_LOOP|EV_STATE );
 		}
 		break;
 		
 	case EID_VECTOR:	// 割込みベクタ出力
 		// T0=IBF=H つまり8255のバッファが空いていなければリトライ
 		if( GetT0() ) break;
-		vm->evsc->Del( this, EID_VECTOR );
+		vm->EventDel( this, EID_VECTOR );
 		
 		OutVector();	// 割込みベクタ出力
 		
 		// 続いてデータ出力
-		vm->evsc->Add( this, EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
+		vm->EventAdd( this, EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
 		break;
 		
 	case EID_DATA:		// 割込みデータ出力
 		// T0=IBF=H つまり8255のバッファが空いていなければリトライ
 		if( GetT0() ) break;
-		vm->evsc->Del( this, EID_DATA );
+		vm->EventDel( this, EID_DATA );
 		
 		// CPUに対する割込み要求をキャンセル(割込み禁止対策)
-		vm->intr->CancelIntr( IREQ_8049 );
+		vm->IntCancelIntr( IREQ_8049 );
 		
 		OutData();		// 割込みデータ出力
 		break;
@@ -147,51 +144,51 @@ void SUB6::Reset( void )
 	CmtData    = 0;
 	SioData    = 0;
 	
-	vm->evsc->Add( this, EID_INTCHK, WAIT_INTCHK, EV_LOOP|EV_US );
+	vm->EventAdd( this, EID_INTCHK, WAIT_INTCHK, EV_LOOP|EV_US );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // I/Oポートアクセス
 ////////////////////////////////////////////////////////////////
-inline BYTE SUB6::ReadIO( int addr )
+BYTE SUB6::ReadIO( int addr )
 {
-	return vm->ios->In( addr );
+	return vm->IosIn( addr );
 }
 
-inline void SUB6::WriteIO( int addr, BYTE data )
+void SUB6::WriteIO( int addr, BYTE data )
 {
-	vm->ios->Out( addr, data );
+	vm->IosOut( addr, data );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 外部メモリアクセス
 ////////////////////////////////////////////////////////////////
-inline void SUB6::WriteExt( BYTE data )
+void SUB6::WriteExt( BYTE data )
 {
-	vm->ios->Out( IO8049_BUS, data );
+	vm->IosOut( IO8049_BUS, data );
 }
 
-inline BYTE SUB6::ReadExt( void )
+BYTE SUB6::ReadExt( void )
 {
-	return vm->ios->In( IO8049_BUS );
+	return vm->IosIn( IO8049_BUS );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // テスト0ステータス取得
 ////////////////////////////////////////////////////////////////
-inline bool SUB6::GetT0( void )
+bool SUB6::GetT0( void )
 {
-	return vm->ios->In( IO8049_T0 ) ? true : false;
+	return vm->IosIn( IO8049_T0 ) ? true : false;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // テスト1ステータス取得
 ////////////////////////////////////////////////////////////////
-inline bool SUB6::GetT1( void )
+bool SUB6::GetT1( void )
 {
 	return 0;
 }
@@ -200,9 +197,9 @@ inline bool SUB6::GetT1( void )
 ////////////////////////////////////////////////////////////////
 // 外部割込みステータス取得
 ////////////////////////////////////////////////////////////////
-inline bool SUB6::GetINT( void )
+bool SUB6::GetINT( void )
 {
-	return vm->ios->In( IO8049_INT ) ? true : false;
+	return vm->IosIn( IO8049_INT ) ? true : false;
 }
 
 
@@ -222,7 +219,7 @@ void SUB6::ExtIntr( void )
 		if( ( Status8049 & D8049_IMASK ) == D8049_CMTO ){
 			PRINTD( SUB_LOG, "[8049][ExtIntr] CmtPut %02X\n", comm );
 			
-			vm->cmts->CmtWrite( comm );
+			vm->CmtsCmtWrite( comm );
 			Status8049 &= ~D8049_IMASK;
 		}
 		
@@ -272,21 +269,21 @@ void SUB60::ExtIntrExec( BYTE comm )
 		break;
 		
 	case 0x39:	// ------ CMT(SAVE) OPEN ----------
-		vm->cmts->Mount();
+		vm->CmtsMount();
 		CmtStatus = SAVEOPEN;
 		break;
 		
 	case 0x3a:	// ------ CMT(SAVE) CLOSE ----------
 		CmtStatus = CMTCLOSE;
-		vm->cmts->Unmount();
+		vm->CmtsUnmount();
 		break;
 		
 	case 0x3d:	// ------ CMT(SAVE) 600ボー ----------
-		vm->cmts->SetBaud( 600 );
+		vm->CmtsSetBaud( 600 );
 		break;
 		
 	case 0x3e:	// ------ CMT(SAVE) 1200ボー ----------
-		vm->cmts->SetBaud( 1200 );
+		vm->CmtsSetBaud( 1200 );
 		break;
 	}
 }
@@ -302,11 +299,11 @@ void SUB62::ExtIntrExec( BYTE comm )
 		break;
 		
 	case 0x04:	// ------ 英字<->かな切換 ----------
-		vm->key->ChangeKana();
+		vm->KeyChangeKana();
 		break;
 		
 	case 0x05:	// ------ かな<->カナ切換 ----------
-		vm->key->ChangeKKana();
+		vm->KeyChangeKKana();
 		break;
 		
 	case 0x06:	// ------ STICK,STRIG ----------
@@ -335,21 +332,21 @@ void SUB62::ExtIntrExec( BYTE comm )
 		break;
 		
 	case 0x39:	// ------ CMT(SAVE) OPEN ----------
-		vm->cmts->Mount();
+		vm->CmtsMount();
 		CmtStatus = SAVEOPEN;
 		break;
 		
 	case 0x3a:	// ------ CMT(SAVE) CLOSE ----------
 		CmtStatus = CMTCLOSE;
-		vm->cmts->Unmount();
+		vm->CmtsUnmount();
 		break;
 		
 	case 0x3d:	// ------ CMT(SAVE) 600ボー ----------
-		vm->cmts->SetBaud( 600 );
+		vm->CmtsSetBaud( 600 );
 		break;
 		
 	case 0x3e:	// ------ CMT(SAVE) 1200ボー ----------
-		vm->cmts->SetBaud( 1200 );
+		vm->CmtsSetBaud( 1200 );
 		break;
 	}
 }
@@ -423,7 +420,7 @@ void SUB6::ReqJoyIntr( void )
 	if( IntrFlag & IR_JOY ) return;
 	
 	IntrFlag |= IR_JOY;
-	JoyCode   = vm->key->GetKeyJoy();
+	JoyCode   = vm->KeyGetKeyJoy();
 }
 
 
@@ -486,7 +483,7 @@ void SUB6::OutVector( void )
 	}
 	
 	WriteExt( IntrVector );
-	vm->intr->ReqIntr( IREQ_8049 );
+	vm->IntReqIntr( IREQ_8049 );
 }
 
 
@@ -562,7 +559,7 @@ bool SUB6::IsCmtIntrReady( void )
 			( CmtStatus == LOADOPEN ) &&
 			!( IntrFlag & IR_CMTR ) &&
 			!GetT0() &&
-			!( vm->cmtl->IsBoostUp() && ( vm->mem->Read( 0xfa19 ) & 2 ) )	// ワークエリアのフラグ参照
+			!( vm->CmtlIsBoostUp() && ( vm->MemRead( 0xfa19 ) & 2 ) )	// ワークエリアのフラグ参照
 			);
 }
 
@@ -572,12 +569,6 @@ bool SUB6::IsCmtIntrReady( void )
 ////////////////////////////////////////////////////////////////
 bool SUB6::DokoSave( cIni *Ini )
 {
-	int i;
-	cSche::evinfo e;
-	char stren[16];
-	
-	e.device = this;
-	
 	if( !Ini ) return false;
 	
 	Ini->PutEntry( "8049", NULL, "CmtStatus",	"%d",		CmtStatus );
@@ -588,18 +579,6 @@ bool SUB6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "8049", NULL, "CmtData",		"0x%02X",	CmtData );
 	Ini->PutEntry( "8049", NULL, "SioData",		"0x%02X",	SioData );
 	
-	// イベント
-	int eid[] = { EID_INTCHK, EID_VECTOR, EID_DATA, 0 };
-	i = 0;
-	
-	while( eid[i] ){
-		e.id = eid[i++];
-		if( vm->evsc->GetEvinfo( &e ) ){
-			sprintf( stren, "Event%08X", e.id );
-			Ini->PutEntry( "8049", NULL, stren, "%d %d %d %lf", e.Active ? 1 : 0, e.Period, e.Clock, e.nps );
-		}
-	}
-	
 	return true;
 }
 
@@ -609,36 +588,17 @@ bool SUB6::DokoSave( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 bool SUB6::DokoLoad( cIni *Ini )
 {
-	int st,yn,i;
-	cSche::evinfo e;
-	char stren[16];
-	char strrs[64];
-	
-	e.device = this;
+	int st;
 	
 	if( !Ini ) return false;
 	
 	Ini->GetInt(   "8049", "CmtStatus",		&CmtStatus,		CmtStatus );
 	Ini->GetInt(   "8049", "Status8049",	&Status8049,	Status8049 );
-	Ini->GetInt(   "8049", "IntrFlag",		&st,		IntrFlag );	IntrFlag = st;
-	Ini->GetInt(   "8049", "KeyCode",		&st,		KeyCode );	KeyCode  = st;
-	Ini->GetInt(   "8049", "JoyCode",		&st,		JoyCode );	JoyCode  = st;
-	Ini->GetInt(   "8049", "CmtData",		&st,		CmtData );	CmtData  = st;
-	Ini->GetInt(   "8049", "SioData",		&st,		SioData );	SioData  = st;
-	
-	// イベント
-	int eid[] = { EID_INTCHK, EID_VECTOR, EID_DATA, 0 };
-	i = 0;
-	
-	while( eid[i] ){
-		e.id = eid[i++];
-		sprintf( stren, "Event%08X", e.id );
-		if( Ini->GetString( "8049", stren, strrs, "" ) ){
-			sscanf( strrs,"%d %d %d %lf", &yn, &e.Period, &e.Clock, &e.nps );
-			e.Active = yn ? true : false;
-			if( !vm->evsc->SetEvinfo( &e ) ) return false;
-		}
-	}
+	Ini->GetInt(   "8049", "IntrFlag",		&st,			IntrFlag );	IntrFlag = st;
+	Ini->GetInt(   "8049", "KeyCode",		&st,			KeyCode );	KeyCode  = st;
+	Ini->GetInt(   "8049", "JoyCode",		&st,			JoyCode );	JoyCode  = st;
+	Ini->GetInt(   "8049", "CmtData",		&st,			CmtData );	CmtData  = st;
+	Ini->GetInt(   "8049", "SioData",		&st,			SioData );	SioData  = st;
 	
 	return true;
 }

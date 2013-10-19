@@ -43,6 +43,7 @@ public:
 	static void SetError( Errno e );
 	static Errno GetError();
 	static const char *GetErrorText();
+	static void Reset();
 	
 private:
 	Error();

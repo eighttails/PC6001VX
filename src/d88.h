@@ -72,7 +72,7 @@ public:
 	cD88();							// コンストラクタ
 	~cD88();						// デストラクタ
 	
-	bool Init( char * );			// 初期化
+	bool Init( const char * );		// 初期化
 	
 	BYTE Get8();					// 1byte 読込み
 	bool Put8( BYTE );				// 1byte 書込み

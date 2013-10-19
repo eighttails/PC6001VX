@@ -6,7 +6,6 @@
 #include "d88.h"
 #include "ini.h"
 
-#include "p6device.h"
 
 // 最大ドライブ接続数
 #define	MAXDRV	4
@@ -133,7 +132,7 @@ int step;			// Phase内の処理手順
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class DSK6 : public P6DEVICE, public IDoko {
+class DSK6 : public Device, public IDoko {
 protected:
 	int DrvNum;							// ドライブ数
 	char FilePath[MAXDRV][PATH_MAX];	// ファイルパス
@@ -146,7 +145,7 @@ protected:
 	bool SetWait( int );				// ウェイト設定
 	
 public:
-	DSK6( VM6 *, const P6ID& );			// コンストラクタ
+	DSK6( VM6 *, const ID& );			// コンストラクタ
 	virtual ~DSK6();					// デストラクタ
 	
 	virtual void EventCallback( int, int );	// イベントコールバック関数
@@ -154,7 +153,7 @@ public:
 	virtual bool Init( int ) = 0;		// 初期化
 	virtual void Reset() = 0;			// リセット
 	
-	bool Mount( int, char * );			// DISK マウント
+	bool Mount( int, const char * );	// DISK マウント
 	void Unmount( int );				// DISK アンマウント
 	
 	int GetDrives();					// ドライブ数取得
@@ -166,10 +165,15 @@ public:
 	
 	const char *GetFile( int );			// ファイルパス取得
 	const char *GetName( int );			// DISK名取得
+	
+	// ------------------------------------------
+	bool DokoSave( cIni * );	// どこでもSAVE
+	bool DokoLoad( cIni * );	// どこでもLOAD
+	// ------------------------------------------
 };
 
 
-class DSK60 : public DSK6, public Device {
+class DSK60 : public DSK6 {
 private:
 	DISK60 mdisk;			// ミニフロッピーディスク各種情報
 	
@@ -219,7 +223,7 @@ public:
 };
 
 
-class DSK66 : public DSK6, public Device {
+class DSK66 : public DSK6 {
 private:
 	struct CmdBuffer {
 		BYTE Data[10];

@@ -37,10 +37,6 @@ const char *Error::ErrorText[Error::EndofErrors] =
 	MSERR_NoReplayData			// NoReplayData
 };
 
-const char *Error::GetErrorText()
-{
-	return ErrorText[err];
-}
 
 void Error::SetError( Errno e )
 {
@@ -50,4 +46,14 @@ void Error::SetError( Errno e )
 Error::Errno Error::GetError( void )
 {
 	return err;
+}
+
+const char *Error::GetErrorText()
+{
+	return ErrorText[err];
+}
+
+void Error::Reset( void )
+{
+	err = NoError;
 }

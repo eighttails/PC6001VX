@@ -1,15 +1,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "p6el.h"
-#include "debug.h"
 #include "breakpoint.h"
-#include "cpum.h"
-#include "io.h"
-#include "memory.h"
+#include "debug.h"
 #include "osd.h"
 #include "schedule.h"
 
+#include "p6el.h"
+#include "p6vm.h"
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 //------------------------------------------------------
@@ -18,7 +16,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndMem::cWndMem( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), Addr(0) {}
+cWndMem::cWndMem( VM6 *vm, const ID& id ) : Device(vm,id), Addr(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -45,7 +43,7 @@ bool cWndMem::Init( void )
 void cWndMem::Update( void )
 {
 	WORD addr = Addr;
-	static BYTE TexCol[] = { FC_GRAY, FC_BLUE, FC_GREEN, FC_CYAN, FC_RED, FC_MAGENTA, FC_YELLOW, FC_WHITE };
+	static DWORD TexCol[] = { FC_GRAY, FC_BLUE, FC_GREEN, FC_CYAN, FC_RED, FC_MAGENTA, FC_YELLOW, FC_WHITE };
 	int i,j;
 	
 	ZCons::Locate( 0, 0 );
@@ -54,24 +52,24 @@ void cWndMem::Update( void )
 	ZCons::Printf( "R" );
 	for( i=0; i<4; i++ ){
 		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( " %-8s", vm->mem->GetReadMemBlk( i ) );
+		ZCons::Printf( " %-8s", vm->MemGetReadMemBlk( i ) );
 	}
 	ZCons::Printf( "\n " );
 	for( i=4; i<8; i++ ){
 		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( " %-8s", vm->mem->GetReadMemBlk( i ) );
+		ZCons::Printf( " %-8s", vm->MemGetReadMemBlk( i ) );
 	}
 	ZCons::Printf( "\nW" );
 	
 	// Write メモリブロック名表示
 	for( i=0; i<4; i++ ){
 		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( " %-8s", vm->mem->GetWriteMemBlk( i ) );
+		ZCons::Printf( " %-8s", vm->MemGetWriteMemBlk( i ) );
 	}
 	ZCons::Printf( "\n " );
 	for( i=4; i<8; i++ ){
 		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( " %-8s", vm->mem->GetWriteMemBlk( i ) );
+		ZCons::Printf( " %-8s", vm->MemGetWriteMemBlk( i ) );
 	}
 	ZCons::Printf( "\n" );
 	
@@ -82,9 +80,9 @@ void cWndMem::Update( void )
 		ZCons::Printf( "%04X:", addr );
 		ZCons::SetColor( FC_WHITE );
 		for( j=0; j<8; j++)
-			ZCons::Printf( "%02X ", vm->mem->Read(addr+j) );
+			ZCons::Printf( "%02X ", vm->MemRead(addr+j) );
 		for( j=0; j<8; j++)
-			ZCons::PutCharH( vm->mem->Read(addr+j) );
+			ZCons::PutCharH( vm->MemRead(addr+j) );
 		addr += 8;
 	}
 }
@@ -96,7 +94,7 @@ void cWndMem::Update( void )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndReg::cWndReg( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id) {}
+cWndReg::cWndReg( VM6 *vm, const ID& id ) : Device(vm,id) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -126,14 +124,14 @@ void cWndReg::Update( void )
 	int i,j;
 	
 	// レジスタ値取得
-	vm->cpum->GetRegister( &reg );
+	vm->CpumGetRegister( &reg );
 	
 	// フラグの状態取得
 	for( j=0,i=reg.AF.B.l; j<8; j++,i<<=1 ) fbuf[j] = i&0x80 ? flags[j] : '.';
 	fbuf[8]='\0';
 	
 	// 1ライン逆アセンブル
-	vm->cpum->Disasm( DisCode, reg.PC.W );
+	vm->CpumDisasm( DisCode, reg.PC.W );
 	
 	ZCons::Locate( 0, 0 ); ZCons::Print( "AF :%04X  BC :%04X  DE :%04X  HL :%04X", reg.AF.W, reg.BC.W, reg.DE.W, reg.HL.W );
 	ZCons::Locate( 0, 1 ); ZCons::Print( "AF':%04X  BC':%04X  DE':%04X  HL':%04X", reg.AF1.W, reg.BC1.W, reg.DE1.W, reg.HL1.W );
@@ -299,7 +297,7 @@ const struct{
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndMon::cWndMon( VM6 *vm, const P6ID& id ) : P6DEVICE(vm,id), Argc(0), ArgvCounter(0)
+cWndMon::cWndMon( VM6 *vm, const ID& id ) : Device(vm,id), Argc(0), ArgvCounter(0)
 {
 	INITARRAY( KeyBuf, '\0' );
 	for( int i=0; i<MAX_HIS; i++ ) ZeroMemory( HisBuf[i], MAX_CHRS );
@@ -433,11 +431,11 @@ void cWndMon::BreakIn( WORD addr )
 {
 	ZCons::SetColor( FC_YELLOW );
 	ZCons::Printf( "\n << Break in %04XH >>", addr );
-	switch( vm->bp->GetType( vm->bp->GetReqBPNum() ) ){
-	case BPoint::BP_READ:	ZCons::Printf( " Read Memory %04XH",    vm->bp->GetAddr( vm->bp->GetReqBPNum() ) );	break;
-	case BPoint::BP_WRITE:	ZCons::Printf( " Write Memory %04XH",   vm->bp->GetAddr( vm->bp->GetReqBPNum() ) );	break;
-	case BPoint::BP_IN:		ZCons::Printf( " Read I/O Port %02XH",  vm->bp->GetAddr( vm->bp->GetReqBPNum() ) );	break;
-	case BPoint::BP_OUT:	ZCons::Printf( " Write I/O Port %02XH", vm->bp->GetAddr( vm->bp->GetReqBPNum() ) );	break;
+	switch( vm->BpGetType( vm->BpGetReqBPNum() ) ){
+	case BPoint::BP_READ:	ZCons::Printf( " Read Memory %04XH",    vm->BpGetAddr( vm->BpGetReqBPNum() ) );	break;
+	case BPoint::BP_WRITE:	ZCons::Printf( " Write Memory %04XH",   vm->BpGetAddr( vm->BpGetReqBPNum() ) );	break;
+	case BPoint::BP_IN:		ZCons::Printf( " Read I/O Port %02XH",  vm->BpGetAddr( vm->BpGetReqBPNum() ) );	break;
+	case BPoint::BP_OUT:	ZCons::Printf( " Write I/O Port %02XH", vm->BpGetAddr( vm->BpGetReqBPNum() ) );	break;
 	default:				break;
 	}
 	ZCons::SetColor( FC_WHITE );
@@ -628,7 +626,7 @@ void cWndMon::Exec( int cmd )
 		
 		
 		while( step-- ){
-			vm->evsc->Update( vm->Emu() );	// 1命令実行とイベント更新
+			vm->EventUpdate( vm->Emu() );	// 1命令実行とイベント更新
 		}
 		
 //		if( CheckBreakPointPC() ) set_emumode( TRACE_BP );
@@ -664,10 +662,10 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->cpum->GetRegister( &reg );
+		vm->CpumGetRegister( &reg );
 		
 		addr = reg.PC.W;
-		code = vm->mem->Read( addr );
+		code = vm->MemRead( addr );
 		
 		if( call ){
 			if( code		== 0xcd ||	// CALL nn    = 11001101B
@@ -684,17 +682,17 @@ void cWndMon::Exec( int cmd )
 		
 	    if( rep ){
 			if( code == 0xed ){			// LDIR/LDDR/CPIR/CPDR etc
-				code = vm->mem->Read( addr+1 );
+				code = vm->MemRead( addr+1 );
 				if( (code&0xf4) == 0xb0 ){
 					addr += 2;
 				}
 			}
 		}
 		
-		vm->cpum->Disasm( DisCode, addr );
+		vm->CpumDisasm( DisCode, addr );
 		ZCons::Printf( "%s\n", DisCode );
 		
-		vm->evsc->Update( vm->Emu() );	// 1命令実行とイベント更新
+		vm->EventUpdate( vm->Emu() );	// 1命令実行とイベント更新
 		
 		break;
 	}	
@@ -711,10 +709,10 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->cpum->GetRegister( &reg );
+		vm->CpumGetRegister( &reg );
 		
 		addr = reg.PC.W;
-		code = vm->mem->Read( addr );
+		code = vm->MemRead( addr );
 		
 		if( code		== 0xcd ||	// CALL nn    = 11001101B
 		  ( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
@@ -726,16 +724,16 @@ void cWndMon::Exec( int cmd )
 		}
 		
 		if( code == 0xed ){			// LDIR/LDDR/CPIR/CPDR etc
-			code = vm->mem->Read( addr+1 );
+			code = vm->MemRead( addr+1 );
 			if( (code&0xf4) == 0xb0 ){
 				addr += 2;
 			}
 		}
 		
-		vm->cpum->Disasm( DisCode, addr );
+		vm->CpumDisasm( DisCode, addr );
 		ZCons::Printf( "%s\n", DisCode );
 		
-		vm->evsc->Update( vm->Emu() );	// 1命令実行とイベント更新
+		vm->EventUpdate( vm->Emu() );	// 1命令実行とイベント更新
 		
 		break;
 	}	
@@ -793,8 +791,8 @@ void cWndMon::Exec( int cmd )
 		if( show ){
 			for( int i=0; i<NR_BP; i++ ){
 				ZCons::Printf( "    #%02d  ", i+1 );
-				addr = vm->bp->GetAddr( i );
-				switch( vm->bp->GetType( i ) ){
+				addr = vm->BpGetAddr( i );
+				switch( vm->BpGetType( i ) ){
 				case BPoint::BP_NONE:
 					ZCons::Printf( "-- なし --\n" );
 					break;
@@ -819,34 +817,34 @@ void cWndMon::Exec( int cmd )
 			}
 		}else{
 			if( action == ARG_CLEAR ){
-				vm->bp->SetType( number, BPoint::BP_NONE );
+				vm->BpSetType( number, BPoint::BP_NONE );
 				ZCons::Printf( "ブレークポイント #%02d を消去します。\n", number+1 );
 			}else{
 				const char *s = NULL;
 				
 				switch( action ){
 				case ARG_PC:
-					vm->bp->SetType( number, BPoint::BP_PC );
+					vm->BpSetType( number, BPoint::BP_PC );
 					s = "PC : %04XH";
 					break;
 				case ARG_READ:
-					vm->bp->SetType( number, BPoint::BP_READ );
+					vm->BpSetType( number, BPoint::BP_READ );
 					s = "READ : %04XH";
 					break;
 				case ARG_WRITE:
-					vm->bp->SetType( number, BPoint::BP_WRITE );
+					vm->BpSetType( number, BPoint::BP_WRITE );
 					s = "WRITE : %04XH";
 					break;
 				case ARG_IN:
-					vm->bp->SetType( number, BPoint::BP_IN );
+					vm->BpSetType( number, BPoint::BP_IN );
 					s = "IN : %02XH";
 					break;
 				case ARG_OUT:
-					vm->bp->SetType( number, BPoint::BP_OUT );
+					vm->BpSetType( number, BPoint::BP_OUT );
 					s = "OUT : %02XH";
 					break;
 				}
-				vm->bp->SetAddr( number, addr );
+				vm->BpSetAddr( number, addr );
 				ZCons::Printf( "ブレークポイント #%02d を設定します。[ ",number+1 );
 				ZCons::Printf( s, addr );
 				ZCons::Printf( " ]\n" );
@@ -881,7 +879,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->mem->Write( addr, data );
+		vm->MemWrite( addr, data );
 		
 		ZCons::Printf( "WRITE memory [ %04XH ] <- %02X  (= %d | %+d | ", addr, (BYTE)data, (BYTE)data, (int8_t)data );
 		int i,j;
@@ -920,7 +918,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		for( int i=0; i<size; i++ ) vm->mem->Write( start+i, value );
+		for( int i=0; i<size; i++ ) vm->MemWrite( start+i, value );
 		
 		break;
 	}
@@ -955,9 +953,9 @@ void cWndMon::Exec( int cmd )
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		// 転送元-転送先が 重ならない
-		if( start+size <= dist ) for( int i=0; i<size; i++ )    vm->mem->Write( dist+i, vm->mem->Read( start+i ) );
+		if( start+size <= dist ) for( int i=0; i<size; i++ )    vm->MemWrite( dist+i, vm->MemRead( start+i ) );
 		// 転送元-転送先が 重なる
-		else                     for( int i=size-1; i>=0; i-- ) vm->mem->Write( dist+i, vm->mem->Read( start+i ) );
+		else                     for( int i=size-1; i>=0; i-- ) vm->MemWrite( dist+i, vm->MemRead( start+i ) );
 		
 		break;
 	}
@@ -990,7 +988,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->iom->Out( port, data );
+		vm->IomOut( port, data );
 		
 		ZCons::Printf( "OUT port [ %02XH ] <- %02X  (= %d | %+d | ", port, (BYTE)data, (BYTE)data, (int8_t)data );
 		int i,j;
@@ -1035,7 +1033,7 @@ void cWndMon::Exec( int cmd )
 			int addr = start;
 			for( int i=0; i<size; i++ ){
 				BYTE dat = fgetc( fp );
-				vm->mem->Write( (addr++)&0xffff, dat );
+				vm->MemWrite( (addr++)&0xffff, dat );
 			}
 			fclose( fp );
 			ZCons::Printf( " Loaded [%s] -> %d bytes\n", fname, addr-start );
@@ -1081,7 +1079,7 @@ void cWndMon::Exec( int cmd )
 		if( (fp=fopen( fname, "wb" )) != NULL ){
 			int addr = start;
 			for( int i=0; i<size; i++ ){
-				if( fputc( vm->mem->Read( (addr++)&0xffff ), fp ) == EOF ){
+				if( fputc( vm->MemRead( (addr++)&0xffff ), fp ) == EOF ){
 					ZCons::SetColor( FC_RED );
 					ZCons::Printf( "Failed : Data write error\n" );
 					ZCons::SetColor( FC_WHITE );
@@ -1127,7 +1125,7 @@ void cWndMon::Exec( int cmd )
 		}
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->cpum->GetRegister( &reg );
+		vm->CpumGetRegister( &reg );
 		
 		switch( re ){
 		case ARG_AF:	reg.AF.W = val;		break;
@@ -1149,7 +1147,7 @@ void cWndMon::Exec( int cmd )
 		case ARG_HALT:	if(val)   val=1; reg.Halt = val;	break;
 		}
 		
-		vm->cpum->SetRegister( &reg );
+		vm->CpumSetRegister( &reg );
 		
 		for( i=0; i<COUNTOF( MonitorArgv ); i++ )
 			if( re == MonitorArgv[i].Val ) break;
@@ -1184,12 +1182,12 @@ void cWndMon::Exec( int cmd )
 		}
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->cpum->GetRegister( &reg );
+		vm->CpumGetRegister( &reg );
 		if( addr == -1 ) addr = reg.PC.W;	// ADDR 未指定時
 		
 		pc = 0;
 		for( i=0; i<step; i++ ){
-			pc += vm->cpum->Disasm( DisCode, (WORD)(addr+pc) );
+			pc += vm->CpumDisasm( DisCode, (WORD)(addr+pc) );
 			ZCons::Printf( "%s\n", DisCode );
 		}
 		SaveDisasmAddr = ( addr + pc ) & 0xffff;

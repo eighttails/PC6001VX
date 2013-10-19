@@ -319,10 +319,10 @@ int sjistbl2[] = {
 //			sstr			SJIS文字列へのポインタ
 // 返値:	int				P6文字列の長さ
 ////////////////////////////////////////////////////////////////
-int Sjis2P6( char *dstr, char *sstr )
+int Sjis2P6( char *dstr, const char *sstr )
 {
-	char *ss = sstr;
-	char *ds = dstr;
+    const char *ss = sstr;
+    char *ds = dstr;
 	int c;
 	
 	while( (c = (BYTE)(*ss++)) != '\0' ){
@@ -389,7 +389,7 @@ int Sjis2P6( char *dstr, char *sstr )
 //			pos				保存する領域情報へのポインタ
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool SaveImg( char *filename, VSurface *sur, VRect *pos )
+bool SaveImg( const char *filename, VSurface *sur, VRect *pos )
 {
 	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
 	
@@ -404,13 +404,7 @@ bool SaveImg( char *filename, VSurface *sur, VRect *pos )
         rec.w = sur->Width(); rec.h = sur->Height();
     }
 
-    QVector<QRgb> PaletteTable;
-    for (int i=0; i < sur->GetPalette()->ncols; i++){
-        COLOR24& col = sur->GetPalette()->colors[i];
-        PaletteTable.push_back(qRgb(col.r, col.g, col.b));
-    }
-    QImage image(rec.w, rec.h, QImage::Format_Indexed8);
-    image.setColorTable(PaletteTable);
+    QImage image(rec.w, rec.h, QImage::Format_ARGB32_Premultiplied);
 
     BYTE *doff = (BYTE *)sur->GetPixels() + rec.x + rec.y * sur->Pitch();
     for( int i=0; i<rec.h; i++ ){
@@ -431,7 +425,7 @@ bool SaveImg( char *filename, VSurface *sur, VRect *pos )
 // 引数:	filename		読込むファイル名
 // 返値:	VSurface *		読込まれたサーフェスへのポインタ
 ////////////////////////////////////////////////////////////////
-VSurface *LoadImg( char *filename )
+VSurface *LoadImg( const char *filename )
 {
 	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filename );
 	
@@ -440,7 +434,7 @@ VSurface *LoadImg( char *filename )
 
     // サーフェスを作成
     VSurface* sur = new VSurface;
-    sur->InitSurface( image.width(), image.height(), image.depth() );
+    sur->InitSurface( image.width(), image.height() );
 
 	// 画像データを取得
 	BYTE *doff = (BYTE *)sur->GetPixels();
@@ -449,18 +443,6 @@ VSurface *LoadImg( char *filename )
 		doff += sur->Pitch();
 	}
 		
-    COLOR24 PaletteS[256];
-    if( image.depth() == 8 ){	// 8bitカラー限定
-		// パレットを取得
-        QVector<QRgb> Palette = image.colorTable();
-        for( int i=0; i<Palette.count(); i++ ){
-            PaletteS[i].r = qRed(Palette[i]);
-            PaletteS[i].g = qGreen(Palette[i]);
-            PaletteS[i].b = qBlue(Palette[i]);
-		}
-        sur->SetPalette( PaletteS, Palette.count() );
-	}
-	
 	return sur;
 }
 

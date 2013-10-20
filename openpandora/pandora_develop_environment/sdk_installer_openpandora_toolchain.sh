@@ -779,7 +779,7 @@ SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 #usage sample with the sample case "wesnoth":
 #current 1.10 setup:
-#PATH=$PNDSDK/usr/bin:\$PATH CFLAGS="-DPANDORA -O3 -pipe -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp" CXXFLAGS="-DPANDORA -O3 -pipe -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp" cmake -DCMAKE_BUILD_TYPE=release -DENABLE_STRICT_COMPILATION=off -DCMAKE_TOOLCHAIN_FILE=$USEFUL_TOOLS_DIR/PandoraToolchain.cmake -DPKG_CONFIG_EXECUTABLE=$PNDSDK/bin/arm-none-linux-gnueabi-pkg-config -DSDL_CONFIG=$PNDSDK/usr/bin/sdl-config -DLIBINTL_INCLUDE_DIR=$PNDSDK/arm-none-linux-gnueabi/libc/usr/include/ -DPREFERENCES_DIR=wesnoth-1.10_userdata ../wesnoth-1.10.x
+#PATH=$PNDSDK/usr/bin:\$PATH CFLAGS="-DPANDORA -O3 -pipe -O3 -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " CXXFLAGS="-DPANDORA -O3 -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " cmake -DCMAKE_BUILD_TYPE=release -DENABLE_STRICT_COMPILATION=off -DCMAKE_TOOLCHAIN_FILE=$USEFUL_TOOLS_DIR/PandoraToolchain.cmake -DPKG_CONFIG_EXECUTABLE=$PNDSDK/bin/arm-none-linux-gnueabi-pkg-config -DSDL_CONFIG=$PNDSDK/usr/bin/sdl-config -DLIBINTL_INCLUDE_DIR=$PNDSDK/arm-none-linux-gnueabi/libc/usr/include/ -DPREFERENCES_DIR=wesnoth-1.10_userdata ../wesnoth-1.10.x
 #
 #current 1.11 setup:
 #PATH=$PNDSDK/usr/bin:\$PATH CFLAGS="-DPANDORA -O3 -pipe -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp" CXXFLAGS="-DPANDORA -O3 -pipe -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp" cmake -DCMAKE_BUILD_TYPE=release -DENABLE_STRICT_COMPILATION=off -DCMAKE_TOOLCHAIN_FILE=$USEFUL_TOOLS_DIR/PandoraToolchain.cmake -DPKG_CONFIG_EXECUTABLE=$PNDSDK/bin/arm-none-linux-gnueabi-pkg-config -DSDL_CONFIG=$PNDSDK/usr/bin/sdl-config -DLIBINTL_INCLUDE_DIR=$PNDSDK/arm-none-linux-gnueabi/libc/usr/include/ -DPREFERENCES_DIR=wesnoth-1.11_userdata ../wesnoth-1.11.x
@@ -812,8 +812,8 @@ LIBTOOL_SYSROOT_PATH=\$PNDSDK \\
 PKG_CONFIG_PATH=\$PNDSDK/usr/lib/pkgconfig \\
 PKG_CONFIG=\$PNDSDK/bin/arm-none-linux-gnueabi-pkg-config \\
 CPATH="\$PNDSDK/usr/include:\$CPATH" \\
-CFLAGS="-DPANDORA -O3 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -ffast-math" \\
-CPPFLAGS="-DPANDORA -O3 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -ffast-math" \\
+CFLAGS="-DPANDORA -O3 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
+CPPFLAGS="-DPANDORA -O3 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
 CXXFLAGS="-I\$PNDSDK/usr/include" \\
 LDFLAGS="-L\$PNDSDK/usr/lib -Wl,-rpath,\$PNDSDK/usr/lib" \\
 CXX=\$CROSSTOOL-g++ \\
@@ -1951,7 +1951,7 @@ QMAKE_CFLAGS_DEPS	+= -M
 #QMAKE_CFLAGS_HIDESYMS   += -fvisibility=hidden
 QMAKE_CFLAGS		+= -pipe
 QMAKE_CFLAGS_RELEASE    += -fno-omit-frame-pointer -fno-optimize-sibling-calls
-QMAKE_CFLAGS_RELEASE	+= -DPANDORA -Os -pipe -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -ffast-math
+QMAKE_CFLAGS_RELEASE	+= -DPANDORA -O3 pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math 
 QMAKE_CFLAGS_SHLIB	+= -fPIC
 QMAKE_CFLAGS_STATIC_LIB	+= -fPIC
 QMAKE_CFLAGS_THREAD	+= -D_REENTRANT

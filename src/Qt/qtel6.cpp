@@ -40,6 +40,7 @@ void EL6::ShowPopupMenu( int x, int y )
 ////////////////////////////////////////////////////////////////
 void EL6::ExecMenu( int id )
 {
+    char str[PATH_MAX];
     // 項目ごとの処理
     switch( id ){
     case ID_TAPEINSERT:		UI_TapeInsert();						break;	// TAPE 挿入
@@ -66,7 +67,23 @@ void EL6::ExecMenu( int id )
     case ID_RESET:			UI_Reset();								break;	// リセット
     case ID_RESTART:		UI_Restart();							break;	// 再起動
     case ID_DOKOSAVE:		UI_DokoSave();							break;	// どこでもSAVE
+    case ID_DOKOSAVE1:                                                      // どこでもSAVE1
+    case ID_DOKOSAVE2:                                                      // どこでもSAVE2
+    case ID_DOKOSAVE3:                                                      // どこでもSAVE3
+        strncpy( str, QString("%1/.%2.dds").arg(cfg->GetDokoSavePath()).arg(id - ID_DOKOSAVE).toLocal8Bit().data(), PATH_MAX );
+        DokoDemoSave( str );
+        break;
     case ID_DOKOLOAD:		UI_DokoLoad();							break;	// どこでもLOAD
+    case ID_DOKOLOAD1:                                                      // どこでもLOAD1
+    case ID_DOKOLOAD2:                                                      // どこでもLOAD2
+    case ID_DOKOLOAD3:                                                      // どこでもLOAD3
+        strncpy( str, QString("%1/.%2.dds").arg(cfg->GetDokoSavePath()).arg(id - ID_DOKOLOAD).toLocal8Bit().data(), PATH_MAX );
+        if( OSD_FileExist( str ) ){
+            cfg->SetModel( GetDokoModel( str ) );
+            cfg->SetDokoFile( str );
+            OSD_PushEvent( EV_DOKOLOAD );
+        }
+        break;
     case ID_REPLAYSAVE:		UI_ReplaySave();						break;	// リプレイ保存
     case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
     case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
@@ -76,6 +93,11 @@ void EL6::ExecMenu( int id )
     case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
     case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
     case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
+    case ID_TILT:                                                           // TILTモード変更
+        qApp->setProperty("TILTEnabled",
+                          qVariantFromValue(!qApp->property("TILTEnabled").toBool()));
+        graph->ResizeScreen();	// スクリーンサイズ変更
+        break;
     case ID_DISP43:			UI_Disp43();							break;	// 4:3表示変更
     case ID_STATUS:			UI_StatusBar();							break;	// ステータスバー表示状態変更
     case ID_M4MONO:															// MODE4カラー モノクロ
@@ -308,10 +330,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
     selectedAction = menu.exec(QCursor::pos());
 
     if (selectedAction != NULL) {
-
-
         // 項目ごとの処理
-        char str[PATH_MAX];
         MenuCommand id = selectedAction->property(MENUIDPROPERTY).value<MenuCommand>();
         ExecMenu(id);
         //#PENDING 消す

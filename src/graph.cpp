@@ -227,7 +227,7 @@ void DSP6::DrawScreen( void )
 	{
 		UpdateSubBuf();	// サブバッファ更新
 		
-		if( DISPFULL ){	// フルスクリーン表示
+        if( 0/*DISPFULL P6VXではフルスクリーンでもサイズを変えない*/ ){	// フルスクリーン表示
 			PRINTD( GRP_LOG, " -> FullScreen" );
 			OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() ) / 2 );
 		}else{			// ウィンドウ表示

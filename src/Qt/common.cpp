@@ -404,7 +404,7 @@ bool SaveImg( const char *filename, VSurface *sur, VRect *pos )
         rec.w = sur->Width(); rec.h = sur->Height();
     }
 
-    QImage image(rec.w, rec.h, QImage::Format_ARGB32_Premultiplied);
+    QImage image(rec.w, rec.h, QImage::Format_RGB32);
 
     BYTE *doff = (BYTE *)sur->GetPixels() + rec.x + rec.y * sur->Pitch();
     for( int i=0; i<rec.h; i++ ){

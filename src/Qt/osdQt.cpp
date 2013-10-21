@@ -809,7 +809,7 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
 {
     VRect src1,drc1;
 
-    QImage image(src->Width(), src->Height(), QImage::Format_ARGB32_Premultiplied);
+    QImage image(src->Width(), src->Height(), QImage::Format_RGB32);
 
     // 転送元範囲設定
     src1.x = 0;

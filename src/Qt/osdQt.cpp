@@ -3,7 +3,9 @@
 
 #include <QtCore>
 #include <QtWidgets>
+#ifndef NOSOUND
 #include <QtMultimedia>
+#endif
 
 #ifndef NOJOYSTICK
 #include <SDL2/SDL.h>
@@ -37,9 +39,11 @@ QElapsedTimer elapsedTimer;
 
 std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
 
+#ifndef NOSOUND
 //サウンド関連
 QPointer<QIODevice> audioBuffer = NULL;
 QPointer<QAudioOutput> audioOutput = NULL;
+#endif
 
 //ジョイスティック関連
 #ifndef NOJOYSTICK
@@ -1277,6 +1281,7 @@ int OSD_Message( const char *mes, const char *cap, int type )
 ////////////////////////////////////////////////////////////////
 bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 {
+#ifndef NOSOUND
     //実行時に出る警告の抑止
     qRegisterMetaType<QAudio::State>();
 
@@ -1299,6 +1304,7 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
     }
 
     audioOutput = new QAudioOutput(info, format, qApp);
+#endif
     return true;
 }
 
@@ -1311,9 +1317,11 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 ////////////////////////////////////////////////////////////////
 void OSD_CloseAudio( void )
 {
+#ifndef NOSOUND
     if(audioOutput){
         audioOutput->stop();
     }
+#endif
 }
 
 
@@ -1325,11 +1333,13 @@ void OSD_CloseAudio( void )
 ////////////////////////////////////////////////////////////////
 void OSD_StartAudio( void )
 {
+#ifndef NOSOUND
     if(audioOutput){
         audioBuffer = audioOutput->start();
         //#PENDING これではグローバルボリュームを変えてしまう？
         audioOutput->setVolume(0.3);
     }
+#endif
 }
 
 
@@ -1341,9 +1351,11 @@ void OSD_StartAudio( void )
 ////////////////////////////////////////////////////////////////
 void OSD_StopAudio( void )
 {
+#ifndef NOSOUND
     if(audioOutput){
         audioOutput->suspend();
     }
+#endif
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1355,9 +1367,11 @@ void OSD_StopAudio( void )
 ////////////////////////////////////////////////////////////////
 void OSD_WriteAudioStream(BYTE *stream, int samples)
 {
+#ifndef NOSOUND
     if(audioBuffer){
         audioBuffer->write((const char*)stream, samples);
     }
+#endif
 }
 
 
@@ -1369,11 +1383,15 @@ void OSD_WriteAudioStream(BYTE *stream, int samples)
 ////////////////////////////////////////////////////////////////
 bool OSD_AudioPlaying( void )
 {
+#ifndef NOSOUND
     if(audioOutput){
         return audioOutput->state() == QAudio::ActiveState;
     } else {
         return false;
     }
+#else
+    return false;
+#endif
 }
 
 

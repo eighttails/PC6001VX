@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets network  multimedia
+QT       += core gui widgets network
 
 TARGET = PC6001VX
 TEMPLATE = app
@@ -12,9 +12,13 @@ TEMPLATE = app
 #ジョイスティックが不要な場合はコメントアウトをはずす(SDLが不要になる)
 #DEFINES += NOJOYSTICK
 
-
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
+
+#Android用設定
+android:{
+DEFINES += NOJOYSTICK NOSOUND NOOPENGL
+}
 
 #OpenPandora用設定
 pandora:{
@@ -46,6 +50,9 @@ LIBS += $$system(sdl2-config --libs)
 
 !contains(DEFINES, NOOPENGL) {
 QT += opengl
+}
+!contains(DEFINES, NOSOUND) {
+QT += multimedia
 }
 
 SOURCES += \

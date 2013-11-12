@@ -198,7 +198,6 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QI
         pItem->setTransform(trans);
     }
     pItem->setPixmap(QPixmap::fromImage(image));
-
 }
 
 void QtP6VXApplication::clearLayout(HWINDOW Wh)

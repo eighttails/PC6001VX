@@ -17,7 +17,8 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 #Android用設定
 android:{
-DEFINES += NOJOYSTICK NOSOUND NOOPENGL
+QTPLUGIN += qico
+DEFINES += NOJOYSTICK NOSOUND NOMONITOR NOOPENGL
 }
 
 #OpenPandora用設定

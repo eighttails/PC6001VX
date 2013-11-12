@@ -829,12 +829,12 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
 
     BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x * 4;
 
+    const int length = image.bytesPerLine();
     for( int i=0; i < src1.h; i++ ){
         BYTE *pdst = (BYTE *)image.scanLine(i);
-        memcpy( pdst, psrc, image.bytesPerLine() );
+        memcpy( pdst, psrc, length );
         psrc += src->Pitch();
     }
-
     // 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
     // スロットを呼び出してメインスレッドでSceneを更新する
     // (直接呼び出すと呼び出し側スレッドで実行されてしまう)

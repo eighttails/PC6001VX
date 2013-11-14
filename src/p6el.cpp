@@ -38,9 +38,9 @@
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 EL6::EL6( void ) : vm(NULL), cfg(NULL), sche(NULL), graph(NULL), snd(NULL), joy(NULL), staw(NULL),
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	regw(NULL), memw(NULL), monw(NULL),
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	UpDateFPSID(NULL), UDFPSCount(0), FSkipCount(0)
 {}
 
@@ -64,7 +64,7 @@ void EL6::OnThread( void *inst )
 	
 	p6 = STATIC_CAST( EL6 *, inst );	// 自分自身のオブジェクトポインタ取得
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( p6->cfg->GetMonDisp() ){
 	// モニタモード
 		while( !this->cThread::IsCancel() ){
@@ -95,7 +95,10 @@ void EL6::OnThread( void *inst )
 						// 自動キー入力
 						if( IsAutoKey() ){
 							BYTE key = GetAutoKey();
-							if( key ) p6->vm->cpus->ReqKeyIntr( 0, key );
+							if( key ){
+								if( key == 0x14 ) p6->vm->cpus->ReqKeyIntr( 6, GetAutoKey() );
+								else			  p6->vm->cpus->ReqKeyIntr( 0, key );
+							}
 						}
 						
 						// ウェイト
@@ -114,7 +117,7 @@ void EL6::OnThread( void *inst )
 				}
 			}
 		}else
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{	// 通常実行
 		while( !this->cThread::IsCancel() ){
 			// ポーズ中なら画面更新のみ
@@ -156,7 +159,10 @@ void EL6::OnThread( void *inst )
 				// 自動キー入力
 				if( IsAutoKey() ){
 					BYTE key = GetAutoKey();
-					if( key ) p6->vm->cpus->ReqKeyIntr( 0, key );
+					if( key ){
+						if( key == 0x14 ) p6->vm->cpus->ReqKeyIntr( 6, GetAutoKey() );
+						else			  p6->vm->cpus->ReqKeyIntr( 0, key );
+					}
 				}
 			}
 			
@@ -210,7 +216,7 @@ int EL6::EmuVSYNC( void )
 }
 
 
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ////////////////////////////////////////////////////////////////
 // 指定ステート数実行
 ////////////////////////////////////////////////////////////////
@@ -244,7 +250,7 @@ bool EL6::ToggleMonitor( void )
 	
 	return cfg->GetMonDisp();
 }
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 ////////////////////////////////////////////////////////////////
@@ -268,22 +274,23 @@ bool EL6::Init( const CFG6 *config )
 	
 	for( int i=0; i<128; i++ ){
 		cfg->GetColor( i, &GPal.colors[i] );
-		// スキャンライン用カラー設定
-		GPal.colors[i+128].r = ( GPal.colors[i].r * cfg->GetScanLineBr() ) / 100;
-		GPal.colors[i+128].g = ( GPal.colors[i].g * cfg->GetScanLineBr() ) / 100;
-		GPal.colors[i+128].b = ( GPal.colors[i].b * cfg->GetScanLineBr() ) / 100;
+		VSurface::SetColor( i, COL2DW( GPal.colors[i] ) );
 	}
-	
+
+    // パレット設定
+    OSD_SetPalette(NULL, &GPal);
+
 	// 機種別 VM確保
 	switch( cfg->GetModel() ){
 	case 61: vm = new VM61( this ); break;
 	case 62: vm = new VM62( this ); break;
 	case 66: vm = new VM66( this ); break;
+	case 64: vm = new VM64( this ); break;
+	case 68: vm = new VM68( this ); break;
 	default: vm = new VM60( this );
 	}
 	// VM初期化
 	if( !vm || !vm->AllocObject( cfg ) || !vm->Init( cfg ) ) return false;
-	vm->vdg->SetColors( &GPal );				// カラーテーブル設定
 	
 	// 各種オブジェクト確保
 	try{
@@ -292,11 +299,11 @@ bool EL6::Init( const CFG6 *config )
 		graph  = new DSP6( vm );									// 画面描画
 		joy    = new JOY6;											// ジョイスティック
 		staw   = new cWndStat( vm );								// ステータスバー
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		regw   = new cWndReg( vm, DEV_ID("REGW") );					// レジスタウィンドウ
 		memw   = new cWndMem( vm, DEV_ID("MEMW") );					// メモリウィンドウ
 		monw   = new cWndMon( vm, DEV_ID("MONW") );					// モニタウィンドウ
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	}
 	// new に失敗した場合
 	catch( std::bad_alloc ){
@@ -305,11 +312,11 @@ bool EL6::Init( const CFG6 *config )
 		if( graph ){ delete graph; graph = NULL; }
 		if( staw ) { delete staw;  staw  = NULL; }
 		if( joy )  { delete joy;   joy   = NULL; }
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         if( regw ) { delete regw;  regw  = NULL; }
 		if( memw ) { delete memw;  memw  = NULL; }
 		if( monw ) { delete monw;  monw  = NULL; }
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 		return false;
 	}
@@ -328,7 +335,7 @@ bool EL6::Init( const CFG6 *config )
 	// ステータスバー -----
 	if( !staw->Init( graph->ScreenX(), cfg->GetFddNum() ) ) return false;
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// レジスタウィンドウ　-----
 	if( !regw->Init() ) return false;
 	
@@ -337,7 +344,7 @@ bool EL6::Init( const CFG6 *config )
 	
 	// モニタウィンドウ　-----
 	if( !monw->Init() ) return false;
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	// FPS表示タイマ設定
     //FPS表示タイマはQtで実装
@@ -433,13 +440,13 @@ EL6::ReturnCode EL6::EventLoop( void )
 			break;
 			
 		case EV_KEYDOWN:		// キー入力
-			#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+			#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			// モニタモード?
 			if( cfg->GetMonDisp() ){
 				monw->KeyIn( event.key.sym, event.key.mod & KVM_SHIFT, event.key.unicode );
 				break;
 			}else
-			#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+			#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			// 各種機能キーチェック
 			if( CheckFuncKey( event.key.sym,
 							  event.key.mod & KVM_ALT  ? true : false,
@@ -469,14 +476,14 @@ EL6::ReturnCode EL6::EventLoop( void )
             }
             break;
 
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		case EV_DEBUGMODEBP:	// モニタモード変更(ブレークポイント到達時)
 			monw->BreakIn( event.bp.addr );		// ブレークポイントの情報を表示
 			ToggleMonitor();					// モニタモード変更
 			
 			break;
 			
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         case EV_CONTEXTMENU:	// コンテキストメニュー
                 // ポップアップメニュー表示
                 ShowPopupMenu( event.mousebt.x, event.mousebt.y );
@@ -553,9 +560,9 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 			graph->ResizeScreen();	// スクリーンサイズ変更
 			Start();
 		}else{
-			#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+			#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			ToggleMonitor();
-			#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+			#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		}
 		break;
 		
@@ -638,11 +645,11 @@ void EL6::DeleteAllObject( void )
 {
     //if( UpDateFPSID ) OSD_DelTimer( UpDateFPSID );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( monw ) { delete monw;	monw = NULL; }
 	if( memw ) { delete memw;	memw = NULL; }
 	if( regw ) { delete regw;	regw = NULL; }
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	if( staw ) { delete staw;	staw  = NULL; }
 	if( joy )  { delete joy;	joy   = NULL; }
@@ -671,13 +678,13 @@ bool EL6::ScreenUpdate( void )
 		vm->vdg->UpdateBackBuf();	// バックバッファ更新
 		graph->DrawScreen();		// 画面描画
 		
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		if( cfg->GetMonDisp() ){
 			regw->Update();
 			memw->Update();
 			monw->Update();
 		}
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		
 		UDFPSCount++;
 		FSkipCount = 0;
@@ -936,11 +943,12 @@ bool EL6::SetAutoKeyFile( const char *filepath )
 ////////////////////////////////////////////////////////////////
 void EL6::SetAutoStart( void )
 {
-	char buf[256] = "";
+	char kbuf[256] = "";
+	char *buf = kbuf;
 	
 	if( !(vm->cmtl->IsMount() && vm->cmtl->IsAutoStart()) ) return;
 	
-	P6TAUTOINFO *ainf = vm->cmtl->GetAutoStartInfo();
+	const P6TAUTOINFO *ainf = vm->cmtl->GetAutoStartInfo();
 	
 	// キーバッファに書込み
 	switch( cfg->GetModel() ){
@@ -948,41 +956,63 @@ void EL6::SetAutoStart( void )
 	case 61:	// PC-6001A
 		sprintf( buf, "%c%c", ainf->Page+'0', 0x0d );
 		break;
+		
+	case 64:	// PC-6001mk2SR
+		if( ainf->BASIC == 6 ){
+			if( vm->disk->GetDrives() )	// ??? 実際は?
+				sprintf( buf, "%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 20, 0x0d, 0x17, 10 );
+			else
+				sprintf( buf, "%c%c%c%c%c%c%c",   0x17, 10, ainf->BASIC+'0', 0x17, 20,       0x17, 10 );
+			break;
+		}
+		
 	case 62:	// PC-6001mk2
 		switch( ainf->BASIC ){
 		case 3:
 		case 4:
 		case 5:
 			if( vm->disk->GetDrives() )	// ??? 実際は?
-				sprintf( buf, "%c%c%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 20, 0x0d, ainf->Page+'0', 0x0d, 0x17, 110 );
+				sprintf( buf, "%c%c%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 30, 0x0d, ainf->Page+'0', 0x0d, 0x17, 120 );
 			else
-				sprintf( buf, "%c%c%c%c%c%c%c%c%c",   0x17, 50, ainf->BASIC+'0', 0x17, 20,       ainf->Page+'0', 0x0d, 0x17, 110 );
+				sprintf( buf, "%c%c%c%c%c%c%c%c%c",   0x17, 50, ainf->BASIC+'0', 0x17, 30,       ainf->Page+'0', 0x0d, 0x17, 120 );
 			break;
 		default:
-			sprintf( buf, "%c%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 20, ainf->Page+'0', 0x0d, 0x17, 10 );
+			sprintf( buf, "%c%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 30, ainf->Page+'0', 0x0d, 0x17, 20 );
 		}
 		break;
+		
+	case 68:	// PC-6601SR
+		if( ainf->BASIC == 6 ){
+			if( vm->disk->IsMount( 0 ) )
+				sprintf( buf, "%c%c%c%c%c%c%c%c%c", 0x17, 260, 0x14, 0xf4, 0x17, 30, 0x0d, 0x17, 10 );
+			else
+				sprintf( buf, "%c%c%c%c%c%c%c%c",   0x17, 200, 0x14, 0xf4, 0x17, 30,       0x17, 10 );
+			break;
+		}else{
+			sprintf( buf, "%c%c%c%c%c%c%c%c", 0x17, 200, 0x17, vm->disk->IsMount( 0 ) ? 60 : 1, 0x17, vm->disk->IsMount( 1 ) ? 60 : 1, 0x14, 0xf3 );
+		}
+		buf += strlen(kbuf);
+		
 	case 66:	// PC-6601
 		switch( ainf->BASIC ){
 		case 3:
 		case 4:
 		case 5:
 			if( vm->disk->IsMount( 0 ) )
-				sprintf( buf, "%c%c%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 20, 0x0d, ainf->Page+'0', 0x0d, 0x17, 110 );
+				sprintf( buf, "%c%c%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 30, 0x0d, ainf->Page+'0', 0x0d, 0x17, 110 );
 			else
-				sprintf( buf, "%c%c%c%c%c%c%c%c%c",   0x17, 50, ainf->BASIC+'0', 0x17, 20,       ainf->Page+'0', 0x0d, 0x17, 110 );
+				sprintf( buf, "%c%c%c%c%c%c%c%c%c",   0x17, 50, ainf->BASIC+'0', 0x17, 30,       ainf->Page+'0', 0x0d, 0x17, 110 );
 			break;
 		default:
-			sprintf( buf, "%c%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 20, ainf->Page+'0', 0x0d, 0x17, 10 );
+			sprintf( buf, "%c%c%c%c%c%c%c%c%c", 0x17, 50, ainf->BASIC+'0', 0x17, 30, ainf->Page+'0', 0x0d, 0x17, 10 );
 		}
 		break;
-//		case 64:	// PC-6001mk2SR
-//		case 68:	// PC-6601SR
+		
 	}
-	memcpy( &buf[strlen(buf)], ainf->ask, ainf->ASKey );
-	
+	strcat( kbuf, ainf->ask );
+		
 	// 自動キー入力設定
-	if( SetAutoKey( buf, strlen(buf) ) );
+	if( SetAutoKey( kbuf, strlen(kbuf) ) );
 }
 
 
@@ -994,12 +1024,12 @@ void EL6::SetAutoStart( void )
 // 引数:	なし
 // 返値:	bool		true:モニタモード false:実行中
 ////////////////////////////////////////////////////////////////
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-bool EL6::IsMonitor( void )
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+bool EL6::IsMonitor( void ) const
 {
 	return cfg->GetMonDisp();
 }
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 ////////////////////////////////////////////////////////////////
@@ -1491,10 +1521,17 @@ void EL6::UI_AutoType( const char *path )
 ////////////////////////////////////////////////////////////////
 void EL6::UI_Reset( void )
 {
+	bool can = this->cThread::IsCancel();	// スレッド停止済み?
+	
+	if( !can ) Stop();
+	
 	// システムディスクが入っていたらTAPEのオートスタート無効
 	if( !vm->disk->IsSystem(0) && !vm->disk->IsSystem(1) )
 		SetAutoStart();
+	
 	vm->Reset();
+	
+	if( !can ) Start();
 }
 
 

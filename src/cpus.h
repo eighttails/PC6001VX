@@ -33,6 +33,12 @@ protected:
 	BYTE CmtData;						// CMTリードデータ(割込み用)
 	BYTE SioData;						// RS232C受信データ(割込み用)
 	
+	BYTE TVRData[32];					// TV予約データ
+	BYTE DateData[5];					// DATEデータ
+	
+	int TVRCnt;							// TV予約割込み用カウンタ
+	int DateCnt;						// DATE割込み用カウンタ;
+	
 	BYTE ReadIO( int );					// I/Oポートアクセス Read
 	void WriteIO( int, BYTE );			// I/Oポートアクセス Write
 	
@@ -63,7 +69,7 @@ public:
 	
 	// CMT関連
 	void ReqCmtIntr( BYTE );			// CMT READ割込み要求
-	int GetCmtStatus();					// CMTステータス取得
+	int GetCmtStatus() const;			// CMTステータス取得
 	bool IsCmtIntrReady();				// CMT割込み発生可?
 	
 	void ExtIntr();						// 外部割込み要求
@@ -90,6 +96,19 @@ protected:
 public:
 	SUB62( VM6 *, const ID& );			// コンストラクタ
 	~SUB62();							// デストラクタ
+};
+
+
+class SUB68 : public SUB6 {
+protected:
+	void ReqTVRReadIntr();				// TV予約読込み割込み要求
+	void ReqDateIntr();					// DATE割込み要求
+	
+	void ExtIntrExec( BYTE );			// 外部割込み処理
+	
+public:
+	SUB68( VM6 *, const ID& );			// コンストラクタ
+	~SUB68();							// デストラクタ
 };
 
 

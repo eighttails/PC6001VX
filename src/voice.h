@@ -53,7 +53,7 @@
 // クラス定義
 ////////////////////////////////////////////////////////////////
 class VCE6 : public Device, public cD7752, public SndDev, public IDoko {
-private:
+protected:
 	char FilePath[PATH_MAX];		// WAVEファイル格納パス
 	
 	BYTE io_E0H;
@@ -83,6 +83,7 @@ private:
 	void UpConvert();				// サンプリングレート変換
 	bool LoadVoice( int );			// 内部句WAV読込み
 	void FreeVoice();				// 内部句WAV開放
+	virtual void ReqIntr();			// 音声合成割込み要求
 	
 	// デバイス定義
 	static const Descriptor descriptor;
@@ -100,7 +101,7 @@ private:
 	
 public:
 	VCE6( VM6 *, const ID& );		// コンストラクタ
-	~VCE6();						// デストラクタ
+	virtual ~VCE6();				// デストラクタ
 	
 	void EventCallback( int, int );	// イベントコールバック関数
 	
@@ -117,6 +118,15 @@ public:
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
+};
+
+class VCE64 : public VCE6 {
+protected:
+	void ReqIntr();					// 音声合成割込み要求
+	
+public:
+	VCE64( VM6 *, const ID& );		// コンストラクタ
+	virtual ~VCE64();				// デストラクタ
 };
 
 #endif	// VOICE_H_INCLUDED

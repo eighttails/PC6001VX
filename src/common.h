@@ -42,6 +42,7 @@ int Sjis2P6( char *, const char * );				// SJIS -> P6
 ////////////////////////////////////////////////////////////////
 // 画像ファイル操作関数
 ////////////////////////////////////////////////////////////////
+bool SaveImgData( const char *, BYTE *, int, int, int, VRect * );	// Img SAVE from Data
 bool SaveImg( const char *, VSurface *, VRect * );	// Img SAVE
 VSurface *LoadImg( const char * );					// Img LOAD
 

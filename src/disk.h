@@ -6,9 +6,31 @@
 #include "d88.h"
 #include "ini.h"
 
+#define	MAXDRV	4	// 最大ドライブ接続数
 
-// 最大ドライブ接続数
-#define	MAXDRV	4
+
+// 装置タイプ
+enum UnitType
+{
+	PC6031 = 0,
+	PC6031SR,
+	PC8031,
+	PC80S31,
+	PC6601,
+	PC6601SR,
+	EndofUnitType
+};
+
+// ドライブタイプ
+enum FddType
+{
+	FDD1D = 0,
+	FDD1DD,
+	FDD2D,
+	FDD2DD,
+	
+	EndofFddType
+};
 
 // コマンド
 // PC-6031準拠(えすびさん調査ベース)
@@ -22,15 +44,23 @@ enum FddCommand
 	SEND_RESULT_STATUS	= 0x06,
 	SEND_DRIVE_STATUS	= 0x07,
 	
+	COPY				= 0x04,	// PC-6031SR
+	GET_MEMORY			= 0x0b,	// PC-6031SR
+	FAST_WRITE_DISK		= 0x11,	// PC-6031SR
+	FAST_SEND_DATA		= 0x12,	// PC-6031SR
+	SET_MODE			= 0x17,	// PC-6031SR
+	
 	IDLE				= 0xff,	// 処理待ちの状態
-	EndofFdcCmd
+	EndofFddCmd
 };
 
 // ミニフロッピーディスク 各種情報
 struct DISK60 {
-	int DAC;			// Data Accepted	:データ受信完
-	int RFD;			// Ready For Data	:データ受信準備完
-	int DAV;			// Data Valid		:データ送信完
+	FddType Type;		// ドライブタイプ
+	
+	bool DAC;			// Data Accepted	:データ受信完
+	bool RFD;			// Ready For Data	:データ受信準備完
+	bool DAV;			// Data Valid		:データ送信完
 	
 	int command;		// 受け取ったコマンド
 	int step;			// パラメータ入力待ちステータス
@@ -46,6 +76,9 @@ struct DISK60 {
 	
 	int size;			// 処理するバイト数
 	
+	bool Fast;			// 高速アクセスフラグ true:有効 false:無効
+	bool FastStat;		// 高速アクセス時アクセスデータフラグ true:2バイト目 false:1バイト目
+	
 	BYTE retdat;		// port D0H から返す値
 	
 	BYTE busy;			// ドライブBUSY 1:ドライブ1 2:ドライブ2
@@ -53,10 +86,10 @@ struct DISK60 {
 	bool error;			// エラーフラグ true:エラーあり false:エラーなし
 	
 	DISK60() :
-		DAC(0), RFD(0), DAV(0),
+		Type(FDD1D), DAC(0), RFD(0), DAV(0),
 		command(IDLE), step(0),
 		blk(0), drv(0), trk(0), sct(0),
-		size(0),
+		size(0), Fast(false), FastStat(false),
 		retdat(0xff), busy(0), error(false) {}
 };
 
@@ -77,9 +110,9 @@ enum FdcSeek{
 struct PD765 {
 	BYTE command;		// コマンド
 	
-FdcPhase phase;		// Phase (C/E/R)
-int step;			// Phase内の処理手順
-
+//	FdcPhase phase;		// Phase (C/E/R)
+//	int step;			// Phase内の処理手順
+	
 	BYTE SRT;			// Step Rate Time
 	BYTE HUT;			// Head Unloaded Time
 	BYTE HLT;			// Head Load Time
@@ -107,20 +140,20 @@ int step;			// Phase内の処理手順
 	BYTE D;				// Format Data
 	BYTE SC;			// Sector
 	
-	BYTE st0;			// ST0
-	BYTE st1;			// ST1
-	BYTE st2;			// ST2
-	BYTE st3;			// ST3
+	BYTE ST0;			// ST0
+	BYTE ST1;			// ST1
+	BYTE ST2;			// ST2
+	BYTE ST3;			// ST3
 	
-	BYTE status;		// Status
-	bool intr;			// FDC割込み発生フラグ
+	BYTE Status;		// Status
+	bool Intr;			// FDC割込み発生フラグ
 	
 		PD765() :
-		command(0), phase(R_PHASE), step(0),
+		command(0), // phase(R_PHASE), step(0),
 		SRT(32), HUT(0), HLT(0), ND(false),
 		MT(0), MF(0), SK(0), HD(0), US(0), C(0), H(0), R(0), N(0),
 		EOT(0), GPL(0), DTL(0),
-		st0(0), st1(0), st2(0), st3(0), status(0)
+		ST0(0), ST1(0), ST2(0), ST3(0), Status(0), Intr(false)
 		{
 			INITARRAY( SeekSta, SK_STOP );
 			INITARRAY( NCN, 0 );
@@ -134,6 +167,7 @@ int step;			// Phase内の処理手順
 ////////////////////////////////////////////////////////////////
 class DSK6 : public Device, public IDoko {
 protected:
+	UnitType UType;						// 装置タイプ
 	int DrvNum;							// ドライブ数
 	char FilePath[MAXDRV][PATH_MAX];	// ファイルパス
 	cD88 *Dimg[MAXDRV];					// ディスクイメージオブジェクトへのポインタ
@@ -158,13 +192,13 @@ public:
 	
 	int GetDrives();					// ドライブ数取得
 	
-	bool IsMount( int );				// マウント済み?
-	bool IsSystem( int );				// システムディスク?
-	bool IsProtect( int );				// プロテクト?
-	virtual bool InAccess( int ) = 0;	// アクセス中?
+	bool IsMount( int ) const;			// マウント済み?
+	bool IsSystem( int ) const;			// システムディスク?
+	bool IsProtect( int ) const;		// プロテクト?
+	virtual bool InAccess( int ) const = 0;	// アクセス中?
 	
-	const char *GetFile( int );			// ファイルパス取得
-	const char *GetName( int );			// DISK名取得
+	const char *GetFile( int ) const;	// ファイルパス取得
+	const char *GetName( int ) const;	// DISK名取得
 	
 	// ------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE
@@ -174,7 +208,7 @@ public:
 
 
 class DSK60 : public DSK6 {
-private:
+protected:
 	DISK60 mdisk;			// ミニフロッピーディスク各種情報
 	
 	BYTE RBuf[4096];		// 読込みバッファ
@@ -204,13 +238,13 @@ private:
 	
 public:
 	DSK60( VM6 *, const ID& );			// コンストラクタ
-	~DSK60();							// デストラクタ
+	virtual ~DSK60();					// デストラクタ
 	
 	void EventCallback( int, int );		// イベントコールバック関数
 	
 	bool Init( int );					// 初期化
 	void Reset();						// リセット
-	bool InAccess( int );				// アクセス中?
+	bool InAccess( int ) const;			// アクセス中?
 	
 	// デバイスID
 	enum IDOut{ outD1H=0, outD2H, outD3H };
@@ -220,6 +254,13 @@ public:
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
+};
+
+
+class DSK64 : public DSK60 {
+public:
+	DSK64( VM6 *, const ID& );			// コンストラクタ
+	virtual ~DSK64();					// デストラクタ
 };
 
 
@@ -244,7 +285,7 @@ private:
 	
 	// FDCI
 	int SendBytes;						// 転送量(256Bytes単位)
-	bool DIO;							// FDDバッファアクセス制御 true: 外付ドライブ制御 false: FDDバッファ
+	bool ExtDrv;						// FDDタイプ true: 外付 false: 内蔵
 	bool B2Dir;							// PortB2H アクセスレジスタ true: 出力 false: 入力
 	
 	void PushStatus( BYTE );			// ステータスバッファにデータを入れる
@@ -300,7 +341,7 @@ public:
 	
 	bool Init( int );					// 初期化
 	void Reset();						// リセット
-	bool InAccess( int );				// アクセス中?
+	bool InAccess( int ) const;			// アクセス中?
 	
 	// デバイスID
 	enum IDOut{ outB1H=0, outB3H, outD0H, outD1H, outD2H, outD3H, outD6H, outD8H,
@@ -311,6 +352,13 @@ public:
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
+};
+
+
+class DSK68 : public DSK66 {
+public:
+	DSK68( VM6 *, const ID& );			// コンストラクタ
+	virtual ~DSK68();					// デストラクタ
 };
 
 #endif	// DISK_H_INCLUDED

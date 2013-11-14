@@ -1,7 +1,7 @@
 #include "breakpoint.h"
 
 
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
@@ -18,7 +18,7 @@ BPoint::~BPoint( void ){}
 ////////////////////////////////////////////////////////////////
 // ブレークポイントの有無をチェック
 ////////////////////////////////////////////////////////////////
-bool BPoint::ExistBreakPoint( void )
+bool BPoint::ExistBreakPoint( void ) const
 {
 	for( int i=0; i<NR_BP; i++ )
 		if( BP[i].Type != BP_NONE ) return true;
@@ -64,7 +64,7 @@ void BPoint::ClearStatus( void )
 ////////////////////////////////////////////////////////////////
 // ブレークポイントのタイプを取得
 ////////////////////////////////////////////////////////////////
-BPoint::BPtype BPoint::GetType( int num )
+BPoint::BPtype BPoint::GetType( int num ) const
 {
 	return BP[num].Type;
 }
@@ -82,7 +82,7 @@ void BPoint::SetType( int num, BPtype type )
 ////////////////////////////////////////////////////////////////
 // ブレークポイントのアドレスを取得
 ////////////////////////////////////////////////////////////////
-WORD BPoint::GetAddr( int num )
+WORD BPoint::GetAddr( int num ) const
 {
 	return BP[num].Addr;
 }
@@ -100,7 +100,7 @@ void BPoint::SetAddr( int num, WORD addr )
 ////////////////////////////////////////////////////////////////
 // ブレーク要求あり?
 ////////////////////////////////////////////////////////////////
-bool BPoint::IsReqBreak( void )
+bool BPoint::IsReqBreak( void ) const
 {
 	return ReqBreak;
 }
@@ -109,7 +109,7 @@ bool BPoint::IsReqBreak( void )
 ////////////////////////////////////////////////////////////////
 // ブレーク要求のあったブレークポイントNo.を取得
 ////////////////////////////////////////////////////////////////
-int BPoint::GetReqBPNum( void )
+int BPoint::GetReqBPNum( void ) const
 {
 	return ReqBPNum;
 }
@@ -125,4 +125,4 @@ void BPoint::ResetBreak( void )
 }
 
 
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

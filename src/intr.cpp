@@ -14,26 +14,48 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-INT6::INT6( VM6 *vm, const ID& id ) : Device(vm,id),
-	IntrFlag(0), TimerIntrEnable(false), TimerAddr(0), TimerCntUp(0) {}
-INT60::INT60( VM6 *vm, const ID& id ) : INT6(vm,id) {}
-INT62::INT62( VM6 *vm, const ID& id ) : INT6(vm,id),
-	TimerIntrEnable2(false), Int1IntrEnable(false), Int2IntrEnable(false),
-	Int1AddrOutput(false), Int2AddrOutput(false), Int1Addr(0), Int2Addr(0) {}
+IRQ6::IRQ6( VM6 *vm, const ID& id ) : Device(vm,id),
+	IntrFlag(0), TimerIntrEnable(false), TimerCntUp(0), Timer1st(50)
+{
+	INITARRAY( IntEnable, false );
+	INITARRAY( VecOutput, false );
+	INITARRAY( IntVector, 0 );
+}
+
+IRQ60::IRQ60( VM6 *vm, const ID& id ) : IRQ6(vm,id)
+{
+	TimerCntUp   = 3;
+	IntEnable[0] = true;
+	IntEnable[2] = true;
+}
+
+IRQ62::IRQ62( VM6 *vm, const ID& id ) : IRQ6(vm,id)
+{
+	Timer1st = 88;
+}
+
+IRQ64::IRQ64( VM6 *vm, const ID& id ) : IRQ6(vm,id)
+{
+	Timer1st = 88;
+}
 
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
 ////////////////////////////////////////////////////////////////
-INT6::~INT6( void ){}
-INT60::~INT60( void ){}
-INT62::~INT62( void ){}
+IRQ6::~IRQ6( void ){}
+
+IRQ60::~IRQ60( void ){}
+
+IRQ62::~IRQ62( void ){}
+
+IRQ64::~IRQ64( void ){}
 
 
 ////////////////////////////////////////////////////////////////
 // イベントコールバック関数
 ////////////////////////////////////////////////////////////////
-void INT6::EventCallback( int id, int clock )
+void IRQ6::EventCallback( int id, int clock )
 {
 	switch( id ){
 	case EID_TIMER:		// タイマ割込み発生
@@ -45,14 +67,35 @@ void INT6::EventCallback( int id, int clock )
 
 
 ////////////////////////////////////////////////////////////////
+// タイマ割込みスイッチ
+////////////////////////////////////////////////////////////////
+void IRQ6::SetTimerIntr( bool en )
+{
+	PRINTD( INTR_LOG, "[INTR][SetTimerIntr] %s->%s\n", TimerIntrEnable ? "ON" : "OFF", en ? "ON" : "OFF" );
+	
+	// 割込みOff->Onのタイミングでカウンタはリセットされるらしい
+	if( en && !TimerIntrEnable ){
+		// 初代機は割込み有効後，最初の周期は指定の半分(1ms)になるらしい
+		// (推定) 割込みパルスは1/4CLOCK(約1MHz)をカウンタで2048分周したもの。
+		//        パルスの立ち上がり(L->H)で割込みが発生するがカウンタの初期値がLのため
+		//        初回は半周期で立ち上がってしまう。本来はインバータが必要。
+		// mk2以降はちゃんと指定の周期になる...はずだけど若干短くなるようだ。
+		// フロッガーで実機と比較しながら調整したら88%くらいだった
+		SetTimerIntrHz(	TimerCntUp, Timer1st );
+	}
+	TimerIntrEnable = en;
+}
+
+
+////////////////////////////////////////////////////////////////
 // タイマ割込み周波数設定
 ////////////////////////////////////////////////////////////////
-void INT6::SetTimerIntrHz( BYTE data, BYTE first )
+void IRQ6::SetTimerIntrHz( BYTE data, BYTE first )
 {
 	TimerCntUp = data;
 	
 	// イベント追加
-	vm->EventAdd( this, EID_TIMER, (double)(2048)*(TimerCntUp+1), EV_LOOP|EV_STATE );
+	vm->EventAdd( this, EID_TIMER, (double)(2048/(vm->VdgIsSRmode() ? 32 : 1))*(TimerCntUp+1), EV_LOOP|EV_STATE );
 	
 	// 初回周期の指定がある場合の処理
 	if( first ){
@@ -71,74 +114,148 @@ void INT6::SetTimerIntrHz( BYTE data, BYTE first )
 ////////////////////////////////////////////////////////////////
 // リセット
 ////////////////////////////////////////////////////////////////
-void INT60::Reset( void )
+void IRQ60::Reset( void )
 {
 	PRINTD( INTR_LOG, "[INTR][Reset]\n" );
 	
-	// 割込みアドレス初期値設定
-	TimerAddr = 6;
-	
 	// 各種変数初期化
-	TimerCntUp       = 3;
-	TimerIntrEnable  = false;	// タイマ割込み許可フラグ降ろす
-	IntrFlag         = 0;		// 割込み要求フラグクリア
+	TimerIntrEnable = false;	// タイマ割込み許可フラグ降ろす
+	IntrFlag        = 0;		// 割込み要求フラグクリア
 	
 	// タイマ割込み周波数初期化
 	SetTimerIntrHz(	TimerCntUp );
 
 }
 
-void INT62::Reset( void )
+void IRQ62::Reset( void )
 {
 	PRINTD( INTR_LOG, "[INTR][Reset]\n" );
 	
-	// 割込みアドレス初期値設定
-	TimerAddr  = 6;
-	Int1Addr   = 0;
-	Int2Addr   = 0;
-	
 	// 各種変数初期化
-	TimerCntUp       = 3;
-	TimerIntrEnable  = false;	// タイマ割込み許可フラグ降ろす
-	TimerIntrEnable2 = false;	// タイマ割込み許可フラグ降ろす(mk2以降)
-	Int1IntrEnable   = true;	// INT1割込み許可フラグ立てる
-	Int2IntrEnable   = false;	// INT2割込み許可フラグ降ろす
-	Int1AddrOutput   = false;	// INT1割込みアドレス出力フラグ降ろす
-	Int2AddrOutput   = false;	// INT2割込みアドレス出力フラグ降ろす
-	IntrFlag         = 0;		// 割込み要求フラグクリア
+	TimerCntUp      = 0;		// タイマカウンタ初期化
+	TimerIntrEnable = false;	// タイマ割込み許可フラグ降ろす
+	IntrFlag        = 0;		// 割込み要求フラグクリア
+	
+	for( int i=0; i<2; i++ ){
+		IntEnable[i] = false;	// 割込み許可フラグ降ろす
+		VecOutput[i] = false;	// 割込みアドレス出力フラグ降ろす
+		IntVector[i] = 0;		// 割込みアドレス初期化
+	}
 	
 	// タイマ割込み周波数初期化
 	SetTimerIntrHz(	TimerCntUp );
 }
 
+void IRQ64::Reset( void )
+{
+	PRINTD( INTR_LOG, "[INTR][Reset]\n" );
+	
+	// 各種変数初期化
+	TimerCntUp      = 0;		// タイマカウンタ初期化
+	TimerIntrEnable = false;	// タイマ割込み許可フラグ降ろす
+	IntrFlag        = 0;		// 割込み要求フラグクリア
+	
+	for( int i=0; i<8; i++ ){
+		IntEnable[i] = false;	// 割込み許可フラグ降ろす
+		VecOutput[i] = false;	// 割込みアドレス出力フラグ降ろす
+		IntVector[i] = 0;		// 割込みアドレス初期化
+	}
+	
+	// タイマ割込み周波数初期化
+	SetTimerIntrHz(	TimerCntUp );
+}
 
 ////////////////////////////////////////////////////////////////
 // 割込みチェック
-//   割込み発生源はタイマか8049で,タイマ優先か?
 ////////////////////////////////////////////////////////////////
-int INT6::IntrCheck( void )
+//   割込み発生源はタイマか8049で,タイマ優先か?
+//   と思ったけどSRの調査をしていたら違うような気がしてきた。
+//   mk2のINT1,INT2がずっと謎だったのだがこう考えればよいのか?
+//    INT1 = 8049割込み
+//    INT2 = ジョイスティック割込み
+//    INT3 = タイマ割込み
+//   とすると8049割込みを再優先にするのが正しいことになる
+//   ジョイスティック割込みはジョイスティックポートの7pinをトリガにした外部割込み
+//   8049を介したゲーム用キー割込みとは別物
+
+// INT1: SUB CPU
+// INT2: JOYSTICK
+// INT3: TIMER
+// INT4: VOICE
+// INT5: VRTC
+// IRQ6: RS-232C
+// INT7: PRINTER
+// INT8: EXT INT
+
+int IRQ6::IntrCheck( void )
 {
 	int	IntrNo = -1;
 	
-	// タイマ割込み
-	if( ( IntrFlag & IREQ_TIMER ) && IsTimerIntrEnable() ){
-		PRINTD( INTR_LOG, "[INTR][IntrCheck](Timer)\n" );
-		
-		CancelIntr( IREQ_TIMER );
-		IntrNo    = TimerAddr>>1;
-	}
-	// 8049割込み
-	else if( IntrFlag & IREQ_8049 ){
-		PRINTD( INTR_LOG, "[INTR][IntrCheck](8049)\n" );
+	PRINTD( INTR_LOG, "[INTR][IntrCheck]" );
+	
+	// INT1:8049割込み
+	if( ( IntrFlag & IREQ_8049 ) && IntEnable[0] ){
+		PRINTD( INTR_LOG, "(8049)" );
 		
 		CancelIntr( IREQ_8049 );
-		IntrNo = vm->PioReadA() / 2;
+		IntrNo = ( VecOutput[0] ? IntVector[0] : vm->PioReadA() )>>1;
+	}
+	// INT1:ジョイスティック割込み(7pin)
+	else if( ( IntrFlag & IREQ_JOYSTK ) && IntEnable[1] ){
+		PRINTD( INTR_LOG, "(JoyStick)" );
+		
+		CancelIntr( IREQ_JOYSTK );
+		IntrNo = ( VecOutput[1] ? IntVector[1] : 0x00 )>>1;	// アドレス不明(とりあえず0x00)
+	}
+	// INT3:タイマ割込み
+	else if( ( IntrFlag & IREQ_TIMER ) && IntEnable[2] && TimerIntrEnable ){
+		PRINTD( INTR_LOG, "(Timer)" );
+		
+		CancelIntr( IREQ_TIMER );
+		IntrNo = ( VecOutput[2] ? IntVector[2] : 0x06 )>>1;	// アドレス0x06固定?
+	}
+	// INT4:音声合成割込み
+	else if( ( IntrFlag & IREQ_VOICE ) && IntEnable[3] ){
+		PRINTD( INTR_LOG, "(Voice)" );
+		
+		CancelIntr( IREQ_VOICE );
+		IntrNo = ( VecOutput[3] ? IntVector[3] : 0x20 )>>1;	// アドレス不明(とりあえず0x20)
+	}
+	// INT5:VRTC割込み(SRモードの時だけ発生)
+	else if( ( IntrFlag & IREQ_VRTC ) && IntEnable[4] && vm->VdgIsSRmode() ){
+		PRINTD( INTR_LOG, "(VRTC)" );
+		
+		CancelIntr( IREQ_VRTC );
+		IntrNo = ( VecOutput[4] ? IntVector[4] : 0x22 )>>1;	// アドレス不明(とりあえず0x22)
+	}
+	// IRQ6:RS-232C割込み
+	else if( ( IntrFlag & IREQ_SIO ) && IntEnable[5] ){
+		PRINTD( INTR_LOG, "(RS-232C)" );
+		
+		CancelIntr( IREQ_SIO );
+		IntrNo = ( VecOutput[5] ? IntVector[5] : 0x04 )>>1;	// アドレス0x04固定？
+	}
+	// INT7:プリンタ割込み
+	else if( ( IntrFlag & IREQ_PRINT ) && IntEnable[6] ){
+		PRINTD( INTR_LOG, "(Printer)" );
+		
+		CancelIntr( IREQ_PRINT );
+		IntrNo = ( VecOutput[6] ? IntVector[6] : 0x00 )>>1;	// アドレス不明(とりあえず0x00)
+	}
+	// INT8:外部割込み
+	else if( ( IntrFlag & IREQ_EXTINT ) && IntEnable[7] ){
+		PRINTD( INTR_LOG, "(Ext)" );
+		
+		CancelIntr( IREQ_EXTINT );
+		IntrNo = ( VecOutput[7] ? IntVector[7] : 0x00 )>>1;	// アドレス不明(とりあえず0x00)
 	}
 	
+	
 	if( IntrNo >= 0 ){
-		PRINTD( INTR_LOG, " IntrNo = %d\n", IntrNo  );
+		PRINTD( INTR_LOG, " IntrNo = %d", IntrNo  );
 		IntrNo <<= 1;
 	}
+	PRINTD( INTR_LOG, "\n" );
 	
 	return IntrNo;
 }
@@ -147,7 +264,7 @@ int INT6::IntrCheck( void )
 ////////////////////////////////////////////////////////////////
 // 割込み要求
 ////////////////////////////////////////////////////////////////
-void INT6::ReqIntr( DWORD vec )
+void IRQ6::ReqIntr( DWORD vec )
 {
 	IntrFlag |= vec;
 	
@@ -158,7 +275,7 @@ void INT6::ReqIntr( DWORD vec )
 ////////////////////////////////////////////////////////////////
 // 割込み撤回
 ////////////////////////////////////////////////////////////////
-void INT6::CancelIntr( DWORD vec )
+void IRQ6::CancelIntr( DWORD vec )
 {
 	IntrFlag &= ~vec;
 	
@@ -167,158 +284,138 @@ void INT6::CancelIntr( DWORD vec )
 
 
 ////////////////////////////////////////////////////////////////
-// タイマ割込み許可チェック
-////////////////////////////////////////////////////////////////
-bool INT6::IsTimerIntrEnable( void )
-{
-	return TimerIntrEnable;
-}
-bool INT62::IsTimerIntrEnable( void )
-{
-	return TimerIntrEnable && TimerIntrEnable2;
-}
-
-
-////////////////////////////////////////////////////////////////
 // 割込み許可フラグ設定
 ////////////////////////////////////////////////////////////////
-void INT62::SetIntrEnable( BYTE data )
+void IRQ6::SetIntrEnable( BYTE data ){}
+
+void IRQ62::SetIntrEnable( BYTE data )
 {
-	Int1IntrEnable   = (data&0x01 ? false : true);
-	Int2IntrEnable   = (data&0x02 ? false : true);
-	TimerIntrEnable2 = (data&0x04 ? false : true);
-	Int1AddrOutput   = (data&0x08 ? false : true);
-	Int2AddrOutput   = (data&0x10 ? false : true);
+	PRINTD( INTR_LOG, "[INTR][SetIntrEnable]\n" );
+	
+	IntEnable[0] = (data&0x01 ? false : true);
+	IntEnable[1] = (data&0x02 ? false : true);
+	IntEnable[2] = (data&0x04 ? false : true);
+	VecOutput[0] = (data&0x08 ? true : false);
+	VecOutput[1] = (data&0x10 ? true : false);
+	
+	PRINTD( INTR_LOG, "\tINT1:SUB CPU  %s\n", IntEnable[0] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT2:JOYSTICK %s\n", IntEnable[1] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT3:TIMER    %s\n", IntEnable[2] ? "Enable" : "Disable" );
+}
+
+void IRQ64::SetIntrEnable( BYTE data )
+{
+	PRINTD( INTR_LOG, "[INTR][SetIntrEnable]\n" );
+	
+	for( int i=0; i<8; i++ )
+		IntEnable[i] = (data>>i)&1 ? false : true;
+	PRINTD( INTR_LOG, "\tINT1:SUB CPU  %s\n", IntEnable[0] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT2:JOYSTICK %s\n", IntEnable[1] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT3:TIMER    %s\n", IntEnable[2] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT4:VOICE    %s\n", IntEnable[3] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT5:VRTC     %s\n", IntEnable[4] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tIRQ6:RS-232C  %s\n", IntEnable[5] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT7:PRINTER  %s\n", IntEnable[6] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT8:EXT INT  %s\n", IntEnable[7] ? "Enable" : "Disable" );
+}
+
+
+////////////////////////////////////////////////////////////////
+// 割込みベクタアドレス出力フラグ設定
+////////////////////////////////////////////////////////////////
+void IRQ64::SetIntrVectorEnable( BYTE data )
+{
+	PRINTD( INTR_LOG, "[INTR][SetIntrVectorEnable]\n" );
+	
+	for( int i=0; i<8; i++ )
+		VecOutput[i] = (data>>i)&1 ? true : false;
+	
+	PRINTD( INTR_LOG, "\tINT1:SUB CPU  %s\n", VecOutput[0] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT2:JOYSTICK %s\n", VecOutput[1] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT3:TIMER    %s\n", VecOutput[2] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT4:VOICE    %s\n", VecOutput[3] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT5:VRTC     %s\n", VecOutput[4] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tIRQ6:RS-232C  %s\n", VecOutput[5] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT7:PRINTER  %s\n", VecOutput[6] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT8:EXT INT  %s\n", VecOutput[7] ? "Enable" : "Disable" );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
-void INT60::OutB0H( int, BYTE data )
+void IRQ6::OutB0H( int, BYTE data ){ SetTimerIntr( data&1 ? false : true ); }
+void IRQ6::OutF3H( int, BYTE data ){ SetIntrEnable( data ); }
+void IRQ6::OutF4H( int, BYTE data ){ IntVector[0] = data; }
+void IRQ6::OutF5H( int, BYTE data ){ IntVector[1] = data; }
+void IRQ6::OutF6H( int, BYTE data ){ SetTimerIntrHz( data ); }
+void IRQ6::OutF7H( int, BYTE data ){ IntVector[2] = data; }
+
+BYTE IRQ6::InF3H( int )
 {
-	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
-	
-	// 割込みOff->Onのタイミングでカウンタはリセットされるらしい
-	if( !(data & 1) && !TimerIntrEnable ){
-		// 初代機は割込み有効後，最初の周期は指定の半分(1ms)になるらしい
-		// (推定) 割込みパルスは1/4CLOCK(約1MHz)をカウンタで2048分周したもの。
-		//        パルスの立ち上がり(L->H)で割込みが発生するがカウンタの初期値がLのため
-		//        初回は半周期で立ち上がってしまう。本来はインバータが必要。
-		SetTimerIntrHz(	TimerCntUp, 50 );
-	}
-	TimerIntrEnable = (data&1 ? false : true);
+	return (IntEnable[0] ? 0 : 0x01) | (IntEnable[1] ? 0 : 0x02) |
+	       (IntEnable[2] ? 0 : 0x04) | (VecOutput[0] ? 0 : 0x08) |
+		   (VecOutput[1] ? 0 : 0x10) | 0xe0;
 }
+BYTE IRQ6::InF4H( int ){ return IntVector[0]; }
+BYTE IRQ6::InF5H( int ){ return IntVector[1]; }
+BYTE IRQ6::InF6H( int ){ return TimerCntUp; }
+BYTE IRQ6::InF7H( int ){ return IntVector[2]; }
 
+void IRQ64::OutBxH( int port, BYTE data ){ IntVector[port&7] = data; }
+void IRQ64::OutFAH( int, BYTE data ){ SetIntrEnable( data ); }
+void IRQ64::OutFBH( int, BYTE data ){ SetIntrVectorEnable( data ); }
 
-void INT62::OutB0H( int, BYTE data )
+BYTE IRQ64::InFAH( int )
 {
-	PRINTD( INTR_LOG, "[INTR][OutB0H] %02X\n", data );
-	
-	// 割込みOff->Onのタイミングでカウンタはリセットされるらしい
-	if( !(data & 1) && !TimerIntrEnable ){
-		// mk2以降はちゃんと指定の周期になる...はずだけど若干短くなるようだ。
-		// フロッガーで実機と比較しながら調整したら88%くらいだった
-		SetTimerIntrHz(	TimerCntUp, 88 );
-	}
-	TimerIntrEnable  = (data&1 ? false : true);
+	return (IntEnable[0] ? 0 : 0x01) | (IntEnable[1] ? 0 : 0x02) |
+		   (IntEnable[2] ? 0 : 0x04) | (IntEnable[3] ? 0 : 0x08) |
+		   (IntEnable[4] ? 0 : 0x10) | (IntEnable[5] ? 0 : 0x20) |
+		   (IntEnable[6] ? 0 : 0x40) | (IntEnable[7] ? 0 : 0x80);
 }
-
-void INT62::OutF3H( int, BYTE data )
+BYTE IRQ64::InFBH( int )
 {
-	PRINTD( INTR_LOG, "[INTR][OutF3H] %02X\n", data );
-	SetIntrEnable( data );
-}
-
-void INT62::OutF4H( int, BYTE data )
-{
-	PRINTD( INTR_LOG, "[INTR][OutF4H] %02X\n", data );
-	Int1Addr = data;
-}
-
-void INT62::OutF5H( int, BYTE data )
-{
-	PRINTD( INTR_LOG, "[INTR][OutF5H] %02X\n", data );
-	Int2Addr = data;
-}
-
-void INT62::OutF6H( int, BYTE data )
-{
-	PRINTD( INTR_LOG, "[INTR][OutF6H] %02X\n", data );
-	SetTimerIntrHz( data );
-}
-
-void INT62::OutF7H( int, BYTE data )
-{
-	PRINTD( INTR_LOG, "[INTR][OutF7H] %02X\n", data );
-	TimerAddr = data;
-}
-
-BYTE INT62::InF3H( int )
-{
-	return (Int1IntrEnable   ? 0 : 0x01) | (Int2IntrEnable ? 0 : 0x02) |
-	       (TimerIntrEnable2 ? 0 : 0x04) | (Int1AddrOutput ? 0 : 0x08) |
-		   (Int2AddrOutput   ? 0 : 0x10) | 0xe0;
-}
-
-BYTE INT62::InF4H( int )
-{
-	return Int1Addr;
-}
-
-BYTE INT62::InF5H( int )
-{
-	return Int2Addr;
-}
-
-BYTE INT62::InF6H( int )
-{
-	return TimerCntUp;
-}
-
-BYTE INT62::InF7H( int )
-{
-	PRINTD( INTR_LOG, "[INTR][InF7H] %02X\n", TimerAddr );
-	return TimerAddr;
+	return (VecOutput[0] ? 0x01 : 0) | (VecOutput[1] ? 0x02 : 0) |
+		   (VecOutput[2] ? 0x04 : 0) | (VecOutput[3] ? 0x08 : 0) |
+		   (VecOutput[4] ? 0x10 : 0) | (VecOutput[5] ? 0x20 : 0) |
+		   (VecOutput[6] ? 0x40 : 0) | (VecOutput[7] ? 0x80 : 0);
 }
 
 
 ////////////////////////////////////////////////////////////////
 // どこでもSAVE
 ////////////////////////////////////////////////////////////////
-bool INT6::DokoSave( cIni *Ini )
+bool IRQ6::DokoSave( cIni *Ini )
 {
+	char stren[16];
+	
 	if( !Ini ) return false;
 	
 	Ini->PutEntry( "INTR", NULL, "IntrFlag",			"0x%08X",	IntrFlag );
-	Ini->PutEntry( "INTR", NULL, "TimerIntrEnable",		"%s",		TimerIntrEnable ? "Yes" : "No" );
-	Ini->PutEntry( "INTR", NULL, "TimerAddr",			"0x%02X",	TimerAddr );
+	Ini->PutEntry( "INTR", NULL, "TimerIntrEnable",		"%s",		TimerIntrEnable  ? "Yes" : "No" );
 	Ini->PutEntry( "INTR", NULL, "TimerCntUp",			"%d",		TimerCntUp );
+	
+	for( int i=0; i<8; i++ ){
+		sprintf( stren, "IntEnable%d", i );
+		Ini->PutEntry( "INTR", NULL, stren,		"%s",		IntEnable[i]  ? "Yes" : "No" );
+	}
+	for( int i=0; i<8; i++ ){
+		sprintf( stren, "VecOutput%d", i );
+		Ini->PutEntry( "INTR", NULL, stren,		"%s",		VecOutput[i]  ? "Yes" : "No" );
+	}
+	for( int i=0; i<8; i++ ){
+		sprintf( stren, "IntVector%d", i );
+		Ini->PutEntry( "INTR", NULL, stren,		"0x%02X",	IntVector[i] );
+	}
 	
 	return true;
 }
-
-bool INT62::DokoSave( cIni *Ini )
-{
-	if( !Ini ) return false;
-	
-	Ini->PutEntry( "INTR", NULL, "TimerIntrEnable2",	"%s",		TimerIntrEnable2 ? "Yes" : "No" );
-	Ini->PutEntry( "INTR", NULL, "Int1IntrEnable",		"%s",		Int1IntrEnable ? "Yes" : "No" );
-	Ini->PutEntry( "INTR", NULL, "Int2IntrEnable",		"%s",		Int2IntrEnable ? "Yes" : "No" );
-	Ini->PutEntry( "INTR", NULL, "Int1AddrOutput",		"%s",		Int1AddrOutput ? "Yes" : "No" );
-	Ini->PutEntry( "INTR", NULL, "Int2AddrOutput",		"%s",		Int2AddrOutput ? "Yes" : "No" );
-	Ini->PutEntry( "INTR", NULL, "Int1Addr",			"0x%02X",	Int1Addr );
-	Ini->PutEntry( "INTR", NULL, "Int2Addr",			"0x%02X",	Int2Addr );
-	
-	return INT6::DokoSave( Ini );
-}
-
 
 
 ////////////////////////////////////////////////////////////////
 // どこでもLOAD
 ////////////////////////////////////////////////////////////////
-bool INT6::DokoLoad( cIni *Ini )
+bool IRQ6::DokoLoad( cIni *Ini )
 {
 	int st;
 	
@@ -326,25 +423,22 @@ bool INT6::DokoLoad( cIni *Ini )
 	
 	Ini->GetInt(   "INTR", "IntrFlag",			&st,				IntrFlag );			IntrFlag = st;
 	Ini->GetTruth( "INTR", "TimerIntrEnable",	&TimerIntrEnable,	TimerIntrEnable );
-	Ini->GetInt(   "INTR", "TimerAddr",			&st,				TimerAddr );		TimerAddr = st;
-	Ini->GetInt(   "INTR", "TimerCntUp",		&st,				TimerCntUp );		TimerCntUp = st;
+	Ini->GetInt(   "INTR", "TimerCntUp",		&st,				TimerCntUp );		TimerCntUp   = st;
 	
-	return true;
-}
-
-bool INT62::DokoLoad( cIni *Ini )
-{
-	int st;
+	char stren[16];
 	
-	if( !Ini || !INT6::DokoLoad( Ini ) ) return false;
-	
-	Ini->GetTruth( "INTR", "TimerIntrEnable2",	&TimerIntrEnable2,	TimerIntrEnable2 );
-	Ini->GetTruth( "INTR", "Int1IntrEnable",	&Int1IntrEnable,	Int1IntrEnable );
-	Ini->GetTruth( "INTR", "Int2IntrEnable",	&Int2IntrEnable,	Int2IntrEnable );
-	Ini->GetTruth( "INTR", "Int1AddrOutput",	&Int1AddrOutput,	Int1AddrOutput );
-	Ini->GetTruth( "INTR", "Int2AddrOutput",	&Int2AddrOutput,	Int2AddrOutput );
-	Ini->GetInt(   "INTR", "Int1Addr",			&st,				Int1Addr );		Int1Addr = st;
-	Ini->GetInt(   "INTR", "Int2Addr",			&st,				Int2Addr );		Int2Addr = st;
+	for( int i=0; i<8; i++ ){
+		sprintf( stren, "IntEnable%d", i );
+		Ini->GetTruth( "INTR", stren,		&IntEnable[i],	IntEnable[i] );
+	}
+	for( int i=0; i<8; i++ ){
+		sprintf( stren, "VecOutput%d", i );
+		Ini->GetTruth( "INTR", stren,		&VecOutput[i],	VecOutput[i] );
+	}
+	for( int i=0; i<8; i++ ){
+		sprintf( stren, "IntVector%d", i );
+		Ini->GetInt(   "INTR", stren,		&st,			IntVector[i] );		IntVector[i] = st;
+	}
 	
 	return true;
 }
@@ -353,33 +447,59 @@ bool INT62::DokoLoad( cIni *Ini )
 ////////////////////////////////////////////////////////////////
 //  device description
 ////////////////////////////////////////////////////////////////
-const Device::Descriptor INT60::descriptor = {
-	INT60::indef, INT60::outdef
+const Device::Descriptor IRQ60::descriptor = {
+	IRQ60::indef, IRQ60::outdef
 };
 
-const Device::OutFuncPtr INT60::outdef[] = {
-	STATIC_CAST( Device::OutFuncPtr, &INT60::OutB0H )
+const Device::OutFuncPtr IRQ60::outdef[] = {
+	STATIC_CAST( Device::OutFuncPtr, &IRQ60::OutB0H )
 };
 
-const Device::InFuncPtr INT60::indef[] = { NULL };
+const Device::InFuncPtr IRQ60::indef[] = { NULL };
 
-const Device::Descriptor INT62::descriptor = {
-	INT62::indef, INT62::outdef
+const Device::Descriptor IRQ62::descriptor = {
+	IRQ62::indef, IRQ62::outdef
 };
 
-const Device::OutFuncPtr INT62::outdef[] = {
-	STATIC_CAST( Device::OutFuncPtr, &INT62::OutB0H ),
-	STATIC_CAST( Device::OutFuncPtr, &INT62::OutF3H ),
-	STATIC_CAST( Device::OutFuncPtr, &INT62::OutF4H ),
-	STATIC_CAST( Device::OutFuncPtr, &INT62::OutF5H ),
-	STATIC_CAST( Device::OutFuncPtr, &INT62::OutF6H ),
-	STATIC_CAST( Device::OutFuncPtr, &INT62::OutF7H )
+const Device::OutFuncPtr IRQ62::outdef[] = {
+	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutB0H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF3H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF4H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF5H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF6H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF7H )
 };
 
-const Device::InFuncPtr INT62::indef[] = {
-	STATIC_CAST( Device::InFuncPtr, &INT62::InF3H ),
-	STATIC_CAST( Device::InFuncPtr, &INT62::InF4H ),
-	STATIC_CAST( Device::InFuncPtr, &INT62::InF5H ),
-	STATIC_CAST( Device::InFuncPtr, &INT62::InF6H ),
-	STATIC_CAST( Device::InFuncPtr, &INT62::InF7H )
+const Device::InFuncPtr IRQ62::indef[] = {
+	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF3H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF4H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF5H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF6H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF7H )
+};
+
+const Device::Descriptor IRQ64::descriptor = {
+	IRQ64::indef, IRQ64::outdef
+};
+
+const Device::OutFuncPtr IRQ64::outdef[] = {
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutB0H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutBxH ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF3H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF4H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF5H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF6H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF7H ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutFAH ),
+	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutFBH )
+};
+
+const Device::InFuncPtr IRQ64::indef[] = {
+	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF3H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF4H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF5H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF6H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF7H ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ64::InFAH ),
+	STATIC_CAST( Device::InFuncPtr, &IRQ64::InFBH )
 };

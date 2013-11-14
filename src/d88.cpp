@@ -91,7 +91,7 @@ void cD88::ReadHeader88( void )
 		
 		PRINTD( D88_LOG, " FileName : %s\n", d88.name )
 		PRINTD( D88_LOG, " Protect  : %s\n", d88.protect ? "ON" : "OFF" )
-		PRINTD( D88_LOG, " Format   : %d\n", d88.type )
+		PRINTD( D88_LOG, " Media    : %02X\n", d88.type )
 		PRINTD( D88_LOG, " Size     : %d\n", (int)d88.size )
 	}
 }
@@ -105,18 +105,18 @@ void cD88::ReadSector88( void )
 	PRINTD( D88_LOG, "[D88][ReadSector88]\n" );
 	
 	if( d88.fp && d88.table[d88.trkno] ){
-		d88.secinfo.c = fgetc( d88.fp );			// ID の C (シリンダNo 片面の場合は=トラックNo)
-		d88.secinfo.h = fgetc( d88.fp );			// ID の H (ヘッダアドレス 片面の場合は=0)
-		d88.secinfo.r = fgetc( d88.fp );			// ID の R (トラック内のセクタNo)
-		d88.secinfo.n = fgetc( d88.fp );			// ID の N (セクタサイズ 0:256 1:256 2:512 3:1024)
+		d88.secinfo.c       = fgetc( d88.fp );		// ID の C (シリンダNo 片面の場合は=トラックNo)
+		d88.secinfo.h       = fgetc( d88.fp );		// ID の H (ヘッダアドレス 片面の場合は=0)
+		d88.secinfo.r       = fgetc( d88.fp );		// ID の R (トラック内のセクタNo)
+		d88.secinfo.n       = fgetc( d88.fp );		// ID の N (セクタサイズ 0:256 1:256 2:512 3:1024)
 		d88.secinfo.sec_nr  = FGETWORD( d88.fp );	// このトラック内に存在するセクタの数
 		d88.secinfo.density = fgetc( d88.fp );		// 記録密度     0x00:倍密度   0x40:単密度
 		d88.secinfo.deleted = fgetc( d88.fp );		// DELETED MARK 0x00:ノーマル 0x10:DELETED
 		d88.secinfo.status  = fgetc( d88.fp );		// ステータス
 		fread( d88.secinfo.reserve, sizeof(BYTE), 5, d88.fp );	// リザーブ空読み
-		d88.secinfo.size   = FGETWORD( d88.fp );	// このセクタ部のデータサイズ
-		d88.secinfo.data   = ftell( d88.fp );		// データへのオフセット
-		d88.secinfo.offset = 0;						// 次に読込むデータのセクタ先頭からのオフセット
+		d88.secinfo.size    = FGETWORD( d88.fp );	// このセクタ部のデータサイズ
+		d88.secinfo.data    = ftell( d88.fp );		// データへのオフセット
+		d88.secinfo.offset  = 0;					// 次に読込むデータのセクタ先頭からのオフセット
 		d88.secinfo.secno++;						// アクセス中のセクタNo
 		
 		// Dittのバグ対応
@@ -221,7 +221,7 @@ bool cD88::Seek( int trackno, int sectno )
 	PRINTD( D88_LOG, "[D88][Seek] Track : %d Sector : %d ", trackno, sectno );
 	
 	if( d88.fp ){
-		d88.trkno = trackno;
+		d88.trkno          = trackno;
 		d88.secinfo.secno  = 0;
 		d88.secinfo.status = BIOS_MISSING_IAM;
 		
@@ -313,7 +313,7 @@ bool cD88::NextSector( void )
 ////////////////////////////////////////////////////////////////
 // 現在のCHRN取得
 ////////////////////////////////////////////////////////////////
-void cD88::GetID( BYTE *C, BYTE *H, BYTE *R, BYTE *N )
+void cD88::GetID( BYTE *C, BYTE *H, BYTE *R, BYTE *N ) const
 {
 	PRINTD( D88_LOG, "[D88][GetID] %02X %02X %02X %02X\n", d88.secinfo.c, d88.secinfo.h, d88.secinfo.r, d88.secinfo.n );
 	
@@ -327,7 +327,7 @@ void cD88::GetID( BYTE *C, BYTE *H, BYTE *R, BYTE *N )
 ////////////////////////////////////////////////////////////////
 // 現在のセクタサイズ取得
 ////////////////////////////////////////////////////////////////
-WORD cD88::GetSecSize( void )
+WORD cD88::GetSecSize( void ) const
 {
 	PRINTD( D88_LOG, "[D88][GetSecSize]\n" );
 	
@@ -338,7 +338,7 @@ WORD cD88::GetSecSize( void )
 ////////////////////////////////////////////////////////////////
 // 現在のトラック番号取得
 ////////////////////////////////////////////////////////////////
-BYTE cD88::Track( void )
+BYTE cD88::Track( void ) const
 {
 	PRINTD( D88_LOG, "[D88][Track]\n" );
 	
@@ -349,7 +349,7 @@ BYTE cD88::Track( void )
 ////////////////////////////////////////////////////////////////
 // 現在のセクタ番号取得
 ////////////////////////////////////////////////////////////////
-BYTE cD88::Sector( void )
+BYTE cD88::Sector( void ) const
 {
 	PRINTD( D88_LOG, "[D88][Sector]\n" );
 	
@@ -360,7 +360,7 @@ BYTE cD88::Sector( void )
 ////////////////////////////////////////////////////////////////
 // 現在のトラック内に存在するセクタ数取得
 ////////////////////////////////////////////////////////////////
-WORD cD88::SecNum( void )
+WORD cD88::SecNum( void ) const
 {
 	PRINTD( D88_LOG, "[D88][SecNum]\n" );
 	
@@ -371,7 +371,7 @@ WORD cD88::SecNum( void )
 ////////////////////////////////////////////////////////////////
 // 現在のステータス取得
 ////////////////////////////////////////////////////////////////
-BYTE cD88::GetSecStatus( void )
+BYTE cD88::GetSecStatus( void ) const
 {
 	PRINTD( D88_LOG, "[D88][GetStatus]\n" );
 	
@@ -382,7 +382,7 @@ BYTE cD88::GetSecStatus( void )
 ////////////////////////////////////////////////////////////////
 // ファイル名取得
 ////////////////////////////////////////////////////////////////
-char *cD88::GetFileName( void )
+const char *cD88::GetFileName( void ) const
 {
 	return FileName;
 }
@@ -391,16 +391,32 @@ char *cD88::GetFileName( void )
 ////////////////////////////////////////////////////////////////
 // DISKイメージ名取得
 ////////////////////////////////////////////////////////////////
-char *cD88::GetDiskImgName( void )
+const char *cD88::GetDiskImgName( void ) const
 {
-	return (char *)d88.name;
+	return (const char *)d88.name;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // プロテクトシール状態取得
 ////////////////////////////////////////////////////////////////
-bool cD88::IsProtect( void )
+bool cD88::IsProtect( void ) const
 {
 	return Protected;
+}
+
+
+////////////////////////////////////////////////////////////////
+// メディアタイプ取得
+////////////////////////////////////////////////////////////////
+int cD88::GetType( void ) const
+{
+	int ret = FDUNKNOWN;
+	
+	switch( d88.type ){
+	case 0x00: ret = FD2D;  break;	// 2D
+	case 0x10: ret = FD2DD; break;	// 2DD
+	case 0x20: ret = FD2HD; break;	// 2HD
+	}
+	return ret;
 }

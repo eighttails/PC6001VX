@@ -1,11 +1,9 @@
 #include <stdarg.h>
 #include <ctype.h>
 
-#include <QTextCodec>
-
-#include "../log.h"
-#include "../console.h"
-#include "../common.h"
+#include "log.h"
+#include "console.h"
+#include "common.h"
 
 
 #define	BLNKW	(2)	/* 横方向の余白 */
@@ -90,7 +88,12 @@ void JFont::CloseFont( void )
 ////////////////////////////////////////////////////////////////
 // 半角文字描画
 ////////////////////////////////////////////////////////////////
+#if INBPP == 8	// 8bit
+void JFont::PutCharh( VSurface *dst, int dx, int dy, BYTE txt, BYTE  fg, BYTE  bg )
+#else			// 32bit
 void JFont::PutCharh( VSurface *dst, int dx, int dy, BYTE txt, DWORD fg, DWORD bg )
+#endif
+
 {
 	PRINTD( GRP_LOG, "[JFont][PutCharh]\n" );
 	
@@ -108,14 +111,22 @@ void JFont::PutCharh( VSurface *dst, int dx, int dy, BYTE txt, DWORD fg, DWORD b
 	// 転送
 	for( int y=0; y<sr.h; y++ )
 		for( int x=0; x<sr.w; x++ )
-			dst->PSet( dr.x + x, dr.y + y, HFont && HFont->PGet( sr.x + x, sr.y + y )&(RMASK32|GMASK32||BMASK32) ? fg : bg );
+			#if INBPP == 8	// 8bit
+			dst->PSet( dr.x + x, dr.y + y, HFont && HFont->PGet( sr.x + x, sr.y + y )                           ? fg : bg );
+			#else			// 32bit
+			dst->PSet( dr.x + x, dr.y + y, HFont && HFont->PGet( sr.x + x, sr.y + y )&(RMASK32|GMASK32|BMASK32) ? fg : bg );
+			#endif
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 全角文字描画
 ////////////////////////////////////////////////////////////////
+#if INBPP == 8	// 8bit
+void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, BYTE  fg, BYTE  bg )
+#else			// 32bit
 void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, DWORD fg, DWORD bg )
+#endif
 {
 	PRINTD( GRP_LOG, "[JFont][PutCharz]\n" );
 	
@@ -137,7 +148,11 @@ void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, DWORD fg, DWORD b
 	// 転送
 	for( int y=0; y<sr.h; y++ )
 		for( int x=0; x<sr.w; x++ )
-			dst->PSet( dr.x + x, dr.y + y, ZFont && ZFont->PGet( sr.x + x, sr.y + y )&(RMASK32|GMASK32||BMASK32) ? fg : bg );
+			#if INBPP == 8	// 8bit
+			dst->PSet( dr.x + x, dr.y + y, ZFont && ZFont->PGet( sr.x + x, sr.y + y )                           ? fg : bg );
+			#else			// 32bit
+			dst->PSet( dr.x + x, dr.y + y, ZFont && ZFont->PGet( sr.x + x, sr.y + y )&(RMASK32|GMASK32|BMASK32) ? fg : bg );
+			#endif
 }
 
 
@@ -164,7 +179,11 @@ ZCons::~ZCons( void ){}
 ////////////////////////////////////////////////////////////////
 // コンソール作成(文字数でサイズ指定)
 ////////////////////////////////////////////////////////////////
+#if INBPP == 8	// 8bit
+bool ZCons::Init( int winx, int winy, const char *caption, BYTE  fcol, BYTE  bcol )
+#else			// 32bit
 bool ZCons::Init( int winx, int winy, const char *caption, DWORD fcol, DWORD bcol )
+#endif
 {
 	int winxr = winx * hWidth  + BLNKW * 2;
 	int winyr = winy * hHeight + BLNKH * 2;
@@ -176,7 +195,11 @@ bool ZCons::Init( int winx, int winy, const char *caption, DWORD fcol, DWORD bco
 ////////////////////////////////////////////////////////////////
 // コンソール作成(解像度でサイズ指定)
 ////////////////////////////////////////////////////////////////
+#if INBPP == 8	// 8bit
+bool ZCons::InitRes( int winx, int winy, const char *caption, BYTE  fcol, BYTE  bcol )
+#else			// 32bit
 bool ZCons::InitRes( int winx, int winy, const char *caption, DWORD fcol, DWORD bcol )
+#endif
 {
 	// サーフェス作成
 	if( !VSurface::InitSurface( winx, winy ) ) return false;
@@ -254,13 +277,21 @@ void ZCons::LocateR( int xx, int yy )
 ////////////////////////////////////////////////////////////////
 // 描画色設定
 ////////////////////////////////////////////////////////////////
+#if INBPP == 8	// 8bit
+void ZCons::SetColor( BYTE  fg, BYTE  bg )
+#else			// 32bit
 void ZCons::SetColor( DWORD fg, DWORD bg )
+#endif
 {
 	fgc = fg;
 	bgc = bg;
 }
 
+#if INBPP == 8	// 8bit
+void ZCons::SetColor( BYTE  fg )
+#else			// 32bit
 void ZCons::SetColor( DWORD fg )
+#endif
 {
 	fgc = fg;
 }
@@ -301,7 +332,8 @@ void ZCons::PutCharZ( WORD c )
 	x += 2;
 }
 
-
+#include <QString>
+#include <QTextCodec>
 ////////////////////////////////////////////////////////////////
 // 書式付文字列描画(制御文字非対応)
 ////////////////////////////////////////////////////////////////

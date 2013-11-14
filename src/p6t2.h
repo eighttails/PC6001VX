@@ -142,17 +142,17 @@ public:
 	cP6T();									// コンストラクタ
 	virtual ~cP6T();						// デストラクタ
 	
-	int GetBlocks();						// 全DATAブロック数を取得
-	int GetParts();							// 全PART数を取得
+	int GetBlocks() const;					// 全DATAブロック数を取得
+	int GetParts() const;					// 全PART数を取得
 	
-	cP6PART *GetPart( int );				// 任意PARTへのポインタ取得
+	cP6PART *GetPart( int ) const;			// 任意PARTへのポインタ取得
 	
 	int SetName( const char * );			// データ名設定
-	const char *GetName();					//         取得
+	const char *GetName() const;			//         取得
 	
-	P6TAUTOINFO *GetAutoStartInfo();		// オートスタート情報取得
+	const P6TAUTOINFO *GetAutoStartInfo() const;	// オートスタート情報取得
 	
-	int GetSize();							// ベタイメージサイズ取得
+	int GetSize() const;					// ベタイメージサイズ取得
 	
 	BYTE ReadOne();							// 1文字読込み
 	
@@ -162,7 +162,7 @@ public:
 	bool Readf( const char * );				// ファイルから読込み
 	bool Writef( const char * );			// ファイルに書込み
 	
-	int GetCount();							// TAPEカウンタ取得
+	int GetCount() const;					// TAPEカウンタ取得
 	void SetCount( int );					//             設定
 	
 	void Reset();							// リセット(読込み関係ワーク初期化)

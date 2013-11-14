@@ -139,10 +139,16 @@ int OSD_GetWindowWidth( HWINDOW );
 int OSD_GetWindowHeight( HWINDOW );
 // ウィンドウクリア
 void OSD_ClearWindow( HWINDOW );
+// パレット設定
+bool OSD_SetPalette( HWINDOW, VPalette * );
 // ウィンドウ反映
 void OSD_RenderWindow( HWINDOW );
-// ウィンドウに転送
-void OSD_BlitToWindow( HWINDOW, VSurface *, int, int );
+// ウィンドウに転送(等倍)
+void OSD_BlitToWindow( HWINDOW, VSurface *, const int, const int );
+// ウィンドウに転送(拡大等)
+void OSD_BlitToWindowEx( HWINDOW, VSurface *, const int, const int, const int, const bool, const bool, const int );
+// ウィンドウのイメージデータ取得
+bool OSD_GetWindowImage( HWINDOW, void **, VRect * );
 // アイコン設定
 void OSD_SetIcon( HWINDOW, int );
 // OS依存のウィンドウハンドルを取得

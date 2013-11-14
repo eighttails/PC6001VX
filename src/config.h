@@ -18,9 +18,9 @@ protected:
 	char Caption[256];						// ウィンドウキャプション
 	char DokoFile[PATH_MAX];				// どこでもSAVEファイル名
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	bool MonDisp;							// モニタウィンドウ表示状態 true:表示 false:非表示
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	
 	// INIファイルに保存するメンバ
@@ -133,21 +133,21 @@ public:
 	void SetFddNum( int );					//            設定
 	
 	// 画面関係
-	char *GetImgPath();						// スクリーンショット格納パス取得
+	const char *GetImgPath();				// スクリーンショット格納パス取得
 	void SetImgPath( const char * );		//                           設定
-	int GetMode4Color();					// モード4カラーモード取得
+	int GetMode4Color() const;				// モード4カラーモード取得
 	void SetMode4Color( int );				//                    設定
-	bool GetScanLine();						// スキャンライン取得
+	bool GetScanLine() const;				// スキャンライン取得
 	void SetScanLine( bool );				//               設定
-	int GetScanLineBr();					// スキャンライン輝度取得
+	int GetScanLineBr() const;				// スキャンライン輝度取得
 	void SetScanLineBr( int );				//                   設定
-	bool GetDispNTSC();						// 4:3表示取得
+	bool GetDispNTSC() const;				// 4:3表示取得
 	void SetDispNTSC( bool );				//        設定
-	bool GetFullScreen();					// フルスクリーン取得
+	bool GetFullScreen() const;				// フルスクリーン取得
 	void SetFullScreen( bool );				//               設定
-	bool GetDispStat();						// ステータスバー表示状態取得
+	bool GetDispStat() const;				// ステータスバー表示状態取得
 	void SetDispStat( bool );				//                       設定
-	int GetFrameSkip();						// フレームスキップ取得
+	int GetFrameSkip() const;				// フレームスキップ取得
 	void SetFrameSkip( int );				//                 設定
 
 	
@@ -178,10 +178,10 @@ public:
 	void SetVKey( PCKEYsym, P6KEYsym );		//         設定
 	int GetVKeyDef( VKeyConv ** );			// キー定義配列取得
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	bool GetMonDisp();						// モニタウィンドウ表示状態取得
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	bool GetMonDisp() const;				// モニタウィンドウ表示状態取得
 	void SetMonDisp( bool );				// モニタウィンドウ表示状態設定
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	
 	// ------------------------------------------

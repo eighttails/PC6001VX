@@ -18,11 +18,15 @@
 ////////////////////////////////////////////////////////////////
 PSG6::PSG6( VM6 *vm, const ID& id ) : Device(vm,id), JoyNo(0), Clock(0) {}
 
+OPN6::OPN6( VM6 *vm, const ID& id ) : PSG6(vm,id), cnt(0) {}
+
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
 ////////////////////////////////////////////////////////////////
 PSG6::~PSG6( void ){}
+
+OPN6::~OPN6( void ){}
 
 
 ////////////////////////////////////////////////////////////////
@@ -54,7 +58,7 @@ void PSG6::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
 ////////////////////////////////////////////////////////////////
 int PSG6::GetUpdateSamples( void )
 {
-	int samples = (int)( (double)SndDev::SampleRate * vm->EventScale( this->Device::GetID(), EID_PSG ) + 0.5 );
+	int samples = (int)( (double)SndDev::SampleRate * vm->EventGetProgress( this->Device::GetID(), EID_PSG ) + 0.5 );
 	vm->EventReset( this->Device::GetID(), EID_PSG );
 	return samples;
 }
@@ -168,6 +172,22 @@ BYTE PSG6::InA2H( int )
 {
 	return cAY8910::AYReadReg();
 }
+
+
+// PSGレジスタアドレスラッチ
+void OPN6::OutA0H( int, BYTE data ){ PSG6::cAY8910::AYWriteReg( 0, data ); }
+
+// PSGライトデータ
+void OPN6::OutA1H( int, BYTE data ){ PSG6::cAY8910::AYWriteReg( 1, data ); }
+
+// PSGインアクティブ
+void OPN6::OutA3H( int, BYTE data ){}
+
+// PSGリードデータ
+BYTE OPN6::InA2H( int ){ return PSG6::cAY8910::AYReadReg(); }
+
+// YM-2203 ステータスリード
+BYTE OPN6::InA3H( int ){ return (cnt++)&3 ? 0x00 : 0x80; }
 
 
 ////////////////////////////////////////////////////////////////
@@ -287,5 +307,20 @@ const Device::OutFuncPtr PSG6::outdef[] = {
 
 const Device::InFuncPtr PSG6::indef[] = {
 	STATIC_CAST( Device::InFuncPtr, &PSG6::InA2H )
+};
+
+const Device::Descriptor OPN6::descriptor = {
+	OPN6::indef, OPN6::outdef
+};
+
+const Device::OutFuncPtr OPN6::outdef[] = {
+	STATIC_CAST( Device::OutFuncPtr, &OPN6::OutA0H ),
+	STATIC_CAST( Device::OutFuncPtr, &OPN6::OutA1H ),
+	STATIC_CAST( Device::OutFuncPtr, &OPN6::OutA3H )
+};
+
+const Device::InFuncPtr OPN6::indef[] = {
+	STATIC_CAST( Device::InFuncPtr, &OPN6::InA2H ),
+	STATIC_CAST( Device::InFuncPtr, &OPN6::InA3H )
 };
 

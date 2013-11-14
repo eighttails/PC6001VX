@@ -2,6 +2,7 @@
 
 #include "pc6001v.h"
 #include "log.h"
+#include "intr.h"
 #include "osd.h"
 #include "schedule.h"
 #include "voice.h"
@@ -27,6 +28,8 @@ VCE6::VCE6( VM6 *vm, const ID& id ) : Device(vm,id),
 	SndDev::Volume = DEFAULT_VOICEVOL;
 }
 
+VCE64::VCE64( VM6 *vm, const ID& id ) : VCE6(vm,id) {}
+
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
@@ -36,6 +39,8 @@ VCE6::~VCE6()
 	FreeVoice();
 	if( Fbuf ) delete [] Fbuf;
 }
+
+VCE64::~VCE64(){}
 
 
 ////////////////////////////////////////////////////////////////
@@ -67,6 +72,7 @@ void VCE6::EventCallback( int id, int clock )
 					// 次フレームのパラメータを受け付ける
 					PReady = false;
 					VStat |= D7752E_REQ;
+					ReqIntr();		// 音声合成割込み
 				}
 			}else{			// 完了してなければエラー
 				AbortVoice();		// 発声停止
@@ -137,12 +143,13 @@ void VCE6::VSetCommand( BYTE comm )
 		Fbuf = new D7752_SAMPLE[cD7752::GetFrameSize()];
 		if( !Fbuf ) break;
 		
-		// ステータスを外部句再生モードにセット，パラメータ受付開始
-		VStat = D7752E_BSY | D7752E_EXT | D7752E_REQ;
-		
 		// フレームイベントをセットする
 		vm->EventAdd( this, EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
 		
+		// ステータスを外部句再生モードにセット，パラメータ受付開始
+		VStat = D7752E_BSY | D7752E_EXT | D7752E_REQ;
+		
+		ReqIntr();		// 音声合成割込み
 		break;
 		
 	case 0xff:		// ストップコマンド ----------
@@ -175,7 +182,8 @@ void VCE6::VSetData( BYTE data )
 				Pnum = 0;
 				if( Fnum > 0 ) Fnum--;
 				PReady = true;
-			}
+			}else
+				ReqIntr();		// 音声合成割込み
 		}else{						// 繰り返しフレーム?
 			// パラメータバッファに保存
 			// PD7752の仕様に合わせる
@@ -312,6 +320,17 @@ void VCE6::FreeVoice( void )
 		IVBuf = NULL;
 		IVLen = IVPos= 0;
 	}
+}
+
+
+////////////////////////////////////////////////////////////////
+// 音声合成割込み要求
+////////////////////////////////////////////////////////////////
+void VCE6::ReqIntr( void ){}
+
+void VCE64::ReqIntr( void )
+{
+	vm->IntReqIntr( IREQ_VOICE );
 }
 
 

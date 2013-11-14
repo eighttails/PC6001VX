@@ -38,6 +38,7 @@ QWaitCondition eventEmitted;
 QElapsedTimer elapsedTimer;
 
 std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
+QVector<QRgb> PaletteTable;              //パレットテーブル
 
 #ifndef NOSOUND
 //サウンド関連
@@ -773,6 +774,23 @@ int OSD_GetWindowHeight( HWINDOW Wh )
     return view->scene()->height();
 }
 
+////////////////////////////////////////////////////////////////
+// パレット設定
+//
+// 引数:	Wh			ウィンドウハンドル
+//			pal			パレットへのポインタ
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
+{
+    PaletteTable.clear();
+    for (int i=0; i < pal->ncols; i++){
+        COLOR24& col = pal->colors[i];
+        PaletteTable.push_back(qRgb(col.r, col.g, col.b));
+    }
+    return true;
+}
+
 
 ////////////////////////////////////////////////////////////////
 // ウィンドウ反映
@@ -813,7 +831,8 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
 {
     VRect src1,drc1;
 
-    QImage image(src->Width(), src->Height(), QImage::Format_RGB32);
+    QImage image(src->Width(), src->Height(), QImage::Format_Indexed8);
+    image.setColorTable(PaletteTable);
 
     // 転送元範囲設定
     src1.x = 0;
@@ -827,7 +846,7 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
     drc1.x = 0;
     drc1.y = 0;
 
-    BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x * 4;
+    BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x;
 
     const int length = image.bytesPerLine();
     for( int i=0; i < src1.h; i++ ){
@@ -842,9 +861,176 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
                               Q_ARG(HWINDOW, Wh),
                               Q_ARG(int, x),
                               Q_ARG(int, y),
-                              Q_ARG(double, src->GetAspectRatio()),
+                              Q_ARG(double, 1.0),
                               Q_ARG(QImage, image));
 }
+
+////////////////////////////////////////////////////////////////
+// ウィンドウに転送(拡大等)
+//
+// 引数:	wh			ウィンドウハンドル
+//			src			転送元サーフェス
+//			dx			転送先x座標
+//			dy			転送先y座標
+//			dh			転送先高さ
+//			ntsc		4:3表示フラグ
+//			scan		スキャンラインフラグ
+//			brscan		スキャンライン輝度
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+#define	RESO		256		/* 中間色計算用分解能(1ラインをRESO分割する) */
+void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, const int dh,
+                        const bool ntsc, const bool scan, const int brscan )
+{
+#if 0
+    VRect src1,drc1;
+
+    if( !src || !wh ) return;
+
+    SDL_Surface *dst = SDL_GetVideoSurface();
+    if( !dst ) return;
+
+    #if INBPP == 8	// 8bit
+    const BYTE *spt  = (BYTE *)src->GetPixels();
+    const int pp     = src->Pitch();
+    #else			// 32bit
+    const DWORD *spt = (DWORD *)src->GetPixels();
+    const int pp     = src->Pitch() / sizeof(DWORD);
+    #endif
+    const int xsc    = src->XScale();
+    const int ww     = src->Width();
+    const int hh     = src->Height();
+
+    const DWORD *dpt = (DWORD *)dst->pixels;
+    const int dpp    = dst->pitch / sizeof(DWORD);
+
+    // 転送元範囲設定
+    src1.x = max( 0, -dx / 2 * xsc );
+    src1.y = max( 0, -dy );
+    src1.w = min( ww * xsc - src1.x, dst->w );
+    src1.h = min( hh       - src1.y, dst->h );
+
+    if( src1.w <= 0 || src1.h <= 0 ) return;
+
+    // 転送先範囲設定
+    drc1.x = max( 0, dx );
+    drc1.y = max( 0, dy );
+    drc1.w = min( ww, (dst->w - drc1.x)/2*xsc );
+    drc1.h = min( dh, dst->h - drc1.y );
+
+    if( SDL_MUSTLOCK( dst ) ) SDL_LockSurface( dst );
+
+    for( int y=0; y<drc1.h; y++ ){
+        int y0 = ( (y+src1.y) * hh ) / dh;
+        int a1 = ( (y+src1.y) * hh * RESO ) / dh - y0 * RESO;
+        int a2 = RESO - a1;
+
+        #if INBPP == 8	// 8bit
+        BYTE *sof1  = (BYTE *)spt  + pp * y0 + src1.x;
+        BYTE *sof2  = sof1 + ( y0 < hh-1 ? pp : 0 );
+        #else			// 32bit
+        DWORD *sof1 = (DWORD *)spt + pp * y0 + src1.x;
+        DWORD *sof2 = sof1 + ( y0 < hh-1 ? pp : 0 );
+        #endif
+        DWORD *doff = (DWORD *)dpt + dpp * (y+drc1.y) + drc1.x;
+
+        for( int x=0; x<drc1.w; x++ ){
+            DWORD r,g,b;
+            #if INBPP == 8	// 8bit
+            DWORD d1 = VSurface::GetColor( *sof1++ );
+            DWORD d2 = VSurface::GetColor( *sof2++ );
+            #else			// 32bit
+            DWORD d1 = *sof1++;
+            DWORD d2 = *sof2++;
+            #endif
+
+            if( ntsc ){
+                r = ( ( ( (d1>>RSHIFT32)&0xff ) * a2 + ( (d2>>RSHIFT32)&0xff ) * a1 ) / RESO ) & 0xff;
+                g = ( ( ( (d1>>GSHIFT32)&0xff ) * a2 + ( (d2>>GSHIFT32)&0xff ) * a1 ) / RESO ) & 0xff;
+                b = ( ( ( (d1>>BSHIFT32)&0xff ) * a2 + ( (d2>>BSHIFT32)&0xff ) * a1 ) / RESO ) & 0xff;
+            }else{
+                r = (d1>>RSHIFT32)&0xff;
+                g = (d1>>GSHIFT32)&0xff;
+                b = (d1>>BSHIFT32)&0xff;
+            }
+
+            if( scan && y&1 ){
+                r = ( ( r * brscan ) / 100 ) & 0xff;
+                g = ( ( g * brscan ) / 100 ) & 0xff;
+                b = ( ( b * brscan ) / 100 ) & 0xff;
+            }
+            *doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
+            if( xsc == 1 ) *doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
+        }
+    }
+
+    if( SDL_MUSTLOCK( dst ) ) SDL_UnlockSurface( dst );
+#endif
+}
+
+
+////////////////////////////////////////////////////////////////
+// ウィンドウのイメージデータ取得
+//
+// 引数:	wh			ウィンドウハンドル
+//			pixels		転送先配列ポインタへのポインタ
+//			pos			保存する領域情報へのポインタ
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
+{
+    VRect src1;
+
+    if( !wh || !pixels ) return false;
+
+    #if SDL_VERSION_ATLEAST(2,0,0)
+
+    #else
+
+    SDL_Surface *src = SDL_GetVideoSurface();
+    if( !src ) return false;
+
+    // 転送元範囲設定
+    if( pos ){
+        src1.x = max( 0, min( pos->x, src->w ) );
+        src1.y = max( 0, min( pos->y, src->h ) );
+        src1.w = min( pos->w, src->w - src1.x );
+        src1.h = min( pos->h, src->h - src1.y );
+        if( src1.w <= 0 || src1.h <= 0 ) return false;
+
+        *pos = src1;
+
+    }else{
+        src1.x = 0;
+        src1.y = 0;
+        src1.w = src->w;
+        src1.h = src->h;
+    }
+
+//	BYTE *pixels = new BYTE[src1.w * src1.h * sizeof(DWORD)];
+//	if( !pixels ) return false;
+
+    const int spp = src->pitch / sizeof(DWORD);
+    const int dpp = src1.w;
+    DWORD *spt = (DWORD *)src->pixels + spp * src1.y + src1.x / sizeof(DWORD);
+//	DWORD *dpt = (DWORD *)pixels;
+    DWORD *dpt = (DWORD *)(*pixels);
+
+    if( SDL_MUSTLOCK( src ) ) SDL_LockSurface( src );
+
+    for( int y=0; y<src1.h; y++ ){
+        memcpy( (BYTE *)dpt, (BYTE *)spt, src1.w * sizeof(DWORD) );
+        spt += spp;
+        dpt += dpp;
+    }
+
+    if( SDL_MUSTLOCK( src ) ) SDL_UnlockSurface( src );
+
+    #endif
+
+    return true;
+}
+
 
 ////////////////////////////////////////////////////////////////
 // パスのデリミタを'/'に変換

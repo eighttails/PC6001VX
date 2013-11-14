@@ -14,10 +14,19 @@
 #if defined(WIN32) || defined(WIN64)
 #include <windows.h>
 #else
-typedef uint8_t BYTE;
-typedef uint16_t WORD;
-typedef uint32_t DWORD;
+typedef uint8_t		BYTE;
+typedef uint16_t	WORD;
+typedef uint32_t	DWORD;
 #endif
+
+
+typedef uint8_t		UINT8;
+typedef uint16_t	UINT16;
+typedef uint32_t	UINT32;
+typedef int8_t		SINT8;
+typedef int16_t		SINT16;
+typedef int32_t		SINT32;
+
 
 // OSD関連オブジェクトへのポインタ
 // 面倒なのでとりあえず何でもvoid *
@@ -36,6 +45,8 @@ typedef DWORD (*CBF_TMR)( DWORD, void * );		// タイマ
 /////////////////////////////////////////////////////////////////////////////
 // 定数など
 /////////////////////////////////////////////////////////////////////////////
+#define INBPP		8	// 内部色深度
+
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
 #endif

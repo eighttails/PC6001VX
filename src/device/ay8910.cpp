@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////
 //  ay8910.cpp
 //
-//	MAMEのソースをベースにゆみたろが手を加えたものです
-//
-//  Emulation of the AY-3-8910
-//  Based on various code snippets by Ville Hallik, Michael Cuddy,
-//  Tatsuyuki Satoh, Fabrice Frances, Nicola Salmoria.
+//  Original : MAME
+//   Emulation of the AY-3-8910
+//   Based on various code snippets by Ville Hallik, Michael Cuddy,
+//   Tatsuyuki Satoh, Fabrice Frances, Nicola Salmoria.
+//  Modification : Yumitaro
 ////////////////////////////////////////////////////////////////////
 #include "../log.h"
 #include "ay8910.h"
@@ -67,7 +67,7 @@ void cAY8910::PortBwrite( BYTE ){}
 
 
 ////////////////////////////////////////////////////////////////
-// PSGクロック設定
+// クロック設定
 ////////////////////////////////////////////////////////////////
 void cAY8910::SetClock( int clock, int rate )
 {

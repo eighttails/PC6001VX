@@ -390,7 +390,7 @@ const COLOR24 CFG6::STDColor[] = {	// 標準カラーデータ ( R,G,B,0  0-255 
 				{ 128,   0, 128, 0 },	// 05:
 				{ 128, 128,   0, 0 },	// 06:
 				{ 128, 128, 128, 0 },	// 07:
-				{ 192, 192, 192, 0 },	// 08:
+				{  64,  64,  64, 0 },	// 08:
 				{   0,   0, 255, 0 },	// 09:
 				{   0, 255,   0, 0 },	// 10:
 				{   0, 255, 255, 0 },	// 11:
@@ -486,9 +486,9 @@ const COLOR24 CFG6::STDColor[] = {	// 標準カラーデータ ( R,G,B,0  0-255 
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 CFG6::CFG6( void ) : Ini(NULL)
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	, MonDisp(false)
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 {
 	// INIファイルのパスを設定
 	sprintf( IniPath, "%s" CONF_FILE, OSD_GetModulePath() );
@@ -1057,7 +1057,7 @@ void CFG6::SetFddNum( int data )
 }
 
 // スクリーンショット格納パス取得
-char *CFG6::GetImgPath( void )
+const char *CFG6::GetImgPath( void )
 {
 	Ini->GetString( "PATH", "ImgPath", ImgPath, ImgPath );
 	Delimiter( ImgPath );
@@ -1076,7 +1076,7 @@ void CFG6::SetImgPath( const char *str )
 
 
 // モード4カラーモード取得
-int CFG6::GetMode4Color( void )
+int CFG6::GetMode4Color( void ) const
 {
 	int st = DEFAULT_MODE4_COLOR;
 	Ini->GetInt( "DISPLAY", "Mode4Color", &st, st );
@@ -1090,7 +1090,7 @@ void CFG6::SetMode4Color( int data )
 }
 
 // スキャンライン取得
-bool CFG6::GetScanLine( void )
+bool CFG6::GetScanLine( void ) const
 {
 	bool st = DEFAULT_SCANLINE;
 	Ini->GetTruth( "DISPLAY", "ScanLine", &st, st );
@@ -1104,7 +1104,7 @@ void CFG6::SetScanLine( bool yn )
 }
 
 // スキャンライン輝度取得
-int CFG6::GetScanLineBr( void )
+int CFG6::GetScanLineBr( void ) const
 {
 	int st = DEFAULT_SCANLINEBR;
 	Ini->GetInt( "DISPLAY", "ScanLineBr", &st, st );
@@ -1118,7 +1118,7 @@ void CFG6::SetScanLineBr( int data )
 }
 
 // 4:3表示取得
-bool CFG6::GetDispNTSC( void )
+bool CFG6::GetDispNTSC( void ) const
 {
 	bool st = DEFAULT_DISPNTSC;
 	Ini->GetTruth( "DISPLAY", "DispNTSC", &st, st );
@@ -1132,7 +1132,7 @@ void CFG6::SetDispNTSC( bool yn )
 }
 
 // フルスクリーン取得
-bool CFG6::GetFullScreen( void )
+bool CFG6::GetFullScreen( void ) const
 {
 	bool st = false;
 	Ini->GetTruth( "DISPLAY", "FullScreen", &st, st );
@@ -1146,7 +1146,7 @@ void CFG6::SetFullScreen( bool yn )
 }
 
 // ステータスバー表示状態取得
-bool CFG6::GetDispStat( void )
+bool CFG6::GetDispStat( void ) const
 {
 	bool st = true;
 	Ini->GetTruth( "DISPLAY", "DispStatus", &st, st );
@@ -1160,7 +1160,7 @@ void CFG6::SetDispStat( bool yn )
 }
 
 // フレームスキップ取得
-int CFG6::GetFrameSkip( void )
+int CFG6::GetFrameSkip( void ) const
 {
 	int st = DEFAULT_FRAMESKIP;
 	Ini->GetInt( "DISPLAY", "FrameSkip", &st, st );
@@ -1332,9 +1332,9 @@ int CFG6::GetVKeyDef( VKeyConv **kdef )
 	return COUNTOF(KeyIni);
 }
 
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // モニタウィンドウ表示状態取得
-bool CFG6::GetMonDisp( void )
+bool CFG6::GetMonDisp( void ) const
 {
 	return MonDisp;
 }
@@ -1346,7 +1346,7 @@ void CFG6::SetMonDisp( bool yn )
 }
 
 
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 ////////////////////////////////////////////////////////////////

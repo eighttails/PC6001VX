@@ -30,11 +30,11 @@ public:
 	
 	bool Init( int );						// 初期化
 	
-	int GetStatus();						// ステータス取得
+	int GetStatus() const;					// ステータス取得
 	
 	bool StartRecord( const char * );		// リプレイ記録開始
 	void StopRecord();						// リプレイ記録停止
-	bool ReplayWriteFrame( BYTE *, bool );	// リプレイ1フレーム書出し
+	bool ReplayWriteFrame( const BYTE *, bool );	// リプレイ1フレーム書出し
 	
 	bool StartReplay( const char * );		// リプレイ再生開始
 	void StopReplay();						// リプレイ再生止

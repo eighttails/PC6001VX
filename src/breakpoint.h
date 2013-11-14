@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // ブレークポイントの数
 #define	NR_BP	(10)
 
@@ -38,21 +38,21 @@ public:
 	BPoint();
 	~BPoint();
 	
-	bool ExistBreakPoint();								// ブレークポイントの有無をチェック
+	bool ExistBreakPoint() const;						// ブレークポイントの有無をチェック
 	bool CheckBreakPoint( BPtype, WORD, BYTE, const char * );	// ブレークポイントをチェック
 	
 	void ClearStatus();									// ブレークポイントの情報をクリア
 	
-	BPtype GetType( int );								// ブレークポイントのタイプを取得
+	BPtype GetType( int ) const;						// ブレークポイントのタイプを取得
 	void SetType( int, BPtype );						// ブレークポイントのタイプを設定
-	WORD GetAddr( int );								// ブレークポイントのアドレスを取得
+	WORD GetAddr( int ) const;							// ブレークポイントのアドレスを取得
 	void SetAddr( int, WORD );							// ブレークポイントのアドレスを設定
 	
-	bool IsReqBreak();									// ブレーク要求あり?
-	int GetReqBPNum();									// ブレーク要求のあったブレークポイントNo.を取得
+	bool IsReqBreak() const;							// ブレーク要求あり?
+	int GetReqBPNum() const;							// ブレーク要求のあったブレークポイントNo.を取得
 	void ResetBreak();									// ブレーク要求キャンセル
 };
 
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 #endif	// BREAKPOINTL_H_INCLUDED

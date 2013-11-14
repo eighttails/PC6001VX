@@ -60,7 +60,7 @@ bool REPLAY::Init( int msize )
 // 引数:	なし
 // 返値:	int		ステータス
 ////////////////////////////////////////////////////////////////
-int REPLAY::GetStatus( void )
+int REPLAY::GetStatus( void ) const
 {
 	return RepST;
 }
@@ -135,7 +135,7 @@ void REPLAY::StopRecord( void )
 // 			chg		キーマトリクス変化 true:した false:しない
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool REPLAY::ReplayWriteFrame( BYTE *mt, bool chg )
+bool REPLAY::ReplayWriteFrame( const BYTE *mt, bool chg )
 {
 	char stren[16],strva[256];
 	

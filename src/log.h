@@ -20,6 +20,7 @@
 #define PPI_LOG		0	// 8255関係
 #define SND_LOG		0	// Sound関係
 #define GRP_LOG		0	// 描画関係
+#define VDG_LOG		0	// VDG関係
 #define OSD_LOG		0	// OS依存関係
 #define TIC_LOG		0	// スケジューラ関係
 #define INI_LOG		0	// INI関係
@@ -30,7 +31,7 @@
 #define VOI_LOG		0	// 音声合成関係
 #define VM_LOG		0	// 仮想マシンコア関係
 
-#if KEY_LOG || MEM_LOG || TAPE_LOG || P6T2_LOG || DISK_LOG || D88_LOG || FDC_LOG || PSG_LOG || INTR_LOG || CPU_LOG || SUB_LOG || PPI_LOG || SND_LOG || GRP_LOG || OSD_LOG || TIC_LOG || INI_LOG || CON_LOG || IO_LOG || WIN_LOG || CONST_LOG || VOI_LOG || VM_LOG
+#if KEY_LOG || MEM_LOG || TAPE_LOG || P6T2_LOG || DISK_LOG || D88_LOG || FDC_LOG || PSG_LOG || INTR_LOG || CPU_LOG || SUB_LOG || PPI_LOG || SND_LOG || GRP_LOG || VDG_LOG || OSD_LOG || TIC_LOG || INI_LOG || CON_LOG || IO_LOG || WIN_LOG || CONST_LOG || VOI_LOG || VM_LOG
 
 #include <stdio.h>
 #define PRINTD(m,...)	{ if( m ){ fprintf( stdout, __VA_ARGS__ );	fflush( stdout ); } }

@@ -12,7 +12,7 @@
 // クラス定義
 ////////////////////////////////////////////////////////////////
 class PSG6 : public Device, public cAY8910, public SndDev, public IDoko {
-private:
+protected:
 	BYTE JoyNo;							// 読取るジョイスティックの番号(0-1)
 	int Clock;							// クロック
 	
@@ -37,7 +37,7 @@ private:
 	
 public:
 	PSG6( VM6 *, const ID& );			// コンストラクタ
-	~PSG6();							// デストラクタ
+	virtual ~PSG6();					// デストラクタ
 	
 	void EventCallback( int, int );		// イベントコールバック関数
 	
@@ -55,6 +55,32 @@ public:
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
+};
+
+
+class OPN6 : public PSG6 {
+private:
+	int cnt;
+
+	// デバイス定義
+	static const Descriptor descriptor;
+	static const InFuncPtr  indef[];
+	static const OutFuncPtr outdef[];
+	const Descriptor* GetDesc() const { return &descriptor; }
+	
+	void OutA0H( int, BYTE );			// PSGレジスタアドレスラッチ
+	void OutA1H( int, BYTE );			// PSGライトデータ
+	void OutA3H( int, BYTE );			// PSGインアクティブ
+	BYTE InA2H( int );					// PSGリードデータ
+	BYTE InA3H( int );					// YM-2203 ステータスリード
+	
+public:
+	OPN6( VM6 *, const ID& );			// コンストラクタ
+	~OPN6();							// デストラクタ
+	
+	// デバイスID
+	enum IDOut{ outA0H=0, outA1H, outA3H };
+	enum IDIn {  inA2H=0,  inA3H };
 };
 
 

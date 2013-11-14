@@ -11,8 +11,8 @@
 #include "p6el.h"
 
 // 通常ウィンドウサイズ
-#define	P6WINW		vm->vdg->Width()*2
-#define	P6WINH		vm->vdg->Height()*2
+#define	P6WINW		(vm->vdg->Width()*2/vm->vdg->XScale())
+#define	P6WINH		(vm->vdg->Height()*2)
 
 #define	HBBUS		((282-12)*2)	/* 4:3表示時画面高さ */
 
@@ -20,31 +20,27 @@
 #define	P6WIFW		640
 #define	P6WIFH		480
 
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // デバッグモードウィンドウサイズ
 #define	P6DEBUGW	(P6WINW/2+vm->el->regw->Width())
 #define	P6DEBUGH	(max(P6WINH/2,vm->el->regw->Height()+vm->el->memw->Height())+vm->el->monw->Height())
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 // モニタモード時はスキャンライン，4:3表示禁止
 // フルスクリーンモード時はステータスバー表示禁止
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #define	DISPMON		vm->el->IsMonitor()
 #define	DISPFULL	(vm->el->cfg->GetFullScreen())
 #define	DISPSCAN	(!DISPMON  && vm->el->cfg->GetScanLine())
 #define	DISPNTSC	(!DISPMON  && vm->el->cfg->GetDispNTSC())
-#define	DISPSTAT	(!DISPFULL && vm->el->cfg->GetDispStat())
-
 #else
-
 #define	DISPFULL	vm->el->cfg->GetFullScreen()
 #define	DISPSCAN	vm->el->cfg->GetScanLine()
 #define	DISPNTSC	vm->el->cfg->GetDispNTSC()
-#define	DISPSTAT	vm->el->cfg->GetDispStat()
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-
+#define	DISPSTAT	(!DISPFULL && vm->el->cfg->GetDispStat())
 
 
 
@@ -52,7 +48,8 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL), SBuf(NULL) {}
+//DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL), SBuf(NULL) {}
+DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -60,7 +57,7 @@ DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL), SBuf(NULL) {}
 ////////////////////////////////////////////////////////////////
 DSP6::~DSP6( void )
 {
-	if( SBuf ) delete SBuf;
+//	if( SBuf ) delete SBuf;
 	if( Wh ) OSD_DestroyWindow( Wh );
 }
 
@@ -88,7 +85,7 @@ bool DSP6::Init( void )
 // 引数:	model	機種 60,62,66
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void DSP6::SetIcon( int model )
+void DSP6::SetIcon( const int model )
 {
 	OSD_SetIcon( Wh, model );
 }
@@ -107,7 +104,7 @@ bool DSP6::SetScreenSurface( void )
 	int x = 0, y = 0;
 	bool fsflag = false;
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( DISPMON ){	// モニタモード?
 		x      = P6DEBUGW;
 		y      = P6DEBUGH;
@@ -115,7 +112,7 @@ bool DSP6::SetScreenSurface( void )
 		
 		PRINTD( GRP_LOG, " -> Monitor Mode ( X:%d Y:%d )\n", x, y );
 	}else
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
 			x      = P6WINW;
 			y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
@@ -164,12 +161,12 @@ bool DSP6::ResizeScreen( void )
 	int x, y;
 	
 	// ウィンドウサイズチェック
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( DISPMON ){	// モニタモード?
 		x = P6DEBUGW;
 		y = P6DEBUGH;
 	}else
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
 		x      = P6WINW;
 		y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
@@ -207,7 +204,7 @@ void DSP6::DrawScreen( void )
 	// スクリーンサーフェスにblit
 	PRINTD( GRP_LOG, " -> Blit" );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( DISPMON ){	// モニタモード?
 		PRINTD( GRP_LOG, " -> Monitor" );
 		
@@ -223,16 +220,18 @@ void DSP6::DrawScreen( void )
 		// メモリウィンドウ
 		OSD_BlitToWindow( Wh, vm->el->memw, P6WINW/2, vm->el->regw->Height() );
 	}else
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
-		UpdateSubBuf();	// サブバッファ更新
+//		UpdateSubBuf();	// サブバッファ更新
 		
         if( 0/*DISPFULL P6VXではフルスクリーンでもサイズを変えない*/ ){	// フルスクリーン表示
 			PRINTD( GRP_LOG, " -> FullScreen" );
-			OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() ) / 2 );
+//			OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() ) / 2 );
+			OSD_BlitToWindowEx( Wh, BBuf, ( OSD_GetWindowWidth( Wh ) - ScreenX() ) / 2, ( OSD_GetWindowHeight( Wh ) - ScreenY() ) / 2, ScreenY(), DISPNTSC, DISPSCAN, vm->el->cfg->GetScanLineBr() );
 		}else{			// ウィンドウ表示
 			PRINTD( GRP_LOG, " -> Window" );
-			OSD_BlitToWindow( Wh, SBuf, 0, 0 );
+//			OSD_BlitToWindow( Wh, SBuf, 0, 0 );
+			OSD_BlitToWindowEx( Wh, BBuf, 0, 0, ScreenY(), DISPNTSC, DISPSCAN, vm->el->cfg->GetScanLineBr() );
 		}
 		
 		// ステータスバー
@@ -242,7 +241,6 @@ void DSP6::DrawScreen( void )
 			// ステータスバー更新
 			// スクリーンサーフェス下端に位置を合わせてblit
 			vm->el->staw->Update();
-			
 			OSD_BlitToWindow( Wh, vm->el->staw, 0, OSD_GetWindowHeight( Wh ) - vm->el->staw->Height() );
 		}
 	}
@@ -260,7 +258,7 @@ void DSP6::DrawScreen( void )
 // 引数:	なし
 // 返値:	int		有効スクリーン幅ピクセル数
 ////////////////////////////////////////////////////////////////
-int DSP6::ScreenX( void )
+int DSP6::ScreenX( void ) const
 {
 	return P6WINW;
 }
@@ -272,7 +270,7 @@ int DSP6::ScreenX( void )
 // 引数:	なし
 // 返値:	int		有効スクリーン高さピクセル数
 ////////////////////////////////////////////////////////////////
-int DSP6::ScreenY( void )
+int DSP6::ScreenY( void ) const
 {
     // P6VXでは4:3モードでもスクリーンサイズは変化しない
     return P6WINH;
@@ -287,7 +285,8 @@ int DSP6::ScreenY( void )
 ////////////////////////////////////////////////////////////////
 VSurface *DSP6::GetSubBuffer( void )
 {
-	return SBuf;
+	return NULL;
+//	return SBuf;
 }
 
 
@@ -310,28 +309,33 @@ HWINDOW DSP6::GetWindowHandle( void )
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
 #define	RESO43		256		/* 中間色計算用分解能(1ラインをRESO43分割する) */
+/*
 bool DSP6::UpdateSubBuf( void )
 {
 	PRINTD( GRP_LOG, "[GRP][UpdateSubBuf]\n" );
 	
 	VSurface *BBuf = vm->vdg;
-	bool dntsc = DISPNTSC;
-	bool dscan = DISPSCAN;
-	int brscan = vm->el->cfg->GetScanLineBr();
 	
 	if( !BBuf ) return false;
 	if( !RefreshSubBuf() ) return false;
 	
-	for( int y=0; y<SBuf->Height(); y++ ){
-		DWORD y0 = ( y * BBuf->Height() ) / SBuf->Height();
-		DWORD a1 = ( y * BBuf->Height() * RESO43 ) / SBuf->Height() - y0 * RESO43;
+	const bool dntsc = DISPNTSC;
+	const bool dscan = DISPSCAN;
+	const int brscan = vm->el->cfg->GetScanLineBr();
+	const int xsc    = BBuf->XScale();
+	const int yy     = SBuf->Height();
+	const int xx     = BBuf->Width();
+	
+	for( int y=0; y<yy; y++ ){
+		DWORD y0 = ( y * BBuf->Height() ) / yy;
+		DWORD a1 = ( y * BBuf->Height() * RESO43 ) / yy - y0 * RESO43;
 		DWORD a2 = RESO43 - a1;
 		
 		DWORD *sof1 = (DWORD *)BBuf->GetPixels() + BBuf->Pitch()/sizeof(DWORD) * y0;
 		DWORD *sof2 = sof1 + ( y0 < (DWORD)BBuf->Height()-1 ? BBuf->Pitch()/sizeof(DWORD) : 0 );
 		DWORD *doff = (DWORD *)SBuf->GetPixels() + SBuf->Pitch()/sizeof(DWORD) * y ;
 		
-		for( int x=0; x<(int)BBuf->Width(); x++ ){
+		for( int x=0; x<xx; x++ ){
 			DWORD r,g,b;
 			DWORD d1 = *sof1++;
 			DWORD d2 = *sof2++;
@@ -352,7 +356,7 @@ bool DSP6::UpdateSubBuf( void )
 				b = ( ( b * brscan ) / 100 ) & 0xff;
 			}
 			*doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
-			*doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
+			if( xsc == 1 ) *doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
 		}
 	}
 	
@@ -404,6 +408,7 @@ bool DSP6::RefreshSubBuf( void )
 	
 	return true;
 }
+*/
 
 
 ////////////////////////////////////////////////////////////////
@@ -429,7 +434,19 @@ void DSP6::SnapShot( const char *path )
 	}while( OSD_FileExist( img_file ) || (Index > 999) );
 	
 	// 連番が有効なら画像ファイル保存
-	if( !(Index > 999) ) SaveImg( img_file, SBuf, NULL );
+	if( !(Index > 999) ){
+		VRect scr;
+		
+		scr.x = scr.y = 0;
+		scr.w = DISPFULL ? P6WIFW : P6WINW;
+		scr.h = DISPFULL ? P6WIFH : DISPNTSC ? HBBUS : P6WINH;
+		
+		BYTE *pixels = new BYTE[scr.w * scr.h * sizeof(DWORD)];
+		if( !pixels ) return;
+		
+		if( !OSD_GetWindowImage( Wh, (void **)(&pixels), &scr ) ) return;
+		SaveImgData( img_file, pixels, 32, scr.w, scr.h, NULL );
+		
+		if( pixels ) delete [] pixels;
+	}
 }
-
-

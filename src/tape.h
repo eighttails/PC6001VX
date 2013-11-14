@@ -56,20 +56,20 @@ public:
 	WORD Update();						// ストリーム更新(1byte分)
 	int SoundUpdate( int );				// ストリーム更新
 	
-	bool IsMount();						// マウント済み?
-	bool IsAutoStart();					// オートスタート?
+	bool IsMount() const;				// マウント済み?
+	bool IsAutoStart() const;			// オートスタート?
 	
-	const char *GetFile();				// ファイルパス取得
-	const char *GetName();				// TAPE名取得
-	DWORD GetSize();					// ベタイメージサイズ取得
-	int GetCount();						// カウンタ取得
-	bool IsRelay();						// リレーの状態取得
+	const char *GetFile() const;		// ファイルパス取得
+	const char *GetName() const;		// TAPE名取得
+	DWORD GetSize() const;				// ベタイメージサイズ取得
+	int GetCount() const;				// カウンタ取得
+	bool IsRelay() const;				// リレーの状態取得
 	
 	void SetBoost( bool );				// BoostUp設定
 	void SetMaxBoost( int, int );		// BoostUp最大倍率設定
-	bool IsBoostUp();					// BoostUp状態取得
+	bool IsBoostUp() const;				// BoostUp状態取得
 	
-	P6TAUTOINFO *GetAutoStartInfo();	// オートスタート情報取得
+	const P6TAUTOINFO *GetAutoStartInfo() const;	// オートスタート情報取得
 	
 	// デバイスID
 	enum IDOut{ outB0H=0 };

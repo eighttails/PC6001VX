@@ -45,26 +45,19 @@ protected:
 	
 	int mstate;				// メモリアクセスウェイト ステート数
 	
-	// フェッチ(M1)
-	virtual BYTE Fetch( WORD, int * )   = 0;
+	virtual BYTE Fetch( WORD, int * )   = 0;	// フェッチ(M1)
+	virtual BYTE ReadMemNW( WORD )      = 0;	// メモリアクセス(ウェイトなし)
+	virtual BYTE ReadMem( WORD )        = 0;	// メモリアクセス(ウェイトあり) Read
+	virtual void WriteMem( WORD, BYTE ) = 0;	// メモリアクセス(ウェイトあり) Write
+	virtual BYTE ReadIO( int )          = 0;	// I/Oポートアクセス Read
+	virtual void WriteIO( int, BYTE )   = 0;	// I/Oポートアクセス Write
+	virtual int GetIntrVector()         = 0;	// 割込みベクタ取得
+	virtual bool IsBUSREQ()             = 0;	// バスリクエスト区間フラグ取得
 	
-	// メモリアクセス(ウェイトなし)
-	virtual BYTE ReadMemNW( WORD )      = 0;
 	
-	// メモリアクセス(ウェイトあり)
-	virtual BYTE ReadMem( WORD )        = 0;
-	virtual void WriteMem( WORD, BYTE ) = 0;
-	
-	// I/Oポートアクセス
-	virtual BYTE ReadIO( int )          = 0;
-	virtual void WriteIO( int, BYTE )   = 0;
-	
-	// 割込みベクタ取得
-	virtual int GetIntrVector()         = 0;
-	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	void PrintfHead( char *, WORD, int );	// アドレス/インストラクションコードの表示
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 public:
 	cZ80();						// コンストラクタ
@@ -73,15 +66,13 @@ public:
 	void Reset();				// リセット
 	int Exec();					// 1命令実行
 	
-	virtual bool IsBUSREQ();	// BUSREQ取得
-	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// デバッグ用
 	int Disasm( char *, WORD );		// 1ライン逆アセンブル
 	void GetRegister( Register * );	// レジスタ値取得
 	void SetRegister( Register * );	// レジスタ値設定
 	WORD GetPC();					// PCレジスタ値取得
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 };
 
 

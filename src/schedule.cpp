@@ -27,7 +27,7 @@ EVSC::~EVSC( void ){}
 //			id			イベントID
 // 返値:	evinfo *	イベント情報ポインタ(存在しなければNULL)
 ////////////////////////////////////////////////////////////////
-EVSC::evinfo *EVSC::Find( Device::ID devid, int id )
+const EVSC::evinfo *EVSC::Find( Device::ID devid, int id ) const
 {
 	for( int i=0; i<MAXEVENT; i++ )
 		if( ev[i].devid == devid && ev[i].id == id ) return &ev[i];
@@ -66,7 +66,7 @@ bool EVSC::Entry( Device *dev )
 bool EVSC::Add( Device *dev, int id, double hz, int flag )
 {
 	// 登録済みの場合は一旦削除して再登録
-	evinfo *e = Find( dev->GetID(), id );
+	const evinfo *e = Find( dev->GetID(), id );
 	if( e ) Del( (Device *)devlist.Find( e->devid ), e->id );
 	
 	for( int i=0; i<MAXEVENT; i++ ){
@@ -123,7 +123,7 @@ bool EVSC::Add( Device *dev, int id, double hz, int flag )
 ////////////////////////////////////////////////////////////////
 bool EVSC::Del( Device *dev, int id )
 {
-	evinfo *e = Find( dev->GetID(), id );
+	evinfo *e = (evinfo *)Find( dev->GetID(), id );
 	if( e ){
 		devlist.Del( dev );
 		
@@ -146,7 +146,7 @@ bool EVSC::Del( Device *dev, int id )
 ////////////////////////////////////////////////////////////////
 bool EVSC::SetHz( Device::ID devid, int id, double hz )
 {
-	evinfo *e = Find( devid, id );
+	evinfo *e = (evinfo *)Find( devid, id );
 	if( e ){
 		e->nps    = hz;
 		e->Period = (int)((double)MasterClock / hz);
@@ -215,9 +215,9 @@ void EVSC::Update( int clk )
 ////////////////////////////////////////////////////////////////
 void EVSC::Reset( Device::ID devid, int id, double ini )
 {
-	PRINTD( TIC_LOG, "[SCHE][Reset] ID:%d %3f%", id, ini );
+	PRINTD( TIC_LOG, "[SCHE][Reset] ID:%d %3f%%", id, ini );
 	
-	evinfo *e = Find( devid, id );
+	evinfo *e = (evinfo *)Find( devid, id );
 	if( e ){
 		// 溜め込んだクロック分を考慮
 		e->Clock = (int)((double)e->Period * ( 1.0 - min( max( 0.0, ini ), 1.0 ) )) - SaveClock;
@@ -236,9 +236,9 @@ void EVSC::Reset( Device::ID devid, int id, double ini )
 //			id		イベントID
 // 返値:	int		残りステート数(IDが無効なら0)
 ////////////////////////////////////////////////////////////////
-int EVSC::Rest( Device::ID devid, int id )
+int EVSC::Rest( Device::ID devid, int id ) const
 {
-	evinfo *e = Find( devid, id );
+	const evinfo *e = Find( devid, id );
 	if( e ) return e->Clock;
 	else    return 0;
 }
@@ -251,11 +251,11 @@ int EVSC::Rest( Device::ID devid, int id )
 //			id		イベントID
 // 返値:	double	イベント進行率(1.0=100%)
 ////////////////////////////////////////////////////////////////
-double EVSC::Scale( Device::ID devid, int id )
+double EVSC::GetProgress( Device::ID devid, int id ) const
 {
-	PRINTD( TIC_LOG, "[SCHE][Scale] ID:%d", id );
+	PRINTD( TIC_LOG, "[SCHE][GetProgress] ID:%d", id );
 	
-	evinfo *e = Find( devid, id );
+	const evinfo *e = Find( devid, id );
 	// イベントが存在し1周期のクロック数が設定されている?
 	if( e && e->Period > 0 ){
 		PRINTD( TIC_LOG, " %d/%d SAVE:%d\n", e->Clock, e->Period, SaveClock );
@@ -263,8 +263,11 @@ double EVSC::Scale( Device::ID devid, int id )
 		// 溜め込んだクロックを考慮
 		double sc = (double)( (double)( e->Period - max( e->Clock - SaveClock, 0 ) ) / (double)e->Period );
 		return min( max( 0.0, sc ), 1.0 );
-	}else
-		return 0;
+	}else{
+		PRINTD( TIC_LOG, " Disable\n" );
+	}
+	
+	return 0;
 }
 
 
@@ -274,11 +277,11 @@ double EVSC::Scale( Device::ID devid, int id )
 // 引数:	evinfo *	イベント情報構造体へのポインタ(devid,id をセットしておく)
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool EVSC::GetEvinfo( evinfo *info )
+bool EVSC::GetEvinfo( evinfo *info ) const
 {
 	if( !info ) return false;
 	
-	evinfo *e = Find( info->devid, info->id );
+	const evinfo *e = Find( info->devid, info->id );
 	if( e ){
 		info->Active = e->Active;
 		info->Period = e->Period;
@@ -303,7 +306,7 @@ bool EVSC::SetEvinfo( evinfo *info )
 	// 問答無用で追加
 	if( !Add( (Device *)devlist.Find( info->devid ), info->id, 1, EV_HZ ) ) return false;
 	
-	evinfo *e = Find( info->devid, info->id );
+	evinfo *e = (evinfo *)Find( info->devid, info->id );
 	if( e ){
 		e->Active = info->Active;
 		e->Period = info->Period;
@@ -339,7 +342,7 @@ void EVSC::SetMasterClock( int clock )
 // 引数:	なし
 // 返値:	int		マスタクロック数
 ////////////////////////////////////////////////////////////////
-int EVSC::GetMasterClock( void )
+int EVSC::GetMasterClock( void ) const
 {
 	return MasterClock;
 }
@@ -350,7 +353,7 @@ int EVSC::GetMasterClock( void )
 // 引数:	なし
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-bool EVSC::IsVSYNC( void )
+bool EVSC::IsVSYNC( void ) const
 {
 	return VSYNC;
 }
@@ -567,7 +570,7 @@ void SCH6::Stop( void )
 // 引数:	なし
 // 返値:	有効:true 無効:false
 ////////////////////////////////////////////////////////////////
-bool SCH6::GetWaitEnable( void )
+bool SCH6::GetWaitEnable( void ) const
 {
 	return WaitEnable;
 }
@@ -591,7 +594,7 @@ void SCH6::SetWaitEnable( bool en )
 // 引数:	なし
 // 返値:	有効:true 無効:false
 ////////////////////////////////////////////////////////////////
-bool SCH6::GetPauseEnable( void )
+bool SCH6::GetPauseEnable( void ) const
 {
 	return PauseEnable;
 }
@@ -674,7 +677,7 @@ void SCH6::SetSpeedRatio( int spd )
 // 引数:	なし
 // 返値:	int		実行速度(%)
 ////////////////////////////////////////////////////////////////
-int SCH6::GetSpeedRatio( void )
+int SCH6::GetSpeedRatio( void ) const
 {
 	return SpeedRatio;
 }
@@ -686,7 +689,7 @@ int SCH6::GetSpeedRatio( void )
 // 引数:	なし
 // 返値:	int		実行速度比(%)(等倍が100)
 ////////////////////////////////////////////////////////////////
-int SCH6::GetRatio( void )
+int SCH6::GetRatio( void ) const
 {
 	DWORD sum = 0;
 	

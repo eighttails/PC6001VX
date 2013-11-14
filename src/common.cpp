@@ -236,7 +236,7 @@ void Convert2Jis( BYTE *c1, BYTE *c2 )
 // 返値:	char *			UTF8文字列へのポインタ
 ////////////////////////////////////////////////////////////////
 #ifdef __APPLE__
-char *Sjis2UTF8( const char *str )
+const char *Sjis2UTF8( const char *str )
 {
 	static char dst[PATH_MAX];
 	CFStringRef cfstr;
@@ -321,8 +321,8 @@ int sjistbl2[] = {
 ////////////////////////////////////////////////////////////////
 int Sjis2P6( char *dstr, const char *sstr )
 {
-    const char *ss = sstr;
-    char *ds = dstr;
+	const char *ss = sstr;
+	char *ds       = dstr;
 	int c;
 	
 	while( (c = (BYTE)(*ss++)) != '\0' ){
@@ -381,14 +381,73 @@ int Sjis2P6( char *dstr, const char *sstr )
 }
 
 
+
+
+////////////////////////////////////////////////////////////////
+// Img SAVE from Data
+//   情報参照「PNG利用術」 http://gmoon.jp/png/
+//			 「プログラミング・ライブラリ」 http://dencha.ojaru.jp/
+//
+// 引数:	filename		保存ファイル名
+//			pixels			保存するデータ領域へのポインタ
+//			bpp				色深度
+//			ww				幅
+//			hh				高さ
+//			pos				保存する領域情報へのポインタ
+// 返値:	bool	true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+extern QVector<QRgb> PaletteTable;              //パレットテーブル
+bool SaveImgData( const char *filename, BYTE *pixels, int bpp, int ww, int hh, VRect *pos )
+{
+	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
+	
+    VRect rec;
+	const int pitch = ww * bpp / 8;
+	
+	// 領域設定
+	if( pos ){
+		rec.x = pos->x;	rec.y = pos->y;
+		rec.w = pos->w;	rec.h = pos->h;
+	}else{
+		rec.x =     rec.y = 0;
+		rec.w = ww; rec.h = hh;
+	}
+
+    QImage::Format format = (bpp == 8) ? QImage::Format_Indexed8 : QImage::Format_RGB32;
+
+    QImage image(rec.w, rec.h, format);
+    if(bpp == 8){
+        image.setColorTable(PaletteTable);
+    }
+
+    BYTE *doff = pixels + rec.x + rec.y * pitch;
+    for( int i=0; i<rec.h; i++ ){
+        memcpy( image.scanLine(i), doff, rec.w );
+        doff += pitch;
+    }
+
+    image.save(filename);
+
+    return true;
+}
+
+
 ////////////////////////////////////////////////////////////////
 // Img SAVE
+//			 「プログラミング・ライブラリ」 http://dencha.ojaru.jp/
 //
 // 引数:	filename		保存ファイル名
 //			sur				保存するサーフェスへのポインタ
 //			pos				保存する領域情報へのポインタ
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
+bool SaveImg( const char *filename, VSurface *sur, VRect *pos )
+{
+	return SaveImgData( filename, (BYTE *)sur->GetPixels(), INBPP, sur->Width(), sur->Height(), pos );
+}
+
+//#PENDING 消す
+/*
 bool SaveImg( const char *filename, VSurface *sur, VRect *pos )
 {
 	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
@@ -416,11 +475,12 @@ bool SaveImg( const char *filename, VSurface *sur, VRect *pos )
 	
 	return true;
 }
-
+*/
 
 
 ////////////////////////////////////////////////////////////////
 // Img LOAD
+//			 「プログラミング・ライブラリ」 http://dencha.ojaru.jp/
 //
 // 引数:	filename		読込むファイル名
 // 返値:	VSurface *		読込まれたサーフェスへのポインタ
@@ -430,7 +490,8 @@ VSurface *LoadImg( const char *filename )
 	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filename );
 	
     // 画像を読み込む
-    QImage image(filename);
+    QImage loadImage(filename);
+    QImage image = loadImage.convertToFormat(QImage::Format_Indexed8);
 
     // サーフェスを作成
     VSurface* sur = new VSurface;

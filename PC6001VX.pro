@@ -9,6 +9,8 @@ QT       += core gui widgets network
 TARGET = PC6001VX
 TEMPLATE = app
 
+DEFINES += INBPP=8
+
 #ジョイスティックが不要な場合はコメントアウトをはずす(SDLが不要になる)
 #DEFINES += NOJOYSTICK
 
@@ -96,8 +98,6 @@ SOURCES += \
     src/Qt/configdialog.cpp \
     src/Qt/colorbutton.cpp \
     src/Qt/aboutdialog.cpp \
-    src/Qt/common.cpp \
-    src/Qt/console.cpp \
     src/p6el.cpp \
     src/p6vm.cpp \
     src/Qt/qtsingleapplication/qtlocalpeer.cpp \
@@ -111,7 +111,9 @@ SOURCES += \
     src/Qt/renderview.cpp \
     src/Qt/qtel6.cpp \
     src/Qt/semaphore.cpp \
-    src/Qt/thread.cpp
+    src/Qt/thread.cpp \
+    src/console.cpp \
+    src/common.cpp
 
 HEADERS  += \
     src/breakpoint.h \

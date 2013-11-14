@@ -52,7 +52,7 @@ protected:
 	int NextEvent;				// 次のイベントが発生するまでのクロック数
 	int SaveClock;				// クロックを溜め込む
 	
-	evinfo *Find( Device::ID, int );			// イベント検索
+	const evinfo *Find( Device::ID, int ) const;	// イベント検索
 	
 public:
 	EVSC( int );								// コンストラクタ
@@ -67,16 +67,16 @@ public:
 	void Update( int );							// イベント更新
 	void Reset( Device::ID, int, double=0 );	// 指定イベントをリセットする
 	
-	int Rest( Device::ID, int );				// イベント発生までの残りクロック数を求める
-	double Scale( Device::ID, int );			// イベントの進行率を求める
+	int Rest( Device::ID, int ) const;			// イベント発生までの残りクロック数を求める
+	double GetProgress( Device::ID, int ) const;	// イベントの進行率を求める
 	
-	bool GetEvinfo( evinfo * );					// イベント情報取得
+	bool GetEvinfo( evinfo * ) const;			// イベント情報取得
 	bool SetEvinfo( evinfo * );					// イベント情報設定
 	
 	void SetMasterClock( int );					// マスタクロック設定
-	int GetMasterClock();						// マスタクロック取得
+	int GetMasterClock() const;					// マスタクロック取得
 	
-	bool IsVSYNC();								// VSYNCに達した?
+	bool IsVSYNC() const;						// VSYNCに達した?
 	void OnVSYNC();								// VSYNCを通知する
 	void ReVSYNC();								// VSYNCフラグキャンセル
 	
@@ -112,20 +112,20 @@ public:
 	bool Start();								// 動作開始
 	void Stop();								// 動作停止
 	
-	bool GetWaitEnable();						// Wait有効フラグ取得
+	bool GetWaitEnable() const;					// Wait有効フラグ取得
 	void SetWaitEnable( bool );					//               設定
 	
-	bool GetPauseEnable();						// ポーズ有効フラグ取得
+	bool GetPauseEnable() const;				// ポーズ有効フラグ取得
 	void SetPauseEnable( bool );				//                 設定
 	
 	void VWait();								// VSYNC Wait
 	void WaitReset();							// Waitを解除する
 	
 	void SetSpeedRatio( int );					// 実行速度設定
-	int GetSpeedRatio();						//         取得
+	int GetSpeedRatio() const;					//         取得
 	
 	void Update( int );							// イベント更新
-	int GetRatio();								// 実行速度比取得
+	int GetRatio() const;						// 実行速度比取得
 	
 	bool IsScreenUpdate();						// 画面更新時期を迎えた?
 };

@@ -4,14 +4,28 @@
 #include "typedef.h"
 
 
+#define FD_DOUBLESIDE			0x01	// 両面
+#define	FD_DOUBLETRACK			0x02	// 倍トラック
+#define	FD_DOUBLEDENSITY		0x04	// 倍密度
+#define	FD_HIGHDENSITY			0x08	// 高密度
+
+#define	FD1D					(FD_DOUBLEDENSITY)
+#define	FD2D					(FD_DOUBLESIDE|FD_DOUBLEDENSITY)
+#define	FD1DD					(FD_DOUBLETRACK|FD_DOUBLEDENSITY)
+#define	FD2DD					(FD_DOUBLESIDE|FD_DOUBLETRACK|FD_DOUBLEDENSITY)
+#define	FD2HD					(FD_DOUBLESIDE|FD_DOUBLETRACK|FD_HIGHDENSITY)
+#define	FDUNKNOWN				0xff
+
+#define	TRACKCAP(t)				((t)&FD_HIGHDENSITY ? 12500 : (t)&FD_DOUBLEDENSITY ? 6250 : 3125)
+
 // Disk BIOS Status
-#define BIOS_READY					(0x00)
-#define BIOS_WRITE_PROTECT			(0x70)
-#define BIOS_ID_CRC_ERROR			(0xa0)
-#define BIOS_DATA_CRC_ERROR			(0xb0)
-#define BIOS_NO_DATA				(0xc0)
-#define BIOS_MISSING_IAM			(0xe0)
-#define BIOS_MISSING_DAM			(0xf0)
+#define BIOS_READY				(0x00)
+#define BIOS_WRITE_PROTECT		(0x70)
+#define BIOS_ID_CRC_ERROR		(0xa0)
+#define BIOS_DATA_CRC_ERROR		(0xb0)
+#define BIOS_NO_DATA			(0xc0)
+#define BIOS_MISSING_IAM		(0xe0)
+#define BIOS_MISSING_DAM		(0xf0)
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
@@ -62,7 +76,6 @@ private:
 	
 	D88INFO d88;					// D88 情報
 	char FileName[PATH_MAX];		// ファイル名バッファ
-	
 	bool Protected;					// プロテクトシール
 	
 	void ReadHeader88();			// D88 ヘッダ読込み
@@ -80,17 +93,18 @@ public:
 	bool SearchSector( BYTE, BYTE, BYTE, BYTE );	// セクタを探す
 	bool NextSector();				// 次のセクタに移動する
 	
-	void GetID( BYTE *, BYTE *, BYTE *, BYTE * );	// 現在のCHRN取得
-	WORD GetSecSize();				// 現在のセクタサイズ取得
-	BYTE GetSecStatus();			// 現在のステータス取得
+	void GetID( BYTE *, BYTE *, BYTE *, BYTE * ) const;	// 現在のCHRN取得
+	WORD GetSecSize() const;		// 現在のセクタサイズ取得
+	BYTE GetSecStatus() const;		// 現在のステータス取得
 	
-	char *GetFileName();			// ファイル名取得
-	char *GetDiskImgName();			// DISKイメージ名取得
-	bool IsProtect();				// プロテクトシール状態取得
+	const char *GetFileName() const;	// ファイル名取得
+	const char *GetDiskImgName() const;	// DISKイメージ名取得
+	bool IsProtect() const;			// プロテクトシール状態取得
+	int GetType() const;			// メディアタイプ取得
 	
-	BYTE Track();					// 現在のトラック番号取得
-	BYTE Sector();					// 現在のセクタ番号取得
-	WORD SecNum();					// 現在のトラック内に存在するセクタ数取得
+	BYTE Track() const;				// 現在のトラック番号取得
+	BYTE Sector() const;			// 現在のセクタ番号取得
+	WORD SecNum() const;			// 現在のトラック内に存在するセクタ数取得
 };
 
 #endif	// D88_H_INCLUDED

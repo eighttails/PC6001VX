@@ -50,28 +50,39 @@ protected:
 	int pitch;					// 1ラインのbyte数
     double aspect;              // アスペクト比(幅を1とした場合の高さの比率)
 	void *pixels;				// ピクセルデータへのポインタ
-	
+	int xscale;					// 幅倍率(1:等倍 2:2倍)
 	VRect rect;					// 描画領域
 	
+	static DWORD col32[256];	// 32bitカラーテーブル
+	
 public:
-	VSurface();									// コンストラクタ
-	virtual ~VSurface();						// デストラクタ
+	VSurface();										// コンストラクタ
+	virtual ~VSurface();							// デストラクタ
 	
-	virtual bool InitSurface( int, int );		// 初期化(サーフェスサイズ指定)
-	void SetRect( int, int, int, int );			// 描画領域設定
-    double GetAspectRatio();
-    void SetAspectRatio(double);                // アスペクト比を設定
-	VRect *GetRect();							// 描画領域取得
+	virtual bool InitSurface( int, int, int=1 );	// 初期化(サーフェスサイズ指定)
+	void SetRect( int, int, int, int );				// 描画領域設定
+	VRect *GetRect();								// 描画領域取得
 	
-	int Width();								// 幅取得
-	int Height();								// 高さ取得
-	int Pitch();								// 1ラインのbyte数取得
-	void *GetPixels();							// ピクセルデータへのポインタ取得
+	int Width() const;								// 幅取得
+	int Height() const;								// 高さ取得
+	int Pitch() const;								// 1ラインのbyte数取得
+	int XScale() const;								// 幅倍率取得
+	void *GetPixels() const;						// ピクセルデータへのポインタ取得
 	
-	void PSet( int, int, DWORD );				// 点を描く
-	DWORD PGet( int, int );						// 色を取得
-	void Fill( DWORD, VRect * = NULL );			// 矩形領域を塗りつぶす
-	void Blit( VRect *, VSurface *, VRect * );	// 転送する
+	#if INBPP == 8	// 8bit
+	void PSet( int, int, BYTE );					// 点を描く
+	BYTE PGet( int, int );							// 色を取得
+	void Fill( BYTE, VRect * = NULL );				// 矩形領域を塗りつぶす
+	#else			// 32bit
+	void PSet( int, int, DWORD );					// 点を描く
+	DWORD PGet( int, int );							// 色を取得
+	void Fill( DWORD, VRect * = NULL );				// 矩形領域を塗りつぶす
+	#endif
+	
+	void Blit( VRect *, VSurface *, VRect * );		// 転送する
+	
+	static void SetColor( int, DWORD );				// 32bitカラーテーブル設定
+	static DWORD GetColor( int );					// 32bitカラー取得
 };
 
 

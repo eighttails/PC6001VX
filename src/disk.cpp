@@ -74,7 +74,7 @@ static const int Gap4size[] = { 488, 152, 182,  94, 1584, 1760, 2242, 4144 };
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSK6::DSK6( VM6 *vm, const ID& id ) : Device(vm,id), DrvNum(0)
+DSK6::DSK6( VM6 *vm, const ID& id ) : Device(vm,id), UType(PC6031), DrvNum(0)
 {
 	for( int i=0; i<MAXDRV; i++ ){
 		ZeroMemory( FilePath[i], PATH_MAX );
@@ -217,7 +217,7 @@ int DSK6::GetDrives( void )
 ////////////////////////////////////////////////////////////////
 // マウント済み?
 ////////////////////////////////////////////////////////////////
-bool DSK6::IsMount( int drvno )
+bool DSK6::IsMount( int drvno ) const
 {
 	if( drvno < DrvNum ) return Dimg[drvno] ? true : false;
 	else                 return false;
@@ -227,7 +227,7 @@ bool DSK6::IsMount( int drvno )
 ////////////////////////////////////////////////////////////////
 // システムディスク?
 ////////////////////////////////////////////////////////////////
-bool DSK6::IsSystem( int drvno )
+bool DSK6::IsSystem( int drvno ) const
 {
 	return Sys[drvno];
 }
@@ -236,7 +236,7 @@ bool DSK6::IsSystem( int drvno )
 ////////////////////////////////////////////////////////////////
 // プロテクト?
 ////////////////////////////////////////////////////////////////
-bool DSK6::IsProtect( int drvno )
+bool DSK6::IsProtect( int drvno ) const
 {
 	if( !IsMount( drvno ) ) return false;
 	
@@ -247,7 +247,7 @@ bool DSK6::IsProtect( int drvno )
 ////////////////////////////////////////////////////////////////
 // ファイルパス取得
 ////////////////////////////////////////////////////////////////
-const char *DSK6::GetFile( int drvno )
+const char *DSK6::GetFile( int drvno ) const
 {
 	return FilePath[drvno];
 }
@@ -256,12 +256,15 @@ const char *DSK6::GetFile( int drvno )
 ////////////////////////////////////////////////////////////////
 // DISK名取得
 ////////////////////////////////////////////////////////////////
-const char *DSK6::GetName( int drvno )
+const char *DSK6::GetName( int drvno ) const
 {
 	if( !IsMount( drvno ) ) return "";
 	
 	return Dimg[drvno]->GetDiskImgName();
 }
+
+
+
 
 
 
@@ -283,6 +286,12 @@ DSK60::DSK60( VM6 *vm, const ID& id ) :
 {
 	INITARRAY( RBuf, 0 );
 	INITARRAY( WBuf, 0 );
+	UType = PC6031;
+}
+
+DSK64::DSK64( VM6 *vm, const ID& id ) :	DSK60(vm,id)
+{
+	UType = PC6031SR;
 }
 
 
@@ -290,6 +299,7 @@ DSK60::DSK60( VM6 *vm, const ID& id ) :
 // デストラクタ
 ////////////////////////////////////////////////////////////////
 DSK60::~DSK60( void ){}
+DSK64::~DSK64( void ){}
 
 
 ////////////////////////////////////////////////////////////////
@@ -302,7 +312,7 @@ DSK60::~DSK60( void ){}
 void DSK60::EventCallback( int id, int clock )
 {
 	switch( id ){
-	case EID_INIT1:		// 00h イニシャライズ(ドライブ1)
+	case EID_INIT1:		// 00h INITIALIZE(Drive1)
 		PRINTD( DISK_LOG, "<< [DISK][EventCallback] EID_INIT1 >>\n" );
 		if( DrvNum > 1 ){
 			mdisk.busy = 2;
@@ -312,7 +322,7 @@ void DSK60::EventCallback( int id, int clock )
 			DSK6::SetWait( EID_INIT2 );
 			break;
 		}
-	case EID_INIT2:		// 00h イニシャライズ(ドライブ2)
+	case EID_INIT2:		// 00h INITIALIZE(Drive2)
 		PRINTD( DISK_LOG, "<< [DISK][EventCallback] EID_INIT2 >>\n" );
 		if( !(io_D2H&0x10) ){
 			// DAVが立っていなければ待ち
@@ -321,29 +331,29 @@ void DSK60::EventCallback( int id, int clock )
 			DSK6::SetWait( EID_INIT2 );
 		}else{
 			mdisk.busy = 0;
-			mdisk.RFD  = 1;
-			mdisk.DAC  = 1;
+			mdisk.RFD  = true;
+			mdisk.DAC  = true;
 		}
 		break;
 		
-	case EID_WRDATEX:	// 01h ライト データ実行
+	case EID_WRDATEX:	// 01h WRITE DATA 実行
 		PRINTD( DISK_LOG, "<< [DISK][EventCallback] EID_WRDATEX >>\n" );
 		mdisk.busy = 0;
-		mdisk.RFD  = 1;
-		mdisk.DAC  = 1;
+		mdisk.RFD  = true;
+		mdisk.DAC  = true;
 		break;
 		
-	case EID_RDDATEX:	// 02h リード データ実行
+	case EID_RDDATEX:	// 02h READ DATA 実行
 		PRINTD( DISK_LOG, "<< [DISK][EventCallback] EID_RDDATEX >>\n" );
 		mdisk.busy = 0;
-		mdisk.RFD  = 1;
-		mdisk.DAC  = 1;
+		mdisk.RFD  = true;
+		mdisk.DAC  = true;
 		break;
 		
 	case EID_GETPAR:	// パラメータ受信
 		PRINTD( DISK_LOG, "<< [DISK][EventCallback] EID_GETPAR >>\n" );
-		mdisk.RFD = 1;
-		mdisk.DAC = 1;
+		mdisk.RFD = true;
+		mdisk.DAC = true;
 		break;
 		
 	default:;
@@ -370,20 +380,28 @@ bool DSK60::Init( int num )
 ////////////////////////////////////////////////////////////////
 void DSK60::Reset( void )
 {
+	PRINTD( DISK_LOG, "[DISK][Reset]\n" );
+	
 	ZeroMemory( &mdisk, sizeof( DISK60 ) );
-	mdisk.command = IDLE;	// 受け取ったコマンド
-	mdisk.retdat  = 0xff;	// port D0H から返す値
-	mdisk.error   = false;	// エラーフラグ降ろす
+	mdisk.Type     = FDD1D;	// ドライブタイプ
+	mdisk.command  = IDLE;	// 受け取ったコマンド
+	mdisk.retdat   = 0xff;	// port D0H から返す値
+	mdisk.error    = false;	// エラーフラグ降ろす
+	mdisk.Fast     = false;
+	mdisk.FastStat = false;
 	
 	io_D1H = 0;
 	io_D2H = 0x08;
+	
+	INITARRAY( RBuf, 0 );
+	INITARRAY( WBuf, 0 );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // アクセス中?
 ////////////////////////////////////////////////////////////////
-bool DSK60::InAccess( int drvno )
+bool DSK60::InAccess( int drvno ) const
 {
 	return ( mdisk.busy == ( drvno + 1 ) ) ? true : false;
 }
@@ -396,21 +414,34 @@ BYTE DSK60::FddIn( void )
 {
 	PRINTD( DISK_LOG, "[DISK][FddIn]  <- " );
 	
-	if( mdisk.DAV && mdisk.step != 0 ){		// コマンド処理中でデータが有効な場合
+	mdisk.retdat = 0xff;
+	
+//	if( mdisk.DAV && mdisk.step != 0 ){		// コマンド処理中でデータが有効な場合
+
+	// コマンド処理中でデータが有効な場合
+	// または高速アクセス2バイト目の場合，DAVが立っていなくても読む
+	// ホントちゃんとDAVの処理が必要だと思う
+	if( (mdisk.DAV || ( mdisk.Fast && mdisk.FastStat )) && mdisk.step != 0 ){
 		switch( mdisk.command ){
-		case SEND_DATA:				// 03h センド データ
+		case FAST_SEND_DATA:		// 12h FAST SEND DATA
+			PRINTD( DISK_LOG, "FAST_" );
+			mdisk.FastStat = mdisk.FastStat ? false : true;
+			
+		case SEND_DATA:				// 03h SEND DATA
 			PRINTD( DISK_LOG, "SEND_DATA" );
 			// バッファから読む
 			mdisk.retdat = RBuf[mdisk.ridx++];
 			if( mdisk.ridx >= mdisk.rsize ){
-				mdisk.rsize   = 0;
-				mdisk.ridx    = 0;
-				mdisk.command = IDLE;
-				mdisk.step    = 0;
+				mdisk.rsize    = 0;
+				mdisk.ridx     = 0;
+				mdisk.command  = IDLE;
+				mdisk.step     = 0;
+				mdisk.Fast     = false;
+				mdisk.FastStat = false;
 			}
 			break;
 			
-		case SEND_RESULT_STATUS:	// 06h センド リザルト ステータス
+		case SEND_RESULT_STATUS:	// 06h SEND RESULT STATUS
 			PRINTD( DISK_LOG, "SEND_RESULT_STATUS" );
 			//	Bit7:I/O動作終了フラグ
 			//	Bit6:読込みバッファにデータ 有:1 無:0
@@ -421,17 +452,29 @@ BYTE DSK60::FddIn( void )
 			mdisk.retdat = (mdisk.rsize ? 0x40 : 0) | (mdisk.error ? 1 : 0);
 			break;
 			
-		case SEND_DRIVE_STATUS:		// 07h センド ドライブ ステータス
+		case SEND_DRIVE_STATUS:		// 07h SEND DRIVE STATUS
 			PRINTD( DISK_LOG, "SEND_DRIVE_STATUS" );
 			mdisk.retdat = 0xf0;
 			for( int i=DrvNum; i>0; i-- )
 				mdisk.retdat |= 1<<(4+i);
 			break;
 			
-		default:
-			mdisk.retdat = 0xff;
+			
+		case GET_MEMORY:			// 0Bh GET MEMORY
+			// TO DO
+			PRINTD( DISK_LOG, "GET_MEMORY" );
+			// バッファから読む
+			mdisk.retdat = RBuf[mdisk.ridx++];
+			if( --mdisk.rsize == 0 ){
+				mdisk.rsize    = 0;
+				mdisk.ridx     = 0;
+				mdisk.command  = IDLE;
+				mdisk.step     = 0;
+			}
+			break;
+			
 		}
-		PRINTD( DISK_LOG, "%02X\n", mdisk.retdat );
+		PRINTD( DISK_LOG, ":%02X\n", mdisk.retdat );
 		
 		return mdisk.retdat;
 	}
@@ -451,10 +494,10 @@ void DSK60::FddOut( BYTE dat )
 {
 	PRINTD( DISK_LOG, "[DISK][FddOut]    -> %02X ", dat );
 	
-	int eid  = EID_GETPAR;
+	int eid = EID_GETPAR;
 	
 	io_D1H = dat;
-	mdisk.RFD = 0;
+	mdisk.RFD = false;
 	
 	DSK6::ResetWait();
 	DSK6::AddWait( WFDD_GETPAR );
@@ -463,75 +506,114 @@ void DSK60::FddOut( BYTE dat )
 		mdisk.command = dat;
 		mdisk.error   = false;
 		switch( mdisk.command ){
-		case INITIALIZE:			// 00h イニシャライズ
-			PRINTD( DISK_LOG, "INITIALIZE" );
+		case INITIALIZE:			// 00h INITIALIZE
+			PRINTD( DISK_LOG, "[INITIALIZE]" );
 			eid  = EID_INIT1;
 			DSK6::AddWait( WFDD_INIT );
 			
 			mdisk.busy = 1;
 			break;
 			
-		case WRITE_DATA:			// 01h ライト データ
-			PRINTD( DISK_LOG, "WRITE_DATA" );
+		case WRITE_DATA:			// 01h WRITE DATA
+			PRINTD( DISK_LOG, "[WRITE_DATA]" );
 			mdisk.step  = 1;
 			mdisk.wsize = 0;
 			break;
 			
-		case READ_DATA:				// 02h リード データ
-			PRINTD( DISK_LOG, "READ_DATA" );
+		case READ_DATA:				// 02h READ DATA
+			PRINTD( DISK_LOG, "[READ_DATA]" );
 			mdisk.step  = 1;
 			mdisk.rsize = 0;
 			mdisk.ridx  = 0;
 			break;
 			
-		case SEND_DATA:				// 03h センド データ
-			PRINTD( DISK_LOG, "SEND_DATA" );
+		case SEND_DATA:				// 03h SEND DATA
+			PRINTD( DISK_LOG, "[SEND_DATA]" );
 			mdisk.step = 1;
 			break;
 			
-		case FORMAT:				// 05h フォーマット
-			PRINTD( DISK_LOG, "FORMAT" );
+		case FORMAT:				// 05h FORMAT
+			PRINTD( DISK_LOG, "[FORMAT]" );
 			break;
 			
-		case SEND_RESULT_STATUS:	// 06h センド リザルト ステータス
-			PRINTD( DISK_LOG, "SEND_RESULT_STATUS" );
+		case SEND_RESULT_STATUS:	// 06h SEND RESULT STATUS
+			PRINTD( DISK_LOG, "[SEND_RESULT_STATUS]" );
 			mdisk.step = 1;
 			break;
 			
-		case SEND_DRIVE_STATUS:		// 07h センド ドライブ ステータス
-			PRINTD( DISK_LOG, "SEND_DRIVE_STATUS" );
+		case SEND_DRIVE_STATUS:		// 07h SEND DRIVE STATUS
+			PRINTD( DISK_LOG, "[SEND_DRIVE_STATUS]" );
 			mdisk.step = 1;
 			break;
 			
-		default:
+			
+		case GET_MEMORY:			// 0Bh GET MEMORY
+			if( UType == PC6031SR ){
+				PRINTD( DISK_LOG, "[GET_MEMORY]" );
+				mdisk.step = 1;
+			}else{
+				PRINTD( DISK_LOG, "[UNKNOWN]" );
+				eid = 0;
+			}
+			break;
+			
+		case FAST_SEND_DATA:		// 12h FAST SEND DATA
+			if( UType == PC6031SR ){
+				PRINTD( DISK_LOG, "[FAST_SEND_DATA]" );
+				mdisk.step     = 1;
+				mdisk.Fast     = true;
+				mdisk.FastStat = false;
+			}else{
+				PRINTD( DISK_LOG, "[UNKNOWN]" );
+				eid = 0;
+			}
+			break;
+			
+		case SET_MODE:				// 17h SET MODE
+			if( UType == PC6031SR ){
+				PRINTD( DISK_LOG, "[SET_MODE]" );
+				mdisk.step = 1;
+			}else{
+				PRINTD( DISK_LOG, "[UNKNOWN]" );
+				eid = 0;
+			}
+			break;
+			
+		default:					// 無効コマンド
+			PRINTD( DISK_LOG, "[UNKNOWN]" );
 			eid = 0;
 		}
 	}else{					// データの場合
 		switch( mdisk.command ){
-		case WRITE_DATA:			// 01h ライト データ
+		case WRITE_DATA:			// 01h WRITE DATA
 			switch( mdisk.step ){
 			case 1:	// 01h:転送ブロック数
+				PRINTD( DISK_LOG, "<WRITE_DATA P1>" );
 				mdisk.blk   = max( dat, 16 );
 				mdisk.size  = mdisk.blk*256;
 				mdisk.step++;
 				break;
 				
 			case 2:	// 02h:ドライブ番号-1
+				PRINTD( DISK_LOG, "<WRITE_DATA P2>" );
 				mdisk.drv = dat;
 				mdisk.step++;
 				break;
 				
 			case 3:	// 03h:トラック番号
+				PRINTD( DISK_LOG, "<WRITE_DATA P3>" );
 				mdisk.trk = dat;
 				mdisk.step++;
 				break;
 				
 			case 4:	// 04h:セクタ番号
+				PRINTD( DISK_LOG, "<WRITE_DATA P4>" );
 				mdisk.sct = dat;
 				mdisk.step++;
 				break;
 				
 			case 5:	// 05h:データ書き込み
+				PRINTD( DISK_LOG, "<WRITE_DATA P5>" );
 				eid  = EID_WRDATEX;
 				mdisk.busy = mdisk.drv + 1;
 				
@@ -580,25 +662,29 @@ void DSK60::FddOut( BYTE dat )
 			}
 			break;
 			
-		case READ_DATA:				// 02h リード データ
+		case READ_DATA:				// 02h READ DATA
 			switch( mdisk.step ){
 			case 1:	// 01h:転送ブロック数
+				PRINTD( DISK_LOG, "<REAR_DATA P1>" );
 				mdisk.blk  = max( dat, 16 );
 				mdisk.size = mdisk.blk*256;
 				mdisk.step++;
 				break;
 				
 			case 2:	// 02h:ドライブ番号-1
+				PRINTD( DISK_LOG, "<REAR_DATA P2>" );
 				mdisk.drv = dat;
 				mdisk.step++;
 				break;
 				
 			case 3:	// 03h:トラック番号
+				PRINTD( DISK_LOG, "<REAR_DATA P3>" );
 				mdisk.trk = dat;
 				mdisk.step++;
 				break;
 				
 			case 4:	// 04h:セクタ番号
+				PRINTD( DISK_LOG, "<REAR_DATA P4>" );
 				mdisk.sct = dat;
 				
 				eid  = EID_RDDATEX;
@@ -639,6 +725,48 @@ void DSK60::FddOut( BYTE dat )
 				mdisk.step = 0;
 				break;
 			}
+			break;
+			
+		case GET_MEMORY:			// 0Bh GET MEMORY
+			switch( mdisk.step ){
+			case 1:	// 01h:転送アドレス上位
+				PRINTD( DISK_LOG, "<GET_MEMORY P1>" );
+				mdisk.ridx = dat<<8;
+				mdisk.step++;
+				break;
+				
+			case 2:	// 02h:転送アドレス下位
+				PRINTD( DISK_LOG, "<GET_MEMORY P2>" );
+				mdisk.ridx += dat;
+				mdisk.step++;
+				break;
+				
+			case 3:	// 03h:転送バイト数上位
+				PRINTD( DISK_LOG, "<GET_MEMORY P3>" );
+				mdisk.rsize = dat<<8;
+				mdisk.step++;
+				break;
+				
+			case 4:	// 04h:転送バイト数下位
+				PRINTD( DISK_LOG, "<GET_MEMORY P4>" );
+				// TO DO
+				mdisk.rsize += dat;
+				break;
+			}
+			break;
+			
+		case SET_MODE:				// 17h SET MODE
+			switch( mdisk.step ){
+			case 1:	// 01h:モード
+				PRINTD( DISK_LOG, "<SET_MODE P1>" );
+				// TO DO
+				if( dat&0x0f ) mdisk.Type = FDD1DD;
+				else		   mdisk.Type = FDD1D;
+				mdisk.step = 0;
+				break;
+			}
+			break;
+			
 		}
 	}
 	
@@ -655,10 +783,10 @@ void DSK60::FddOut( BYTE dat )
 BYTE DSK60::FddCntIn( void )
 {
 	PRINTD( DISK_LOG, "[DISK][FddCntIn]  <- %02X %s %s %s\n",
-						(io_D2H&0xf0) | 0x08 | (mdisk.DAC<<2) | (mdisk.RFD<<1) | mdisk.DAV,
+						(io_D2H&0xf0) | (mdisk.DAC ? 4 : 0) | (mdisk.RFD ? 2 : 0) | (mdisk.DAV ? 1 : 0),
 						mdisk.DAC ? "DAC" : "", mdisk.RFD ? "RFD" : "", mdisk.DAV ? "DAV" : "" );
 	
-	io_D2H = (io_D2H&0xf0) | 0x08 | (mdisk.DAC<<2) | (mdisk.RFD<<1) | mdisk.DAV;
+	io_D2H = (io_D2H&0xf0) | (mdisk.DAC ? 4 : 0) | (mdisk.RFD ? 2 : 0) | (mdisk.DAV ? 1 : 0);
 	return io_D2H;
 }
 
@@ -680,24 +808,34 @@ void DSK60::FddCntOut( BYTE dat )
 	case 7:	// bit7 ATN
 		PRINTD( DISK_LOG, "ATN:%d", dat&1 );
 		if( (dat&1) && !(io_D2H&0x80) ){
-			mdisk.RFD = 1;
+			mdisk.RFD = true;
 			mdisk.command = IDLE;
+			PRINTD( DISK_LOG, " -> RFD:%d", mdisk.RFD ? 1 : 0 );
 		}
 		break;
 		
 	case 6:	// bit6 DAC
 		PRINTD( DISK_LOG, "DAC:%d", dat&1 );
-		if( (dat&1) && !(io_D2H&0x40) ) mdisk.DAV = 0;
+		if( (dat&1) && !(io_D2H&0x40) ){
+			mdisk.DAV = false;
+			PRINTD( DISK_LOG, " -> DAV:%d", mdisk.DAV ? 1 : 0 );
+		}
 		break;
 		
 	case 5:	// bit5 RFD
 		PRINTD( DISK_LOG, "RFD:%d", dat&1 );
-		if( (dat&1) && !(io_D2H&0x20) ) mdisk.DAV = 1;
+		if( (dat&1) && !(io_D2H&0x20) ){
+			mdisk.DAV = true;
+			PRINTD( DISK_LOG, " -> DAV:%d", mdisk.DAV ? 1 : 0 );
+		}
 		break;
 		
 	case 4:	// bit4 DAV
 		PRINTD( DISK_LOG, "DAV:%d", dat&1 );
-		if( !(dat&1) ) mdisk.DAC = 0;
+		if( !(dat&1) ){
+			mdisk.DAC = false;
+			PRINTD( DISK_LOG, " -> DAC:%d", mdisk.DAC ? 1 : 0 );
+		}
 		break;
 	}
 	
@@ -780,9 +918,15 @@ BYTE DSK60::InD2H( int ){ return FddCntIn(); }
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 DSK66::DSK66( VM6 *vm, const ID& id ) : DSK6(vm,id),
-	SendBytes(0), DIO(false), B2Dir(false)
+	SendBytes(0), ExtDrv(false), B2Dir(false)
 {
 	INITARRAY( FDDBuf, 0 );
+	UType = PC6601;
+}
+
+DSK68::DSK68( VM6 *vm, const ID& id ) :	DSK66(vm,id)
+{
+	UType = PC6601SR;
 }
 
 
@@ -790,6 +934,7 @@ DSK66::DSK66( VM6 *vm, const ID& id ) : DSK6(vm,id),
 // デストラクタ
 ////////////////////////////////////////////////////////////////
 DSK66::~DSK66( void ){}
+DSK68::~DSK68( void ){}
 
 
 ////////////////////////////////////////////////////////////////
@@ -809,8 +954,8 @@ void DSK66::EventCallback( int id, int clock )
 	case EID_SEEK3: Drv = 2; PRINTD( FDC_LOG, "[DSK66][EventCallback] EID_SEEK Drv:%d\n", Drv ); break;
 	case EID_SEEK4: Drv = 3; PRINTD( FDC_LOG, "[DSK66][EventCallback] EID_SEEK Drv:%d\n", Drv ); break;
 	case EID_EXWAIT:
-		fdc.intr    = true;
-		fdc.status |= FDC_DATA_READY;
+		fdc.Intr    = true;
+		fdc.Status |= FDC_DATA_READY;
 		break;
 		
 	default:;
@@ -819,8 +964,8 @@ void DSK66::EventCallback( int id, int clock )
 	if( Drv < 4 ){
 		fdc.SeekSta[Drv] = SK_END;
 		fdc.PCN[Drv]     = fdc.NCN[Drv];
-		fdc.intr         = true;
-		fdc.status      |= 1<<Drv;
+		fdc.Intr         = true;
+		fdc.Status      |= 1<<Drv;
 	}
 }
 
@@ -856,11 +1001,11 @@ void DSK66::Reset( void )
 		fdc.SeekSta[i] = SK_STOP;
 	}
 	fdc.US     = 0;
-	fdc.status = FDC_DATA_READY;
-	fdc.intr   = false;
+	fdc.Status = FDC_DATA_READY;
+	fdc.Intr   = false;
 	
 	SendBytes  = 0;
-	DIO        = false;
+	ExtDrv     = false;
 	B2Dir      = false;
 }
 
@@ -868,10 +1013,10 @@ void DSK66::Reset( void )
 ////////////////////////////////////////////////////////////////
 // アクセス中?
 ////////////////////////////////////////////////////////////////
-bool DSK66::InAccess( int drvno )
+bool DSK66::InAccess( int drvno ) const
 {
 	return ( (fdc.SeekSta[drvno] == SK_SEEK) ||
-			((fdc.status & FDC_BUSY) && (fdc.US == drvno)) ) ? true : false;
+			((fdc.Status & FDC_BUSY) && (fdc.US == drvno)) ) ? true : false;
 }
 
 
@@ -924,17 +1069,17 @@ void DSK66::OutFDC( BYTE data )
 	
 	const int CmdLength[] = { 0,0,9,3,2,9,9,2,1,0,0,0,0,6,0,3 };
 	
-	fdc.intr = false;	// 読み書きするとキャンセルされるようだ?
+	fdc.Intr = false;	// 読み書きするとキャンセルされるようだ?
 	
-	if( !(fdc.status & FDC_FD2PC) ){
+	if( !(fdc.Status & FDC_FD2PC) ){
 		CmdIn.Data[CmdIn.Index++] = data;
 		
 		// コマンド長のコマンドが来たら コマンド実行
 		if( CmdLength[CmdIn.Data[0]&0xf] == CmdIn.Index ){
-			fdc.status = FDC_FD2PC | FDC_BUSY | ( fdc.status & 0x0f );
+			fdc.Status = FDC_FD2PC | FDC_BUSY | ( fdc.Status & 0x0f );
 			Exec();
 		}else{
-			fdc.status = FDC_DATA_READY | FDC_BUSY | ( fdc.status & 0x0f );
+			fdc.Status = FDC_DATA_READY | FDC_BUSY | ( fdc.Status & 0x0f );
 		}
 	}
 }
@@ -947,11 +1092,11 @@ BYTE DSK66::InFDC( void )
 {
 	PRINTD( FDC_LOG, "[DSK66][InFDC] Index:%d ->", CmdOut.Index-1 );
 	
-	fdc.intr = false;	// 読み書きするとキャンセルされるようだ?
+	fdc.Intr = false;	// 読み書きするとキャンセルされるようだ?
 	
-	if( fdc.status & FDC_FD2PC ){
-		if( CmdOut.Index == 1 ) fdc.status = FDC_DATA_READY | ( fdc.status & 0x0f );
-		else					fdc.status = FDC_DATA_READY | FDC_FD2PC | FDC_BUSY | ( fdc.status & 0x0f );
+	if( fdc.Status & FDC_FD2PC ){
+		if( CmdOut.Index == 1 ) fdc.Status = FDC_DATA_READY | ( fdc.Status & 0x0f );
+		else					fdc.Status = FDC_DATA_READY | FDC_FD2PC | FDC_BUSY | ( fdc.Status & 0x0f );
 		return PopStatus();
 	}else{
 		return 0xff;
@@ -1075,57 +1220,57 @@ bool DSK66::SearchSector( BYTE *sta )
 				// セクタのステータスをチェック
 				switch( *sta ){
 				case BIOS_NO_DATA:
-					fdc.st0 = ST0_IC_AT;
-					fdc.st1 = ST1_NO_DATA;
-					fdc.st2 = 0;
+					fdc.ST0 = ST0_IC_AT;
+					fdc.ST1 = ST1_NO_DATA;
+					fdc.ST2 = 0;
 					if( fdc.C != fdc.PCN[fdc.US] ){
-						fdc.st2 |= ST2_NO_CYLINDER;
-						if( fdc.C == 0xff ) fdc.st2 |= ST2_BAD_CYLINDER;
+						fdc.ST2 |= ST2_NO_CYLINDER;
+						if( fdc.C == 0xff ) fdc.ST2 |= ST2_BAD_CYLINDER;
 					}
 					break;
 					
 				case BIOS_MISSING_IAM:
-					fdc.st0 = ST0_IC_AT;
-					fdc.st1 = ST1_MISSING_AM;
-					fdc.st2 = 0;
+					fdc.ST0 = ST0_IC_AT;
+					fdc.ST1 = ST1_MISSING_AM;
+					fdc.ST2 = 0;
 					break;
 					
 				case BIOS_ID_CRC_ERROR:
-					fdc.st0 = ST0_IC_AT;
-					fdc.st1 = ST1_DATA_ERROR;
-					fdc.st2 = 0;
+					fdc.ST0 = ST0_IC_AT;
+					fdc.ST1 = ST1_DATA_ERROR;
+					fdc.ST2 = 0;
 					break;
 					
 				case BIOS_MISSING_DAM:
 					// Read Data or Read Deleted Data
 					if( (fdc.command == 0x06) || (fdc.command == 0x0c) ){
-						fdc.st0 = ST0_IC_AT;
-						fdc.st1 = ST1_MISSING_AM;
-						fdc.st2 = ST2_MA_IN_DATA_FIELD;
+						fdc.ST0 = ST0_IC_AT;
+						fdc.ST1 = ST1_MISSING_AM;
+						fdc.ST2 = ST2_MA_IN_DATA_FIELD;
 					}else{
-						fdc.st0 = ST0_IC_NT;
-						fdc.st1 = 0;
-						fdc.st2 = 0;
+						fdc.ST0 = ST0_IC_NT;
+						fdc.ST1 = 0;
+						fdc.ST2 = 0;
 					}
 					break;
 					
 				case BIOS_DATA_CRC_ERROR:
 					// Read Data or Read Deleted Data
 					if( (fdc.command == 0x06) || (fdc.command == 0x0c) ){
-						fdc.st0 = ST0_IC_AT;
-						fdc.st1 = ST1_DATA_ERROR;
-						fdc.st2 = ST2_DE_IN_DATA_FIELD;
+						fdc.ST0 = ST0_IC_AT;
+						fdc.ST1 = ST1_DATA_ERROR;
+						fdc.ST2 = ST2_DE_IN_DATA_FIELD;
 					}else{
-						fdc.st0 = ST0_IC_NT;
-						fdc.st1 = 0;
-						fdc.st2 = 0;
+						fdc.ST0 = ST0_IC_NT;
+						fdc.ST1 = 0;
+						fdc.ST2 = 0;
 					}
 					break;
 					
 				default:
-					fdc.st0 = ST0_IC_NT;
-					fdc.st1 = 0;
-					fdc.st2 = 0;
+					fdc.ST0 = ST0_IC_NT;
+					fdc.ST1 = 0;
+					fdc.ST2 = 0;
 				}
 				PRINTD( FDC_LOG, "-> Found:%02X\n", *sta );
 				return true;
@@ -1170,7 +1315,7 @@ void DSK66::ReadDiagnostic( void )
 	fdc.EOT =  CmdIn.Data[6];			// End of Track
 	fdc.GPL =  CmdIn.Data[7];			// Gap Length
 	fdc.DTL =  CmdIn.Data[8];			// Data length
-	fdc.st0 = fdc.st1 = fdc.st2 = 0;
+	fdc.ST0 = fdc.ST1 = fdc.ST2 = 0;
 	
 	// Execution phase
 	if( IsMount( fdc.US ) ){
@@ -1209,23 +1354,23 @@ void DSK66::ReadDiagnostic( void )
 		Dimg[fdc.US]->GetID( &fdc.C, &fdc.H, &fdc.R, &fdc.N );
 		
 	}else{
-		fdc.st0  = ST0_NOT_READY;	// st0  bit3 : media not ready
+		fdc.ST0  = ST0_NOT_READY;	// ST0  bit3 : media not ready
 		DSK6::AddWait( WAIT_TRACK * 2 );
 	}
 	
 	// Result phase
-	fdc.st0 |= fdc.US;
+	fdc.ST0 |= fdc.US;
 	
 	PushStatus( fdc.N );	// N
 	PushStatus( fdc.R );	// R
 	PushStatus( fdc.H );	// H
 	PushStatus( fdc.C );	// C
-	PushStatus( fdc.st2 );	// st2
-	PushStatus( fdc.st1 );	// st1
-	PushStatus( fdc.st0 );	// st0
+	PushStatus( fdc.ST2 );	// ST2
+	PushStatus( fdc.ST1 );	// ST1
+	PushStatus( fdc.ST0 );	// ST0
 	
-	fdc.status = FDC_FD2PC | FDC_BUSY | ( fdc.status & 0x0f );
-	fdc.intr   = false;
+	fdc.Status = FDC_FD2PC | FDC_BUSY | ( fdc.Status & 0x0f );
+	fdc.Intr   = false;
 	
 	// ウェイト設定
 	DSK6::SetWait( EID_EXWAIT );
@@ -1245,7 +1390,7 @@ void DSK66::Specify( void )
 	fdc.HLT = (CmdIn.Data[2]>>1)*2;				// Head Load Time
 	fdc.ND  =  CmdIn.Data[2]&1 ? true : false;	// Non DMA Mode  true:Non DMA false:DMA
 	
-	fdc.status = FDC_DATA_READY | ( fdc.status & 0x0f );
+	fdc.Status = FDC_DATA_READY | ( fdc.Status & 0x0f );
 }
 
 
@@ -1273,7 +1418,7 @@ void DSK66::ReadData( void )
 	fdc.EOT =  CmdIn.Data[6];			// End of Track
 	fdc.GPL =  CmdIn.Data[7];			// Gap Length
 	fdc.DTL =  CmdIn.Data[8];			// Data length
-	fdc.st0 = fdc.st1 = fdc.st2 = 0;
+	fdc.ST0 = fdc.ST1 = fdc.ST2 = 0;
 	
 	// Execution phase
 	if( IsMount( fdc.US ) ){
@@ -1311,25 +1456,25 @@ void DSK66::ReadData( void )
 			else				   fdc.R++;			// 次のセクタ
 			
 			
-		}while( (SendBytes > i) && (fdc.st0 == ST0_IC_NT) );
+		}while( (SendBytes > i) && (fdc.ST0 == ST0_IC_NT) );
 		
 	}else{
-		fdc.st0 = ST0_NOT_READY;	// st0  bit3 : media not ready
+		fdc.ST0 = ST0_NOT_READY;	// ST0  bit3 : media not ready
 	}
 	
 	// Result phase
-	fdc.st0 |= fdc.US;
+	fdc.ST0 |= fdc.US;
 	
 	PushStatus( fdc.N );	// N
 	PushStatus( fdc.R );	// R
 	PushStatus( fdc.H );	// H
 	PushStatus( fdc.C );	// C
-	PushStatus( fdc.st2 );	// st2
-	PushStatus( fdc.st1 );	// st1
-	PushStatus( fdc.st0 );	// st0
+	PushStatus( fdc.ST2 );	// ST2
+	PushStatus( fdc.ST1 );	// ST1
+	PushStatus( fdc.ST0 );	// ST0
 	
-	fdc.status = FDC_FD2PC | FDC_BUSY | ( fdc.status & 0x0f );
-	fdc.intr   = false;
+	fdc.Status = FDC_FD2PC | FDC_BUSY | ( fdc.Status & 0x0f );
+	fdc.Intr   = false;
 	
 	// ウェイト設定
 	DSK6::SetWait( EID_EXWAIT );
@@ -1360,7 +1505,7 @@ void DSK66::WriteData( void )
 	fdc.EOT =  CmdIn.Data[6];			// End of Track
 	fdc.GPL =  CmdIn.Data[7];			// Gap Length
 	fdc.DTL =  CmdIn.Data[8];			// Data length
-	fdc.st0 = fdc.st1 = fdc.st2 = 0;
+	fdc.ST0 = fdc.ST1 = fdc.ST2 = 0;
 	
 	// Execution phase
 	if( IsMount( fdc.US ) ){
@@ -1398,25 +1543,25 @@ void DSK66::WriteData( void )
 			else				   fdc.R++;			// 次のセクタ
 			
 			
-		}while( (SendBytes > i) && (fdc.st0 == ST0_IC_NT) );
+		}while( (SendBytes > i) && (fdc.ST0 == ST0_IC_NT) );
 		
 	}else{
-		fdc.st0 = ST0_NOT_READY;	// st0  bit3 : media not ready
+		fdc.ST0 = ST0_NOT_READY;	// ST0  bit3 : media not ready
 	}
 	
 	// Result phase
-	fdc.st0 |= fdc.US;
+	fdc.ST0 |= fdc.US;
 	
 	PushStatus( fdc.N );	// N
 	PushStatus( fdc.R );	// R
 	PushStatus( fdc.H );	// H
 	PushStatus( fdc.C );	// C
-	PushStatus( fdc.st2 );	// st2
-	PushStatus( fdc.st1 );	// st1
-	PushStatus( fdc.st0 );	// st0
+	PushStatus( fdc.ST2 );	// ST2
+	PushStatus( fdc.ST1 );	// ST1
+	PushStatus( fdc.ST0 );	// ST0
 	
-	fdc.status = FDC_FD2PC | FDC_BUSY | ( fdc.status & 0x0f );
-	fdc.intr   = false;
+	fdc.Status = FDC_FD2PC | FDC_BUSY | ( fdc.Status & 0x0f );
+	fdc.Intr   = false;
 	
 	// ウェイト設定
 	DSK6::SetWait( EID_EXWAIT );
@@ -1450,7 +1595,7 @@ void DSK66::Seek( void )
 	// 無効ドライブ or シーク不要 or ディスクがマウントされてない?
 	if( ( fdc.US >= DrvNum ) || fdc.NCN[fdc.US] == fdc.PCN[fdc.US] || !IsMount( fdc.US ) ){
 		fdc.SeekSta[fdc.US] = SK_END;
-		fdc.intr            = true;
+		fdc.Intr            = true;
 	}else{										// シーク実行
 		// ウェイト設定
 		int eid = EID_SEEK1;
@@ -1465,10 +1610,10 @@ void DSK66::Seek( void )
 		DSK6::SetWait( eid );
 		
 		fdc.SeekSta[fdc.US] = SK_SEEK;
-		fdc.intr            = false;
-		fdc.status         &= ~(1<<fdc.US);
+		fdc.Intr            = false;
+		fdc.Status         &= ~(1<<fdc.US);
 	}
-	fdc.status = FDC_DATA_READY | ( fdc.status & 0x0f );
+	fdc.Status = FDC_DATA_READY | ( fdc.Status & 0x0f );
 }
 
 
@@ -1491,36 +1636,38 @@ void DSK66::SenseInterruptStatus( void )
 		PushStatus( ST0_IC_IC );
 	}else{			// シーク完了ドライブあり
 		if( Drv < DrvNum && IsMount( Drv ) ){
-			fdc.st0 = ST0_IC_NT | ST0_SEEK_END | Drv;
+			fdc.ST0 = ST0_IC_NT | ST0_SEEK_END | Drv;
 			// トラックNoを2倍(1D->2D)
-			Dimg[fdc.US]->Seek( fdc.PCN[Drv]*2 );
-			PRINTD( FDC_LOG, "Drv:%d ST0:%02X C:%d\n", Drv, fdc.st0, fdc.PCN[Drv] );
+			// SRで1Dにアクセスする時はそのまま
+			Dimg[fdc.US]->Seek( fdc.PCN[Drv] *
+				(((UType == PC6601SR) && (!(Dimg[fdc.US]->GetType()&FD_DOUBLETRACK))) ? 1 : 2) );
+			PRINTD( FDC_LOG, "Drv:%d ST0:%02X C:%d\n", Drv, fdc.ST0, fdc.PCN[Drv] );
 		}else{
 			PRINTD( FDC_LOG, "Drv:%d NotReady\n", Drv );
-			fdc.st0 = ST0_IC_AT | ST0_SEEK_END | ST0_NOT_READY | Drv;
+			fdc.ST0 = ST0_IC_AT | ST0_SEEK_END | ST0_NOT_READY | Drv;
 		}
 		fdc.SeekSta[Drv] = SK_STOP;
-		fdc.status      &= ~(1<<Drv);
+		fdc.Status      &= ~(1<<Drv);
 		
 		PushStatus( fdc.PCN[Drv] );
-		PushStatus( fdc.st0 );
+		PushStatus( fdc.ST0 );
 	}
 	
-	fdc.status = FDC_DATA_READY | FDC_FD2PC | ( fdc.status & 0x0f );
+	fdc.Status = FDC_DATA_READY | FDC_FD2PC | ( fdc.Status & 0x0f );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
-void DSK66::OutB1H( int, BYTE data ){ DIO   = data&4 ? true : false; }	// FDCIモード設定
-void DSK66::OutB3H( int, BYTE data ){ B2Dir = data&1 ? true : false; }	// PortB2hの入出力制御
+void DSK66::OutB1H( int, BYTE data ){ ExtDrv = data&4 ? true : false; }	// FDCIモード設定
+void DSK66::OutB3H( int, BYTE data ){ B2Dir  = data&1 ? true : false; }	// PortB2hの入出力制御
 
 
-void DSK66::OutD0H( int port, BYTE data ){ if( !DIO ) BufWrite( ((port&0xff)<<8)|((port>>8)&0xff), data ); }	// Buffer
-void DSK66::OutD1H( int port, BYTE data ){ if( !DIO ) BufWrite( ((port&0xff)<<8)|((port>>8)&0xff), data ); }	// Buffer
-void DSK66::OutD2H( int port, BYTE data ){ if( !DIO ) BufWrite( ((port&0xff)<<8)|((port>>8)&0xff), data ); }	// Buffer
-void DSK66::OutD3H( int port, BYTE data ){ if( !DIO ) BufWrite( ((port&0xff)<<8)|((port>>8)&0xff), data ); }	// Buffer
+void DSK66::OutD0H( int port, BYTE data ){ if( !ExtDrv ) BufWrite( ((port&0xff)<<8)|((port>>8)&0xff), data ); }	// Buffer
+void DSK66::OutD1H( int port, BYTE data ){ if( !ExtDrv ) BufWrite( ((port&0xff)<<8)|((port>>8)&0xff), data ); }	// Buffer
+void DSK66::OutD2H( int port, BYTE data ){ if( !ExtDrv ) BufWrite( ((port&0xff)<<8)|((port>>8)&0xff), data ); }	// Buffer
+void DSK66::OutD3H( int port, BYTE data ){ if( !ExtDrv ) BufWrite( ((port&0xff)<<8)|((port>>8)&0xff), data ); }	// Buffer
 
 void DSK66::OutD6H( int, BYTE data ){}									// FDDモータ制御
 void DSK66::OutD8H( int, BYTE data ){}									// 書き込み補償制御 ???
@@ -1529,16 +1676,16 @@ void DSK66::OutDDH( int, BYTE data ){ OutFDC( data ); }					// FDC データレ�
 void DSK66::OutDEH( int, BYTE data ){}									// ?
 
 
-BYTE DSK66::InB2H( int ){ return !B2Dir && fdc.intr ? 1 : 0; }			// FDC INT
+BYTE DSK66::InB2H( int ){ return !B2Dir && fdc.Intr ? 0xff : 0x0e; }			// FDC INT
 
-BYTE DSK66::InD0H( int port ){ return DIO ? 0xff : BufRead( ((port&0xff)<<8)|((port>>8)&0xff) ); }			// Buffer
-BYTE DSK66::InD1H( int port ){ return DIO ? 0xff : BufRead( ((port&0xff)<<8)|((port>>8)&0xff) ); }			// Buffer
-BYTE DSK66::InD2H( int port ){ return DIO ? 0xff : BufRead( ((port&0xff)<<8)|((port>>8)&0xff) ); }			// Buffer
-BYTE DSK66::InD3H( int port ){ return DIO ? 0xff : BufRead( ((port&0xff)<<8)|((port>>8)&0xff) ); }			// Buffer
+BYTE DSK66::InD0H( int port ){ return ExtDrv ? 0xff : BufRead( ((port&0xff)<<8)|((port>>8)&0xff) ); }			// Buffer
+BYTE DSK66::InD1H( int port ){ return ExtDrv ? 0xff : BufRead( ((port&0xff)<<8)|((port>>8)&0xff) ); }			// Buffer
+BYTE DSK66::InD2H( int port ){ return ExtDrv ? 0xff : BufRead( ((port&0xff)<<8)|((port>>8)&0xff) ); }			// Buffer
+BYTE DSK66::InD3H( int port ){ return ExtDrv ? 0xff : BufRead( ((port&0xff)<<8)|((port>>8)&0xff) ); }			// Buffer
 
 
 BYTE DSK66::InD4H( int ){ return 0; }									// FDDモータの状態
-BYTE DSK66::InDCH( int ){ return fdc.status; }							// FDC ステータスレジスタ
+BYTE DSK66::InDCH( int ){ return fdc.Status; }							// FDC ステータスレジスタ
 BYTE DSK66::InDDH( int ){ return InFDC(); }								// FDC データレジスタ
 
 
@@ -1575,9 +1722,9 @@ bool DSK60::DokoSave( cIni *Ini )
 	if( !Ini || !DSK6::DokoSave( Ini ) ) return false;
 	
 	// DSK60
-	Ini->PutEntry( "P60DISK", NULL, "mdisk_DAC",		"%d",		mdisk.DAC );
-	Ini->PutEntry( "P60DISK", NULL, "mdisk_RFD",		"%d",		mdisk.RFD );
-	Ini->PutEntry( "P60DISK", NULL, "mdisk_DAV",		"%d",		mdisk.DAV );
+	Ini->PutEntry( "P66DISK", NULL, "mdisk_DAC",		"%s",		mdisk.DAC ? "Yes" : "No" );
+	Ini->PutEntry( "P66DISK", NULL, "mdisk_RFD",		"%s",		mdisk.RFD ? "Yes" : "No" );
+	Ini->PutEntry( "P66DISK", NULL, "mdisk_DAV",		"%s",		mdisk.DAV ? "Yes" : "No" );
 	Ini->PutEntry( "P60DISK", NULL, "mdisk_command",	"%d",		mdisk.command );
 	Ini->PutEntry( "P60DISK", NULL, "mdisk_step",		"%d",		mdisk.step );
 	Ini->PutEntry( "P60DISK", NULL, "mdisk_blk",		"%d",		mdisk.blk );
@@ -1653,17 +1800,17 @@ bool DSK66::DokoSave( cIni *Ini )
 	Ini->PutEntry( "P66DISK", NULL, "fdc_DTL",		"0x%02X",	fdc.DTL );
 	Ini->PutEntry( "P66DISK", NULL, "fdc_D",		"0x%02X",	fdc.D );
 	Ini->PutEntry( "P66DISK", NULL, "fdc_SC",		"0x%02X",	fdc.SC );
-	Ini->PutEntry( "P66DISK", NULL, "fdc_st0",		"0x%02X",	fdc.st0 );
-	Ini->PutEntry( "P66DISK", NULL, "fdc_st1",		"0x%02X",	fdc.st1 );
-	Ini->PutEntry( "P66DISK", NULL, "fdc_st2",		"0x%02X",	fdc.st2 );
-	Ini->PutEntry( "P66DISK", NULL, "fdc_st3",		"0x%02X",	fdc.st3 );
-	Ini->PutEntry( "P66DISK", NULL, "fdc_status",	"0x%02X",	fdc.status );
-	Ini->PutEntry( "P66DISK", NULL, "fdc_intr",		"%s",		fdc.intr ? "Yes" : "No" );
+	Ini->PutEntry( "P66DISK", NULL, "fdc_ST0",		"0x%02X",	fdc.ST0 );
+	Ini->PutEntry( "P66DISK", NULL, "fdc_ST1",		"0x%02X",	fdc.ST1 );
+	Ini->PutEntry( "P66DISK", NULL, "fdc_ST2",		"0x%02X",	fdc.ST2 );
+	Ini->PutEntry( "P66DISK", NULL, "fdc_ST3",		"0x%02X",	fdc.ST3 );
+	Ini->PutEntry( "P66DISK", NULL, "fdc_Status",	"0x%02X",	fdc.Status );
+	Ini->PutEntry( "P66DISK", NULL, "fdc_Intr",		"%s",		fdc.Intr ? "Yes" : "No" );
 	
 	// FDCI
 	Ini->PutEntry( "P66DISK", NULL, "SendBytes",	"%d",		SendBytes );
-	Ini->PutEntry( "P66DISK", NULL, "DIO",			"%s",		DIO   ? "Yes" : "No" );
-	Ini->PutEntry( "P66DISK", NULL, "B2Dir",		"%s",		B2Dir ? "Yes" : "No" );
+	Ini->PutEntry( "P66DISK", NULL, "ExtDrv",		"%s", 		ExtDrv ? "Yes" : "No" );
+	Ini->PutEntry( "P66DISK", NULL, "B2Dir",		"%s",		B2Dir  ? "Yes" : "No" );
 	
 	for( i=0; i<4; i++ ){
 		for( j=0; j<256; j+=64 ){
@@ -1687,8 +1834,8 @@ bool DSK6::DokoLoad( cIni *Ini )
 	// とりあえず全部アンマウント
 	for( int i=0; i<DrvNum; i++ ) if( Dimg[i] ) Unmount( i) ;
 	
-	Ini->GetInt( "DISK", "DrvNum",	&DrvNum,	DrvNum );
-	Ini->GetInt( "DISK", "WaitCnt",	&waitcnt,	waitcnt );
+	Ini->GetInt("DISK", "DrvNum",	&DrvNum,	DrvNum );
+	Ini->GetInt("DISK", "WaitCnt",	&waitcnt,	waitcnt );
 	
 	// ディスクイメージオブジェクト
 	for( int i=0; i<DrvNum; i++ ){
@@ -1716,9 +1863,9 @@ bool DSK60::DokoLoad( cIni *Ini )
 	if( !Ini || !DSK6::DokoLoad( Ini ) ) return false;
 	
 	// DSK60
-	Ini->GetInt(   "P60DISK", "mdisk_DAC",		&mdisk.DAC,		mdisk.DAC );
-	Ini->GetInt(   "P60DISK", "mdisk_RFD",		&mdisk.RFD,		mdisk.RFD );
-	Ini->GetInt(   "P60DISK", "mdisk_DAV",		&mdisk.DAV,		mdisk.DAV );
+	Ini->GetTruth( "P66DISK", "mdisk_DAC",		&mdisk.DAC,		mdisk.DAC );
+	Ini->GetTruth( "P66DISK", "mdisk_RFD",		&mdisk.RFD,		mdisk.RFD );
+	Ini->GetTruth( "P66DISK", "mdisk_DAV",		&mdisk.DAV,		mdisk.DAV );
 	Ini->GetInt(   "P60DISK", "mdisk_command",	&mdisk.command,	mdisk.command );
 	Ini->GetInt(   "P60DISK", "mdisk_step",		&mdisk.step,	mdisk.step );
 	Ini->GetInt(   "P60DISK", "mdisk_blk",		&mdisk.blk,		mdisk.blk );
@@ -1731,7 +1878,7 @@ bool DSK60::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "P60DISK", "mdisk_size",		&mdisk.size,	mdisk.size );
 	Ini->GetInt(   "P60DISK", "mdisk_retdat",	&st,			mdisk.retdat );	mdisk.retdat = st;
 	Ini->GetInt(   "P60DISK", "mdisk_busy",		&st,			mdisk.busy );	mdisk.busy = st;
-	Ini->GetTruth( "P66DISK", "fdc_intr",		&mdisk.error,	mdisk.error );
+	Ini->GetTruth( "P66DISK", "fdc_Intr",		&mdisk.error,	mdisk.error );
 	Ini->GetInt(   "P60DISK", "io_D1H",			&st,			io_D1H );		io_D1H = st;
 	Ini->GetInt(   "P60DISK", "io_D2H",			&st,			io_D2H );		io_D2H = st;
 	
@@ -1805,16 +1952,16 @@ bool DSK66::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "P66DISK", "fdc_DTL",	&st,		fdc.DTL );		fdc.DTL = st;
 	Ini->GetInt(   "P66DISK", "fdc_D",		&st,		fdc.D );		fdc.D = st;
 	Ini->GetInt(   "P66DISK", "fdc_SC",		&st,		fdc.SC );		fdc.SC = st;
-	Ini->GetInt(   "P66DISK", "fdc_st0",	&st,		fdc.st0 );		fdc.st0 = st;
-	Ini->GetInt(   "P66DISK", "fdc_st1",	&st,		fdc.st1 );		fdc.st1 = st;
-	Ini->GetInt(   "P66DISK", "fdc_st2",	&st,		fdc.st2 );		fdc.st2 = st;
-	Ini->GetInt(   "P66DISK", "fdc_st3",	&st,		fdc.st3 );		fdc.st3 = st;
-	Ini->GetInt(   "P66DISK", "fdc_status",	&st,		fdc.status );	fdc.status = st;
-	Ini->GetTruth( "P66DISK", "fdc_intr",	&fdc.intr,	fdc.intr );
+	Ini->GetInt(   "P66DISK", "fdc_ST0",	&st,		fdc.ST0 );		fdc.ST0 = st;
+	Ini->GetInt(   "P66DISK", "fdc_ST1",	&st,		fdc.ST1 );		fdc.ST1 = st;
+	Ini->GetInt(   "P66DISK", "fdc_ST2",	&st,		fdc.ST2 );		fdc.ST2 = st;
+	Ini->GetInt(   "P66DISK", "fdc_ST3",	&st,		fdc.ST3 );		fdc.ST3 = st;
+	Ini->GetInt(   "P66DISK", "fdc_Status",	&st,		fdc.Status );	fdc.Status = st;
+	Ini->GetTruth( "P66DISK", "fdc_Intr",	&fdc.Intr,	fdc.Intr );
 	
 	// FDCI
 	Ini->GetInt(   "P66DISK", "SendBytes",	&SendBytes,	SendBytes );
-	Ini->GetTruth( "P66DISK", "DIO",		&DIO,		DIO );
+	Ini->GetTruth( "P66DISK", "ExtDrv",		&ExtDrv,	ExtDrv );
 	Ini->GetTruth( "P66DISK", "B2Dir",		&B2Dir,		B2Dir );
 	
 	for( i=0; i<4; i++ ){

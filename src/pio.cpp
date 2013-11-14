@@ -201,7 +201,7 @@ void PIO6::JobWriteC1( BYTE data )
 	// プリンタストローブ
 	cPRT::Strobe( data&1 ? false : true );
 	
-	// CRT表示切替
+	// CRT表示状態設定
 	vm->VdgSetCrtDisp( data&2 ? true : false );
 	
 	// CG ROM BANK 切替
@@ -223,7 +223,7 @@ void PIO6::JobWriteD( BYTE data )
 		cPRT::Strobe( data&1 ? false : true );
 		break;
 		
-	case 1: // CRT表示切替
+	case 1: // CRT表示状態設定
 		vm->VdgSetCrtDisp( data&1 ? true : false );
 		break;
 		

@@ -457,7 +457,7 @@ bool KEY6::Init( int repeat )
 //				bit1: STOP
 //				bit0: SHIFT
 ////////////////////////////////////////////////////////////////
-BYTE KEY6::GetKeyJoy( void )
+BYTE KEY6::GetKeyJoy( void ) const
 {
 	PRINTD( KEY_LOG, "[KEY][GetKeyJoy]\n" );
 	
@@ -660,7 +660,7 @@ bool KEY6::ScanMatrix( void )
 // 引数:	なし
 // 返値:	int		キーマトリクスサイズ
 ////////////////////////////////////////////////////////////////
-int KEY6::GetMatrixSize( void )
+int KEY6::GetMatrixSize( void ) const
 {
 	return COUNTOF(P6Matrix);
 }
@@ -684,7 +684,7 @@ BYTE *KEY6::GetMatrix( void )
 // 引数:	なし
 // 返値:	BYTE *	マトリクスデータ(保存用)へのポインタ
 ////////////////////////////////////////////////////////////////
-BYTE *KEY6::GetMatrix2( void )
+const BYTE *KEY6::GetMatrix2( void ) const
 {
 	return P6Mtrx;
 }
@@ -699,7 +699,7 @@ BYTE *KEY6::GetMatrix2( void )
 //				KI_KKANA: カタカナモードON
 //				KI_CAPS:  CAPS ON
 ////////////////////////////////////////////////////////////////
-BYTE KEY6::GetKeyIndicator( void )
+BYTE KEY6::GetKeyIndicator( void ) const
 {
 	PRINTD( KEY_LOG, "[KEY][GetKeyIndicator] -> " );
 	
@@ -737,8 +737,8 @@ void KEY6::SetVKeySymbols( VKeyConv *vcnv )
 //
 // 引数:	JoyNo	ジョイスティックの番号 ( 0 - 1 )
 // 返値:	BYTE	ジョイスティックの状態 1:OFF 0:ON <-注意!
-//				bit7: ボタン4
-//				bit6: ボタン3
+//				bit7: -
+//				bit6: -
 //				bit5: ボタン2
 //				bit4: ボタン1
 //				bit3: 右
@@ -746,9 +746,9 @@ void KEY6::SetVKeySymbols( VKeyConv *vcnv )
 //				bit1: 上
 //				bit0: 下
 ////////////////////////////////////////////////////////////////
-BYTE KEY6::GetJoy( int JoyNo )
+BYTE KEY6::GetJoy( int JoyNo ) const
 {
-	return P6Mtrx[NOM-2+(JoyNo&1)];
+	return P6Mtrx[NOM-2+(JoyNo&1)] | 0xc0;
 }
 
 

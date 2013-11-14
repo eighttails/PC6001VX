@@ -44,16 +44,16 @@ public:
 	void UpdateMatrixKey( int, bool );	// キーマトリクス更新(キー)
 	void UpdateMatrixJoy( BYTE, BYTE );	// キーマトリクス更新(ジョイスティック)
 	bool ScanMatrix();					// キーマトリクススキャン
-	int GetMatrixSize();				// キーマトリクスサイズ取得
+	int GetMatrixSize() const;			// キーマトリクスサイズ取得
 	BYTE *GetMatrix();					// キーマトリクスポインタ取得
-	BYTE *GetMatrix2();					// キーマトリクスポインタ(保存用)取得
+	const BYTE *GetMatrix2() const;		// キーマトリクスポインタ(保存用)取得
 	
-	BYTE GetKeyJoy();					// カーソルキー状態取得
-	BYTE GetKeyIndicator();				// キーボードインジケータ状態取得
+	BYTE GetKeyJoy() const;				// カーソルキー状態取得
+	BYTE GetKeyIndicator() const;		// キーボードインジケータ状態取得
 	
 	void SetVKeySymbols( VKeyConv * );	// 仮想キーコード -> P6キーコード 設定
 	
-	BYTE GetJoy( int );					// ジョイスティック状態取得
+	BYTE GetJoy( int ) const;			// ジョイスティック状態取得
 	
 	void ChangeKana();					// 英字<->かな切換
 	void ChangeKKana();					// かな<->カナ切換

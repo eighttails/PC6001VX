@@ -59,10 +59,13 @@
 
 #define	CPUM_CLOCK60			(3993600)			/* メインCPUクロック(Hz) 60 */
 #define	CPUM_CLOCK62			(4000000)			/* メインCPUクロック(Hz) 62,66 */
+#define	CPUM_CLOCK64			(3580000)			/* メインCPUクロック(Hz) 64,68 */
 #define	CPUS_CLOCK60			(CPUM_CLOCK60*2)	/* サブCPUクロック(Hz) 60 */
 #define	CPUS_CLOCK62			(CPUM_CLOCK62*2)	/* サブCPUクロック(Hz) 62,66 */
+#define	CPUS_CLOCK64			(CPUM_CLOCK64*2)	/* サブCPUクロック(Hz) 64,68 */
 #define	PSG_CLOCK60				(CPUM_CLOCK60/2)	/* PSGクロック(Hz) 60 */
 #define	PSG_CLOCK62				(CPUM_CLOCK62/2)	/* PSGクロック(Hz) 62,66 */
+#define	PSG_CLOCK64				(2000000)			/* PSGクロック(Hz) 64,68 CPUクロックとは別?? */
 
 #define	VSYNC_HZ				(60)				/* VSYNC周波数 */
 #define	DEFAULT_BAUD			(1200)				/* CMTボーレート 初期値 */

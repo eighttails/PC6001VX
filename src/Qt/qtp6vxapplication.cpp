@@ -43,7 +43,7 @@ bool SerchRom( CFG6 *cfg )
         return true;
     }
 
-    int models[] = { 60, 62, 66 };
+    int models[] = { 60, 61, 62, 66, 64, 68 };
     for( int i=0; i < COUNTOF(models); i++ ){
         sprintf( RomSerch, "%s*.%2d", cfg->GetRomPath(), models[i] );
         if( OSD_FileExist( RomSerch ) ){
@@ -126,7 +126,6 @@ void QtP6VXApplication::startup()
         OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
         Error::SetError( Error::NoError );
     }
-
 
     // INIファイル読込み
     if( !Cfg.Init() ){

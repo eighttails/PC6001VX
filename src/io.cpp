@@ -69,6 +69,8 @@ bool IOBus::Init( DeviceList* dl, int bs )
 // IN/OUT -----------
 bool IOBus::Connect( IDevice* device, const Connector* connector )
 {
+	if( !device || !connector ) return false;
+	
 	if( devlist ) devlist->Add(device);
 	
 	const IDevice::Descriptor* desc = device->GetDesc();
@@ -93,6 +95,8 @@ bool IOBus::Connect( IDevice* device, const Connector* connector )
 // IN -----------
 bool IOBus::ConnectIn( int bank, IDevice* device, InFuncPtr func )
 {
+	PRINTD( IO_LOG, "[IO][ConnectIn] %02XH -> ", bank&0xff );
+	
 	InBank* i = &ins[bank];
 	if( i->func == STATIC_CAST( InFuncPtr, &DummyIO::dummyin ) ){
 		// 最初の接続
@@ -106,6 +110,7 @@ bool IOBus::ConnectIn( int bank, IDevice* device, InFuncPtr func )
 		}
 		catch( std::bad_alloc ){	// new に失敗した場合
 			Error::SetError( Error::MemAllocFailed );
+			PRINTD( IO_LOG, "Failed\n" );
 			return false;
 		}
 		j->device = device;
@@ -113,6 +118,7 @@ bool IOBus::ConnectIn( int bank, IDevice* device, InFuncPtr func )
 		j->next   = i->next;
 		i->next   = j;
 	}
+	PRINTD( IO_LOG, "OK\n" );
 	return true;
 }
 
@@ -120,6 +126,8 @@ bool IOBus::ConnectIn( int bank, IDevice* device, InFuncPtr func )
 // OUT -----------
 bool IOBus::ConnectOut( int bank, IDevice* device, OutFuncPtr func )
 {
+	PRINTD( IO_LOG, "[IO][ConnectOut] %02XH -> ", bank&0xff );
+	
 	OutBank* i = &outs[bank];
 	if( i->func == STATIC_CAST( OutFuncPtr, &DummyIO::dummyout ) ){
 		// 最初の接続
@@ -133,6 +141,7 @@ bool IOBus::ConnectOut( int bank, IDevice* device, OutFuncPtr func )
 		}
 		catch( std::bad_alloc ){	// new に失敗した場合
 			Error::SetError( Error::MemAllocFailed );
+			PRINTD( IO_LOG, "Failed\n" );
 			return false;
 		}
 		j->device = device;
@@ -140,6 +149,7 @@ bool IOBus::ConnectOut( int bank, IDevice* device, OutFuncPtr func )
 		j->next   = i->next;
 		i->next   = j;
 	}
+	PRINTD( IO_LOG, "OK\n" );
 	return true;
 }
 
@@ -282,6 +292,8 @@ IO6::~IO6( void )
 ////////////////////////////////////////////////////////////////
 bool IO6::Init( int banksize )
 {
+	PRINTD( IO_LOG, "[IO][Init]\n" );
+	
 	// オブジェクト確保
 	try{
 		dl = new DeviceList;	// デバイスリスト

@@ -7,9 +7,9 @@
 
 #include "device/z80.h"
 
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #include "breakpoint.h"
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 class EL6;
 class CFG6;
@@ -18,7 +18,7 @@ class CPU6;
 class SUB6;
 class IO6;
 class MEM6;
-class INT6;
+class IRQ6;
 class PIO6;
 class VDG6;
 class KEY6;
@@ -39,9 +39,9 @@ class VM6 {
 	friend class EL6;
 	friend class DSP6;
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	friend class cWndMon;
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 protected:
 	// デバイスコネクタテーブル構造体
@@ -62,15 +62,15 @@ protected:
 	};
 	
 	
-	int clock;					// CPUクロック
+	int cclock;					// CPUクロック
+	int pclock;					// PSG/OPNクロック
 	
 	// オブジェクトポインタ
 	EL6 *el;					// エミュレータレイヤ
-	
 	EVSC *evsc;					// イベントスケジューラ
 	IO6 *iom;					// I/O(Z80側)
 	IO6 *ios;					// I/O(SUB CPU側)
-	INT6 *intr;					// 割込み
+	IRQ6 *intr;					// 割込み
 	CPU6 *cpum;					// CPU
 	SUB6 *cpus;					// SUB CPU
 	MEM6 *mem;					// メモリ
@@ -82,10 +82,9 @@ protected:
 	CMTL *cmtl;					// CMT(LOAD)
 	CMTS *cmts;					// CMT(SAVE)
 	DSK6 *disk;					// DISK
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	BPoint *bp;					// ブレークポイント
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	DEVCONNTABLE DevTable;		// デバイスコネクタテーブル
 	
@@ -102,20 +101,20 @@ public:
 	bool Init( CFG6 * );						// 初期化
 	void Reset();								// リセット
 	int Emu();									// 1命令実行
-	int GetCPUClock();							// CPUクロック取得
+	int GetCPUClock() const;					// CPUクロック取得
 	
 	
 	// P6デバイス用関数群
 	// EL
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	bool ElIsMonitor();							// モニタモード?
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	bool ElIsMonitor() const;					// モニタモード?
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// EVSC
 	bool EventAdd( Device *, int, double, int );	// イベント追加
 	bool EventDel( Device *, int );				// イベント削除
 	void EventUpdate( int );					// イベント更新
 	void EventReset( Device::ID, int, double=0 );	// 指定イベントをリセットする
-	double EventScale( Device::ID, int );		// イベントの進行率を求める
+	double EventGetProgress( Device::ID, int );	// イベントの進行率を求める
 	bool EventGetInfo( EVSC::evinfo * );		// イベント情報取得
 	bool EventSetInfo( EVSC::evinfo * );		// イベント情報設定
 	void EventOnVSYNC();						// VSYNCを通知する
@@ -124,16 +123,16 @@ public:
 	BYTE IosIn( int, int * = NULL );			// IN関数
 	void IomOut( int, BYTE, int * = NULL );		// OUT関数
 	void IosOut( int, BYTE, int * = NULL );		// OUT関数
-	// INT6
+	// IRQ6
 	int	IntIntrCheck();							// 割込みチェック
 	void IntReqIntr( DWORD );					// 割込み要求
 	void IntCancelIntr( DWORD );				// 割込み撤回
 	// CPU6
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	int CpumDisasm( char *, WORD );				// 1ライン逆アセンブル
 	void CpumGetRegister( cZ80::Register * );	// レジスタ値取得
 	void CpumSetRegister( cZ80::Register * );	// レジスタ値設定
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// SUB6
 	void CpusReqKeyIntr( int, BYTE );			// キー割込み要求
 	void CpusExtIntr();							// 外部割込み要求
@@ -144,60 +143,66 @@ public:
 	BYTE MemRead( WORD, int * = NULL );			// メモリリード
 	void MemWrite( WORD, BYTE, int * = NULL );	// メモリライト
 	void MemSetCGBank( bool );					// CG ROM BANK を切り替える
-	BYTE MemReadMainRom( WORD );
-	BYTE MemReadMainRam( WORD );
-	BYTE MemReadExtRom ( WORD );
-	BYTE MemReadCGrom1 ( WORD );
-	BYTE MemReadCGrom2 ( WORD );
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	const char *MemGetReadMemBlk( int );
-	const char *MemGetWriteMemBlk( int );
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	BYTE MemReadMainRom( WORD ) const;			// 直接読込み
+	BYTE MemReadMainRam( WORD ) const;			// 直接読込み
+	BYTE MemReadExtRom ( WORD ) const;			// 直接読込み
+	BYTE MemReadCGrom1 ( WORD ) const;			// 直接読込み
+	BYTE MemReadCGrom2 ( WORD ) const;			// 直接読込み
+	BYTE MemReadCGrom3 ( WORD ) const;			// 直接読込み
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	const char *MemGetReadMemBlk( int ) const;	// メモリブロック取得(Read)
+	const char *MemGetWriteMemBlk( int ) const;	// メモリブロック取得(Write)
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// VDG6
+	bool VdgGetCrtDisp() const;					// CRT表示状態取得
 	void VdgSetCrtDisp( bool );					// CRT表示状態設定
-	bool VdgGetWinSize();						// ウィンドウサイズ取得
-	bool VdgIsDisp();							// 表示区間フラグ取得
+	bool VdgGetBusRequest() const;				// バスリクエスト取得
+	void VdgSetBusRequest( bool );				// バスリクエスト設定
+	bool VdgGetWinSize() const;					// ウィンドウサイズ取得
+	bool VdgIsBusReq() const;					// バスリクエスト区間フラグ取得
+	bool VdgIsSRmode() const;					// SRモード取得
+	bool VdgIsSRGVramAccess( WORD, bool ) const;	// SRのG-VRAMアクセス?
+	WORD VdgSRGVramAddr( WORD ) const;			// SRのG-VRAMアドレス取得
 	// PIO6
 	BYTE PioReadA();							// PartA リード
 	// KEY6
-	BYTE KeyGetKeyJoy();						// カーソルキー状態取得
-	BYTE KeyGetJoy( int );						// ジョイスティック状態取得
-	BYTE KeyGetKeyIndicator();					// キーボードインジケータ状態取得
+	BYTE KeyGetKeyJoy() const;					// カーソルキー状態取得
+	BYTE KeyGetJoy( int ) const;				// ジョイスティック状態取得
+	BYTE KeyGetKeyIndicator() const;			// キーボードインジケータ状態取得
 	void KeyChangeKana();						// 英字<->かな切換
 	void KeyChangeKKana();						// かな<->カナ切換
 	// CMTL
-	bool CmtlIsMount();							// マウント済み?
-	bool CmtlIsAutoStart();						// オートスタート?
-	bool CmtlIsBoostUp();						// BoostUp状態取得
-	const char *CmtlGetFile();					// ファイルパス取得
-	const char *CmtlGetName();					// TAPE名取得
-	DWORD CmtlGetSize();						// ベタイメージサイズ取得
-	int CmtlGetCount();							// カウンタ取得
+	bool CmtlIsMount() const;					// マウント済み?
+	bool CmtlIsAutoStart() const;				// オートスタート?
+	const char *CmtlGetFile() const;			// ファイルパス取得
+	const char *CmtlGetName() const;			// TAPE名取得
+	DWORD CmtlGetSize() const;					// ベタイメージサイズ取得
+	int CmtlGetCount() const;					// カウンタ取得
 	// CMTS
 	bool CmtsMount();							// TAPE マウント
 	void CmtsUnmount();							// TAPE アンマウント
 	void CmtsSetBaud( int );					// ボーレート設定
 	void CmtsCmtWrite( BYTE );					// CMT 1文字書込み
 	// DSK6
-	bool DskIsMount( int );						// マウント済み?
-	bool DskIsSystem( int );					// システムディスク?
-	bool DskIsProtect( int );					// プロテクト?
-	bool DskInAccess( int );					// アクセス中?
-	const char *DskGetFile( int );				// ファイルパス取得
-	const char *DskGetName( int );				// DISK名取得
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	bool DskIsMount( int ) const;				// マウント済み?
+	bool DskIsSystem( int ) const;				// システムディスク?
+	bool DskIsProtect( int ) const;				// プロテクト?
+	bool DskInAccess( int ) const;				// アクセス中?
+	const char *DskGetFile( int ) const;		// ファイルパス取得
+	const char *DskGetName( int ) const;		// DISK名取得
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// BPoint
-	bool BpExistBreakPoint();					// ブレークポイントの有無をチェック
+	bool BpExistBreakPoint() const;				// ブレークポイントの有無をチェック
 	bool BpCheckBreakPoint( BPoint::BPtype, WORD, BYTE, const char * );	// ブレークポイントをチェック
 	void BpClearStatus();						// ブレークポイントの情報をクリア
-	BPoint::BPtype BpGetType( int );			// ブレークポイントのタイプを取得
+	BPoint::BPtype BpGetType( int ) const;		// ブレークポイントのタイプを取得
 	void BpSetType( int, BPoint::BPtype );		// ブレークポイントのタイプを設定
-	WORD BpGetAddr( int );						// ブレークポイントのアドレスを取得
+	WORD BpGetAddr( int ) const;				// ブレークポイントのアドレスを取得
 	void BpSetAddr( int, WORD );				// ブレークポイントのアドレスを設定
-	bool BpIsReqBreak();						// ブレーク要求あり?
-	int BpGetReqBPNum();						// ブレーク要求のあったブレークポイントNo.を取得
+	bool BpIsReqBreak() const;					// ブレーク要求あり?
+	int BpGetReqBPNum() const;					// ブレーク要求のあったブレークポイントNo.を取得
 	void BpResetBreak();						// ブレーク要求キャンセル
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 };
 
 // PC-6001 仮想マシンクラス
@@ -239,7 +244,7 @@ public:
 	
 	// デバイスコネクタ
 	const static IOBus::Connector c_intr[];		// 割込み
-	const static IOBus::Connector c_memory[];	// メモリみ
+	const static IOBus::Connector c_memory[];	// メモリ
 	const static IOBus::Connector c_vdg[];		// VDG
 	const static IOBus::Connector c_psg[];		// PSG
 	const static IOBus::Connector c_8255m[];	// I/O(Z80側)
@@ -257,6 +262,42 @@ private:
 public:
 	VM66( EL6 * );								// コンストラクタ
 	~VM66();									// デストラクタ
+	
+	// デバイスコネクタ
+	const static IOBus::Connector c_disk[];		// DISK
+};
+
+
+// PC-6001mk2SR 仮想マシンクラス
+class VM64 : public VM6 {
+private:
+	bool AllocObjSpecific();					// 機種別オブジェクト確保
+	
+public:
+	VM64( EL6 * );								// コンストラクタ
+	~VM64();									// デストラクタ
+	
+	// デバイスコネクタ
+	const static IOBus::Connector c_intr[];		// 割込み
+	const static IOBus::Connector c_memory[];	// メモリ
+	const static IOBus::Connector c_vdg[];		// VDG
+	const static IOBus::Connector c_psg[];		// PSG
+	const static IOBus::Connector c_8255m[];	// I/O(Z80側)
+	const static IOBus::Connector c_8255s[];	// I/O(SUB CPU側)
+	const static IOBus::Connector c_voice[];	// 音声合成
+	const static IOBus::Connector c_disk[];		// DISK
+	const static IOBus::Connector c_cmtl[];		// CMT(LOAD)
+};
+
+
+// PC-6601SR 仮想マシンクラス
+class VM68 : public VM6 {
+private:
+	bool AllocObjSpecific();					// 機種別オブジェクト確保
+	
+public:
+	VM68( EL6 * );								// コンストラクタ
+	~VM68();									// デストラクタ
 	
 	// デバイスコネクタ
 	const static IOBus::Connector c_disk[];		// DISK

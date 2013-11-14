@@ -109,6 +109,7 @@ bool CMTL::Remote( bool relay )
 		// 画面サイズによりBoostUp最大倍率設定
 		// 本当はBASICモード(N60,N60m/N66)によって判断するべき
 		// あまり厳密ではないけどいいことにする
+		// SRはmk2/66と同じにしてみる
 		int bst = Boost ? ( vm->VdgGetWinSize() ? MaxBoost60 : MaxBoost62 ) : 1;
 		
 		if( !vm->EventAdd( this, EID_TAPE, DEFAULT_CMT_HZ * bst, EV_LOOP|EV_HZ ) ) return false;
@@ -220,7 +221,7 @@ WORD CMTL::CmtRead( void )
 ////////////////////////////////////////////////////////////////
 // マウント済み?
 ////////////////////////////////////////////////////////////////
-bool CMTL::IsMount( void )
+bool CMTL::IsMount( void ) const
 {
 	if( p6t ) return true;
 	else      return false;
@@ -230,7 +231,7 @@ bool CMTL::IsMount( void )
 ////////////////////////////////////////////////////////////////
 // オートスタート?
 ////////////////////////////////////////////////////////////////
-bool CMTL::IsAutoStart( void )
+bool CMTL::IsAutoStart( void ) const
 {
 	if( p6t ) return p6t->GetAutoStartInfo()->Start;
 	else      return false;
@@ -240,7 +241,7 @@ bool CMTL::IsAutoStart( void )
 ////////////////////////////////////////////////////////////////
 // ファイルパス取得
 ////////////////////////////////////////////////////////////////
-const char *CMTL::GetFile()
+const char *CMTL::GetFile() const
 {
 	return FilePath;
 }
@@ -249,7 +250,7 @@ const char *CMTL::GetFile()
 ////////////////////////////////////////////////////////////////
 // TAPE名取得
 ////////////////////////////////////////////////////////////////
-const char *CMTL::GetName( void )
+const char *CMTL::GetName( void ) const
 {
 	if( p6t ) return p6t->GetName();
 	else      return (const char *)"";
@@ -259,7 +260,7 @@ const char *CMTL::GetName( void )
 ////////////////////////////////////////////////////////////////
 // ベタイメージサイズ取得
 ////////////////////////////////////////////////////////////////
-DWORD CMTL::GetSize( void )
+DWORD CMTL::GetSize( void ) const
 {
 	if( p6t ) return p6t->GetSize();
 	else      return 0;
@@ -269,7 +270,7 @@ DWORD CMTL::GetSize( void )
 ////////////////////////////////////////////////////////////////
 // カウンタ取得
 ////////////////////////////////////////////////////////////////
-int CMTL::GetCount( void )
+int CMTL::GetCount( void ) const
 {
 	if( p6t ) return p6t->GetCount();
 	else      return 0;
@@ -279,7 +280,7 @@ int CMTL::GetCount( void )
 ////////////////////////////////////////////////////////////////
 // リレーの状態取得
 ////////////////////////////////////////////////////////////////
-bool CMTL::IsRelay( void )
+bool CMTL::IsRelay( void ) const
 {
 	return Relay;
 }
@@ -314,7 +315,7 @@ void CMTL::SetMaxBoost( int max60, int max62 )
 ////////////////////////////////////////////////////////////////
 // BoostUp状態取得
 ////////////////////////////////////////////////////////////////
-bool CMTL::IsBoostUp( void )
+bool CMTL::IsBoostUp( void ) const
 {
 	return Boost;
 }
@@ -323,7 +324,7 @@ bool CMTL::IsBoostUp( void )
 ////////////////////////////////////////////////////////////////
 // オートスタート情報取得
 ////////////////////////////////////////////////////////////////
-P6TAUTOINFO *CMTL::GetAutoStartInfo( void )
+const P6TAUTOINFO *CMTL::GetAutoStartInfo( void ) const
 {
 	return p6t->GetAutoStartInfo();
 }
@@ -394,7 +395,7 @@ WORD CMTL::Update( void )
 ////////////////////////////////////////////////////////////////
 int CMTL::SoundUpdate( int samples )
 {
-	PRINTD( TAPE_LOG, "[TAPE][SoundUpdate] Samples: %d(%d)", samples, SndDev::cRing::FreeSize() );
+//	PRINTD( TAPE_LOG, "[TAPE][SoundUpdate] Samples: %d(%d)", samples, SndDev::cRing::FreeSize() );
 	
 	int length = 0;
 	
@@ -403,7 +404,7 @@ int CMTL::SoundUpdate( int samples )
 	}else if( samples > 0 ) length = min( samples - SndDev::cRing::ReadySize(), SndDev::cRing::FreeSize() );
 	else                    length = SndDev::cRing::FreeSize();
 	
-	PRINTD( TAPE_LOG, " -> %d\n", length );
+//	PRINTD( TAPE_LOG, " -> %d\n", length );
 	
 	if( length <= 0 ) return 0;
 	

@@ -27,7 +27,7 @@ protected:
 	void AYWriteReg( BYTE, BYTE );		// レジスタ書込み
 	BYTE AYReadReg();					// レジスタ読込み
 	
-	void SetClock( int, int );			// PSGクロック設定
+	void SetClock( int, int );			// クロック設定
 	void SetVolumeTable( int );			// 音量設定(ボリュームテーブル設定)
 	
 	// ポートアクセス関数

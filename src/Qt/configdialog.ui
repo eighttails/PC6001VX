@@ -77,7 +77,7 @@
           <item>
            <widget class="QRadioButton" name="radioButtonModel6001mk2SR">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>PC-6001mk2SR</string>
@@ -87,7 +87,7 @@
           <item>
            <widget class="QRadioButton" name="radioButtonModel6601SR">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>PC-6601SR</string>
@@ -278,7 +278,7 @@
             <set>Qt::ImhDigitsOnly</set>
            </property>
            <property name="inputMask">
-            <string>999; </string>
+            <string>999</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -694,7 +694,7 @@
               <set>Qt::ImhDigitsOnly|Qt::ImhHiddenText</set>
              </property>
              <property name="inputMask">
-              <string>99999; </string>
+              <string>99999</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -782,7 +782,7 @@
             <set>Qt::ImhDigitsOnly</set>
            </property>
            <property name="inputMask">
-            <string>999; </string>
+            <string>999</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -3321,7 +3321,7 @@ border-radius: 1;</string>
             <set>Qt::ImhDigitsOnly</set>
            </property>
            <property name="inputMask">
-            <string>9999; </string>
+            <string>9999</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -3422,7 +3422,7 @@ border-radius: 1;</string>
              <set>Qt::ImhDigitsOnly</set>
             </property>
             <property name="inputMask">
-             <string>9; </string>
+             <string>9</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -3464,7 +3464,7 @@ border-radius: 1;</string>
              <set>Qt::ImhDigitsOnly</set>
             </property>
             <property name="inputMask">
-             <string>9; </string>
+             <string>9</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

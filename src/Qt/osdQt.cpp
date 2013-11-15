@@ -862,6 +862,7 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
                               Q_ARG(int, x),
                               Q_ARG(int, y),
                               Q_ARG(double, 1.0),
+                              Q_ARG(double, 1.0),
                               Q_ARG(QImage, image));
 }
 
@@ -882,6 +883,64 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
 void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, const int dh,
                         const bool ntsc, const bool scan, const int brscan )
 {
+    VRect src1,drc1;
+    if( !src || !wh ) return;
+
+    const int s = (scan ? 2 : 1);   //スキャンライン時には2行ずつ処理する
+
+    const BYTE *spt  = (BYTE *)src->GetPixels();
+    const int pp     = src->Pitch();
+
+    const int xsc    = src->XScale();
+    const int ww     = src->Width();
+    const int hh     = src->Height();
+
+    QImage image(src->Width(), src->Height() * s, QImage::Format_Indexed8);
+    image.setColorTable(PaletteTable);
+
+    const int dpp    = image.bytesPerLine();
+
+    // 転送元範囲設定
+    src1.x = qMax( 0, -dx / 2 * xsc );
+    src1.y = qMax( 0, -dy );
+    src1.w = qMin( ww * xsc - src1.x, image.width() );
+    src1.h = qMin( hh       - src1.y, image.height() );
+
+    if( src1.w <= 0 || src1.h <= 0 ) return;
+
+    // 転送先範囲設定
+    drc1.x = qMax( 0, dx );
+    drc1.y = qMax( 0, dy );
+    drc1.w = qMin( ww, (image.width() - drc1.x)*xsc );
+    drc1.h = qMin( dh, image.height() - drc1.y );
+
+    for( int y=0; y<drc1.h; y+=s ){
+        BYTE *sof  = (BYTE *)spt  + pp * y / s + src1.x;
+
+        memcpy( (BYTE *)image.scanLine(y), sof, dpp );
+
+        if(scan && !(y&1)){
+            BYTE *sdoff = (BYTE *)image.scanLine(y+1);
+            memcpy( sdoff, sof, dpp );
+            for( int x=0; x<drc1.w; x++ ){
+                (*sdoff++) += 32;//ダミーの値
+                //#PENDING スキャンライン用の暗い色は従来と同じように予め作っておく（OSD_Setpalette?）
+            }
+        }
+    }
+
+    double imgXScale = 720.0 / image.width();
+    double imgYScale = (ntsc ? 540.0 : 460.0) / image.height();
+    // 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
+    // スロットを呼び出してメインスレッドでSceneを更新する
+    // (直接呼び出すと呼び出し側スレッドで実行されてしまう)
+    QMetaObject::invokeMethod(qApp, "layoutBitmap",
+                              Q_ARG(HWINDOW, wh),
+                              Q_ARG(int, dx),
+                              Q_ARG(int, dy),
+                              Q_ARG(double, imgXScale),
+                              Q_ARG(double, imgYScale),
+                              Q_ARG(QImage, image));
 #if 0
     VRect src1,drc1;
 

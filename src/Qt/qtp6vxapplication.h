@@ -31,7 +31,7 @@ public slots:
     //グラフィックをシーンに配置
     //QGraphicsSceneの操作はメインスレッドでしかできないため、
     //ここで実装する
-    void layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image);
+    void layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image);
 
     //グラフィックシーンをクリア
     void clearLayout(HWINDOW Wh);

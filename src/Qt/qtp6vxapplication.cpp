@@ -167,7 +167,7 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, bool fsflag)
     OSD_ClearWindow(Wh);
 }
 
-void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QImage image)
+void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image)
 {
     //QtではSceneRectの幅を返す
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
@@ -190,13 +190,14 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double aspect, QI
         pItem = new QGraphicsPixmapItem(NULL);
         scene->addItem(pItem);
         pItem->setTransformationMode(Qt::SmoothTransformation);
-        QTransform trans;
-        // アスペクト比に従って縦サイズを調整
-        trans.scale(1, aspect);
-        trans.translate(x, y);
-        pItem->setTransform(trans);
     }
     pItem->setPixmap(QPixmap::fromImage(image));
+    pItem->resetTransform();
+    // アスペクト比に従って縦サイズを調整
+    QTransform trans;
+    trans.scale(scaleX, scaleY);
+    trans.translate(x, y);
+    pItem->setTransform(trans);
 }
 
 void QtP6VXApplication::clearLayout(HWINDOW Wh)

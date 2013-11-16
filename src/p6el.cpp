@@ -737,7 +737,7 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 //			len			バッファサイズ(バイト単位)
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-//#PENDING 消す
+// P6VXでは使わない
 //void EL6::StreamUpdate( void *userdata, BYTE *stream, int len )
 //{
 //	EL6 *p6 = STATIC_CAST( EL6 *, userdata );	// 自分自身のオブジェクトポインタ取得
@@ -760,7 +760,7 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 ////////////////////////////////////////////////////////////////
 // FPS表示タイマ コールバック関数
 ////////////////////////////////////////////////////////////////
-//#PENDING FPSタイマはQtで実装
+// FPSタイマはQtで実装
 //DWORD EL6::UpDateFPS( DWORD interval, void *obj )
 //{
 //	EL6 *p6 = STATIC_CAST( EL6 *, obj );	// 自分自身のオブジェクトポインタ取得
@@ -775,7 +775,7 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 ////////////////////////////////////////////////////////////////
 // FPS表示タイマ設定
 ////////////////////////////////////////////////////////////////
-//#PENDING FPSタイマはQtで実装
+// FPSタイマはQtで実装
 //bool EL6::SetFPSTimer( int fps )
 //{
 //	// タイマ稼動中なら停止

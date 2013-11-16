@@ -1653,16 +1653,16 @@ bool OSD_AudioPlaying( void )
 bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 {
     //#PENDING
-//    SDL_AudioSpec ws;
+    //    SDL_AudioSpec ws;
 
-//    if( !SDL_LoadWAV( filepath, &ws, buf, (Uint32 *)len ) ) return false;
+    //    if( !SDL_LoadWAV( filepath, &ws, buf, (Uint32 *)len ) ) return false;
 
-//    if( ws.freq < 22050 || ws.format != AUDIO_S16 || ws.channels != 1 ){
-//        SDL_FreeWAV( *buf );
-//        return false;
-//    }
+    //    if( ws.freq < 22050 || ws.format != AUDIO_S16 || ws.channels != 1 ){
+    //        SDL_FreeWAV( *buf );
+    //        return false;
+    //    }
 
-//    *freq    = ws.freq;
+    //    *freq    = ws.freq;
 
     return true;
 }
@@ -1676,7 +1676,7 @@ bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 ////////////////////////////////////////////////////////////////
 void OSD_FreeWAV( BYTE *buf )
 {
-    //#PENDING SDL_FreeWAV( buf );
+    // 何もしない
 }
 
 

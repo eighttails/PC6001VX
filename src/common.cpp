@@ -446,38 +446,6 @@ bool SaveImg( const char *filename, VSurface *sur, VRect *pos )
 	return SaveImgData( filename, (BYTE *)sur->GetPixels(), INBPP, sur->Width(), sur->Height(), pos );
 }
 
-//#PENDING 消す
-/*
-bool SaveImg( const char *filename, VSurface *sur, VRect *pos )
-{
-	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
-	
-	VRect rec;
-
-    // 領域設定
-    if( pos ){
-        rec.x = pos->x;	rec.y = pos->y;
-        rec.w = pos->w;	rec.h = pos->h;
-    }else{
-        rec.x =               rec.y = 0;
-        rec.w = sur->Width(); rec.h = sur->Height();
-    }
-
-    QImage image(rec.w, rec.h, QImage::Format_RGB32);
-
-    BYTE *doff = (BYTE *)sur->GetPixels() + rec.x + rec.y * sur->Pitch();
-    for( int i=0; i<rec.h; i++ ){
-        memcpy( image.scanLine(i), doff, rec.w );
-        doff += sur->Pitch();
-    }
-
-    image.save(filename);
-	
-	return true;
-}
-*/
-
-
 ////////////////////////////////////////////////////////////////
 // Img LOAD
 //			 「プログラミング・ライブラリ」 http://dencha.ojaru.jp/

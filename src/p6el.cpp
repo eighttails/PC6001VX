@@ -275,6 +275,12 @@ bool EL6::Init( const CFG6 *config )
 	for( int i=0; i<128; i++ ){
 		cfg->GetColor( i, &GPal.colors[i] );
 		VSurface::SetColor( i, COL2DW( GPal.colors[i] ) );
+
+        // スキャンライン用カラー設定
+        GPal.colors[i+128].r = ( GPal.colors[i].r * cfg->GetScanLineBr() ) / 100;
+        GPal.colors[i+128].g = ( GPal.colors[i].g * cfg->GetScanLineBr() ) / 100;
+        GPal.colors[i+128].b = ( GPal.colors[i].b * cfg->GetScanLineBr() ) / 100;
+        VSurface::SetColor( i+128, COL2DW( GPal.colors[i+128] ) );
 	}
 
     // パレット設定

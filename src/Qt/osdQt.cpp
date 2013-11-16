@@ -923,8 +923,8 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
             BYTE *sdoff = (BYTE *)image.scanLine(y+1);
             memcpy( sdoff, sof, dpp );
             for( int x=0; x<drc1.w; x++ ){
-                (*sdoff++) += 32;//ダミーの値
-                //#PENDING スキャンライン用の暗い色は従来と同じように予め作っておく（OSD_Setpalette?）
+                //スキャンライン用の暗い色は128ずらしたインデックスに登録されている
+                (*sdoff++) += 128;
             }
         }
     }

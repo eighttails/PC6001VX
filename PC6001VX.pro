@@ -9,8 +9,6 @@ QT       += core gui widgets network
 TARGET = PC6001VX
 TEMPLATE = app
 
-DEFINES += INBPP=8
-
 #ジョイスティックが不要な場合はコメントアウトをはずす(SDLが不要になる)
 #DEFINES += NOJOYSTICK
 

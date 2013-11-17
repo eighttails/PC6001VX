@@ -919,7 +919,7 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
 
         memcpy( (BYTE *)image.scanLine(y), sof, dpp );
 
-        if(scan && !(y&1)){
+        if(scan){
             BYTE *sdoff = (BYTE *)image.scanLine(y+1);
             memcpy( sdoff, sof, dpp );
             for( int x=0; x<drc1.w; x++ ){
@@ -941,90 +941,6 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
                               Q_ARG(double, imgXScale),
                               Q_ARG(double, imgYScale),
                               Q_ARG(QImage, image));
-#if 0
-    VRect src1,drc1;
-
-    if( !src || !wh ) return;
-
-    SDL_Surface *dst = SDL_GetVideoSurface();
-    if( !dst ) return;
-
-    #if INBPP == 8	// 8bit
-    const BYTE *spt  = (BYTE *)src->GetPixels();
-    const int pp     = src->Pitch();
-    #else			// 32bit
-    const DWORD *spt = (DWORD *)src->GetPixels();
-    const int pp     = src->Pitch() / sizeof(DWORD);
-    #endif
-    const int xsc    = src->XScale();
-    const int ww     = src->Width();
-    const int hh     = src->Height();
-
-    const DWORD *dpt = (DWORD *)dst->pixels;
-    const int dpp    = dst->pitch / sizeof(DWORD);
-
-    // 転送元範囲設定
-    src1.x = max( 0, -dx / 2 * xsc );
-    src1.y = max( 0, -dy );
-    src1.w = min( ww * xsc - src1.x, dst->w );
-    src1.h = min( hh       - src1.y, dst->h );
-
-    if( src1.w <= 0 || src1.h <= 0 ) return;
-
-    // 転送先範囲設定
-    drc1.x = max( 0, dx );
-    drc1.y = max( 0, dy );
-    drc1.w = min( ww, (dst->w - drc1.x)/2*xsc );
-    drc1.h = min( dh, dst->h - drc1.y );
-
-    if( SDL_MUSTLOCK( dst ) ) SDL_LockSurface( dst );
-
-    for( int y=0; y<drc1.h; y++ ){
-        int y0 = ( (y+src1.y) * hh ) / dh;
-        int a1 = ( (y+src1.y) * hh * RESO ) / dh - y0 * RESO;
-        int a2 = RESO - a1;
-
-        #if INBPP == 8	// 8bit
-        BYTE *sof1  = (BYTE *)spt  + pp * y0 + src1.x;
-        BYTE *sof2  = sof1 + ( y0 < hh-1 ? pp : 0 );
-        #else			// 32bit
-        DWORD *sof1 = (DWORD *)spt + pp * y0 + src1.x;
-        DWORD *sof2 = sof1 + ( y0 < hh-1 ? pp : 0 );
-        #endif
-        DWORD *doff = (DWORD *)dpt + dpp * (y+drc1.y) + drc1.x;
-
-        for( int x=0; x<drc1.w; x++ ){
-            DWORD r,g,b;
-            #if INBPP == 8	// 8bit
-            DWORD d1 = VSurface::GetColor( *sof1++ );
-            DWORD d2 = VSurface::GetColor( *sof2++ );
-            #else			// 32bit
-            DWORD d1 = *sof1++;
-            DWORD d2 = *sof2++;
-            #endif
-
-            if( ntsc ){
-                r = ( ( ( (d1>>RSHIFT32)&0xff ) * a2 + ( (d2>>RSHIFT32)&0xff ) * a1 ) / RESO ) & 0xff;
-                g = ( ( ( (d1>>GSHIFT32)&0xff ) * a2 + ( (d2>>GSHIFT32)&0xff ) * a1 ) / RESO ) & 0xff;
-                b = ( ( ( (d1>>BSHIFT32)&0xff ) * a2 + ( (d2>>BSHIFT32)&0xff ) * a1 ) / RESO ) & 0xff;
-            }else{
-                r = (d1>>RSHIFT32)&0xff;
-                g = (d1>>GSHIFT32)&0xff;
-                b = (d1>>BSHIFT32)&0xff;
-            }
-
-            if( scan && y&1 ){
-                r = ( ( r * brscan ) / 100 ) & 0xff;
-                g = ( ( g * brscan ) / 100 ) & 0xff;
-                b = ( ( b * brscan ) / 100 ) & 0xff;
-            }
-            *doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
-            if( xsc == 1 ) *doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
-        }
-    }
-
-    if( SDL_MUSTLOCK( dst ) ) SDL_UnlockSurface( dst );
-#endif
 }
 
 
@@ -1042,6 +958,9 @@ bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
 
     if( !wh || !pixels ) return false;
 
+    //#PENDING
+
+#if 0
     #if SDL_VERSION_ATLEAST(2,0,0)
 
     #else
@@ -1086,6 +1005,7 @@ bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
     if( SDL_MUSTLOCK( src ) ) SDL_UnlockSurface( src );
 
     #endif
+#endif
 
     return true;
 }

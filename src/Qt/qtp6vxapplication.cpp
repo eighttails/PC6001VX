@@ -200,6 +200,18 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, do
     pItem->setTransform(trans);
 }
 
+void QtP6VXApplication::getWindowImage(HWINDOW Wh, QRect pos, void **pixels)
+{
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    Q_ASSERT(view);
+    QGraphicsScene* scene = view->scene();
+    QImage image(pos.width(), pos.height(), QImage::Format_RGB32);
+
+    QPainter painter(&image);
+    scene->render(&painter, image.rect(), pos);
+    memcpy(*pixels, image.bits(), image.byteCount());
+}
+
 void QtP6VXApplication::clearLayout(HWINDOW Wh)
 {
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);

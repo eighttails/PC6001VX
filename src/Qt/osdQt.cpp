@@ -954,58 +954,17 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
 ////////////////////////////////////////////////////////////////
 bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
 {
-    VRect src1;
-
     if( !wh || !pixels ) return false;
 
-    //#PENDING
-
-#if 0
-    #if SDL_VERSION_ATLEAST(2,0,0)
-
-    #else
-
-    SDL_Surface *src = SDL_GetVideoSurface();
-    if( !src ) return false;
-
-    // 転送元範囲設定
-    if( pos ){
-        src1.x = max( 0, min( pos->x, src->w ) );
-        src1.y = max( 0, min( pos->y, src->h ) );
-        src1.w = min( pos->w, src->w - src1.x );
-        src1.h = min( pos->h, src->h - src1.y );
-        if( src1.w <= 0 || src1.h <= 0 ) return false;
-
-        *pos = src1;
-
-    }else{
-        src1.x = 0;
-        src1.y = 0;
-        src1.w = src->w;
-        src1.h = src->h;
-    }
-
-//	BYTE *pixels = new BYTE[src1.w * src1.h * sizeof(DWORD)];
-//	if( !pixels ) return false;
-
-    const int spp = src->pitch / sizeof(DWORD);
-    const int dpp = src1.w;
-    DWORD *spt = (DWORD *)src->pixels + spp * src1.y + src1.x / sizeof(DWORD);
-//	DWORD *dpt = (DWORD *)pixels;
-    DWORD *dpt = (DWORD *)(*pixels);
-
-    if( SDL_MUSTLOCK( src ) ) SDL_LockSurface( src );
-
-    for( int y=0; y<src1.h; y++ ){
-        memcpy( (BYTE *)dpt, (BYTE *)spt, src1.w * sizeof(DWORD) );
-        spt += spp;
-        dpt += dpp;
-    }
-
-    if( SDL_MUSTLOCK( src ) ) SDL_UnlockSurface( src );
-
-    #endif
-#endif
+    // Sceneのレンダリングはメインスレッドでないとできないため、
+    // スロットを呼び出してメインスレッドでSceneの画像を取得する
+    // (直接呼び出すと呼び出し側スレッドで実行されてしまう)
+    // 呼び出し元に結果を返す必要があるため、Qt::BlockingQueuedConnectionで実行する。
+    QMetaObject::invokeMethod(qApp, "getWindowImage",
+                              Qt::BlockingQueuedConnection,
+                              Q_ARG(HWINDOW, wh),
+                              Q_ARG(QRect, QRect(pos->x, pos->y, pos->w, pos->h)),
+                              Q_ARG(void**, pixels));
 
     return true;
 }

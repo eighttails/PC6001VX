@@ -422,7 +422,7 @@ bool SaveImgData( const char *filename, BYTE *pixels, int bpp, int ww, int hh, V
 
     BYTE *doff = pixels + rec.x + rec.y * pitch;
     for( int i=0; i<rec.h; i++ ){
-        memcpy( image.scanLine(i), doff, rec.w );
+        memcpy( image.scanLine(i), doff, rec.w * bpp / 8);
         doff += pitch;
     }
 

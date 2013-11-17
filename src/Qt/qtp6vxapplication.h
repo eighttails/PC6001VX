@@ -33,6 +33,11 @@ public slots:
     //ここで実装する
     void layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image);
 
+    //ウィンドウイメージバイト列でを取得
+    //QGraphicsSceneの操作はメインスレッドでしかできないため、
+    //ここで実装する
+    void getWindowImage(HWINDOW Wh, QRect pos, void** pixels);
+
     //グラフィックシーンをクリア
     void clearLayout(HWINDOW Wh);
 

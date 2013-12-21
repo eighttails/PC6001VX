@@ -8,5 +8,6 @@
         <file>res/font/fontz12.png</file>
         <file>res/font/fonth12.png</file>
         <file>res/background.png</file>
+        <file>res/background60.png</file>
     </qresource>
 </RCC>

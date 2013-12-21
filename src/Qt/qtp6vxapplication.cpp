@@ -227,10 +227,20 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
         #endif
             property("TILTEnabled").toBool()){
         //画面に対する、枠を含めたサイズの比率
-        const qreal merginRatio = 1.2;
-
-        QGraphicsPixmapItem* background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background.png")));
+        qreal merginRatio = 1.0;
+        QGraphicsPixmapItem* background = NULL;
+        if(this->Cfg.GetModel() == 60){
+            //初代機の場合はPC-6042Kを使う
+            background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background60.png")));
+            merginRatio = 1.45;
+        } else {
+            //それ以外の場合はPC-60m43を使う
+            background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background.png")));
+            merginRatio = 1.2;
+        }
         background->setTransformationMode(Qt::SmoothTransformation);
+        //最前面に配置(他のアイテムのZ値はデフォルトの0)
+        background->setZValue(1);
         QTransform trans;
         //画像の拡大倍率
         qreal ratio = qMax(scene->width() / background->sceneBoundingRect().width(),

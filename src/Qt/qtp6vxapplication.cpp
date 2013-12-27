@@ -229,11 +229,14 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
         //画面に対する、枠を含めたサイズの比率
         qreal merginRatio = 1.0;
         QGraphicsPixmapItem* background = NULL;
-        if(this->Cfg.GetModel() == 60){
+        switch(this->Cfg.GetModel()){
+        case 60:
+        case 61:
             //初代機の場合はPC-6042Kを使う
             background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background60.png")));
             merginRatio = 1.45;
-        } else {
+            break;
+        default:
             //それ以外の場合はPC-60m43を使う
             background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background.png")));
             merginRatio = 1.2;

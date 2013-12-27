@@ -154,14 +154,17 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, bool fsflag)
 
     if(fsflag){
         view->setWindowState(view->windowState() | Qt::WindowFullScreen);
+        view->showFullScreen();
     } else {
         view->setWindowState(view->windowState() & ~Qt::WindowFullScreen);
         if(!view->isVisible()){
             view->showNormal();
         }
+#if 0
         if(!view->isMaximized()){
             view->setGeometry(100, 100, scene->width(), scene->height());
         }
+#endif
     }
     view->fitContent();
     OSD_ClearWindow(Wh);

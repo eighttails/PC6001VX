@@ -3,7 +3,7 @@
 #include "log.h"
 #include "osd.h"
 #include "schedule.h"
-
+#include "common.h"
 
 #define WRUPDATE	(1000/SPDCNT)	/* 処理速度更新間隔(ms) */
 
@@ -508,6 +508,9 @@ void SCH6::OnThread( void *inst )
     DWORD NextWait = now + Vint[VintCnt++];
 
     while( !this->cThread::IsCancel() ){
+        // TILTモード
+        UpdateTilt();
+
         NextWait += Vint[VintCnt++];
         if( VintCnt >= VSYNC_HZ ){
             VintCnt -= VSYNC_HZ;

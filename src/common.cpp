@@ -521,21 +521,30 @@ char *UTF8toLocal( const char *str )
     return array.data();
 }
 
+Q_DECLARE_METATYPE(TiltDirection)
 
 void TiltScreen(TiltDirection dir)
 {
+    qApp->setProperty("TILTDirection", qVariantFromValue(dir));
+}
+
+void UpdateTilt()
+{
+    if(!qApp->property("TILTEnabled").toBool()) return;
+
     const qreal step = 0.5;
     const qreal maxAngle = 15.0;
     qreal t = qApp->property("TILT").toReal();
-    switch (dir) {
-    case LEFT: // 左
+    switch (qApp->property("TILTDirection").value<TiltDirection>()){
+    case LEFT: //左
         qApp->setProperty("TILT", QVariant::fromValue(qMax(-maxAngle, t - step)));
         break;
     case RIGHT: // 右
         qApp->setProperty("TILT", QVariant::fromValue(qMin(maxAngle, t + step)));
-    break;
-    default:
+        break;
+    case NEWTRAL:
         qApp->setProperty("TILT", QVariant::fromValue(
                               t > step ? t - step : t < -step ? t + step : 0));
+    default:;
     }
 }

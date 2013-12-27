@@ -1776,15 +1776,19 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
     QMutexLocker lock(&joystickMutex);
+    static TiltDirection prevDir = NEWTRAL;
     if(num == 0){
         // ジョイスティックの左右に対応して画面を傾ける
         int Xmove = SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
         if( Xmove < INT16_MIN / 2 ){  // 左
             TiltScreen(LEFT);
+            prevDir = LEFT;
         } else if( Xmove > INT16_MAX / 2 ){  // 右
             TiltScreen(RIGHT);
-        } else {
+            prevDir = RIGHT;
+        } else if( prevDir != NEWTRAL ){
             TiltScreen(NEWTRAL);
+            prevDir = NEWTRAL;
         }
     }
     return SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );

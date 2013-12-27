@@ -37,7 +37,7 @@ void RenderView::paintEvent(QPaintEvent *event)
 {
     if(isActiveWindow()){
         fitContent();
-        if(qApp->property("TILTEnabled").toBool()){
+        if(qApp->property("TILTEnabled").toBool() && isFullScreen()){
             //TILTモードの回転
             rotate(qApp->property("TILT").toReal());
         }

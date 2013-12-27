@@ -57,7 +57,9 @@ enum TiltDirection{
     LEFT,
     RIGHT,
 };
+
 // TILTモード用に画面を傾ける
 void TiltScreen(TiltDirection dir);
+void UpdateTilt();
 
 #endif	// COMMON_H_INCLUDED

@@ -8,6 +8,7 @@
 #include "../console.h"
 #include "../error.h"
 #include "../osd.h"
+#include "../common.h"
 
 #include "renderview.h"
 #include "qtp6vxapplication.h"
@@ -443,6 +444,17 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         }
         if(processKeyEventInQt){
             return QtSingleApplication::notify(receiver, event);
+        }
+
+        // TILT処理
+        if(!ke->isAutoRepeat()){
+            if(keyCode == Qt::Key_Right && event->type() == QEvent::KeyPress){
+                TiltScreen(RIGHT);
+            } else if (keyCode == Qt::Key_Left && event->type() == QEvent::KeyPress){
+                TiltScreen(LEFT);
+            } else if ((keyCode == Qt::Key_Left || keyCode == Qt::Key_Right) && event->type() == QEvent::KeyRelease){
+                TiltScreen(NEWTRAL);
+            }
         }
 
         // 「ろ」が入力できない対策

@@ -262,10 +262,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
     if (cfg->GetDispNTSC()) disp43->setChecked(true);
     QAction* scanLine = addCommand(settingsMenu, "スキャンライン", ID_SCANLINE, true);
     if (cfg->GetScanLine()) scanLine->setChecked(true);
-#ifndef NOJOYSTICK
     QAction* tiltMode = addCommand(settingsMenu, "TILTモード", ID_TILT, true);
     if (qApp->property("TILTEnabled").toBool()) tiltMode->setChecked(true);
-#endif
 
     QMenu* colorMenu = settingsMenu->addMenu("MODE4 カラー");
     QActionGroup* colorGroup = new QActionGroup(&menu);

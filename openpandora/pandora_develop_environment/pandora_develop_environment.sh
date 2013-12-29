@@ -11,7 +11,7 @@ INSTALLER_DIR=$PWD
 #を追加しておく
 #(予め編集しておく)
 ./sdk_installer_openpandora_toolchain.sh
-source ~/.bashrc
+export PNDSDK=$HOME/pandora-dev/arm-2009q3
 
 
 #SDKフォルダ内のホームフォルダ
@@ -48,9 +48,9 @@ make && make install
 
 #Qt
 cd $SDKHOME
-wget -c  http://download.qt-project.org/official_releases/qt/5.1/5.1.1/single/qt-everywhere-opensource-src-5.1.1.tar.gz
-tar xf qt-everywhere-opensource-src-5.1.1.tar.gz
-cd qt-everywhere-opensource-src-5.1.1
+wget -c  http://download.qt-project.org/official_releases/qt/5.2/5.2.0/single/qt-everywhere-opensource-src-5.2.0.tar.gz
+tar xf qt-everywhere-opensource-src-5.2.0.tar.gz
+cd qt-everywhere-opensource-src-5.2.0
 
 #mkspecをコピー
 cp -rf $INSTALLER_DIR/linux-pandora-g++ qtbase/mkspecs
@@ -61,7 +61,7 @@ patch -p1  < $INSTALLER_DIR/qtmultimedia.patch
 cd qtbase
 make confclean -j2
 cd ..
-./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -qt-xcb -system-sqlite -no-c++11 -nomake examples -skip qtwebkit-examples -v
+./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -qt-xcb -no-icu -no-sql-sqlite -no-c++11 -nomake examples -skip qtwebkit-examples -v
 #echo "Hit Enter.";read Wait
-make -j2 && make install
+make -j3 && make install
 

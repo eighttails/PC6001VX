@@ -224,6 +224,7 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
     QGraphicsScene* scene = view->scene();
     scene->clear();
 
+#ifndef PANDORA
     // フルスクリーンでTILTモードが有効になっている場合、背景を描く
     if(view->isFullScreen() &&
         #ifndef NOMONITOR
@@ -263,6 +264,7 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
         background->setTransform(trans);
         scene->addItem(background);
     }
+#endif
 }
 
 void QtP6VXApplication::showPopupMenu(int x, int y)

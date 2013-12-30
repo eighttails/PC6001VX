@@ -365,7 +365,7 @@ const VKeyConv CFG6::KeyIni[] = {	// 仮想キーコード -> P6キーコード�
 	// 追加キー
 	{ KVX_RMETA,		KP6_UNKNOWN },		// L-Meta
 	{ KVX_LMETA,		KP6_UNKNOWN },		// R-Meta
-	{ KVX_MENU,			KP6_UNKNOWN },		// Menu
+    { KVX_MENU,			KP6_UNKNOWN },		// Menu
 	
 	// 各種機能キー (今のところ無効)
 //	{ KVC_F6,			KFN_1 },			// F6

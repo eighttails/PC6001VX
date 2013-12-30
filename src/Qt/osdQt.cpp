@@ -157,9 +157,16 @@ static const struct {	// Qtキーコード -> 仮想キーコード定義
     { Qt::Key_Insert,			KVC_INSERT },		// Insert
     { Qt::Key_Delete,			KVC_DELETE },		// Delete
     { Qt::Key_End,				KVC_END },			// End
+
+    #ifdef PANDORA //PANDORAではAボタン(HOME)をSPACEに、Xボタン(PAGEDOWN)をSHIFTに割り当てる
+    { Qt::Key_Home,             KVC_SPACE },			// Home
+    { Qt::Key_PageUp,			KVC_PAGEUP },		// PageUp
+    { Qt::Key_PageDown,         KVC_LSHIFT },		// PageDown
+    #else
     { Qt::Key_Home,             KVC_HOME },			// Home
     { Qt::Key_PageUp,			KVC_PAGEUP },		// PageUp
     { Qt::Key_PageDown,         KVC_PAGEDOWN },		// PageDown
+    #endif
 
     { Qt::Key_Up,				KVC_UP },			// ↑
     { Qt::Key_Down,         	KVC_DOWN },			// ↓

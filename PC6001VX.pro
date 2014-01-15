@@ -11,6 +11,7 @@ TEMPLATE = app
 
 #ジョイスティックが不要な場合はコメントアウトをはずす(SDLが不要になる)
 #DEFINES += NOJOYSTICK
+#DEFINES += NOOPENGL
 
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
@@ -33,7 +34,6 @@ DEFINES += NOJOYSTICK NOOPENGL NOMONITOR
 win32:{
 #Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
 QTPLUGIN += qico
-CONFIG += exceptions
 QMAKE_LFLAGS += -static -lpthread
 RC_FILE = src/win32/PC6001VX.rc
 

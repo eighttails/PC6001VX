@@ -11,7 +11,6 @@ TEMPLATE = app
 
 #ジョイスティックが不要な場合はコメントアウトをはずす(SDLが不要になる)
 #DEFINES += NOJOYSTICK
-#DEFINES += NOOPENGL
 
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication

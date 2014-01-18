@@ -11,6 +11,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setBackgroundBrush(Qt::black);
+    setStyleSheet( "QGraphicsView { border-style: none; }" );
 
 #ifndef NOOPENGL
     QGLWidget* glw = new QGLWidget(this);

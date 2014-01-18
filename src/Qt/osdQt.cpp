@@ -1435,6 +1435,8 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
     }
 
     audioOutput = new QAudioOutput(info, format, qApp);
+    //#PENDING これではグローバルボリュームを変えてしまう？
+    audioOutput->setVolume(0.5);
 #endif
     return true;
 }
@@ -1466,9 +1468,11 @@ void OSD_StartAudio( void )
 {
 #ifndef NOSOUND
     if(audioOutput){
-        audioBuffer = audioOutput->start();
-        //#PENDING これではグローバルボリュームを変えてしまう？
-        audioOutput->setVolume(0.3);
+        if(audioOutput->state() == QAudio::SuspendedState){
+            audioOutput->resume();
+        } else {
+            audioBuffer = audioOutput->start();
+        }
     }
 #endif
 }

@@ -331,15 +331,15 @@ bool EL6::Init( const CFG6 *config )
     if( !snd->Init( this, NULL, cfg->GetSampleRate(), cfg->GetSoundBuffer() ) ) return false;
 	snd->SetVolume( cfg->GetMasterVol() );
 	
-	// 画面描画 -----
+    // ステータスバー -----
+    if( !staw->Init( graph->ScreenX(), cfg->GetFddNum() ) ) return false;
+
+    // 画面描画 -----
     graph->SetIcon( cfg->GetModel() );	// アイコン設定
 	if( !graph->Init() ) return false;
 	
 	// ジョイスティック -----
 	if( !joy->Init() ) return false;
-	
-	// ステータスバー -----
-	if( !staw->Init( graph->ScreenX(), cfg->GetFddNum() ) ) return false;
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// レジスタウィンドウ　-----

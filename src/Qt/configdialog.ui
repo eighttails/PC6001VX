@@ -429,7 +429,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButtonSample225">
+             <widget class="QRadioButton" name="radioButtonSample220">
               <property name="text">
                <string>22050 Hz</string>
               </property>
@@ -3577,7 +3577,7 @@ border-radius: 1;</string>
   <tabstop>checkBoxFullscreen</tabstop>
   <tabstop>checkBoxStatDisp</tabstop>
   <tabstop>radioButtonSample441</tabstop>
-  <tabstop>radioButtonSample225</tabstop>
+  <tabstop>radioButtonSample220</tabstop>
   <tabstop>radioButtonSample110</tabstop>
   <tabstop>horizontalSliderSndBufferSize</tabstop>
   <tabstop>horizontalSliderMasterVol</tabstop>

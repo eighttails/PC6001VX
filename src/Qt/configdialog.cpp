@@ -109,7 +109,7 @@ void ConfigDialog::readConfig()
     // サンプリングレート
     switch(config->GetSampleRate()){
     case 44100: ui->radioButtonSample441->setChecked(true); break;
-    case 22500: ui->radioButtonSample225->setChecked(true); break;
+    case 22050: ui->radioButtonSample220->setChecked(true); break;
     case 11025: ui->radioButtonSample110->setChecked(true); break;
     default:    Q_ASSERT(false);
     }
@@ -367,7 +367,7 @@ void ConfigDialog::writeConfig()
     // サウンド-------------------------------------------------------------------
     // サンプリングレート
     if      (ui->radioButtonSample441->isChecked())   config->SetSampleRate(44100);
-    else if (ui->radioButtonSample225->isChecked())   config->SetSampleRate(22500);
+    else if (ui->radioButtonSample220->isChecked())   config->SetSampleRate(22050);
     else if (ui->radioButtonSample110->isChecked())   config->SetSampleRate(11025);
 
     // バッファサイズ

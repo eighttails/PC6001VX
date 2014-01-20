@@ -28,7 +28,7 @@ private:
 // Constructer
 cThread::cThread( void )
 {
-	this->m_bCancel			= false;
+    this->m_bCancel			= true;
     this->m_hThread			= NULL;
 	this->m_BeginTheadParam	= NULL;
 }

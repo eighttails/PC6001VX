@@ -1120,9 +1120,6 @@ bool EL6::DokoDemoLoad( const char *filename )
 		// (機種,FDD台数,拡張RAM,ROMパッチ,戦士のカートリッジ)
 		if( !cfg->DokoLoad( Ini ) ) throw Error::GetError();
 
-        // VM停止
-        Stop();
-
 		// VM再初期化
 		Init( cfg );
 		

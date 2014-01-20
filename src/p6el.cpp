@@ -1119,7 +1119,10 @@ bool EL6::DokoDemoLoad( const char *filename )
 		// PC6001Vのバージョン確認と主要構成情報を読込み
 		// (機種,FDD台数,拡張RAM,ROMパッチ,戦士のカートリッジ)
 		if( !cfg->DokoLoad( Ini ) ) throw Error::GetError();
-		
+
+        // VM停止
+        Stop();
+
 		// VM再初期化
 		Init( cfg );
 		

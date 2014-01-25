@@ -1,0 +1,11 @@
+--- qt-everywhere-opensource-src-5.2.0/qtbase/mkspecs/win32-g++/qmake.conf.orig	2014-01-16 22:11:47.656950900 +0900
++++ qt-everywhere-opensource-src-5.2.0/qtbase/mkspecs/win32-g++/qmake.conf	2014-01-16 22:12:54.594040400 +0900
+@@ -29,7 +29,7 @@
+ QMAKE_CFLAGS_DEPS       = -M
+ QMAKE_CFLAGS_WARN_ON    = -Wall -Wextra
+ QMAKE_CFLAGS_WARN_OFF   = -w
+-QMAKE_CFLAGS_RELEASE    = -O2
++QMAKE_CFLAGS_RELEASE    = -Os
+ QMAKE_CFLAGS_DEBUG      = -g
+ QMAKE_CFLAGS_YACC       = -Wno-unused -Wno-parentheses
+ QMAKE_CFLAGS_SSE2       = -msse2

@@ -9,36 +9,32 @@ QT       += core gui widgets network
 TARGET = PC6001VX
 TEMPLATE = app
 
-#ジョイスティックが不要な場合はコメントアウトをはずす(SDLが不要になる)
+#ジョイスヂ�ヂ�が不要な場合�コメントアウトをはずす(SDLが不要にな�
 #DEFINES += NOJOYSTICK
 
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
-#Android用設定
-android:{
+#Android用設�android:{
 QTPLUGIN += qico
 DEFINES += NOJOYSTICK NOSOUND NOMONITOR NOOPENGL
 }
 
-#OpenPandora用設定
-pandora:{
+#OpenPandora用設�pandora:{
 target.path = /media/sddev/pc6001vx
 QTPLUGIN += qico qxcb qgtk2
 INSTALLS += target
 DEFINES += NOJOYSTICK NOOPENGL NOMONITOR
 }
 
-#Windows用設定
-win32:{
-#Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
+#Windows用設�win32:{
+#Windowsでは極力ライブラリをスタヂ�ヂ�リンクする。Qtプラグインもスタヂ�ヂ�ライブラリとしてしてリンクする
 QTPLUGIN += qico
 QMAKE_LFLAGS += -static -lpthread
 RC_FILE = src/win32/PC6001VX.rc
 
 !contains(DEFINES, NOJOYSTICK) {
-#Windowsでは環境変数SDL_DIRにSDL2のフォルダパスを定義しておく。
-QMAKE_CXXFLAGS += -I$$(SDL_DIR)/include -Dmain=SDL_main
+#Windowsでは環墤�数SDL_DIRにSDL2のフォルダパスを定義しておく�QMAKE_CXXFLAGS += -I$$(SDL_DIR)/include -Dmain=SDL_main
 LIBS += -L$$(SDL_DIR)/lib -lmingw32 -lSDL2main -lSDL2 -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -luuid
 }
 } else {
@@ -207,7 +203,11 @@ OTHER_FILES += \
     openpandora/pandora_develop_environment/qtmultimedia.patch \
     openpandora/pandora_develop_environment/pandora_develop_environment.sh \
     openpandora/pandora_develop_environment/environment_build.log \
-    openpandora/pandora_develop_environment/linux-pandora-g++/qmake.conf
+    openpandora/pandora_develop_environment/linux-pandora-g++/qmake.conf \
+    win32/buildenv.sh \
+    win32/toolchain.sh \
+    win32/CFLAGS.patch \
+    win32/libGLESv2.patch
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

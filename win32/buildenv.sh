@@ -10,8 +10,8 @@ echo "Hit Enter"
 read Wait
 }
 
-#���̃X�N���v�g�̒u���ꏊ���J�����g�Ƃ��Ď��s���邱�ƁB
-#�J�����g�f�B���N�g��
+#このスクリプトの置き場所をカレントとして実行すること。
+#カレントディレクトリ
 export SCRIPT_DIR=$PWD
 
 cd
@@ -24,20 +24,20 @@ export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
 wget -c  http://download.qt-project.org/official_releases/qt/5.2/$QT_VERSION/single/$QT_SOURCE_DIR.zip
 
 if [ -e $QT_SOURCE_DIR ]; then
-    # ���݂���ꍇ
+    # 存在する場合
     echo "$QT_SOURCE_DIR already exists."
 else
-    # ���݂��Ȃ��ꍇ
+    # 存在しない場合
     unzip -q -n $QT_SOURCE_DIR.zip 
-    #MSYS�Ńr���h���ʂ�Ȃ����ւ̑΍�p�b�`
+    #MSYSでビルドが通らない問題への対策パッチ
     patch -p0 --binary < $SCRIPT_DIR/libGLESv2.patch
 fi
 
 export PATH=$PWD/$QT_SOURCE_DIR/gnuwin32/bin:$PATH
 
-#if[ 1 ]; then #��������R�����g�A�E�g
+#if[ 1 ]; then #ここからコメントアウト
 
-#shared��(QtCreator�p)
+#shared版(QtCreator用)
 rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
@@ -55,10 +55,10 @@ export QTC_VER=3.0.0
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 wget -c  http://download.qt-project.org/official_releases/qtcreator/3.0/$QTC_VER/$QTC_SOURCE_DIR.zip
 if [ -e $QTC_SOURCE_DIR ]; then
-    # ���݂���ꍇ
+    # 存在する場合
     echo "$QTC_SOURCE_DIR already exists."
 else
-    # ���݂��Ȃ��ꍇ
+    # 存在しない場合
     unzip -q -n $QTC_SOURCE_DIR.zip
 fi
 
@@ -73,7 +73,7 @@ popd
 
 #fi #if[ 1 ]; then
 
-#static��(P6VX�p)
+#static版(P6VX用)
 rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
@@ -112,5 +112,42 @@ popd
 
 popd
 
-#SDL2
+#opengl版(P6VX用)
+rm -rf qt5-opengl
+mkdir qt5-opengl
+pushd qt5-opengl
+
+mkdir qtbase
+pushd qtbase
+cmd.exe "/c %CD%/../../$QT_SOURCE_DIR/qtbase/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../../local/qt5-opengl -static -opengl desktop -no-icu -no-openssl -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake examples -nomake tests"
+
+mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install 
+exitOnError
+
+cp lib/libpreprocessor*.a /usr/local/qt5-opengl/lib
+cp lib/libtranslator_*.a /usr/local/qt5-opengl/lib
+popd
+
+mkdir qttools
+pushd qttools
+/usr/local/qt5-opengl/bin/qmake ../../$QT_SOURCE_DIR/qttools/qttools.pro
+mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install 
+exitOnError
+popd
+
+mkdir qtmultimedia
+pushd qtmultimedia
+/usr/local/qt5-opengl/bin/qmake ../../$QT_SOURCE_DIR/qtmultimedia/qtmultimedia.pro
+mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install 
+exitOnError
+popd
+
+mkdir qttranslations
+pushd qttranslations
+/usr/local/qt5-opengl/bin/qmake ../../$QT_SOURCE_DIR/qttranslations/qttranslations.pro
+mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install 
+exitOnError
+popd
+
+popd
 

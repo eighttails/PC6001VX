@@ -11,7 +11,7 @@ INSTALLER_DIR=$PWD
 #を追加しておく
 #(予め編集しておく)
 ./sdk_installer_openpandora_toolchain.sh
-export PNDSDK=$HOME/pandora-dev/arm-2009q3
+export PNDSDK=$HOME/pandora-dev/arm-2011.09
 
 
 #SDKフォルダ内のホームフォルダ
@@ -61,7 +61,7 @@ patch -p1  < $INSTALLER_DIR/qtmultimedia.patch
 cd qtbase
 make confclean -j2
 cd ..
-./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -qt-xcb -no-icu -no-sql-sqlite -no-c++11 -nomake examples -skip qtwebkit-examples -v
+./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -no-c++11 -qreal float -qt-xcb -no-icu -no-sql-sqlite -nomake examples -skip qtwebkit-examples -silent
 #echo "Hit Enter.";read Wait
 make -j3 && make install
 

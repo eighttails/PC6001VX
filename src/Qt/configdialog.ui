@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>661</width>
-    <height>443</height>
+    <width>883</width>
+    <height>548</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -329,7 +329,7 @@
         </layout>
        </item>
        <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBoxfps">
+        <widget class="QGroupBox" name="groupBoxFps">
          <property name="title">
           <string>フレームスキップ(&amp;K)</string>
          </property>
@@ -377,7 +377,10 @@
         </spacer>
        </item>
        <item row="0" column="1">
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="groupBoxVideoCapture">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="title">
           <string>ビデオキャプチャ</string>
          </property>

@@ -196,9 +196,11 @@ void QtEL6::ShowPopupImpl(int x, int y)
             ( REPLAY::GetStatus() == REP_REPLAY ) )
         repleySave->setEnabled(false);
 
+#if 0
     // ビデオキャプチャ
     addCommand(systemMenu, AVI6::IsAVI() ? MSMEN_AVI1 : MSMEN_AVI0, ID_AVISAVE);
     systemMenu->addSeparator();
+#endif
 
     addCommand(systemMenu, "打込み代行...", ID_AUTOTYPE);
     systemMenu->addSeparator();

@@ -26,6 +26,9 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent) :
     // クリアボタンを押したらラインエディットをクリア
     connect(folderClearMap, SIGNAL(mapped(QWidget*)), this, SLOT(clearFolder(QWidget*)));
 
+    // ビデオキャプチャ設定を消す
+    ui->groupBoxVideoCapture->setVisible(false);
+
     // OKボタンを押したら設定に書き込む
     connect(this, SIGNAL(accepted()), this, SLOT(writeConfig()));
 

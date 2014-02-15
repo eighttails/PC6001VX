@@ -17,6 +17,8 @@ cp $PNDSDK/usr/lib/libGL.so.1 pnd
 cp $PNDSDK/usr/lib/libGLU.so.1 pnd
 cp $PNDSDK/usr/lib/libXxf86vm.so.1 pnd
 cp $PNDSDK/usr/lib/libxcb.so.1 pnd
+cp $PNDSDK/usr/lib/libX11-xcb.so.1 pnd
+cp $PNDSDK/usr/lib/libX11.so.6 pnd
 
 chmod +x pnd/PC6001VX
 chmod +x pnd/PC6001VX.sh

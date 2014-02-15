@@ -716,7 +716,7 @@ _END_
 	done
 
 	#SEDCMD="s#/usr/local/pandora#$PNDSDK_DIR#g;s#prefix=\/.*#prefix=$PNDSDK/usr#g;s#includedir=\/.*#includedir=$PNDSDK/usr/include#g;s#libdir=\/.*#libdir='$PNDSDK/usr/lib'#;s#pluginsdir=/usr/lib/\(.*\)#pluginsdir='$PNDSDK/usr/lib/\1'#;s# /usr/lib/lib\([A-Z0-9a-z.-]*\).la# $PNDSDK/usr/lib/lib\1.la#g;s# /usr/lib# $PNDSDK/usr/lib#g;s#-L/usr/lib#-L$PNDSDK/usr/lib#g;s#-R/usr/lib#-R$PNDSDK/usr/lib#g;s#-I/usr/include#-I$PNDSDK/usr/include#g;s#-isystem\/.*\b##g"
-	SEDCMD="s#/usr/local/pandora#$PNDSDK_DIR#g;s#prefix=\/.*#prefix=$PNDSDK/usr#g;s#includedir=/usr/include\(.*\)#includedir='$PNDSDK/usr/include\1'#;s#libdir=/usr/lib\(.*\)#libdir='$PNDSDK/usr/lib\1'#;s#pluginsdir=/usr/lib\(.*\)#pluginsdir='$PNDSDK/usr/lib\1'#;s# /usr/lib/lib\([A-Z0-9a-z.-]*\).la# $PNDSDK/usr/lib/lib\1.la#g;s# /usr/lib# $PNDSDK/usr/lib#g;s#-L/usr/lib#-L$PNDSDK/usr/lib#g;s#-R/usr/lib#-R$PNDSDK/usr/lib#g;s#-I/usr/include#-I$PNDSDK/usr/include#g;s#-isystem\/.*\b##g"
+	SEDCMD="s#/usr/local/pandora#$PNDSDK_DIR#g;s#prefix=\/.*#prefix=$PNDSDK/usr#g;s#includedir=/usr/include\(.*\)#includedir=$PNDSDK/usr/include\1#;s#libdir=/usr/lib\(.*\)#libdir=$PNDSDK/usr/lib\1#;s#pluginsdir=/usr/lib\(.*\)#pluginsdir=$PNDSDK/usr/lib\1#;s# /usr/lib/lib\([A-Z0-9a-z.-]*\).la# $PNDSDK/usr/lib/lib\1.la#g;s# /usr/lib# $PNDSDK/usr/lib#g;s#-L/usr/lib#-L$PNDSDK/usr/lib#g;s#-R/usr/lib#-R$PNDSDK/usr/lib#g;s#-I/usr/include#-I$PNDSDK/usr/include#g;s#-isystem\/.*\b##g"
 
 	cecho "Fixing paths inside *la, *pc and files in usr/bin/" $green
 	for i in $(find $PNDSDK/usr/lib -name '*la'; find $PNDSDK/usr/lib/pkgconfig -name '*pc'; find $PNDSDK/usr/share/pkgconfig -name '*pc';find $PNDSDK/usr/bin -type f);do 
@@ -815,7 +815,7 @@ CROSSTOOL="\$PNDSDK/bin/\$TARGET_SYS"
 #on single long line with all the env vars that make sense to have...
 PATH=\$PNDSDK/bin:\$PNDSDK/usr/bin:\$PATH \\
 LIBTOOL_SYSROOT_PATH=\$PNDSDK \\
-PKG_CONFIG_PATH=\$PNDSDK/usr/lib/pkgconfig \\
+PKG_CONFIG_PATH=\$PNDSDK/usr/share/pkgconfig:\$PNDSDK/usr/lib/pkgconfig \\
 PKG_CONFIG=\$PNDSDK/bin/arm-none-linux-gnueabi-pkg-config \\
 CPATH="\$PNDSDK/usr/include:\$CPATH" \\
 CFLAGS="-DPANDORA -O2 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\

@@ -1,6 +1,6 @@
 #必要ツール
 sudo dpkg --add-architecture i386
-sudo apt-get install ia32-libs libcurl4-openssl-dev libgpgme11-dev libtool build-essential libglib2.0-dev xsltproc libncurses5:i386
+sudo apt-get install ia32-libs libcurl4-openssl-dev libgpgme11-dev libtool build-essential libglib2.0-dev xsltproc squashfs-tools libncurses5:i386
 
 #カレントディレクトリ
 INSTALLER_DIR=$PWD

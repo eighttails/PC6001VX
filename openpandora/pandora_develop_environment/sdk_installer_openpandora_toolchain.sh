@@ -818,8 +818,8 @@ LIBTOOL_SYSROOT_PATH=\$PNDSDK \\
 PKG_CONFIG_PATH=\$PNDSDK/usr/share/pkgconfig:\$PNDSDK/usr/lib/pkgconfig \\
 PKG_CONFIG=\$PNDSDK/bin/arm-none-linux-gnueabi-pkg-config \\
 CPATH="\$PNDSDK/usr/include:\$CPATH" \\
-CFLAGS="-DPANDORA -O2 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
-CPPFLAGS="-DPANDORA -O2 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
+CFLAGS="-DPANDORA -Os -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
+CPPFLAGS="-DPANDORA -Os -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
 CXXFLAGS="-I\$PNDSDK/usr/include" \\
 LDFLAGS="-L\$PNDSDK/usr/lib -Wl,-rpath,\$PNDSDK/usr/lib" \\
 CXX=\$CROSSTOOL-g++ \\
@@ -2007,7 +2007,7 @@ QMAKE_LFLAGS_BSYMBOLIC_FUNC = -Wl,-Bsymbolic-functions
 QMAKE_LFLAGS_DEBUG	+=
 QMAKE_LFLAGS_DYNAMIC_LIST = -Wl,--dynamic-list,
 QMAKE_LFLAGS_NOUNDEF	+= -Wl,--no-undefined
-QMAKE_LFLAGS_RELEASE	+= -Wl,-O2
+QMAKE_LFLAGS_RELEASE	+= -Wl,-Os
 QMAKE_LFLAGS_SHLIB	+= -shared
 QMAKE_LFLAGS_PLUGIN	+= \$\$QMAKE_LFLAGS_SHLIB
 QMAKE_LFLAGS_SONAME	+= -Wl,-soname,

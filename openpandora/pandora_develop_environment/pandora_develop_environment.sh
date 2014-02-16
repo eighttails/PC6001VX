@@ -74,7 +74,7 @@ cp -rf $INSTALLER_DIR/linux-pandora-g++ qtbase/mkspecs
 patch -p1  < $INSTALLER_DIR/qtmultimedia.patch
 
 cd qtbase
-make confclean -j2
+make confclean -j3
 cd ..
 ./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -no-c++11 -opengl es2 -qreal float -qt-xcb -no-icu -no-sql-sqlite -nomake examples -skip qtwebkit-examples -silent
 #echo "Hit Enter.";read Wait

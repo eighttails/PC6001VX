@@ -92,6 +92,10 @@ void EL6::ExecMenu( int id )
     case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
     case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
     case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
+    case ID_FULLSCREEN:
+        cfg->SetFullScreen( cfg->GetFullScreen() ? false : true );
+        graph->ResizeScreen();	// スクリーンサイズ変更
+        break;
     case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
     case ID_TILT:                                                           // TILTモード変更
         qApp->setProperty("TILTEnabled",
@@ -258,6 +262,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
     // 設定メニュー
     QMenu* settingsMenu = menu.addMenu("設定");
+    QAction* fullScreen = addCommand(settingsMenu, "フルスクリーン", ID_FULLSCREEN, true);
+    if (cfg->GetFullScreen()) fullScreen->setChecked(true);
     QAction* statusBar = addCommand(settingsMenu, "ステータスバー", ID_STATUS, true);
     if (cfg->GetDispStat()) statusBar->setChecked(true);
     QAction* disp43 = addCommand(settingsMenu, "4:3表示", ID_DISP43, true);

@@ -39,6 +39,7 @@ enum MenuCommand{
     ID_NOWAIT,
     ID_TURBO,
     ID_BOOST,
+    ID_FULLSCREEN,
     ID_SCANLINE,
     ID_DISP43,
     ID_STATUS,

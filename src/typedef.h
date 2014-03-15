@@ -12,6 +12,7 @@
 // 型,定数定義
 /////////////////////////////////////////////////////////////////////////////
 #if defined(WIN32) || defined(WIN64)
+#define NOMINMAX
 #include <windows.h>
 #else
 typedef uint8_t		BYTE;
@@ -80,11 +81,6 @@ typedef DWORD (*CBF_TMR)( DWORD, void * );		// タイマ
 #endif
 
 
-
-
-
-
-
 /////////////////////////////////////////////////////////////////////////////
 // 汎用マクロ
 /////////////////////////////////////////////////////////////////////////////
@@ -123,13 +119,22 @@ typedef DWORD (*CBF_TMR)( DWORD, void * );		// タイマ
 #define ZeroMemory(d,l)	memset((d), 0, (l))
 #endif
 
-#ifndef max
-#define max(a,b) ((a)>(b)?(a):(b))
-#endif
-#ifndef min
-#define min(a,b) ((a)<(b)?(a):(b))
-#endif
+template <class T, class S>
+T max(T v1, S v2){ T v2_(v2); return v1 > v2_ ? v1 : v2_; }
 
+template <class T, class S>
+T min(T v1, S v2){ T v2_(v2); return v1 < v2_ ? v1 : v2_; }
 
+#ifdef QTP6VX
+#include <QObject>
+#include <QString>
+//翻訳対象文字列
+#define TOTRANS(a)  QT_TR_NOOP(a)
+//翻訳された文字列を返す
+#define TRANS(a) (QObject::tr(a).toLocal8Bit())
+#else
+#define TOTRANS(a)  a
+#define TRANS(a) a
+#endif
 
 #endif	// TYPEDEF_H_INCLUDED

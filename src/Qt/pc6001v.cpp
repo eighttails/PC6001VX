@@ -22,7 +22,7 @@ int main( int argc, char *argv[] )
 
     QtP6VXApplication app(argc, argv);
 
-    setlocale(LC_ALL,"Japanese");
+    //setlocale(LC_ALL,"Japanese");
 
     //イベントループが始まったらQtP6VXApplication::startup()を実行
     QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);

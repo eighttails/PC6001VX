@@ -9,6 +9,11 @@ QT       += core gui widgets network
 TARGET = PC6001VX
 TEMPLATE = app
 
+TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
+
+#Qt依存コードを書く際のDEFINE
+DEFINES += QTP6VX
+
 #ジョイスティックが不要な場合、コメントアウトをはずす(SDLが不要になる)
 #DEFINES += NOJOYSTICK
 
@@ -211,7 +216,9 @@ OTHER_FILES += \
     win32/buildenv.sh \
     win32/toolchain.sh \
     win32/CFLAGS.patch \
-    win32/libGLESv2.patch
+    win32/libGLESv2.patch \
+    src/Qt/translation/PC6001VX_en.ts \
+    src/Qt/translation/PC6001VX_en.qm
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

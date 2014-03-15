@@ -214,119 +214,119 @@ static const struct {	// Qtキーコード -> 仮想キーコード定義
 ///////////////////////////////////////////////////////////
 // 一般メッセージ
 const char *MsgStr[] = {
-    "終了してよろしいですか?",
-    "終了確認",
-    "再起動してよろしいですか?",
-    "変更は再起動後に有効となります。\n今すぐ再起動しますか?",
-    "再起動確認",
-    "拡張ROMを挿入してリセットします。",
-    "拡張ROMを排出してリセットします。",
-    "リセット確認"
+    TOTRANS("終了してよろしいですか?"),
+    TOTRANS("終了確認"),
+    TOTRANS("再起動してよろしいですか?"),
+    TOTRANS("変更は再起動後に有効となります。\n今すぐ再起動しますか?"),
+    TOTRANS("再起動確認"),
+    TOTRANS("拡張ROMを挿入してリセットします。"),
+    TOTRANS("拡張ROMを排出してリセットします。"),
+    TOTRANS("リセット確認")
 };
 
 // メニュー用メッセージ ------
 const char *MsgMen[] = {
-    "ビデオキャプチャ...",
-    "ビデオキャプチャ停止",
-    "記録...",	// (リプレイ)
-    "記録停止",	// (リプレイ)
-    "再生...",	// (リプレイ)
-    "再生停止"	// (リプレイ)
+    TOTRANS("ビデオキャプチャ..."),
+    TOTRANS("ビデオキャプチャ停止"),
+    TOTRANS("記録..."),	// (リプレイ)
+    TOTRANS("記録停止"),	// (リプレイ)
+    TOTRANS("再生..."),	// (リプレイ)
+    TOTRANS("再生停止")	// (リプレイ)
 };
 
 // INIファイル用メッセージ ------
 const char *MsgIni[] = {
     // [CONFIG]
-    "; === PC6001V 初期設定ファイル ===\n\n",
-    //	"機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR",
-    "機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601",
-    "FDD接続台数 (0-2)",
-    "拡張RAM使用",
-    "Turbo TAPE Yes:有効 No:無効",
-    "BoostUp Yes:有効 No:無効",
-    "BoostUp 最大倍率(N60モード)",
-    "BoostUp 最大倍率(N60m/N66モード)",
-    "オーバークロック率 (1-1000)%",
-    "CRCチェック Yes:有効 No:無効",
-    "ROMパッチ Yes:あてる No:あてない",
+    TOTRANS("; === PC6001V 初期設定ファイル ===\n\n"),
+    //	TOTRANS("機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR"),
+    TOTRANS("機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601"),
+    TOTRANS("FDD接続台数 (0-2)"),
+    TOTRANS("拡張RAM使用"),
+    TOTRANS("Turbo TAPE Yes:有効 No:無効"),
+    TOTRANS("BoostUp Yes:有効 No:無効"),
+    TOTRANS("BoostUp 最大倍率(N60モード)"),
+    TOTRANS("BoostUp 最大倍率(N60m/N66モード)"),
+    TOTRANS("オーバークロック率 (1-1000)%"),
+    TOTRANS("CRCチェック Yes:有効 No:無効"),
+    TOTRANS("ROMパッチ Yes:あてる No:あてない"),
     // [DISPLAY]
-    "MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク",
-    "スキャンライン Yes:あり No:なし",
-    "スキャンライン輝度 (0-100)%",
-    "4:3表示 Yes:有効 No:無効",
-    "フルスクリーンモード Yes:有効 No:無効",
-    "ステータスバー Yes:表示 No:非表示",
-    "フレームスキップ",
+    TOTRANS("MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク"),
+    TOTRANS("スキャンライン Yes:あり No:なし"),
+    TOTRANS("スキャンライン輝度 (0-100)%"),
+    TOTRANS("4:3表示 Yes:有効 No:無効"),
+    TOTRANS("フルスクリーンモード Yes:有効 No:無効"),
+    TOTRANS("ステータスバー Yes:表示 No:非表示"),
+    TOTRANS("フレームスキップ"),
     // [SOUND]
-    "サンプリングレート (44100/22050/11025)Hz",
-    "サウンドバッファサイズ",
-    "マスター音量 (0-100)",
-    "PSG音量 (0-100)",
-    "音声合成音量 (0-100)",
-    "TAPEモニタ音量 (0-100)",
-    "PSG LPFカットオフ周波数(0で無効)",
+    TOTRANS("サンプリングレート (44100/22050/11025)Hz"),
+    TOTRANS("サウンドバッファサイズ"),
+    TOTRANS("マスター音量 (0-100)"),
+    TOTRANS("PSG音量 (0-100)"),
+    TOTRANS("音声合成音量 (0-100)"),
+    TOTRANS("TAPEモニタ音量 (0-100)"),
+    TOTRANS("PSG LPFカットオフ周波数(0で無効)"),
     // [MOVIE]
-    "ビデオキャプチャ色深度 (16,24,32)",
+    TOTRANS("ビデオキャプチャ色深度 (16,24,32)"),
     // [FILES]
-    "拡張ROMファイル名",
-    "TAPE(LODE)ファイル名(起動時に自動マウント)",
-    "TAPE(SAVE)ファイル名(SAVE時に自動マウント)",
-    "DISK1ファイル名(起動時に自動マウント)",
-    "DISK2ファイル名(起動時に自動マウント)",
-    "プリンタ出力ファイル名",
-    "全角フォントファイル名",
-    "半角フォントファイル名",
+    TOTRANS("拡張ROMファイル名"),
+    TOTRANS("TAPE(LODE)ファイル名(起動時に自動マウント)"),
+    TOTRANS("TAPE(SAVE)ファイル名(SAVE時に自動マウント)"),
+    TOTRANS("DISK1ファイル名(起動時に自動マウント)"),
+    TOTRANS("DISK2ファイル名(起動時に自動マウント)"),
+    TOTRANS("プリンタ出力ファイル名"),
+    TOTRANS("全角フォントファイル名"),
+    TOTRANS("半角フォントファイル名"),
     // [PATH]
-    "ROMイメージ格納パス",
-    "TAPEイメージ格納パス",
-    "DISKイメージ格納パス",
-    "拡張ROMイメージ格納パス",
-    "スナップショット格納パス",
-    "WAVEファイル格納パス",
-    "FONT格納パス",
-    "どこでもSAVE格納パス",
+    TOTRANS("ROMイメージ格納パス"),
+    TOTRANS("TAPEイメージ格納パス"),
+    TOTRANS("DISKイメージ格納パス"),
+    TOTRANS("拡張ROMイメージ格納パス"),
+    TOTRANS("スナップショット格納パス"),
+    TOTRANS("WAVEファイル格納パス"),
+    TOTRANS("FONT格納パス"),
+    TOTRANS("どこでもSAVE格納パス"),
     // [CHECK]
-    "終了時確認 Yes:する No:しない",
-    "終了時INIファイルを保存 Yes:する No:しない",
+    TOTRANS("終了時確認 Yes:する No:しない"),
+    TOTRANS("終了時INIファイルを保存 Yes:する No:しない"),
     // [KEY]
-    "キーリピートの間隔(単位:ms 0で無効)",
-    "PS/2キーボード使う? Yes:PS/2 No:USB",
+    TOTRANS("キーリピートの間隔(単位:ms 0で無効)"),
+    TOTRANS("PS/2キーボード使う? Yes:PS/2 No:USB"),
     // [OPTION]
-    "戦士のカートリッジ Yes:有効 No:無効"
+    TOTRANS("戦士のカートリッジ Yes:有効 No:無効")
 
 };
 
 // どこでもSAVE用メッセージ ------
 const char *MsgDok[] = {
-    "; === PC6001V どこでもSAVEファイル ===\n\n"
+    TOTRANS("; === PC6001V どこでもSAVEファイル ===\n\n")
 };
 
 // Error用メッセージ ------
 const char *MsgErr[] = {
-    "Error",
-    "エラーはありません",
-    "原因不明のエラーが発生しました",
-    "メモリの確保に失敗しました",
-    "指定された機種のROMイメージが見つからないため機種を変更しました\n設定を確認してください",
-    "ROMイメージが見つかりません\n設定を確認してください",
-    "ROMイメージのサイズが不正です",
-    "ROMイメージのCRCが不正です",
-    "ライブラリの初期化に失敗しました",
-    "初期化に失敗しました\n設定を確認してください",
-    "フォントの読込みに失敗しました",
-    "フォントファイルの作成に失敗しました",
-    "INIファイルの読込みに失敗しました\nデフォルト設定で起動します",
-    "INIファイルの読込みに失敗しました",
-    "INIファイルの保存に失敗しました",
-    "TAPEイメージのマウントに失敗しました",
-    "DISKイメージのマウントに失敗しました",
-    "拡張ROMイメージのマウントに失敗しました",
-    "どこでもLOADに失敗しました",
-    "どこでもSAVEに失敗しました",
-    "どこでもLOADに失敗しました\n保存時とPC6001Vのバージョンが異なります",
-    "リプレイ再生に失敗しました",
-    "リプレイ記録に失敗しました",
-    "リプレイデータがありません"
+    TOTRANS("Error"),
+    TOTRANS("エラーはありません"),
+    TOTRANS("原因不明のエラーが発生しました"),
+    TOTRANS("メモリの確保に失敗しました"),
+    TOTRANS("指定された機種のROMイメージが見つからないため機種を変更しました\n設定を確認してください"),
+    TOTRANS("ROMイメージが見つかりません\n設定を確認してください"),
+    TOTRANS("ROMイメージのサイズが不正です"),
+    TOTRANS("ROMイメージのCRCが不正です"),
+    TOTRANS("ライブラリの初期化に失敗しました"),
+    TOTRANS("初期化に失敗しました\n設定を確認してください"),
+    TOTRANS("フォントの読込みに失敗しました"),
+    TOTRANS("フォントファイルの作成に失敗しました"),
+    TOTRANS("INIファイルの読込みに失敗しました\nデフォルト設定で起動します"),
+    TOTRANS("INIファイルの読込みに失敗しました"),
+    TOTRANS("INIファイルの保存に失敗しました"),
+    TOTRANS("TAPEイメージのマウントに失敗しました"),
+    TOTRANS("DISKイメージのマウントに失敗しました"),
+    TOTRANS("拡張ROMイメージのマウントに失敗しました"),
+    TOTRANS("どこでもLOADに失敗しました"),
+    TOTRANS("どこでもSAVEに失敗しました"),
+    TOTRANS("どこでもLOADに失敗しました\n保存時とPC6001Vのバージョンが異なります"),
+    TOTRANS("リプレイ再生に失敗しました"),
+    TOTRANS("リプレイ記録に失敗しました"),
+    TOTRANS("リプレイデータがありません")
 };
 
 
@@ -339,23 +339,71 @@ const char *MsgErr[] = {
 const char *OSD_ColorName( int num )
 {
     static const char *JColorName[] = {
-        "MODE1,2 黒(ボーダー)",
-        "MODE1 Set1 緑",		"MODE1 Set1 深緑",		"MODE1 Set2 橙",		"MODE1 Set2 深橙",
-        "MODE2 緑",				"MODE2 黄",				"MODE2 青",				"MODE2 赤",
-        "MODE2 白",				"MODE2 シアン",			"MODE2 マゼンタ",		"MODE2 橙",
-        "MODE3 Set1 緑",		"MODE3 Set1 黄",		"MODE3 Set1 青",		"MODE3 Set1 赤",
-        "MODE3 Set2 白",		"MODE3 Set2 シアン",	"MODE3 Set2 マゼンタ",	"MODE3 Set2 橙",
-        "MODE4 Set1 深緑",		"MODE4 Set1 緑",		"MODE4 Set2 黒",		"MODE4 Set2 白",
-        "MODE4 Set1 にじみ 赤",		"MODE4 Set1 にじみ 青",		"MODE4 Set1 にじみ 桃",		"MODE4 Set1 にじみ 緑",
-        "MODE4 Set1 にじみ 明赤",	"MODE4 Set1 にじみ 暗赤",	"MODE4 Set1 にじみ 明青",	"MODE4 Set1 にじみ 暗青",
-        "MODE4 Set1 にじみ 明桃",	"MODE4 Set1 にじみ 暗桃",	"MODE4 Set1 にじみ 明緑",	"MODE4 Set1 にじみ 暗緑",
-        "MODE4 Set2 にじみ 赤",		"MODE4 Set2 にじみ 青",		"MODE4 Set2 にじみ 桃",		"MODE4 Set2 にじみ 緑",
-        "MODE4 Set2 にじみ 明赤",	"MODE4 Set2 にじみ 暗赤",	"MODE4 Set2 にじみ 明青",	"MODE4 Set2 にじみ 暗青",
-        "MODE4 Set2 にじみ 明桃",	"MODE4 Set2 にじみ 暗桃",	"MODE4 Set2 にじみ 明緑",	"MODE4 Set2 にじみ 暗緑",
-        "mk2〜 透明(黒)",		"mk2〜 橙",				"mk2〜 青緑",			"mk2〜 黄緑",
-        "mk2〜 青紫",			"mk2〜 赤紫",			"mk2〜 空色",			"mk2〜 灰色",
-        "mk2〜 黒",				"mk2〜 赤",				"mk2〜 緑",				"mk2〜 黄",
-        "mk2〜 青",				"mk2〜 マゼンタ",		"mk2〜 シアン",			"mk2〜 白"
+        TOTRANS("MODE1,2 黒(ボーダー)"),
+        TOTRANS("MODE1 Set1 緑"),
+        TOTRANS("MODE1 Set1 深緑"),
+        TOTRANS("MODE1 Set2 橙"),
+        TOTRANS("MODE1 Set2 深橙"),
+        TOTRANS("MODE2 緑"),
+        TOTRANS("MODE2 黄"),
+        TOTRANS("MODE2 青"),
+        TOTRANS("MODE2 赤"),
+        TOTRANS("MODE2 白"),
+        TOTRANS("MODE2 シアン"),
+        TOTRANS("MODE2 マゼンタ"),
+        TOTRANS("MODE2 橙"),
+        TOTRANS("MODE3 Set1 緑"),
+        TOTRANS("MODE3 Set1 黄"),
+        TOTRANS("MODE3 Set1 青"),
+        TOTRANS("MODE3 Set1 赤"),
+        TOTRANS("MODE3 Set2 白"),
+        TOTRANS("MODE3 Set2 シアン"),
+        TOTRANS("MODE3 Set2 マゼンタ"),
+        TOTRANS("MODE3 Set2 橙"),
+        TOTRANS("MODE4 Set1 深緑"),
+        TOTRANS("MODE4 Set1 緑"),
+        TOTRANS("MODE4 Set2 黒"),
+        TOTRANS("MODE4 Set2 白"),
+        TOTRANS("MODE4 Set1 にじみ 赤"),
+        TOTRANS("MODE4 Set1 にじみ 青"),
+        TOTRANS("MODE4 Set1 にじみ 桃"),
+        TOTRANS("MODE4 Set1 にじみ 緑"),
+        TOTRANS("MODE4 Set1 にじみ 明赤"),
+        TOTRANS("MODE4 Set1 にじみ 暗赤"),
+        TOTRANS("MODE4 Set1 にじみ 明青"),
+        TOTRANS("MODE4 Set1 にじみ 暗青"),
+        TOTRANS("MODE4 Set1 にじみ 明桃"),
+        TOTRANS("MODE4 Set1 にじみ 暗桃"),
+        TOTRANS("MODE4 Set1 にじみ 明緑"),
+        TOTRANS("MODE4 Set1 にじみ 暗緑"),
+        TOTRANS("MODE4 Set2 にじみ 赤"),
+        TOTRANS("MODE4 Set2 にじみ 青"),
+        TOTRANS("MODE4 Set2 にじみ 桃"),
+        TOTRANS("MODE4 Set2 にじみ 緑"),
+        TOTRANS("MODE4 Set2 にじみ 明赤"),
+        TOTRANS("MODE4 Set2 にじみ 暗赤"),
+        TOTRANS("MODE4 Set2 にじみ 明青"),
+        TOTRANS("MODE4 Set2 にじみ 暗青"),
+        TOTRANS("MODE4 Set2 にじみ 明桃"),
+        TOTRANS("MODE4 Set2 にじみ 暗桃"),
+        TOTRANS("MODE4 Set2 にじみ 明緑"),
+        TOTRANS("MODE4 Set2 にじみ 暗緑"),
+        TOTRANS("mk2〜 透明(黒)"),
+        TOTRANS("mk2〜 橙"),
+        TOTRANS("mk2〜 青緑"),
+        TOTRANS("mk2〜 黄緑"),
+        TOTRANS("mk2〜 青紫"),
+        TOTRANS("mk2〜 赤紫"),
+        TOTRANS("mk2〜 空色"),
+        TOTRANS("mk2〜 灰色"),
+        TOTRANS("mk2〜 黒"),
+        TOTRANS("mk2〜 赤"),
+        TOTRANS("mk2〜 緑"),
+        TOTRANS("mk2〜 黄"),
+        TOTRANS("mk2〜 青"),
+        TOTRANS("mk2〜 マゼンタ"),
+        TOTRANS("mk2〜 シアン"),
+        TOTRANS("mk2〜 白")
     };
 
     if( num < 0 || num >= COUNTOF( JColorName ) ) return NULL;
@@ -372,128 +420,128 @@ const char *OSD_ColorName( int num )
 const char *OSD_KeyName( PCKEYsym sym )
 {
     static const PCKeyName kname[] = {
-        { KVC_1,			"1" },
-        { KVC_2,			"2" },
-        { KVC_3,			"3" },
-        { KVC_4,			"4" },
-        { KVC_5,			"5" },
-        { KVC_6,			"6" },
-        { KVC_7,			"7" },
-        { KVC_8,			"8" },
-        { KVC_9,			"9" },
-        { KVC_0,			"0" },
+        { KVC_1,			TOTRANS("1") },
+        { KVC_2,			TOTRANS("2") },
+        { KVC_3,			TOTRANS("3") },
+        { KVC_4,			TOTRANS("4") },
+        { KVC_5,			TOTRANS("5") },
+        { KVC_6,			TOTRANS("6") },
+        { KVC_7,			TOTRANS("7") },
+        { KVC_8,			TOTRANS("8") },
+        { KVC_9,			TOTRANS("9") },
+        { KVC_0,			TOTRANS("0") },
 
-        { KVC_A,			"A" },
-        { KVC_B,			"B" },
-        { KVC_C,			"C" },
-        { KVC_D,			"D" },
-        { KVC_E,			"E" },
-        { KVC_F,			"F" },
-        { KVC_G,			"G" },
-        { KVC_H,			"H" },
-        { KVC_I,			"I" },
-        { KVC_J,			"J" },
-        { KVC_K,			"K" },
-        { KVC_L,			"L" },
-        { KVC_M,			"M" },
-        { KVC_N,			"N" },
-        { KVC_O,			"O" },
-        { KVC_P,			"P" },
-        { KVC_Q,			"Q" },
-        { KVC_R,			"R" },
-        { KVC_S,			"S" },
-        { KVC_T,			"T" },
-        { KVC_U,			"U" },
-        { KVC_V,			"V" },
-        { KVC_W,			"W" },
-        { KVC_X,			"X" },
-        { KVC_Y,			"Y" },
-        { KVC_Z,			"Z" },
+        { KVC_A,			TOTRANS("A") },
+        { KVC_B,			TOTRANS("B") },
+        { KVC_C,			TOTRANS("C") },
+        { KVC_D,			TOTRANS("D") },
+        { KVC_E,			TOTRANS("E") },
+        { KVC_F,			TOTRANS("F") },
+        { KVC_G,			TOTRANS("G") },
+        { KVC_H,			TOTRANS("H") },
+        { KVC_I,			TOTRANS("I") },
+        { KVC_J,			TOTRANS("J") },
+        { KVC_K,			TOTRANS("K") },
+        { KVC_L,			TOTRANS("L") },
+        { KVC_M,			TOTRANS("M") },
+        { KVC_N,			TOTRANS("N") },
+        { KVC_O,			TOTRANS("O") },
+        { KVC_P,			TOTRANS("P") },
+        { KVC_Q,			TOTRANS("Q") },
+        { KVC_R,			TOTRANS("R") },
+        { KVC_S,			TOTRANS("S") },
+        { KVC_T,			TOTRANS("T") },
+        { KVC_U,			TOTRANS("U") },
+        { KVC_V,			TOTRANS("V") },
+        { KVC_W,			TOTRANS("W") },
+        { KVC_X,			TOTRANS("X") },
+        { KVC_Y,			TOTRANS("Y") },
+        { KVC_Z,			TOTRANS("Z") },
 
-        { KVC_F1,			"F1" },
-        { KVC_F2,			"F2" },
-        { KVC_F3,			"F3" },
-        { KVC_F4,			"F4" },
-        { KVC_F5,			"F5" },
-        { KVC_F6,			"F6" },
-        { KVC_F7,			"F7" },
-        { KVC_F8,			"F8" },
-        { KVC_F9,			"F9" },
-        { KVC_F10,			"F10" },
-        { KVC_F11,			"F11" },
-        { KVC_F12,			"F12" },
+        { KVC_F1,			TOTRANS("F1") },
+        { KVC_F2,			TOTRANS("F2") },
+        { KVC_F3,			TOTRANS("F3") },
+        { KVC_F4,			TOTRANS("F4") },
+        { KVC_F5,			TOTRANS("F5") },
+        { KVC_F6,			TOTRANS("F6") },
+        { KVC_F7,			TOTRANS("F7") },
+        { KVC_F8,			TOTRANS("F8") },
+        { KVC_F9,			TOTRANS("F9") },
+        { KVC_F10,			TOTRANS("F10") },
+        { KVC_F11,			TOTRANS("F11") },
+        { KVC_F12,			TOTRANS("F12") },
 
-        { KVC_MINUS,		"-" },
-        { KVC_CARET,		"^" },
-        { KVC_BACKSPACE,	"BackSpace" },
-        { KVC_AT,			"@" },
-        { KVC_LBRACKET,		"[" },
-        { KVC_SEMICOLON,	";" },
-        { KVC_COLON,		":" },
-        { KVC_COMMA,		"," },
-        { KVC_PERIOD,		"." },
-        { KVC_SLASH,		"/" },
-        { KVC_SPACE,		"Space" },
+        { KVC_MINUS,		TOTRANS("-") },
+        { KVC_CARET,		TOTRANS("^") },
+        { KVC_BACKSPACE,	TOTRANS("BackSpace") },
+        { KVC_AT,			TOTRANS("@") },
+        { KVC_LBRACKET,		TOTRANS("[") },
+        { KVC_SEMICOLON,	TOTRANS(";") },
+        { KVC_COLON,		TOTRANS(":") },
+        { KVC_COMMA,		TOTRANS(",") },
+        { KVC_PERIOD,		TOTRANS(".") },
+        { KVC_SLASH,		TOTRANS("/") },
+        { KVC_SPACE,		TOTRANS("Space") },
 
-        { KVC_ESC,			"ESC" },
-        { KVC_HANZEN,		"半角/全角" },
-        { KVC_TAB,			"Tab" },
-        { KVC_CAPSLOCK,		"CapsLock" },
-        { KVC_ENTER,		"Enter" },
-        { KVC_LCTRL,		"L-Ctrl" },
-        { KVC_RCTRL,		"R-Ctrl" },
-        { KVC_LSHIFT,		"L-Shift" },
-        { KVC_RSHIFT,		"R-Shift" },
-        { KVC_LALT,			"L-Alt" },
-        { KVC_RALT,			"R-Alt" },
-        { KVC_PRINT,		"PrintScreen" },
-        { KVC_SCROLLLOCK,	"ScrollLock" },
-        { KVC_PAUSE,		"Pause" },
-        { KVC_INSERT,		"Insert" },
-        { KVC_DELETE,		"Delete" },
-        { KVC_END,			"End" },
-        { KVC_HOME,			"Home" },
-        { KVC_PAGEUP,		"PageUp" },
-        { KVC_PAGEDOWN,		"PageDown" },
+        { KVC_ESC,			TOTRANS("ESC") },
+        { KVC_HANZEN,		TOTRANS("半角/全角") },
+        { KVC_TAB,			TOTRANS("Tab") },
+        { KVC_CAPSLOCK,		TOTRANS("CapsLock") },
+        { KVC_ENTER,		TOTRANS("Enter") },
+        { KVC_LCTRL,		TOTRANS("L-Ctrl") },
+        { KVC_RCTRL,		TOTRANS("R-Ctrl") },
+        { KVC_LSHIFT,		TOTRANS("L-Shift") },
+        { KVC_RSHIFT,		TOTRANS("R-Shift") },
+        { KVC_LALT,			TOTRANS("L-Alt") },
+        { KVC_RALT,			TOTRANS("R-Alt") },
+        { KVC_PRINT,		TOTRANS("PrintScreen") },
+        { KVC_SCROLLLOCK,	TOTRANS("ScrollLock") },
+        { KVC_PAUSE,		TOTRANS("Pause") },
+        { KVC_INSERT,		TOTRANS("Insert") },
+        { KVC_DELETE,		TOTRANS("Delete") },
+        { KVC_END,			TOTRANS("End") },
+        { KVC_HOME,			TOTRANS("Home") },
+        { KVC_PAGEUP,		TOTRANS("PageUp") },
+        { KVC_PAGEDOWN,		TOTRANS("PageDown") },
 
-        { KVC_UP,			"↑" },
-        { KVC_DOWN,			"↓" },
-        { KVC_LEFT,			"←" },
-        { KVC_RIGHT,		"→" },
+        { KVC_UP,			TOTRANS("↑") },
+        { KVC_DOWN,			TOTRANS("↓") },
+        { KVC_LEFT,			TOTRANS("←") },
+        { KVC_RIGHT,		TOTRANS("→") },
 
-        { KVC_P0,			"0(テンキー)" },
-        { KVC_P1,			"1(テンキー)" },
-        { KVC_P2,			"2(テンキー)" },
-        { KVC_P3,			"3(テンキー)" },
-        { KVC_P4,			"4(テンキー)" },
-        { KVC_P5,			"5(テンキー)" },
-        { KVC_P6,			"6(テンキー)" },
-        { KVC_P7,			"7(テンキー)" },
-        { KVC_P8,			"8(テンキー)" },
-        { KVC_P9,			"9(テンキー)" },
-        { KVC_NUMLOCK,		"NumLock" },
-        { KVC_P_PLUS,		"+(テンキー)" },
-        { KVC_P_MINUS,		"-(テンキー)" },
-        { KVC_P_MULTIPLY,	"*(テンキー)" },
-        { KVC_P_DIVIDE,		"/(テンキー)" },
-        { KVC_P_PERIOD,		".(テンキー)" },
-        { KVC_P_ENTER,		"Enter(テンキー)" },
+        { KVC_P0,			TOTRANS("0(テンキー)") },
+        { KVC_P1,			TOTRANS("1(テンキー)") },
+        { KVC_P2,			TOTRANS("2(テンキー)") },
+        { KVC_P3,			TOTRANS("3(テンキー)") },
+        { KVC_P4,			TOTRANS("4(テンキー)") },
+        { KVC_P5,			TOTRANS("5(テンキー)") },
+        { KVC_P6,			TOTRANS("6(テンキー)") },
+        { KVC_P7,			TOTRANS("7(テンキー)") },
+        { KVC_P8,			TOTRANS("8(テンキー)") },
+        { KVC_P9,			TOTRANS("9(テンキー)") },
+        { KVC_NUMLOCK,		TOTRANS("NumLock") },
+        { KVC_P_PLUS,		TOTRANS("+(テンキー)") },
+        { KVC_P_MINUS,		TOTRANS("-(テンキー)") },
+        { KVC_P_MULTIPLY,	TOTRANS("*(テンキー)") },
+        { KVC_P_DIVIDE,		TOTRANS("/(テンキー)") },
+        { KVC_P_PERIOD,		TOTRANS(".(テンキー)") },
+        { KVC_P_ENTER,		TOTRANS("Enter(テンキー)") },
 
         // 日本語キーボードのみ
-        { KVC_YEN,			"\\" },
-        { KVC_RBRACKET,		"]" },
-        { KVC_UNDERSCORE,	"_" },
-        { KVC_MUHENKAN,		"無変換" },
-        { KVC_HENKAN,		"変換" },
-        { KVC_HIRAGANA,		"ひらがな" },
+        { KVC_YEN,			TOTRANS("\\") },
+        { KVC_RBRACKET,		TOTRANS("]") },
+        { KVC_UNDERSCORE,	TOTRANS("_") },
+        { KVC_MUHENKAN,		TOTRANS("無変換") },
+        { KVC_HENKAN,		TOTRANS("変換") },
+        { KVC_HIRAGANA,		TOTRANS("ひらがな") },
 
         // 英語キーボードのみ
-        { KVE_BACKSLASH,	"BackSlash" },
+        { KVE_BACKSLASH,	TOTRANS("BackSlash") },
 
         // 追加キー
-        { KVX_RMETA,		"L-Windows" },
-        { KVX_LMETA,		"R-Windows" },
-        { KVX_MENU,			"Menu" }
+        { KVX_RMETA,		TOTRANS("L-Windows") },
+        { KVX_LMETA,		TOTRANS("R-Windows") },
+        { KVX_MENU,			TOTRANS("Menu") }
     };
 
     const char *str = NULL;
@@ -1182,7 +1230,7 @@ bool OSD_FileReadOnly( const char *fullpath )
 ///////////////////////////////////////////////////////////
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
-    QByteArray result = QFileDialog::getExistingDirectory(NULL, "フォルダを選択してください。", QDir::homePath()).toUtf8();
+    QByteArray result = QFileDialog::getExistingDirectory(NULL, TRANS("フォルダを選択してください。"), QDir::homePath()).toUtf8();
     strcpy(Result, result);
     return result.constData();
 }
@@ -1246,113 +1294,113 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
     switch( type ){
     case FD_TapeLoad:	// TAPE(LOAD)選択
         mode   = FM_Load;
-        title  = "TAPEイメージ選択(LOAD)";
-        filter = "TAPEイメージ (*.p6t *.cas *.p6);;"
+        title  = TOTRANS("TAPEイメージ選択(LOAD)");
+        filter = TOTRANS("TAPEイメージ (*.p6t *.cas *.p6);;"
                 "P6T形式 (*.p6t);;"
                 "ベタ形式 (*.cas *.p6);;"
-                "全てのファイル (*.*)";
+                "全てのファイル (*.*)");
         ext    = "p6t";
         break;
 
     case FD_TapeSave:	// TAPE(SAVE)選択
         mode   = FM_Save;
-        title  = "TAPEイメージ選択(SAVE)";
-        filter = "TAPEイメージ (*.p6t *.cas *.p6);;"
+        title  = TOTRANS("TAPEイメージ選択(SAVE)");
+        filter = TOTRANS("TAPEイメージ (*.p6t *.cas *.p6);;"
                 "P6T形式 (*.p6t);;"
                 "ベタ形式 (*.cas *.p6);;"
-                "全てのファイル (*.*)";
+                "全てのファイル (*.*)");
         ext    = "p6t";
         break;
 
     case FD_Disk:		// DISK選択
         mode   = FM_Load;
-        title  = "DISKイメージ選択";
-        filter = "DISKイメージ(*.d88);;"
+        title  = TOTRANS("DISKイメージ選択");
+        filter = TOTRANS("DISKイメージ(*.d88);;"
                 "D88形式 (*.d88);;"
-                "全てのファイル (*.*)";
+                "全てのファイル (*.*)");
         ext    = "d88";
         break;
 
     case FD_ExtRom:		// 拡張ROM選択
         mode   = FM_Load;
-        title  = "拡張ROMイメージ選択";
-        filter = "全てのファイル (*.*)";
+        title  = TOTRANS("拡張ROMイメージ選択");
+        filter = TOTRANS("全てのファイル (*.*)");
         break;
 
     case FD_Printer:	// プリンター出力ファイル選択
         mode   = FM_Save;
-        title  = "プリンター出力ファイル選択";
-        filter = "全てのファイル (*.*)";
+        title  = TOTRANS("プリンター出力ファイル選択");
+        filter = TOTRANS("全てのファイル (*.*)");
         ext    = "txt";
         break;
 
     case FD_FontZ:		// 全角フォントファイル選択
         mode   = FM_Load;
-        title  = "全角フォントファイル選択";
-        filter = "PNGファイル (*.png);;"
-                "全てのファイル (*.*)";
+        title  = TOTRANS("全角フォントファイル選択");
+        filter = TOTRANS("PNGファイル (*.png);;"
+                "全てのファイル (*.*)");
         ext    = "png";
         break;
 
     case FD_FontH:		// 半角フォントファイル選択
         mode   = FM_Load;
-        title  = "半角フォントファイル選択";
-        filter = "PNGファイル (*.png);;"
-                "全てのファイル (*.*)";
+        title  = TOTRANS("半角フォントファイル選択");
+        filter = TOTRANS("PNGファイル (*.png);;"
+                "全てのファイル (*.*)");
         ext    = "png";
         break;
 
     case FD_DokoLoad:	// どこでもLOADファイル選択
         mode   = FM_Load;
-        title  = "どこでもLOADファイル選択";
-        filter = "どこでもSAVEファイル (*.dds *.ddr);;"
+        title  = TOTRANS("どこでもLOADファイル選択");
+        filter = TOTRANS("どこでもSAVEファイル (*.dds *.ddr);;"
                 "どこでもSAVE形式 (*.dds);;"
                 "リプレイファイル (*.ddr);;"
-                "全てのファイル (*.*)";
+                "全てのファイル (*.*)");
         ext    = "dds";
         break;
 
     case FD_DokoSave:	// どこでもSAVEファイル選択
         mode   = FM_Save;
-        title  = "どこでもSAVEファイル選択";
-        filter = "どこでもSAVE形式 (*.dds);;"
-                "全てのファイル (*.*)";
+        title  = TOTRANS("どこでもSAVEファイル選択");
+        filter = TOTRANS("どこでもSAVE形式 (*.dds);;"
+                "全てのファイル (*.*)");
         ext    = "dds";
         break;
 
     case FD_RepLoad:	// リプレイ再生ファイル選択
         mode   = FM_Load;
-        title  = "リプレイ再生ファイル選択";
-        filter = "リプレイファイル (*.ddr);;"
-                "全てのファイル (*.*)";
+        title  = TOTRANS("リプレイ再生ファイル選択");
+        filter = TOTRANS("リプレイファイル (*.ddr);;"
+                "全てのファイル (*.*)");
         ext    = "ddr";
         break;
 
     case FD_RepSave:	// リプレイ保存ファイル選択
         mode   = FM_Save;
-        title  = "リプレイ保存ファイル選択";
-        filter = "リプレイファイル (*.ddr);;"
-                "全てのファイル (*.*)";
+        title  = TOTRANS("リプレイ保存ファイル選択");
+        filter = TOTRANS("リプレイファイル (*.ddr);;"
+                "全てのファイル (*.*)");
         ext    = "ddr";
         break;
 
     case FD_AVISave:	// ビデオキャプチャ出力ファイル選択
         mode   = FM_Save;
-        title  = "ビデオキャプチャ出力ファイル選択";
-        filter = "AVIファイル (*.avi);;"
-                "全てのファイル (*.*)";
+        title  = TOTRANS("ビデオキャプチャ出力ファイル選択");
+        filter = TOTRANS("AVIファイル (*.avi);;"
+                "全てのファイル (*.*)");
         ext    = "avi";
         break;
 
     case FD_LoadAll:	// 汎用LOAD
     default:
         mode   = FM_Load;
-        title  = "ファイル選択";
-        filter = "全てのファイル (*.*)";
+        title  = TOTRANS("ファイル選択");
+        filter = TOTRANS("全てのファイル (*.*)");
         break;
     }
 
-    return OSD_FileDiaog( NULL, mode, title, filter, fullpath, path, ext );
+    return OSD_FileDiaog( NULL, mode, TRANS(title), TRANS(filter), fullpath, path, ext );
 }
 
 

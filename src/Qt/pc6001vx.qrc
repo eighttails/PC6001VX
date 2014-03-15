@@ -9,5 +9,6 @@
         <file>res/font/fonth12.png</file>
         <file>res/background.png</file>
         <file>res/background60.png</file>
+        <file>translation/PC6001VX_en.qm</file>
     </qresource>
 </RCC>

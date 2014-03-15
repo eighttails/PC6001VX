@@ -240,7 +240,7 @@ bool cIni::Write( void )
 	do{
 		switch( node->NodeID ){
 		case cNode::NODE_COMMENT:	// Comment
-			if( strlen(node->Comment) ) fprintf( fp, ";%s\n", node->Comment );
+            if( strlen(node->Comment) ) fprintf( fp, ";%s\n", TRANS(node->Comment) );
 			else                        fprintf( fp, "\n" );
 			break;
 			
@@ -258,7 +258,7 @@ bool cIni::Write( void )
 			if( node->Comment ){
 				for( int i=TABN*TABW-((int)strlen(node->Value)+2); i>0; i-=TABW )
 					fprintf( fp, "\t" );
-				fprintf( fp, "\t;%s\n", node->Comment );
+                fprintf( fp, "\t;%s\n", TRANS(node->Comment) );
 			}else
 				fprintf( fp, "\n" );
 			
@@ -415,7 +415,7 @@ bool cIni::PutEntry( const char *section, const char *comment, const char *entry
 	}
 	
 	// エントリにコメントありなら追加
-	if( comment ) node->SetMember( cNode::NODE_COMMENT, comment );
+    if( comment ) node->SetMember( cNode::NODE_COMMENT, comment );
 	
 	// エントリを保存
 	char tstr[MAX_LINE+1];

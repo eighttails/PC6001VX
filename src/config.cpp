@@ -541,7 +541,7 @@ bool CFG6::Init( void )
 			FILE *fp = FOPENEN( IniPath, "wt" );
 			if( !fp ) throw Error::IniWriteFailed;
 			// タイトル行を出力して一旦閉じる
-			fprintf( fp, MSINI_TITLE );
+            fprintf( fp, TRANS(MSINI_TITLE) );
 			fclose( fp );
 			
 			// INIファイルを開く

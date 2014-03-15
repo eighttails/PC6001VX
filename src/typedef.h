@@ -126,14 +126,11 @@ template <class T, class S>
 T min(T v1, S v2){ T v2_(v2); return v1 < v2_ ? v1 : v2_; }
 
 #ifdef QTP6VX
-#include <QObject>
+#include <QCoreApplication>
 #include <QString>
-//翻訳対象文字列
-#define TOTRANS(a)  QT_TR_NOOP(a)
 //翻訳された文字列を返す
-#define TRANS(a) (QObject::tr(a).toLocal8Bit())
+#define TRANS(a) (QCoreApplication::translate("PC6001VX", a).toLocal8Bit().data())
 #else
-#define TOTRANS(a)  a
 #define TRANS(a) a
 #endif
 

@@ -22,6 +22,12 @@ int main( int argc, char *argv[] )
 
     QtP6VXApplication app(argc, argv);
 
+    QString locale = QLocale::system().name();
+    QTranslator myappTranslator;
+    if(locale == "ja_JP"){
+        myappTranslator.load(":/translation/PC6001VX_en");
+        app.installTranslator(&myappTranslator);
+    }
     //setlocale(LC_ALL,"Japanese");
 
     //イベントループが始まったらQtP6VXApplication::startup()を実行

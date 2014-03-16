@@ -129,7 +129,7 @@ T min(T v1, S v2){ T v2_(v2); return v1 < v2_ ? v1 : v2_; }
 #include <QCoreApplication>
 #include <QString>
 //翻訳された文字列を返す
-#define TRANS(a) (QCoreApplication::translate("PC6001VX", a).toLocal8Bit().data())
+#define TRANS(a) (QCoreApplication::translate("PC6001VX", a).toUtf8().data())
 #else
 #define TRANS(a) a
 #endif

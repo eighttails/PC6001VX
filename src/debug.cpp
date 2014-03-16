@@ -185,28 +185,28 @@ const struct{
 	const char *HelpMes;
 }MonitorCmd[]=
 	{
-	{ MONITOR_HELP,		"help",		"ヘルプを表示" },
-	{ MONITOR_HELP,		"?",		"    〃" },
-	{ MONITOR_GO,		"go",		"実行" },
-	{ MONITOR_GO,		"g",		"    〃" },
-	{ MONITOR_TRACE,	"trace",	"トレース実行" },
-	{ MONITOR_TRACE,	"t",		"    〃" },
-	{ MONITOR_STEP,		"step",		"ステップ実行" },
-	{ MONITOR_STEP,		"s",		"    〃" },
-	{ MONITOR_STEPALL,	"S",		"    〃" },
-	{ MONITOR_BREAK,	"break",	"ブレークポイント設定" },
-	{ MONITOR_BREAK,	"b",		"    〃" },
-	{ MONITOR_READ,		"read",		"メモリを読込む" },
-	{ MONITOR_WRITE,	"write",	"メモリに書込む" },
-	{ MONITOR_FILL,		"fill",		"メモリを埋める" },
-	{ MONITOR_MOVE,		"move",		"メモリを移動" },
-	{ MONITOR_SEARCH,	"search",	"メモリを検索" },
-	{ MONITOR_OUT,		"out",		"ポート出力" },
-	{ MONITOR_LOADMEM,	"loadmem",	"ファイルからメモリに読込む" },
-	{ MONITOR_SAVEMEM,	"savemem",	"メモリからファイルに書込む" },
-	{ MONITOR_RESET,	"reset",	"PC6001Vをリセット" },
-	{ MONITOR_REG,		"reg",		"CPUレジスタを参照/設定" },
-	{ MONITOR_DISASM,	"disasm",	"逆アセンブル" },
+    { MONITOR_HELP,		"help",		QT_TRANSLATE_NOOP("PC6001VX", "ヘルプを表示") },
+    { MONITOR_HELP,		"?",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
+    { MONITOR_GO,		"go",		QT_TRANSLATE_NOOP("PC6001VX", "実行") },
+    { MONITOR_GO,		"g",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
+    { MONITOR_TRACE,	"trace",	QT_TRANSLATE_NOOP("PC6001VX", "トレース実行") },
+    { MONITOR_TRACE,	"t",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
+    { MONITOR_STEP,		"step",		QT_TRANSLATE_NOOP("PC6001VX", "ステップ実行") },
+    { MONITOR_STEP,		"s",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
+    { MONITOR_STEPALL,	"S",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
+    { MONITOR_BREAK,	"break",	QT_TRANSLATE_NOOP("PC6001VX", "ブレークポイント設定") },
+    { MONITOR_BREAK,	"b",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
+    { MONITOR_READ,		"read",		QT_TRANSLATE_NOOP("PC6001VX", "メモリを読込む") },
+    { MONITOR_WRITE,	"write",	QT_TRANSLATE_NOOP("PC6001VX", "メモリに書込む") },
+    { MONITOR_FILL,		"fill",		QT_TRANSLATE_NOOP("PC6001VX", "メモリを埋める") },
+    { MONITOR_MOVE,		"move",		QT_TRANSLATE_NOOP("PC6001VX", "メモリを移動") },
+    { MONITOR_SEARCH,	"search",	QT_TRANSLATE_NOOP("PC6001VX", "メモリを検索") },
+    { MONITOR_OUT,		"out",		QT_TRANSLATE_NOOP("PC6001VX", "ポート出力") },
+    { MONITOR_LOADMEM,	"loadmem",	QT_TRANSLATE_NOOP("PC6001VX", "ファイルからメモリに読込む") },
+    { MONITOR_SAVEMEM,	"savemem",	QT_TRANSLATE_NOOP("PC6001VX", "メモリからファイルに書込む") },
+    { MONITOR_RESET,	"reset",	QT_TRANSLATE_NOOP("PC6001VX", "PC6001Vをリセット") },
+    { MONITOR_REG,		"reg",		QT_TRANSLATE_NOOP("PC6001VX", "CPUレジスタを参照/設定") },
+    { MONITOR_DISASM,	"disasm",	QT_TRANSLATE_NOOP("PC6001VX", "逆アセンブル") },
 
 };
 
@@ -320,10 +320,10 @@ bool cWndMon::Init( void )
 {
 	if( ZCons::Init( MONWINW, MONWINH, "" ) ){
 		// 最初だけメッセージ表示
-		ZCons::Printf( "***********************************************\n" );
-		ZCons::Printf( "* PC6001V  - monitor mode -                   *\n" );
-		ZCons::Printf( "*  help 又は ? と入力するとヘルプを表示します *\n" );
-		ZCons::Printf( "***********************************************\n\n" );
+        ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "***********************************************\n") );
+        ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "* PC6001V  - monitor mode -                   *\n") );
+        ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "*  help 又は ? と入力するとヘルプを表示します *\n") );
+        ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "***********************************************\n\n") );
 		ZCons::Printf( PROMPT );
 		return true;
 	}
@@ -477,7 +477,7 @@ int cWndMon::GetArg( void )
 		
 		if( i == COUNTOF( MonitorCmd ) ){	// 無効命令の場合
 			ZCons::SetColor( FC_RED );
-			ZCons::Printf( "無効なコマンドです : %s\n", Argv[0] );
+            ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "無効なコマンドです : %s\n"), Argv[0] );
 			ZCons::SetColor( FC_WHITE );
 			JobNo = MONITOR_NONE;
 		}else{								// 引数が ? の場合
@@ -551,7 +551,7 @@ void cWndMon::Shift( void )
 #define ErrorMes()													\
 	do{																\
 		ZCons::SetColor( FC_RED );									\
-		ZCons::Printf( "引数が無効です (arg %d)\n", ArgvCounter );	\
+        ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "引数が無効です (arg %d)\n"), ArgvCounter );	\
 		ZCons::SetColor( FC_WHITE );								\
 		return;														\
 	}while(0)
@@ -584,8 +584,8 @@ void cWndMon::Exec( int cmd )
 		if( !cmd ){	// 引数なし。全ヘルプ表示
 			ZCons::Printf( "help\n" );
 			for( i=0; i < COUNTOF(MonitorCmd); i++ )
-				ZCons::Printf( "  %-7s %s\n", MonitorCmd[i].cmd, MonitorCmd[i].HelpMes );
-			ZCons::Printf( "     注: \"help <コマンド名>\" と入力すると 更に詳細なヘルプを表示します。\n" );
+                ZCons::Printf( "  %-7s %s\n", TRANS(MonitorCmd[i].cmd), TRANS(MonitorCmd[i].HelpMes) );
+            ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX","     注: \"help <コマンド名>\" と入力すると 更に詳細なヘルプを表示します。\n") );
 		}else{		// 引数のコマンドのヘルプ表示
 			for( i=0; i < COUNTOF(MonitorCmd); i++ )
 				if( !strcmp( cmd, MonitorCmd[i].cmd ) ) break;
@@ -796,7 +796,7 @@ void cWndMon::Exec( int cmd )
 				addr = vm->BpGetAddr( i );
 				switch( vm->BpGetType( i ) ){
 				case BPoint::BP_NONE:
-					ZCons::Printf( "-- なし --\n" );
+                    ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "-- なし --\n") );
 					break;
 				case BPoint::BP_PC:
 					ZCons::Printf( "PC   reach %04XH\n", addr&0xffff );
@@ -820,7 +820,7 @@ void cWndMon::Exec( int cmd )
 		}else{
 			if( action == ARG_CLEAR ){
 				vm->BpSetType( number, BPoint::BP_NONE );
-				ZCons::Printf( "ブレークポイント #%02d を消去します。\n", number+1 );
+                ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "ブレークポイント #%02d を消去します。\n"), number+1 );
 			}else{
 				const char *s = NULL;
 				
@@ -847,7 +847,7 @@ void cWndMon::Exec( int cmd )
 					break;
 				}
 				vm->BpSetAddr( number, addr );
-				ZCons::Printf( "ブレークポイント #%02d を設定します。[ ",number+1 );
+                ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "ブレークポイント #%02d を設定します。[ "),number+1 );
 				ZCons::Printf( s, addr );
 				ZCons::Printf( " ]\n" );
 			}
@@ -1208,32 +1208,39 @@ void cWndMon::Help( int cmd )
 	switch( cmd ){
 	case MONITOR_HELP:
 		ZCons::Printf(
-			"  help [<cmd>]\n"
-			"    ヘルプを表示します\n"
-			"    <cmd> ... ヘルプを表示したいコマンド\n"
-			"              [omit]... 全コマンドの簡単なヘルプを表示します\n"
-		);
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  help [<cmd>]\n"
+            "    ヘルプを表示します\n"
+            "    <cmd> ... ヘルプを表示したいコマンド\n"
+            "              [omit]... 全コマンドの簡単なヘルプを表示します\n"
+            )
+        );
 		break;
 		
 	case MONITOR_GO:
 		ZCons::Printf(
-			"  go\n"
-			"    プログラムを実行します\n"
-		);
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  go\n"
+            "    プログラムを実行します\n"
+            )
+        );
 		break;
 		
 	case MONITOR_TRACE:
 		ZCons::Printf(
-			"  trace [#<steps>|<steps>]\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  trace [#<steps>|<steps>]\n"
 			"    execute program specityes times\n"
 			"    [all omit]        ... trace some steps (previous steps)\n"
 			"    #<steps>, <steps> ... step counts of trace  ( you can omit '#' )\n"
-		);
+            )
+        );
 		break;
 		
 	case MONITOR_STEP:
 		ZCons::Printf(
-			"  step [call][jp][rep]\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  step [call][jp][rep]\n"
 			"    execute program 1 time\n"
 			"    [all omit] ... execute 1 step\n"
 			"    call       ... not trace CALL instruction\n"
@@ -1241,23 +1248,27 @@ void cWndMon::Help( int cmd )
 			"    rep        ... not trace LD*R/CP*R/IN*R/OT*R instruction\n"
 			"    CAUTION)\n"
 			"         call/jp/rep are use break-point #10.\n"
-		);
+            )
+        );
 		break;
 		
 	case MONITOR_STEPALL:
 		ZCons::Printf(
-			"  S\n"
-			"    'step all' と同じ   (stepを参照)\n"
-		);
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  S\n"
+            "    'step all' と同じ   (stepを参照)\n"
+            )
+        );
 		break;
 		
 	case MONITOR_BREAK:
 		ZCons::Printf(
-			"  break [<action>] <addr|port> [#<No>]\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  break [<action>] <addr|port> [#<No>]\n"
 			"  break CLEAR [#<No>]\n"
 			"  break\n"
-			"    ブレークポイントを設定します\n"
-			"    [all omit]  ... 全てのブレークポイントを表示\n"
+            "    ブレークポイントを設定します\n"
+            "    [all omit]  ... 全てのブレークポイントを表示\n"
 			"    <action>    ... set action of conditon PC|READ|WRITE|IN|OUT or CLEAR\n"
 			"                    PC    ... break if PC reach addr\n"
 			"                    READ  ... break if data is read\n"
@@ -1271,122 +1282,145 @@ void cWndMon::Help( int cmd )
 			"    #<No>       ... number of break point. (#1..#10)\n"
 			"                    [omit]... select #1\n"
 			"                    CAUTION).. #10 is used by system\n"
-		);
+            )
+        );
 		break;
 		
 	case MONITOR_READ:
 		ZCons::Printf(
-			"  read <addr>\n"
-			"    メモリを読込みます\n"
-			"    <addr> ... 指定アドレス\n"
-		);
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  read <addr>\n"
+            "    メモリを読込みます\n"
+            "    <addr> ... 指定アドレス\n"
+            )
+        );
 		break;
 		
 	case MONITOR_WRITE:
 		ZCons::Printf(
-			"  write <addr> <data>\n"
-			"    メモリに書込みます\n"
-			"    <addr> ... 指定アドレス\n"
-			"    <data> ... 書込むデータ\n"
-		);
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  write <addr> <data>\n"
+            "    メモリに書込みます\n"
+            "    <addr> ... 指定アドレス\n"
+            "    <data> ... 書込むデータ\n"
+            )
+        );
 		break;
 		
 	case MONITOR_FILL:
 		ZCons::Printf(
-			"  fill <start-addr> <end-addr> <value>\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  fill <start-addr> <end-addr> <value>\n"
 			"  fill <start-addr> #<size>    <value>\n"
-			"    メモリを指定値で埋めます\n"
-			"    <start-addr> ... 開始アドレス\n"
-			"    <end-addr>   ... 終了アドレス\n"
-			"    #<size>      ... サイズ\n"
-			"    <value>      ... 書込む値\n"
-		);
+            "    メモリを指定値で埋めます\n"
+            "    <start-addr> ... 開始アドレス\n"
+            "    <end-addr>   ... 終了アドレス\n"
+            "    #<size>      ... サイズ\n"
+            "    <value>      ... 書込む値\n"
+            )
+        );
 		break;
 		
 	case MONITOR_MOVE:
 		ZCons::Printf(
-			"  move <src-addr> <end-addr> <dist-addr>\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  move <src-addr> <end-addr> <dist-addr>\n"
 			"  move <src-addr> #<size>    <dist-addr>\n"
-			"    メモリを転送します\n"
-			"    <src-addr>  ... 転送元開始アドレス\n"
-			"    <end-addr>  ... 転送元終了アドレス\n"
-			"    #<size>     ... 転送サイズ\n"
-			"    <dist-addr> ... 転送先アドレス\n"
-		);
+            "    メモリを転送します\n"
+            "    <src-addr>  ... 転送元開始アドレス\n"
+            "    <end-addr>  ... 転送元終了アドレス\n"
+            "    #<size>     ... 転送サイズ\n"
+            "    <dist-addr> ... 転送先アドレス\n"
+            )
+        );
 		break;
 		
 	case MONITOR_SEARCH:
 		ZCons::Printf(
-			"  search [<value> [<start-addr> <end-addr>]]\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  search [<value> [<start-addr> <end-addr>]]\n"
 			"  search [<value> [<start-addr> #<size>]]\n"
-			"    メモリを検索します\n"
-			"    <value>      ... 検索値\n"
-			"    <start-addr> ... 検索開始アドレス\n"
-			"    <end-addr>   ... 検索終了アドレス\n"
-			"    #<size>      ... 検索サイズ\n"
-			"    [omit-all]   ... 前回の値または文字列を検索\n"
-		);
+            "    メモリを検索します\n"
+            "    <value>      ... 検索値\n"
+            "    <start-addr> ... 検索開始アドレス\n"
+            "    <end-addr>   ... 検索終了アドレス\n"
+            "    #<size>      ... 検索サイズ\n"
+            "    [omit-all]   ... 前回の値または文字列を検索\n"
+            )
+        );
 		break;
 		
 	case MONITOR_OUT:
 		ZCons::Printf(
-			"  out <port> <data>\n"
-			"    I/Oポートに出力します\n"
-			"    <port> ... I/Oポートアドレス\n"
-			"    <data> ... 出力データ\n"
-		);
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  out <port> <data>\n"
+            "    I/Oポートに出力します\n"
+            "    <port> ... I/Oポートアドレス\n"
+            "    <data> ... 出力データ\n"
+            )
+        );
 		break;
 		
 	case MONITOR_LOADMEM:
 		ZCons::Printf(
-			"  loadmem <filename> <start-addr> <end-addr>\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  loadmem <filename> <start-addr> <end-addr>\n"
 			"  loadmem <filename> <start-addr> #<size>\n"
-			"    ファイルからメモリにロードします\n"
-			"    <filename>   ... ファイル名\n"
-			"    <start-addr> ... ロード開始アドレス\n"
-			"    <end-addr>   ... ロード終了アドレス\n"
-			"    #<size>      ... ロードサイズ\n"
-		);
+            "    ファイルからメモリにロードします\n"
+            "    <filename>   ... ファイル名\n"
+            "    <start-addr> ... ロード開始アドレス\n"
+            "    <end-addr>   ... ロード終了アドレス\n"
+            "    #<size>      ... ロードサイズ\n"
+            )
+        );
 		break;
 		
 	case MONITOR_SAVEMEM:
 		ZCons::Printf(
-			"  savemem <filename> <start-addr> <end-addr>\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  savemem <filename> <start-addr> <end-addr>\n"
 			"  savemem <filename> <start-addr> #<size>\n"
-			"    メモリイメージをファイルにセーブします\n"
-			"    <filename>   ... ファイル名\n"
-			"    <start-addr> ... セーブ開始アドレス\n"
-			"    <end-addr>   ... セーブ終了アドレス\n"
-			"    #<size>      ... セーブサイズ\n"
-		);
+            "    メモリイメージをファイルにセーブします\n"
+            "    <filename>   ... ファイル名\n"
+            "    <start-addr> ... セーブ開始アドレス\n"
+            "    <end-addr>   ... セーブ終了アドレス\n"
+            "    #<size>      ... セーブサイズ\n"
+            )
+        );
 		break;
 		
 	case MONITOR_RESET:
 		ZCons::Printf(
-			"  reset\n"
-			"    PC6001Vをリセットし，アドレス 0000H から実行します\n"
-		);
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  reset\n"
+            "    PC6001Vをリセットし，アドレス 0000H から実行します\n"
+            )
+        );
 		break;
 		
 	case MONITOR_REG:
 		ZCons::Printf(
-			"  reg <name> <value>\n"
-			"    レジスタの値を参照，設定します\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  reg <name> <value>\n"
+            "    レジスタの値を参照，設定します\n"
 			"    <name>     ... specity register name.\n"
 			"                   AF|BC|DE|HL|AF'|BC'|DE'|HL'|IX|IY|SP|PC|I|R|IFF|IM\n"
 			"    <value>    ... set value\n"
-		);
+            )
+        );
 		break;
 		
 	case MONITOR_DISASM:
 		ZCons::Printf(
-			"  disasm [[<start-addr>][#<steps>]]\n"
-			"    逆アセンブルします\n"
+            QT_TRANSLATE_NOOP("PC6001VX",
+            "  disasm [[<start-addr>][#<steps>]]\n"
+            "    逆アセンブルします\n"
 			"    [all omit]   ... PCレジスタアドレスから16ステップ分を逆アセンブルします\n"
 			"    <start-addr> ... start-addr から逆アセンブルします\n"
 			"                     [omit]... PCレジスタアドレス\n"
 			"    #<steps>     ... 逆アセンブルするステップ数\n"
-			"                     [omit]... 16ステップ\n"
+            "                     [omit]... 16ステップ\n"
+            )
 		);
 		break;
 		

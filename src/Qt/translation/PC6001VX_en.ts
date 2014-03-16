@@ -2270,7 +2270,7 @@ Save time and PC6001V version </translation>
         <location filename="../../debug.cpp" line="588"/>
         <source>     注: &quot;help &lt;コマンド名&gt;&quot; と入力すると 更に詳細なヘルプを表示します。
 </source>
-        <translation>     Note: \&quot;help &lt;Command name&gt;\&quot; Displays help for more details.
+        <translation type="unfinished">     Note: &quot;help &lt;Command name&gt;&quot; Displays help for more details.
 </translation>
     </message>
     <message>

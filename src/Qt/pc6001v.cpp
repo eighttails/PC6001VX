@@ -24,7 +24,9 @@ int main( int argc, char *argv[] )
 
     QString locale = QLocale::system().name();
     QTranslator myappTranslator;
-    if(locale == "ja_JP"){
+
+    //システム言語が日本語でない場合は英語リソースを読み込む
+    if(locale != "ja_JP"){
         myappTranslator.load(":/translation/PC6001VX_en");
         app.installTranslator(&myappTranslator);
     }

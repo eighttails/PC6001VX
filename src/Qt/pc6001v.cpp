@@ -27,7 +27,7 @@ int main( int argc, char *argv[] )
     QTranslator myappTranslator;
 
     //表示言語が日本語でない場合は英語リソースを読み込む
-    if(lang != "ja_JP"){
+    if(lang != "ja-JP"){
         myappTranslator.load(":/translation/PC6001VX_en");
         app.installTranslator(&myappTranslator);
     }

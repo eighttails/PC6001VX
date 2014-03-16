@@ -2242,7 +2242,7 @@ Save time and PC6001V version </translation>
         <location filename="../../debug.cpp" line="325"/>
         <source>*  help 又は ? と入力するとヘルプを表示します *
 </source>
-        <translation>*  Type help or ? to show the help *
+        <translation type="unfinished">*  Type help or ? to show the help            *
 </translation>
     </message>
     <message>

@@ -135,7 +135,7 @@ Q_DECLARE_METATYPE(MenuCommand)
 
 QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable = false)
 {
-    QAction* action = menu->addAction(label);
+    QAction* action = menu->addAction(TRANS(label.toUtf8()));
     action->setProperty(MENUIDPROPERTY, qVariantFromValue<MenuCommand>(id));
     action->setCheckable(checkable);
     return action;

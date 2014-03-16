@@ -22,11 +22,12 @@ int main( int argc, char *argv[] )
 
     QtP6VXApplication app(argc, argv);
 
-    QString locale = QLocale::system().name();
+    QLocale locale;
+    QString lang = locale.uiLanguages()[0];
     QTranslator myappTranslator;
 
-    //システム言語が日本語でない場合は英語リソースを読み込む
-    if(locale != "ja_JP"){
+    //表示言語が日本語でない場合は英語リソースを読み込む
+    if(lang != "ja_JP"){
         myappTranslator.load(":/translation/PC6001VX_en");
         app.installTranslator(&myappTranslator);
     }

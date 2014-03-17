@@ -288,10 +288,10 @@ void QtP6VXApplication::executeEmulation()
             Error::SetError( Error::NoError );
         }
     }else{
-        if(OSD_Message( QString("ROMファイルが見つかりません。\n"
+        if(OSD_Message( QString(tr("ROMファイルが見つかりません。\n"
                                 "ROMフォルダ(%1)にROMファイルをコピーするか、"
                                 "別のROMフォルダを指定してください。\n"
-                                "別のROMフォルダを指定しますか?").arg(Cfg.GetRomPath()).toUtf8().constData(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONERROR ) == OSDR_YES){
+                                "別のROMフォルダを指定しますか?")).arg(Cfg.GetRomPath()).toUtf8().constData(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONERROR ) == OSDR_YES){
             //ROMフォルダ再設定
             char folder[PATH_MAX];
             strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
@@ -326,9 +326,9 @@ void QtP6VXApplication::executeEmulation()
     if( !P6Core->Init( &Cfg ) ){
         if(Error::GetError() == Error::RomCrcNG){
             // CRCが合わない場合
-            int ret = OSD_Message( "ROMイメージのCRCが不正です。\n"
+            int ret = OSD_Message( tr("ROMイメージのCRCが不正です。\n"
                                    "CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。\n"
-                                   "それでも起動しますか?",
+                                   "それでも起動しますか?").toUtf8(),
                                    MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING );
             if(ret == OSDR_YES) {
                 Cfg.SetCheckCRC(false);

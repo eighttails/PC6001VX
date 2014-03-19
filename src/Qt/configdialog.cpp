@@ -11,6 +11,7 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent) :
     config(cfg),
     sliderLabelMap(new QSignalMapper(this)),
     fileRefMap(new QSignalMapper(this)),
+    fileClearMap(new QSignalMapper(this)),
     folderRefMap(new QSignalMapper(this)),
     folderClearMap(new QSignalMapper(this)),
     ui(new Ui::ConfigDialog)
@@ -21,10 +22,12 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent) :
     connect(sliderLabelMap, SIGNAL(mapped(QWidget*)), this, SLOT(dispValue(QWidget*)));
     // 参照ボタンを押したらファイル、ファイル選択ダイアログを出し、ラインエディットに反映
     connect(fileRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFile(QWidget*)));
+    // クリアボタンを押したらラインエディットをクリア
+    connect(fileClearMap, SIGNAL(mapped(QWidget*)), this, SLOT(clearLineEdit(QWidget*)));
     // 参照ボタンを押したらファイル、フォルダ選択ダイアログを出し、ラインエディットに反映
     connect(folderRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFolder(QWidget*)));
     // クリアボタンを押したらラインエディットをクリア
-    connect(folderClearMap, SIGNAL(mapped(QWidget*)), this, SLOT(clearFolder(QWidget*)));
+    connect(folderClearMap, SIGNAL(mapped(QWidget*)), this, SLOT(clearLineEdit(QWidget*)));
 
     // ビデオキャプチャ設定を消す
     ui->groupBoxVideoCapture->setVisible(false);
@@ -159,6 +162,8 @@ void ConfigDialog::readConfig()
     strncpy( str, config->GetExtRomFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditExtRom->setText(str);
+    connect(ui->pushButtonClearExtRom, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+    fileClearMap->setMapping(ui->pushButtonClearExtRom, ui->lineEditExtRom);
     connect(ui->pushButtonRefExtRom, SIGNAL(clicked()), fileRefMap, SLOT(map()));
     fileRefMap->setMapping(ui->pushButtonRefExtRom, ui->lineEditExtRom);
 
@@ -166,6 +171,8 @@ void ConfigDialog::readConfig()
     strncpy( str, config->GetTapeFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditLoadTape->setText(str);
+    connect(ui->pushButtonClearLoadTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+    fileClearMap->setMapping(ui->pushButtonClearLoadTape, ui->lineEditLoadTape);
     connect(ui->pushButtonRefLoadTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
     fileRefMap->setMapping(ui->pushButtonRefLoadTape, ui->lineEditLoadTape);
 
@@ -173,6 +180,8 @@ void ConfigDialog::readConfig()
     strncpy( str, config->GetSaveFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditSaveTape->setText(str);
+    connect(ui->pushButtonClearSaveTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+    fileClearMap->setMapping(ui->pushButtonClearSaveTape, ui->lineEditSaveTape);
     connect(ui->pushButtonRefSaveTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
     fileRefMap->setMapping(ui->pushButtonRefSaveTape, ui->lineEditSaveTape);
 
@@ -180,6 +189,8 @@ void ConfigDialog::readConfig()
     strncpy( str, config->GetDiskFile(1), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditDisk1->setText(str);
+    connect(ui->pushButtonClearDisk1, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+    fileClearMap->setMapping(ui->pushButtonClearDisk1, ui->lineEditDisk1);
     connect(ui->pushButtonRefDisk1, SIGNAL(clicked()), fileRefMap, SLOT(map()));
     fileRefMap->setMapping(ui->pushButtonRefDisk1, ui->lineEditDisk1);
 
@@ -187,6 +198,8 @@ void ConfigDialog::readConfig()
     strncpy( str, config->GetDiskFile(2), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditDisk2->setText(str);
+    connect(ui->pushButtonClearDisk2, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+    fileClearMap->setMapping(ui->pushButtonClearDisk2, ui->lineEditDisk2);
     connect(ui->pushButtonRefDisk2, SIGNAL(clicked()), fileRefMap, SLOT(map()));
     fileRefMap->setMapping(ui->pushButtonRefDisk2, ui->lineEditDisk2);
 
@@ -194,6 +207,8 @@ void ConfigDialog::readConfig()
     strncpy( str, config->GetPrinterFile(), PATH_MAX );
     UnDelimiter( str );
     ui->lineEditPrinter->setText(str);
+    connect(ui->pushButtonClearPrinter, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+    fileClearMap->setMapping(ui->pushButtonClearPrinter, ui->lineEditPrinter);
     connect(ui->pushButtonRefPrinter, SIGNAL(clicked()), fileRefMap, SLOT(map()));
     fileRefMap->setMapping(ui->pushButtonRefPrinter, ui->lineEditPrinter);
 
@@ -404,56 +419,56 @@ void ConfigDialog::writeConfig()
     // フォルダ-------------------------------------------------------------
     // ROMパス
     qStr = ui->lineEditFolderRom->text();
-    if(QDir(qStr).exists()){
+    if(qStr == "" || QDir(qStr).exists()){
         config->SetRomPath(qStr.toUtf8().constData());
     }
 
     // TAPEパス
     qStr = ui->lineEditFolderTape->text();
-    if(QDir(qStr).exists()){
+    if(qStr == "" || QDir(qStr).exists()){
         config->SetTapePath(qStr.toUtf8().constData());
     }
 
     // DISKパス
     qStr = ui->lineEditFolderDisk->text();
-    if(QDir(qStr).exists()){
+    if(qStr == "" || QDir(qStr).exists()){
         config->SetDiskPath(qStr.toUtf8().constData());
     }
 
     // 拡張ROMパス
     qStr = ui->lineEditFolderExtRom->text();
-    if(QDir(qStr).exists()){
+    if(qStr == "" || QDir(qStr).exists()){
         config->SetExtRomPath(qStr.toUtf8().constData());
     }
 
     // IMGパス
     qStr = ui->lineEditFolderImg->text();
-    if(QDir(qStr).exists()){
+    if(qStr == "" || QDir(qStr).exists()){
         config->SetImgPath(qStr.toUtf8().constData());
     }
 
     // WAVEパス
     qStr = ui->lineEditFolderWave->text();
-    if(QDir(qStr).exists()){
+    if(qStr == "" || QDir(qStr).exists()){
         config->SetWavePath(qStr.toUtf8().constData());
     }
 
     // どこでもSAVEパス
     qStr = ui->lineEditFolderDokoSave->text();
-    if(QDir(qStr).exists()){
+    if(qStr == "" || QDir(qStr).exists()){
         config->SetDokoSavePath(qStr.toUtf8().constData());
     }
 
     // ファイル--------------------------------------------------------
     // 拡張ROMファイル
     qStr = ui->lineEditExtRom->text();
-    if(QFile(qStr).exists()){
+    if(qStr == "" || QFile(qStr).exists()){
         config->SetExtRomFile(qStr.toUtf8().constData());
     }
 
     // TAPE(LOAD)ファイル名
     qStr = ui->lineEditLoadTape->text();
-    if(QFile(qStr).exists()){
+    if(qStr == "" || QFile(qStr).exists()){
         config->SetTapeFile(qStr.toUtf8().constData());
     }
 
@@ -463,13 +478,13 @@ void ConfigDialog::writeConfig()
 
     // DISK1ファイル名
     qStr = ui->lineEditDisk1->text();
-    if(QFile(qStr).exists()){
+    if(qStr == "" || QFile(qStr).exists()){
         config->SetDiskFile(1, qStr.toUtf8().constData());
     }
 
     // DISK2ファイル名
     qStr = ui->lineEditDisk1->text();
-    if(QFile(qStr).exists()){
+    if(qStr == "" || QFile(qStr).exists()){
         config->SetDiskFile(2, qStr.toUtf8().constData());
     }
 
@@ -596,7 +611,7 @@ void ConfigDialog::selectFolder(QWidget *widget)
     }
 }
 
-void ConfigDialog::clearFolder(QWidget *widget)
+void ConfigDialog::clearLineEdit(QWidget *widget)
 {
     QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
     if(edit){

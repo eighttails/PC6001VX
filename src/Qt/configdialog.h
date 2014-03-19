@@ -23,6 +23,7 @@ private:
     CFG6* config;
     QSignalMapper* sliderLabelMap;
     QSignalMapper* fileRefMap;
+    QSignalMapper* fileClearMap;
     QSignalMapper* folderRefMap;
     QSignalMapper* folderClearMap;
 
@@ -33,7 +34,7 @@ private slots:
     void dispValue(QWidget* widget);
     void selectFile(QWidget* widget);
     void selectFolder(QWidget* widget);
-    void clearFolder(QWidget* widget);
+    void clearLineEdit(QWidget* widget);
 };
 
 #endif // CONFIGDIALOG_H

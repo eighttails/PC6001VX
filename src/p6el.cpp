@@ -494,6 +494,30 @@ EL6::ReturnCode EL6::EventLoop( void )
                 // ポップアップメニュー表示
                 ShowPopupMenu( event.mousebt.x, event.mousebt.y );
             break;
+        case EV_MOUSEBUTTONUP:	// マウスボタンクリック(離した時)
+            if( event.mousebt.state != false ) break;
+
+            if( event.mousebt.button == MBT_WHEELUP )
+                // スピードアップ
+                sche->SetSpeedRatio( 1 );
+
+            if( event.mousebt.button == MBT_WHEELDOWN )
+                // スピードダウン
+                sche->SetSpeedRatio( -1 );
+
+            if( event.mousebt.button == MBT_LEFT )
+                // 等速
+                sche->SetSpeedRatio( 0 );
+
+//			if( event.mousebt.button == MBT_MIDDLE ){}
+
+            if( event.mousebt.button == MBT_RIGHT ){
+                // ポップアップメニュー表示
+                Stop();
+                ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+                Start();
+            }
+            break;
 		case EV_QUIT:			// 終了
 			if( cfg->GetCkQuit() )
 				if( OSD_Message( MSG_QUIT, MSG_QUITC, OSDM_YESNO | OSDM_ICONQUESTION ) != OSDR_YES )

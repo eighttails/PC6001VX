@@ -492,8 +492,28 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
     }
     case QEvent::ContextMenu:
     {
-        ev.type        = EV_CONTEXTMENU;
+        ev.type = EV_CONTEXTMENU;
         OSD_PushEvent(ev.type);
+        break;
+    }
+    case QEvent::GraphicsSceneWheel:
+    {
+        QGraphicsSceneWheelEvent* we = dynamic_cast<QGraphicsSceneWheelEvent*>(event);
+        Q_ASSERT(we);
+        ev.type = EV_MOUSEBUTTONUP;
+        ev.mousebt.button = we->delta() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
+        OSD_PushEvent(ev);
+        break;
+    }
+    case QEvent::GraphicsSceneMouseRelease:
+    {
+        QGraphicsSceneMouseEvent* me = dynamic_cast<QGraphicsSceneMouseEvent*>(event);
+        Q_ASSERT(me);
+        if(me->button() == Qt::LeftButton){
+            ev.type = EV_MOUSEBUTTONUP;
+            ev.mousebt.button = MBT_LEFT;
+            OSD_PushEvent(ev);
+        }
         break;
     }
     default:;

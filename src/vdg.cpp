@@ -646,8 +646,8 @@ bool VDG6::DokoLoad( cIni *Ini )
 	Ini->GetTruth( "VDG", "N60Win",			&N60Win,		N60Win );
 	Ini->GetInt(   "VDG", "VAddr",			&st,			VAddr );	VAddr   = st;
 	Ini->GetInt(   "VDG", "HAddr",			&st,			HAddr );	HAddr   = st;
-	Ini->GetInt(   "VDG", "RowCntA",		&RowCntA,		RowCntA );	RowCntA = st;
-	Ini->GetInt(   "VDG", "RowCntG",		&RowCntG,		RowCntG );	RowCntG = st;
+    Ini->GetInt(   "VDG", "RowCntA",		&RowCntA,		RowCntA );
+    Ini->GetInt(   "VDG", "RowCntG",		&RowCntG,		RowCntG );
 	Ini->GetInt(   "VDG", "AT_AG",			&st,			AT_AG );	AT_AG   = st;
 	Ini->GetInt(   "VDG", "AT_AS",			&st,			AT_AS );	AT_AS   = st;
 	Ini->GetInt(   "VDG", "AT_IE",			&st,			AT_IE );	AT_IE   = st;
@@ -658,10 +658,10 @@ bool VDG6::DokoLoad( cIni *Ini )
 	// 62,66,64,68
 	Ini->GetTruth( "VDG", "CharMode",		&CharMode,		CharMode );
 	Ini->GetTruth( "VDG", "GraphMode",		&GraphMode,		GraphMode );
-	Ini->GetInt(   "VDG", "Css1",			&Css1,			Css1 );		Css1 = st;
-	Ini->GetInt(   "VDG", "Css2",			&Css2,			Css2 );		Css2 = st;
-	Ini->GetInt(   "VDG", "Css3",			&Css3,			Css3 );		Css3 = st;
-	
+    Ini->GetInt(   "VDG", "Css1",			&Css1,			Css1 );
+    Ini->GetInt(   "VDG", "Css2",			&Css2,			Css2 );
+    Ini->GetInt(   "VDG", "Css3",			&Css3,			Css3 );
+
 	// 64,68
 	Ini->GetTruth( "VDG", "SRmode",			&SRmode,		SRmode );
 	Ini->GetTruth( "VDG", "SRBitmap",		&SRBitmap,		SRBitmap );
@@ -677,7 +677,7 @@ bool VDG6::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "VDG", "AddrOff",		&st,			AddrOff );	AddrOff = st;
 	Ini->GetTruth( "VDG", "VSYNC",			&VSYNC,			VSYNC );
 	Ini->GetTruth( "VDG", "HSYNC",			&HSYNC,			HSYNC );
-	Ini->GetInt(   "VDG", "VLcnt",			&VLcnt,			VLcnt );	VLcnt   = st;
+    Ini->GetInt(   "VDG", "VLcnt",			&VLcnt,			VLcnt );
 	Ini->GetTruth( "VDG", "OnDisp",			&OnDisp,		OnDisp );
 	
 	for( int i=0; i<16; i++ ){

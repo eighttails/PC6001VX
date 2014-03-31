@@ -56,6 +56,9 @@ public:
 	bool GetTruth( const char *, const char *, bool *, const bool );		// YesNo読込み
 	bool PutEntry( const char *, const char *, const char *, const char *, ... );	// エントリ追加
 	
+    bool DeleteBefore( const char *, const char * );  // エントリ削除
+    bool DeleteAfter( const char *, const char * );  // エントリ削除
+
 };
 
 

@@ -85,6 +85,9 @@ void EL6::ExecMenu( int id )
         }
         break;
     case ID_REPLAYSAVE:		UI_ReplaySave();						break;	// リプレイ保存
+    case ID_REPLAYRESUME:	UI_ReplayResumeSave();					break;	// リプレイ保存再開
+    case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();					break;	// リプレイ中どこでもLOAD
+    case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
     case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
     case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
     case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
@@ -190,6 +193,13 @@ void QtEL6::ShowPopupImpl(int x, int y)
         repleyLoad->setEnabled(false);
 
     QAction* repleySave = addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
+    if (REPLAY::GetStatus() == REP_IDLE){
+        QAction* repleyResumeSave = addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
+    }
+    if (REPLAY::GetStatus() == REP_RECORD){
+        QAction* repleyDokoLoad = addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);
+        QAction* repleyDokoSave = addCommand(replayMenu, tr("途中保存から再開"), ID_REPLAYDOKOLOAD);
+    }
     systemMenu->addSeparator();
     // モニタモード or ブレークポインタが設定されている
     // またはリプレイ再生中だったらリプレイ記録無効

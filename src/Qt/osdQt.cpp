@@ -1162,6 +1162,22 @@ const char *OSD_GetFileNamePart( const char *path )
 }
 
 ////////////////////////////////////////////////////////////////
+// フルパスからフォルダ名を取得
+//
+// 引数:	path		フルパス格納バッファポインタ
+// 返値:	char *		フォルダ名の開始ポインタ
+////////////////////////////////////////////////////////////////
+const char *OSD_GetFolderNamePart( const char *path )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_GetFolderNamePart]\n" );
+
+    static QByteArray filePath;
+    QFileInfo info(QString::fromUtf8(path));
+    filePath = info.dir().absolutePath().toUtf8();
+    return filePath.constData();
+}
+
+////////////////////////////////////////////////////////////////
 // フルパスから拡張子名を取得
 //
 // 引数:	path		フルパス格納バッファポインタ

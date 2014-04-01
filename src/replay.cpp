@@ -5,7 +5,7 @@
 #include "replay.h"
 #include "common.h"
 #include "error.h"
-
+#include "osd.h"
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
@@ -101,9 +101,28 @@ bool REPLAY::StartRecord( const char *filename )
 	// 無事だったのでエラーなし
 	Error::Reset();
 	
-	return true;
+    return true;
 }
 
+
+////////////////////////////////////////////////////////////////
+// リプレイ記録再開
+//
+// 引数:	filename	出力ファイル名
+// 引数:	frame       途中再開するフレーム
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool REPLAY::ResumeRecord(const char *filename, int frame)
+{
+    if(!StartRecord(filename)) return false;
+    char buf[16];
+    sprintf(buf, "%08lX", frame);
+    // 指定されたフレーム以降のリプレイを削除し、そこから再開
+    Ini->DeleteAfter("REPLAY", buf);
+
+    RepFrm = frame;
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////
 // リプレイ記録停止

@@ -513,7 +513,9 @@ bool cIni::DeleteAfter(const char *section, const char *entry)
             do{
                 tnode = tnode->GetNextNode();
             }while( tnode && tnode->NodeID != cNode::NODE_SECTION );
-            tnode->GetPrevNode()->SetNextNode(NULL);
+            if(tnode){
+                tnode->GetPrevNode()->SetNextNode(NULL);
+            }
             node->GetPrevNode()->SetNextNode(tnode);
             delete node;
         }

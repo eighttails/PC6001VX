@@ -161,7 +161,7 @@ bool REPLAY::ReplayWriteFrame( const BYTE *mt, bool chg )
 	if( ( RepST != REP_RECORD ) || !mt || !Ini ) return false;
 	
 	// マトリクスに変化があったら書出し
-	if( chg ){
+    if( 1/*chg*/ ){
 		sprintf( stren, "%08lX ", RepFrm );
 		for( int i=0; i<MSize; i++ )
 			sprintf( strva+i*2, "%02X", mt[i] );

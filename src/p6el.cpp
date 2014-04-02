@@ -659,7 +659,17 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 		ShowPopupMenu( 0, 0 );
 		Start();
 		break;
-	default:				// どれでもない
+    case KVC_MUHENKAN:      // リプレイ中どこでもSAVE
+        Stop();
+        UI_ReplayDokoSave();
+        Start();
+        break;
+    case KVC_HENKAN:      // リプレイ中どこでもLOAD
+        Stop();
+        UI_ReplayDokoLoad();
+        Start();
+        break;
+    default:				// どれでもない
 		return false;
 	}
 	return true;

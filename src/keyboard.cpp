@@ -386,7 +386,7 @@ enum KeyGroup
 ////////////////////////////////////////////////////////////////
 KEY6::KEY6( VM6 *vm, const ID& id ) : Device(vm,id),
 	ON_SHIFT(false), ON_GRAPH(false), ON_KANA(false), ON_KKANA(false),
-	ON_CTRL(false), ON_STOP(false), ON_CAPS(false)
+    ON_CTRL(false), ON_STOP(false), ON_CAPS(false), scanned(false)
 {
 
 	// 仮想キーコード -> P6キーコード 変換テーブル初期化

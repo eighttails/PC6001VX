@@ -1498,9 +1498,12 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
         format = info.nearestFormat(format);
     }
 
-    audioOutput = new QAudioOutput(info, format, qApp);
+    audioOutput = new QAudioOutput(info, format);
     //#PENDING これではグローバルボリュームを変えてしまう？
     audioOutput->setVolume(0.5);
+
+    audioOutput->moveToThread(qApp->thread());
+    audioOutput->setParent(qApp);
 #endif
     return true;
 }

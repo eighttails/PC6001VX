@@ -428,7 +428,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         // ・エミュレーションポーズ中
         // 　例外としてF9キー(ポーズ解除)とF12(スナップショット)は
         // 　エミュレータで受け付ける
-        if(!(P6Core && !P6Core->GetPauseEnable())
+        if(!(P6Core && !P6Core->IsCancel() && !P6Core->GetPauseEnable())
                 && keyCode != Qt::Key_F9
                 && keyCode != Qt::Key_F12){
             processKeyEventInQt = true;

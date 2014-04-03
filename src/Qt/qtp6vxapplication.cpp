@@ -225,8 +225,8 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
     scene->clear();
 
 #ifndef PANDORA
-    // フルスクリーンでTILTモードが有効になっている場合、背景を描く
-    if(view->isFullScreen() &&
+    // ステータスバー非表示またはフルスクリーン、かつTILTモードが有効になっている場合、背景を描く
+    if( (!Cfg.GetDispStat() || Cfg.GetFullScreen()) &&
         #ifndef NOMONITOR
             !Cfg.GetMonDisp() &&
         #endif

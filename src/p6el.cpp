@@ -491,8 +491,10 @@ EL6::ReturnCode EL6::EventLoop( void )
 			
 		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         case EV_CONTEXTMENU:	// コンテキストメニュー
-                // ポップアップメニュー表示
-                ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+            // ポップアップメニュー表示
+            Stop();
+            ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+            Start();
             break;
         case EV_MOUSEBUTTONUP:	// マウスボタンクリック(離した時)
             if( event.mousebt.state != false ) break;

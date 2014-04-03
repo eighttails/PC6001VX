@@ -1369,6 +1369,10 @@ bool EL6::ReplayRecDokoSave()
         cIni save;
         if(!save.Init(strsave)) return false;
         save.PutEntry("REPLAY", NULL, "frame", "%d", REPLAY::RepFrm);
+        // 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
+        save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+        save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+
         save.Write();
 
         return true;

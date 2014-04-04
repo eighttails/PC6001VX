@@ -448,17 +448,6 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
             return QtSingleApplication::notify(receiver, event);
         }
 
-        // TILT処理
-        if(!ke->isAutoRepeat()){
-            if(keyCode == Qt::Key_Right && event->type() == QEvent::KeyPress){
-                TiltScreen(RIGHT);
-            } else if (keyCode == Qt::Key_Left && event->type() == QEvent::KeyPress){
-                TiltScreen(LEFT);
-            } else if ((keyCode == Qt::Key_Left || keyCode == Qt::Key_Right) && event->type() == QEvent::KeyRelease){
-                TiltScreen(NEWTRAL);
-            }
-        }
-
         // 「ろ」が入力できない対策
         quint32 nativeKey = ke->nativeScanCode();
         //X11の場合

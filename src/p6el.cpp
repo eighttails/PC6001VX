@@ -661,14 +661,36 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 		ShowPopupMenu( 0, 0 );
 		Start();
 		break;
-    case KVC_MUHENKAN:      // リプレイ中どこでもSAVE
+    case KVC_MUHENKAN:      // どこでもSAVE
         Stop();
-        UI_ReplayDokoSave();
+        if(REPLAY::GetStatus() == REP_RECORD){
+            UI_ReplayDokoSave();
+        } else {
+            QString str = QString("%1/.1.dds").arg(cfg->GetDokoSavePath());
+            DokoDemoSave( str.toLocal8Bit().data() );
+
+            cIni save;
+            if(save.Init(str.toLocal8Bit().data())) {
+                // 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
+                save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+                save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+            }
+        }
         Start();
         break;
-    case KVC_HENKAN:      // リプレイ中どこでもLOAD
+    case KVC_HENKAN:      // どこでもLOAD
         Stop();
-        UI_ReplayDokoLoad();
+        if(REPLAY::GetStatus() == REP_RECORD){
+            UI_ReplayDokoLoad();
+        } else {
+            char str[PATH_MAX];
+            strncpy( str, QString("%1/.1.dds").arg(cfg->GetDokoSavePath()).toLocal8Bit().data(), PATH_MAX );
+            if( OSD_FileExist( str ) ){
+                cfg->SetModel( GetDokoModel( str ) );
+                cfg->SetDokoFile( str );
+                OSD_PushEvent( EV_DOKOLOAD );
+            }
+        }
         Start();
         break;
     default:				// どれでもない

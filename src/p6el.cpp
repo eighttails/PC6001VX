@@ -491,8 +491,10 @@ EL6::ReturnCode EL6::EventLoop( void )
 			
 		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         case EV_CONTEXTMENU:	// コンテキストメニュー
-                // ポップアップメニュー表示
-                ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+            // ポップアップメニュー表示
+            Stop();
+            ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+            Start();
             break;
         case EV_MOUSEBUTTONUP:	// マウスボタンクリック(離した時)
             if( event.mousebt.state != false ) break;
@@ -659,7 +661,39 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 		ShowPopupMenu( 0, 0 );
 		Start();
 		break;
-	default:				// どれでもない
+    case KVC_MUHENKAN:      // どこでもSAVE
+        Stop();
+        if(REPLAY::GetStatus() == REP_RECORD){
+            UI_ReplayDokoSave();
+        } else {
+            QString str = QString("%1/.1.dds").arg(cfg->GetDokoSavePath());
+            DokoDemoSave( str.toLocal8Bit().data() );
+
+            cIni save;
+            if(save.Init(str.toLocal8Bit().data())) {
+                // 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
+                save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+                save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+            }
+        }
+        Start();
+        break;
+    case KVC_HENKAN:      // どこでもLOAD
+        Stop();
+        if(REPLAY::GetStatus() == REP_RECORD){
+            UI_ReplayDokoLoad();
+        } else {
+            char str[PATH_MAX];
+            strncpy( str, QString("%1/.1.dds").arg(cfg->GetDokoSavePath()).toLocal8Bit().data(), PATH_MAX );
+            if( OSD_FileExist( str ) ){
+                cfg->SetModel( GetDokoModel( str ) );
+                cfg->SetDokoFile( str );
+                OSD_PushEvent( EV_DOKOLOAD );
+            }
+        }
+        Start();
+        break;
+    default:				// どれでもない
 		return false;
 	}
 	return true;
@@ -1293,6 +1327,83 @@ bool EL6::ReplayRecStart( const char *filename )
 	return REPLAY::StartRecord( filename );
 }
 
+////////////////////////////////////////////////////////////////
+// リプレイ保存開始
+//
+// 引数:	filename	ファイル名
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool EL6::ReplayRecResume( const char *filename )
+{
+    // 途中セーブファイルを探す
+    char strsave[PATH_MAX];
+    strncpy(strsave, OSD_GetFolderNamePart(filename), PATH_MAX);
+    AddDelimiter(strsave);
+    const char savefile[] = "resume.dds";
+    strncat(strsave, savefile, sizeof(savefile));
+    if(OSD_FileExist(strsave)){
+        cIni save;
+        save.Init(strsave);
+        int frame = 0;
+        save.GetInt("REPLAY", "frame", &frame, frame);
+        if(frame == 0) return false;
+
+        DokoDemoLoad(strsave);
+        return REPLAY::ResumeRecord( filename, frame );
+    }
+    return false;
+}
+
+////////////////////////////////////////////////////////////////
+// リプレイ中どこでもLOAD
+//
+// 引数:	なし
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool EL6::ReplayRecDokoLoad()
+{
+    if(REPLAY::GetStatus() == REP_RECORD){
+        char filename[PATH_MAX];
+        strncpy(filename, REPLAY::Ini->getFileName(), PATH_MAX);
+        REPLAY::StopRecord();
+        return ReplayRecResume(filename);
+    } else {
+        return false;
+    }
+}
+
+////////////////////////////////////////////////////////////////
+// リプレイ中どこでもSAVE
+//
+// 引数:	なし
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool EL6::ReplayRecDokoSave()
+{
+    if(REPLAY::GetStatus() == REP_RECORD){
+        // 途中セーブファイルを保存
+        char strsave[PATH_MAX];
+        strncpy(strsave, OSD_GetFolderNamePart(REPLAY::Ini->getFileName()), PATH_MAX);
+        AddDelimiter(strsave);
+        const char savefile[] = "resume.dds";
+        strncat(strsave, savefile, sizeof(savefile));
+        if(!DokoDemoSave(strsave)) return false;
+
+        // 途中セーブ情報を追記
+        cIni save;
+        if(!save.Init(strsave)) return false;
+        save.PutEntry("REPLAY", NULL, "frame", "%d", REPLAY::RepFrm);
+        // 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
+        save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+        save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+
+        save.Write();
+
+        return true;
+    } else {
+        return false;
+    }
+}
 
 ////////////////////////////////////////////////////////////////
 // リプレイ保存停止
@@ -1302,7 +1413,8 @@ bool EL6::ReplayRecStart( const char *filename )
 ////////////////////////////////////////////////////////////////
 void EL6::ReplayRecStop( void )
 {
-	REPLAY::StopRecord();
+    ReplayRecDokoSave();
+    REPLAY::StopRecord();
 }
 
 
@@ -1474,8 +1586,47 @@ void EL6::UI_ReplaySave( void )
 			if( DokoDemoSave( str ) ) ReplayRecStart( str );
 		}
 	}else if( REPLAY::GetStatus() == REP_RECORD ){
-		ReplayRecStop();
-	}
+        ReplayRecStop();
+    }
+}
+
+////////////////////////////////////////////////////////////////
+// UI:リプレイ再開
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void EL6::UI_ReplayResumeSave()
+{
+    char strreplay[PATH_MAX];
+
+    if( REPLAY::GetStatus() == REP_IDLE ){
+        if( OSD_FileSelect( graph->GetWindowHandle(), FD_RepSave, strreplay, (char *)OSD_GetModulePath() ) ){
+            ReplayRecResume( strreplay);
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////
+// UI:リプレイ中どこでもLOAD
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void EL6::UI_ReplayDokoLoad()
+{
+    ReplayRecDokoLoad();
+}
+
+////////////////////////////////////////////////////////////////
+// UI:リプレイ中どこでもSAVE
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void EL6::UI_ReplayDokoSave()
+{
+    ReplayRecDokoSave();
 }
 
 

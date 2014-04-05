@@ -1162,6 +1162,22 @@ const char *OSD_GetFileNamePart( const char *path )
 }
 
 ////////////////////////////////////////////////////////////////
+// フルパスからフォルダ名を取得
+//
+// 引数:	path		フルパス格納バッファポインタ
+// 返値:	char *		フォルダ名の開始ポインタ
+////////////////////////////////////////////////////////////////
+const char *OSD_GetFolderNamePart( const char *path )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_GetFolderNamePart]\n" );
+
+    static QByteArray filePath;
+    QFileInfo info(QString::fromUtf8(path));
+    filePath = info.dir().absolutePath().toUtf8();
+    return filePath.constData();
+}
+
+////////////////////////////////////////////////////////////////
 // フルパスから拡張子名を取得
 //
 // 引数:	path		フルパス格納バッファポインタ
@@ -1482,9 +1498,12 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
         format = info.nearestFormat(format);
     }
 
-    audioOutput = new QAudioOutput(info, format, qApp);
+    audioOutput = new QAudioOutput(info, format);
     //#PENDING これではグローバルボリュームを変えてしまう？
     audioOutput->setVolume(0.5);
+
+    audioOutput->moveToThread(qApp->thread());
+    audioOutput->setParent(qApp);
 #endif
     return true;
 }
@@ -1835,21 +1854,6 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
     QMutexLocker lock(&joystickMutex);
-    static TiltDirection prevDir = NEWTRAL;
-    if(num == 0){
-        // ジョイスティックの左右に対応して画面を傾ける
-        int Xmove = SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
-        if( Xmove < INT16_MIN / 2 ){  // 左
-            TiltScreen(LEFT);
-            prevDir = LEFT;
-        } else if( Xmove > INT16_MAX / 2 ){  // 右
-            TiltScreen(RIGHT);
-            prevDir = RIGHT;
-        } else if( prevDir != NEWTRAL ){
-            TiltScreen(NEWTRAL);
-            prevDir = NEWTRAL;
-        }
-    }
     return SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
 #else
     return 0;

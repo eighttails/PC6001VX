@@ -6,6 +6,7 @@
 #include "log.h"
 #include "keyboard.h"
 #include "osd.h"
+#include "common.h"
 
 #include "p6vm.h"
 
@@ -386,7 +387,7 @@ enum KeyGroup
 ////////////////////////////////////////////////////////////////
 KEY6::KEY6( VM6 *vm, const ID& id ) : Device(vm,id),
 	ON_SHIFT(false), ON_GRAPH(false), ON_KANA(false), ON_KKANA(false),
-	ON_CTRL(false), ON_STOP(false), ON_CAPS(false)
+    ON_CTRL(false), ON_STOP(false), ON_CAPS(false), scanned(false)
 {
 
 	// 仮想キーコード -> P6キーコード 変換テーブル初期化
@@ -539,6 +540,8 @@ bool KEY6::ScanMatrix( void )
 	BYTE MatData = 0;		// P6のマトリクスコード(bit7-4:Y-1 bit3-0:X)
 	BYTE KeyData = 0;		// P6のキーコード
 	
+    static TiltDirection dir = NEWTRAL;
+
 	// 特殊キー判定(ON-OFF状態を判定)
 	ON_CTRL  = P6Mtrx[0] & 0x02 ? false : true;
 	ON_SHIFT = P6Mtrx[0] & 0x04 ? false : true;
@@ -563,7 +566,19 @@ bool KEY6::ScanMatrix( void )
 			}
 		}
 	}
-	
+
+    // 左右カーソルキーを押した場合
+    if( (P6Mtrx[8] ^ P6Mtrx[8+NOM]) & P6Mtrx[8+NOM] & 0x10 ){
+        dir = RIGHT;
+    } else if( (P6Mtrx[8] ^ P6Mtrx[8+NOM]) & P6Mtrx[8+NOM] & 0x20 ){
+        dir = LEFT;
+    }
+    // 左右カーソルキーを離した場合
+    else if ((P6Mtrx[8] ^ P6Mtrx[8+NOM]) & P6Mtrx[NOM] & 0x10
+             || (P6Mtrx[8] ^ P6Mtrx[8+NOM]) & P6Mtrx[NOM] & 0x20 ){
+        dir = NEWTRAL;
+    }
+
 	if( KeyPUSH ){	// キー押した?
 		switch( MatData ){	// マトリクスコード
 		case 0x96:	// CAPS
@@ -643,9 +658,24 @@ bool KEY6::ScanMatrix( void )
 	for( int y=NOM-2; y<NOM; y++ ){
 		// 前回のマトリクスと変化あり?
 		if( P6Mtrx[y] != P6Mtrx[y+NOM] ) MatChg = true;
-	}
+
+        // 左右スティックを押した場合
+        if( (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y+NOM] & 0x08 ){
+            dir = RIGHT;
+        } else if( (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y+NOM] & 0x04 ){
+            dir = LEFT;
+        }
+        // 左右スティックを離した場合
+        else if( (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y] & 0x08
+                 || (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y] & 0x04){
+            dir = NEWTRAL;
+        }
+    }
 	
-	// 変化があればキーマトリクス保存
+    // TILTさせる
+    TiltScreen(dir);
+
+    // 変化があればキーマトリクス保存
 	if( MatChg ) memcpy( P6Matrix+NOM, P6Mtrx, NOM );
 	
 	PRINTD( KEY_LOG, "\n" );

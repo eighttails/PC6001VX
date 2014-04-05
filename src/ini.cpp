@@ -422,5 +422,102 @@ bool cIni::PutEntry( const char *section, const char *comment, const char *entry
 	sprintf( tstr, "%s=%s", entry, rstr );
 	node->SetMember( cNode::NODE_ENTRY, tstr );
 	
-	return true;
+    return true;
+}
+
+////////////////////////////////////////////////////////////////
+// エントリ削除
+////////////////////////////////////////////////////////////////
+bool cIni::DeleteBefore(const char *section, const char *entry)
+{
+    cNode *node, *tnode;
+    bool Found = false;
+
+    if( !Ready ) return false;
+
+    // セクションを探す
+    node = IniNode;
+    do{
+        tnode = node;
+        if( node->NodeID == cNode::NODE_SECTION )
+            if( !stricmp( node->Section, section ) ) Found = true;
+    }while( (node = node->GetNextNode() ) && !Found );
+
+    // セクションが見つからなければ何もしない
+    if( !Found ){
+        return false;
+    } else {
+        // セクションが見つかった場合
+        Found = false;
+
+        // エントリを探す
+        do{
+            tnode = node;
+            if( node->NodeID == cNode::NODE_ENTRY )
+                if( !stricmp( node->Entry, entry ) ) Found = true;
+        }while( (node = node->GetNextNode()) && tnode->NodeID != cNode::NODE_SECTION && !Found  );
+        node = tnode;
+
+        // エントリが見つからなければ何もしない
+        if( !Found ){
+            return false;
+        } else {
+            // エントリが見つかった場合はそれより前を削除(指定されたエントリを含む)
+            tnode = node;
+            do{
+                tnode = tnode->GetPrevNode();
+            }while( tnode && tnode->NodeID != cNode::NODE_SECTION );
+            tnode->GetPrevNode()->SetNextNode(node->GetNextNode());
+            node->GetPrevNode()->SetNextNode(NULL);
+            delete tnode;
+        }
+    }
+}
+
+bool cIni::DeleteAfter(const char *section, const char *entry)
+{
+    cNode *node, *tnode;
+    bool Found = false;
+
+    if( !Ready ) return false;
+
+    // セクションを探す
+    node = IniNode;
+    do{
+        tnode = node;
+        if( node->NodeID == cNode::NODE_SECTION )
+            if( !stricmp( node->Section, section ) ) Found = true;
+    }while( (node = node->GetNextNode() ) && !Found );
+
+    // セクションが見つからなければ何もしない
+    if( !Found ){
+        return false;
+    } else {
+        // セクションが見つかった場合
+        Found = false;
+
+        // エントリを探す
+        do{
+            tnode = node;
+            if( node->NodeID == cNode::NODE_ENTRY )
+                if( !stricmp( node->Entry, entry ) ) Found = true;
+        }while( (node = node->GetNextNode()) && tnode->NodeID != cNode::NODE_SECTION && !Found  );
+        node = tnode;
+
+        // エントリが見つからなければ何もしない
+        if( !Found ){
+            return false;
+        } else {
+            // エントリが見つかった場合はそれより後を削除(指定されたエントリを含む)
+            tnode = node;
+            do{
+                tnode = tnode->GetNextNode();
+            }while( tnode && tnode->NodeID != cNode::NODE_SECTION );
+            if(tnode){
+                tnode->GetPrevNode()->SetNextNode(NULL);
+            }
+            node->GetPrevNode()->SetNextNode(tnode);
+            delete node;
+        }
+    }
 }

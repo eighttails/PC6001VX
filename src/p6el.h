@@ -119,7 +119,10 @@ protected:
 	void UI_DokoSave();								// どこでもSAVE
 	void UI_DokoLoad( const char * = NULL );		// どこでもLOAD
 	void UI_ReplaySave();							// リプレイ保存
-	void UI_ReplayLoad( const char * = NULL );		// リプレイ再生
+    void UI_ReplayResumeSave();						// リプレイ保存再開
+    void UI_ReplayDokoLoad();						// リプレイ中どこでもLOAD
+    void UI_ReplayDokoSave();						// リプレイ中どこでもSAVE
+    void UI_ReplayLoad( const char * = NULL );		// リプレイ再生
 	void UI_AVISave();								// ビデオキャプチャ
 	void UI_AutoType( const char * = NULL );		// 打込み代行
 	void UI_Reset();						// リセット
@@ -150,7 +153,10 @@ protected:
 	void DiskUnmount( int );				// DISK アンマウント
 	
 	bool ReplayRecStart( const char * );	// リプレイ保存開始
-	void ReplayRecStop();					// リプレイ保存停止
+    bool ReplayRecResume(const char *);     // リプレイ保存再開
+    bool ReplayRecDokoLoad();               // リプレイ中どこでもLOAD
+    bool ReplayRecDokoSave();               // リプレイ中どこでもSAVE
+    void ReplayRecStop();					// リプレイ保存停止
 	void ReplayPlayStart( const char * );	// リプレイ再生開始
 	void ReplayPlayStop();					// リプレイ再生停止
 	

@@ -225,8 +225,8 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
     scene->clear();
 
 #ifndef PANDORA
-    // フルスクリーンでTILTモードが有効になっている場合、背景を描く
-    if(view->isFullScreen() &&
+    // ステータスバー非表示またはフルスクリーン、かつTILTモードが有効になっている場合、背景を描く
+    if( (!Cfg.GetDispStat() || Cfg.GetFullScreen()) &&
         #ifndef NOMONITOR
             !Cfg.GetMonDisp() &&
         #endif
@@ -428,7 +428,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         // ・エミュレーションポーズ中
         // 　例外としてF9キー(ポーズ解除)とF12(スナップショット)は
         // 　エミュレータで受け付ける
-        if(!(P6Core && !P6Core->GetPauseEnable())
+        if(!(P6Core && !P6Core->IsCancel() && !P6Core->GetPauseEnable())
                 && keyCode != Qt::Key_F9
                 && keyCode != Qt::Key_F12){
             processKeyEventInQt = true;
@@ -446,17 +446,6 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         }
         if(processKeyEventInQt){
             return QtSingleApplication::notify(receiver, event);
-        }
-
-        // TILT処理
-        if(!ke->isAutoRepeat()){
-            if(keyCode == Qt::Key_Right && event->type() == QEvent::KeyPress){
-                TiltScreen(RIGHT);
-            } else if (keyCode == Qt::Key_Left && event->type() == QEvent::KeyPress){
-                TiltScreen(LEFT);
-            } else if ((keyCode == Qt::Key_Left || keyCode == Qt::Key_Right) && event->type() == QEvent::KeyRelease){
-                TiltScreen(NEWTRAL);
-            }
         }
 
         // 「ろ」が入力できない対策

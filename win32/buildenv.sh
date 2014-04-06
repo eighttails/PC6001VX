@@ -19,7 +19,7 @@ mkdir extlib
 
 #Qt
 cd ~/extlib
-export QT_VERSION=5.2.0
+export QT_VERSION=5.2.1
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
 wget -c  http://download.qt-project.org/official_releases/qt/5.2/$QT_VERSION/single/$QT_SOURCE_DIR.zip
 
@@ -28,9 +28,10 @@ if [ -e $QT_SOURCE_DIR ]; then
     echo "$QT_SOURCE_DIR already exists."
 else
     # 存在しない場合
-    unzip -q -n $QT_SOURCE_DIR.zip 
+    unzip -q -b -n $QT_SOURCE_DIR.zip 
     #MSYSでビルドが通らない問題への対策パッチ
     patch -p0 --binary < $SCRIPT_DIR/libGLESv2.patch
+    dos2unix $QT_SOURCE_DIR/qtwebkit/Source/JavaScriptCore/llint/*.asm
 fi
 
 export PATH=$PWD/$QT_SOURCE_DIR/gnuwin32/bin:$PATH
@@ -51,7 +52,7 @@ popd
 
 #Qt Creator
 cd ~/extlib
-export QTC_VER=3.0.0
+export QTC_VER=3.0.1
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 wget -c  http://download.qt-project.org/official_releases/qtcreator/3.0/$QTC_VER/$QTC_SOURCE_DIR.zip
 if [ -e $QTC_SOURCE_DIR ]; then
@@ -59,7 +60,7 @@ if [ -e $QTC_SOURCE_DIR ]; then
     echo "$QTC_SOURCE_DIR already exists."
 else
     # 存在しない場合
-    unzip -q -n $QTC_SOURCE_DIR.zip
+    unzip -q -b -n $QTC_SOURCE_DIR.zip
 fi
 
 rm -rf qtcreator
@@ -112,42 +113,4 @@ popd
 
 popd
 
-#opengl版(P6VX用)
-rm -rf qt5-opengl
-mkdir qt5-opengl
-pushd qt5-opengl
-
-mkdir qtbase
-pushd qtbase
-cmd.exe "/c %CD%/../../$QT_SOURCE_DIR/qtbase/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../../local/qt5-opengl -static -opengl desktop -no-icu -no-openssl -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake examples -nomake tests"
-
-mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install 
-exitOnError
-
-cp lib/libpreprocessor*.a /usr/local/qt5-opengl/lib
-cp lib/libtranslator_*.a /usr/local/qt5-opengl/lib
-popd
-
-mkdir qttools
-pushd qttools
-/usr/local/qt5-opengl/bin/qmake ../../$QT_SOURCE_DIR/qttools/qttools.pro
-mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install 
-exitOnError
-popd
-
-mkdir qtmultimedia
-pushd qtmultimedia
-/usr/local/qt5-opengl/bin/qmake ../../$QT_SOURCE_DIR/qtmultimedia/qtmultimedia.pro
-mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install 
-exitOnError
-popd
-
-mkdir qttranslations
-pushd qttranslations
-/usr/local/qt5-opengl/bin/qmake ../../$QT_SOURCE_DIR/qttranslations/qttranslations.pro
-mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install 
-exitOnError
-popd
-
-popd
 

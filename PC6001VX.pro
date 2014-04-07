@@ -17,6 +17,10 @@ DEFINES += QTP6VX
 #ジョイスティックが不要な場合、コメントアウトをはずす(SDLが不要になる)
 #DEFINES += NOJOYSTICK
 
+#その他のフィーチャー無効化フラグ
+#DEFINES += NOOPENGL
+#DEFINES += NOSOUND
+
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 

@@ -448,18 +448,30 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
             return QtSingleApplication::notify(receiver, event);
         }
 
-        // 「ろ」が入力できない対策
+        // 特殊キー対策
         quint32 nativeKey = ke->nativeScanCode();
+        qDebug("nativekeycode %d\n", nativeKey);
+
         //X11の場合
         if (QGuiApplication::platformName() == QLatin1String("xcb")){
+            // 「ろ」
             if(keyCode == Qt::Key_Backslash){
                 keyCode = nativeKey == 97 ? Qt::Key_Underscore : Qt::Key_Backslash;
             }
         }
         //Windowsの場合
         else if (QGuiApplication::platformName() == QLatin1String("windows")){
+            // 「ろ」
             if(keyCode == Qt::Key_Backslash){
                 keyCode = nativeKey == 115 ? Qt::Key_Underscore : Qt::Key_Backslash;
+            }
+            // 変換
+            else if(nativeKey == 121){
+                keyCode = Qt::Key_Henkan;
+            }
+            // 無変換
+            else if(nativeKey == 123){
+                keyCode = Qt::Key_Muhenkan;
             }
         }
 

@@ -19,11 +19,6 @@ int main( int argc, char *argv[] )
     if (QGuiApplication::platformName() == QLatin1String("xcb")){
         QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
     }
-#ifdef WIN32
-    // IMEを無効化
-    ImmDisableIME(-1);
-#endif
-
     QtP6VXApplication app(argc, argv);
 
     QLocale locale;

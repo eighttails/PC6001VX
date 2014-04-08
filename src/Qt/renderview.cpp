@@ -24,6 +24,10 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     }
 #endif
 
+#ifdef WIN32
+    //IMEを無効化
+    ImmAssociateContext( (HWND)winId(), NULL );
+#endif
 }
 
 void RenderView::fitContent()

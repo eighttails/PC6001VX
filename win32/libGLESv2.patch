@@ -1,5 +1,5 @@
---- qt-everywhere-opensource-src-5.2.1/qtbase/src/angle/src/libGLESv2/libGLESv2.pro	2013-12-09 02:09:53.000000000 +0900
-+++ qt-everywhere-opensource-src-5.2.1/qtbase/src/angle/src/libGLESv2/libGLESv2.pro	2014-01-04 14:18:52.400101600 +0900
+--- qtbase/src/angle/src/libGLESv2/libGLESv2.pro	2013-12-09 02:09:53.000000000 +0900
++++ qtbase/src/angle/src/libGLESv2/libGLESv2.pro	2014-01-04 14:18:52.400101600 +0900
 @@ -181,7 +181,7 @@
  SHADER_DIR = $$OUT_PWD/renderer/shaders/compiled
  

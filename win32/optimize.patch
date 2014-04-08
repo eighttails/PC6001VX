@@ -1,0 +1,11 @@
+--- qtbase/mkspecs/win32-g++/qmake.conf	2014-04-07 15:02:07.977525300 +0900
++++ qtbase/mkspecs/win32-g++/qmake.conf	2014-04-07 15:02:22.781238800 +0900
+@@ -29,7 +29,7 @@
+ QMAKE_CFLAGS_DEPS       = -M
+ QMAKE_CFLAGS_WARN_ON    = -Wall -Wextra
+ QMAKE_CFLAGS_WARN_OFF   = -w
+-QMAKE_CFLAGS_RELEASE    = -O2
++QMAKE_CFLAGS_RELEASE    = -Os
+ QMAKE_CFLAGS_DEBUG      = -g
+ QMAKE_CFLAGS_YACC       = -Wno-unused -Wno-parentheses
+ QMAKE_CFLAGS_SSE2       = -msse2

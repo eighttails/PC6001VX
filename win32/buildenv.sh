@@ -30,7 +30,11 @@ else
     # 存在しない場合
     unzip -q -b -n $QT_SOURCE_DIR.zip 
     #MSYSでビルドが通らない問題への対策パッチ
+    pushd $QT_SOURCE_DIR
     patch -p0 --binary < $SCRIPT_DIR/libGLESv2.patch
+    #Osで最適化するためのパッチ(サイズ削減のため)
+    patch -p0 --binary < $SCRIPT_DIR/optimize.patch
+    popd
     dos2unix $QT_SOURCE_DIR/qtwebkit/Source/JavaScriptCore/llint/*.asm
 fi
 

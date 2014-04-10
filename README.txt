@@ -41,10 +41,13 @@ GUIに関してもオリジナルを極力忠実に再現しましたので、
 ・サウンドが突然止まることがあります。
 
 【更新履歴】
-2.0Beta3 2014/04/06
+2.0Beta3 2014/04/10
 ・(Windows)グラフィクスタックにANGLE経由のDirectXを使うようにした。
 　IntelGPUでもハードウェアアクセラレーションが有効になり、軽くなる効果が期待できます。
 　XPでは正常に動作しない可能性があり、勝手ながら本バージョンからXPは非サポートとします。
+ 起動しない場合は、以下のページからDirectXのランタイムをインストールしてください。
+ http://www.microsoft.com/ja-jp/download/details.aspx?id=35
+
 ・Merged English translation.(Thanks Anna Wu!)
 　When display language of OS is not Japanese, GUI of PC6001VX is displayed in English.
 ・リプレイ関連機能強化

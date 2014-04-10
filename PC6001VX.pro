@@ -221,6 +221,7 @@ OTHER_FILES += \
     win32/toolchain.sh \
     win32/CFLAGS.patch \
     win32/libGLESv2.patch \
+    win32/optimize.patch \
     src/Qt/translation/PC6001VX_en.ts \
     src/Qt/translation/PC6001VX_en.qm
 

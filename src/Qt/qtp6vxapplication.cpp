@@ -375,11 +375,18 @@ void QtP6VXApplication::executeEmulation()
             if(ret == OSDR_YES) {
                 Cfg.SetCheckCRC(false);
                 Cfg.Write();
-                Restart = EL6::Restart;
+                P6Core->deleteLater();
+                emit vmRestart();
+                return;
+            } else {
+                P6Core->deleteLater();
+                exit();
+                return;
             }
         } else {
             OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
             exit();
+            return;
         }
     }
 

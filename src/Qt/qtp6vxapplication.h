@@ -8,6 +8,7 @@
 #include "../typedef.h"
 #include "../p6vm.h"
 #include "../config.h"
+#include "../common.h"
 #include "qtel6.h"
 #include "emulationadaptor.h"
 
@@ -19,6 +20,14 @@ public:
     virtual ~QtP6VXApplication();
 
     virtual bool notify(QObject *receiver, QEvent *event);
+
+    // TILT関連
+    bool isTiltEnabled();
+    void enableTilt(bool enable);
+    TiltDirection getTiltDirection();
+    void setTiltDirection(TiltDirection dir);
+    qreal getTiltAngle();
+    void setTiltAngle(qreal angle);
 
 public slots:
     //仮想マシンの起動→終了→再起動のループ
@@ -68,7 +77,12 @@ private:
     EL6::ReturnCode Restart;	// 再起動フラグ
     CFG6 Cfg;					// 環境設定オブジェクト
     EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ
+    QMutex propretyMutex;       // 属性値保護のためのMutex
     QMutex MenuMutex;           // メニュー表示中にロックされるMutex
+
+    bool TiltEnabled;
+    TiltDirection TiltDir;
+    qreal TiltAngle;
 };
 
 #endif // QTP6VXAPPLICATION_H

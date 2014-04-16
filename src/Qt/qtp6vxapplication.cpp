@@ -13,6 +13,7 @@
 #include "renderview.h"
 #include "qtp6vxapplication.h"
 
+
 ///////////////////////////////////////////////////////////
 // フォントファイルチェック(無ければ作成する)
 ///////////////////////////////////////////////////////////
@@ -63,9 +64,13 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
   , P6Core(NULL)
   , Restart(EL6::Quit)
   , Adaptor(new EmulationAdaptor())
+  , TiltEnabled(false)
+  , TiltDir(NEWTRAL)
+  , TiltAngle(0.0)
 {
-    //HWINDOWという型名をシグナルの引数として使えるようにする
+    //アプリで定義した型名をシグナルの引数として使えるようにする
     qRegisterMetaType<HWINDOW>("HWINDOW");
+    qRegisterMetaType<TiltDirection>("TiltDirection");
 
     // エミュレーションコア部分用スレッドを生成
     QThread* emulationThread = new QThread(this);
@@ -230,7 +235,7 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
         #ifndef NOMONITOR
             !Cfg.GetMonDisp() &&
         #endif
-            property("TILTEnabled").toBool()){
+            isTiltEnabled()){
         //画面に対する、枠を含めたサイズの比率
         qreal merginRatio = 1.0;
         QGraphicsPixmapItem* background = NULL;
@@ -276,6 +281,43 @@ void QtP6VXApplication::showPopupMenu(int x, int y)
         P6Core->Start();
         MenuMutex.unlock();
     }
+}
+
+
+bool QtP6VXApplication::isTiltEnabled()
+{
+    QMutexLocker lock(&propretyMutex);
+    return TiltEnabled;
+}
+
+void QtP6VXApplication::enableTilt(bool enable)
+{
+    QMutexLocker lock(&propretyMutex);
+    TiltEnabled = enable;
+}
+
+TiltDirection QtP6VXApplication::getTiltDirection()
+{
+    QMutexLocker lock(&propretyMutex);
+    return TiltDir;
+}
+
+void QtP6VXApplication::setTiltDirection(TiltDirection dir)
+{
+    QMutexLocker lock(&propretyMutex);
+    TiltDir = dir;
+}
+
+void QtP6VXApplication::setTiltAngle(qreal angle)
+{
+    QMutexLocker lock(&propretyMutex);
+    TiltAngle = angle;
+}
+
+qreal QtP6VXApplication::getTiltAngle()
+{
+    QMutexLocker lock(&propretyMutex);
+    return TiltAngle;
 }
 
 //仮想マシンを開始させる
@@ -526,3 +568,5 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         return true;
     }
 }
+
+

@@ -18,6 +18,7 @@
 #include "../joystick.h"
 #include "../id_menu.h"
 
+#include "qtp6vxapplication.h"
 #include "qtel6.h"
 
 #define	FRAMERATE	(VSYNC_HZ/(cfg->GetFrameSkip()+1))
@@ -101,10 +102,12 @@ void EL6::ExecMenu( int id )
         break;
     case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
     case ID_TILT:                                                           // TILTモード変更
-        qApp->setProperty("TILTEnabled",
-                          qVariantFromValue(!qApp->property("TILTEnabled").toBool()));
+    {
+        QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+        app->enableTilt(!app->isTiltEnabled());
         graph->ResizeScreen();	// スクリーンサイズ変更
         break;
+    }
     case ID_DISP43:			UI_Disp43();							break;	// 4:3表示変更
     case ID_STATUS:			UI_StatusBar();							break;	// ステータスバー表示状態変更
     case ID_M4MONO:															// MODE4カラー モノクロ
@@ -156,6 +159,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 {
     OSD_ShowCursor( true );
     QAction* selectedAction = NULL;
+    QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
 
     QMenu menu;
 
@@ -281,7 +285,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
     QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
     if (cfg->GetScanLine()) scanLine->setChecked(true);
     QAction* tiltMode = addCommand(settingsMenu, tr("TILTモード"), ID_TILT, true);
-    if (qApp->property("TILTEnabled").toBool()) tiltMode->setChecked(true);
+    if (app->isTiltEnabled()) tiltMode->setChecked(true);
 
     QMenu* colorMenu = settingsMenu->addMenu(tr("MODE4 カラー"));
     QActionGroup* colorGroup = new QActionGroup(&menu);

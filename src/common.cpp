@@ -2,6 +2,7 @@
 
 #include "../log.h"
 #include "../common.h"
+#include "qtp6vxapplication.h"
 
 #ifdef __APPLE__
 #include <Carbon/Carbon.h>  // add Windy for UTF8 変換
@@ -521,30 +522,29 @@ char *UTF8toLocal( const char *str )
     return array.data();
 }
 
-Q_DECLARE_METATYPE(TiltDirection)
-
 void TiltScreen(TiltDirection dir)
 {
-    qApp->setProperty("TILTDirection", qVariantFromValue(dir));
+    QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+    app->setTiltDirection(dir);
 }
 
 void UpdateTilt()
 {
-    if(!qApp->property("TILTEnabled").toBool()) return;
+    QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+    if(!app->isTiltEnabled()) return;
 
     const qreal step = 0.5;
     const qreal maxAngle = 15.0;
-    qreal t = qApp->property("TILT").toReal();
-    switch (qApp->property("TILTDirection").value<TiltDirection>()){
+    qreal t = app->getTiltAngle();
+    switch (app->getTiltDirection()){
     case LEFT: //左
-        qApp->setProperty("TILT", QVariant::fromValue(qMax(-maxAngle, t - step)));
+        app->setTiltAngle(qMax(-maxAngle, t - step));
         break;
     case RIGHT: // 右
-        qApp->setProperty("TILT", QVariant::fromValue(qMin(maxAngle, t + step)));
+        app->setTiltAngle(qMin(maxAngle, t + step));
         break;
     case NEWTRAL:
-        qApp->setProperty("TILT", QVariant::fromValue(
-                              t > step ? t - step : t < -step ? t + step : 0));
+        app->setTiltAngle(t > step ? t - step : t < -step ? t + step : 0.0);
     default:;
     }
 }

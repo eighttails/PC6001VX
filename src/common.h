@@ -57,6 +57,9 @@ enum TiltDirection{
     LEFT,
     RIGHT,
 };
+#ifdef QTP6VX
+Q_DECLARE_METATYPE(TiltDirection)
+#endif
 
 // TILTモード用に画面を傾ける
 void TiltScreen(TiltDirection dir);

@@ -3,6 +3,7 @@
 #endif
 #include <QtWidgets>
 #include "renderview.h"
+#include "qtp6vxapplication.h"
 
 RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
     QGraphicsView(scene, parent)
@@ -40,11 +41,12 @@ void RenderView::fitContent()
 
 void RenderView::paintEvent(QPaintEvent *event)
 {
+    QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
     if(isActiveWindow()){
         fitContent();
-        if(qApp->property("TILTEnabled").toBool()){
+        if(app->isTiltEnabled()){
             //TILTモードの回転
-            rotate(qApp->property("TILT").toReal());
+            rotate(app->getTiltAngle());
         }
     }
     QGraphicsView::paintEvent(event);

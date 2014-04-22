@@ -1,6 +1,7 @@
+#include "common.h"
 #include "log.h"
 #include "movie.h"
-#include "common.h"
+#include "osd.h"
 
 
 // [参考] MSDN
@@ -25,7 +26,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-AVI6::AVI6( void ) : vfp(NULL), ABPP(32), PosMOVI(0),
+AVI6::AVI6( void ) : vfp(NULL), ABPP(32), Sbuf(NULL), PosMOVI(0),
 						RiffSize(0), MoviSize(0), anum(0) {}
 
 
@@ -139,6 +140,9 @@ bool AVI6::Init( void )
 	
 	ABPP     = 32;
 	
+	if( Sbuf ) delete [] Sbuf;
+	Sbuf     = NULL;
+	
 	PosMOVI  = 0;
 	
 	RiffSize = 0;
@@ -152,15 +156,20 @@ bool AVI6::Init( void )
 // ビデオキャプチャ開始
 //
 // 引数:	filename	出力ファイル名
-//			sbuf		サブバッファへのポインタ
+//			sw			スクリーンの幅
+//			sh			スクリーンの高さ
 //			vrate		フレームレート(fps)
 //			arate		音声サンプリングレート(Hz)
 //			bpp			色深度(16,24,32)
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool AVI6::StartAVI( const char *filename, VSurface *sbuf, int vrate, int arate, int bpp )
+bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate, int bpp )
 {
 	Init();
+	
+	// イメージデータバッファ取得
+	Sbuf = new BYTE[sw*sh*sizeof(DWORD)];
+	if( !Sbuf ) return false;
 	
 	vfp = FOPENEN( filename, "w+b" );
 	if( !vfp ) return false;
@@ -196,16 +205,16 @@ bool AVI6::StartAVI( const char *filename, VSurface *sbuf, int vrate, int arate,
 	vmh.dwInitialFrames = 0;
 	// ファイル内のストリーム数を指定する。たとえば,オーディオとビデオを含むファイルには 2つのストリームがある。
 	vmh.dwStreams = 2;
+	// AVIファイルの幅をピクセル単位で指定する。
+	vmh.dwWidth  = sw;
+	// AVIファイルの高さをピクセル単位で指定する。
+	vmh.dwHeight = sh;
 	// ファイルを読み取るためのバッファサイズを指定する。一般に,このサイズはファイル内の最大のチャンクを格納するのに
 	// 十分な大きさにする。ゼロに設定したり,小さすぎる値に設定した場合,再生ソフトウェアは再生中にメモリを
 	// 再割り当てしなければならず,パフォーマンスが低下する。インターリーブされたファイルの場合,バッファサイズはチャンクではなく
 	// レコード全体を読み取るのに十分な大きさでなければならない。
 	// (とりあえず1フレーム分)
-	vmh.dwSuggestedBufferSize = sbuf->Width() * sbuf->Height() * ( ABPP / 8 );
-	// AVIファイルの幅をピクセル単位で指定する。
-	vmh.dwWidth  = sbuf->Width();
-	// AVIファイルの高さをピクセル単位で指定する。
-	vmh.dwHeight = sbuf->Height();
+	vmh.dwSuggestedBufferSize = vmh.dwWidth * vmh.dwHeight * ( ABPP / 8 );
 	
 	// AVIストリームヘッダーの設定
 	// ストリームに含まれるデータのタイプを指定する FOURCC を含む。ビデオおよびオーディオに対して以下の標準AVI値が定義されている。
@@ -257,7 +266,7 @@ bool AVI6::StartAVI( const char *filename, VSurface *sbuf, int vrate, int arate,
 	// このストリームを読み取るために必要なバッファの大きさを指定する。通常は,ストリーム内の最大のチャンクに対応する値である。
 	// 正しいバッファサイズを使用することで,再生の効率が高まる。正しいバッファサイズがわからない場合は,ゼロを指定する。
 	// (とりあえず1フレーム分)
-	vsh.dwSuggestedBufferSize = sbuf->Width() * sbuf->Height() * ( ABPP / 8 );
+	vsh.dwSuggestedBufferSize = vmh.dwWidth * vmh.dwHeight * ( ABPP / 8 );
 	ash.dwSuggestedBufferSize = arate / vrate * 2;
 	// ストリーム内のデータの品質を示す値を指定する。品質は,0〜10,000 の範囲の値で示される。圧縮データの場合,これは通常
 	// 圧縮ソフトウェアに渡される品質パラメータの値を示す。-1に設定した場合,ドライバはデフォルトの品質値を使用する。
@@ -276,18 +285,18 @@ bool AVI6::StartAVI( const char *filename, VSurface *sbuf, int vrate, int arate,
 	// 動画矩形の左上隅からの相対指定となる。
 	vsh.rcFrame.left   = 0;
 	vsh.rcFrame.top    = 0;
-	vsh.rcFrame.right  = sbuf->Width()  - 1;
-	vsh.rcFrame.bottom = sbuf->Height() - 1;
+	vsh.rcFrame.right  = vmh.dwWidth  - 1;
+	vsh.rcFrame.bottom = vmh.dwHeight - 1;
 	
 	// BMPINFOHEADER6構造体の設定
 	// 構造体が必要とするバイト数を指定する。
 	vbf.biSize = sizeof(BMPINFOHEADER6);
 	// ビットマップの幅をピクセル単位で指定する。
-	vbf.biWidth  = sbuf->Width();
+	vbf.biWidth  = vmh.dwWidth;
 	// ビットマップの高さをピクセル単位で指定する。biHeight の値が正である場合,ビットマップはボトムアップDIB
 	// (device-independent bitmap : デバイスに依存しないビットマップ) であり,左下隅が原点となる。biHeight の値が負である場合
 	// ビットマップはトップダウンDIB であり,左上隅が原点となる。
-	vbf.biHeight = sbuf->Height();
+	vbf.biHeight = vmh.dwHeight;
 	// ターゲット デバイスに対する面の数を指定する。これは必ず 1 に設定する。
 	vbf.biPlanes = 1;
 	// 1 ピクセルあたりのビット数を指定する。圧縮フォーマットによっては,ピクセルの色を正しくデコードするためにこの情報が必要である。
@@ -296,7 +305,7 @@ bool AVI6::StartAVI( const char *filename, VSurface *sbuf, int vrate, int arate,
 	// このメンバを使用する。
 	vbf.biCompression = 0;	// 0:BI_RGB
 	// イメージのサイズをバイト単位で指定する。非圧縮RGBビットマップの場合は,0 に設定できる。
-	vbf.biSizeImage = sbuf->Width() * sbuf->Height() * ( ABPP / 8 );
+	vbf.biSizeImage = vmh.dwWidth * vmh.dwHeight * ( ABPP / 8 );
 	// ビットマップのターゲットデバイスの水平解像度を 1メートルあたりのピクセル単位で指定する。アプリケーションはこの値を
 	// 使用して,リソースグループの中から現在のデバイスの特性に最も適合するビットマップを選択することができる。
 	vbf.biXPelsPerMeter = 0;
@@ -339,6 +348,7 @@ bool AVI6::StartAVI( const char *filename, VSurface *sbuf, int vrate, int arate,
 	// カウンタ初期化
 	anum = 0;
 	
+	
 	return true;
 }
 
@@ -373,6 +383,9 @@ void AVI6::StopAVI( void )
 	
 	fclose( vfp );
 	vfp = NULL;
+	
+	if( Sbuf ) delete [] Sbuf;
+	Sbuf = NULL;
 }
 
 
@@ -391,53 +404,32 @@ bool AVI6::IsAVI( void )
 ////////////////////////////////////////////////////////////////
 // AVI1フレーム書出し
 //
-// 引数:	sbuf	サーフェスへのポインタ
+// 引数:	wh		ウィンドウハンドル
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool AVI6::AVIWriteFrame( VSurface *sbuf )
+bool AVI6::AVIWriteFrame( HWINDOW wh )
 {
-	if( !vfp || !sbuf ) return false;
+	if( !vfp || !wh ) return false;
 	
-	int xx = min( sbuf->Width(),  vbf.biWidth  );
-	int yy = min( sbuf->Height(), vbf.biHeight );
+//	int xx = min( sbuf->Width(),  vbf.biWidth  );
+//	int yy = min( sbuf->Height(), vbf.biHeight );
+	int xx = vbf.biWidth;
+	int yy = vbf.biHeight;
 	
 	FPUTDWORD( CID00DB, vfp );
 	FPUTDWORD( vbf.biSizeImage, vfp );
 	
+	VRect ss;
+	ss.x = 0;
+	ss.y = 0;
+	ss.w = xx;
+	ss.h = yy;
+	if( !OSD_GetWindowImage( wh, (void **)&Sbuf, &ss ) ) return false;
+	
 	switch( ABPP ){
-/*	case 8:		// 8bitの場合
-		if( AVIRLE ){	// RLEの場合
-			long fnum = 0;
-			for( int y = yy - 1; y >= 0; y-- ){
-				BYTE dat = ((BYTE *)sbuf->GetPixels())[y*sbuf->Pitch()];
-				int num = 1;
-				for( int x = 1; x < xx; x++ ){
-					if( ( ((BYTE *)sbuf->GetPixels())[y*sbuf->Pitch()+x] != dat )||( num == 255 )||( x == xx - 1 ) ){
-						FPUTBYTE( num, vfp );
-						FPUTBYTE( dat, vfp );
-						dat = ((BYTE *)sbuf->GetPixels())[y*sbuf->Pitch()+x];
-						num = 1;
-						fnum += 2;
-					}else
-						num++;
-				}
-				FPUTBYTE( 0, vfp );
-				if( y ) FPUTBYTE( 0, vfp );
-				else    FPUTBYTE( 1, vfp );
-				fnum += 2;
-			}
-			fseek( vfp, -fnum-4, SEEK_CUR );
-			FPUTDWORD( (DWORD)fnum, vfp );
-			fseek( vfp, 0, SEEK_END );
-		}else{			// ベタの場合
-			for( int y = yy - 1; y >= 0; y-- )
-				fwrite( (BYTE *)sbuf->GetPixels() + sbuf->Pitch() * y, sizeof(BYTE), xx, vfp );
-		}
-		break;
-*/		
 	case 16:	// 16bitの場合
 		for( int y = yy - 1; y >= 0; y-- ){
-			DWORD *src = (DWORD *)sbuf->GetPixels() + sbuf->Pitch()/sizeof(DWORD) * y;
+			DWORD *src = (DWORD *)Sbuf + vmh.dwWidth * y;
 			for( int x=0; x < xx; x++ ){
 				WORD dat = (((*src)&RMASK32)>>(RSHIFT32+3))<<10 |
 						   (((*src)&GMASK32)>>(GSHIFT32+3))<<5 |
@@ -450,7 +442,7 @@ bool AVI6::AVIWriteFrame( VSurface *sbuf )
 		
 	case 24:	// 24bitの場合
 		for( int y = yy - 1; y >= 0; y-- ){
-			DWORD *src = (DWORD *)sbuf->GetPixels() + sbuf->Pitch()/sizeof(DWORD) * y;
+			DWORD *src = (DWORD *)Sbuf + vmh.dwWidth * y;
 			for( int x=0; x < xx; x++ ){
 				FPUTBYTE( ((*src)&BMASK32)>>BSHIFT32, vfp );
 				FPUTBYTE( ((*src)&GMASK32)>>GSHIFT32, vfp );
@@ -462,7 +454,7 @@ bool AVI6::AVIWriteFrame( VSurface *sbuf )
 		
 	case 32:	// 32bitの場合
 		for( int y = yy - 1; y >= 0; y-- )
-			fwrite( (BYTE *)sbuf->GetPixels() + sbuf->Pitch() * y, sizeof(DWORD), xx, vfp );
+			fwrite( (BYTE *)((DWORD *)Sbuf + vmh.dwWidth * y), sizeof(DWORD), xx, vfp );
 	}
 	
 	// 総フレーム数を1増やす

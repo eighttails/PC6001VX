@@ -236,7 +236,8 @@ bool PSG6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "PSG", NULL, "Holding",		"0x%02X",	Holding );
 	Ini->PutEntry( "PSG", NULL, "RNG",			"%d",		RNG );
 	
-    Ini->PutEntry( "PSG", NULL, "BufSize",		"%d",		SndDev::FreeSize() );
+	Ini->PutEntry( "PSG", NULL, "BufSize",		"%d",		SndDev::FreeSize() );
+	
     return true;
 }
 
@@ -288,6 +289,10 @@ bool PSG6::DokoLoad( cIni *Ini )
 	Ini->GetInt( "PSG", "Attack",		&st,			Attack );		Attack = st;
 	Ini->GetInt( "PSG", "Holding",		&st,			Holding );		Holding = st;
 	Ini->GetInt( "PSG", "RNG",			&RNG,			RNG );
+	
+	Ini->GetInt( "PSG", "BufSize",		&st,            SndDev::FreeSize() );
+	while( SndDev::FreeSize() > st )
+		SndDev::Put(0);
 	
     Ini->GetInt( "PSG", "BufSize",		&st,            SndDev::FreeSize() );
     while(SndDev::FreeSize() > st){

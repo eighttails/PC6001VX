@@ -95,7 +95,17 @@ void IRQ6::SetTimerIntrHz( BYTE data, BYTE first )
 	TimerCntUp = data;
 	
 	// イベント追加
-	vm->EventAdd( this, EID_TIMER, (double)(2048/(vm->VdgIsSRmode() ? 32 : 1))*(TimerCntUp+1), EV_LOOP|EV_STATE );
+//	vm->EventAdd( this, EID_TIMER, (double)(2048/(vm->VdgIsSRmode() ? 32 : 1))*(TimerCntUp+1), EV_LOOP|EV_STATE );
+
+	// 非SR系は 1[intr] : (2048*(TimerCntUp+1)) [clock]
+	// SR系は500Hzが基本?? ほんと??
+	if( vm->VdgIsSRmode() )
+		vm->EventAdd( this, EID_TIMER, (double)(CPUM_CLOCK64/2000 * ((TimerCntUp>>5)+1)), EV_LOOP|EV_STATE );
+	else
+		vm->EventAdd( this, EID_TIMER, (double)(2048*(TimerCntUp+1)), EV_LOOP|EV_STATE );
+
+
+
 	
 	// 初回周期の指定がある場合の処理
 	if( first ){

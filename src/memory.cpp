@@ -495,7 +495,7 @@ bool MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, const char *path )
 			char fpath[PATH_MAX] = "";
 			if( path ){
 				strncpy( fpath, path, PATH_MAX );
-				AddDelimiter( fpath );
+				OSD_AddDelimiter( fpath );
 			}
 			strncat( fpath, info->Rinf[i].FileName, PATH_MAX );
 			
@@ -665,28 +665,28 @@ bool MEM6::Init( bool useexram, bool usesol )
 	// メモリブロック設定
 	// とりあえず全てEmptyに設定
 	for( int i=0; i<MAXRMB; i++ )
-		RomB[i].SetMemory( "EmptyRom", EmptyRom, MemTable.EmptRom->WaitR, MemTable.EmptRom->WaitW, true );
+		RomB[i].SetMemory( "EmpRom", EmptyRom, MemTable.EmptRom->WaitR, MemTable.EmptRom->WaitW, true );
 	for( int i=0; i<MAXWMB; i++ )
-		RamB[i].SetMemory( "EmptyRam", EmptyRam, MemTable.EmptRam->WaitR, MemTable.EmptRam->WaitW, true );
+		RamB[i].SetMemory( "EmpRam", EmptyRam, MemTable.EmptRam->WaitR, MemTable.EmptRam->WaitW, true );
 	
 	// 拡張ROM領域
-	EXTROM0.SetMemory( "ExtRom0", ExtRom,        MemTable.ExtRom->WaitR, MemTable.ExtRom->WaitW, true );
-	EXTROM1.SetMemory( "ExtRom1", ExtRom+0x2000, MemTable.ExtRom->WaitR, MemTable.ExtRom->WaitW, true );
+	EXTROM0.SetMemory( "ExRom0", ExtRom,        MemTable.ExtRom->WaitR, MemTable.ExtRom->WaitW, true );
+	EXTROM1.SetMemory( "ExRom1", ExtRom+0x2000, MemTable.ExtRom->WaitR, MemTable.ExtRom->WaitW, true );
 	
 	// 外部RAM設定(排他)
 	if( UseSol ){			// 戦士のカートリッジ
-		EXTRAM0.SetMemory( "ExtRam0", ExtRam,        MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM1.SetMemory( "ExtRam1", ExtRam+0x2000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		SOLRAM.SetMemory ( "SolRam",  ExtRam+0x6000, MemTable.SolRam->WaitR, MemTable.SolRam->WaitW, false );
+		EXTRAM0.SetMemory( "ExRam0", ExtRam,        MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM1.SetMemory( "ExRam1", ExtRam+0x2000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		SOLRAM.SetMemory ( "SolRam", ExtRam+0x6000, MemTable.SolRam->WaitR, MemTable.SolRam->WaitW, false );
 	}else if( UseExtRam ){	// RAMカートリッジ
-		EXTRAM0.SetMemory( "ExtRam0", ExtRam,        MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM1.SetMemory( "ExtRam1", ExtRam+0x2000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM2.SetMemory( "ExtRam2", ExtRam+0x4000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM3.SetMemory( "ExtRam3", ExtRam+0x6000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM4.SetMemory( "ExtRam4", ExtRam+0x8000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM5.SetMemory( "ExtRam5", ExtRam+0xa000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM6.SetMemory( "ExtRam6", ExtRam+0xc000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM7.SetMemory( "ExtRam7", ExtRam+0xe000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM0.SetMemory( "ExRam0", ExtRam,        MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM1.SetMemory( "ExRam1", ExtRam+0x2000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM2.SetMemory( "ExRam2", ExtRam+0x4000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM3.SetMemory( "ExRam3", ExtRam+0x6000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM4.SetMemory( "ExRam4", ExtRam+0x8000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM5.SetMemory( "ExRam5", ExtRam+0xa000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM6.SetMemory( "ExRam6", ExtRam+0xc000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		EXTRAM7.SetMemory( "ExRam7", ExtRam+0xe000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
 	}
 	
 	 // 機種別初期化
@@ -704,15 +704,15 @@ bool MEM60::InitSpecific( void )
 	
 	// メモリブロック設定
 	// BASIC ROM
-	MAINROM0.SetMemory( "MainRom0", MainRom,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM1.SetMemory( "MainRom1", MainRom+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM0.SetMemory( "Basic0", MainRom,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM1.SetMemory( "Basic1", MainRom+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
 	
 	// CG ROM
-	CGROM1.SetMemory  ( "CGRom1",   CGRom1,         MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
+	CGROM1.SetMemory  ( "CGRom1", CGRom1,         MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
 	
 	// 内部RAM
-	MAINRAM0.SetMemory( "IntRam0",  IntRam,         MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM1.SetMemory( "IntRam1",  IntRam+0x2000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM0.SetMemory( "InRam0", IntRam,         MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM1.SetMemory( "InRam1", IntRam+0x2000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
 	
 	return true;
 }
@@ -723,34 +723,34 @@ bool MEM62::InitSpecific( void )
 	
 	// メモリブロック設定
 	// BASIC ROM
-	MAINROM0.SetMemory ( "MainRom0", MainRom,         MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM1.SetMemory ( "MainRom1", MainRom+0x2000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM2.SetMemory ( "MainRom2", MainRom+0x4000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM3.SetMemory ( "MainRom3", MainRom+0x6000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM0.SetMemory ( "Basic0", MainRom,         MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM1.SetMemory ( "Basic1", MainRom+0x2000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM2.SetMemory ( "Basic2", MainRom+0x4000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM3.SetMemory ( "Basic3", MainRom+0x6000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
 	
 	// CG ROM
-	CGROM1.SetMemory   ( "CGRom1",   CGRom1,          MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
-	CGROM2.SetMemory   ( "CGRom2",   CGRom2,          MemTable.CGRom2->WaitR,  MemTable.CGRom2->WaitW,  true );
+	CGROM1.SetMemory   ( "CGRom1", CGRom1,          MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
+	CGROM2.SetMemory   ( "CGRom2", CGRom2,          MemTable.CGRom2->WaitR,  MemTable.CGRom2->WaitW,  true );
 	
 	// 漢字ROM
-	KANJIROM0.SetMemory( "KanjRom0", KanjiRom,        MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
-	KANJIROM1.SetMemory( "KanjRom1", KanjiRom+0x2000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
-	KANJIROM2.SetMemory( "KanjRom2", KanjiRom+0x4000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
-	KANJIROM3.SetMemory( "KanjRom3", KanjiRom+0x6000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
+	KANJIROM0.SetMemory( "KjRom0", KanjiRom,        MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
+	KANJIROM1.SetMemory( "KjRom1", KanjiRom+0x2000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
+	KANJIROM2.SetMemory( "KjRom2", KanjiRom+0x4000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
+	KANJIROM3.SetMemory( "KjRom3", KanjiRom+0x6000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
 	
 	// 音声合成ROM
-	VOICEROM0.SetMemory( "VoicRom0", VoiceRom,        MemTable.Voice->WaitR,   MemTable.Voice->WaitW,   true );
-	VOICEROM1.SetMemory( "VoicRom1", VoiceRom+0x2000, MemTable.Voice->WaitR,   MemTable.Voice->WaitW,   true );
+	VOICEROM0.SetMemory( "VoRom0", VoiceRom,        MemTable.Voice->WaitR,   MemTable.Voice->WaitW,   true );
+	VOICEROM1.SetMemory( "VoRom1", VoiceRom+0x2000, MemTable.Voice->WaitR,   MemTable.Voice->WaitW,   true );
 	
 	// 内部RAM
-	MAINRAM0.SetMemory ( "IntRam0",  IntRam,          MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM1.SetMemory ( "IntRam1",  IntRam+0x2000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM2.SetMemory ( "IntRam2",  IntRam+0x4000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM3.SetMemory ( "IntRam3",  IntRam+0x6000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM4.SetMemory ( "IntRam4",  IntRam+0x8000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM5.SetMemory ( "IntRam5",  IntRam+0xa000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM6.SetMemory ( "IntRam6",  IntRam+0xc000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM7.SetMemory ( "IntRam7",  IntRam+0xe000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM0.SetMemory ( "InRam0", IntRam,          MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM1.SetMemory ( "InRam1", IntRam+0x2000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM2.SetMemory ( "InRam2", IntRam+0x4000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM3.SetMemory ( "InRam3", IntRam+0x6000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM4.SetMemory ( "InRam4", IntRam+0x8000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM5.SetMemory ( "InRam5", IntRam+0xa000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM6.SetMemory ( "InRam6", IntRam+0xc000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM7.SetMemory ( "InRam7", IntRam+0xe000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
 	
 	return true;
 }
@@ -761,44 +761,44 @@ bool MEM64::InitSpecific( void )
 	
 	// メモリブロック設定
 	// N66-BASIC ROM
-	MAINROM0.SetMemory ( "N66Rom0",  MainRom,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM1.SetMemory ( "N66Rom1",  MainRom+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM2.SetMemory ( "N66Rom2",  MainRom+0x4000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM3.SetMemory ( "N66Rom3",  MainRom+0x6000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM0.SetMemory ( "SYS1-0", MainRom,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM1.SetMemory ( "SYS1-1", MainRom+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM2.SetMemory ( "SYS1-2", MainRom+0x4000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM3.SetMemory ( "SYS1-3", MainRom+0x6000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
 	
 	// N66SR-BASIC ROM
-	MAINROM4.SetMemory ( "66SRRom0", MainRom+0x8000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM5.SetMemory ( "66SRRom1", MainRom+0xa000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM6.SetMemory ( "66SRRom2", MainRom+0xc000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM7.SetMemory ( "66SRRom3", MainRom+0xe000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM4.SetMemory ( "SYS1-4", MainRom+0x8000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM5.SetMemory ( "SYS1-5", MainRom+0xa000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM6.SetMemory ( "SYS1-6", MainRom+0xc000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM7.SetMemory ( "SYS1-7", MainRom+0xe000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
 	
 	// SR メニューROM
-	SRMENROM0.SetMemory( "SRmnRom0", SysRom2,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	SRMENROM1.SetMemory( "SRmnRom1", SysRom2+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	SRMENROM0.SetMemory( "SYS2-0", SysRom2,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	SRMENROM1.SetMemory( "SYS2-1", SysRom2+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
 	
 	// 音声合成ROM
-	VOICEROM0.SetMemory( "VoicRom0", SysRom2+0x4000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	VOICEROM1.SetMemory( "VoicRom1", SysRom2+0x6000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	VOICEROM0.SetMemory( "SYS2-2", SysRom2+0x4000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	VOICEROM1.SetMemory( "SYS2-3", SysRom2+0x6000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
 	
 	// 漢字ROM
-	KANJIROM0.SetMemory( "KanjRom0", SysRom2+0x8000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	KANJIROM1.SetMemory( "KanjRom1", SysRom2+0xa000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	KANJIROM2.SetMemory( "KanjRom2", SysRom2+0xc000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	KANJIROM3.SetMemory( "KanjRom3", SysRom2+0xe000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	KANJIROM0.SetMemory( "SYS2-4", SysRom2+0x8000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	KANJIROM1.SetMemory( "SYS2-5", SysRom2+0xa000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	KANJIROM2.SetMemory( "SYS2-6", SysRom2+0xc000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	KANJIROM3.SetMemory( "SYS2-7", SysRom2+0xe000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
 	
 	// CG ROM
-	CGROM1.SetMemory   ( "CGRom1",   CGRom1,         MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
-	CGROM2.SetMemory   ( "CGRom2",   CGRom1+0x2000,  MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
+	CGROM1.SetMemory   ( "CGRom1", CGRom1,         MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
+	CGROM2.SetMemory   ( "CGRom2", CGRom1+0x2000,  MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
 	
 	// 内部RAM
-	MAINRAM0.SetMemory ( "IntRam0",  IntRam,         MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM1.SetMemory ( "IntRam1",  IntRam+0x2000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM2.SetMemory ( "IntRam2",  IntRam+0x4000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM3.SetMemory ( "IntRam3",  IntRam+0x6000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM4.SetMemory ( "IntRam4",  IntRam+0x8000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM5.SetMemory ( "IntRam5",  IntRam+0xa000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM6.SetMemory ( "IntRam6",  IntRam+0xc000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM7.SetMemory ( "IntRam7",  IntRam+0xe000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM0.SetMemory ( "InRam0", IntRam,         MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM1.SetMemory ( "InRam1", IntRam+0x2000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM2.SetMemory ( "InRam2", IntRam+0x4000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM3.SetMemory ( "InRam3", IntRam+0x6000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM4.SetMemory ( "InRam4", IntRam+0x8000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM5.SetMemory ( "InRam5", IntRam+0xa000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM6.SetMemory ( "InRam6", IntRam+0xc000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	MAINRAM7.SetMemory ( "InRam7", IntRam+0xe000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
 	
 	return true;
 }
@@ -904,6 +904,9 @@ BYTE MEM6::Fetch( WORD addr, int *m1wait ) const
 	// M1ウェイト追加
 	if( m1wait ) (*m1wait) += M1Wait;
 	
+	// バスリクエスト区間実行時ウェイト追加
+	if( vm->VdgIsBusReqExec() ) (*m1wait)++;
+	
 	return data;
 }
 
@@ -923,6 +926,9 @@ BYTE MEM6::Read( WORD addr, int *wcnt ) const
 			data = Rm_blkSR[addr>>13]->Read( addr, wcnt );
 	}else
 		data = Rm_blk  [addr>>13]->Read( addr, wcnt );
+	
+	// バスリクエスト区間実行時ウェイト追加
+	if( wcnt && vm->VdgIsBusReqExec() ) (*wcnt)++;
 	
 	PRINTD( MEM_LOG, "[MEM][Read]  -> %04X:%02X\n", addr, data );
 	
@@ -946,6 +952,9 @@ void MEM6::Write( WORD addr, BYTE data, int *wcnt ) const
 			Wm_blkSR[addr>>13]->Write( addr, data, wcnt );
 	}else
 		Wm_blk[addr>>13]->Write( addr, data, wcnt );
+	
+	// バスリクエスト区間実行時ウェイト追加
+	if( wcnt && vm->VdgIsBusReqExec() ) (*wcnt)++;
 	
 	// 内部/外部RAMとも書込みの場合はひとまず内部だけ
 }
@@ -1567,8 +1576,12 @@ bool MEM6::DokoSave( cIni *Ini )
 	}
 	
 	// 拡張ROMがマウントされている場合
-	if( UseExtRom )
-		Ini->PutEntry( "MEMORY", NULL, "FilePath",	"%s",	FilePath );
+	if( UseExtRom ){
+		char pathstr[PATH_MAX+1];
+		strncpy( pathstr, FilePath, PATH_MAX );
+		OSD_RelativePath( pathstr );
+		Ini->PutEntry( "MEMORY", NULL, "FilePath",	"%s",	pathstr );
+	}
 	
 	return true;
 }
@@ -1832,7 +1845,7 @@ bool MEM64::DokoLoad( cIni *Ini )
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 ////////////////////////////////////////////////////////////////
-// デバッグ用関数
+// モニタモード用関数
 ////////////////////////////////////////////////////////////////
 const char *MEM6::GetReadMemBlk( int blk ) const 
 {

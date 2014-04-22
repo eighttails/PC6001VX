@@ -12,13 +12,81 @@
 #include "p6vm.h"
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+#define	SCRWINW		(380)
+#define	SCRWINH		(250)
+
+#define	REGWINW		(40)
+#define	REGWINH		( 8)
+#define	MEMWINW		(72)
+#define	MEMWINH		(31)
+#define	MONWINW		(60)
+#define	MONWINH		(30)
+
+#define	PROMPT		"P6V>"
+
+//------------------------------------------------------
+//  モニタモードウィンドウ インターフェース(?)クラス
+//------------------------------------------------------
+////////////////////////////////////////////////////////////////
+// コンストラクタ
+////////////////////////////////////////////////////////////////
+iMon::iMon( VM6 *vm, const ID& id ) : Device(vm,id)
+{
+	x = y = 0;
+}
+
+
+////////////////////////////////////////////////////////////////
+// デストラクタ
+////////////////////////////////////////////////////////////////
+iMon::~iMon( void ){}
+
+
+////////////////////////////////////////////////////////////////
+// X座標取得
+////////////////////////////////////////////////////////////////
+int iMon::X( void )
+{
+	return x;
+}
+
+
+////////////////////////////////////////////////////////////////
+// Y座標取得
+////////////////////////////////////////////////////////////////
+int iMon::Y( void )
+{
+	return y;
+}
+
+
+////////////////////////////////////////////////////////////////
+// X座標設定
+////////////////////////////////////////////////////////////////
+void iMon::SetX( int xx )
+{
+	x = xx;
+}
+
+
+////////////////////////////////////////////////////////////////
+// Y座標設定
+////////////////////////////////////////////////////////////////
+void iMon::SetY( int yy )
+{
+	x = yy;
+}
+
+
+
 //------------------------------------------------------
 //  メモリダンプウィンドウクラス
 //------------------------------------------------------
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndMem::cWndMem( VM6 *vm, const ID& id ) : Device(vm,id), Addr(0) {}
+cWndMem::cWndMem( VM6 *vm, const ID& id ) : iMon(vm,id), Addr(0) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -49,45 +117,81 @@ void cWndMem::Update( void )
 	int i,j;
 	
 	ZCons::Locate( 0, 0 );
+	ZCons::SetColor( FC_YELLOW, FC_DYELLOW );
+	ZCons::Printf( "MAP " );
+	ZCons::SetColor( FC_DCYAN, FC_BLACK );
+	ZCons::Printf( "  0000   2000   4000   6000   8000   A000   C000   E000\n" );
+	ZCons::SetColor( FC_WHITE );
 	
 	// Read メモリブロック名表示
-	ZCons::Printf( "R" );
-	for( i=0; i<4; i++ ){
+	ZCons::Printf( "Read  " );
+	for( i=0; i<8; i++ ){
 		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( " %-8s", vm->MemGetReadMemBlk( i ) );
+		ZCons::Printf( "%-7s", vm->MemGetReadMemBlk( i ) );
 	}
-	ZCons::Printf( "\n " );
-	for( i=4; i<8; i++ ){
-		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( " %-8s", vm->MemGetReadMemBlk( i ) );
-	}
-	ZCons::Printf( "\nW" );
+	ZCons::Printf( "\nWrire " );
 	
 	// Write メモリブロック名表示
-	for( i=0; i<4; i++ ){
+	for( i=0; i<8; i++ ){
 		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( " %-8s", vm->MemGetWriteMemBlk( i ) );
-	}
-	ZCons::Printf( "\n " );
-	for( i=4; i<8; i++ ){
-		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( " %-8s", vm->MemGetWriteMemBlk( i ) );
+		ZCons::Printf( "%-7s", vm->MemGetWriteMemBlk( i ) );
 	}
 	ZCons::Printf( "\n" );
 	
 	// メモリダンプ表示
-	for( i=0; i<ZCons::GetYline()-5; i++ ){
+	ZCons::SetColor( FC_YELLOW, FC_DYELLOW );
+	ZCons::Printf( "ADDR" );
+	ZCons::SetColor( FC_DCYAN, FC_BLACK );
+	ZCons::Printf( " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F" );
+	for( i=0; i<(ZCons::GetYline()-5)/2; i++ ){
 		ZCons::Printf( "\n" );
 		ZCons::SetColor( TexCol[ addr>>13 ] );
-		ZCons::Printf( "%04X:", addr );
+		ZCons::Printf( "%04X ", addr );
 		ZCons::SetColor( FC_WHITE );
-		for( j=0; j<8; j++)
+		for( j=0; j<16; j++)
 			ZCons::Printf( "%02X ", vm->MemRead(addr+j) );
-		for( j=0; j<8; j++)
+		for( j=0; j<16; j++)
 			ZCons::PutCharH( vm->MemRead(addr+j) );
-		addr += 8;
+		addr += 16;
+	}
+	
+	addr = Addr;
+	ZCons::Printf( "\n" );
+	ZCons::SetColor( FC_YELLOW, FC_DYELLOW );
+	ZCons::Printf( "RAM " );
+	ZCons::SetColor( FC_DCYAN, FC_BLACK );
+	ZCons::Printf( " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F" );
+	for( i=0; i<(ZCons::GetYline()-5)/2; i++ ){
+		ZCons::Printf( "\n" );
+		ZCons::SetColor( TexCol[ addr>>13 ] );
+		ZCons::Printf( "%04X ", addr );
+		ZCons::SetColor( FC_WHITE );
+		for( j=0; j<16; j++)
+			ZCons::Printf( "%02X ", vm->MemReadMainRam(addr+j) );
+		for( j=0; j<16; j++)
+			ZCons::PutCharH( vm->MemReadMainRam(addr+j) );
+		addr += 16;
 	}
 }
+
+
+////////////////////////////////////////////////////////////////
+// 表示アドレス設定
+////////////////////////////////////////////////////////////////
+void cWndMem::SetAddress( WORD addr )
+{
+	Addr = addr & 0xfff8;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 表示アドレス取得
+////////////////////////////////////////////////////////////////
+WORD cWndMem::GetAddress( void )
+{
+	return Addr;
+}
+
 
 
 //------------------------------------------------------
@@ -96,7 +200,7 @@ void cWndMem::Update( void )
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndReg::cWndReg( VM6 *vm, const ID& id ) : Device(vm,id) {}
+cWndReg::cWndReg( VM6 *vm, const ID& id ) : iMon(vm,id) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -140,7 +244,7 @@ void cWndReg::Update( void )
 	ZCons::Locate( 0, 2 ); ZCons::Print( "IX :%04X  IY :%04X  PC :%04X  SP :%04X", reg.IX.W, reg.IY.W, reg.PC.W, reg.SP.W );
 	ZCons::Locate( 0, 3 ); ZCons::Print( "FLAG:[%s] I:%02X IFF:%d IM:%1d HALT:%1d",  fbuf, reg.I, reg.IFF, reg.IM, reg.Halt );
 	ZCons::Locate( 0, 4 ); ZCons::Print( "--------------------------------------" );
-	ZCons::Locate( 0, 5 ); ZCons::Print( " %-36s", DisCode );
+	ZCons::Locate( 0, 5 ); ZCons::Print( "%s", DisCode );
 }
 
 
@@ -299,7 +403,7 @@ const struct{
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cWndMon::cWndMon( VM6 *vm, const ID& id ) : Device(vm,id), Argc(0), ArgvCounter(0)
+cWndMon::cWndMon( VM6 *vm, const ID& id ) : iMon(vm,id), Argc(0), ArgvCounter(0)
 {
 	INITARRAY( KeyBuf, '\0' );
 	for( int i=0; i<MAX_HIS; i++ ) ZeroMemory( HisBuf[i], MAX_CHRS );
@@ -416,7 +520,8 @@ void cWndMon::KeyIn( int kcode, bool shift, int ccode )
 				char *p = &KeyBuf[strlen(KeyBuf)];
 				*p++ = (BYTE)ccode;
 				*p   = (BYTE)'\0';
-				ZCons::PutCharH( ccode );
+//				ZCons::PutCharH( ccode );
+				ZCons::Printf( "%c", ccode );
 			}
 		}
 	}
@@ -1415,7 +1520,7 @@ void cWndMon::Help( int cmd )
             QT_TRANSLATE_NOOP("PC6001VX",
             "  disasm [[<start-addr>][#<steps>]]\n"
             "    逆アセンブルします\n"
-			"    [all omit]   ... PCレジスタアドレスから16ステップ分を逆アセンブルします\n"
+			"    [all omit]   ... PCレジスタアドレスから16ステップ分を逆アセンブル\n"
 			"    <start-addr> ... start-addr から逆アセンブルします\n"
 			"                     [omit]... PCレジスタアドレス\n"
 			"    #<steps>     ... 逆アセンブルするステップ数\n"
@@ -1426,4 +1531,93 @@ void cWndMon::Help( int cmd )
 		
 	}
 }
+
+
+
+
+
+
+
+//------------------------------------------------------
+//  モニタモードクラス
+//------------------------------------------------------
+
+////////////////////////////////////////////////////////////////
+// コンストラクタ
+////////////////////////////////////////////////////////////////
+Monitor::Monitor( VM6 *vm ) : vm(vm)
+{
+	for( int i=0; i<COUNTOF(dcn); i++ )
+		dcn[i] = NULL;
+}
+
+
+////////////////////////////////////////////////////////////////
+// デストラクタ
+////////////////////////////////////////////////////////////////
+Monitor::~Monitor( void )
+{
+	for( int i=0; i<COUNTOF(dcn); i++ )
+		if( dcn[i] ) delete dcn[i];
+}
+
+
+////////////////////////////////////////////////////////////////
+// 初期化
+////////////////////////////////////////////////////////////////
+bool Monitor::Init( void )
+{
+	dcn[0] = new cWndMon( vm, DEV_ID("MONW") );	// モニタウィンドウ
+	dcn[1] = new cWndReg( vm, DEV_ID("REGW") );	// レジスタウィンドウ
+	dcn[2] = new cWndMem( vm, DEV_ID("MEMW") );	// メモリウィンドウ
+	
+	for( int i=0; i<COUNTOF(dcn); i++ )
+		if( !(dcn[i] && dcn[i]->Init()) ) return false;
+	
+	// 位置合わせ
+	dcn[0]->SetX( 0 );								dcn[0]->SetY( SCRWINH/12 );
+	dcn[1]->SetX( dcn[0]->X() + dcn[0]->Width());	dcn[1]->SetY( 0 );
+	dcn[2]->SetX( dcn[1]->X() );					dcn[2]->SetY( dcn[1]->Y() + dcn[1]->Height() );
+	return true;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ウィンドウ更新
+////////////////////////////////////////////////////////////////
+void Monitor::Update( void )
+{
+	for( int i=0; i<COUNTOF(dcn); i++ )
+		dcn[i]->Update();
+}
+
+
+////////////////////////////////////////////////////////////////
+// モニタモード ウィンドウ幅取得
+////////////////////////////////////////////////////////////////
+int Monitor::Width( void )
+{
+	int ww = 0;
+	for( int i=0; i<COUNTOF(dcn); i++ )
+		ww = max( ww, dcn[i]->X() + dcn[i]->Width() );
+	
+	return ww;
+}
+
+
+////////////////////////////////////////////////////////////////
+// モニタモード ウィンドウ高さ取得
+////////////////////////////////////////////////////////////////
+int Monitor::Height( void )
+{
+	int hh = 0;
+	for( int i=0; i<COUNTOF(dcn); i++ )
+		hh = max( hh, dcn[i]->Y() + dcn[i]->Height() );
+	
+	return hh;
+}
+
+
+
+
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

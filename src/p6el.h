@@ -97,7 +97,7 @@ protected:
 		int Num;				// 残り文字数
 		int Wait;				// 待ち回数カウンタ
 		bool Relay;				// リレースイッチOFF待ちフラグ
-		bool RelayOn;			// リレースイッチOB待ちフラグ
+		bool RelayOn;			// リレースイッチON待ちフラグ
 		int Seek;
 		
 		AKEY() : Buffer(NULL), Num(0), Wait(0), Relay(false), Seek(0) {}

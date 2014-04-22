@@ -491,7 +491,7 @@ CFG6::CFG6( void ) : Ini(NULL)
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 {
 	// INIファイルのパスを設定
-	sprintf( IniPath, "%s" CONF_FILE, OSD_GetModulePath() );
+	OSD_AddPath( IniPath, OSD_GetModulePath(), CONF_FILE );
 	
 	INITARRAY( Caption, '\0' );		// ウィンドウキャプション
 	INITARRAY( DokoFile, '\0' );	// どこでもSAVEファイルパス
@@ -628,8 +628,7 @@ char *CFG6::GetDokoFile( void )
 void CFG6::SetDokoFile( const char *str )
 {
 	strncpy( DokoFile, str, PATH_MAX );
-	UnDelimiter( DokoFile );
-	DelDelimiter( DokoFile );
+	OSD_DelDelimiter( DokoFile );
 }
 
 // オーバークロック率取得
@@ -650,8 +649,8 @@ void CFG6::SetOverClock( int data )
 char *CFG6::GetRomPath( void )
 {
 	Ini->GetString( "PATH", "RomPath", RomPath, RomPath );
-	Delimiter( RomPath );
-	AddDelimiter( RomPath );
+	OSD_AddDelimiter( RomPath );
+	OSD_AbsolutePath( RomPath );
 	return RomPath;
 }
 
@@ -660,8 +659,8 @@ void CFG6::SetRomPath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "PATH", MSINI_RomPath, "RomPath", temp );
 }
 
@@ -683,7 +682,8 @@ void CFG6::SetUseExtRam( bool yn )
 char *CFG6::GetExtRomPath( void )
 {
 	Ini->GetString( "PATH", "ExtRomPath", ExtRomPath, ExtRomPath );
-	Delimiter( ExtRomPath );
+	OSD_AddDelimiter( ExtRomPath );
+	OSD_AbsolutePath( ExtRomPath );
 	return ExtRomPath;
 }
 // 拡張ROMパス設定
@@ -691,8 +691,8 @@ void CFG6::SetExtRomPath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "PATH", MSINI_ExtRomPath, "ExtRomPath", temp );
 }
 
@@ -700,7 +700,7 @@ void CFG6::SetExtRomPath( const char *str )
 char *CFG6::GetExtRomFile( void )
 {
 	Ini->GetString( "FILES", "ExtRom", ExtRomFile, ExtRomFile );
-	Delimiter( ExtRomFile );
+	OSD_AbsolutePath( ExtRomFile );
 	return ExtRomFile;
 }
 
@@ -709,7 +709,7 @@ void CFG6::SetExtRomFile( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "FILES", MSINI_ExtRom, "ExtRom", temp );
 }
 
@@ -828,7 +828,8 @@ void CFG6::SetPsgLPF( int data )
 char *CFG6::GetWavePath( void )
 {
 	Ini->GetString( "PATH", "WavePath", WavePath, WavePath );
-	Delimiter( WavePath );
+	OSD_AddDelimiter( WavePath );
+	OSD_AbsolutePath( WavePath );
 	return WavePath;
 }
 
@@ -837,8 +838,8 @@ void CFG6::SetWavePath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "PATH", MSINI_WavePath, "WavePath", temp );
 }
 
@@ -846,7 +847,7 @@ void CFG6::SetWavePath( const char *str )
 char *CFG6::GetDokoSavePath( void )
 {
     Ini->GetString( "PATH", "DokoSavePath", DokoSavePath, DokoSavePath );
-    Delimiter( DokoSavePath );
+    OSD_AddDelimiter( DokoSavePath );
     return DokoSavePath;
 }
 
@@ -855,8 +856,8 @@ void CFG6::SetDokoSavePath( const char *str )
 {
     char temp[PATH_MAX];
     strncpy( temp, str, PATH_MAX );
-    UnDelimiter( temp );
-    DelDelimiter( temp );
+    OSD_DelDelimiter( temp );
+    OSD_AbsolutePath( temp );
     Ini->PutEntry( "PATH", MSINI_DokoSavePath, "DokoSavePath", temp );
 }
 
@@ -878,7 +879,8 @@ void CFG6::SetVoiceVol( int data )
 char *CFG6::GetTapePath( void )
 {
 	Ini->GetString( "PATH", "TapePath", TapePath, TapePath );
-	Delimiter( TapePath );
+	OSD_AddDelimiter( TapePath );
+	OSD_AbsolutePath( TapePath );
 	return TapePath;
 }
 
@@ -887,26 +889,26 @@ void CFG6::SetTapePath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "PATH", MSINI_TapePath, "TapePath", temp );
 }
 
-// TAPEファイル取得
+// TAPEファイル名取得
 char *CFG6::GetTapeFile( void )
 {
 	Ini->GetString( "FILES", "tape", TapeFile, TapeFile );
-	Delimiter( TapeFile );
+	OSD_AbsolutePath( TapeFile );
 	return TapeFile;
 }
 
-// TAPEファイル設定
+// TAPEファイル名設定
 void CFG6::SetTapeFile( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "FILES", MSINI_tape, "tape", temp );
 }
 
@@ -979,21 +981,21 @@ void CFG6::SetMaxBoost2( int data )
 	Ini->PutEntry( "CONFIG", MSINI_MaxBoost62, "MaxBoost62", "%d", data );
 }
 
-// TAPE(SAVE)ファイル取得
+// TAPE(SAVE)ファイル名取得
 char *CFG6::GetSaveFile( void )
 {
 	Ini->GetString( "FILES", "save", SaveFile, SaveFile );
-	Delimiter( SaveFile );
+	OSD_AbsolutePath( SaveFile );
 	return SaveFile;
 }
 
-// TAPE(SAVE)ファイル設定
+// TAPE(SAVE)ファイル名設定
 void CFG6::SetSaveFile( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "FILES", MSINI_save, "save", temp );
 }
 
@@ -1001,7 +1003,8 @@ void CFG6::SetSaveFile( const char *str )
 char *CFG6::GetDiskPath( void )
 {
 	Ini->GetString( "PATH", "DiskPath", DiskPath, DiskPath );
-	Delimiter( DiskPath );
+	OSD_AddDelimiter( DiskPath );
+	OSD_AbsolutePath( DiskPath );
 	return DiskPath;
 }
 
@@ -1010,8 +1013,8 @@ void CFG6::SetDiskPath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "PATH", MSINI_DiskPath, "DiskPath", temp );
 }
 
@@ -1020,10 +1023,10 @@ char *CFG6::GetDiskFile( int drv )
 {
 	switch( drv ){
 	case 1:	Ini->GetString( "FILES", "disk1", DiskFile1, DiskFile1 );
-			Delimiter( DiskFile1 );
+			OSD_AbsolutePath( DiskFile1 );
 			return DiskFile1;
 	case 2: Ini->GetString( "FILES", "disk2", DiskFile2, DiskFile2 );
-			Delimiter( DiskFile2 );
+			OSD_AbsolutePath( DiskFile2 );
 			return DiskFile2;
 	}
 	return NULL;
@@ -1034,8 +1037,8 @@ void CFG6::SetDiskFile( int drv, const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	switch( drv ){
 	case 1: Ini->PutEntry( "FILES", MSINI_disk1, "disk1", temp ); break;
 	case 2: Ini->PutEntry( "FILES", MSINI_disk2, "disk2", temp ); break;
@@ -1060,7 +1063,8 @@ void CFG6::SetFddNum( int data )
 const char *CFG6::GetImgPath( void )
 {
 	Ini->GetString( "PATH", "ImgPath", ImgPath, ImgPath );
-	Delimiter( ImgPath );
+	OSD_AddDelimiter( ImgPath );
+	OSD_AbsolutePath( ImgPath );
 	return ImgPath;
 }
 
@@ -1069,8 +1073,8 @@ void CFG6::SetImgPath( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "PATH", MSINI_ImgPath, "ImgPath", temp );
 }
 
@@ -1191,7 +1195,7 @@ void CFG6::SetAviBpp( int bpp )
 char *CFG6::GetPrinterFile( void )
 {
 	Ini->GetString( "FILES", "printer", PrinterFile, PrinterFile );
-	Delimiter( PrinterFile );
+	OSD_AbsolutePath( PrinterFile );
 	return PrinterFile;
 }
 
@@ -1200,8 +1204,8 @@ void CFG6::SetPrinterFile( const char *str )
 {
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
-	UnDelimiter( temp );
-	DelDelimiter( temp );
+	OSD_DelDelimiter( temp );
+	OSD_RelativePath( temp );
 	Ini->PutEntry( "FILES", MSINI_printer, "printer", temp );
 }
 
@@ -1365,221 +1369,213 @@ void CFG6::InitIni( cIni *ini, bool over )
 	// [CONFIG]
 	// 機種
 	if( over || !ini->GetString( "CONFIG", "Model", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_Model,		"Model",		"%02d",	DEFAULT_MODEL );
+		SetModel( DEFAULT_MODEL );
 	
 	// FDD
 	if( over || !ini->GetString( "CONFIG", "FDD", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_FDD,			"FDD",			"%d",	DEFAULT_FDD );
+		SetFddNum( DEFAULT_FDD );
 	
 	// 拡張RAM使用
 	if( over || !ini->GetString( "CONFIG", "ExtRam", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_ExtRam,		"ExtRam",		"%s",	DEFAULT_EXTRAM ? "Yes" : "No" );
+		SetUseExtRam( DEFAULT_EXTRAM );
 	
 	// Turbo TAPE
 	if( over || !ini->GetString( "CONFIG", "TurboTAPE", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_TurboTAPE,	"TurboTAPE",	"%s",	DEFAULT_TURBO ? "Yes" : "No" );
+		SetTurboTAPE( DEFAULT_TURBO );
 	
 	// Boost Up
 	if( over || !ini->GetString( "CONFIG", "BoostUp", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_BoostUp,		"BoostUp",		"%s",	DEFAULT_BOOST ? "Yes" : "No" );
+		SetBoostUp( DEFAULT_BOOST );
 	
 	// BoostUp 最大倍率(N60モード)
 	if( over || !ini->GetString( "CONFIG", "MaxBoost60", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_MaxBoost60,	"MaxBoost60",	"%d",	DEFAULT_MAXBOOST60 );
+		SetMaxBoost1( DEFAULT_MAXBOOST60 );
 	
 	// BoostUp 最大倍率(N60m/N66モード)
 	if( over || !ini->GetString( "CONFIG", "MaxBoost62", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_MaxBoost62,	"MaxBoost62",	"%d",	DEFAULT_MAXBOOST62 );
+		SetMaxBoost2( DEFAULT_MAXBOOST62 );
 	
 	// オーバークロック率
 	if( over || !ini->GetString( "CONFIG", "OverClock", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_OverClock,	"OverClock",	"%d",	DEFAULT_OVERCLOCK );
+		SetOverClock( DEFAULT_OVERCLOCK );
 	
 	// CRCチェック
 	if( over || !ini->GetString( "CONFIG", "CheckCRC", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_CheckCRC,	"CheckCRC",		"%s",	DEFAULT_CHECKCRC ? "Yes" : "No" );
+		SetCheckCRC( DEFAULT_CHECKCRC );
 	
 	// ROMパッチ
 	if( over || !ini->GetString( "CONFIG", "RomPatch", str, str ) )
-		ini->PutEntry( "CONFIG", MSINI_RomPatch,	"RomPatch",		"%s",	DEFAULT_ROMPATCH ? "Yes" : "No" );
+		SetRomPatch( DEFAULT_ROMPATCH );
 	
 	// [DISPLAY]
 	// MODE4カラー
 	if( over || !ini->GetString( "DISPLAY", "Mode4Color", str, str ) )
-		ini->PutEntry( "DISPLAY", MSINI_Mode4Color,	"Mode4Color",	"%d",	DEFAULT_MODE4_COLOR );
+		SetMode4Color( DEFAULT_MODE4_COLOR );
 	
 	// スキャンライン
 	if( over || !ini->GetString( "DISPLAY", "ScanLine", str, str ) )
-		ini->PutEntry( "DISPLAY", MSINI_ScanLine,	"ScanLine",		"%s",	DEFAULT_SCANLINE ? "Yes" : "No" );
+		SetScanLine( DEFAULT_SCANLINE );
 	
 	// スキャンライン輝度
 	if( over || !ini->GetString( "DISPLAY", "ScanLineBr", str, str ) )
-		ini->PutEntry( "DISPLAY", MSINI_ScanLineBr,	"ScanLineBr",	"%d",	DEFAULT_SCANLINEBR );
+		SetScanLineBr( DEFAULT_SCANLINEBR );
 	
 	// 4:3表示
 	if( over || !ini->GetString( "DISPLAY", "DispNTSC", str, str ) )
-		ini->PutEntry( "DISPLAY", MSINI_DispNTSC,	"DispNTSC",		"%s",	DEFAULT_DISPNTSC ? "Yes" : "No" );
+		SetDispNTSC( DEFAULT_DISPNTSC );
 	
 	// フルスクリーン
 	if( over || !ini->GetString( "DISPLAY", "FullScreen", str, str ) )
-		ini->PutEntry( "DISPLAY", MSINI_FullScreen,	"FullScreen",	"%s",	DEFAULT_FULLSCREEN ? "Yes" : "No" );
+		SetFullScreen( DEFAULT_FULLSCREEN );
 	
 	// ステータスバー表示状態
 	if( over || !ini->GetString( "DISPLAY", "DispStatus", str, str ) )
-		ini->PutEntry( "DISPLAY", MSINI_DispStatus,	"DispStatus",	"%s",	DEFAULT_DISPSTATUS ? "Yes" : "No" );
+		SetDispStat( DEFAULT_DISPSTATUS );
 	
 	// フレームスキップ
 	if( over || !ini->GetString( "DISPLAY", "FrameSkip", str, str ) )
-		ini->PutEntry( "DISPLAY", MSINI_FrameSkip,	"FrameSkip",	"%d",	DEFAULT_FRAMESKIP );
+		SetFrameSkip( DEFAULT_FRAMESKIP );
 	
 	
 	// [SOUND]
 	// サンプリングレート
 	if( over || !ini->GetString( "SOUND", "SampleRate", str, str ) )
-		ini->PutEntry( "SOUND", MSINI_SampleRate,	"SampleRate",	"%d",	DEFAULT_SAMPLE_RATE );
+		SetSampleRate( DEFAULT_SAMPLE_RATE );
 	
 	// サウンドバッファ長倍率
 	if( over || !ini->GetString( "SOUND", "SoundBuffer", str, str ) )
-		ini->PutEntry( "SOUND", MSINI_SoundBuffer,	"SoundBuffer",	"%d",	SOUND_BUFFER_SIZE );
+		SetSoundBuffer( SOUND_BUFFER_SIZE );
 	
 	// マスター音量
 	if( over || !ini->GetString( "SOUND", "MasterVolume", str, str ) )
-		ini->PutEntry( "SOUND", MSINI_MasterVolume,	"MasterVolume",	"%d",	DEFAULT_MASTERVOL );
+		SetMasterVol( DEFAULT_MASTERVOL );
 	
 	// PSG音量
 	if( over || !ini->GetString( "SOUND", "PsgVolume", str, str ) )
-		ini->PutEntry( "SOUND", MSINI_PsgVolume,	"PsgVolume",	"%d",	DEFAULT_PSGVOL );
+		SetPsgVol( DEFAULT_PSGVOL );
 	
 	// PSG LPFカットオフ周波数
 	if( over || !ini->GetString( "SOUND", "PsgLPF", str, str ) )
-		ini->PutEntry( "SOUND", MSINI_PsgLPF,		"PsgLPF",		"%d",	DEFAULT_PSGLPF );
+		SetPsgLPF( DEFAULT_PSGLPF );
 	
 	// 音声合成音量
 	if( over || !ini->GetString( "SOUND", "VoiceVolume", str, str ) )
-		ini->PutEntry( "SOUND", MSINI_VoiceVolume,	"VoiceVolume",	"%d",	DEFAULT_VOICEVOL );
+		SetVoiceVol( DEFAULT_VOICEVOL );
 	
 	// TAPEモニタ音量
 	if( over || !ini->GetString( "SOUND", "TapeVolume", str, str ) )
-		ini->PutEntry( "SOUND", MSINI_TapeVolume,	"TapeVolume",	"%d",	DEFAULT_TAPEVOL );
+		SetCmtVol( DEFAULT_TAPEVOL );
 	
 	
 	// [MOVIE]
 	// ビデオキャプチャ色深度
 	if( over || !ini->GetString( "MOVIE", "AviBpp", str, str ) )
-		ini->PutEntry( "MOVIE", MSINI_AviBpp,	    "AviBpp",		"%d",	DEFAULT_AVIBPP );
+		SetAviBpp( DEFAULT_AVIBPP );
 	
 	
 	//[FILES]
 	// 拡張ROMファイル名(起動時に自動マウント)
 	if( over || !ini->GetString( "FILES", "ExtRom", str, str ) )
-		ini->PutEntry( "FILES",	MSINI_ExtRom,	"ExtRom",	"" );
+		SetExtRomFile( "" );
 	
 	// TAPEファイル名(起動時に自動マウント)
 	if( over || !ini->GetString( "FILES", "tape", str, str ) )
-		ini->PutEntry( "FILES", MSINI_tape,		"tape",		"" );
+		SetTapeFile( "" );
 	
 	// TAPE(SAVE)ファイル名(SAVE時に自動マウント)
 	if( over || !ini->GetString( "FILES", "save", str, str ) ){
-		sprintf( str, "%s%s/%s", OSD_GetModulePath(), TAPE_DIR, SAVE_FILE );
-		UnDelimiter( str );
-		ini->PutEntry( "FILES",	MSINI_save,		"save",		str );
+		OSD_AddPath( str, TAPE_DIR, SAVE_FILE );
+		OSD_AddPath( str, OSD_GetModulePath(), (const char *)str );
+		SetSaveFile( str );
 	}
 	
 	// DISK1ファイル名(起動時に自動マウント)
 	if( over || !ini->GetString( "FILES", "disk1", str, str ) )
-		ini->PutEntry( "FILES",	MSINI_disk1,	"disk1",	"" );
+		SetDiskFile( 1, "" );
 	
 	// DISK2ファイル名(起動時に自動マウント)
 	if( over || !ini->GetString( "FILES", "disk2", str, str ) )
-		ini->PutEntry( "FILES",	MSINI_disk2,	"disk2",	"" );
+		SetDiskFile( 2, "" );
 	
 	// プリンタファイル名
 	if( over || !ini->GetString( "FILES", "printer", str, str ) ){
-		sprintf( str, "%s" PRINTER_FILE, OSD_GetModulePath() );
-		UnDelimiter( str );
-		ini->PutEntry( "FILES",	MSINI_printer,	"printer",	str );
+		OSD_AddPath( str, OSD_GetModulePath(), PRINTER_FILE );
+		SetPrinterFile( str );
 	}
 	
 	// [PATH]
 	// ROMパス
 	if( over || !ini->GetString( "PATH", "RomPath", str, str ) ){
-		sprintf( str, "%s" ROM_DIR, OSD_GetModulePath() );
-		UnDelimiter( str );
-		ini->PutEntry( "PATH",	MSINI_RomPath,	"RomPath",	str );
+		OSD_AddPath( str, OSD_GetModulePath(), ROM_DIR );
+		SetRomPath( str );
 	}
 	
 	// TAPEパス
 	if( over || !ini->GetString( "PATH", "TapePath", str, str ) ){
 #ifdef WIN32
-        sprintf( str, "%s" TAPE_DIR, OSD_GetModulePath() );
+		OSD_AddPath( str, OSD_GetModulePath(), TAPE_DIR );
+		SetTapePath( str );
 #else
         strcpy(str, "");
 #endif
-		UnDelimiter( str );
-		ini->PutEntry( "PATH",	MSINI_TapePath,	"TapePath",	str );
 	}
 	
 	// DISKパス
 	if( over || !ini->GetString( "PATH", "DiskPath", str, str ) ){
 #ifdef WIN32
-        sprintf( str, "%s" DISK_DIR, OSD_GetModulePath() );
+        OSD_AddPath( str, OSD_GetModulePath(), DISK_DIR );
+		SetDiskPath( str );
 #else
         strcpy(str, "");
 #endif
-        UnDelimiter( str );
-		ini->PutEntry( "PATH",	MSINI_DiskPath,	"DiskPath",	str );
 	}
 	
 	// 拡張ROMパス
 	if( over || !ini->GetString( "PATH", "ExtRomPath", str, str ) ){
 #ifdef WIN32
-        sprintf( str, "%s" EXTROM_DIR, OSD_GetModulePath() );
+        OSD_AddPath( str, OSD_GetModulePath(), EXTROM_DIR );
+		SetExtRomPath( str );
 #else
         strcpy(str, "");
 #endif
-        UnDelimiter( str );
-		ini->PutEntry( "PATH",	MSINI_ExtRomPath,	"ExtRomPath",	str );
 	}
 	
 	// WAVEパス
 	if( over || !ini->GetString( "PATH", "WavePath", str, str ) ){
 #ifdef WIN32
-        sprintf( str, "%s" WAVE_DIR, OSD_GetModulePath() );
+        OSD_AddPath( str, OSD_GetModulePath(), WAVE_DIR );
+		SetWavePath( str );
 #else
         strcpy(str, "");
 #endif
-        UnDelimiter( str );
-		ini->PutEntry( "PATH",	MSINI_WavePath,	"WavePath",	str );
 	}
 
     // IMGパス
     if( over || !ini->GetString( "PATH", "ImgPath", str, str ) ){
-        sprintf( str, "%s" IMAGE_DIR, OSD_GetModulePath() );
-        UnDelimiter( str );
-        ini->PutEntry( "PATH",	MSINI_ImgPath,	"ImgPath",	str );
+		OSD_AddPath( str, OSD_GetModulePath(), IMAGE_DIR );
+		SetImgPath( str );
     }
 
     // どこでもSAVEパス
     if( over || !ini->GetString( "PATH", "DokoSavePath", str, str ) ){
-        sprintf( str, "%s" DOKOSAVE_DIR, OSD_GetModulePath() );
-        UnDelimiter( str );
+        OSD_AddPath( str, OSD_GetModulePath(), DOKOSAVE_DIR );
         ini->PutEntry( "PATH",	MSINI_DokoSavePath,	"DokoSavePath",	str );
     }
 
     // [CHECK]
 	// 終了時確認
 	if( over || !ini->GetString( "CHECK", "CkQuit", str, str ) )
-		ini->PutEntry( "CHECK", MSINI_CkQuit,		"CkQuit",		"%s",	DEFAULT_CKQUIT ? "Yes" : "No" );
+		SetCkQuit( DEFAULT_CKQUIT );
 	
 	// 終了時INI保存
 	if( over || !ini->GetString( "CHECK", "SaveQuit", str, str ) )
-		ini->PutEntry( "CHECK", MSINI_SaveQuit,		"SaveQuit",		"%s",	DEFAULT_SAVEQUIT ? "Yes" : "No" );
+		SetSaveQuit( DEFAULT_SAVEQUIT );
 	
 	
 	// [OPTION]
 	// 戦士のカートリッジ使うフラグ
 	if( over || !ini->GetString( "OPTION", "UseSoldier", str, str ) )
-		ini->PutEntry( "OPTION", MSINI_UseSoldier,	"UseSoldier",	"%s",	DEFAULT_SOLDIER ? "Yes" : "No" );
+		SetUseSoldier( DEFAULT_SOLDIER );
 	
 	
 	// [COLOR]
@@ -1588,24 +1584,21 @@ void CFG6::InitIni( cIni *ini, bool over )
 		char stren[16];
 		sprintf( stren, "COL%03d", i );
 		if( over || !ini->GetString( "COLOR", stren, str, str ) )
-			ini->PutEntry( "COLOR", OSD_ColorName( i-16 ), stren, "%02X%02X%02X", STDColor[i].r, STDColor[i].g, STDColor[i].b );
+			SetColor( i, &STDColor[i] );
 	}
 	
 	// [KEY]
 	// キーリピート
 	if( over || !ini->GetString( "KEY", "KeyRepeat", str, str ) )
-		ini->PutEntry( "KEY", MSINI_KeyRepeat,		"KeyRepeat",	"%d",	DEFAULT_REPEAT );
+		SetKeyRepeat( DEFAULT_REPEAT );
 	
 	// キー定義
 	int i = 0;
 	while( KeyIni[i].PCKey != KVC_LAST ){
 		// キーコードから名称取得
 		const char *k1 = GetPCKeyName( KeyIni[i].PCKey );
-		const char *k2 = GetP6KeyName( KeyIni[i].P6Key );
-		if( k1 && k2 ){
-			if( over || !ini->GetString( "KEY", k1, str, str ) )
-				ini->PutEntry( "KEY", OSD_KeyName( KeyIni[i].PCKey ), k1, k2 );
-		}
+		if( k1 && ( over || !ini->GetString( "KEY", k1, str, str ) ) )
+			SetVKey( KeyIni[i].PCKey, KeyIni[i].P6Key );
 		i++;
 	}
 	

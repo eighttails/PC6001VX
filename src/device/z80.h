@@ -52,7 +52,7 @@ protected:
 	virtual BYTE ReadIO( int )          = 0;	// I/Oポートアクセス Read
 	virtual void WriteIO( int, BYTE )   = 0;	// I/Oポートアクセス Write
 	virtual int GetIntrVector()         = 0;	// 割込みベクタ取得
-	virtual bool IsBUSREQ()             = 0;	// バスリクエスト区間フラグ取得
+	virtual bool IsBUSREQ()             = 0;	// バスリクエスト区間停止フラグ取得
 	
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -67,7 +67,6 @@ public:
 	int Exec();					// 1命令実行
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	// デバッグ用
 	int Disasm( char *, WORD );		// 1ライン逆アセンブル
 	void GetRegister( Register * );	// レジスタ値取得
 	void SetRegister( Register * );	// レジスタ値設定

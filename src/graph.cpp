@@ -21,9 +21,9 @@
 #define	P6WIFH		480
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-// デバッグモードウィンドウサイズ
-#define	P6DEBUGW	(P6WINW/2+vm->el->regw->Width())
-#define	P6DEBUGH	(max(P6WINH/2,vm->el->regw->Height()+vm->el->memw->Height())+vm->el->monw->Height())
+// モニタモードウィンドウサイズ
+#define	P6DEBUGW	(max(P6WINW/2,vm->el->monw->Width())+max(vm->el->regw->Width(),vm->el->memw->Width()))
+#define	P6DEBUGH	(max(P6WINH/2+vm->el->monw->Height(),vm->el->regw->Height()+vm->el->memw->Height()))
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
@@ -213,25 +213,21 @@ void DSP6::DrawScreen( void )
 		OSD_BlitToWindow( Wh, BBuf, 0, 0 );
 		
 		// モニタウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->monw, 0, max( P6WINH/2, vm->el->regw->Height() + vm->el->memw->Height() ) );
+		OSD_BlitToWindow( Wh, vm->el->monw, 0, P6WINH/2 );
 		
 		// レジスタウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->regw, P6WINW/2, 0 );
+		OSD_BlitToWindow( Wh, vm->el->regw, max( P6WINW/2, vm->el->monw->Width() ), 0 );
 		
 		// メモリウィンドウ
-		OSD_BlitToWindow( Wh, vm->el->memw, P6WINW/2, vm->el->regw->Height() );
+		OSD_BlitToWindow( Wh, vm->el->memw, max( P6WINW/2, vm->el->monw->Width() ), vm->el->regw->Height() );
 	}else
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
-//		UpdateSubBuf();	// サブバッファ更新
-		
         if( 0/*DISPFULL P6VXではフルスクリーンでもサイズを変えない*/ ){	// フルスクリーン表示
 			PRINTD( GRP_LOG, " -> FullScreen" );
-//			OSD_BlitToWindow( Wh, SBuf, ( OSD_GetWindowWidth( Wh ) - SBuf->Width() ) / 2, ( OSD_GetWindowHeight( Wh ) - SBuf->Height() ) / 2 );
 			OSD_BlitToWindowEx( Wh, BBuf, ( OSD_GetWindowWidth( Wh ) - ScreenX() ) / 2, ( OSD_GetWindowHeight( Wh ) - ScreenY() ) / 2, ScreenY(), DISPNTSC, DISPSCAN, vm->el->cfg->GetScanLineBr() );
 		}else{			// ウィンドウ表示
 			PRINTD( GRP_LOG, " -> Window" );
-//			OSD_BlitToWindow( Wh, SBuf, 0, 0 );
 			OSD_BlitToWindowEx( Wh, BBuf, 0, 0, ScreenY(), DISPNTSC, DISPSCAN, vm->el->cfg->GetScanLineBr() );
 		}
 		
@@ -261,7 +257,7 @@ void DSP6::DrawScreen( void )
 ////////////////////////////////////////////////////////////////
 int DSP6::ScreenX( void ) const
 {
-	return P6WINW;
+	return DISPFULL ? P6WIFW : P6WINW;
 }
 
 

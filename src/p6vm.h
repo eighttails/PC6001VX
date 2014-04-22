@@ -156,10 +156,9 @@ public:
 	// VDG6
 	bool VdgGetCrtDisp() const;					// CRT表示状態取得
 	void VdgSetCrtDisp( bool );					// CRT表示状態設定
-	bool VdgGetBusRequest() const;				// バスリクエスト取得
-	void VdgSetBusRequest( bool );				// バスリクエスト設定
 	bool VdgGetWinSize() const;					// ウィンドウサイズ取得
-	bool VdgIsBusReq() const;					// バスリクエスト区間フラグ取得
+	bool VdgIsBusReqStop() const;				// バスリクエスト区間停止フラグ取得
+	bool VdgIsBusReqExec() const;				// バスリクエスト区間実行フラグ取得
 	bool VdgIsSRmode() const;					// SRモード取得
 	bool VdgIsSRGVramAccess( WORD, bool ) const;	// SRのG-VRAMアクセス?
 	WORD VdgSRGVramAddr( WORD ) const;			// SRのG-VRAMアドレス取得

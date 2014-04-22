@@ -9,9 +9,9 @@
 #define	FD_DOUBLEDENSITY		0x04	// 倍密度
 #define	FD_HIGHDENSITY			0x08	// 高密度
 
-#define	FD1D					(FD_DOUBLEDENSITY)
-#define	FD2D					(FD_DOUBLESIDE|FD_DOUBLEDENSITY)
-#define	FD1DD					(FD_DOUBLETRACK|FD_DOUBLEDENSITY)
+#define	FD1D					(                             FD_DOUBLEDENSITY)
+#define	FD2D					(FD_DOUBLESIDE|               FD_DOUBLEDENSITY)
+#define	FD1DD					(              FD_DOUBLETRACK|FD_DOUBLEDENSITY)
 #define	FD2DD					(FD_DOUBLESIDE|FD_DOUBLETRACK|FD_DOUBLEDENSITY)
 #define	FD2HD					(FD_DOUBLESIDE|FD_DOUBLETRACK|FD_HIGHDENSITY)
 #define	FDUNKNOWN				0xff
@@ -74,6 +74,7 @@ private:
 		}
 	};
 	
+	bool DDDrv;						// 1DDドライブフラグ
 	D88INFO d88;					// D88 情報
 	char FileName[PATH_MAX];		// ファイル名バッファ
 	bool Protected;					// プロテクトシール
@@ -82,7 +83,7 @@ private:
 	void ReadSector88();			// D88 セクタ情報読込み
 	
 public:
-	cD88();							// コンストラクタ
+	cD88( bool );					// コンストラクタ
 	~cD88();						// デストラクタ
 	
 	bool Init( const char * );		// 初期化

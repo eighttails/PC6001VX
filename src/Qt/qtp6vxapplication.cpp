@@ -337,9 +337,9 @@ void QtP6VXApplication::executeEmulation()
             //ROMフォルダ再設定
             char folder[PATH_MAX];
             strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
-            Delimiter(folder);
+            OSD_AddDelimiter(folder);
             OSD_FolderDiaog(NULL, folder);
-            UnDelimiter(folder);
+            OSD_DelDelimiter(folder);
 
             if(strlen(folder) > 0){
                 Cfg.SetRomPath(folder);

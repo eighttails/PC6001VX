@@ -6,6 +6,7 @@
 #include "log.h"
 #include "disk.h"
 #include "error.h"
+#include "osd.h"
 #include "schedule.h"
 
 #include "p6vm.h"
@@ -78,8 +79,9 @@ DSK6::DSK6( VM6 *vm, const ID& id ) : Device(vm,id), UType(PC6031), DrvNum(0)
 {
 	for( int i=0; i<MAXDRV; i++ ){
 		ZeroMemory( FilePath[i], PATH_MAX );
-		Dimg[i] = NULL;
-		Sys[i]  = false;
+		Dimg[i]  = NULL;
+		Sys[i]   = false;
+		DDDrv[i] = false;
 	}
 }
 
@@ -155,7 +157,7 @@ bool DSK6::Mount( int drvno, const char *filename )
 	
 	// ディスクイメージオブジェクトを確保
 	try{
-		Dimg[drvno] = new cD88;
+		Dimg[drvno] = new cD88( DDDrv[drvno] );
 		if( !Dimg[drvno]->Init( filename ) ) throw Error::DiskMountFailed;
 	}
 	catch( std::bad_alloc ){	// new に失敗した場合
@@ -174,12 +176,18 @@ bool DSK6::Mount( int drvno, const char *filename )
 	
 	// システムディスクチェック
 	Dimg[drvno]->Seek( 0 );
-	if( Dimg[drvno]->Get8() == 'S' &&
-		Dimg[drvno]->Get8() == 'Y' &&
-		Dimg[drvno]->Get8() == 'S' )
+	
+	Sys[drvno] = false;
+	const char IDS[][4] = { "SYS", "RXR", "IPL" };
+	char idstr[4];
+	for( int i=0; i<3; i++ )
+		idstr[i] = Dimg[drvno]->Get8();
+	for( int i=0; i<3; i++ ){
+		if( !strncmp( idstr, IDS[i], 3 ) ){
 			Sys[drvno] = true;
-	else
-			Sys[drvno] = false;
+			break;
+		}
+	}
 	Dimg[drvno]->Seek( 0 );	// 念のため
 	
 	return true;
@@ -292,6 +300,8 @@ DSK60::DSK60( VM6 *vm, const ID& id ) :
 DSK64::DSK64( VM6 *vm, const ID& id ) :	DSK60(vm,id)
 {
 	UType = PC6031SR;
+	for( int i=0; i<MAXDRV; i++ )
+		DDDrv[i] = true;
 }
 
 
@@ -621,9 +631,9 @@ void DSK60::FddOut( BYTE dat )
 				if( mdisk.wsize >= mdisk.size ){
 					if( Dimg[mdisk.drv] ){
 						// トラックNoを2倍(1D->2D)
-						DSK6::AddWait( abs( Dimg[mdisk.drv]->Track() - mdisk.trk*2 ) / 2 );
+						DSK6::AddWait( abs( Dimg[mdisk.drv]->Track() - mdisk.trk * 2 ) / 2 );
 						// 目的のセクタへ移動
-						if( Dimg[mdisk.drv]->Seek( mdisk.trk*2 ) ){
+						if( Dimg[mdisk.drv]->Seek( mdisk.trk * 2 * ((DDDrv[mdisk.drv] && (mdisk.Type == FDD1D)) ? 2 : 1) ) ){
 							if( Dimg[mdisk.drv]->SearchSector( mdisk.trk, 0, mdisk.sct, 1 ) ){
 								switch( Dimg[mdisk.drv]->GetSecStatus() ){
 								case BIOS_ID_CRC_ERROR:
@@ -692,8 +702,8 @@ void DSK60::FddOut( BYTE dat )
 				
 				if( Dimg[mdisk.drv] ){
 					// トラックNoを2倍(1D->2D)
-					DSK6::AddWait( abs( Dimg[mdisk.drv]->Track() - mdisk.trk*2 ) / 2 );
-					if( Dimg[mdisk.drv]->Seek( mdisk.trk*2 ) ){
+					DSK6::AddWait( abs( Dimg[mdisk.drv]->Track() - mdisk.trk * 2 ) / 2 );
+					if( Dimg[mdisk.drv]->Seek( mdisk.trk * 2 * ((DDDrv[mdisk.drv] && (mdisk.Type == FDD1D)) ? 2 : 1) ) ){
 						if( Dimg[mdisk.drv]->SearchSector( mdisk.trk, 0, mdisk.sct, 1 ) ){
 							switch( Dimg[mdisk.drv]->GetSecStatus() ){
 							case BIOS_ID_CRC_ERROR:
@@ -758,7 +768,7 @@ void DSK60::FddOut( BYTE dat )
 		case SET_MODE:				// 17h SET MODE
 			switch( mdisk.step ){
 			case 1:	// 01h:モード
-				PRINTD( DISK_LOG, "<SET_MODE P1>" );
+				PRINTD( DISK_LOG, "<SET_MODE P1> %s", dat&0x0f ? "1DD" : "1D" );
 				// TO DO
 				if( dat&0x0f ) mdisk.Type = FDD1DD;
 				else		   mdisk.Type = FDD1D;
@@ -927,6 +937,8 @@ DSK66::DSK66( VM6 *vm, const ID& id ) : DSK6(vm,id),
 DSK68::DSK68( VM6 *vm, const ID& id ) :	DSK66(vm,id)
 {
 	UType = PC6601SR;
+	for( int i=0; i<MAXDRV; i++ )
+		DDDrv[i] = true;
 }
 
 
@@ -1285,7 +1297,10 @@ bool DSK66::SearchSector( BYTE *sta )
 	}
 	
 	PRINTD( FDC_LOG, "-> false\n" );
-	*sta = BIOS_MISSING_IAM;
+	*sta    = BIOS_MISSING_IAM;
+	fdc.ST0 = ST0_IC_AT;
+	fdc.ST1 = ST1_MISSING_AM;
+	fdc.ST2 = 0;
 	return false;
 }
 
@@ -1638,9 +1653,7 @@ void DSK66::SenseInterruptStatus( void )
 		if( Drv < DrvNum && IsMount( Drv ) ){
 			fdc.ST0 = ST0_IC_NT | ST0_SEEK_END | Drv;
 			// トラックNoを2倍(1D->2D)
-			// SRで1Dにアクセスする時はそのまま
-			Dimg[fdc.US]->Seek( fdc.PCN[Drv] *
-				(((UType == PC6601SR) && (!(Dimg[fdc.US]->GetType()&FD_DOUBLETRACK))) ? 1 : 2) );
+			Dimg[fdc.US]->Seek( fdc.PCN[Drv] * 2 );
 			PRINTD( FDC_LOG, "Drv:%d ST0:%02X C:%d\n", Drv, fdc.ST0, fdc.PCN[Drv] );
 		}else{
 			PRINTD( FDC_LOG, "Drv:%d NotReady\n", Drv );
@@ -1702,9 +1715,11 @@ bool DSK6::DokoSave( cIni *Ini )
 	// ディスクイメージオブジェクト
 	for( int i=0; i<DrvNum; i++ ){
 		if( Dimg[i] ){
-			char stren[16];
+			char stren[16], pathstr[PATH_MAX+1];
+			strncpy( pathstr, Dimg[i]->GetFileName(), PATH_MAX );
+			OSD_RelativePath( pathstr );
 			sprintf( stren, "DISK_%d_FileName", i );
-			Ini->PutEntry( "DISK", NULL, stren,	"%s", Dimg[i]->GetFileName() );
+			Ini->PutEntry( "DISK", NULL, stren,	"%s", pathstr );
 			sprintf( stren, "DISK_%d_trkno", i );
 			Ini->PutEntry( "DISK", NULL, stren,	"%d", Dimg[i]->Track() );
 			sprintf( stren, "DISK_%d_secno", i );

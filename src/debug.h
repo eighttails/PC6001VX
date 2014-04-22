@@ -8,22 +8,36 @@
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-#define	REGWINW	(40)
-#define	REGWINH	( 8)
-#define	MEMWINW	(40)
-#define	MEMWINH	(15)
-#define	MONWINW	(100)
-#define	MONWINH	(30)
-
 #define MAX_ARGS	(8)
 #define	MAX_CHRS	(256)
 #define	MAX_HIS		(11)
-#define	PROMPT		"P6V>"
+
+//------------------------------------------------------
+//  モニタモードウィンドウ インターフェース(?)クラス
+//------------------------------------------------------
+class iMon : public Device, public ZCons {
+private:
+	int x;								// X座標(モニタモード内での表示位置)
+	int y;								// Y座標(モニタモード内での表示位置)
+	
+public:
+	iMon( VM6 *, const ID& );			// コンストラクタ
+	~iMon();							// デストラクタ
+	
+	int X();							// X座標取得
+	int Y();							// Y座標取得
+	void SetX( int );					// X座標設定
+	void SetY( int );					// Y座標設定
+	
+	virtual bool Init() = 0;			// 初期化
+	virtual void Update() = 0;			// ウィンドウ更新
+};
+
 
 //------------------------------------------------------
 //  メモリダンプウィンドウクラス
 //------------------------------------------------------
-class cWndMem : public Device, public ZCons {
+class cWndMem : public iMon {
 private:
 	WORD Addr;							// 表示アドレス
 	
@@ -34,15 +48,15 @@ public:
 	bool Init();						// 初期化
 	void Update();						// ウィンドウ更新
 	
-	void SetAddress( WORD addr ){ Addr = addr & 0xfff8; }	// 表示アドレス設定
-	WORD GetAddress(){ return Addr; }						// 表示アドレス取得
+	void SetAddress( WORD );			// 表示アドレス設定
+	WORD GetAddress();					// 表示アドレス取得
 };
 
 
 //------------------------------------------------------
 //  レジスタウィンドウクラス
 //------------------------------------------------------
-class cWndReg : public Device, public ZCons {
+class cWndReg : public iMon {
 private:
 	
 public:
@@ -57,7 +71,7 @@ public:
 //------------------------------------------------------
 //  モニタウィンドウクラス
 //------------------------------------------------------
-class cWndMon : public Device, public ZCons {
+class cWndMon : public iMon {
 private:
 	char KeyBuf[MAX_CHRS];				// キー入力バッファ
 	char HisBuf[MAX_HIS][MAX_CHRS];		// キー入力ヒストリバッファ
@@ -88,6 +102,43 @@ public:
 	
 	void BreakIn( WORD );				// ブレークポイント到達
 };
+
+
+
+
+
+
+
+//------------------------------------------------------
+//  モニタモードクラス
+//------------------------------------------------------
+class Monitor {
+private:
+	VM6 *vm;
+	iMon *dcn[3];
+	
+public:
+	Monitor( VM6 * );					// コンストラクタ
+	~Monitor();							// デストラクタ
+	
+	bool Init();						// 初期化
+	void Update();						// ウィンドウ更新
+	
+	int Width();						// モニタモード ウィンドウ幅取得
+	int Height();						// モニタモード ウィンドウ高さ取得
+	
+	// メモリウィンドウ
+	void SetAddress( WORD );			// 表示アドレス設定
+	WORD GetAddress();					// 表示アドレス取得
+	
+	// モニタウィンドウ
+	void KeyIn( int, bool, int );		// キー入力処理
+	void BreakIn( WORD );				// ブレークポイント到達
+};
+
+
+
+
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 #endif	// DEBUG_H_INCLUDED

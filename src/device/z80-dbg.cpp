@@ -1329,7 +1329,7 @@ static Mnemonics Instruction_FD_CB[256]=
 // アドレス／インストラクションコードの表示
 void cZ80::PrintfHead( char *str, WORD pc, int num )
 {
-	sprintf( str, "%04X ", pc );
+	sprintf( str, "%04X:", pc );
 	str += strlen( str );
 	
 	switch( num ){

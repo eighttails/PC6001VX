@@ -22,16 +22,6 @@ enum FileDlg{ FD_TapeLoad, FD_TapeSave, FD_Disk, FD_ExtRom, FD_Printer, FD_FontZ
 int stricmp ( const char *, const char * );
 #endif
 
-// --- パス名処理関数 ---
-// パスのデリミタを'/'に変換
-void Delimiter( char * );
-// パスのデリミタをOSデフォルトに変換(Windowsなら'\')
-void UnDelimiter( char * );
-// パスの末尾にデリミタを追加
-void AddDelimiter( char * );
-// パスの末尾のデリミタを削除
-void DelDelimiter( char * );
-
 // --- プロセス管理関数 ---
 // 初期化
 bool OSD_Init();
@@ -39,6 +29,18 @@ bool OSD_Init();
 void OSD_Quit();
 // 多重起動チェック
 bool OSD_IsWorking();
+
+// --- パス名処理関数 ---
+// パスの末尾にデリミタを追加
+void OSD_AddDelimiter( char * );
+// パスの末尾のデリミタを削除
+void OSD_DelDelimiter( char * );
+// 相対パス化
+void OSD_RelativePath( char * );
+// 絶対パス化
+void OSD_AbsolutePath( char * );
+// パス結合
+void OSD_AddPath( char *, const char *, const char * );
 
 // --- ファイル操作関数 ---
 // 設定ファイルパス作成
@@ -49,9 +51,9 @@ const char *OSD_GetModulePath();
 bool OSD_FileExist( const char * );
 // ファイルの読取り専用チェック
 bool OSD_FileReadOnly( const char * );
-// フルパスからファイル名を取得
+// パスからファイル名を取得
 const char *OSD_GetFileNamePart( const char * );
-// フルパスからフォルダ名を取得
+// パスから拡張子名を取得
 const char *OSD_GetFolderNamePart( const char * );
 // フルパスから拡張子名を取得
 const char *OSD_GetFileNameExt( const char * );

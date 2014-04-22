@@ -100,6 +100,7 @@ protected:
 	WAVEFORMATEX6 awf;
 	
 	int ABPP;					// 色深度 (16,24,32)
+	BYTE *Sbuf;					// イメージデータバッファポインタ
 	
 	DWORD PosMOVI;
 	
@@ -124,12 +125,12 @@ public:
 	
 	bool Init();							// 初期化
 	
-	bool StartAVI( const char *, VSurface *, int, int, int );	// ビデオキャプチャ開始
+	bool StartAVI( const char *, int, int, int, int, int );	// ビデオキャプチャ開始
 	
 	void StopAVI();							// ビデオキャプチャ停止
 	bool IsAVI();							// ビデオキャプチャ中?
 	
-	bool AVIWriteFrame( VSurface * );		// AVI1フレーム書出し
+	bool AVIWriteFrame( HWINDOW );			// AVI1フレーム書出し
 	
 	cRing *GetAudioBuffer();				// オーディオバッファ取得
 };

@@ -1512,42 +1512,26 @@ void CFG6::InitIni( cIni *ini, bool over )
 	
 	// TAPEパス
 	if( over || !ini->GetString( "PATH", "TapePath", str, str ) ){
-#ifdef WIN32
 		OSD_AddPath( str, OSD_GetModulePath(), TAPE_DIR );
 		SetTapePath( str );
-#else
-        strcpy(str, "");
-#endif
 	}
 	
 	// DISKパス
 	if( over || !ini->GetString( "PATH", "DiskPath", str, str ) ){
-#ifdef WIN32
         OSD_AddPath( str, OSD_GetModulePath(), DISK_DIR );
 		SetDiskPath( str );
-#else
-        strcpy(str, "");
-#endif
 	}
 	
 	// 拡張ROMパス
 	if( over || !ini->GetString( "PATH", "ExtRomPath", str, str ) ){
-#ifdef WIN32
         OSD_AddPath( str, OSD_GetModulePath(), EXTROM_DIR );
 		SetExtRomPath( str );
-#else
-        strcpy(str, "");
-#endif
 	}
 	
 	// WAVEパス
 	if( over || !ini->GetString( "PATH", "WavePath", str, str ) ){
-#ifdef WIN32
         OSD_AddPath( str, OSD_GetModulePath(), WAVE_DIR );
 		SetWavePath( str );
-#else
-        strcpy(str, "");
-#endif
 	}
 
     // IMGパス

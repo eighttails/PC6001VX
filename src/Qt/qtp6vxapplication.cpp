@@ -39,18 +39,19 @@ bool SerchRom( CFG6 *cfg )
     char RomSerch[PATH_MAX];
 
     int IniModel = cfg->GetModel();
-    sprintf( RomSerch, "%s*.%2d", cfg->GetRomPath(), IniModel );
+    sprintf( RomSerch, "*.%2d", IniModel );
+    OSD_AddPath( RomSerch, cfg->GetRomPath(), RomSerch );
     if( OSD_FileExist( RomSerch ) ){
-        Error::SetError( Error::NoError );
+        Error::Reset();
         return true;
     }
 
     int models[] = { 60, 61, 62, 66, 64, 68 };
     for( int i=0; i < COUNTOF(models); i++ ){
-        sprintf( RomSerch, "%s*.%2d", cfg->GetRomPath(), models[i] );
+        sprintf( RomSerch, "*.%2d", models[i] );
+        OSD_AddPath( RomSerch, cfg->GetRomPath(), RomSerch );
         if( OSD_FileExist( RomSerch ) ){
             cfg->SetModel( models[i] );
-            cfg->Write();
             Error::SetError( Error::RomChange );
             return true;
         }

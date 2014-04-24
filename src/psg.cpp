@@ -294,11 +294,6 @@ bool PSG6::DokoLoad( cIni *Ini )
 	while( SndDev::FreeSize() > st )
 		SndDev::Put(0);
 	
-    Ini->GetInt( "PSG", "BufSize",		&st,            SndDev::FreeSize() );
-    while(SndDev::FreeSize() > st){
-        SndDev::Put(0);
-    }
-
     return true;
 }
 

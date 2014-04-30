@@ -120,10 +120,10 @@ bool DSP6::SetScreenSurface( void )
 
     if( DISPFULL ){	// フルスクリーン?
         fsflag = true;
-        PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d %dbpp)\n", x, y, Bpp );
+        PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d )\n", x, y );
     }else{
         fsflag = false;
-        PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d %dbpp )\n", x, y, Bpp );
+        PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d )\n", x, y );
     }
 
 	// スクリーンサーフェス作成

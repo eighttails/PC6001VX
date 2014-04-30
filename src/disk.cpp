@@ -75,7 +75,7 @@ static const int Gap4size[] = { 488, 152, 182,  94, 1584, 1760, 2242, 4144 };
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DSK6::DSK6( VM6 *vm, const ID& id ) : Device(vm,id), UType(PC6031), DrvNum(0)
+DSK6::DSK6( VM6 *vm, const ID& id ) : Device(vm,id), UType(PC6031), DrvNum(0), waitcnt(0)
 {
 	for( int i=0; i<MAXDRV; i++ ){
 		ZeroMemory( FilePath[i], PATH_MAX );

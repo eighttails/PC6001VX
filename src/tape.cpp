@@ -580,7 +580,7 @@ bool CMTL::DokoSave( cIni *Ini )
 	// マウントされていたらP6TオブジェクトをSAVE
 	char pathstr[PATH_MAX+1];
 	strncpy( pathstr, FilePath, PATH_MAX );
-	OSD_RelativePath( pathstr );
+    OSD_AbsolutePath( pathstr );
 	Ini->PutEntry( "TAPE", NULL, "FilePath",	"%s",	pathstr );
 	
 	return p6t->DokoSave( Ini );

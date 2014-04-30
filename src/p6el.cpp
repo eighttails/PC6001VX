@@ -130,12 +130,27 @@ void EL6::OnThread( void *inst )
 				bool matchg = p6->vm->key->ScanMatrix();
 				
 				// リプレイ記録中
-				if( REPLAY::GetStatus() == REP_RECORD )
-					REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
-				
+                if( REPLAY::GetStatus() == REP_RECORD ){
+                    REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
+#ifdef REPLAYDEBUG
+                    char fullPath[PATH_MAX];
+                    char fileName[PATH_MAX];
+                    sprintf(fileName, "record/%06d.dds", REPLAY::RepFrm);
+                    OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+                    DokoDemoSave(fullPath);
+#endif
+                }
+
 				// リプレイ再生中
 				if( REPLAY::GetStatus() == REP_REPLAY ){
-					REPLAY::ReplayReadFrame( p6->vm->key->GetMatrix() );
+#ifdef REPLAYDEBUG
+                    char fullPath[PATH_MAX];
+                    char fileName[PATH_MAX];
+                    sprintf(fileName, "replay/%06d.dds", REPLAY::RepFrm);
+                    OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+                    DokoDemoSave(fullPath);
+#endif
+                    REPLAY::ReplayReadFrame( p6->vm->key->GetMatrix() );
 				}
 				
 				p6->EmuVSYNC();			// 1画面分実行
@@ -1106,20 +1121,23 @@ bool EL6::IsMonitor( void ) const
 ////////////////////////////////////////////////////////////////
 bool EL6::DokoDemoSave( const char *filename )
 {
-	cIni *Ini = NULL;
-	
+#ifdef REPLAYDEBUG
+    printf("DokoDemoSave-------------------------------------------------\n");
+#endif
+    cIni *Ini = NULL;
+
 	// とりあえずエラー設定
-	Error::SetError( Error::DokoWriteFailed );
+    Error::Reset();
 	try{
 		FILE *fp = FOPENEN( filename, "wt" );
-		if( !fp ) throw Error::DokoWriteFailed;
+        if( !fp ) throw Error::DokoWriteFailed;
 		// タイトル行を出力して一旦閉じる
 		fprintf( fp, MSDOKO_TITLE );
 		fclose( fp );
 		
 		// どこでもSAVEファイルを開く
 		Ini = new cIni();
-		if( !Ini->Init( filename ) ) throw Error::DokoWriteFailed;
+        if( !Ini->Init( filename ) ) throw Error::DokoWriteFailed;
 		
 		// 各オブジェクトのパラメータ書込み
 		if( !cfg->DokoSave( Ini )      ||
@@ -1134,8 +1152,8 @@ bool EL6::DokoDemoSave( const char *filename )
 			!vm->key->DokoSave( Ini )  ||
 			!vm->cmtl->DokoSave( Ini ) ||
 			!vm->disk->DokoSave( Ini )
-		) throw Error::GetError();
-		if( vm->voice && !vm->voice->DokoSave( Ini ) ) throw Error::GetError();
+        ) throw Error::GetError();
+        if( vm->voice && !vm->voice->DokoSave( Ini ) ) throw Error::GetError();
 		
 		
 		Ini->PutEntry( "KEY", NULL, "AK_Num",		"%d",	ak.Num );
@@ -1197,7 +1215,10 @@ bool EL6::DokoDemoSave( const char *filename )
 ////////////////////////////////////////////////////////////////
 bool EL6::DokoDemoLoad( const char *filename )
 {
-	cIni *Ini = NULL;
+#ifdef REPLAYDEBUG
+    printf("DokoDemoLoad-------------------------------------------------\n");
+#endif
+    cIni *Ini = NULL;
 	
 	// とりあえずエラー設定
 	Error::SetError( Error::DokoReadFailed );

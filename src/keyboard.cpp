@@ -547,7 +547,7 @@ bool KEY6::ScanMatrix( void )
 	ON_SHIFT = P6Mtrx[0] & 0x04 ? false : true;
 	ON_GRAPH = P6Mtrx[0] & 0x08 ? false : true;
 	// 前回のマトリクスと変化あり?
-	if( P6Mtrx[0] != P6Mtrx[0+NOM] ) MatChg = true;
+    if( P6Mtrx[0] != P6Mtrx[0+NOM] ) MatChg = true;
 	
 	// 一般キー判定 キーマトリクスY1〜
 	for( int y=1; (y<(NOM-2))&&~KeyPUSH; y++ ){

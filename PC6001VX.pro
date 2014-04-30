@@ -20,6 +20,7 @@ DEFINES += QTP6VX
 #その他のフィーチャー無効化フラグ
 #DEFINES += NOOPENGL
 #DEFINES += NOSOUND
+#DEFINES += REPLAYDEBUG
 
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication

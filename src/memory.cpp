@@ -905,7 +905,7 @@ BYTE MEM6::Fetch( WORD addr, int *m1wait ) const
 	if( m1wait ) (*m1wait) += M1Wait;
 	
 	// バスリクエスト区間実行時ウェイト追加
-	if( vm->VdgIsBusReqExec() ) (*m1wait)++;
+    if( vm->VdgIsBusReqExec() ) (*m1wait)++;
 	
 	return data;
 }

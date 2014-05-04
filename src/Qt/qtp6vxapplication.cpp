@@ -553,6 +553,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         Q_ASSERT(we);
         ev.type = EV_MOUSEBUTTONUP;
         ev.mousebt.button = we->delta() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
+        ev.mousebt.state = false;
         OSD_PushEvent(ev);
         break;
     }
@@ -563,6 +564,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
         if(me->button() == Qt::LeftButton){
             ev.type = EV_MOUSEBUTTONUP;
             ev.mousebt.button = MBT_LEFT;
+            ev.mousebt.state = false;
             OSD_PushEvent(ev);
         }
         break;

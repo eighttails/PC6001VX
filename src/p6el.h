@@ -100,7 +100,7 @@ protected:
 		bool RelayOn;			// リレースイッチON待ちフラグ
 		int Seek;
 		
-		AKEY() : Buffer(NULL), Num(0), Wait(0), Relay(false), Seek(0) {}
+        AKEY() : Buffer(NULL), Num(0), Wait(0), Relay(false), RelayOn(false), Seek(0) {}
 	};
 	AKEY ak;								// 自動キー入力情報
 	

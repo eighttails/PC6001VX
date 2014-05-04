@@ -1121,9 +1121,7 @@ bool EL6::IsMonitor( void ) const
 ////////////////////////////////////////////////////////////////
 bool EL6::DokoDemoSave( const char *filename )
 {
-#ifdef REPLAYDEBUG
     printf("DokoDemoSave-------------------------------------------------\n");
-#endif
     cIni *Ini = NULL;
 
 	// とりあえずエラー設定
@@ -1215,9 +1213,7 @@ bool EL6::DokoDemoSave( const char *filename )
 ////////////////////////////////////////////////////////////////
 bool EL6::DokoDemoLoad( const char *filename )
 {
-#ifdef REPLAYDEBUG
     printf("DokoDemoLoad-------------------------------------------------\n");
-#endif
     cIni *Ini = NULL;
 	
 	// とりあえずエラー設定

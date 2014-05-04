@@ -917,7 +917,7 @@ BYTE MEM6::Fetch( WORD addr, int *m1wait ) const
 BYTE MEM6::Read( WORD addr, int *wcnt ) const
 {
 	BYTE data = 0xff;
-	
+
 	if( vm->VdgIsSRmode() ){
 		if( vm->VdgIsSRGVramAccess( addr, true ) ){
 			WORD ad = vm->VdgSRGVramAddr( addr );
@@ -926,11 +926,11 @@ BYTE MEM6::Read( WORD addr, int *wcnt ) const
 			data = Rm_blkSR[addr>>13]->Read( addr, wcnt );
 	}else
 		data = Rm_blk  [addr>>13]->Read( addr, wcnt );
-	
+
 	// バスリクエスト区間実行時ウェイト追加
-	if( wcnt && vm->VdgIsBusReqExec() ) (*wcnt)++;
-	
-	PRINTD( MEM_LOG, "[MEM][Read]  -> %04X:%02X\n", addr, data );
+    if( wcnt && vm->VdgIsBusReqExec() ) (*wcnt)++;
+
+    PRINTD( MEM_LOG, "[MEM][Read]  -> %04X:%02X\n", addr, data );
 	
 	return data;
 }
@@ -941,7 +941,7 @@ BYTE MEM6::Read( WORD addr, int *wcnt ) const
 ////////////////////////////////////////////////////////////////
 void MEM6::Write( WORD addr, BYTE data, int *wcnt ) const
 {
-	PRINTD( MEM_LOG, "[MEM][Write] %04X:%02X -> %p[%04X]'%c'\n", addr, data, vm->VdgIsSRmode() ? Wm_blkSR[addr>>13] : Wm_blk[addr>>13], addr&0x1fff, data );
+    PRINTD( MEM_LOG, "[MEM][Write] %04X:%02X -> %s[%04X]'%c'\n", addr, data, vm->VdgIsSRmode() ? Wm_blkSR[addr>>13]->GetName() : Wm_blk[addr>>13]->GetName(), addr&0x1fff, data );
 	
 	if( vm->VdgIsSRmode() ){
 		if( vm->VdgIsSRGVramAccess( addr, false ) ){
@@ -1555,7 +1555,7 @@ bool MEM6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "MEMORY", NULL, "CGBank",		"%s",		CGBank    ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "UseExtRam",		"%s",		UseExtRam ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "M1Wait",		"%d",		M1Wait );
-	Ini->PutEntry( "MEMORY", NULL, "UseSoldier",	"%s",		UseSol    ? "Yes" : "No" );
+    Ini->PutEntry( "MEMORY", NULL, "UseSoldier",	"%s",		UseSol    ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "SolBank",		"%d",		SolBank );
 	
 	// 62,66,64,68
@@ -1582,7 +1582,12 @@ bool MEM6::DokoSave( cIni *Ini )
 		OSD_RelativePath( pathstr );
 		Ini->PutEntry( "MEMORY", NULL, "FilePath",	"%s",	pathstr );
 	}
-	
+
+    // メモリウェイト
+    Ini->PutEntry( "MEMORY", NULL, "Wait",          "%d",		GetWait() );
+    // CGRomウェイト
+    Ini->PutEntry( "MEMORY", NULL, "CgRomWait",     "%d",		CGROM1.GetWait() );
+
 	return true;
 }
 
@@ -1765,7 +1770,16 @@ bool MEM60::DokoLoad( cIni *Ini )
 	// 戦士のカートリッジ ------------------------------------------
 	if( UseSol ) SetSolBank( SolBank );	// メモリバンク初期化
 	// -------------------------------------------------------------
-	
+
+    // メモリウェイト
+    int st;
+    Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait(st);
+    // CGRomウェイト
+    Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
+    int	cgwait = st&0xff;
+    CGROM1.SetWait( cgwait, cgwait );
+    CGROM2.SetWait( cgwait, cgwait );
+
 	return true;
 }
 
@@ -1828,7 +1842,16 @@ bool MEM62::DokoLoad( cIni *Ini )
 	// 戦士のカートリッジ ------------------------------------------
 	if( UseSol ) SetSolBank( SolBank );	// メモリバンク初期化
 	// -------------------------------------------------------------
-	
+
+    // メモリウェイト
+    int st;
+    Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait(st);
+    // CGRomウェイト
+    Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
+    int	cgwait = st&0xff;
+    CGROM1.SetWait( cgwait, cgwait );
+    CGROM2.SetWait( cgwait, cgwait );
+
 	return true;
 }
 

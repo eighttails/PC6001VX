@@ -439,7 +439,7 @@ bool VDG6::IsBusReqStop( void ) const
 ////////////////////////////////////////////////////////////////
 bool VDG6::IsBusReqExec( void ) const
 {
-	return BusReq && (!SRBusReq);
+    return BusReq && (!SRBusReq);
 }
 
 

@@ -171,8 +171,8 @@ public:
 	
 	bool Init( const CFG6 * );				// 初期化
 	
-	bool Start();							// 動作開始
-	void Stop();							// 動作停止
+    virtual bool Start();							// 動作開始
+    virtual void Stop();							// 動作停止
 	
 	ReturnCode EventLoop();					// イベントループ
 	

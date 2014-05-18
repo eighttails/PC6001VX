@@ -139,7 +139,6 @@ void EL6::ExecMenu( int id )
 Q_DECLARE_METATYPE(MenuCommand)
 #define MENUIDPROPERTY "MenuID"
 
-int QtEL6::Speed = 100;
 
 QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable = false)
 {
@@ -415,19 +414,4 @@ bool QtEL6::GetPauseEnable()
     return sche->GetPauseEnable();
 }
 
-bool QtEL6::Start()
-{
-    // 実行速度を復元
-    while(sche->GetSpeedRatio() != Speed){
-        sche->SetSpeedRatio(Speed > 100 ? 1 : -1);
-    }
-    EL6::Start();
-}
-
-void QtEL6::Stop()
-{
-    // 実行速度を退避
-    Speed = sche->GetSpeedRatio();
-    EL6::Stop();
-}
 

@@ -32,7 +32,7 @@
 
 #define	FRAMERATE	(VSYNC_HZ/(cfg->GetFrameSkip()+1))
 
-
+int EL6::Speed = 100;
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
@@ -411,6 +411,11 @@ bool EL6::Init( const CFG6 *config )
 ////////////////////////////////////////////////////////////////
 bool EL6::Start( void )
 {
+	// 実行速度を復元
+	while(sche->GetSpeedRatio() != Speed){
+		sche->SetSpeedRatio(Speed > 100 ? 1 : -1);
+	}
+
 	FSkipCount = 0;
 	
 	// スレッド生成
@@ -428,6 +433,9 @@ bool EL6::Start( void )
 ////////////////////////////////////////////////////////////////
 void EL6::Stop( void )
 {
+	// 実行速度を退避
+	Speed = sche->GetSpeedRatio();
+
 	if( !this->cThread::IsCancel() ){
 		this->cThread::Cancel();	// スレッド終了フラグ立てる
 		this->cThread::Waiting();	// スレッド終了まで待つ

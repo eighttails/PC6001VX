@@ -49,12 +49,12 @@ protected:
 	bool GetT1();						// テスト1ステータス取得
 	bool GetINT();						// 外部割込みステータス取得
 	
+	void ReqJoyIntr();					// ゲーム用キー割込み要求
+	
 	void OutVector();					// 割込みベクタ出力
 	void OutData()	;					// 割込みデータ出力
 	
-	void ReqJoyIntr();					// ゲーム用キー割込み要求
-	
-	virtual void ExtIntrExec( BYTE ) = 0;	// 外部割込み処理
+	virtual void ExtIntrExec( BYTE );	// 外部割込み処理
 	
 public:
 	SUB6( VM6 *, const ID& );			// コンストラクタ
@@ -81,7 +81,6 @@ public:
 };
 class SUB60 : public SUB6 {
 protected:
-	void ExtIntrExec( BYTE );			// 外部割込み処理
 	
 public:
 	SUB60( VM6 *, const ID& );			// コンストラクタ
@@ -89,9 +88,9 @@ public:
 };
 
 
-class SUB62 : public SUB6 {
+class SUB62 : public SUB60 {
 protected:
-	void ExtIntrExec( BYTE );			// 外部割込み処理
+	virtual void ExtIntrExec( BYTE );	// 外部割込み処理
 	
 public:
 	SUB62( VM6 *, const ID& );			// コンストラクタ
@@ -99,7 +98,7 @@ public:
 };
 
 
-class SUB68 : public SUB6 {
+class SUB68 : public SUB62 {
 protected:
 	void ReqTVRReadIntr();				// TV予約読込み割込み要求
 	void ReqDateIntr();					// DATE割込み要求

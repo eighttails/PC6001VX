@@ -71,14 +71,14 @@ void EL6::ExecMenu( int id )
     case ID_DOKOSAVE1:                                                      // どこでもSAVE1
     case ID_DOKOSAVE2:                                                      // どこでもSAVE2
     case ID_DOKOSAVE3:                                                      // どこでもSAVE3
-        strncpy( str, QString("%1/.%2.dds").arg(cfg->GetDokoSavePath()).arg(id - ID_DOKOSAVE).toLocal8Bit().data(), PATH_MAX );
+        OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOSAVE).toLocal8Bit().data());
         DokoDemoSave( str );
         break;
     case ID_DOKOLOAD:		UI_DokoLoad();							break;	// どこでもLOAD
     case ID_DOKOLOAD1:                                                      // どこでもLOAD1
     case ID_DOKOLOAD2:                                                      // どこでもLOAD2
     case ID_DOKOLOAD3:                                                      // どこでもLOAD3
-        strncpy( str, QString("%1/.%2.dds").arg(cfg->GetDokoSavePath()).arg(id - ID_DOKOLOAD).toLocal8Bit().data(), PATH_MAX );
+        OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOLOAD).toLocal8Bit().data());
         if( OSD_FileExist( str ) ){
             cfg->SetModel( GetDokoModel( str ) );
             cfg->SetDokoFile( str );
@@ -138,6 +138,8 @@ void EL6::ExecMenu( int id )
 ///////////////////////////////////////////////////////////
 Q_DECLARE_METATYPE(MenuCommand)
 #define MENUIDPROPERTY "MenuID"
+
+int QtEL6::Speed = 100;
 
 QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable = false)
 {
@@ -411,5 +413,21 @@ void QtEL6::updateFPS()
 bool QtEL6::GetPauseEnable()
 {
     return sche->GetPauseEnable();
+}
+
+bool QtEL6::Start()
+{
+    // 実行速度を復元
+    while(sche->GetSpeedRatio() != Speed){
+        sche->SetSpeedRatio(Speed > 100 ? 1 : -1);
+    }
+    EL6::Start();
+}
+
+void QtEL6::Stop()
+{
+    // 実行速度を退避
+    Speed = sche->GetSpeedRatio();
+    EL6::Stop();
 }
 

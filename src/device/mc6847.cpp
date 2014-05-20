@@ -157,14 +157,15 @@ const BYTE MC6847core::NJM_TBL[][2] = {
 //青/緑　明←4 1 5→暗
 
 
+
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 MC6847core::MC6847core( void ) :
-	CrtDisp(true), BusReq(true), N60Win(true),
+	CrtDisp(true), BusReq(false), N60Win(true),
 	Mode4Col(0), VAddr(0), HAddr(0), RowCntA(0), RowCntG(0),
 	CharMode(true), GraphMode(false), Css1(1), Css2(1), Css3(1),
-	SRmode(false), SRBitmap(false), SRBMPage(false), SRLine204(false),
+	SRmode(false), SRBusReq(true), SRBitmap(false), SRBMPage(false), SRLine204(false),
 	SRCharLine(true), SRCharWidth(true),
 	SRTextAddr(0), SRRollX(0), SRRollY(0), SRVramAddrY(0),
 	AT_AG(0), AT_AS(0), AT_IE(0), AT_GM(0), AT_CSS(0), AT_INV(0) {}
@@ -274,24 +275,6 @@ void MC6847core::SetCrtDisp( bool st )
 
 
 ////////////////////////////////////////////////////////////////
-// バスリクエスト取得
-////////////////////////////////////////////////////////////////
-bool MC6847core::GetBusRequest( void ) const
-{
-	return BusReq;
-}
-
-
-////////////////////////////////////////////////////////////////
-// バスリクエスト設定
-////////////////////////////////////////////////////////////////
-void MC6847core::SetBusRequest( bool st )
-{
-	BusReq = st;
-}
-
-
-////////////////////////////////////////////////////////////////
 // ウィンドウサイズ取得
 ////////////////////////////////////////////////////////////////
 bool MC6847core::GetWinSize( void ) const
@@ -365,7 +348,7 @@ void PCZ80_12::SetCrtControler( BYTE data )
 		PRINTD( VDG_LOG, " Lines       :%d\n", SRLine204   ? 204    : 200 );
 		PRINTD( VDG_LOG, " SRTextWidth :%d\n", SRCharWidth ? 40     : 80 );
 		PRINTD( VDG_LOG, " CharMode    :%s\n", CharMode    ? "Char" : "Graph" );
-		PRINTD( VDG_LOG, " GraphMode   :%d\n", GraphMode   ? 320    : 640 );
+		PRINTD( VDG_LOG, " GraphMode   :%d\n", GraphMode   ? 640    : 320 );
 	}else{			// 旧モード
 		PRINTD( VDG_LOG, "[66mode] -> %02X\n", data );
 		
@@ -385,16 +368,16 @@ void PCZ80_12::SetCrtControler( BYTE data )
 ////////////////////////////////////////////////////////////////
 void PCZ80_12::SetCrtCtrlType( BYTE data )
 {
-	PRINTD( VDG_LOG, "[VDG][64][SetCrtCtrlType]" );
+	PRINTD( VDG_LOG, "[VDG][64][SetCrtCtrlType] -> %02X\n", data );
 	
 	SRmode     = data&0x01 ? false : true;	// SRモードフラグ 		true:SR-BASIC	false:旧BASIC
-	BusReq     = data&0x02 ? false : true;	// バスリクエスト		true:ON			false:OFF
-	SRCharLine = data&0x04 ? true : false;	// SRテキスト行数		true:20行		false:25行
+	SRBusReq   = data&0x02 ? false : true;	// バスリクエスト		true:ON			false:OFF
+	SRCharLine = data&0x04 ? true  : false;	// SRテキスト行数		true:20行		false:25行
 	SRBitmap   = data&0x08 ? false : true;	// SRビットマップフラグ	true:有効		false:無効
-	SRBMPage   = data&0x10 ? true : false;	// SRビットマップページ	true:上位32KB	false:下位32KB
+	SRBMPage   = data&0x10 ? true  : false;	// SRビットマップページ	true:上位32KB	false:下位32KB
 	
 	PRINTD( VDG_LOG, " BasicMode    :%s\n",   SRmode     ? "SR"     : "66" );
-	PRINTD( VDG_LOG, " BusReqest    :%s\n",   BusReq     ? "ON"     : "OFF" );
+	PRINTD( VDG_LOG, " SRBusReqest  :%s\n",   SRBusReq   ? "ON"     : "OFF" );
 	PRINTD( VDG_LOG, " SRTextLines  :%d\n",   SRCharLine ? 20       : 25 );
 	PRINTD( VDG_LOG, " SRBitmapMode :%s\n",   SRBitmap   ? "Bitmap" : "Text" );
 	PRINTD( VDG_LOG, " SRBitmapPage :%04X\n", SRBMPage   ? 0x8000   : 0x0000 );
@@ -560,7 +543,7 @@ void PCZ80_12::UpdateBackBuf( void )
 ////////////////////////////////////////////////////////////////
 void MC6847::Draw1line1( int line )
 {
-	PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line );
+	if( !line) PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line );
 	
 	BYTE data=0xff, prevdata=0, nextdata=0, bdat=0;
 	BYTE LAT_AG=0, LAT_GM=0;
@@ -763,7 +746,7 @@ void MC6847::Draw1line1( int line )
 
 void PCZ80_07::Draw1line1( int line )
 {
-	PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line );
+	if( !line) PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line );
 	
 	BYTE data=0, prevdata=0, nextdata=0, bdat=0;
 	BYTE LAT_AG=0;
@@ -900,7 +883,7 @@ void PCZ80_07::Draw1line1( int line )
 ////////////////////////////////////////////////////////////////
 void PCZ80_07::Draw1line2( int line )
 {
-	PRINTD( VDG_LOG, "[VDG][Draw1line2] %d\n", line );
+	if( !line) PRINTD( VDG_LOG, "[VDG][Draw1line2] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph3" : "Graph4" );
 	
 	BYTE attr, data, bdat;
 	
@@ -988,7 +971,7 @@ void PCZ80_07::Draw1line2( int line )
 ////////////////////////////////////////////////////////////////
 void PCZ80_12::Draw1line3( int line )
 {
-	PRINTD( VDG_LOG, "[VDG][Draw1line3] %d\n", line );
+	if( !line) PRINTD( VDG_LOG, "[VDG][Draw1line3] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph2" : "Graph3" );
 	
 	BYTE attr, data, bdat;
 	BYTE attr1=0, data1=0, scrl1=0, scrl2=0;

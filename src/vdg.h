@@ -36,7 +36,6 @@ protected:
 	bool VSYNC;									// 垂直同期フラグ
 	bool HSYNC;									// 水平同期フラグ
 	int VLcnt;									// 表示ラインカウンタ
-	bool OnDisp;								// 表示区間フラグ
 	int HSdclk;									// 水平トータル期間(ドットクロック)
 	int Hclk60;									// 水平表示期間(N60)
 	
@@ -54,6 +53,7 @@ protected:
 	
 	virtual WORD GerVramAddr() const = 0;		// VRAMアドレス取得
 	virtual WORD GerAttrAddr() const = 0;		// ATTRアドレス取得
+	virtual void SetAttrAddr( BYTE );			// ATTRアドレス設定
 	
 	// I/Oアクセス関数
 	void OutB0H( int, BYTE );
@@ -73,7 +73,8 @@ public:
 	virtual bool Init();						// 初期化
 	virtual void Reset();						// リセット
 	
-	bool IsBusReq() const;						// バスリクエスト区間フラグ取得
+	bool IsBusReqStop() const;					// バスリクエスト区間停止フラグ取得
+	bool IsBusReqExec() const;					// バスリクエスト区間実行フラグ取得
 	bool IsSRmode() const;						// SRモード取得
 	bool IsSRGVramAccess( WORD ) const;			// SRのG-VRAMアクセス?
 	WORD SRGVramAddr( WORD ) const;				// SRのG-VRAMアドレス取得
@@ -127,9 +128,12 @@ public:
 };
 
 
-class VDG64 : public VDG62, public PCZ80_12 {
+class VDG64 : public VDG6, public PCZ80_12 {
 protected:
 	BYTE GetVram() const;						// VRAMデータ取得
+	WORD GerVramAddr() const;					// VRAMアドレス取得
+	WORD GerAttrAddr() const;					// ATTRアドレス取得
+	void SetAttrAddr( BYTE );					// ATTRアドレス設定
 	
 	// デバイス定義
 	static const Descriptor descriptor;

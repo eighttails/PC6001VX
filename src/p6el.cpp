@@ -130,12 +130,27 @@ void EL6::OnThread( void *inst )
 				bool matchg = p6->vm->key->ScanMatrix();
 				
 				// リプレイ記録中
-				if( REPLAY::GetStatus() == REP_RECORD )
-					REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
-				
+                if( REPLAY::GetStatus() == REP_RECORD ){
+                    REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
+#ifdef REPLAYDEBUG
+                    char fullPath[PATH_MAX];
+                    char fileName[PATH_MAX];
+                    sprintf(fileName, "record/%06d.dds", REPLAY::RepFrm);
+                    OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+                    DokoDemoSave(fullPath);
+#endif
+                }
+
 				// リプレイ再生中
 				if( REPLAY::GetStatus() == REP_REPLAY ){
-					REPLAY::ReplayReadFrame( p6->vm->key->GetMatrix() );
+#ifdef REPLAYDEBUG
+                    char fullPath[PATH_MAX];
+                    char fileName[PATH_MAX];
+                    sprintf(fileName, "replay/%06d.dds", REPLAY::RepFrm);
+                    OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+                    DokoDemoSave(fullPath);
+#endif
+                    REPLAY::ReplayReadFrame( p6->vm->key->GetMatrix() );
 				}
 				
 				p6->EmuVSYNC();			// 1画面分実行
@@ -146,7 +161,7 @@ void EL6::OnThread( void *inst )
 					// サウンド更新
 					p6->SoundUpdate( 0, AVI6::GetAudioBuffer() );
 					// 画面更新されたら AVI1画面保存
-					if( p6->ScreenUpdate() ) AVI6::AVIWriteFrame( p6->graph->GetSubBuffer() );
+					if( p6->ScreenUpdate() ) AVI6::AVIWriteFrame( p6->graph->GetWindowHandle() );
 				}else{
 					// ビデオキャプチャ中でないなら通常の更新
 					// サウンド更新
@@ -413,9 +428,10 @@ bool EL6::Start( void )
 ////////////////////////////////////////////////////////////////
 void EL6::Stop( void )
 {
-	this->cThread::Cancel();	// スレッド終了フラグ立てる
-	this->cThread::Waiting();	// スレッド終了まで待つ
-	
+	if( !this->cThread::IsCancel() ){
+		this->cThread::Cancel();	// スレッド終了フラグ立てる
+		this->cThread::Waiting();	// スレッド終了まで待つ
+	}
 	snd->Pause();
 	sche->Stop();
 
@@ -915,6 +931,7 @@ char EL6::GetAutoKey( void )
 		// バッファが空なら終了
 		delete [] ak.Buffer;
 		ak.Buffer = NULL;
+		ak.Seek   = 0;
 	}
 	return 0;
 }
@@ -1048,12 +1065,12 @@ void EL6::SetAutoStart( void )
 	case 68:	// PC-6601SR
 		if( ainf->BASIC == 6 ){
 			if( vm->disk->IsMount( 0 ) )
-				sprintf( buf, "%c%c%c%c%c%c%c%c%c", 0x17, 260, 0x14, 0xf4, 0x17, 30, 0x0d, 0x17, 10 );
+				sprintf( buf, "%c%c%c%c%c%c%c%c%c%c%c", 0x17, 240, 0x17, 60, 0x14, 0xf4, 0x17, 30, 0x0d, 0x17, 10 );
 			else
-				sprintf( buf, "%c%c%c%c%c%c%c%c",   0x17, 200, 0x14, 0xf4, 0x17, 30,       0x17, 10 );
+				sprintf( buf, "%c%c%c%c%c%c%c%c",   0x17, 240, 0x14, 0xf4, 0x17, 30,       0x17, 10 );
 			break;
 		}else{
-			sprintf( buf, "%c%c%c%c%c%c%c%c", 0x17, 200, 0x17, vm->disk->IsMount( 0 ) ? 60 : 1, 0x17, vm->disk->IsMount( 1 ) ? 60 : 1, 0x14, 0xf3 );
+			sprintf( buf, "%c%c%c%c%c%c%c%c", 0x17, 240, 0x17, vm->disk->IsMount( 0 ) ? 60 : 1, 0x17, vm->disk->IsMount( 1 ) ? 60 : 1, 0x14, 0xf3 );
 		}
 		buf += strlen(kbuf);
 		
@@ -1104,20 +1121,21 @@ bool EL6::IsMonitor( void ) const
 ////////////////////////////////////////////////////////////////
 bool EL6::DokoDemoSave( const char *filename )
 {
-	cIni *Ini = NULL;
-	
+    printf("DokoDemoSave-------------------------------------------------\n");
+    cIni *Ini = NULL;
+
 	// とりあえずエラー設定
-	Error::SetError( Error::DokoWriteFailed );
+    Error::Reset();
 	try{
 		FILE *fp = FOPENEN( filename, "wt" );
-		if( !fp ) throw Error::DokoWriteFailed;
+        if( !fp ) throw Error::DokoWriteFailed;
 		// タイトル行を出力して一旦閉じる
 		fprintf( fp, MSDOKO_TITLE );
 		fclose( fp );
 		
 		// どこでもSAVEファイルを開く
 		Ini = new cIni();
-		if( !Ini->Init( filename ) ) throw Error::DokoWriteFailed;
+        if( !Ini->Init( filename ) ) throw Error::DokoWriteFailed;
 		
 		// 各オブジェクトのパラメータ書込み
 		if( !cfg->DokoSave( Ini )      ||
@@ -1132,8 +1150,39 @@ bool EL6::DokoDemoSave( const char *filename )
 			!vm->key->DokoSave( Ini )  ||
 			!vm->cmtl->DokoSave( Ini ) ||
 			!vm->disk->DokoSave( Ini )
-		) throw Error::GetError();
-		if( vm->voice && !vm->voice->DokoSave( Ini ) ) throw Error::GetError();
+        ) throw Error::GetError();
+        if( vm->voice && !vm->voice->DokoSave( Ini ) ) throw Error::GetError();
+		
+		
+		Ini->PutEntry( "KEY", NULL, "AK_Num",		"%d",	ak.Num );
+		Ini->PutEntry( "KEY", NULL, "AK_Wait",		"%d",	ak.Wait );
+		Ini->PutEntry( "KEY", NULL, "AK_Relay",		"%s",	ak.Relay   ? "Yes" : "No" );
+		Ini->PutEntry( "KEY", NULL, "AK_RelayOn",	"%s",	ak.RelayOn ? "Yes" : "No" );
+		Ini->PutEntry( "KEY", NULL, "AK_Seek",		"%d",	ak.Seek );
+
+		char stren[16],strva[256];
+		int bnum = ak.Num + ak.Seek;
+		
+		if( ak.Buffer && bnum ){
+			int i=0, nn=0;
+			
+			do{
+				sprintf( &strva[(i&63)*2], "%02X", ak.Buffer[i] );
+				i++;
+				if( !(i&63) ){
+					sprintf( stren, "AKBuf_%02X", nn++ );
+					Ini->PutEntry( "KEY", NULL, stren, "%s", strva );
+				}
+			}while( --bnum );
+			
+			sprintf( stren, "AKBuf_%02X", nn );
+			Ini->PutEntry( "KEY", NULL, stren, "%s", strva );
+		}
+
+
+
+
+
 	}
 	catch( std::bad_alloc ){	// new に失敗した場合
 		Error::SetError( Error::MemAllocFailed );
@@ -1164,7 +1213,8 @@ bool EL6::DokoDemoSave( const char *filename )
 ////////////////////////////////////////////////////////////////
 bool EL6::DokoDemoLoad( const char *filename )
 {
-	cIni *Ini = NULL;
+    printf("DokoDemoLoad-------------------------------------------------\n");
+    cIni *Ini = NULL;
 	
 	// とりあえずエラー設定
 	Error::SetError( Error::DokoReadFailed );
@@ -1172,7 +1222,6 @@ bool EL6::DokoDemoLoad( const char *filename )
 		// どこでもLOADファイルを開く
 		Ini = new cIni();
 		if( !Ini->Init( filename ) ) throw Error::DokoReadFailed;
-//		cfg->SetDokoFile( filename );
 		
 		// PC6001Vのバージョン確認と主要構成情報を読込み
 		// (機種,FDD台数,拡張RAM,ROMパッチ,戦士のカートリッジ)
@@ -1196,6 +1245,34 @@ bool EL6::DokoDemoLoad( const char *filename )
 		) throw Error::GetError();
 		if( vm->voice && !vm->voice->DokoLoad( Ini ) ) throw Error::GetError();
 		
+		Ini->GetInt(   "KEY", "AK_Num",		&ak.Num,		ak.Num );
+		Ini->GetInt(   "KEY", "AK_Wait",	&ak.Wait,		ak.Wait );
+		Ini->GetTruth( "KEY", "AK_Relay",	&ak.Relay,		ak.Relay );
+		Ini->GetTruth( "KEY", "AK_RelayOn",	&ak.RelayOn,	ak.RelayOn );
+		Ini->GetInt(   "KEY", "AK_Seek",	&ak.Seek,		ak.Seek );
+		
+		if( ak.Buffer ){
+			delete [] ak.Buffer;
+			ak.Buffer = NULL;
+		}
+		int bnum = ak.Num + ak.Seek;
+		if( bnum ){
+			ak.Buffer = new char[bnum+1];
+			
+			for( int i=0; i<bnum; i+=64 ){
+				char stren[16],strva[256];
+				sprintf( stren, "AKBuf_%02X", i/64 );
+				memset( strva, '0', 64*2 );
+				if( Ini->GetString( "KEY", stren, strva, strva ) ){
+					for( int j=0; j<min(64,bnum-i); j++ ){
+						char dt[5] = "0x";
+						strncpy( &dt[2], &strva[j*2], 2 );
+						ak.Buffer[i+j] = strtol( dt, NULL, 16 );
+					}
+				}
+			}
+		}
+		
 		// ディスクドライブ数によってスクリーンサイズ変更
 		if( !staw->Init( -1, vm->disk->GetDrives() ) ) throw Error::GetError();
 		if( !graph->ResizeScreen() ) throw Error::GetError();
@@ -1211,7 +1288,6 @@ bool EL6::DokoDemoLoad( const char *filename )
 	}
 	
 	delete Ini;
-//	cfg->SetDokoFile( "" );
 	
 	// 無事だったのでエラーなし
 	Error::Reset();
@@ -1338,7 +1414,7 @@ bool EL6::ReplayRecResume( const char *filename )
     // 途中セーブファイルを探す
     char strsave[PATH_MAX];
     strncpy(strsave, OSD_GetFolderNamePart(filename), PATH_MAX);
-    AddDelimiter(strsave);
+    OSD_AddDelimiter(strsave);
     const char savefile[] = "resume.dds";
     strncat(strsave, savefile, sizeof(savefile));
     if(OSD_FileExist(strsave)){
@@ -1384,7 +1460,7 @@ bool EL6::ReplayRecDokoSave()
         // 途中セーブファイルを保存
         char strsave[PATH_MAX];
         strncpy(strsave, OSD_GetFolderNamePart(REPLAY::Ini->getFileName()), PATH_MAX);
-        AddDelimiter(strsave);
+        OSD_AddDelimiter(strsave);
         const char savefile[] = "resume.dds";
         strncat(strsave, savefile, sizeof(savefile));
         if(!DokoDemoSave(strsave)) return false;
@@ -1666,7 +1742,7 @@ void EL6::UI_AVISave( void )
 	
 	if( !AVI6::IsAVI() ){
 		if( OSD_FileSelect( graph->GetWindowHandle(), FD_AVISave, str, (char *)OSD_GetModulePath() ) ){
-			AVI6::StartAVI( str, graph->GetSubBuffer(), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviBpp() );
+			AVI6::StartAVI( str, graph->ScreenX(), graph->ScreenY(), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviBpp() );
 		}
 	}else{
 		AVI6::StopAVI();
@@ -1704,7 +1780,7 @@ void EL6::UI_Reset( void )
 {
 	bool can = this->cThread::IsCancel();	// スレッド停止済み?
 	
-	if( !can ) Stop();
+	if( !can ) Stop();	// スレッド動いてたら一旦止める
 	
 	// システムディスクが入っていたらTAPEのオートスタート無効
 	if( !vm->disk->IsSystem(0) && !vm->disk->IsSystem(1) )
@@ -1712,7 +1788,7 @@ void EL6::UI_Reset( void )
 	
 	vm->Reset();
 	
-	if( !can ) Start();
+	if( !can ) Start();	// 元々スレッドが動いていたら再始動
 }
 
 

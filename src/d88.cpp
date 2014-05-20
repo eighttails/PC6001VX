@@ -9,9 +9,9 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-cD88::cD88( void ) : Protected(false)
+cD88::cD88( bool dd ) : DDDrv(dd), Protected(false)
 {
-	PRINTD( D88_LOG, "[D88][cD88]\n" )
+	PRINTD( D88_LOG, "[D88][cD88] %s Drive\n", DDDrv ? "1DD" : "1D" )
 	
 	INITARRAY( FileName, '\0' );
 }
@@ -83,9 +83,16 @@ void cD88::ReadHeader88( void )
 		d88.size = FGETDWORD( d88.fp );
 		
 		// トラック部のオフセットテーブル
-		for( int i=0; i<164; i++ )
-			d88.table[i] = FGETDWORD( d88.fp );
-		
+		ZeroMemory( &d88.table, sizeof(d88.table) );
+		// 1DDドライブで1Dディスクを使う時は2トラック飛びで読込む
+		if( DDDrv && !(GetType()&FD_DOUBLETRACK) ){
+			PRINTD( D88_LOG, " (1D disk on 1DD drive)\n" )
+			for( int i=0; i<164; i+=2 )
+				d88.table[i] = FGETDWORD( d88.fp );
+		}else
+			for( int i=0; i<164; i++ )
+				d88.table[i] = FGETDWORD( d88.fp );
+			
 		// アクセス中のトラックNo
 		d88.trkno = 0;
 		
@@ -135,18 +142,20 @@ void cD88::ReadSector88( void )
 				}
 			}
 		}
-		
-		PRINTD( D88_LOG, " C      : %d\n", d88.secinfo.c )
-		PRINTD( D88_LOG, " H      : %d\n", d88.secinfo.h )
-		PRINTD( D88_LOG, " R      : %d\n", d88.secinfo.r )
-		PRINTD( D88_LOG, " N      : %d\n", d88.secinfo.n )
-		PRINTD( D88_LOG, " SectNum: %d/%d\n", d88.secinfo.secno, d88.secinfo.sec_nr )
-		PRINTD( D88_LOG, " Density: %s\n", d88.secinfo.density&0x40 ? "S" : "D" )
-		PRINTD( D88_LOG, " Del    : %s\n", d88.secinfo.deleted&0x10 ? "DELETED" : "NORMAL" )
-		PRINTD( D88_LOG, " Stat   : %02X\n", d88.secinfo.status )
-		PRINTD( D88_LOG, " Size   : %d\n", d88.secinfo.size )
-		PRINTD( D88_LOG, " Offset : %d\n", (int)d88.secinfo.data )
+	}else{
+		ZeroMemory( &d88.secinfo, sizeof(D88SECTOR) );
 	}
+	
+	PRINTD( D88_LOG, " C      : %d\n", d88.secinfo.c )
+	PRINTD( D88_LOG, " H      : %d\n", d88.secinfo.h )
+	PRINTD( D88_LOG, " R      : %d\n", d88.secinfo.r )
+	PRINTD( D88_LOG, " N      : %d\n", d88.secinfo.n )
+	PRINTD( D88_LOG, " SectNum: %d/%d\n", d88.secinfo.secno, d88.secinfo.sec_nr )
+	PRINTD( D88_LOG, " Density: %s\n", d88.secinfo.density&0x40 ? "S" : "D" )
+	PRINTD( D88_LOG, " Del    : %s\n", d88.secinfo.deleted&0x10 ? "DELETED" : "NORMAL" )
+	PRINTD( D88_LOG, " Stat   : %02X\n", d88.secinfo.status )
+	PRINTD( D88_LOG, " Size   : %d\n", d88.secinfo.size )
+	PRINTD( D88_LOG, " Offset : %d\n", (int)d88.secinfo.data )
 }
 
 
@@ -221,8 +230,8 @@ bool cD88::Seek( int trackno, int sectno )
 	PRINTD( D88_LOG, "[D88][Seek] Track : %d Sector : %d ", trackno, sectno );
 	
 	if( d88.fp ){
+		ZeroMemory( &d88.secinfo, sizeof(D88SECTOR) );
 		d88.trkno          = trackno;
-		d88.secinfo.secno  = 0;
 		d88.secinfo.status = BIOS_MISSING_IAM;
 		
 		// トラックが無効ならUnformat扱い
@@ -329,7 +338,7 @@ void cD88::GetID( BYTE *C, BYTE *H, BYTE *R, BYTE *N ) const
 ////////////////////////////////////////////////////////////////
 WORD cD88::GetSecSize( void ) const
 {
-	PRINTD( D88_LOG, "[D88][GetSecSize]\n" );
+	PRINTD( D88_LOG, "[D88][GetSecSize] %d\n", d88.secinfo.size );
 	
 	return d88.secinfo.size;
 }
@@ -340,7 +349,7 @@ WORD cD88::GetSecSize( void ) const
 ////////////////////////////////////////////////////////////////
 BYTE cD88::Track( void ) const
 {
-	PRINTD( D88_LOG, "[D88][Track]\n" );
+	PRINTD( D88_LOG, "[D88][Track] %d\n", d88.trkno );
 	
 	return d88.trkno;
 }
@@ -351,7 +360,7 @@ BYTE cD88::Track( void ) const
 ////////////////////////////////////////////////////////////////
 BYTE cD88::Sector( void ) const
 {
-	PRINTD( D88_LOG, "[D88][Sector]\n" );
+	PRINTD( D88_LOG, "[D88][Sector] %d\n", d88.secinfo.secno );
 	
 	return d88.secinfo.secno;
 }
@@ -362,7 +371,7 @@ BYTE cD88::Sector( void ) const
 ////////////////////////////////////////////////////////////////
 WORD cD88::SecNum( void ) const
 {
-	PRINTD( D88_LOG, "[D88][SecNum]\n" );
+	PRINTD( D88_LOG, "[D88][SecNum] %d\n", d88.secinfo.sec_nr );
 	
 	return d88.secinfo.sec_nr;
 }
@@ -373,7 +382,7 @@ WORD cD88::SecNum( void ) const
 ////////////////////////////////////////////////////////////////
 BYTE cD88::GetSecStatus( void ) const
 {
-	PRINTD( D88_LOG, "[D88][GetStatus]\n" );
+	PRINTD( D88_LOG, "[D88][GetStatus] %02X\n", d88.secinfo.status );
 	
 	return d88.secinfo.status;
 }
@@ -414,9 +423,13 @@ int cD88::GetType( void ) const
 	int ret = FDUNKNOWN;
 	
 	switch( d88.type ){
-	case 0x00: ret = FD2D;  break;	// 2D
-	case 0x10: ret = FD2DD; break;	// 2DD
-	case 0x20: ret = FD2HD; break;	// 2HD
+	// 本当はこうだけど
+//	case 0x00: ret = FD2D;  break;	// 2D
+//	case 0x10: ret = FD2DD; break;	// 2DD
+//	case 0x20: ret = FD2HD; break;	// 2HD
+	// P6の場合はこう
+	case 0x00: ret = FD1D;  break;	// 1D
+	case 0x10: ret = FD1DD; break;	// 1DD
 	}
 	return ret;
 }

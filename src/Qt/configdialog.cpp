@@ -160,7 +160,7 @@ void ConfigDialog::readConfig()
     // ファイル----------------------------------------------------
     // 拡張ROMファイル
     strncpy( str, config->GetExtRomFile(), PATH_MAX );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditExtRom->setText(str);
     connect(ui->pushButtonClearExtRom, SIGNAL(clicked()), fileClearMap, SLOT(map()));
     fileClearMap->setMapping(ui->pushButtonClearExtRom, ui->lineEditExtRom);
@@ -169,7 +169,7 @@ void ConfigDialog::readConfig()
 
     // TAPE(LOAD)ファイル名
     strncpy( str, config->GetTapeFile(), PATH_MAX );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditLoadTape->setText(str);
     connect(ui->pushButtonClearLoadTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
     fileClearMap->setMapping(ui->pushButtonClearLoadTape, ui->lineEditLoadTape);
@@ -178,7 +178,7 @@ void ConfigDialog::readConfig()
 
     // TAPE(SAVE)ファイル名
     strncpy( str, config->GetSaveFile(), PATH_MAX );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditSaveTape->setText(str);
     connect(ui->pushButtonClearSaveTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
     fileClearMap->setMapping(ui->pushButtonClearSaveTape, ui->lineEditSaveTape);
@@ -187,7 +187,7 @@ void ConfigDialog::readConfig()
 
     // DISK1ファイル名
     strncpy( str, config->GetDiskFile(1), PATH_MAX );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditDisk1->setText(str);
     connect(ui->pushButtonClearDisk1, SIGNAL(clicked()), fileClearMap, SLOT(map()));
     fileClearMap->setMapping(ui->pushButtonClearDisk1, ui->lineEditDisk1);
@@ -196,7 +196,7 @@ void ConfigDialog::readConfig()
 
     // DISK2ファイル名
     strncpy( str, config->GetDiskFile(2), PATH_MAX );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditDisk2->setText(str);
     connect(ui->pushButtonClearDisk2, SIGNAL(clicked()), fileClearMap, SLOT(map()));
     fileClearMap->setMapping(ui->pushButtonClearDisk2, ui->lineEditDisk2);
@@ -205,7 +205,7 @@ void ConfigDialog::readConfig()
 
     // プリンタファイル名
     strncpy( str, config->GetPrinterFile(), PATH_MAX );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditPrinter->setText(str);
     connect(ui->pushButtonClearPrinter, SIGNAL(clicked()), fileClearMap, SLOT(map()));
     fileClearMap->setMapping(ui->pushButtonClearPrinter, ui->lineEditPrinter);
@@ -215,8 +215,7 @@ void ConfigDialog::readConfig()
     // フォルダ--------------------------------------------------------------
     // ROMパス
     strncpy( str, config->GetRomPath(), PATH_MAX );
-    DelDelimiter( str );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditFolderRom->setText(str);
     connect(ui->pushButtonClearFolderRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
     folderClearMap->setMapping(ui->pushButtonClearFolderRom, ui->lineEditFolderRom);
@@ -225,8 +224,7 @@ void ConfigDialog::readConfig()
 
     // TAPEパス
     strncpy( str, config->GetTapePath(), PATH_MAX );
-    DelDelimiter( str );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditFolderTape->setText(str);
     connect(ui->pushButtonClearFolderTape, SIGNAL(clicked()), folderClearMap, SLOT(map()));
     folderClearMap->setMapping(ui->pushButtonClearFolderTape, ui->lineEditFolderTape);
@@ -235,8 +233,7 @@ void ConfigDialog::readConfig()
 
     // DISKパス
     strncpy( str, config->GetDiskPath(), PATH_MAX );
-    DelDelimiter( str );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditFolderDisk->setText(str);
     connect(ui->pushButtonClearFolderDisk, SIGNAL(clicked()), folderClearMap, SLOT(map()));
     folderClearMap->setMapping(ui->pushButtonClearFolderDisk, ui->lineEditFolderDisk);
@@ -245,8 +242,7 @@ void ConfigDialog::readConfig()
 
     // 拡張ROMパス
     strncpy( str, config->GetExtRomPath(), PATH_MAX );
-    DelDelimiter( str );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditFolderExtRom->setText(str);
     connect(ui->pushButtonClearFolderExtRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
     folderClearMap->setMapping(ui->pushButtonClearFolderExtRom, ui->lineEditFolderExtRom);
@@ -255,8 +251,7 @@ void ConfigDialog::readConfig()
 
     // IMGパス
     strncpy( str, config->GetImgPath(), PATH_MAX );
-    DelDelimiter( str );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditFolderImg->setText(str);
     connect(ui->pushButtonClearFolderImg, SIGNAL(clicked()), folderClearMap, SLOT(map()));
     folderClearMap->setMapping(ui->pushButtonClearFolderImg, ui->lineEditFolderImg);
@@ -265,8 +260,7 @@ void ConfigDialog::readConfig()
 
     // WAVEパス
     strncpy( str, config->GetWavePath(), PATH_MAX );
-    DelDelimiter( str );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditFolderWave->setText(str);
     connect(ui->pushButtonClearFolderWave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
     folderClearMap->setMapping(ui->pushButtonClearFolderWave, ui->lineEditFolderWave);
@@ -275,8 +269,7 @@ void ConfigDialog::readConfig()
 
     // どこでもSAVEパス
     strncpy( str, config->GetDokoSavePath(), PATH_MAX );
-    DelDelimiter( str );
-    UnDelimiter( str );
+    OSD_DelDelimiter( str );
     ui->lineEditFolderDokoSave->setText(str);
     connect(ui->pushButtonClearFolderDokoSave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
     folderClearMap->setMapping(ui->pushButtonClearFolderDokoSave, ui->lineEditFolderDokoSave);
@@ -586,9 +579,9 @@ void ConfigDialog::selectFile(QWidget *widget)
         }
 
         strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
-        Delimiter(folder);
+        OSD_AddDelimiter(folder);
         OSD_FileSelect(NULL, dlg, folder, path);
-        UnDelimiter(folder);
+        OSD_DelDelimiter(folder);
         if(strlen(folder) > 0){
             edit->setText(QString::fromUtf8(folder));
         }
@@ -602,9 +595,9 @@ void ConfigDialog::selectFolder(QWidget *widget)
     QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
     if(edit){
         strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
-        Delimiter(folder);
+        OSD_AddDelimiter(folder);
         OSD_FolderDiaog(NULL, folder);
-        UnDelimiter(folder);
+        OSD_DelDelimiter(folder);
         if(strlen(folder) > 0){
             edit->setText(QString::fromUtf8(folder));
         }

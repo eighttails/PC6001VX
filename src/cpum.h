@@ -18,7 +18,7 @@ private:
 	BYTE ReadIO( int );				// I/Oポートアクセス Read
 	void WriteIO( int, BYTE );		// I/Oポートアクセス Write
 	int GetIntrVector();			// 割込みベクタ取得
-	bool IsBUSREQ();				// バスリクエスト区間フラグ取得
+	bool IsBUSREQ();				// バスリクエスト区間停止フラグ取得
 	
 public:
 	CPU6( VM6 *, const ID& );		// コンストラクタ

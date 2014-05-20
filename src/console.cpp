@@ -265,12 +265,18 @@ void ZCons::Locate( int xx, int yy )
 void ZCons::LocateR( int xx, int yy )
 {
 	x += xx;
-	if( x < 0 ) x = 0;
-	if( x >= Xmax ) x = Xmax;
+	if( x < 0 ){
+	    x += Xmax;
+	    y--;
+	}
+	if( x > Xmax ){
+		x -= Xmax;
+		y++;
+	}
 	
 	y += yy;
-	if( y < 0 ) y = 0;
-	if( y >= Ymax ) y = Ymax;
+	if( y < 0 )    y = 0;
+	if( y > Ymax ) y = Ymax;
 }
 
 

@@ -387,7 +387,7 @@ enum KeyGroup
 ////////////////////////////////////////////////////////////////
 KEY6::KEY6( VM6 *vm, const ID& id ) : Device(vm,id),
 	ON_SHIFT(false), ON_GRAPH(false), ON_KANA(false), ON_KKANA(false),
-    ON_CTRL(false), ON_STOP(false), ON_CAPS(false), scanned(false)
+    ON_CTRL(false), ON_STOP(false), ON_CAPS(false)
 {
 
 	// 仮想キーコード -> P6キーコード 変換テーブル初期化
@@ -546,8 +546,10 @@ bool KEY6::ScanMatrix( void )
 	ON_CTRL  = P6Mtrx[0] & 0x02 ? false : true;
 	ON_SHIFT = P6Mtrx[0] & 0x04 ? false : true;
 	ON_GRAPH = P6Mtrx[0] & 0x08 ? false : true;
+	// 前回のマトリクスと変化あり?
+    if( P6Mtrx[0] != P6Mtrx[0+NOM] ) MatChg = true;
 	
-	// 一般キー判定
+	// 一般キー判定 キーマトリクスY1〜
 	for( int y=1; (y<(NOM-2))&&~KeyPUSH; y++ ){
 		// 前回のマトリクスと変化あり?
 		if( P6Mtrx[y] != P6Mtrx[y+NOM] ){

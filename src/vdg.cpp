@@ -89,7 +89,7 @@ const BYTE VDG6::COL62_CG2[][16] = {	// mode 2-3,4 -----
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 VDG6::VDG6( VM6 *vm, const ID& id ) : Device(vm,id),
-		AddrOff(0), VSYNC(false), HSYNC(false), VLcnt(VLINES60), OnDisp(false) {}
+		AddrOff(0), VSYNC(false), HSYNC(false), VLcnt(VLINES60) {}
 
 VDG60::VDG60( VM6 *vm, const ID& id ) : VDG6(vm,id)
 {
@@ -140,10 +140,32 @@ VDG62::VDG62( VM6 *vm, const ID& id ) : VDG6(vm,id)
 			COL_CG2[i][j] = COL62_CG2[i][j];
 }
 
-VDG64::VDG64( VM6 *vm, const ID& id ) : VDG62(vm,id)
+VDG64::VDG64( VM6 *vm, const ID& id ) : VDG6(vm,id)
 {
 	HSdclk = HSDCLK62;
 	Hclk60 = HCLK6062;
+	
+	// カラーテーブル設定
+	for( int i=0; i<COUNTOF(COL_AN); i++ )
+		COL_AN[i] = COL62_AN[i];
+	
+	for( int i=0; i<COUNTOF(COL_SG); i++ )
+		COL_SG[i] = COL62_SG[i];
+	
+	for( int i=0; i<COUNTOF(COL_CG); i++ )
+		for( int j=0; j<COUNTOF(COL_CG[0]); j++ )
+			COL_CG[i][j] = COL62_CG[i][j];
+	
+	for( int i=0; i<COUNTOF(COL_RG); i++ )
+		for( int j=0; j<COUNTOF(COL_RG[0]); j++ )
+			COL_RG[i][j] = COL62_RG[i][j];
+	
+	for( int i=0; i<COUNTOF(COL_AN2); i++ )
+		COL_AN2[i] = COL62_AN2[i];
+	
+	for( int i=0; i<COUNTOF(COL_CG2); i++ )
+		for( int j=0; j<COUNTOF(COL_CG2[0]); j++ )
+			COL_CG2[i][j] = COL62_CG2[i][j];
 }
 
 
@@ -183,13 +205,13 @@ void VDG6::EventCallback( int id, int clock )
 		
 	case EID_HDISPS:	// 表示区間開始
 		if( VLcnt ){
-			OnDisp = CrtDisp ? true : false;
+			BusReq = CrtDisp ? true : false;
 			VLcnt--;
 		}
 		break;
 		
 	case EID_HDISPE:	// 表示区間終了
-		OnDisp = false;
+		BusReq = false;
 		break;
 	}
 }
@@ -213,13 +235,13 @@ void VDG64::EventCallback( int id, int clock )
 		
 	case EID_HDISPS:	// 表示区間開始
 		if( VLcnt ){
-			OnDisp = CrtDisp ? true : false;
+			BusReq = CrtDisp ? true : false;
 			VLcnt--;
 		}
 		break;
 		
 	case EID_HDISPE:	// 表示区間終了
-		OnDisp = false;
+		BusReq = false;
 		break;
 	}
 }
@@ -308,22 +330,6 @@ BYTE VDG64::GetVram( void ) const
 			// HAddrは8dot/320毎
 			addr = VAddr * ( SRCharWidth ? 40 : 80 ) * 2 + HAddr;
 		}else{				// ビットマップモード
-/*
-			WORD Had = HAddr + ((SRRollX>>1) & (GraphMode ? 0xffff : 0xfffe));
-			WORD Vad = VAddr + SRRollY;
-			
-			while( Had >= 160 ) Had -= 160;
-			while( Vad >= 204 ) Vad -= 204;
-			
-			// HAddrは2dot毎@320 or 8dot/2byte毎@640
-			if( Had < 128 ){
-				addr =  Had      + ((Vad>>1) * 128);
-			}else{
-				Vad = (Vad&0xfff1)|((Vad&2)<<2)|((Vad&0xc)>>1);	// bit1,2,3を入替える
-				addr = (Had-128) + ((Vad>>1) *  32);
-			}
-			addr = (((addr<<1)&0xfffc) | ((Vad&1)<<1) | (Had&1)) + ( Had < 128 ? 0x1a00 : 0 );
-*/
 			WORD Had = HAddr + (SRRollX & (GraphMode ? 0xffff : 0xfffc));
 			WORD Vad = VAddr +  SRRollY;
 			
@@ -407,21 +413,33 @@ bool VDG6::Init( void )
 ////////////////////////////////////////////////////////////////
 void VDG6::Reset()
 {
+	PRINTD( VDG_LOG, "[VDG][Reset]\n" );
 	SRmode = false;
 }
 
 void VDG64::Reset()
 {
+	PRINTD( VDG_LOG, "[VDG][Reset]\n" );
 	SRmode = true;
 }
 
 
 ////////////////////////////////////////////////////////////////
-// バスリクエスト区間フラグ取得
+// バスリクエスト区間停止フラグ取得
 ////////////////////////////////////////////////////////////////
-bool VDG6::IsBusReq( void ) const
+bool VDG6::IsBusReqStop( void ) const
 {
-	return OnDisp & BusReq;
+	// SRの場合，BusReq,SRBusReq 両方のフラグが立っていればバスリクエスト発生
+	return BusReq && SRBusReq;
+}
+
+
+////////////////////////////////////////////////////////////////
+// バスリクエスト区間実行フラグ取得
+////////////////////////////////////////////////////////////////
+bool VDG6::IsBusReqExec( void ) const
+{
+    return BusReq && (!SRBusReq);
 }
 
 
@@ -472,38 +490,33 @@ WORD VDG6::SRGVramAddr( WORD addr ) const
 ////////////////////////////////////////////////////////////////
 WORD VDG60::GerVramAddr( void ) const
 {
-	//	[00] V:C200H
-	//	[01] V:E200H
-	//	[10] V:8200H
-	//	[11] V:A200H
+	//	[00]C200H  [01]E200H  [10]8200H  [11]A200H
 	// 実アドレスは +0x8000
 	return AddrOff + 0x0200;
 }
 
 WORD VDG62::GerVramAddr( void ) const
 {
+	// mk2以降の場合は実アドレスに一致
+	if( N60Win )			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
+		return ( 0x8000 | AddrOff ) + 0x0200;
+	else{					// N60m
+		if( CharMode ) return (AddrOff<<1) + 0x0400;	// キャラクタモード   [00]8400H  [01]C400H  [10]0400H  [11]4400H
+		else		   return (AddrOff<<1) + 0x2000;	// グラフィックモード [00]A000H  [01]E000H  [10]2000H  [11]6000H
+	}
+}
+
+WORD VDG64::GerVramAddr( void ) const
+{
 	if( SRmode ){	// SRモード
-		if( CharMode )	// テキストモード
-			return (WORD)SRTextAddr<<12;
-		else			// ビットマップモード
-			return (SRBMPage ? 0x8000 : 0x0000);
+		if( CharMode ) return (WORD)SRTextAddr<<12;			// テキストモード
+		else		   return (SRBMPage ? 0x8000 : 0x0000);	// ビットマップモード
 	}else{			// 旧モード
-		if( N60Win ){			// 60
-			//	[00] V:C200H
-			//	[01] V:E200H
-			//	[10] V:8200H
-			//	[11] V:A200H
-			// mk2以降の場合は実アドレスに一致
-			return ( 0x8000 | AddrOff ) + 0x0200;
-		}else{					// mk2 or 66
-			//	[00] V:8400H or A000H
-			//	[01] V:C400H or E000H
-			//	[10] V:0400H or 2000H
-			//	[11] V:4400H or 6000H
-			if( CharMode )		// キャラクタモード
-				return (AddrOff<<1) + 0x0400;
-			else				// グラフィックモード
-				return (AddrOff<<1) + 0x2000;
+		if( N60Win )			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
+			return AddrOff + 0x0200;
+		else{					// N60m
+			if( CharMode ) return AddrOff + 0x0400;	// キャラクタモード   [00]8400H  [01]C400H  [10]0400H  [11]4400H
+			else		   return AddrOff + 0x2000;	// グラフィックモード [00]A000H  [01]E000H  [10]2000H  [11]6000H
 		}
 	}
 }
@@ -515,41 +528,55 @@ WORD VDG62::GerVramAddr( void ) const
 ////////////////////////////////////////////////////////////////
 WORD VDG60::GerAttrAddr( void ) const
 {
-	//	[00] A:C000H
-	//	[01] A:E000H
-	//	[10] A:8000H
-	//	[11] A:A000H
 	// 実アドレスは +0x8000
-	return AddrOff;
+	return AddrOff;		// [00]C000H  [01]E000H  [10]8000H  [11]A000H
 }
 
 WORD VDG62::GerAttrAddr( void ) const
 {
-	if( SRmode ){	// SRモード(テキストモードアクセスのみ)
-		return GerVramAddr() + 1;
-	}else{			// 旧モード
-		if( N60Win ){			// 60
-			//	[00] A:C000H
-			//	[01] A:E000H
-			//	[10] A:8000H
-			//	[11] A:A000H
-			// mk2以降の場合は実アドレスに一致
-			return 0x8000 | AddrOff;
-		}else{					// mk2 or 66
-			//	[00] A:8000H
-			//	[01] A:C000H
-			//	[10] A:0000H
-			//	[11] A:4000H
-			return AddrOff<<1;
-		}
-	}
+	// mk2以降の場合は実アドレスに一致
+	if( N60Win ) return 0x8000 | AddrOff;	// N60  [00]C000H  [01]E000H  [10]8000H  [11]A000H
+	else		 return AddrOff<<1;			// N60m [00]8000H  [01]C000H  [10]0000H  [11]4000H
+}
+
+WORD VDG64::GerAttrAddr( void ) const
+{
+	if( SRmode ) return GerVramAddr() + 1;	// SRモード(テキストモードアクセスのみ)
+	else		 return AddrOff;			// 旧モード
+}
+
+
+////////////////////////////////////////////////////////////////
+// ATTRアドレス設定
+////////////////////////////////////////////////////////////////
+void VDG6::SetAttrAddr( BYTE data )
+{
+	PRINTD( VDG_LOG, "[VDG][SetAttrAddr]" );
+	AddrOff = ((~data&4)|(data&2))<<12;
+	PRINTD( VDG_LOG, " %d%d -> %04X\n", data&4 ? 1 : 0, data&2 ? 1 : 0, AddrOff );
+}
+
+void VDG64::SetAttrAddr( BYTE data )
+{
+	// SRの場合はポート書込み時の画面モードでアドレスが決まるようだ
+	// N60  [00]C000H  [01]E000H  [10]8000H  [11]A000H
+	// N60m [00]8000H  [01]C000H  [10]0000H  [11]4000H
+	PRINTD( VDG_LOG, "[VDG][SetAttrAddr]" );
+//	if( !SRmode ){		// SRモードの時は無効?わからんのでとりあえず有効にしておく
+		AddrOff = ((~data&4)|(data&2))<<12;
+		if( N60Win ) AddrOff |= 0x8000;	// N60
+		else		 AddrOff <<= 1;		// N60m
+		
+		PRINTD( VDG_LOG, " %d%d -> %04X", data&4 ? 1 : 0, data&2 ? 1 : 0, AddrOff );
+//	}
+	PRINTD( VDG_LOG, "\n" );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
-void VDG6::OutB0H( int, BYTE data ){ if( !SRmode ) AddrOff = ((data+4)&6)<<12; }
+void VDG6::OutB0H( int, BYTE data ){ SetAttrAddr( data ); }
 void VDG6::OutC0H( int, BYTE data ){ SetCss( data ); }
 void VDG6::OutC1H( int, BYTE data )
 {
@@ -615,7 +642,6 @@ bool VDG6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "VDG", NULL, "VSYNC",		"%s",		VSYNC  ? "Yes" : "No" );
 	Ini->PutEntry( "VDG", NULL, "HSYNC",		"%s",		HSYNC  ? "Yes" : "No" );
 	Ini->PutEntry( "VDG", NULL, "VLcnt",		"%d",		VLcnt );
-	Ini->PutEntry( "VDG", NULL, "OnDisp",		"%s",		OnDisp ? "Yes" : "No" );
 	
 	for( int i=0; i<16; i++ ){
 		char stren[16];
@@ -646,8 +672,8 @@ bool VDG6::DokoLoad( cIni *Ini )
 	Ini->GetTruth( "VDG", "N60Win",			&N60Win,		N60Win );
 	Ini->GetInt(   "VDG", "VAddr",			&st,			VAddr );	VAddr   = st;
 	Ini->GetInt(   "VDG", "HAddr",			&st,			HAddr );	HAddr   = st;
-    Ini->GetInt(   "VDG", "RowCntA",		&RowCntA,		RowCntA );
-    Ini->GetInt(   "VDG", "RowCntG",		&RowCntG,		RowCntG );
+	Ini->GetInt(   "VDG", "RowCntA",		&RowCntA,		RowCntA );
+	Ini->GetInt(   "VDG", "RowCntG",		&RowCntG,		RowCntG );
 	Ini->GetInt(   "VDG", "AT_AG",			&st,			AT_AG );	AT_AG   = st;
 	Ini->GetInt(   "VDG", "AT_AS",			&st,			AT_AS );	AT_AS   = st;
 	Ini->GetInt(   "VDG", "AT_IE",			&st,			AT_IE );	AT_IE   = st;
@@ -658,9 +684,9 @@ bool VDG6::DokoLoad( cIni *Ini )
 	// 62,66,64,68
 	Ini->GetTruth( "VDG", "CharMode",		&CharMode,		CharMode );
 	Ini->GetTruth( "VDG", "GraphMode",		&GraphMode,		GraphMode );
-    Ini->GetInt(   "VDG", "Css1",			&Css1,			Css1 );
-    Ini->GetInt(   "VDG", "Css2",			&Css2,			Css2 );
-    Ini->GetInt(   "VDG", "Css3",			&Css3,			Css3 );
+	Ini->GetInt(   "VDG", "Css1",			&Css1,			Css1 );
+	Ini->GetInt(   "VDG", "Css2",			&Css2,			Css2 );
+	Ini->GetInt(   "VDG", "Css3",			&Css3,			Css3 );
 
 	// 64,68
 	Ini->GetTruth( "VDG", "SRmode",			&SRmode,		SRmode );
@@ -677,8 +703,7 @@ bool VDG6::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "VDG", "AddrOff",		&st,			AddrOff );	AddrOff = st;
 	Ini->GetTruth( "VDG", "VSYNC",			&VSYNC,			VSYNC );
 	Ini->GetTruth( "VDG", "HSYNC",			&HSYNC,			HSYNC );
-    Ini->GetInt(   "VDG", "VLcnt",			&VLcnt,			VLcnt );
-	Ini->GetTruth( "VDG", "OnDisp",			&OnDisp,		OnDisp );
+	Ini->GetInt(   "VDG", "VLcnt",			&VLcnt,			VLcnt );
 	
 	for( int i=0; i<16; i++ ){
 		char stren[16];

@@ -3,6 +3,7 @@
 #include "disk.h"
 #include "intr.h"
 #include "log.h"
+#include "osd.h"
 #include "schedule.h"
 #include "tape.h"
 
@@ -577,7 +578,10 @@ bool CMTL::DokoSave( cIni *Ini )
 	if( !p6t ) return true;
 	
 	// マウントされていたらP6TオブジェクトをSAVE
-	Ini->PutEntry( "TAPE", NULL, "FilePath",	"%s",	FilePath );
+	char pathstr[PATH_MAX+1];
+	strncpy( pathstr, FilePath, PATH_MAX );
+    OSD_AbsolutePath( pathstr );
+	Ini->PutEntry( "TAPE", NULL, "FilePath",	"%s",	pathstr );
 	
 	return p6t->DokoSave( Ini );
 }

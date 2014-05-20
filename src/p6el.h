@@ -97,10 +97,10 @@ protected:
 		int Num;				// 残り文字数
 		int Wait;				// 待ち回数カウンタ
 		bool Relay;				// リレースイッチOFF待ちフラグ
-		bool RelayOn;			// リレースイッチOB待ちフラグ
+		bool RelayOn;			// リレースイッチON待ちフラグ
 		int Seek;
 		
-		AKEY() : Buffer(NULL), Num(0), Wait(0), Relay(false), Seek(0) {}
+        AKEY() : Buffer(NULL), Num(0), Wait(0), Relay(false), RelayOn(false), Seek(0) {}
 	};
 	AKEY ak;								// 自動キー入力情報
 	
@@ -171,8 +171,8 @@ public:
 	
 	bool Init( const CFG6 * );				// 初期化
 	
-	bool Start();							// 動作開始
-	void Stop();							// 動作停止
+    virtual bool Start();							// 動作開始
+    virtual void Stop();							// 動作停止
 	
 	ReturnCode EventLoop();					// イベントループ
 	

@@ -172,6 +172,7 @@ protected:
 	char FilePath[MAXDRV][PATH_MAX];	// ファイルパス
 	cD88 *Dimg[MAXDRV];					// ディスクイメージオブジェクトへのポインタ
 	bool Sys[MAXDRV];					// システムディスクフラグ
+	bool DDDrv[MAXDRV];					// 1DDドライブフラグ
 	int waitcnt;						// ウェイトカウンタ
 	
 	void ResetWait();					// ウェイトカウンタリセット

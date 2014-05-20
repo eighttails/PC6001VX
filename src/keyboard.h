@@ -34,7 +34,6 @@ protected:
 	BYTE P6Matrix[16*2];		// キーマトリクス (前半:今回 後半:前回)
 	BYTE P6Mtrx[16*2];			// キーマトリクス保存用
 								//  いずれも末尾の2byteはジョイスティックの状態保存用
-    bool scanned;
 public:
 	KEY6( VM6 *, const ID& );			// コンストラクタ
 	virtual ~KEY6();					// デストラクタ

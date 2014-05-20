@@ -15,6 +15,7 @@
 
 // ウェイト(us)
 #define	WAIT_INTCHK	(300)
+//#define	WAIT_INTCHK	(30)
 // ウェイト(Z80ステート数)
 #define	WAIT_DATA	(15)
 #define	WAIT_JOY	(9225)
@@ -75,13 +76,14 @@ SUB6::SUB6( VM6 *vm, const ID& id ) : Device(vm,id),
 	IntrFlag(0), KeyCode(0), JoyCode(0), CmtData(0), SioData(0),
 	TVRCnt(0), DateCnt(0)
 {
-	INITARRAY( TVRData,  0 );
+	INITARRAY( TVRData,  0xff );
+	TVRData[0] = 0xa6;
 	INITARRAY( DateData, 0 );
 }
 
 SUB60::SUB60( VM6 *vm, const ID& id ) : SUB6(vm,id){}
-SUB62::SUB62( VM6 *vm, const ID& id ) : SUB6(vm,id){}
-SUB68::SUB68( VM6 *vm, const ID& id ) : SUB6(vm,id){}
+SUB62::SUB62( VM6 *vm, const ID& id ) : SUB60(vm,id){}
+SUB68::SUB68( VM6 *vm, const ID& id ) : SUB62(vm,id){}
 
 ////////////////////////////////////////////////////////////////
 // デストラクタ
@@ -143,9 +145,6 @@ void SUB6::EventCallback( int id, int clock )
 		// T0=IBF=H つまり8255のバッファが空いていなければリトライ
 		if( GetT0() ) break;
 		vm->EventDel( this, EID_DATA );
-		
-		// CPUに対する割込み要求をキャンセル(割込み禁止対策)
-//		vm->IntCancelIntr( IREQ_8049 );
 		
 		OutData();		// 割込みデータ出力
 		break;
@@ -231,31 +230,42 @@ bool SUB6::GetINT( void )
 ////////////////////////////////////////////////////////////////
 void SUB6::ExtIntr( void )
 {
-//	static bool CmtPut = false;
-	
 	// 外部メモリ入力(8255のPortA)
 	BYTE comm = ReadExt();
 	
 	PRINTD( SUB_LOG, "[8049][ExtIntr] -> " );
 	
 	// 外部割込み処理中?
-	if( Status8049 & D8049_IMASK ){
-		if( Status8049 == D8049_CMTO ){			// CMT 1文字出力
-			PRINTD( SUB_LOG, "CmtPut %02X\n", comm );
-			
-			vm->CmtsCmtWrite( comm );
+	switch( Status8049 ){
+	case D8049_CMTO:	// CMT 1文字出力
+		PRINTD( SUB_LOG, "CmtPut %02X\n", comm );
+		
+		vm->CmtsCmtWrite( comm );
+		Status8049 = D8049_IDLE;
+		break;
+		
+	case D8049_TVRW:	// TVR 書込み
+		PRINTD( SUB_LOG, "TV reserve write %02X\n", comm );
+		
+		TVRData[TVRCnt++] = comm;
+		if( comm == 0xff || TVRCnt >= (int)sizeof(TVRData) )
 			Status8049 = D8049_IDLE;
-		}else if( Status8049 == D8049_TVRW ){	// TVR 書込み
-			PRINTD( SUB_LOG, "TV reserve write %02X\n", comm );
-			TVRData[TVRCnt++] = comm;
-			if( comm == 0xff || TVRCnt >= (int)sizeof(TVRData) )
-				Status8049 = D8049_IDLE;
-		}else{
-			PRINTD( SUB_LOG, " %02X pass\n", comm );
-		}
-	}else{
-		// 外部割込み処理
+		break;
+		
+	default:			// ヒマなら新たな外部割込み受付
+		PRINTD( SUB_LOG, "Command %02X\n", comm );
 		ExtIntrExec( comm );
+		// 本当はベクタ(+データ)出力中は外部割込み禁止
+		// 後で考える，かも
+
+//	case D8049_IDLE:	// ヒマなら新たな外部割込み受付
+//		PRINTD( SUB_LOG, "Command %02X\n", comm );
+		
+//		ExtIntrExec( comm );
+//		break;
+		
+//	default:			// 何らか処理中
+//		PRINTD( SUB_LOG, " %02X pass\n", comm );
 	}
 }
 
@@ -263,10 +273,8 @@ void SUB6::ExtIntr( void )
 ////////////////////////////////////////////////////////////////
 // 外部割込み処理
 ////////////////////////////////////////////////////////////////
-void SUB60::ExtIntrExec( BYTE comm )
+void SUB6::ExtIntrExec( BYTE comm )
 {
-	PRINTD( SUB_LOG, "[8049][ExtIntrExec] Command %02X\n", comm );
-	
 	// コマンド
 	switch( comm ){
 	case 0x0c:	// ------ RS-232C ----------
@@ -320,14 +328,8 @@ void SUB60::ExtIntrExec( BYTE comm )
 
 void SUB62::ExtIntrExec( BYTE comm )
 {
-	PRINTD( SUB_LOG, "[8049][ExtIntrExec] Command %02X\n", comm );
-	
 	// コマンド
 	switch( comm ){
-	case 0x0c:	// ------ RS-232C ----------
-	case 0x2c:
-		break;
-		
 	case 0x04:	// ------ 英字<->かな切換 ----------
 		vm->KeyChangeKana();
 		break;
@@ -336,90 +338,15 @@ void SUB62::ExtIntrExec( BYTE comm )
 		vm->KeyChangeKKana();
 		break;
 		
-	case 0x06:	// ------ STICK,STRIG ----------
-		// ゲーム用キー割込み要求
-		ReqJoyIntr();
-		break;
-		
-	case 0x19:	// ------ CMT(LOAD) OPEN ----------
-		CmtStatus = LOADOPEN;
-		break;
-		
-	case 0x1a:	// ------ CMT(LOAD) CLOSE ----------
-		CmtStatus = CMTCLOSE;
-		break;
-		
-	case 0x1d:	// ------ CMT(LOAD) 600ボー ----------
-//		vm->cmtl->SetBaud( 600 );
-		break;
-		
-	case 0x1e:	// ------ CMT(LOAD) 1200ボー ----------
-//		vm->cmtl->SetBaud( 1200 );
-		break;
-		
-	case 0x38:	// ------ CMT 1文字出力 ----------
-		Status8049 |= D8049_CMTO;
-		break;
-		
-	case 0x39:	// ------ CMT(SAVE) OPEN ----------
-		vm->CmtsMount();
-		CmtStatus = SAVEOPEN;
-		break;
-		
-	case 0x3a:	// ------ CMT(SAVE) CLOSE ----------
-		CmtStatus = CMTCLOSE;
-		vm->CmtsUnmount();
-		break;
-		
-	case 0x3d:	// ------ CMT(SAVE) 600ボー ----------
-		vm->CmtsSetBaud( 600 );
-		break;
-		
-	case 0x3e:	// ------ CMT(SAVE) 1200ボー ----------
-		vm->CmtsSetBaud( 1200 );
-		break;
+	default:
+		SUB6::ExtIntrExec( comm );
 	}
 }
 
 void SUB68::ExtIntrExec( BYTE comm )
 {
-	PRINTD( SUB_LOG, "[8049][ExtIntrExec] Command %02X\n", comm );
-	
 	// コマンド
 	switch( comm ){
-	case 0x0c:	// ------ RS-232C ----------
-	case 0x2c:
-		break;
-		
-	case 0x04:	// ------ 英字<->かな切換 ----------
-		vm->KeyChangeKana();
-		break;
-		
-	case 0x05:	// ------ かな<->カナ切換 ----------
-		vm->KeyChangeKKana();
-		break;
-		
-	case 0x06:	// ------ STICK,STRIG ----------
-		// ゲーム用キー割込み要求
-		ReqJoyIntr();
-		break;
-		
-	case 0x19:	// ------ CMT(LOAD) OPEN ----------
-		CmtStatus = LOADOPEN;
-		break;
-		
-	case 0x1a:	// ------ CMT(LOAD) CLOSE ----------
-		CmtStatus = CMTCLOSE;
-		break;
-		
-	case 0x1d:	// ------ CMT(LOAD) 600ボー ----------
-//		vm->cmtl->SetBaud( 600 );
-		break;
-		
-	case 0x1e:	// ------ CMT(LOAD) 1200ボー ----------
-//		vm->cmtl->SetBaud( 1200 );
-		break;
-		
 	case 0x30:	// ------ TV予約書込み ----------
 		Status8049 |= D8049_TVRW;
 		TVRCnt = 0;
@@ -433,27 +360,8 @@ void SUB68::ExtIntrExec( BYTE comm )
 		ReqDateIntr();
 		break;
 		
-	case 0x38:	// ------ CMT 1文字出力 ----------
-		Status8049 |= D8049_CMTO;
-		break;
-		
-	case 0x39:	// ------ CMT(SAVE) OPEN ----------
-		vm->CmtsMount();
-		CmtStatus = SAVEOPEN;
-		break;
-		
-	case 0x3a:	// ------ CMT(SAVE) CLOSE ----------
-		CmtStatus = CMTCLOSE;
-		vm->CmtsUnmount();
-		break;
-		
-	case 0x3d:	// ------ CMT(SAVE) 600ボー ----------
-		vm->CmtsSetBaud( 600 );
-		break;
-		
-	case 0x3e:	// ------ CMT(SAVE) 1200ボー ----------
-		vm->CmtsSetBaud( 1200 );
-		break;
+	default:
+		SUB62::ExtIntrExec( comm );
 	}
 }
 
@@ -695,22 +603,24 @@ void SUB6::OutData( void )
 		IntrFlag &= ~IR_SIO;
 		break;
 		
-	case D8049_TVRR:{	// TV予約割込み データ出力
+	case D8049_TVRR:{	// TV予約読込み割込み データ出力
 		BYTE tvd = TVRCnt >= (int)sizeof(TVRData) ? 0xff : TVRData[TVRCnt++];
 		PRINTD( SUB_LOG, "[OutData TVR] Data: %02X\n", tvd );
 		WriteExt( tvd );
-		if( tvd == 0xff )
+		if( tvd == 0xff ){	// FFHなら終了
 			IntrFlag &= ~IR_TVR;
+		}else{				// FFH以外なら残りのデータ出力
+			vm->EventAdd( this, EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
+			return;
+		}
 		break;
 	}
-	case D8049_DATE:		// DATE割込み データ出力
+	case D8049_DATE:	// DATE割込み データ出力
 		PRINTD( SUB_LOG, "[OutData DATE] Data%d: %02X\n", DateCnt, DateData[DateCnt] );
 		WriteExt( DateData[DateCnt++] );
-		if( DateCnt > 4 ){
-			// 5回出力したら終了
+		if( DateCnt > 4 ){	// 5回出力したら終了
 			IntrFlag &= ~IR_DATE;
-		}else{
-			// 残りのデータ出力
+		}else{				// 5回未満なら残りのデータ出力
 			vm->EventAdd( this, EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
 			return;
 		}

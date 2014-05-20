@@ -1024,40 +1024,13 @@ bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
     return true;
 }
 
-
-////////////////////////////////////////////////////////////////
-// パスのデリミタを'/'に変換
-//
-// 引数:	path		パス格納バッファポインタ
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void Delimiter( char *path )
-{
-    QString strPath = QDir::fromNativeSeparators(QString::fromUtf8(path));
-    strcpy(path, strPath.toUtf8().constData());
-}
-
-
-////////////////////////////////////////////////////////////////
-// パスのデリミタを'\'に変換
-//
-// 引数:	path		パス格納バッファポインタ
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void UnDelimiter( char *path )
-{
-    QString strPath = QDir::toNativeSeparators(QString::fromUtf8(path));
-    strcpy(path, strPath.toUtf8().constData());
-}
-
-
 ////////////////////////////////////////////////////////////////
 // パスの末尾にデリミタを追加
 //
 // 引数:	path		パス格納バッファポインタ
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void AddDelimiter( char *path )
+void OSD_AddDelimiter( char *path )
 {
     if( !strlen( path ) )
         strncpy( path, "/", PATH_MAX );
@@ -1072,11 +1045,56 @@ void AddDelimiter( char *path )
 // 引数:	path		パス格納バッファポインタ
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void DelDelimiter( char *path )
+void OSD_DelDelimiter( char *path )
 {
     if( strlen( path ) > 1 )
         while( ( path[strlen(path)-1] == '/' ) || ( path[strlen(path)-1] == '\\' ) )
             path[strlen(path)-1] = '\0';
+}
+
+////////////////////////////////////////////////////////////////
+// 相対パス化
+//
+// 引数:	path		パス格納バッファポインタ
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_RelativePath( char *path )
+{
+    if( QDir( path ).isRelative() || !strlen( path ) ) return;
+    QDir dir(OSD_GetModulePath());
+    QString relPath = dir.relativeFilePath(path);
+    strcpy(path, relPath.toLocal8Bit().data());
+}
+
+
+////////////////////////////////////////////////////////////////
+// 絶対パス化
+//
+// 引数:	path		パス格納バッファポインタ
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_AbsolutePath( char *path )
+{
+    if( !QDir( path ).isRelative()  || !strlen( path ) ) return;
+    QDir dir(OSD_GetModulePath());
+    dir.cd(path);
+    strcpy(path, dir.absolutePath().toLocal8Bit().data());
+}
+
+
+////////////////////////////////////////////////////////////////
+// パス結合
+//
+// 引数:	pdst		結合後パス格納バッファポインタ
+//			psrc1		パス1格納バッファポインタ
+//			psrc2		パス2格納バッファポインタ
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_AddPath( char *pdst, const char *psrc1, const char *psrc2 )
+{
+    QDir dir(psrc1);
+    QString path = dir.path() + QDir::separator() + psrc2;
+    strcpy(pdst, path.toLocal8Bit().data());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1139,8 +1157,7 @@ const char *OSD_GetModulePath( void )
     QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
 #endif
     sprintf( mpath, "%s", confPath.toUtf8().constData() );
-    AddDelimiter( mpath );	// 念のため
-    UnDelimiter( mpath );
+    OSD_AddDelimiter( mpath );	// 念のため
     return mpath;
 }
 

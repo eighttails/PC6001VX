@@ -40,6 +40,7 @@ protected:
 	
 	// for 64,68 -----------------------------------------------------------------------------
 	bool SRmode;			// SRモードフラグ 			true:SR-BASIC	false:旧BASIC
+	bool SRBusReq;			// SRバスリクエストフラグ	true:有効		false:無効
 	bool SRBitmap;			// SRビットマップフラグ		true:有効		false:無効
 	bool SRBMPage;			// SRビットマップページ		true:上位32KB	false:下位32KB
 	bool SRLine204;			// SRグラフィックライン数	true:204ライン	false:200ライン
@@ -89,8 +90,6 @@ public:
 	
 	bool GetCrtDisp() const;					// CRT表示状態取得
 	void SetCrtDisp( bool );					// CRT表示状態設定
-	bool GetBusRequest() const;					// バスリクエスト取得
-	void SetBusRequest( bool );					// バスリクエスト設定
 	
 	bool GetWinSize() const;					// ウィンドウサイズ取得
 	

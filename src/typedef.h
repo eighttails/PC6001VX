@@ -12,7 +12,7 @@
 // 型,定数定義
 /////////////////////////////////////////////////////////////////////////////
 #if defined(WIN32) || defined(WIN64)
-#define NOMINMAX
+#define NOMINMAX 1
 #include <windows.h>
 #else
 typedef uint8_t		BYTE;

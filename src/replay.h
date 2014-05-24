@@ -33,8 +33,8 @@ public:
 	int GetStatus() const;					// ステータス取得
 	
 	bool StartRecord( const char * );		// リプレイ記録開始
-    bool ResumeRecord(const char * , int );	// リプレイ記録再開
-    void StopRecord();						// リプレイ記録停止
+	bool ResumeRecord(const char * , int );	// リプレイ記録再開
+	void StopRecord();						// リプレイ記録停止
 	bool ReplayWriteFrame( const BYTE *, bool );	// リプレイ1フレーム書出し
 	
 	bool StartReplay( const char * );		// リプレイ再生開始

@@ -23,6 +23,8 @@
 
 #include "renderview.h"
 
+#include "wavfile.h"
+
 ///////////////////////////////////////////////////////////
 // 仕方なしにスタティック変数
 ///////////////////////////////////////////////////////////
@@ -1078,7 +1080,7 @@ void OSD_AbsolutePath( char *path )
     if( !QDir( path ).isRelative()  || !strlen( path ) ) return;
     QDir dir(OSD_GetModulePath());
     dir.cd(path);
-    strcpy(path, dir.absolutePath().toLocal8Bit().data());
+	strcpy(path, (dir.absolutePath() + QDir::separator()).toLocal8Bit().data());
 }
 
 
@@ -1626,19 +1628,18 @@ bool OSD_AudioPlaying( void )
 ////////////////////////////////////////////////////////////////
 bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 {
-    //#PENDING
-    //    SDL_AudioSpec ws;
+	WavFile w;
+	if(!w.open(filepath)) return false;
 
-    //    if( !SDL_LoadWAV( filepath, &ws, buf, (Uint32 *)len ) ) return false;
+	const QAudioFormat& format = w.fileFormat();
+	size_t bodySize = w.size() - w.headerLength();
+	*len = bodySize;
+	*freq = format.sampleRate();
+	BYTE* buffer = new BYTE[bodySize];
+	memcpy(buffer, &w.readAll().data()[w.headerLength()], bodySize);
+	*buf = buffer;
 
-    //    if( ws.freq < 22050 || ws.format != AUDIO_S16 || ws.channels != 1 ){
-    //        SDL_FreeWAV( *buf );
-    //        return false;
-    //    }
-
-    //    *freq    = ws.freq;
-
-    return true;
+	return true;
 }
 
 
@@ -1650,7 +1651,7 @@ bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 ////////////////////////////////////////////////////////////////
 void OSD_FreeWAV( BYTE *buf )
 {
-    // 何もしない
+	if(buf) delete[] buf;
 }
 
 

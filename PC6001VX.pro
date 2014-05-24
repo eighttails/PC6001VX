@@ -120,7 +120,9 @@ SOURCES += \
     src/Qt/semaphore.cpp \
     src/Qt/thread.cpp \
     src/console.cpp \
-    src/common.cpp
+    src/common.cpp \
+    src/Qt/wavfile.cpp \
+    src/Qt/utils.cpp
 
 HEADERS  += \
     src/breakpoint.h \
@@ -189,7 +191,9 @@ HEADERS  += \
     src/Qt/qtel6.h \
     src/Qt/qtutil.h \
     openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
-    src/id_menu.h
+    src/id_menu.h \
+    src/Qt/wavfile.h \
+    src/Qt/utils.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

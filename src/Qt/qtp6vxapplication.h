@@ -26,8 +26,8 @@ public:
     void enableTilt(bool enable);
     TiltDirection getTiltDirection();
     void setTiltDirection(TiltDirection dir);
-    qreal getTiltAngle();
-    void setTiltAngle(qreal angle);
+	int getTiltStep();
+	void setTiltStep(int step);
 
 public slots:
     //仮想マシンの起動→終了→再起動のループ
@@ -82,7 +82,7 @@ private:
 
     bool TiltEnabled;
     TiltDirection TiltDir;
-    qreal TiltAngle;
+	int TiltStep;
 };
 
 #endif // QTP6VXAPPLICATION_H

@@ -67,7 +67,7 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
   , Adaptor(new EmulationAdaptor())
   , TiltEnabled(false)
   , TiltDir(NEWTRAL)
-  , TiltAngle(0.0)
+  , TiltStep(0)
 {
     //アプリで定義した型名をシグナルの引数として使えるようにする
     qRegisterMetaType<HWINDOW>("HWINDOW");
@@ -309,16 +309,16 @@ void QtP6VXApplication::setTiltDirection(TiltDirection dir)
     TiltDir = dir;
 }
 
-void QtP6VXApplication::setTiltAngle(qreal angle)
+void QtP6VXApplication::setTiltStep(int step)
 {
     QMutexLocker lock(&propretyMutex);
-    TiltAngle = angle;
+	TiltStep = step;
 }
 
-qreal QtP6VXApplication::getTiltAngle()
+int QtP6VXApplication::getTiltStep()
 {
     QMutexLocker lock(&propretyMutex);
-    return TiltAngle;
+	return TiltStep;
 }
 
 //仮想マシンを開始させる

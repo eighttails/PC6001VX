@@ -46,7 +46,8 @@ void RenderView::paintEvent(QPaintEvent *event)
         fitContent();
         if(app->isTiltEnabled()){
             //TILTモードの回転
-            rotate(app->getTiltAngle());
+			const qreal unit = 0.5; //0.5度単位で回転
+			rotate(unit * app->getTiltStep());
         }
     }
     QGraphicsView::paintEvent(event);

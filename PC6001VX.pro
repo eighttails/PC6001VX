@@ -11,6 +11,8 @@ TEMPLATE = app
 
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 
+CONFIG += link_prl
+
 #Qt依存コードを書く際のDEFINE
 DEFINES += QTP6VX
 
@@ -34,7 +36,7 @@ DEFINES += NOJOYSTICK NOSOUND NOMONITOR NOOPENGL
 #OpenPandora用設定
 pandora:{
 target.path = /media/sddev/pc6001vx
-QTPLUGIN += qico qxcb qgtk2
+#QTPLUGIN += qico qxcb qgtk2
 INSTALLS += target
 DEFINES += NOJOYSTICK NOMONITOR NOOPENGL
 }

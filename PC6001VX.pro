@@ -65,6 +65,9 @@ QT += opengl
 }
 !contains(DEFINES, NOSOUND) {
 QT += multimedia
+SOURCES += \
+    src/Qt/wavfile.cpp \
+    src/Qt/utils.cpp
 }
 
 SOURCES += \
@@ -122,9 +125,8 @@ SOURCES += \
     src/Qt/semaphore.cpp \
     src/Qt/thread.cpp \
     src/console.cpp \
-    src/common.cpp \
-    src/Qt/wavfile.cpp \
-    src/Qt/utils.cpp
+    src/common.cpp
+
 
 HEADERS  += \
     src/breakpoint.h \

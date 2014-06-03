@@ -23,8 +23,9 @@
 
 #include "renderview.h"
 
+#ifndef NOSOUND
 #include "wavfile.h"
-
+#endif
 ///////////////////////////////////////////////////////////
 // 仕方なしにスタティック変数
 ///////////////////////////////////////////////////////////
@@ -1628,6 +1629,7 @@ bool OSD_AudioPlaying( void )
 ////////////////////////////////////////////////////////////////
 bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 {
+#ifndef NOSOUND
 	WavFile w;
 	if(!w.open(filepath)) return false;
 
@@ -1638,8 +1640,10 @@ bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 	BYTE* buffer = new BYTE[bodySize];
 	memcpy(buffer, &w.readAll().data()[w.headerLength()], bodySize);
 	*buf = buffer;
-
 	return true;
+#else
+	return false;
+#endif
 }
 
 

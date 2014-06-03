@@ -62,5 +62,4 @@ private:
     QAudioFormat m_fileFormat;
     qint64 m_headerLength;
 };
-
 #endif // WAVFILE_H

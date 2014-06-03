@@ -12,7 +12,13 @@
 #include "qtel6.h"
 #include "emulationadaptor.h"
 
-class QtP6VXApplication : public QtSingleApplication
+#ifdef NOSINGLEAPP
+typedef QApplication ParentAppClass;
+#else
+typedef QtSingleApplication ParentAppClass;
+#endif
+
+class QtP6VXApplication : public ParentAppClass
 {
     Q_OBJECT
 public:

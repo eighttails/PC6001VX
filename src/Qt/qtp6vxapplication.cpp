@@ -61,7 +61,7 @@ bool SerchRom( CFG6 *cfg )
 }
 
 QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
-    QtSingleApplication(argc, argv)
+	ParentAppClass(argc, argv)
   , P6Core(NULL)
   , Restart(EL6::Quit)
   , Adaptor(new EmulationAdaptor())
@@ -96,13 +96,15 @@ QtP6VXApplication::~QtP6VXApplication()
 
 void QtP6VXApplication::startup()
 {
-    // 二重起動禁止
-    if( isRunning() ) {
-        exit();
-        return;
-    }
+#ifndef NOSINGLEAPP
+	// 二重起動禁止
+	if( isRunning() ) {
+		exit();
+		return;
+	}
+#endif
 
-    // 設定ファイルパスを作成
+	// 設定ファイルパスを作成
     if(!OSD_CreateModulePath()){
         exit();
         return;
@@ -159,6 +161,9 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, bool fsflag)
     Q_ASSERT(view);
     QGraphicsScene* scene = view->scene();
 
+#ifdef ALWAYSFULLSCREEN
+	view->showFullScreen();
+#else
     if(fsflag){
         view->setWindowState(view->windowState() | Qt::WindowFullScreen);
         view->showFullScreen();
@@ -173,6 +178,7 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, bool fsflag)
         }
 #endif
     }
+#endif
     view->fitContent();
     OSD_ClearWindow(Wh);
 }
@@ -495,7 +501,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
             MenuMutex.unlock();
         }
         if(processKeyEventInQt){
-            return QtSingleApplication::notify(receiver, event);
+			return ParentAppClass::notify(receiver, event);
         }
 
         // 特殊キー対策
@@ -573,7 +579,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
     }
 
     if(ev.type == EV_NOEVENT){
-        return QtSingleApplication::notify(receiver, event);
+		return ParentAppClass::notify(receiver, event);
     } else {
         return true;
     }

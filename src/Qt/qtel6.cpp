@@ -348,7 +348,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QMenu* helpMenu = menu.addMenu(tr("ヘルプ"));
 	addCommand(helpMenu, tr("バージョン情報..."), ID_VERSION);
 
-	selectedAction = menu.exec(QCursor::pos());
+	selectedAction = menu.exec(QPoint(x, y));
 
 	if (selectedAction != NULL) {
 		// 項目ごとの処理

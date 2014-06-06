@@ -233,7 +233,10 @@ OTHER_FILES += \
     win32/libGLESv2.patch \
     win32/optimize.patch \
     src/Qt/translation/PC6001VX_en.ts \
-    src/Qt/translation/PC6001VX_en.qm
+    src/Qt/translation/PC6001VX_en.qm \
+    android/AndroidManifest.xml
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

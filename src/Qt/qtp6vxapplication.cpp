@@ -599,6 +599,16 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 		}
 		break;
 	}
+	case QEvent::ApplicationActivated:
+		if(P6Core){
+			P6Core->Start();
+		}
+		break;
+	case QEvent::ApplicationDeactivated:
+		if(P6Core){
+			P6Core->Stop();
+		}
+		break;
 	default:;
 	}
 

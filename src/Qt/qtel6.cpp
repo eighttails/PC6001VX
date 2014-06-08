@@ -411,7 +411,15 @@ void QtEL6::updateFPS()
 
 bool QtEL6::GetPauseEnable()
 {
-	return sche->GetPauseEnable();
+	if(sche){
+		return sche->GetPauseEnable();
+	}
 }
 
+void QtEL6::SetPauseEnable(bool en)
+{
+	if(sche){
+		sche->SetPauseEnable(en);
+	}
+}
 

@@ -11,6 +11,7 @@ public:
     QtEL6();
     void ShowPopupImpl(int x, int y);
     bool GetPauseEnable();
+	void SetPauseEnable(bool en);
 
 public slots:
     void updateFPS();

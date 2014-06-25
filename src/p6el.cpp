@@ -1632,7 +1632,7 @@ void EL6::UI_DokoSave( void )
 {
 	char str[PATH_MAX];
 	
-	if( OSD_FileSelect( graph->GetWindowHandle(), FD_DokoSave, str, (char *)OSD_GetModulePath() ) )
+	if( OSD_FileSelect( graph->GetWindowHandle(), FD_DokoSave, str, cfg->GetDokoSavePath() ) )
 	DokoDemoSave( str );
 }
 
@@ -1648,7 +1648,7 @@ void EL6::UI_DokoLoad( const char *path )
 	char str[PATH_MAX];
 	const char *fpath = path;
 	
-	if( !path && OSD_FileSelect( graph->GetWindowHandle(), FD_DokoLoad, str, (char *)OSD_GetModulePath() ) )
+	if( !path && OSD_FileSelect( graph->GetWindowHandle(), FD_DokoLoad, str, cfg->GetDokoSavePath() ) )
 		fpath = str;
 	
 	if( !fpath ) return;

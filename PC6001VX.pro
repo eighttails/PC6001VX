@@ -126,7 +126,13 @@ SOURCES += \
     src/Qt/semaphore.cpp \
     src/Qt/thread.cpp \
     src/console.cpp \
-    src/common.cpp
+    src/common.cpp \
+    src/device/fmgen/fmgen.cpp \
+    src/device/fmgen/fmtimer.cpp \
+    src/device/fmgen/opm.cpp \
+    src/device/fmgen/opna.cpp \
+    src/device/fmgen/psg.cpp \
+    src/device/ym2203.cpp
 
 
 HEADERS  += \
@@ -198,7 +204,19 @@ HEADERS  += \
     openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
     src/id_menu.h \
     src/Qt/wavfile.h \
-    src/Qt/utils.h
+    src/Qt/utils.h \
+    src/device/fmgen/types.h \
+    src/device/fmgen/diag.h \
+    src/device/fmgen/fmgen.h \
+    src/device/fmgen/fmgeninl.h \
+    src/device/fmgen/fmtimer.h \
+    src/device/fmgen/headers.h \
+    src/device/fmgen/misc.h \
+    src/device/fmgen/opm.h \
+    src/device/fmgen/opna.h \
+    src/device/fmgen/psg.h \
+    src/device/psgbase.h \
+    src/device/ym2203.h
 
 FORMS    += \
     src/Qt/configdialog.ui \
@@ -234,7 +252,8 @@ OTHER_FILES += \
     win32/optimize.patch \
     src/Qt/translation/PC6001VX_en.ts \
     src/Qt/translation/PC6001VX_en.qm \
-    android/AndroidManifest.xml
+    android/AndroidManifest.xml \
+    src/device/fmgen/readme.txt
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

@@ -101,14 +101,13 @@ PNDSDK_DIR=$HOME/pandora-dev
 
 
 # Don't edit the line below, it depends on the codesourcery toolchain!
-#PNDSDK=$PNDSDK_DIR/arm
 #PNDSDK=$PNDSDK_DIR/arm-2009q3
-#PNDSDK=$PNDSDK_DIR/arm-2010q1
+PNDSDK=$PNDSDK_DIR/arm-2010q1
 
 #PNDSDK=$PNDSDK_DIR/arm-2010.09
 #PNDSDK=$PNDSDK_DIR/arm-2011.03
 #PNDSDK=$PNDSDK_DIR/arm-2011.09
-PNDSDK=$PNDSDK_DIR/arm-2012.03
+#PNDSDK=$PNDSDK_DIR/arm-2012.03
 USEFUL_TOOLS_DIR=$PNDSDK_DIR/sdk_utils
 
 TARGET_SYS=arm-none-linux-gnueabi
@@ -118,9 +117,9 @@ TARGET_SYS=arm-none-linux-gnueabi
 #TOOLCHAIN_TARBALL_NAME=arm-2009q3-67-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_MD5=2c2b324f0a84916afd9920029286eb10
 
-#TOOLCHAIN_URL=https://sourcery.mentor.com/GNUToolchain/package6488/public/arm-none-linux-gnueabi/arm-2010q1-202-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-#TOOLCHAIN_TARBALL_NAME=arm-2010q1-202-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-#TOOLCHAIN_MD5=c6930d14801b4fab6705d72df013e58b
+TOOLCHAIN_URL=https://sourcery.mentor.com/GNUToolchain/package6488/public/arm-none-linux-gnueabi/arm-2010q1-202-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+TOOLCHAIN_TARBALL_NAME=arm-2010q1-202-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+TOOLCHAIN_MD5=c6930d14801b4fab6705d72df013e58b
 
 #TOOLCHAIN_URL=http://www.codesourcery.com/sgpp/lite/arm/portal/package7851/public/arm-none-linux-gnueabi/arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_TARBALL_NAME=arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
@@ -134,9 +133,9 @@ TARGET_SYS=arm-none-linux-gnueabi
 #TOOLCHAIN_TARBALL_NAME=arm-2011.09-70-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_MD5=56d9a77654d012914e703dc8d9383246
 
-TOOLCHAIN_URL=https://sourcery.mentor.com/GNUToolchain/package10380/public/arm-none-linux-gnueabi/arm-2012.03-57-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-TOOLCHAIN_TARBALL_NAME=arm-2012.03-57-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
-TOOLCHAIN_MD5=b9cd2e553eb7063691fed235c6bb815a
+#TOOLCHAIN_URL=https://sourcery.mentor.com/GNUToolchain/package10380/public/arm-none-linux-gnueabi/arm-2012.03-57-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+#TOOLCHAIN_TARBALL_NAME=arm-2012.03-57-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+#TOOLCHAIN_MD5=b9cd2e553eb7063691fed235c6bb815a
 
 OPKG_VERSION=opkg-0.1.8
 OPKG_ARCHIVE_MD5=c714ce0e4863bf1315e3b6913ffe3299

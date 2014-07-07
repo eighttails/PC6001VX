@@ -234,7 +234,8 @@ OTHER_FILES += \
     win32/optimize.patch \
     src/Qt/translation/PC6001VX_en.ts \
     src/Qt/translation/PC6001VX_en.qm \
-    android/AndroidManifest.xml
+    android/AndroidManifest.xml \
+    openpandora/pandora_develop_environment/qtmultimedia53.patch
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

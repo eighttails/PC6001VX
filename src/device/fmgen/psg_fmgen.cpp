@@ -6,7 +6,7 @@
 
 #include "headers.h"
 #include "misc.h"
-#include "psg.h"
+#include "psg_fmgen.h"
 
 // ---------------------------------------------------------------------------
 //	コンストラクタ・デストラクタ

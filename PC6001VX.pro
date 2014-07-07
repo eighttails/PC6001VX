@@ -91,7 +91,6 @@ SOURCES += \
     src/movie.cpp \
     src/p6t2.cpp \
     src/pio.cpp \
-    src/psg.cpp \
     src/replay.cpp \
     src/schedule.cpp \
     src/sound.cpp \
@@ -131,8 +130,9 @@ SOURCES += \
     src/device/fmgen/fmtimer.cpp \
     src/device/fmgen/opm.cpp \
     src/device/fmgen/opna.cpp \
-    src/device/fmgen/psg.cpp \
-    src/device/ym2203.cpp
+    src/device/ym2203.cpp \
+    src/psg.cpp \
+    src/device/fmgen/psg_fmgen.cpp
 
 
 HEADERS  += \
@@ -214,9 +214,9 @@ HEADERS  += \
     src/device/fmgen/misc.h \
     src/device/fmgen/opm.h \
     src/device/fmgen/opna.h \
-    src/device/fmgen/psg.h \
     src/device/psgbase.h \
-    src/device/ym2203.h
+    src/device/ym2203.h \
+    src/device/fmgen/psg_fmgen.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

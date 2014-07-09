@@ -36,9 +36,15 @@ DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN
 
 #OpenPandora用設定
 pandora:{
-target.path = /media/sddev/pc6001vx
+DEPLOY_PATH = /media/sddev/pc6001vx
+target.path = $${DEPLOY_PATH}
+sharedlibs.path = $${DEPLOY_PATH}
+sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
+                    $${PANDORA_SDK}/usr/lib/libX11-xcb.so.1* \
+                    $${PANDORA_SDK}/usr/lib/libxcb.so.1*
+
 #QTPLUGIN += qico qxcb qgtk2
-INSTALLS += target
+INSTALLS += target sharedlibs
 DEFINES += NOJOYSTICK NOMONITOR NOOPENGL
 }
 

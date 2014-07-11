@@ -6,15 +6,15 @@
 #include "../config.h"
 #include "../osd.h"
 
-ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent) :
-    QDialog(parent),
-    config(cfg),
-    sliderLabelMap(new QSignalMapper(this)),
-    fileRefMap(new QSignalMapper(this)),
-    fileClearMap(new QSignalMapper(this)),
-    folderRefMap(new QSignalMapper(this)),
-    folderClearMap(new QSignalMapper(this)),
-    ui(new Ui::ConfigDialog)
+ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
+	: QDialog(parent)
+	, config(cfg)
+	, sliderLabelMap(new QSignalMapper(this))
+	, fileRefMap(new QSignalMapper(this))
+	, fileClearMap(new QSignalMapper(this))
+	, folderRefMap(new QSignalMapper(this))
+	, folderClearMap(new QSignalMapper(this))
+	, ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
     connect(ui->horizontalSliderFPS, SIGNAL(valueChanged(int)), this, SLOT(dispFPS(int)));

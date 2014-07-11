@@ -5,8 +5,8 @@
 #include "renderview.h"
 #include "qtp6vxapplication.h"
 
-RenderView::RenderView(QGraphicsScene* scene, QWidget *parent) :
-    QGraphicsView(scene, parent)
+RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
+	: QGraphicsView(scene, parent)
 {
     setSizeIncrement(1, 1);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

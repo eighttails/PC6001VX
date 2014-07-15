@@ -2,8 +2,11 @@
 #include <QtOpenGL>
 #endif
 #include <QtWidgets>
+#include <QSettings>
 #include "renderview.h"
 #include "qtp6vxapplication.h"
+
+const QString geometryKey = "window/geometry";
 
 RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	: QGraphicsView(scene, parent)
@@ -29,6 +32,13 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     //IMEを無効化
     ImmAssociateContext( (HWND)winId(), NULL );
 #endif
+
+	// ウィンドウ位置とサイズを復元
+	restoreGeometry(QtP6VXApplication::getSetting(geometryKey, QByteArray()).toByteArray());
+}
+
+RenderView::~RenderView()
+{
 }
 
 void RenderView::fitContent()
@@ -50,6 +60,13 @@ void RenderView::paintEvent(QPaintEvent *event)
 			rotate(unit * app->getTiltStep());
         }
     }
-    QGraphicsView::paintEvent(event);
+	QGraphicsView::paintEvent(event);
+}
+
+void RenderView::closeEvent(QCloseEvent *event)
+{
+	// ウィンドウ位置とサイズを保存
+	QtP6VXApplication::setSetting(geometryKey, saveGeometry());
+	QGraphicsView::closeEvent(event);
 }
 

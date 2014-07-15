@@ -176,8 +176,8 @@ bool DSP6::ResizeScreen( void )
 	}
 	
 	// ウィンドウサイズが不適切なら作り直す
-    //if( !Wh || (x != OSD_GetWindowWidth( Wh )) || (y != OSD_GetWindowHeight( Wh )) ){
-    if(1){ //VXでは常に作りなおすことにする。(サーフェスを使いまわすとフルスクリーンに遷移できないため)
+	//if( !Wh || (x != OSD_GetWindowWidth( Wh )) || (y != OSD_GetWindowHeight( Wh )) ){
+	if(1){ //VXでは常に作りなおすことにする。(サーフェスを使いまわすとフルスクリーンに遷移できないため)
         if( !SetScreenSurface() ) return false;
 		vm->el->staw->Init( OSD_GetWindowWidth( Wh ) );	// ステータスバーも
 	}else

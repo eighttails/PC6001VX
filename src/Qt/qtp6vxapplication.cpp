@@ -13,6 +13,7 @@
 #include "renderview.h"
 #include "qtp6vxapplication.h"
 
+QMutex QtP6VXApplication::SettingMutex;
 
 ///////////////////////////////////////////////////////////
 // フォントファイルチェック(無ければ作成する)
@@ -60,14 +61,14 @@ bool SerchRom( CFG6 *cfg )
 	return false;
 }
 
-QtP6VXApplication::QtP6VXApplication(int &argc, char **argv) :
-	ParentAppClass(argc, argv)
-  , P6Core(NULL)
-  , Restart(EL6::Quit)
-  , Adaptor(new EmulationAdaptor())
-  , TiltEnabled(false)
-  , TiltDir(NEWTRAL)
-  , TiltStep(0)
+QtP6VXApplication::QtP6VXApplication(int &argc, char **argv)
+	: ParentAppClass(argc, argv)
+	, P6Core(NULL)
+	, Restart(EL6::Quit)
+	, Adaptor(new EmulationAdaptor())
+	, TiltEnabled(false)
+	, TiltDir(NEWTRAL)
+	, TiltStep(0)
 {
 	//アプリで定義した型名をシグナルの引数として使えるようにする
 	qRegisterMetaType<HWINDOW>("HWINDOW");
@@ -290,40 +291,39 @@ void QtP6VXApplication::showPopupMenu(int x, int y)
 	}
 }
 
-
 bool QtP6VXApplication::isTiltEnabled()
 {
-	QMutexLocker lock(&propretyMutex);
+	QMutexLocker lock(&PropretyMutex);
 	return TiltEnabled;
 }
 
 void QtP6VXApplication::enableTilt(bool enable)
 {
-	QMutexLocker lock(&propretyMutex);
+	QMutexLocker lock(&PropretyMutex);
 	TiltEnabled = enable;
 }
 
 TiltDirection QtP6VXApplication::getTiltDirection()
 {
-	QMutexLocker lock(&propretyMutex);
+	QMutexLocker lock(&PropretyMutex);
 	return TiltDir;
 }
 
 void QtP6VXApplication::setTiltDirection(TiltDirection dir)
 {
-	QMutexLocker lock(&propretyMutex);
+	QMutexLocker lock(&PropretyMutex);
 	TiltDir = dir;
 }
 
 void QtP6VXApplication::setTiltStep(int step)
 {
-	QMutexLocker lock(&propretyMutex);
+	QMutexLocker lock(&PropretyMutex);
 	TiltStep = step;
 }
 
 int QtP6VXApplication::getTiltStep()
 {
-	QMutexLocker lock(&propretyMutex);
+	QMutexLocker lock(&PropretyMutex);
 	return TiltStep;
 }
 
@@ -618,5 +618,20 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 		return true;
 	}
 }
+
+const QVariant QtP6VXApplication::getSetting(const QString &key, const QVariant &defaultValue)
+{
+	QMutexLocker lock(&SettingMutex);
+	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
+	return Setting.value(key, defaultValue);
+}
+
+void QtP6VXApplication::setSetting(const QString &key, const QVariant &value)
+{
+	QMutexLocker lock(&SettingMutex);
+	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
+	Setting.setValue(key, value);
+}
+
 
 

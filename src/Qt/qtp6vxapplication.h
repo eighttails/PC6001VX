@@ -4,6 +4,7 @@
 #include <QtSingleApplication>
 #include <QImage>
 #include <QMutex>
+#include <QSettings>
 
 #include "../typedef.h"
 #include "../p6vm.h"
@@ -26,6 +27,10 @@ public:
     virtual ~QtP6VXApplication();
 
     virtual bool notify(QObject *receiver, QEvent *event);
+
+	// P6VX固有の設定
+	static const QVariant getSetting(const QString& key, const QVariant& defaultValue);
+	static void setSetting(const QString& key, const QVariant& value);
 
     // TILT関連
     bool isTiltEnabled();
@@ -83,10 +88,12 @@ private:
     EL6::ReturnCode Restart;	// 再起動フラグ
     CFG6 Cfg;					// 環境設定オブジェクト
     EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ
-    QMutex propretyMutex;       // 属性値保護のためのMutex
+	QMutex PropretyMutex;       // 属性値保護のためのMutex
     QMutex MenuMutex;           // メニュー表示中にロックされるMutex
 
-    bool TiltEnabled;
+	// P6VX固有の設定
+	static QMutex SettingMutex; // 設定読み書き用Mutex
+	bool TiltEnabled;
     TiltDirection TiltDir;
 	int TiltStep;
 };

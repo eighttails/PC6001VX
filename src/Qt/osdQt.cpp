@@ -771,15 +771,16 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
 {
-    static QGraphicsScene* scene = new QGraphicsScene();
-    static RenderView* view = new RenderView(scene);
-    scene->setSceneRect(0, 0, w, h);
+	static QGraphicsScene* scene = new QGraphicsScene();
+	static RenderView* view = new RenderView(scene);
+
+	scene->setSceneRect(0, 0, w, h);
 
     //アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
-    QObject::connect(qApp, SIGNAL(aboutToQuit()), scene, SLOT(deleteLater()));
+	QObject::connect(qApp, SIGNAL(aboutToQuit()), scene, SLOT(deleteLater()));
 
-    view->moveToThread(qApp->thread());
-    *pwh = view;
+	view->moveToThread(qApp->thread());
+	*pwh = view;
 
     QMetaObject::invokeMethod(qApp, "createWindow",
                               Q_ARG(HWINDOW, *pwh),
@@ -797,7 +798,7 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
 ////////////////////////////////////////////////////////////////
 void OSD_DestroyWindow( HWINDOW Wh )
 {
-    // 何もしない
+	// 何もしない
 }
 
 
@@ -825,7 +826,7 @@ int OSD_GetWindowWidth( HWINDOW Wh )
 ////////////////////////////////////////////////////////////////
 int OSD_GetWindowHeight( HWINDOW Wh )
 {
-    //QtではSceneRectの幅を返す
+	//QtではSceneRectの高さを返す
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
 

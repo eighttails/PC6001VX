@@ -13,6 +13,11 @@
 #include "renderview.h"
 #include "qtp6vxapplication.h"
 
+const QString QtP6VXApplication::keyGeometry		= "window/geometry";
+const QString QtP6VXApplication::keyMaximized		= "window/maximized";
+const QString QtP6VXApplication::keyHwAccel			= "graph/hwAccel";
+const QString QtP6VXApplication::keyFiltering		= "graph/filtering";
+
 QMutex QtP6VXApplication::SettingMutex;
 
 ///////////////////////////////////////////////////////////

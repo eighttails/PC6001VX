@@ -46,7 +46,6 @@ enum MenuCommand{
     ID_SCANLINE,
     ID_DISP43,
     ID_STATUS,
-    ID_TILT,
     ID_M4MONO,
     ID_M4RDBL,
     ID_M4BLRD,
@@ -63,4 +62,14 @@ enum MenuCommand{
     ID_SPR11,
     ID_MONITOR,
     ID_VERSION,
+
+	// 以下、P6VX独自設定
+	ID_TILT,
+	ID_SIZE50,
+	ID_SIZE100,
+	ID_SIZE200,
+	ID_SIZE300,
+	ID_SIZEMANUAL,
+	ID_HWACCEL,
+	ID_FILTERING,
 };

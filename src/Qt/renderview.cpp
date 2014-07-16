@@ -6,8 +6,6 @@
 #include "renderview.h"
 #include "qtp6vxapplication.h"
 
-const QString geometryKey = "window/geometry";
-const QString maximizedKey = "window/maximized";
 
 RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	: QGraphicsView(scene, parent)
@@ -35,8 +33,8 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 #endif
 
 	// ウィンドウ位置とサイズを復元
-	restoreGeometry(QtP6VXApplication::getSetting(geometryKey, QByteArray()).toByteArray());
-	if(QtP6VXApplication::getSetting(maximizedKey, false).toBool()){
+	restoreGeometry(QtP6VXApplication::getSetting(QtP6VXApplication::keyGeometry, QByteArray()).toByteArray());
+	if(QtP6VXApplication::getSetting(QtP6VXApplication::keyMaximized, false).toBool()){
 		showMaximized();
 	}
 }
@@ -50,7 +48,13 @@ void RenderView::fitContent()
     //ウィンドウ全体に表示されるように表示倍率を調整
     qreal scaleRatio = qMin(width() / scene()->width(), height() / scene()->height());
     resetTransform();
-    scale(scaleRatio, scaleRatio);
+	scale(scaleRatio, scaleRatio);
+}
+
+void RenderView::resizeWindowByRatio(int ratio)
+{
+	double r = double(ratio) / 100;
+	setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
 }
 
 void RenderView::paintEvent(QPaintEvent *event)
@@ -70,8 +74,8 @@ void RenderView::paintEvent(QPaintEvent *event)
 void RenderView::closeEvent(QCloseEvent *event)
 {
 	// ウィンドウ位置とサイズを保存
-	QtP6VXApplication::setSetting(geometryKey, saveGeometry());
-	QtP6VXApplication::setSetting(maximizedKey, isMaximized());
+	QtP6VXApplication::setSetting(QtP6VXApplication::keyGeometry, saveGeometry());
+	QtP6VXApplication::setSetting(QtP6VXApplication::keyMaximized, isMaximized());
 	QGraphicsView::closeEvent(event);
 }
 

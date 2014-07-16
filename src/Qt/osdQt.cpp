@@ -22,6 +22,7 @@
 #include "aboutdialog.h"
 
 #include "renderview.h"
+#include "qtp6vxapplication.h"
 
 #ifndef NOSOUND
 #include "wavfile.h"
@@ -814,7 +815,7 @@ int OSD_GetWindowWidth( HWINDOW Wh )
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
 
-    return view->scene()->width();
+	return view->scene()->width();
 }
 
 
@@ -830,7 +831,7 @@ int OSD_GetWindowHeight( HWINDOW Wh )
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
 
-    return view->scene()->height();
+	return view->scene()->height();
 }
 
 ////////////////////////////////////////////////////////////////

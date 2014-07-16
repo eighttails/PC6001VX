@@ -23,6 +23,12 @@ class QtP6VXApplication : public ParentAppClass
 {
     Q_OBJECT
 public:
+	//設定用キー
+	static const QString keyGeometry;		// ウィンドウ表示位置
+	static const QString keyMaximized;		// ウィンドウ最大化フラグ
+	static const QString keyHwAccel;		// ハードウェアアクセラレーション(OpenGL/DirectX)有効化フラグ
+	static const QString keyFiltering;		// 画面拡大縮小時のフィルタリング有効化フラグ
+
     explicit QtP6VXApplication(int &argc, char **argv);
     virtual ~QtP6VXApplication();
 

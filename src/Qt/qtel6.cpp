@@ -18,8 +18,9 @@
 #include "../joystick.h"
 #include "../id_menu.h"
 
-#include "qtp6vxapplication.h"
+#include "renderview.h"
 #include "qtel6.h"
+#include "qtp6vxapplication.h"
 
 #define	FRAMERATE	(VSYNC_HZ/(cfg->GetFrameSkip()+1))
 
@@ -128,6 +129,28 @@ void EL6::ExecMenu( int id )
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	case ID_MONITOR:		ToggleMonitor();						break;	// モニターモード
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	case ID_SIZE50:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(50);
+		break;
+	case ID_SIZE100:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(100);
+		break;
+	case ID_SIZE200:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(200);
+		break;
+	case ID_SIZE300:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(300);
+		break;
+	case ID_SIZEMANUAL:
+	{
+		const int magnification = QInputDialog::getInt(NULL, QObject::tr("表示サイズ"), QObject::tr("表示サイズ(%)を入力してください。(50-1000)"), 100, 50, 1000);
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(magnification);
+		break;
+	}
+	case ID_HWACCEL:
+		break;
+	case ID_FILTERING:
+		break;
 	default:
 		qDebug() << "Unimplemented menu ID:" << id;
 	}
@@ -277,6 +300,14 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	// 設定メニュー
 	QMenu* settingsMenu = menu.addMenu(tr("設定"));
+	// 表示サイズメニュー
+	QMenu* dispSizeMenu = settingsMenu->addMenu(tr("表示サイズ"));
+	addCommand(dispSizeMenu, tr("50%"), ID_SIZE50);
+	addCommand(dispSizeMenu, tr("100%"), ID_SIZE100);
+	addCommand(dispSizeMenu, tr("200%"), ID_SIZE200);
+	addCommand(dispSizeMenu, tr("300%"), ID_SIZE300);
+	addCommand(dispSizeMenu, tr("倍率を指定..."), ID_SIZEMANUAL);
+
 	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
 	if (cfg->GetFullScreen()) fullScreen->setChecked(true);
 	QAction* statusBar = addCommand(settingsMenu, tr("ステータスバー"), ID_STATUS, true);
@@ -285,6 +316,18 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (cfg->GetDispNTSC()) disp43->setChecked(true);
 	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
 	if (cfg->GetScanLine()) scanLine->setChecked(true);
+#ifndef NOOPENGL
+#if defined WIN32
+	const bool defHwAccel = false;
+#else
+	const bool defHwAccel = true;
+#endif
+	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
+	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel, defHwAccel).toBool()) hwAccel->setChecked(true);
+#endif
+	QAction* filtering = addCommand(settingsMenu, tr("フィルタリング"), ID_FILTERING, true);
+	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering, true).toBool()) filtering->setChecked(true);
+
 	QAction* tiltMode = addCommand(settingsMenu, tr("TILTモード"), ID_TILT, true);
 	if (app->isTiltEnabled()) tiltMode->setChecked(true);
 

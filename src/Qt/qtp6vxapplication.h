@@ -35,8 +35,9 @@ public:
     virtual bool notify(QObject *receiver, QEvent *event);
 
 	// P6VX固有の設定
-	static const QVariant getSetting(const QString& key, const QVariant& defaultValue);
+	static const QVariant getSetting(const QString& key);
 	static void setSetting(const QString& key, const QVariant& value);
+	static void setDefaultSetting(const QString &key, const QVariant &value);
 
     // TILT関連
     bool isTiltEnabled();

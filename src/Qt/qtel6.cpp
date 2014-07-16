@@ -148,8 +148,16 @@ void EL6::ExecMenu( int id )
 		break;
 	}
 	case ID_HWACCEL:
+		if(OSD_Message(QObject::tr("設定を反映するには一度終了しますがよろしいですか?").toLocal8Bit().data(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
+			QtP6VXApplication::setSetting(QtP6VXApplication::keyHwAccel,
+										  !QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool());
+			UI_Quit();
+		}
 		break;
 	case ID_FILTERING:
+		QtP6VXApplication::setSetting(QtP6VXApplication::keyFiltering,
+									  !QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool());
+		graph->ResizeScreen();
 		break;
 	default:
 		qDebug() << "Unimplemented menu ID:" << id;
@@ -222,11 +230,11 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	QAction* repleySave = addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
 	if (REPLAY::GetStatus() == REP_IDLE){
-		QAction* repleyResumeSave = addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
+		addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
 	}
 	if (REPLAY::GetStatus() == REP_RECORD){
-		QAction* repleyDokoLoad = addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);
-		QAction* repleyDokoSave = addCommand(replayMenu, tr("途中保存から再開"), ID_REPLAYDOKOLOAD);
+		addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);
+		addCommand(replayMenu, tr("途中保存から再開"), ID_REPLAYDOKOLOAD);
 	}
 	systemMenu->addSeparator();
 	// モニタモード or ブレークポインタが設定されている
@@ -317,16 +325,12 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
 	if (cfg->GetScanLine()) scanLine->setChecked(true);
 #ifndef NOOPENGL
-#if defined WIN32
-	const bool defHwAccel = false;
-#else
-	const bool defHwAccel = true;
-#endif
+
 	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
-	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel, defHwAccel).toBool()) hwAccel->setChecked(true);
+	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool()) hwAccel->setChecked(true);
 #endif
 	QAction* filtering = addCommand(settingsMenu, tr("フィルタリング"), ID_FILTERING, true);
-	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering, true).toBool()) filtering->setChecked(true);
+	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool()) filtering->setChecked(true);
 
 	QAction* tiltMode = addCommand(settingsMenu, tr("TILTモード"), ID_TILT, true);
 	if (app->isTiltEnabled()) tiltMode->setChecked(true);

@@ -593,7 +593,7 @@ EL6::ReturnCode EL6::EventLoop( void )
 			break;
 			
 		default:
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
 			Error::Reset();
 		}
 	}

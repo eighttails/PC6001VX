@@ -120,7 +120,7 @@ void QtP6VXApplication::startup()
 	// OSD関連初期化
 	if( !OSD_Init() ){
 		Error::SetError( Error::InitFailed );
-		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
 		OSD_Quit();	// 終了処理
 		exit();
 		return;
@@ -129,7 +129,7 @@ void QtP6VXApplication::startup()
 	// フォントファイルチェック
 	if( !CheckFont() ){
 		Error::SetError( Error::FontCreateFailed );
-		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONWARNING );
+		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONWARNING );
 		Error::SetError( Error::NoError );
 	}
 
@@ -139,20 +139,31 @@ void QtP6VXApplication::startup()
 	sprintf( FontH, ":/res/%s/%s", FONT_DIR, FONTH_FILE );
 	if( !JFont::OpenFont( FontZ, FontH ) ){
 		Error::SetError( Error::FontLoadFailed );
-		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
 		Error::SetError( Error::NoError );
 	}
+
+	// P6VXデフォルト設定
+#ifndef NOOPENGL
+#if defined WIN32
+	const bool defHwAccel = false;
+#else
+	const bool defHwAccel = true;
+#endif
+	setDefaultSetting(keyHwAccel, defHwAccel);
+#endif
+	setDefaultSetting(keyFiltering, true);
 
 	// INIファイル読込み
 	if( !Cfg.Init() ){
 		switch( Error::GetError() ){
 		case Error::IniDefault:
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONWARNING );
+			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONWARNING );
 			Error::SetError( Error::NoError );
 			break;
 
 		default:
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
 			OSD_Quit();			// 終了処理
 			exit();
 			return;
@@ -212,7 +223,10 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, do
 		// 既存のQPixmapItemが存在しない場合は生成
 		pItem = new QGraphicsPixmapItem(NULL);
 		scene->addItem(pItem);
-		pItem->setTransformationMode(Qt::SmoothTransformation);
+		// フィルタリング
+		if(getSetting(keyFiltering).toBool()){
+			pItem->setTransformationMode(Qt::SmoothTransformation);
+		}
 	}
 	pItem->setPixmap(QPixmap::fromImage(image));
 	pItem->resetTransform();
@@ -397,7 +411,7 @@ void QtP6VXApplication::executeEmulation()
 				return;
 			}
 		} else {
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
 			exit();
 			return;
 		}
@@ -451,7 +465,7 @@ void QtP6VXApplication::postExecuteEmulation()
 	if( Restart == EL6::Restart ){
 		if( !Cfg.Init() ){
 			Error::SetError( Error::IniDefault );
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONWARNING );
+			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONWARNING );
 			Error::SetError( Error::NoError );
 		}
 	}
@@ -625,11 +639,11 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 	}
 }
 
-const QVariant QtP6VXApplication::getSetting(const QString &key, const QVariant &defaultValue)
+const QVariant QtP6VXApplication::getSetting(const QString &key)
 {
 	QMutexLocker lock(&SettingMutex);
 	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
-	return Setting.value(key, defaultValue);
+	return Setting.value(key);
 }
 
 void QtP6VXApplication::setSetting(const QString &key, const QVariant &value)
@@ -637,6 +651,15 @@ void QtP6VXApplication::setSetting(const QString &key, const QVariant &value)
 	QMutexLocker lock(&SettingMutex);
 	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
 	Setting.setValue(key, value);
+}
+
+void QtP6VXApplication::setDefaultSetting(const QString &key, const QVariant &value)
+{
+	QMutexLocker lock(&SettingMutex);
+	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
+	if(!Setting.contains(key)){
+		Setting.setValue(key, value);
+	}
 }
 
 

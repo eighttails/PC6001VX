@@ -17,14 +17,16 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     setStyleSheet( "QGraphicsView { border-style: none; }" );
 
 #ifndef NOOPENGL
-    QGLWidget* glw = new QGLWidget(this);
-    // QGraphicsViewに使うにはOpenGL2以上が必要
-    if(glw->format().majorVersion() >= 2){
-        setViewport(glw);
-        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    } else {
-        glw->deleteLater();
-    }
+	if(QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool()){
+		QGLWidget* glw = new QGLWidget(this);
+		// QGraphicsViewに使うにはOpenGL2以上が必要
+		if(glw->format().majorVersion() >= 2){
+			setViewport(glw);
+			setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+		} else {
+			glw->deleteLater();
+		}
+	}
 #endif
 
 #ifdef WIN32
@@ -33,8 +35,8 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 #endif
 
 	// ウィンドウ位置とサイズを復元
-	restoreGeometry(QtP6VXApplication::getSetting(QtP6VXApplication::keyGeometry, QByteArray()).toByteArray());
-	if(QtP6VXApplication::getSetting(QtP6VXApplication::keyMaximized, false).toBool()){
+	restoreGeometry(QtP6VXApplication::getSetting(QtP6VXApplication::keyGeometry).toByteArray());
+	if(QtP6VXApplication::getSetting(QtP6VXApplication::keyMaximized).toBool()){
 		showMaximized();
 	}
 }
@@ -53,6 +55,10 @@ void RenderView::fitContent()
 
 void RenderView::resizeWindowByRatio(int ratio)
 {
+	// 最大化、フルスクリーン中はリサイズできない
+	if((windowState() & Qt::WindowMaximized) || (windowState() & Qt::WindowFullScreen)){
+		return;
+	}
 	double r = double(ratio) / 100;
 	setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
 }

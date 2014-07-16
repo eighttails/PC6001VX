@@ -7,6 +7,7 @@
 #include "qtp6vxapplication.h"
 
 const QString geometryKey = "window/geometry";
+const QString maximizedKey = "window/maximized";
 
 RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	: QGraphicsView(scene, parent)
@@ -35,6 +36,9 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 
 	// ウィンドウ位置とサイズを復元
 	restoreGeometry(QtP6VXApplication::getSetting(geometryKey, QByteArray()).toByteArray());
+	if(QtP6VXApplication::getSetting(maximizedKey, false).toBool()){
+		showMaximized();
+	}
 }
 
 RenderView::~RenderView()
@@ -67,6 +71,7 @@ void RenderView::closeEvent(QCloseEvent *event)
 {
 	// ウィンドウ位置とサイズを保存
 	QtP6VXApplication::setSetting(geometryKey, saveGeometry());
+	QtP6VXApplication::setSetting(maximizedKey, isMaximized());
 	QGraphicsView::closeEvent(event);
 }
 

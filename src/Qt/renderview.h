@@ -21,7 +21,6 @@ public slots:
 protected:
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void closeEvent(QCloseEvent* event);
-
 };
 
 #endif // RENDERVIEW_H

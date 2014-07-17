@@ -147,6 +147,10 @@ void EL6::ExecMenu( int id )
 		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(magnification);
 		break;
 	}
+	case ID_FIXMAGNIFICATION:
+		QtP6VXApplication::setSetting(QtP6VXApplication::keyFixMagnification,
+									  !QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool());
+		break;
 	case ID_HWACCEL:
 		if(OSD_Message(QObject::tr("設定を反映するには一度終了しますがよろしいですか?").toLocal8Bit().data(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
 			QtP6VXApplication::setSetting(QtP6VXApplication::keyHwAccel,
@@ -315,6 +319,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(dispSizeMenu, tr("200%"), ID_SIZE200);
 	addCommand(dispSizeMenu, tr("300%"), ID_SIZE300);
 	addCommand(dispSizeMenu, tr("倍率を指定..."), ID_SIZEMANUAL);
+	QAction* fixMagnification = addCommand(dispSizeMenu, tr("倍率を固定"), ID_FIXMAGNIFICATION, true);
+	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
 
 	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
 	if (cfg->GetFullScreen()) fullScreen->setChecked(true);

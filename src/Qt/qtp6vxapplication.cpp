@@ -13,10 +13,12 @@
 #include "renderview.h"
 #include "qtp6vxapplication.h"
 
-const QString QtP6VXApplication::keyGeometry		= "window/geometry";
-const QString QtP6VXApplication::keyMaximized		= "window/maximized";
-const QString QtP6VXApplication::keyHwAccel			= "graph/hwAccel";
-const QString QtP6VXApplication::keyFiltering		= "graph/filtering";
+const QString QtP6VXApplication::keyGeometry			= "window/geometry";
+const QString QtP6VXApplication::keyMaximized			= "window/maximized";
+const QString QtP6VXApplication::keyHwAccel				= "graph/hwAccel";
+const QString QtP6VXApplication::keyFiltering			= "graph/filtering";
+const QString QtP6VXApplication::keyFixMagnification	= "graph/fixMagnification";
+const QString QtP6VXApplication::keyMagnification		= "graph/magnification";
 
 QMutex QtP6VXApplication::SettingMutex;
 
@@ -153,6 +155,7 @@ void QtP6VXApplication::startup()
 	setDefaultSetting(keyHwAccel, defHwAccel);
 #endif
 	setDefaultSetting(keyFiltering, true);
+	setDefaultSetting(keyFixMagnification, false);
 
 	// INIファイル読込み
 	if( !Cfg.Init() ){

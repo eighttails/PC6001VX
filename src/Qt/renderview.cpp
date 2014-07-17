@@ -47,19 +47,33 @@ RenderView::~RenderView()
 
 void RenderView::fitContent()
 {
-    //ウィンドウ全体に表示されるように表示倍率を調整
-    qreal scaleRatio = qMin(width() / scene()->width(), height() / scene()->height());
-    resetTransform();
+	const bool fixMag = QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool();
+	//ウィンドウ全体に表示されるように表示倍率を調整
+	qreal scaleRatio = fixMag
+			? QtP6VXApplication::getSetting(QtP6VXApplication::keyMagnification).toReal()
+			: qMin(width() / scene()->width(), height() / scene()->height());
+	resetTransform();
 	scale(scaleRatio, scaleRatio);
+
+	//表示倍率固定の場合は中心に配置
+	if (fixMag){
+		translate((width() - scene()->width()) / 2, (height() - scene()->height()) / 2);
+	}else {
+		QtP6VXApplication::setSetting(QtP6VXApplication::keyMagnification, scaleRatio);
+	}
 }
 
 void RenderView::resizeWindowByRatio(int ratio)
 {
-	// 最大化、フルスクリーン中はリサイズできない
+	qreal r = double(ratio) / 100;
+	// 最大化、フルスクリーン中は倍率固定モードにする。
 	if((windowState() & Qt::WindowMaximized) || (windowState() & Qt::WindowFullScreen)){
+		QtP6VXApplication::setSetting(QtP6VXApplication::keyFixMagnification, true);
+		QtP6VXApplication::setSetting(QtP6VXApplication::keyMagnification, r);
 		return;
+	} else {
+		QtP6VXApplication::setSetting(QtP6VXApplication::keyFixMagnification, false);
 	}
-	double r = double(ratio) / 100;
 	setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
 }
 

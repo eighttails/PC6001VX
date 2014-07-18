@@ -5,6 +5,7 @@
 
 #include "../config.h"
 #include "../osd.h"
+#include "qtp6vxapplication.h"
 
 ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
 	: QDialog(parent)
@@ -107,7 +108,13 @@ void ConfigDialog::readConfig()
     // ステータスバー表示状態
     ui->checkBoxStatDisp->setChecked(config->GetDispStat());
 
-    // フレームスキップ
+	// ハードウェアアクセラレーション
+	ui->checkBoxHwAccel->setChecked(QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool());
+
+	// フィルタリング
+	ui->checkBoxFiltering->setChecked(QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool());
+
+	// フレームスキップ
     ui->horizontalSliderFPS->setValue(config->GetFrameSkip());
     dispFPS(config->GetFrameSkip());
 
@@ -372,8 +379,15 @@ void ConfigDialog::writeConfig()
     // ステータスバー表示状態
     config->SetDispStat(ui->checkBoxStatDisp->isChecked());
 
-    // フレームスキップ
+	// ハードウェアアクセラレーション
+	QtP6VXApplication::setSetting(QtP6VXApplication::keyHwAccel, ui->checkBoxHwAccel->isChecked());
+
+	// フィルタリング
+	QtP6VXApplication::setSetting(QtP6VXApplication::keyFiltering, ui->checkBoxFiltering->isChecked());
+
+	// フレームスキップ
     config->SetFrameSkip(ui->horizontalSliderFPS->value());
+
 
     // サウンド-------------------------------------------------------------------
     // サンプリングレート

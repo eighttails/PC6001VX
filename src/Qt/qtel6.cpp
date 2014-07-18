@@ -143,7 +143,7 @@ void EL6::ExecMenu( int id )
 		break;
 	case ID_SIZEMANUAL:
 	{
-		const int magnification = QInputDialog::getInt(NULL, QObject::tr("表示サイズ"), QObject::tr("表示サイズ(%)を入力してください。(50-1000)"), 100, 50, 1000);
+		const int magnification = QInputDialog::getInt(NULL, QtEL6::tr("表示サイズ"), QtEL6::tr("表示サイズ(%)を入力してください。(50-1000)"), 100, 50, 1000);
 		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(magnification);
 		break;
 	}
@@ -152,7 +152,7 @@ void EL6::ExecMenu( int id )
 									  !QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool());
 		break;
 	case ID_HWACCEL:
-		if(OSD_Message(QObject::tr("設定を反映するには一度終了しますがよろしいですか?").toLocal8Bit().data(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
+		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toLocal8Bit().data(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
 			QtP6VXApplication::setSetting(QtP6VXApplication::keyHwAccel,
 										  !QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool());
 			UI_Quit();

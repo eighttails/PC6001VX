@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>883</width>
-    <height>548</height>
+    <width>915</width>
+    <height>549</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -190,144 +190,6 @@
        <string>画面(&amp;S)</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBoxMode4Color">
-         <property name="title">
-          <string>モード4カラー(&amp;4)</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorBW">
-            <property name="text">
-             <string>モノクロ</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorRB">
-            <property name="text">
-             <string>赤/青</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorBR">
-            <property name="text">
-             <string>青/赤</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorPG">
-            <property name="text">
-             <string>桃/緑</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorGP">
-            <property name="text">
-             <string>緑/桃</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <spacer name="verticalSpacer_12">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="4" column="0" colspan="3">
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0" colspan="4">
-          <widget class="QCheckBox" name="checkBoxScanline">
-           <property name="text">
-            <string>スキャンラインを表示する(&amp;N)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>スキャンライン輝度(&amp;R):</string>
-           </property>
-           <property name="buddy">
-            <cstring>lineEditScanLineBr</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="lineEditScanLineBr">
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="inputMethodHints">
-            <set>Qt::ImhDigitsOnly</set>
-           </property>
-           <property name="inputMask">
-            <string>999</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>％</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="2" column="0" colspan="4">
-          <widget class="QCheckBox" name="checkBoxDispNTSC">
-           <property name="text">
-            <string>4:3表示有効(&amp;3)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="4">
-          <widget class="QCheckBox" name="checkBoxFullscreen">
-           <property name="text">
-            <string>フルスクリーン(&amp;U)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0" colspan="4">
-          <widget class="QCheckBox" name="checkBoxStatDisp">
-           <property name="text">
-            <string>ステータスバーを表示する(&amp;T)</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
        <item row="1" column="0">
         <widget class="QGroupBox" name="groupBoxFps">
          <property name="title">
@@ -376,6 +238,63 @@
          </property>
         </spacer>
        </item>
+       <item row="10" column="0">
+        <spacer name="verticalSpacer_12">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBoxMode4Color">
+         <property name="title">
+          <string>モード4カラー(&amp;4)</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorBW">
+            <property name="text">
+             <string>モノクロ</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorRB">
+            <property name="text">
+             <string>赤/青</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorBR">
+            <property name="text">
+             <string>青/赤</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorPG">
+            <property name="text">
+             <string>桃/緑</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonColorGP">
+            <property name="text">
+             <string>緑/桃</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QGroupBox" name="groupBoxVideoCapture">
          <property name="enabled">
@@ -408,6 +327,105 @@
           </item>
          </layout>
         </widget>
+       </item>
+       <item row="4" column="0" colspan="3">
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBoxScanline">
+           <property name="text">
+            <string>スキャンラインを表示する(&amp;N)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBoxFullscreen">
+           <property name="text">
+            <string>フルスクリーン(&amp;U)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBoxStatDisp">
+           <property name="text">
+            <string>ステータスバーを表示する(&amp;T)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>スキャンライン輝度(&amp;R):</string>
+             </property>
+             <property name="buddy">
+              <cstring>lineEditScanLineBr</cstring>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEditScanLineBr">
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="inputMethodHints">
+              <set>Qt::ImhDigitsOnly</set>
+             </property>
+             <property name="inputMask">
+              <string>999</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>％</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBoxDispNTSC">
+           <property name="text">
+            <string>4:3表示有効(&amp;3)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBoxHwAccel">
+           <property name="text">
+            <string>ハードウェアアクセラレーション(次回起動時に反映)(&amp;H)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBoxFiltering">
+           <property name="text">
+            <string>フィルタリング(&amp;F)</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -3617,7 +3635,6 @@ border-radius: 1;</string>
   <tabstop>radioButtonColorGP</tabstop>
   <tabstop>horizontalSliderFPS</tabstop>
   <tabstop>checkBoxScanline</tabstop>
-  <tabstop>lineEditScanLineBr</tabstop>
   <tabstop>checkBoxDispNTSC</tabstop>
   <tabstop>checkBoxFullscreen</tabstop>
   <tabstop>checkBoxStatDisp</tabstop>

@@ -11,6 +11,8 @@ TEMPLATE = app
 
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 
+CONFIG += link_prl
+
 #Qt依存コードを書く際のDEFINE
 DEFINES += QTP6VX
 
@@ -18,6 +20,7 @@ DEFINES += QTP6VX
 #DEFINES += NOJOYSTICK
 
 #その他のフィーチャー無効化フラグ
+#DEFINES += NOSINGLEAPP
 #DEFINES += NOOPENGL
 #DEFINES += NOSOUND
 #DEFINES += REPLAYDEBUG
@@ -28,14 +31,20 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 #Android用設定
 android:{
 QTPLUGIN += qico
-DEFINES += NOJOYSTICK NOSOUND NOMONITOR NOOPENGL
+DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN
 }
 
 #OpenPandora用設定
 pandora:{
-target.path = /media/sddev/pc6001vx
-QTPLUGIN += qico qxcb qgtk2
-INSTALLS += target
+DEPLOY_PATH = /media/sddev/pc6001vx
+target.path = $${DEPLOY_PATH}
+sharedlibs.path = $${DEPLOY_PATH}
+sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
+                    $${PANDORA_SDK}/usr/lib/libX11-xcb.so.1* \
+                    $${PANDORA_SDK}/usr/lib/libxcb.so.1*
+
+#QTPLUGIN += qico qxcb qgtk2
+INSTALLS += target sharedlibs
 DEFINES += NOJOYSTICK NOMONITOR NOOPENGL
 }
 
@@ -63,6 +72,9 @@ QT += opengl
 }
 !contains(DEFINES, NOSOUND) {
 QT += multimedia
+SOURCES += \
+    src/Qt/wavfile.cpp \
+    src/Qt/utils.cpp
 }
 
 SOURCES += \
@@ -121,6 +133,7 @@ SOURCES += \
     src/Qt/thread.cpp \
     src/console.cpp \
     src/common.cpp
+
 
 HEADERS  += \
     src/breakpoint.h \
@@ -189,7 +202,9 @@ HEADERS  += \
     src/Qt/qtel6.h \
     src/Qt/qtutil.h \
     openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
-    src/id_menu.h
+    src/id_menu.h \
+    src/Qt/wavfile.h \
+    src/Qt/utils.h
 
 FORMS    += \
     src/Qt/configdialog.ui \
@@ -224,7 +239,11 @@ OTHER_FILES += \
     win32/libGLESv2.patch \
     win32/optimize.patch \
     src/Qt/translation/PC6001VX_en.ts \
-    src/Qt/translation/PC6001VX_en.qm
+    src/Qt/translation/PC6001VX_en.qm \
+    android/AndroidManifest.xml \
+    openpandora/pandora_develop_environment/qtmultimedia53.patch
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

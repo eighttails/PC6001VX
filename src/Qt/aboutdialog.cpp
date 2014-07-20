@@ -3,9 +3,9 @@
 #include "../config.h"
 #include "../pc6001v.h"
 
-AboutDialog::AboutDialog(int mdl, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::AboutDialog)
+AboutDialog::AboutDialog(int mdl, QWidget *parent)
+	: QDialog(parent)
+	, ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
     switch( mdl ){

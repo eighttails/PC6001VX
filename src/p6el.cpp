@@ -15,6 +15,7 @@
 #include "intr.h"
 #include "joystick.h"
 #include "keyboard.h"
+#include "log.h"
 #include "memory.h"
 #include "osd.h"
 #include "pio.h"
@@ -32,7 +33,7 @@
 
 #define	FRAMERATE	(VSYNC_HZ/(cfg->GetFrameSkip()+1))
 
-
+int EL6::Speed = 100;
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
@@ -411,6 +412,11 @@ bool EL6::Init( const CFG6 *config )
 ////////////////////////////////////////////////////////////////
 bool EL6::Start( void )
 {
+	// 実行速度を復元
+	while(sche->GetSpeedRatio() != Speed){
+		sche->SetSpeedRatio(Speed > 100 ? 1 : -1);
+	}
+
 	FSkipCount = 0;
 	
 	// スレッド生成
@@ -428,6 +434,9 @@ bool EL6::Start( void )
 ////////////////////////////////////////////////////////////////
 void EL6::Stop( void )
 {
+	// 実行速度を退避
+	Speed = sche->GetSpeedRatio();
+
 	if( !this->cThread::IsCancel() ){
 		this->cThread::Cancel();	// スレッド終了フラグ立てる
 		this->cThread::Waiting();	// スレッド終了まで待つ
@@ -584,7 +593,7 @@ EL6::ReturnCode EL6::EventLoop( void )
 			break;
 			
 		default:
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDR_OK | OSDM_ICONERROR );
+			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
 			Error::Reset();
 		}
 	}
@@ -677,39 +686,42 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 		ShowPopupMenu( 0, 0 );
 		Start();
 		break;
-    case KVC_MUHENKAN:      // どこでもSAVE
-        Stop();
-        if(REPLAY::GetStatus() == REP_RECORD){
-            UI_ReplayDokoSave();
-        } else {
-            QString str = QString("%1/.1.dds").arg(cfg->GetDokoSavePath());
-            DokoDemoSave( str.toLocal8Bit().data() );
+	case KVC_MUHENKAN:      // どこでもSAVE
+		Stop();
+		if(REPLAY::GetStatus() == REP_RECORD){
+			UI_ReplayDokoSave();
+		} else {
+			char str[PATH_MAX];
+			snprintf(str, PATH_MAX, "%s/.1.dds", cfg->GetDokoSavePath());
+			DokoDemoSave( str );
 
-            cIni save;
-            if(save.Init(str.toLocal8Bit().data())) {
-                // 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
-                save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-                save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-            }
-        }
-        Start();
-        break;
-    case KVC_HENKAN:      // どこでもLOAD
-        Stop();
-        if(REPLAY::GetStatus() == REP_RECORD){
-            UI_ReplayDokoLoad();
-        } else {
-            char str[PATH_MAX];
-            strncpy( str, QString("%1/.1.dds").arg(cfg->GetDokoSavePath()).toLocal8Bit().data(), PATH_MAX );
-            if( OSD_FileExist( str ) ){
-                cfg->SetModel( GetDokoModel( str ) );
-                cfg->SetDokoFile( str );
-                OSD_PushEvent( EV_DOKOLOAD );
-            }
-        }
-        Start();
-        break;
-    default:				// どれでもない
+			cIni save;
+			if(save.Init(str)) {
+				// 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
+				save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+				save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+			}
+		}
+		Start();
+		break;
+
+	case KVC_HENKAN:      // どこでもLOAD
+		Stop();
+		if(REPLAY::GetStatus() == REP_RECORD){
+			UI_ReplayDokoLoad();
+		} else {
+			char str[PATH_MAX];
+			snprintf(str, PATH_MAX, "%s/.1.dds", cfg->GetDokoSavePath());
+			if( OSD_FileExist( str ) ){
+				cfg->SetModel( GetDokoModel( str ) );
+				cfg->SetDokoFile( str );
+				OSD_PushEvent( EV_DOKOLOAD );
+			}
+		}
+		Start();
+		break;
+
+	default:				// どれでもない
 		return false;
 	}
 	return true;
@@ -1121,8 +1133,8 @@ bool EL6::IsMonitor( void ) const
 ////////////////////////////////////////////////////////////////
 bool EL6::DokoDemoSave( const char *filename )
 {
-    printf("DokoDemoSave-------------------------------------------------\n");
-    cIni *Ini = NULL;
+	PRINTD( VM_LOG, "[EL6][DokoDemoSave]\n" );
+	cIni *Ini = NULL;
 
 	// とりあえずエラー設定
     Error::Reset();
@@ -1213,8 +1225,8 @@ bool EL6::DokoDemoSave( const char *filename )
 ////////////////////////////////////////////////////////////////
 bool EL6::DokoDemoLoad( const char *filename )
 {
-    printf("DokoDemoLoad-------------------------------------------------\n");
-    cIni *Ini = NULL;
+	PRINTD( VM_LOG, "[EL6][DokoDemoLoad]\n" );
+	cIni *Ini = NULL;
 	
 	// とりあえずエラー設定
 	Error::SetError( Error::DokoReadFailed );
@@ -1620,7 +1632,7 @@ void EL6::UI_DokoSave( void )
 {
 	char str[PATH_MAX];
 	
-	if( OSD_FileSelect( graph->GetWindowHandle(), FD_DokoSave, str, (char *)OSD_GetModulePath() ) )
+	if( OSD_FileSelect( graph->GetWindowHandle(), FD_DokoSave, str, cfg->GetDokoSavePath() ) )
 	DokoDemoSave( str );
 }
 
@@ -1636,7 +1648,7 @@ void EL6::UI_DokoLoad( const char *path )
 	char str[PATH_MAX];
 	const char *fpath = path;
 	
-	if( !path && OSD_FileSelect( graph->GetWindowHandle(), FD_DokoLoad, str, (char *)OSD_GetModulePath() ) )
+	if( !path && OSD_FileSelect( graph->GetWindowHandle(), FD_DokoLoad, str, cfg->GetDokoSavePath() ) )
 		fpath = str;
 	
 	if( !fpath ) return;

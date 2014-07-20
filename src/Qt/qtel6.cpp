@@ -18,8 +18,9 @@
 #include "../joystick.h"
 #include "../id_menu.h"
 
-#include "qtp6vxapplication.h"
+#include "renderview.h"
 #include "qtel6.h"
+#include "qtp6vxapplication.h"
 
 #define	FRAMERATE	(VSYNC_HZ/(cfg->GetFrameSkip()+1))
 
@@ -28,9 +29,9 @@
 ///////////////////////////////////////////////////////////
 void EL6::ShowPopupMenu( int x, int y )
 {
-    QMetaObject::invokeMethod(qApp, "showPopupMenu",
-                              Q_ARG(int, x),
-                              Q_ARG(int, y));
+	QMetaObject::invokeMethod(qApp, "showPopupMenu",
+							  Q_ARG(int, x),
+							  Q_ARG(int, y));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -41,96 +42,130 @@ void EL6::ShowPopupMenu( int x, int y )
 ////////////////////////////////////////////////////////////////
 void EL6::ExecMenu( int id )
 {
-    char str[PATH_MAX];
-    // 項目ごとの処理
-    switch( id ){
-    case ID_TAPEINSERT:		UI_TapeInsert();						break;	// TAPE 挿入
-    case ID_TAPEEJECT:		TapeUnmount();							break;	// TAPE 排出
-    case ID_DISKINSERT1:													// DISK 挿入
-    case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );	break;
-    case ID_DISKEJECT1:														// DISK 排出
-    case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );		break;
-    case ID_ROMINSERT:		UI_RomInsert();							break;	// 拡張ROM 挿入
-    case ID_ROMEJECT:		UI_RomEject();							break;	// 拡張ROM 排出
-    case ID_JOY100:															// ジョイスティック1
-    case ID_JOY101:
-    case ID_JOY102:
-    case ID_JOY103:
-    case ID_JOY104:
-    case ID_JOY105:			joy->Connect( 0, id - ID_JOY101 );		break;
-    case ID_JOY200:															// ジョイスティック2
-    case ID_JOY201:
-    case ID_JOY202:
-    case ID_JOY203:
-    case ID_JOY204:
-    case ID_JOY205:			joy->Connect( 1, id - ID_JOY201 );		break;
-    case ID_CONFIG:			UI_Config();							break;	// 環境設定
-    case ID_RESET:			UI_Reset();								break;	// リセット
-    case ID_RESTART:		UI_Restart();							break;	// 再起動
-    case ID_DOKOSAVE:		UI_DokoSave();							break;	// どこでもSAVE
-    case ID_DOKOSAVE1:                                                      // どこでもSAVE1
-    case ID_DOKOSAVE2:                                                      // どこでもSAVE2
-    case ID_DOKOSAVE3:                                                      // どこでもSAVE3
-        OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOSAVE).toLocal8Bit().data());
-        DokoDemoSave( str );
-        break;
-    case ID_DOKOLOAD:		UI_DokoLoad();							break;	// どこでもLOAD
-    case ID_DOKOLOAD1:                                                      // どこでもLOAD1
-    case ID_DOKOLOAD2:                                                      // どこでもLOAD2
-    case ID_DOKOLOAD3:                                                      // どこでもLOAD3
-        OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOLOAD).toLocal8Bit().data());
-        if( OSD_FileExist( str ) ){
-            cfg->SetModel( GetDokoModel( str ) );
-            cfg->SetDokoFile( str );
-            OSD_PushEvent( EV_DOKOLOAD );
-        }
-        break;
-    case ID_REPLAYSAVE:		UI_ReplaySave();						break;	// リプレイ保存
-    case ID_REPLAYRESUME:	UI_ReplayResumeSave();					break;	// リプレイ保存再開
-    case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();					break;	// リプレイ中どこでもLOAD
-    case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
-    case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
-    case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
-    case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
-    case ID_QUIT:			UI_Quit();								break;	// 終了
-    case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
-    case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
-    case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
-    case ID_FULLSCREEN:
-        cfg->SetFullScreen( cfg->GetFullScreen() ? false : true );
-        graph->ResizeScreen();	// スクリーンサイズ変更
-        break;
-    case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
-    case ID_TILT:                                                           // TILTモード変更
-    {
-        QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
-        app->enableTilt(!app->isTiltEnabled());
-        graph->ResizeScreen();	// スクリーンサイズ変更
-        break;
-    }
-    case ID_DISP43:			UI_Disp43();							break;	// 4:3表示変更
-    case ID_STATUS:			UI_StatusBar();							break;	// ステータスバー表示状態変更
-    case ID_M4MONO:															// MODE4カラー モノクロ
-    case ID_M4RDBL:															// MODE4カラー 赤/青
-    case ID_M4BLRD:															// MODE4カラー 青/赤
-    case ID_M4PKGR:															// MODE4カラー ピンク/緑
-    case ID_M4GRPK:			UI_Mode4Color( id - ID_M4MONO );		break;	// MODE4カラー 緑/ピンク
-    case ID_FSKP0:															// フレームスキップ なし
-    case ID_FSKP1:															// フレームスキップ 1
-    case ID_FSKP2:															// フレームスキップ 2
-    case ID_FSKP3:															// フレームスキップ 3
-    case ID_FSKP4:															// フレームスキップ 4
-    case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );			break;	// フレームスキップ 5
-    case ID_SPR44:															// サンプリングレート 44100Hz
-    case ID_SPR22:															// サンプリングレート 22050Hz
-    case ID_SPR11:			UI_SampleRate( 44100 >> (id - ID_SPR44 ) );	break;	// サンプリングレート 11025Hz
-    case ID_VERSION:		OSD_VersionDialog( graph->GetWindowHandle(), cfg->GetModel() );	break;	// バージョン情報
-    #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-    case ID_MONITOR:		ToggleMonitor();						break;	// モニターモード
-    #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-    default:
-        qDebug() << "Unimplemented menu ID:" << id;
-    }
+	char str[PATH_MAX];
+	// 項目ごとの処理
+	switch( id ){
+	case ID_TAPEINSERT:		UI_TapeInsert();						break;	// TAPE 挿入
+	case ID_TAPEEJECT:		TapeUnmount();							break;	// TAPE 排出
+	case ID_DISKINSERT1:													// DISK 挿入
+	case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );	break;
+	case ID_DISKEJECT1:														// DISK 排出
+	case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );		break;
+	case ID_ROMINSERT:		UI_RomInsert();							break;	// 拡張ROM 挿入
+	case ID_ROMEJECT:		UI_RomEject();							break;	// 拡張ROM 排出
+	case ID_JOY100:															// ジョイスティック1
+	case ID_JOY101:
+	case ID_JOY102:
+	case ID_JOY103:
+	case ID_JOY104:
+	case ID_JOY105:			joy->Connect( 0, id - ID_JOY101 );		break;
+	case ID_JOY200:															// ジョイスティック2
+	case ID_JOY201:
+	case ID_JOY202:
+	case ID_JOY203:
+	case ID_JOY204:
+	case ID_JOY205:			joy->Connect( 1, id - ID_JOY201 );		break;
+	case ID_CONFIG:			UI_Config();							break;	// 環境設定
+	case ID_RESET:			UI_Reset();								break;	// リセット
+	case ID_RESTART:		UI_Restart();							break;	// 再起動
+	case ID_DOKOSAVE:		UI_DokoSave();							break;	// どこでもSAVE
+	case ID_DOKOSAVE1:                                                      // どこでもSAVE1
+	case ID_DOKOSAVE2:                                                      // どこでもSAVE2
+	case ID_DOKOSAVE3:                                                      // どこでもSAVE3
+		OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOSAVE).toLocal8Bit().data());
+		DokoDemoSave( str );
+		break;
+	case ID_DOKOLOAD:		UI_DokoLoad();							break;	// どこでもLOAD
+	case ID_DOKOLOAD1:                                                      // どこでもLOAD1
+	case ID_DOKOLOAD2:                                                      // どこでもLOAD2
+	case ID_DOKOLOAD3:                                                      // どこでもLOAD3
+		OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOLOAD).toLocal8Bit().data());
+		if( OSD_FileExist( str ) ){
+			cfg->SetModel( GetDokoModel( str ) );
+			cfg->SetDokoFile( str );
+			OSD_PushEvent( EV_DOKOLOAD );
+		}
+		break;
+	case ID_REPLAYSAVE:		UI_ReplaySave();						break;	// リプレイ保存
+	case ID_REPLAYRESUME:	UI_ReplayResumeSave();					break;	// リプレイ保存再開
+	case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();					break;	// リプレイ中どこでもLOAD
+	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
+	case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
+	case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
+	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
+	case ID_QUIT:			UI_Quit();								break;	// 終了
+	case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
+	case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
+	case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
+	case ID_FULLSCREEN:
+		cfg->SetFullScreen( cfg->GetFullScreen() ? false : true );
+		graph->ResizeScreen();	// スクリーンサイズ変更
+		break;
+	case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
+	case ID_TILT:                                                           // TILTモード変更
+	{
+		QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+		app->enableTilt(!app->isTiltEnabled());
+		graph->ResizeScreen();	// スクリーンサイズ変更
+		break;
+	}
+	case ID_DISP43:			UI_Disp43();							break;	// 4:3表示変更
+	case ID_STATUS:			UI_StatusBar();							break;	// ステータスバー表示状態変更
+	case ID_M4MONO:															// MODE4カラー モノクロ
+	case ID_M4RDBL:															// MODE4カラー 赤/青
+	case ID_M4BLRD:															// MODE4カラー 青/赤
+	case ID_M4PKGR:															// MODE4カラー ピンク/緑
+	case ID_M4GRPK:			UI_Mode4Color( id - ID_M4MONO );		break;	// MODE4カラー 緑/ピンク
+	case ID_FSKP0:															// フレームスキップ なし
+	case ID_FSKP1:															// フレームスキップ 1
+	case ID_FSKP2:															// フレームスキップ 2
+	case ID_FSKP3:															// フレームスキップ 3
+	case ID_FSKP4:															// フレームスキップ 4
+	case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );			break;	// フレームスキップ 5
+	case ID_SPR44:															// サンプリングレート 44100Hz
+	case ID_SPR22:															// サンプリングレート 22050Hz
+	case ID_SPR11:			UI_SampleRate( 44100 >> (id - ID_SPR44 ) );	break;	// サンプリングレート 11025Hz
+	case ID_VERSION:		OSD_VersionDialog( graph->GetWindowHandle(), cfg->GetModel() );	break;	// バージョン情報
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	case ID_MONITOR:		ToggleMonitor();						break;	// モニターモード
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+	case ID_SIZE50:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(50);
+		break;
+	case ID_SIZE100:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(100);
+		break;
+	case ID_SIZE200:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(200);
+		break;
+	case ID_SIZE300:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(300);
+		break;
+	case ID_SIZEMANUAL:
+	{
+		const int magnification = QInputDialog::getInt(NULL, QtEL6::tr("表示サイズ"), QtEL6::tr("表示サイズ(%)を入力してください。(50-1000)"), 100, 50, 1000);
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(magnification);
+		break;
+	}
+	case ID_FIXMAGNIFICATION:
+		QtP6VXApplication::setSetting(QtP6VXApplication::keyFixMagnification,
+									  !QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool());
+		break;
+	case ID_HWACCEL:
+		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toLocal8Bit().data(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
+			QtP6VXApplication::setSetting(QtP6VXApplication::keyHwAccel,
+										  !QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool());
+			UI_Quit();
+		}
+		break;
+	case ID_FILTERING:
+		QtP6VXApplication::setSetting(QtP6VXApplication::keyFiltering,
+									  !QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool());
+		graph->ResizeScreen();
+		break;
+	default:
+		qDebug() << "Unimplemented menu ID:" << id;
+	}
 }
 
 ///////////////////////////////////////////////////////////
@@ -139,241 +174,258 @@ void EL6::ExecMenu( int id )
 Q_DECLARE_METATYPE(MenuCommand)
 #define MENUIDPROPERTY "MenuID"
 
-int QtEL6::Speed = 100;
 
 QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable = false)
 {
-    QAction* action = menu->addAction(TRANS(label.toUtf8()));
-    action->setProperty(MENUIDPROPERTY, qVariantFromValue<MenuCommand>(id));
-    action->setCheckable(checkable);
-    return action;
+	QAction* action = menu->addAction(TRANS(label.toUtf8()));
+	action->setProperty(MENUIDPROPERTY, qVariantFromValue<MenuCommand>(id));
+	action->setCheckable(checkable);
+	return action;
 }
 
 QtEL6::QtEL6()
 {
-    // FPS更新タイマ
-    QTimer* fpsTimer = new QTimer(this);
-    fpsTimer->start(1000);
-    connect(fpsTimer, SIGNAL(timeout()), this, SLOT(updateFPS()));
+	// FPS更新タイマ
+	QTimer* fpsTimer = new QTimer(this);
+	fpsTimer->start(1000);
+	connect(fpsTimer, SIGNAL(timeout()), this, SLOT(updateFPS()));
 }
 
 void QtEL6::ShowPopupImpl(int x, int y)
 {
-    OSD_ShowCursor( true );
-    QAction* selectedAction = NULL;
-    QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+	OSD_ShowCursor( true );
+	QAction* selectedAction = NULL;
+	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
 
-    QMenu menu;
+	QMenu menu;
 
-    // システムメニュー
-    QMenu* systemMenu = menu.addMenu(tr("システム"));
-    menu.addSeparator();
-    addCommand(systemMenu, tr("リセット"), ID_RESET);
-    addCommand(systemMenu, tr("再起動"), ID_RESTART);
-    systemMenu->addSeparator();
+	// システムメニュー
+	QMenu* systemMenu = menu.addMenu(tr("システム"));
+	menu.addSeparator();
+	addCommand(systemMenu, tr("リセット"), ID_RESET);
+	addCommand(systemMenu, tr("再起動"), ID_RESTART);
+	systemMenu->addSeparator();
 
-    // どこでもLOAD,SAVEメニュー
-    QMenu* dokoLoadMenu = systemMenu->addMenu(tr("どこでもLOAD"));
-    QMenu* dokoSaveMenu = systemMenu->addMenu(tr("どこでもSAVE"));
-    systemMenu->addSeparator();
-    addCommand(dokoLoadMenu, tr("LOAD..."), ID_DOKOLOAD);
-    addCommand(dokoLoadMenu, "1", ID_DOKOLOAD1);
-    addCommand(dokoLoadMenu, "2", ID_DOKOLOAD2);
-    addCommand(dokoLoadMenu, "3", ID_DOKOLOAD3);
-    addCommand(dokoSaveMenu, tr("SAVE..."), ID_DOKOSAVE);
-    addCommand(dokoSaveMenu, "1", ID_DOKOSAVE1);
-    addCommand(dokoSaveMenu, "2", ID_DOKOSAVE2);
-    addCommand(dokoSaveMenu, "3", ID_DOKOSAVE3);
+	// どこでもLOAD,SAVEメニュー
+	QMenu* dokoLoadMenu = systemMenu->addMenu(tr("どこでもLOAD"));
+	QMenu* dokoSaveMenu = systemMenu->addMenu(tr("どこでもSAVE"));
+	systemMenu->addSeparator();
+	addCommand(dokoLoadMenu, tr("LOAD..."), ID_DOKOLOAD);
+	addCommand(dokoLoadMenu, "1", ID_DOKOLOAD1);
+	addCommand(dokoLoadMenu, "2", ID_DOKOLOAD2);
+	addCommand(dokoLoadMenu, "3", ID_DOKOLOAD3);
+	addCommand(dokoSaveMenu, tr("SAVE..."), ID_DOKOSAVE);
+	addCommand(dokoSaveMenu, "1", ID_DOKOSAVE1);
+	addCommand(dokoSaveMenu, "2", ID_DOKOSAVE2);
+	addCommand(dokoSaveMenu, "3", ID_DOKOSAVE3);
 
-    // リプレイメニュー
-    QMenu* replayMenu = systemMenu->addMenu(tr("リプレイ"));
-    systemMenu->addSeparator();
-    QAction* repleyLoad = addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
-    // モニタモード or ブレークポインタが設定されている
-    // またはリプレイ記録中だったらリプレイ再生無効
-    if(
-        #ifndef NOMONITOR
-            cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
-        #endif
-            ( REPLAY::GetStatus() == REP_RECORD ) )
-        repleyLoad->setEnabled(false);
+	// リプレイメニュー
+	QMenu* replayMenu = systemMenu->addMenu(tr("リプレイ"));
+	systemMenu->addSeparator();
+	QAction* repleyLoad = addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
+	// モニタモード or ブレークポインタが設定されている
+	// またはリプレイ記録中だったらリプレイ再生無効
+	if(
+		#ifndef NOMONITOR
+			cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+		#endif
+			( REPLAY::GetStatus() == REP_RECORD ) )
+		repleyLoad->setEnabled(false);
 
-    QAction* repleySave = addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
-    if (REPLAY::GetStatus() == REP_IDLE){
-        QAction* repleyResumeSave = addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
-    }
-    if (REPLAY::GetStatus() == REP_RECORD){
-        QAction* repleyDokoLoad = addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);
-        QAction* repleyDokoSave = addCommand(replayMenu, tr("途中保存から再開"), ID_REPLAYDOKOLOAD);
-    }
-    systemMenu->addSeparator();
-    // モニタモード or ブレークポインタが設定されている
-    // またはリプレイ再生中だったらリプレイ記録無効
-    if(
-        #ifndef NOMONITOR
-            cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
-        #endif
-            ( REPLAY::GetStatus() == REP_REPLAY ) )
-        repleySave->setEnabled(false);
+	QAction* repleySave = addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
+	if (REPLAY::GetStatus() == REP_IDLE){
+		addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
+	}
+	if (REPLAY::GetStatus() == REP_RECORD){
+		addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);
+		addCommand(replayMenu, tr("途中保存から再開"), ID_REPLAYDOKOLOAD);
+	}
+	systemMenu->addSeparator();
+	// モニタモード or ブレークポインタが設定されている
+	// またはリプレイ再生中だったらリプレイ記録無効
+	if(
+		#ifndef NOMONITOR
+			cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+		#endif
+			( REPLAY::GetStatus() == REP_REPLAY ) )
+		repleySave->setEnabled(false);
 
 #if 0
-    // ビデオキャプチャ
-    addCommand(systemMenu, AVI6::IsAVI() ? MSMEN_AVI1 : MSMEN_AVI0, ID_AVISAVE);
-    systemMenu->addSeparator();
+	// ビデオキャプチャ
+	addCommand(systemMenu, AVI6::IsAVI() ? MSMEN_AVI1 : MSMEN_AVI0, ID_AVISAVE);
+	systemMenu->addSeparator();
 #endif
 
-    addCommand(systemMenu, tr("打込み代行..."), ID_AUTOTYPE);
-    systemMenu->addSeparator();
-    addCommand(systemMenu, tr("終了"), ID_QUIT);
+	addCommand(systemMenu, tr("打込み代行..."), ID_AUTOTYPE);
+	systemMenu->addSeparator();
+	addCommand(systemMenu, tr("終了"), ID_QUIT);
 
-    // TAPEメニュー
-    QMenu* tapeMenu = menu.addMenu(tr("TAPE"));
-    addCommand(tapeMenu, tr("挿入..."), ID_TAPEINSERT);
-    QAction* tapeEject = addCommand(tapeMenu, tr("取出"), ID_TAPEEJECT);
-    if(!*vm->cmtl->GetFile()) tapeEject->setEnabled(false);
+	// TAPEメニュー
+	QMenu* tapeMenu = menu.addMenu(tr("TAPE"));
+	addCommand(tapeMenu, tr("挿入..."), ID_TAPEINSERT);
+	QAction* tapeEject = addCommand(tapeMenu, tr("取出"), ID_TAPEEJECT);
+	if(!*vm->cmtl->GetFile()) tapeEject->setEnabled(false);
 
-    // DISKメニュー
-    if (vm->disk->GetDrives()){
-        QMenu* diskMenu = menu.addMenu(tr("DISK"));
-        for (int i = 0; i < vm->disk->GetDrives(); i++){
-            QString item = QString("Drive%1").arg(i + 1);
-            QMenu* driveMenu = diskMenu->addMenu(item);
-            addCommand(driveMenu, tr("挿入..."), MenuCommand(ID_DISKINSERT1 + i));
-            QAction* diskEject = addCommand(driveMenu, tr("取出"), MenuCommand(ID_DISKEJECT1 + i));
-            if (!*vm->disk->GetFile(i)) diskEject->setEnabled(false);
-        }
-    }
+	// DISKメニュー
+	if (vm->disk->GetDrives()){
+		QMenu* diskMenu = menu.addMenu(tr("DISK"));
+		for (int i = 0; i < vm->disk->GetDrives(); i++){
+			QString item = QString("Drive%1").arg(i + 1);
+			QMenu* driveMenu = diskMenu->addMenu(item);
+			addCommand(driveMenu, tr("挿入..."), MenuCommand(ID_DISKINSERT1 + i));
+			QAction* diskEject = addCommand(driveMenu, tr("取出"), MenuCommand(ID_DISKEJECT1 + i));
+			if (!*vm->disk->GetFile(i)) diskEject->setEnabled(false);
+		}
+	}
 
-    // 拡張ROMメニュー
-    QMenu* extRomMenu = menu.addMenu(tr("拡張ROM"));
-    addCommand(extRomMenu, tr("挿入..."), ID_ROMINSERT);
-    QAction* romEject = addCommand(extRomMenu, tr("取出"), ID_ROMEJECT);
-    if(!*vm->mem->GetFile()) romEject->setEnabled(false);
+	// 拡張ROMメニュー
+	QMenu* extRomMenu = menu.addMenu(tr("拡張ROM"));
+	addCommand(extRomMenu, tr("挿入..."), ID_ROMINSERT);
+	QAction* romEject = addCommand(extRomMenu, tr("取出"), ID_ROMEJECT);
+	if(!*vm->mem->GetFile()) romEject->setEnabled(false);
 
 #ifndef NOJOYSTICK
-    // ジョイスティックメニュー
-    QMenu* joystickMenu = menu.addMenu(tr("ジョイスティック"));
-    //------
-    QMenu* joyMenu1 = joystickMenu->addMenu("1");
-    QMenu* joyMenu2 = joystickMenu->addMenu("2");
-    QActionGroup* joyGroup1 = new QActionGroup(&menu);
-    QActionGroup* joyGroup2 = new QActionGroup(&menu);
-    for( int i = 0; i < 5; i++ ){
-        if( i < OSD_GetJoyNum() ){
-            QAction* joyAction1 = addCommand(joyMenu1, OSD_GetJoyName( i ), MenuCommand(ID_JOY101 + i), true);
-            QAction* joyAction2 = addCommand(joyMenu2, OSD_GetJoyName( i ), MenuCommand(ID_JOY201 + i), true);
-            joyGroup1->addAction(joyAction1);
-            joyGroup2->addAction(joyAction2);
-            if(joy->GetID(0) == i) joyAction1->setChecked(true);
-            if(joy->GetID(1) == i) joyAction2->setChecked(true);
-        }
-    }
-    QAction* noJoy1 = addCommand(joyMenu1, tr("なし"), ID_JOY100, true);
-    QAction* noJoy2 = addCommand(joyMenu2, tr("なし"), ID_JOY200, true);
-    joyGroup1->addAction(noJoy1);
-    joyGroup2->addAction(noJoy2);
-    if (joy->GetID(0) < 0) noJoy1->setChecked(true);
-    if (joy->GetID(1) < 0) noJoy2->setChecked(true);
+	// ジョイスティックメニュー
+	QMenu* joystickMenu = menu.addMenu(tr("ジョイスティック"));
+	//------
+	QMenu* joyMenu1 = joystickMenu->addMenu("1");
+	QMenu* joyMenu2 = joystickMenu->addMenu("2");
+	QActionGroup* joyGroup1 = new QActionGroup(&menu);
+	QActionGroup* joyGroup2 = new QActionGroup(&menu);
+	for( int i = 0; i < 5; i++ ){
+		if( i < OSD_GetJoyNum() ){
+			QAction* joyAction1 = addCommand(joyMenu1, OSD_GetJoyName( i ), MenuCommand(ID_JOY101 + i), true);
+			QAction* joyAction2 = addCommand(joyMenu2, OSD_GetJoyName( i ), MenuCommand(ID_JOY201 + i), true);
+			joyGroup1->addAction(joyAction1);
+			joyGroup2->addAction(joyAction2);
+			if(joy->GetID(0) == i) joyAction1->setChecked(true);
+			if(joy->GetID(1) == i) joyAction2->setChecked(true);
+		}
+	}
+	QAction* noJoy1 = addCommand(joyMenu1, tr("なし"), ID_JOY100, true);
+	QAction* noJoy2 = addCommand(joyMenu2, tr("なし"), ID_JOY200, true);
+	joyGroup1->addAction(noJoy1);
+	joyGroup2->addAction(noJoy2);
+	if (joy->GetID(0) < 0) noJoy1->setChecked(true);
+	if (joy->GetID(1) < 0) noJoy2->setChecked(true);
 #endif
 
-    // 設定メニュー
-    QMenu* settingsMenu = menu.addMenu(tr("設定"));
-    QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
-    if (cfg->GetFullScreen()) fullScreen->setChecked(true);
-    QAction* statusBar = addCommand(settingsMenu, tr("ステータスバー"), ID_STATUS, true);
-    if (cfg->GetDispStat()) statusBar->setChecked(true);
-    QAction* disp43 = addCommand(settingsMenu, tr("4:3表示"), ID_DISP43, true);
-    if (cfg->GetDispNTSC()) disp43->setChecked(true);
-    QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
-    if (cfg->GetScanLine()) scanLine->setChecked(true);
-    QAction* tiltMode = addCommand(settingsMenu, tr("TILTモード"), ID_TILT, true);
-    if (app->isTiltEnabled()) tiltMode->setChecked(true);
+	// 設定メニュー
+	QMenu* settingsMenu = menu.addMenu(tr("設定"));
+	// 表示サイズメニュー
+	QMenu* dispSizeMenu = settingsMenu->addMenu(tr("表示サイズ"));
+	addCommand(dispSizeMenu, tr("50%"), ID_SIZE50);
+	addCommand(dispSizeMenu, tr("100%"), ID_SIZE100);
+	addCommand(dispSizeMenu, tr("200%"), ID_SIZE200);
+	addCommand(dispSizeMenu, tr("300%"), ID_SIZE300);
+	addCommand(dispSizeMenu, tr("倍率を指定..."), ID_SIZEMANUAL);
+	QAction* fixMagnification = addCommand(dispSizeMenu, tr("倍率を固定"), ID_FIXMAGNIFICATION, true);
+	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
 
-    QMenu* colorMenu = settingsMenu->addMenu(tr("MODE4 カラー"));
-    QActionGroup* colorGroup = new QActionGroup(&menu);
-    QStringList colorList = (QStringList()
-                             << tr("モノクロ")
-                             << tr("赤/青")
-                             << tr("青/赤")
-                             << tr("桃/緑")
-                             << tr("緑/桃"));
-    for( int i = 0; i < 5; i++ ){
-        QAction* color = addCommand(colorMenu, colorList[i], MenuCommand(ID_M4MONO + i), true);
-        if (vm->vdg->GetMode4Color() == i) color->setChecked(true);
-    }
+	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
+	if (cfg->GetFullScreen()) fullScreen->setChecked(true);
+	QAction* statusBar = addCommand(settingsMenu, tr("ステータスバー"), ID_STATUS, true);
+	if (cfg->GetDispStat()) statusBar->setChecked(true);
+	QAction* disp43 = addCommand(settingsMenu, tr("4:3表示"), ID_DISP43, true);
+	if (cfg->GetDispNTSC()) disp43->setChecked(true);
+	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
+	if (cfg->GetScanLine()) scanLine->setChecked(true);
+#ifndef NOOPENGL
 
-    QMenu* fpsMenu = settingsMenu->addMenu(tr("フレームスキップ"));
-    settingsMenu->addSeparator();
-    QActionGroup* fpsGroup = new QActionGroup(&menu);
-    QStringList fpsList = (QStringList()
-                           << "0 (60fps)"
-                           << "1 (30fps)"
-                           << "2 (20fps)"
-                           << "3 (15fps)"
-                           << "4 (12fps)"
-                           << "5 (10fps)");
-    for( int i = 0; i < fpsList.size(); i++ ){
-        QAction* fps = addCommand(fpsMenu, fpsList[i], MenuCommand(ID_FSKP0 + i), true);
-        if (cfg->GetFrameSkip() == i) fps->setChecked(true);
-    }
+	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
+	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool()) hwAccel->setChecked(true);
+#endif
+	QAction* filtering = addCommand(settingsMenu, tr("フィルタリング"), ID_FILTERING, true);
+	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool()) filtering->setChecked(true);
 
-    QMenu* sprMenu = settingsMenu->addMenu(tr("サンプリングレート"));
-    settingsMenu->addSeparator();
-    QActionGroup* sprGroup = new QActionGroup(&menu);
-    QStringList sprList = (QStringList()
-                           << "44100Hz"
-                           << "22050Hz"
-                           << "11025Hz");
-    for( int i = 0; i < sprList.size(); i++ ){
-        QAction* spr = addCommand(sprMenu, sprList[i], MenuCommand(ID_SPR44 + i), true);
-        if (2 - ((cfg->GetSampleRate()/11025)>>1) == i) spr->setChecked(true);
-    }
+	QAction* tiltMode = addCommand(settingsMenu, tr("TILTモード"), ID_TILT, true);
+	if (app->isTiltEnabled()) tiltMode->setChecked(true);
 
-    QAction* noWait = addCommand(settingsMenu, tr("ウェイト無効"), ID_NOWAIT, true);
-    if (!sche->GetWaitEnable()) noWait->setChecked(true);
-    QAction* turboTape = addCommand(settingsMenu, tr("Turbo TAPE"), ID_TURBO, true);
-    if (cfg->GetTurboTAPE()) turboTape->setChecked(true);
-    QAction* boostUp =  addCommand(settingsMenu, tr("Boost Up"), ID_BOOST, true);
-    if (vm->cmtl->IsBoostUp()) boostUp->setChecked(true);
-    addCommand(settingsMenu, tr("環境設定..."), ID_CONFIG);
+	QMenu* colorMenu = settingsMenu->addMenu(tr("MODE4 カラー"));
+	QActionGroup* colorGroup = new QActionGroup(&menu);
+	QStringList colorList = (QStringList()
+							 << tr("モノクロ")
+							 << tr("赤/青")
+							 << tr("青/赤")
+							 << tr("桃/緑")
+							 << tr("緑/桃"));
+	for( int i = 0; i < 5; i++ ){
+		QAction* color = addCommand(colorMenu, colorList[i], MenuCommand(ID_M4MONO + i), true);
+		if (vm->vdg->GetMode4Color() == i) color->setChecked(true);
+	}
+
+	QMenu* fpsMenu = settingsMenu->addMenu(tr("フレームスキップ"));
+	settingsMenu->addSeparator();
+	QActionGroup* fpsGroup = new QActionGroup(&menu);
+	QStringList fpsList = (QStringList()
+						   << "0 (60fps)"
+						   << "1 (30fps)"
+						   << "2 (20fps)"
+						   << "3 (15fps)"
+						   << "4 (12fps)"
+						   << "5 (10fps)");
+	for( int i = 0; i < fpsList.size(); i++ ){
+		QAction* fps = addCommand(fpsMenu, fpsList[i], MenuCommand(ID_FSKP0 + i), true);
+		if (cfg->GetFrameSkip() == i) fps->setChecked(true);
+	}
+
+	QMenu* sprMenu = settingsMenu->addMenu(tr("サンプリングレート"));
+	settingsMenu->addSeparator();
+	QActionGroup* sprGroup = new QActionGroup(&menu);
+	QStringList sprList = (QStringList()
+						   << "44100Hz"
+						   << "22050Hz"
+						   << "11025Hz");
+	for( int i = 0; i < sprList.size(); i++ ){
+		QAction* spr = addCommand(sprMenu, sprList[i], MenuCommand(ID_SPR44 + i), true);
+		if (2 - ((cfg->GetSampleRate()/11025)>>1) == i) spr->setChecked(true);
+	}
+
+	QAction* noWait = addCommand(settingsMenu, tr("ウェイト無効"), ID_NOWAIT, true);
+	if (!sche->GetWaitEnable()) noWait->setChecked(true);
+	QAction* turboTape = addCommand(settingsMenu, tr("Turbo TAPE"), ID_TURBO, true);
+	if (cfg->GetTurboTAPE()) turboTape->setChecked(true);
+	QAction* boostUp =  addCommand(settingsMenu, tr("Boost Up"), ID_BOOST, true);
+	if (vm->cmtl->IsBoostUp()) boostUp->setChecked(true);
+	addCommand(settingsMenu, tr("環境設定..."), ID_CONFIG);
 
 #ifndef NOMONITOR
-    // デバッグメニュー
-    QMenu* debugMenu = menu.addMenu(tr("デバッグ"));
-    menu.addSeparator();
-    QAction* monitorMode =  addCommand(debugMenu, tr("モニタモード"), ID_MONITOR, true);
-    if (cfg->GetMonDisp()) monitorMode->setChecked(true);
+	// デバッグメニュー
+	QMenu* debugMenu = menu.addMenu(tr("デバッグ"));
+	menu.addSeparator();
+	QAction* monitorMode =  addCommand(debugMenu, tr("モニタモード"), ID_MONITOR, true);
+	if (cfg->GetMonDisp()) monitorMode->setChecked(true);
 #endif
 
-    // ヘルプメニュー
-    QMenu* helpMenu = menu.addMenu(tr("ヘルプ"));
-    addCommand(helpMenu, tr("バージョン情報..."), ID_VERSION);
+	// ヘルプメニュー
+	QMenu* helpMenu = menu.addMenu(tr("ヘルプ"));
+	addCommand(helpMenu, tr("バージョン情報..."), ID_VERSION);
 
-    selectedAction = menu.exec(QCursor::pos());
+	selectedAction = menu.exec(QPoint(x, y));
 
-    if (selectedAction != NULL) {
-        // 項目ごとの処理
-        MenuCommand id = selectedAction->property(MENUIDPROPERTY).value<MenuCommand>();
-        ExecMenu(id);
-    }
-    if(
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-            !cfg->GetMonDisp()  &&
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-            cfg->GetFullScreen()){
-        OSD_ShowCursor( false );
-    }
+	if (selectedAction != NULL) {
+		// 項目ごとの処理
+		MenuCommand id = selectedAction->property(MENUIDPROPERTY).value<MenuCommand>();
+		ExecMenu(id);
+	}
+	if(
+		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+			!cfg->GetMonDisp()  &&
+		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
+			cfg->GetFullScreen()){
+		OSD_ShowCursor( false );
+	}
 }
 
 
 
 void QtEL6::updateFPS()
 {
-    Event ev;
-    ev.type = EV_FPSUPDATE;
-    ev.fps.fps = UDFPSCount;
-    OSD_PushEvent( ev );
-    UDFPSCount = 0;
+	Event ev;
+	ev.type = EV_FPSUPDATE;
+	ev.fps.fps = UDFPSCount;
+	OSD_PushEvent( ev );
+	UDFPSCount = 0;
 }
 
 
@@ -412,22 +464,15 @@ void QtEL6::updateFPS()
 
 bool QtEL6::GetPauseEnable()
 {
-    return sche->GetPauseEnable();
+	if(sche){
+		return sche->GetPauseEnable();
+	}
 }
 
-bool QtEL6::Start()
+void QtEL6::SetPauseEnable(bool en)
 {
-    // 実行速度を復元
-    while(sche->GetSpeedRatio() != Speed){
-        sche->SetSpeedRatio(Speed > 100 ? 1 : -1);
-    }
-    EL6::Start();
-}
-
-void QtEL6::Stop()
-{
-    // 実行速度を退避
-    Speed = sche->GetSpeedRatio();
-    EL6::Stop();
+	if(sche){
+		sche->SetPauseEnable(en);
+	}
 }
 

@@ -72,7 +72,8 @@ protected:
 	int UDFPSCount;				// FPS表示タイマカウンタ
 	int FSkipCount;				// フレームスキップカウンタ
 	
-	
+	static int Speed;           // 停止時の速度退避用
+
 	void DeleteAllObject();					// 全オブジェクト削除
 	
 	bool ScreenUpdate();					// 画面更新
@@ -171,8 +172,8 @@ public:
 	
 	bool Init( const CFG6 * );				// 初期化
 	
-    virtual bool Start();							// 動作開始
-    virtual void Stop();							// 動作停止
+	bool Start();							// 動作開始
+	void Stop();							// 動作停止
 	
 	ReturnCode EventLoop();					// イベントループ
 	

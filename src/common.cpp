@@ -533,18 +533,17 @@ void UpdateTilt()
     QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
     if(!app->isTiltEnabled()) return;
 
-    const qreal step = 0.5;
-    const qreal maxAngle = 15.0;
-    qreal t = app->getTiltAngle();
+	const int maxStep = 30;
+	const int t = app->getTiltStep();
     switch (app->getTiltDirection()){
     case LEFT: //左
-        app->setTiltAngle(qMax(-maxAngle, t - step));
+		app->setTiltStep(qMax(-maxStep, t - 1));
         break;
     case RIGHT: // 右
-        app->setTiltAngle(qMin(maxAngle, t + step));
+		app->setTiltStep(qMin(maxStep, t + 1));
         break;
-    case NEWTRAL:
-        app->setTiltAngle(t > step ? t - step : t < -step ? t + step : 0.0);
+	case NEWTRAL:
+		app->setTiltStep(t == 0 ? 0 : t > 0 ? t - 1 : t + 1);
     default:;
     }
 }

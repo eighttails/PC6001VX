@@ -4,6 +4,7 @@
 #include <QtSingleApplication>
 #include <QImage>
 #include <QMutex>
+#include <QSettings>
 
 #include "../typedef.h"
 #include "../p6vm.h"
@@ -12,22 +13,41 @@
 #include "qtel6.h"
 #include "emulationadaptor.h"
 
-class QtP6VXApplication : public QtSingleApplication
+#ifdef NOSINGLEAPP
+typedef QApplication ParentAppClass;
+#else
+typedef QtSingleApplication ParentAppClass;
+#endif
+
+class QtP6VXApplication : public ParentAppClass
 {
     Q_OBJECT
 public:
+	//設定用キー
+	static const QString keyGeometry;			// ウィンドウ表示位置
+	static const QString keyMaximized;			// ウィンドウ最大化フラグ
+	static const QString keyHwAccel;			// ハードウェアアクセラレーション(OpenGL/DirectX)有効化フラグ
+	static const QString keyFiltering;			// 画面拡大縮小時のフィルタリング有効化フラグ
+	static const QString keyFixMagnification;	// 表示倍率固定フラグ
+	static const QString keyMagnification;		// 表示倍率
+
     explicit QtP6VXApplication(int &argc, char **argv);
     virtual ~QtP6VXApplication();
 
     virtual bool notify(QObject *receiver, QEvent *event);
+
+	// P6VX固有の設定
+	static const QVariant getSetting(const QString& key);
+	static void setSetting(const QString& key, const QVariant& value);
+	static void setDefaultSetting(const QString &key, const QVariant &value);
 
     // TILT関連
     bool isTiltEnabled();
     void enableTilt(bool enable);
     TiltDirection getTiltDirection();
     void setTiltDirection(TiltDirection dir);
-    qreal getTiltAngle();
-    void setTiltAngle(qreal angle);
+	int getTiltStep();
+	void setTiltStep(int step);
 
 public slots:
     //仮想マシンの起動→終了→再起動のループ
@@ -77,12 +97,14 @@ private:
     EL6::ReturnCode Restart;	// 再起動フラグ
     CFG6 Cfg;					// 環境設定オブジェクト
     EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ
-    QMutex propretyMutex;       // 属性値保護のためのMutex
+	QMutex PropretyMutex;       // 属性値保護のためのMutex
     QMutex MenuMutex;           // メニュー表示中にロックされるMutex
 
-    bool TiltEnabled;
+	// P6VX固有の設定
+	static QMutex SettingMutex; // 設定読み書き用Mutex
+	bool TiltEnabled;
     TiltDirection TiltDir;
-    qreal TiltAngle;
+	int TiltStep;
 };
 
 #endif // QTP6VXAPPLICATION_H

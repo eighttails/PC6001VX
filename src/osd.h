@@ -53,7 +53,7 @@ bool OSD_FileExist( const char * );
 bool OSD_FileReadOnly( const char * );
 // パスからファイル名を取得
 const char *OSD_GetFileNamePart( const char * );
-// パスから拡張子名を取得
+// パスからフォルダ名を取得
 const char *OSD_GetFolderNamePart( const char * );
 // フルパスから拡張子名を取得
 const char *OSD_GetFileNameExt( const char * );

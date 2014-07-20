@@ -22,7 +22,11 @@
 #include "aboutdialog.h"
 
 #include "renderview.h"
+#include "qtp6vxapplication.h"
 
+#ifndef NOSOUND
+#include "wavfile.h"
+#endif
 ///////////////////////////////////////////////////////////
 // 仕方なしにスタティック変数
 ///////////////////////////////////////////////////////////
@@ -768,15 +772,16 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
 {
-    static QGraphicsScene* scene = new QGraphicsScene();
-    static RenderView* view = new RenderView(scene);
-    scene->setSceneRect(0, 0, w, h);
+	static QGraphicsScene* scene = new QGraphicsScene();
+	static RenderView* view = new RenderView(scene);
+
+	scene->setSceneRect(0, 0, w, h);
 
     //アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
-    QObject::connect(qApp, SIGNAL(aboutToQuit()), scene, SLOT(deleteLater()));
+	QObject::connect(qApp, SIGNAL(aboutToQuit()), scene, SLOT(deleteLater()));
 
-    view->moveToThread(qApp->thread());
-    *pwh = view;
+	view->moveToThread(qApp->thread());
+	*pwh = view;
 
     QMetaObject::invokeMethod(qApp, "createWindow",
                               Q_ARG(HWINDOW, *pwh),
@@ -794,7 +799,7 @@ bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
 ////////////////////////////////////////////////////////////////
 void OSD_DestroyWindow( HWINDOW Wh )
 {
-    // 何もしない
+	// 何もしない
 }
 
 
@@ -810,7 +815,7 @@ int OSD_GetWindowWidth( HWINDOW Wh )
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
 
-    return view->scene()->width();
+	return view->scene()->width();
 }
 
 
@@ -822,11 +827,11 @@ int OSD_GetWindowWidth( HWINDOW Wh )
 ////////////////////////////////////////////////////////////////
 int OSD_GetWindowHeight( HWINDOW Wh )
 {
-    //QtではSceneRectの幅を返す
+	//QtではSceneRectの高さを返す
     QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
     Q_ASSERT(view);
 
-    return view->scene()->height();
+	return view->scene()->height();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1078,7 +1083,7 @@ void OSD_AbsolutePath( char *path )
     if( !QDir( path ).isRelative()  || !strlen( path ) ) return;
     QDir dir(OSD_GetModulePath());
     dir.cd(path);
-    strcpy(path, dir.absolutePath().toLocal8Bit().data());
+	strcpy(path, (dir.absolutePath() + QDir::separator()).toLocal8Bit().data());
 }
 
 
@@ -1626,19 +1631,21 @@ bool OSD_AudioPlaying( void )
 ////////////////////////////////////////////////////////////////
 bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 {
-    //#PENDING
-    //    SDL_AudioSpec ws;
+#ifndef NOSOUND
+	WavFile w;
+	if(!w.open(filepath)) return false;
 
-    //    if( !SDL_LoadWAV( filepath, &ws, buf, (Uint32 *)len ) ) return false;
-
-    //    if( ws.freq < 22050 || ws.format != AUDIO_S16 || ws.channels != 1 ){
-    //        SDL_FreeWAV( *buf );
-    //        return false;
-    //    }
-
-    //    *freq    = ws.freq;
-
-    return true;
+	const QAudioFormat& format = w.fileFormat();
+	size_t bodySize = w.size() - w.headerLength();
+	*len = bodySize;
+	*freq = format.sampleRate();
+	BYTE* buffer = new BYTE[bodySize];
+	memcpy(buffer, &w.readAll().data()[w.headerLength()], bodySize);
+	*buf = buffer;
+	return true;
+#else
+	return false;
+#endif
 }
 
 
@@ -1650,7 +1657,7 @@ bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 ////////////////////////////////////////////////////////////////
 void OSD_FreeWAV( BYTE *buf )
 {
-    // 何もしない
+	if(buf) delete[] buf;
 }
 
 

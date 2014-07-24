@@ -152,7 +152,7 @@ void EL6::ExecMenu( int id )
 									  !QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool());
 		break;
 	case ID_HWACCEL:
-		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toLocal8Bit().data(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
+        if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
 			QtP6VXApplication::setSetting(QtP6VXApplication::keyHwAccel,
 										  !QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool());
 			UI_Quit();

@@ -680,13 +680,14 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 			graph->SnapShot( cfg->GetImgPath() );
 		}
 		break;
-		
-	case KVX_MENU:			// ポップアップメニュー表示
-		Stop();
-		ShowPopupMenu( 0, 0 );
-		Start();
-		break;
-	case KVC_MUHENKAN:      // どこでもSAVE
+#if 0 //ContextMenuEventで拾われるはず
+    case KVX_MENU:			// ポップアップメニュー表示
+        Stop();
+        ShowPopupMenu( 0, 0 );
+        Start();
+        break;
+#endif
+    case KVC_MUHENKAN:      // どこでもSAVE
 		Stop();
 		if(REPLAY::GetStatus() == REP_RECORD){
 			UI_ReplayDokoSave();

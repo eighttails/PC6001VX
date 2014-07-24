@@ -4,6 +4,7 @@
 #include <QtSingleApplication>
 #include <QImage>
 #include <QMutex>
+#include <QPointer>
 #include <QSettings>
 
 #include "../typedef.h"
@@ -93,7 +94,7 @@ private slots:
     void terminateEmulation();
 
 private:
-    QtEL6 *P6Core;    			// オブジェクトポインタ
+    QPointer<QtEL6> P6Core;		// オブジェクトポインタ
     EL6::ReturnCode Restart;	// 再起動フラグ
     CFG6 Cfg;					// 環境設定オブジェクト
     EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ

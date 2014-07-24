@@ -16,10 +16,10 @@ CONFIG += link_prl
 #Qt依存コードを書く際のDEFINE
 DEFINES += QTP6VX
 
-#ジョイスティックが不要な場合、コメントアウトをはずす(SDLが不要になる)
+#ジョイス�?���?��が不要な場合�?�コメントアウトをはずす(SDLが不要にな�?)
 #DEFINES += NOJOYSTICK
 
-#その他のフィーチャー無効化フラグ
+#そ�?他�?フィーチャー無効化フラグ
 #DEFINES += NOSINGLEAPP
 #DEFINES += NOOPENGL
 #DEFINES += NOSOUND
@@ -28,13 +28,13 @@ DEFINES += QTP6VX
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
-#Android用設定
+#Android用設�?
 android:{
 QTPLUGIN += qico
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN
 }
 
-#OpenPandora用設定
+#OpenPandora用設�?
 pandora:{
 DEPLOY_PATH = /media/sddev/pc6001vx
 target.path = $${DEPLOY_PATH}
@@ -43,21 +43,19 @@ sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
                     $${PANDORA_SDK}/usr/lib/libX11-xcb.so.1* \
                     $${PANDORA_SDK}/usr/lib/libxcb.so.1*
 
-#QTPLUGIN += qico qxcb qgtk2
 INSTALLS += target sharedlibs
 DEFINES += NOJOYSTICK NOMONITOR NOOPENGL
 }
 
-#Windows用設定
+#Windows用設�?
 win32:{
-#Windowsでは極力ライブラリをスタティックリンクする。Qtプラグインもスタティックライブラリとしてしてリンクする
-QTPLUGIN += qico
+#Windowsでは極力ライブラリをスタ�?���?��リンクする。Qtプラグインもスタ�?���?��ライブラリとしてしてリンクする
 QMAKE_LFLAGS += -static -lpthread
 RC_FILE = src/win32/PC6001VX.rc
 
 !contains(DEFINES, NOJOYSTICK) {
-#Windowsでは環境変数SDL_DIRにSDL2のフォルダパスを定義しておく。
-QMAKE_CXXFLAGS += -I$$(SDL_DIR)/include -Dmain=SDL_main                     
+#Windowsでは環�?��数SDL_DIRにSDL2のフォル�?パスを定義しておく�?
+QMAKE_CXXFLAGS += -I$$(SDL_DIR)/include -Dmain=SDL_main
 LIBS += -L$$(SDL_DIR)/lib -lmingw32 -lSDL2main -lSDL2 -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -luuid
 }
 } else {
@@ -235,13 +233,12 @@ OTHER_FILES += \
     openpandora/pandora_develop_environment/linux-pandora-g++/qmake.conf \
     win32/buildenv.sh \
     win32/toolchain.sh \
-    win32/CFLAGS.patch \
-    win32/libGLESv2.patch \
     win32/optimize.patch \
     src/Qt/translation/PC6001VX_en.ts \
     src/Qt/translation/PC6001VX_en.qm \
     android/AndroidManifest.xml \
-    openpandora/pandora_develop_environment/qtmultimedia53.patch
+    openpandora/pandora_develop_environment/qtmultimedia53.patch \
+    win32/angle.patch
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

@@ -17,7 +17,9 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     setStyleSheet( "QGraphicsView { border-style: none; }" );
 
 #ifndef NOOPENGL
-	if(QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool()){
+	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+	if(!app->isSafeMode() &&
+			QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool()){
 		QGLWidget* glw = new QGLWidget(this);
 		// QGraphicsViewに使うにはOpenGL2以上が必要
 		if(glw->format().majorVersion() >= 2){

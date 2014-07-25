@@ -76,6 +76,7 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv)
 	, TiltEnabled(false)
 	, TiltDir(NEWTRAL)
 	, TiltStep(0)
+	, SafeMode(false)
 {
 	//アプリで定義した型名をシグナルの引数として使えるようにする
 	qRegisterMetaType<HWINDOW>("HWINDOW");
@@ -147,12 +148,8 @@ void QtP6VXApplication::startup()
 
 	// P6VXデフォルト設定
 #ifndef NOOPENGL
-#if defined WIN32
-	const bool defHwAccel = false;
-#else
 	const bool defHwAccel = true;
-#endif
-	setDefaultSetting(keyHwAccel, defHwAccel);
+	setDefaultSetting(keyHwAccel, true);
 #endif
 	setDefaultSetting(keyFiltering, true);
 	setDefaultSetting(keyFixMagnification, false);
@@ -348,6 +345,18 @@ int QtP6VXApplication::getTiltStep()
 {
 	QMutexLocker lock(&PropretyMutex);
 	return TiltStep;
+}
+
+bool QtP6VXApplication::isSafeMode()
+{
+	QMutexLocker lock(&PropretyMutex);
+	return SafeMode;
+}
+
+void QtP6VXApplication::enableSafeMode(bool enable)
+{
+	QMutexLocker lock(&PropretyMutex);
+	SafeMode = enable;
 }
 
 //仮想マシンを開始させる

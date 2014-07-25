@@ -32,7 +32,7 @@ public:
 	static const QString keyFixMagnification;	// 表示倍率固定フラグ
 	static const QString keyMagnification;		// 表示倍率
 
-    explicit QtP6VXApplication(int &argc, char **argv);
+	explicit QtP6VXApplication(int &argc, char **argv);
     virtual ~QtP6VXApplication();
 
     virtual bool notify(QObject *receiver, QEvent *event);
@@ -49,6 +49,10 @@ public:
     void setTiltDirection(TiltDirection dir);
 	int getTiltStep();
 	void setTiltStep(int step);
+
+	// セーフモード(一時的にハードウェアアクセラレーションを無効化する)
+	bool isSafeMode();
+	void enableSafeMode(bool enable);
 
 public slots:
     //仮想マシンの起動→終了→再起動のループ
@@ -106,6 +110,8 @@ private:
 	bool TiltEnabled;
     TiltDirection TiltDir;
 	int TiltStep;
+
+	bool SafeMode;
 };
 
 #endif // QTP6VXAPPLICATION_H

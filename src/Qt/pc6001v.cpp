@@ -19,6 +19,13 @@ int main( int argc, char *argv[] )
 
 	QtP6VXApplication app(argc, argv);
 
+	QCommandLineParser parser;
+	QCommandLineOption forceOption(QStringList() << "s" << "safemode", "Safe Mode");
+	parser.addOption(forceOption);
+	parser.process(app);
+	bool safeMode = parser.isSet(forceOption);
+	app.enableSafeMode(safeMode);
+
 	QLocale locale;
     QString lang = locale.uiLanguages()[0];
     QTranslator myappTranslator;

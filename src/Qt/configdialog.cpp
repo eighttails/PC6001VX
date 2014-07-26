@@ -109,8 +109,11 @@ void ConfigDialog::readConfig()
     ui->checkBoxStatDisp->setChecked(config->GetDispStat());
 
 	// ハードウェアアクセラレーション
+#ifndef NOOPENGL
 	ui->checkBoxHwAccel->setChecked(QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool());
-
+#else
+	ui->checkBoxHwAccel->setVisible(false);
+#endif
 	// フィルタリング
 	ui->checkBoxFiltering->setChecked(QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool());
 

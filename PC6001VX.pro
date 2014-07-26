@@ -13,13 +13,13 @@ TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 
 CONFIG += link_prl
 
-#Qt依存コードを書く際のDEFINE
+#Define for Qt dependent code
 DEFINES += QTP6VX
 
-#ジョイス�?���?��が不要な場合�?�コメントアウトをはずす(SDLが不要にな�?)
+#Disable joystick support.If joystick support is disabled, PC6001VX does not depend on SDL2.
 #DEFINES += NOJOYSTICK
 
-#そ�?他�?フィーチャー無効化フラグ
+#Other feature control flags.
 #DEFINES += NOSINGLEAPP
 #DEFINES += NOOPENGL
 #DEFINES += NOSOUND
@@ -28,13 +28,13 @@ DEFINES += QTP6VX
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
-#Android用設�?
+#Configuration for Android
 android:{
 QTPLUGIN += qico
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN
 }
 
-#OpenPandora用設�?
+#Configuration for OpenPandora
 pandora:{
 DEPLOY_PATH = /media/sddev/pc6001vx
 target.path = $${DEPLOY_PATH}
@@ -47,14 +47,14 @@ INSTALLS += target sharedlibs
 DEFINES += NOJOYSTICK NOMONITOR NOOPENGL
 }
 
-#Windows用設�?
+#Configuration for Windows
 win32:{
-#Windowsでは極力ライブラリをスタ�?���?��リンクする。Qtプラグインもスタ�?���?��ライブラリとしてしてリンクする
+#On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
 RC_FILE = src/win32/PC6001VX.rc
 
 !contains(DEFINES, NOJOYSTICK) {
-#Windowsでは環�?��数SDL_DIRにSDL2のフォル�?パスを定義しておく�?
+#On Windows, referes SDL_DIR environment variable to search SDL2
 QMAKE_CXXFLAGS += -I$$(SDL_DIR)/include -Dmain=SDL_main
 LIBS += -L$$(SDL_DIR)/lib -lmingw32 -lSDL2main -lSDL2 -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -luuid
 }

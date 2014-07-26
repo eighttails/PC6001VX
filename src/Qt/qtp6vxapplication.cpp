@@ -539,7 +539,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 
 		// 特殊キー対策
 		quint32 nativeKey = ke->nativeScanCode();
-		qDebug("keycode %d\n", keyCode);
+		qDebug("keycode 0x%x\n", keyCode);
 		qDebug("nativekeycode %d\n", nativeKey);
 
 		//X11の場合

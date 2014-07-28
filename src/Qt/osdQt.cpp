@@ -1086,8 +1086,7 @@ void OSD_AbsolutePath( char *path )
 {
 	if( !QDir( path ).isRelative()  || !strlen( path ) ) return;
 	QDir dir(OSD_GetModulePath());
-	dir.cd(path);
-	strcpy(path, (dir.absolutePath() + QDir::separator()).toLocal8Bit().data());
+	strcpy(path, dir.absoluteFilePath(path).toLocal8Bit().data());
 }
 
 

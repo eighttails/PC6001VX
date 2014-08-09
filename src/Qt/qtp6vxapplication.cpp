@@ -359,9 +359,26 @@ void QtP6VXApplication::enableSafeMode(bool enable)
 	SafeMode = enable;
 }
 
+QString QtP6VXApplication::getCustomRomPath()
+{
+	QMutexLocker lock(&PropretyMutex);
+	return CustomRomPath;
+}
+
+void QtP6VXApplication::setCustomRomPath(QString path)
+{
+	QMutexLocker lock(&PropretyMutex);
+	CustomRomPath = path;
+}
+
 //仮想マシンを開始させる
 void QtP6VXApplication::executeEmulation()
 {
+	// カスタムROMパスが設定されている場合はそちらを使う
+	if(getCustomRomPath() != ""){
+		Cfg.SetRomPath(getCustomRomPath().toLocal8Bit().data());
+	}
+
 	// ROMファイル存在チェック&機種変更
 	if( SerchRom( &Cfg ) ){
 		if( Error::GetError() != Error::NoError ){

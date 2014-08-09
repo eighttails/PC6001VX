@@ -32,6 +32,8 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 android:{
 QTPLUGIN += qico
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN
+#Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
+debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 }
 
 #Configuration for OpenPandora

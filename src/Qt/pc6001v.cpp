@@ -20,11 +20,15 @@ int main( int argc, char *argv[] )
 	QtP6VXApplication app(argc, argv);
 
 	QCommandLineParser parser;
-	QCommandLineOption forceOption(QStringList() << "s" << "safemode", "Safe Mode");
-	parser.addOption(forceOption);
+	QCommandLineOption safeModeOption(QStringList() << "s" << "safemode", "Safe Mode");
+	parser.addOption(safeModeOption);
 	parser.process(app);
-	bool safeMode = parser.isSet(forceOption);
+	bool safeMode = parser.isSet(safeModeOption);
 	app.enableSafeMode(safeMode);
+
+#ifdef ANDROID
+	app.setCustomRomPath(CUSTOMROMPATH);
+#endif
 
 	QLocale locale;
     QString lang = locale.uiLanguages()[0];
@@ -36,7 +40,6 @@ int main( int argc, char *argv[] )
         myappTranslator.load(":/translation/PC6001VX_en");
         app.installTranslator(&myappTranslator);
     }
-    //setlocale(LC_ALL,"Japanese");
 
     //イベントループが始まったらQtP6VXApplication::startup()を実行
     QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);

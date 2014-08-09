@@ -54,6 +54,10 @@ public:
 	bool isSafeMode();
 	void enableSafeMode(bool enable);
 
+	// デバッグ用に一時的にROMパスを切り替える(主にAndroid用)
+	QString getCustomRomPath();
+	void setCustomRomPath(QString path);
+
 public slots:
     //仮想マシンの起動→終了→再起動のループ
     //直接呼び出さずに、Qtのイベントループの中で実行する
@@ -112,6 +116,8 @@ private:
 	int TiltStep;
 
 	bool SafeMode;
+
+	QString CustomRomPath;
 };
 
 #endif // QTP6VXAPPLICATION_H

@@ -653,6 +653,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 #endif
 		break;
 	}
+#ifdef ALWAYSFULLSCREEN
 	case QEvent::ApplicationActivated:
         if(P6Core){
 			P6Core->Start();
@@ -663,6 +664,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 			P6Core->Stop();
 		}
 		break;
+#endif
 	default:;
 	}
 

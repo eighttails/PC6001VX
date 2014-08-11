@@ -19,8 +19,11 @@ public slots:
 	// 指定した倍率(%)で表示されるようにウィンドウをリサイズ
 	void resizeWindowByRatio(int ratio);
 protected:
+	virtual bool event(QEvent *);
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void closeEvent(QCloseEvent* event);
+
+public:
 };
 
 #endif // RENDERVIEW_H

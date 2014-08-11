@@ -3,6 +3,10 @@
 #endif
 #include <QtWidgets>
 #include <QSettings>
+#include <QGestureEvent>
+#include <QTapAndHoldGesture>
+
+#include "../osd.h"
 #include "renderview.h"
 #include "qtp6vxapplication.h"
 
@@ -30,6 +34,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 		}
 	}
 #endif
+	grabGesture(Qt::TapAndHoldGesture);
 
 #ifdef WIN32
     //IMEを無効化
@@ -41,6 +46,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	if(QtP6VXApplication::getSetting(QtP6VXApplication::keyMaximized).toBool()){
 		showMaximized();
 	}
+
 }
 
 RenderView::~RenderView()
@@ -79,6 +85,25 @@ void RenderView::resizeWindowByRatio(int ratio)
 	setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
 }
 
+bool RenderView::event(QEvent *event)
+{
+	if(QGestureEvent* gEvent = dynamic_cast<QGestureEvent*>(event)){
+		if(QTapAndHoldGesture* tGesture = dynamic_cast<QTapAndHoldGesture*>(gEvent->gesture(Qt::TapAndHoldGesture))){
+			QGraphicsItem* item = scene()->itemAt(mapToScene(tGesture->position().toPoint()), transform());
+			// タップしたアイテムが原点にある場合、メイン画面とみなして長押しメニューを出す
+			if(tGesture->state() == Qt::GestureFinished && item && item->pos() == QPoint(0, 0)){
+				Event e;
+				e.type = EV_CONTEXTMENU;
+				e.mousebt.x = tGesture->position().x();
+				e.mousebt.y = tGesture->position().y();
+				OSD_PushEvent(e);
+				return true;
+			}
+		}
+	}
+	return QGraphicsView::event(event);
+}
+
 void RenderView::paintEvent(QPaintEvent *event)
 {
     QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
@@ -100,4 +125,5 @@ void RenderView::closeEvent(QCloseEvent *event)
 	QtP6VXApplication::setSetting(QtP6VXApplication::keyMaximized, isMaximized());
 	QGraphicsView::closeEvent(event);
 }
+
 

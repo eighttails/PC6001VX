@@ -20,6 +20,8 @@ typedef QApplication ParentAppClass;
 typedef QtSingleApplication ParentAppClass;
 #endif
 
+class QKeyEvent;
+
 class QtP6VXApplication : public ParentAppClass
 {
     Q_OBJECT
@@ -101,6 +103,9 @@ private slots:
     //仮想マシンを終了させる
     void terminateEmulation();
 
+protected:
+	// 特殊キー対策
+	void handleSpecialKeys(QKeyEvent* ke, int keyCode);
 private:
     QPointer<QtEL6> P6Core;		// オブジェクトポインタ
     EL6::ReturnCode Restart;	// 再起動フラグ

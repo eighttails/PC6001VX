@@ -220,7 +220,6 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, do
 	}
 
 	if(pItem == NULL){
-		// 既存のQPixmapItemが存在しない場合は生成
 		pItem = new QGraphicsPixmapItem(NULL);
 		scene->addItem(pItem);
 		// フィルタリング
@@ -515,6 +514,39 @@ void QtP6VXApplication::terminateEmulation()
 	OSD_PushEvent( EV_QUIT );
 }
 
+void QtP6VXApplication::handleSpecialKeys(QKeyEvent* ke, int keyCode)
+{
+	quint32 nativeKey = ke->nativeScanCode();
+	qDebug("keycode 0x%x\n", keyCode);
+	qDebug("nativekeycode %d\n", nativeKey);
+
+	//X11の場合
+	if (QGuiApplication::platformName() == QLatin1String("xcb")){
+		// 「ろ」
+		if(keyCode == Qt::Key_Backslash){
+			keyCode = nativeKey == 97 ? Qt::Key_Underscore : Qt::Key_Backslash;
+		}
+	}
+	//Windowsの場合
+	else if (QGuiApplication::platformName() == QLatin1String("windows")){
+		// 「ろ」
+		if(keyCode == Qt::Key_Backslash){
+			keyCode = nativeKey == 115 ? Qt::Key_Underscore : Qt::Key_Backslash;
+		}
+		// 変換
+		else if(nativeKey == 121){
+			keyCode = Qt::Key_Henkan;
+		}
+		// 無変換
+		else if(nativeKey == 123){
+			keyCode = Qt::Key_Muhenkan;
+		}
+	}
+	//Androidの場合
+	else if (QGuiApplication::platformName() == QLatin1String("android")){
+	}
+}
+
 bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 {
 	Event ev;
@@ -555,46 +587,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 		}
 
 		// 特殊キー対策
-		quint32 nativeKey = ke->nativeScanCode();
-		qDebug("keycode 0x%x\n", keyCode);
-		qDebug("nativekeycode %d\n", nativeKey);
-
-		//X11の場合
-		if (QGuiApplication::platformName() == QLatin1String("xcb")){
-			// 「ろ」
-			if(keyCode == Qt::Key_Backslash){
-				keyCode = nativeKey == 97 ? Qt::Key_Underscore : Qt::Key_Backslash;
-			}
-		}
-		//Windowsの場合
-		else if (QGuiApplication::platformName() == QLatin1String("windows")){
-			// 「ろ」
-			if(keyCode == Qt::Key_Backslash){
-				keyCode = nativeKey == 115 ? Qt::Key_Underscore : Qt::Key_Backslash;
-			}
-			// 変換
-			else if(nativeKey == 121){
-				keyCode = Qt::Key_Henkan;
-			}
-			// 無変換
-			else if(nativeKey == 123){
-				keyCode = Qt::Key_Muhenkan;
-			}
-		}
-		//Androidの場合
-		else if (QGuiApplication::platformName() == QLatin1String("android")){
-			// バックスラッシュキーを暫定的に潰してメニューキーにする
-			if(keyCode == Qt::Key_Backslash){
-				if (event->type() == QEvent::KeyRelease){
-					// コンテキストメニューを出す(#PENDING 暫定実装 キーボードのない端末に対応が必要)
-					ev.type = EV_CONTEXTMENU;
-					ev.mousebt.x = 0;
-					ev.mousebt.y = 0;
-					OSD_PushEvent(ev);
-				}
-				break;
-			}
-		}
+		handleSpecialKeys(ke, keyCode);
 
 		ev.type        = event->type() == QEvent::KeyPress ? EV_KEYDOWN : EV_KEYUP;
 		ev.key.state   = event->type() == QEvent::KeyPress ? true : false;
@@ -605,7 +598,7 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 					| ( ke->modifiers() & Qt::AltModifier ? KVM_ALT : KVM_NONE )
 					| ( ke->modifiers() & Qt::MetaModifier ? KVM_META : KVM_NONE )
 					| ( ke->modifiers() & Qt::KeypadModifier ? KVM_NUM : KVM_NONE )
-					//#PENDING CAPSLOCKは検出できない？
+					// CAPSLOCKは検出できない？
 					//| ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
 					);
 		ev.key.unicode = ke->text().utf16()[0];

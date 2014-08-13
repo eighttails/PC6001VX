@@ -158,7 +158,7 @@ bool OPN6::Init( int clock, int srate )
 	cYM2203::Init( Clock, srate );
 	
 	// OPN ボリュームテーブル設定
-	cYM2203::SetVolumeTable( DEFAULT_PSGVOL );
+	cYM2203::SetVolumeTable( Volume );
 	
 	// リセット
 	cYM2203::Reset();

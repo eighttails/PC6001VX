@@ -2,6 +2,7 @@
 //  ym2203.cpp
 ////////////////////////////////////////////////////////////////////
 #include "../log.h"
+#include "../pc6001v.h"
 #include "ym2203.h"
 
 
@@ -64,8 +65,8 @@ void cYM2203::SetVolumeTable( int vol )
 	PRINTD( PSG_LOG, "[OPN][SetVolumeTable] %d\n", vol );
 	
 	// とりあえず
-	opn.SetVolumeFM( -15 );
-	opn.SetVolumePSG( 0 );
+	opn.SetVolumeFM( (vol - DEFAULT_PSGVOL) / 100 - 15 );
+	opn.SetVolumePSG( (vol - DEFAULT_PSGVOL) / 100 );
 //	opn.SetVolume( vol );
 }
 

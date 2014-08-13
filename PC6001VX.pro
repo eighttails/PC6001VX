@@ -241,7 +241,9 @@ OTHER_FILES += \
     src/Qt/translation/PC6001VX_en.qm \
     android/AndroidManifest.xml \
     openpandora/pandora_develop_environment/qtmultimedia53.patch \
-    win32/angle.patch
+    win32/angle.patch \
+    win32/safemode.bat \
+    win32/angle52.patch
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

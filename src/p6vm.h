@@ -22,7 +22,7 @@ class IRQ6;
 class PIO6;
 class VDG6;
 class KEY6;
-class PSG6;
+class PSGb;
 class VCE6;
 class CMTL;
 class CMTS;
@@ -49,7 +49,7 @@ protected:
 		const IOBus::Connector *Intr;		// 割込み
 		const IOBus::Connector *Memory;		// メモリ
 		const IOBus::Connector *Vdg;		// VDG
-		const IOBus::Connector *Psg;		// PSG
+		const IOBus::Connector *Psg;		// PSG/OPN
 		const IOBus::Connector *M8255;		// I/O(Z80側)
 		const IOBus::Connector *S8255;		// I/O(SUB CPU側)
 		const IOBus::Connector *Voice;		// 音声合成
@@ -75,7 +75,7 @@ protected:
 	SUB6 *cpus;					// SUB CPU
 	MEM6 *mem;					// メモリ
 	VDG6 *vdg;					// VDG
-	PSG6 *psg;					// PSG
+	PSGb *psg;					// PSG/OPN
 	VCE6 *voice;				// 音声合成
 	PIO6 *pio;					// 8255
 	KEY6 *key;					// キー
@@ -280,7 +280,7 @@ public:
 	const static IOBus::Connector c_intr[];		// 割込み
 	const static IOBus::Connector c_memory[];	// メモリ
 	const static IOBus::Connector c_vdg[];		// VDG
-	const static IOBus::Connector c_psg[];		// PSG
+	const static IOBus::Connector c_psg[];		// OPN
 	const static IOBus::Connector c_8255m[];	// I/O(Z80側)
 	const static IOBus::Connector c_8255s[];	// I/O(SUB CPU側)
 	const static IOBus::Connector c_voice[];	// 音声合成

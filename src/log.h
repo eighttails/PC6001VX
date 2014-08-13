@@ -13,7 +13,7 @@
 #define DISK_LOG	0	// DISK関係
 #define FDC_LOG		0	// FDC関係
 #define D88_LOG		0	// D88関係
-#define PSG_LOG		0	// PSG関係
+#define PSG_LOG		0	// PSG/OPN関係
 #define INTR_LOG	0	// 割込み関係
 #define CPU_LOG		0	// CPU関係
 #define SUB_LOG		0	// サブCPU関係

@@ -79,9 +79,9 @@ bool CPU6::IsBUSREQ( void )
 {
 	return
 		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-		vm->ElIsMonitor() ? false :
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-		vm->VdgIsBusReqStop();
+			vm->ElIsMonitor() ? false :
+							#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+								vm->VdgIsBusReqStop();
 }
 
 

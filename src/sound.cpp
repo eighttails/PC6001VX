@@ -41,12 +41,12 @@ bool cRing::InitBuffer( int size )
 	
 	if( Buffer ) delete [] Buffer;
 	
-	Size = size * MULTI;	// 実際のバッファサイズはMULTI倍
+	Size = size;
 	Wpt = Rpt = Num = 0;
 	
 	try{
-		Buffer = new int[Size];
-		memset( Buffer, 0, Size );
+		Buffer = new int[Size * MULTI];	// 実際のバッファサイズはMULTI倍
+		memset( Buffer, 0, Size * MULTI );
 	}
 	// new に失敗した場合
 	catch( std::bad_alloc ){
@@ -69,7 +69,7 @@ int cRing::Get( void )
 	if( Num ){
 		cCritical::Lock();
 		int data = Buffer[Rpt++];
-		if( Rpt == Size ) Rpt = 0;
+		if( Rpt == Size * MULTI ) Rpt = 0;
 		Num--;
 		cCritical::UnLock();
 		return data;
@@ -87,10 +87,10 @@ int cRing::Get( void )
 ////////////////////////////////////////////////////////////////
 bool cRing::Put( int data )
 {
-	if( Num < Size ){
+	if( Num < Size * MULTI ){
 		cCritical::Lock();
 		Buffer[Wpt++] = data;
-		if( Wpt == Size ) Wpt = 0;
+		if( Wpt == Size * MULTI ) Wpt = 0;
 		Num++;
 		cCritical::UnLock();
 		return true;
@@ -107,7 +107,7 @@ bool cRing::Put( int data )
 ////////////////////////////////////////////////////////////////
 int cRing::ReadySize( void )
 {
-	return Num;
+	return Num > Size ? Size : Num;
 }
 
 

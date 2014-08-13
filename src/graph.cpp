@@ -57,7 +57,7 @@ DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL) {}
 ////////////////////////////////////////////////////////////////
 DSP6::~DSP6( void )
 {
-//	if( SBuf ) delete SBuf;
+	//	if( SBuf ) delete SBuf;
 	if( Wh ) OSD_DestroyWindow( Wh );
 }
 
@@ -104,7 +104,7 @@ bool DSP6::SetScreenSurface( void )
 	int x = 0, y = 0;
 	bool fsflag = false;
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( DISPMON ){	// モニタモード?
 		x      = P6DEBUGW;
 		y      = P6DEBUGH;
@@ -112,27 +112,28 @@ bool DSP6::SetScreenSurface( void )
 		
 		PRINTD( GRP_LOG, " -> Monitor Mode ( X:%d Y:%d )\n", x, y );
 	}else
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
-			x      = P6WINW;
-			y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
+		x      = P6WINW;
+		y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
 	}
 
-    if( DISPFULL ){	// フルスクリーン?
-        fsflag = true;
-        PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d )\n", x, y );
-    }else{
-        fsflag = false;
-        PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d )\n", x, y );
-    }
+	if( DISPFULL ){	// フルスクリーン?
+		fsflag = true;
+		PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d )\n", x, y );
+	}else{
+		fsflag = false;
+		PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d )\n", x, y );
+	}
 
 	// スクリーンサーフェス作成
 	OSD_CreateWindow( &Wh, x, y, fsflag );
 	if( !Wh ){
 		PRINTD( GRP_LOG, " -> Failed\n" );
 		return false;
-	}else
+	}else{
 		PRINTD( GRP_LOG, " -> OK ( %d x %d )\n", OSD_GetWindowWidth( Wh ), OSD_GetWindowHeight( Wh ) );
+	}
 	
 	if( DISPFULL ){	// フルスクリーンの時
 		// マウスカーソルを消す
@@ -161,12 +162,12 @@ bool DSP6::ResizeScreen( void )
 	int x, y;
 	
 	// ウィンドウサイズチェック
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( DISPMON ){	// モニタモード?
 		x = P6DEBUGW;
 		y = P6DEBUGH;
 	}else
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
 		x      = P6WINW;
 		y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
@@ -178,7 +179,7 @@ bool DSP6::ResizeScreen( void )
 	// ウィンドウサイズが不適切なら作り直す
 	//if( !Wh || (x != OSD_GetWindowWidth( Wh )) || (y != OSD_GetWindowHeight( Wh )) ){
 	if(1){ //VXでは常に作りなおすことにする。(サーフェスを使いまわすとフルスクリーンに遷移できないため)
-        if( !SetScreenSurface() ) return false;
+		if( !SetScreenSurface() ) return false;
 		vm->el->staw->Init( OSD_GetWindowWidth( Wh ) );	// ステータスバーも
 	}else
 		// 作り直さない場合は現在のスクリーンサーフェスをクリア
@@ -205,7 +206,7 @@ void DSP6::DrawScreen( void )
 	// スクリーンサーフェスにblit
 	PRINTD( GRP_LOG, " -> Blit" );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( DISPMON ){	// モニタモード?
 		PRINTD( GRP_LOG, " -> Monitor" );
 		
@@ -221,9 +222,9 @@ void DSP6::DrawScreen( void )
 		// メモリウィンドウ
 		OSD_BlitToWindow( Wh, vm->el->memw, max( P6WINW/2, vm->el->monw->Width() ), vm->el->regw->Height() );
 	}else
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
-        if( 0/*DISPFULL P6VXではフルスクリーンでもサイズを変えない*/ ){	// フルスクリーン表示
+		if( 0/*DISPFULL P6VXではフルスクリーンでもサイズを変えない*/ ){	// フルスクリーン表示
 			PRINTD( GRP_LOG, " -> FullScreen" );
 			OSD_BlitToWindowEx( Wh, BBuf, ( OSD_GetWindowWidth( Wh ) - ScreenX() ) / 2, ( OSD_GetWindowHeight( Wh ) - ScreenY() ) / 2, ScreenY(), DISPNTSC, DISPSCAN, vm->el->cfg->GetScanLineBr() );
 		}else{			// ウィンドウ表示
@@ -269,8 +270,8 @@ int DSP6::ScreenX( void ) const
 ////////////////////////////////////////////////////////////////
 int DSP6::ScreenY( void ) const
 {
-    // P6VXでは4:3モードでもスクリーンサイズは変化しない
-    return P6WINH;
+	// P6VXでは4:3モードでもスクリーンサイズは変化しない
+	return P6WINH;
 }
 
 
@@ -283,7 +284,7 @@ int DSP6::ScreenY( void ) const
 VSurface *DSP6::GetSubBuffer( void )
 {
 	return NULL;
-//	return SBuf;
+	//	return SBuf;
 }
 
 
@@ -359,12 +360,12 @@ bool DSP6::UpdateSubBuf( void )
 	
 	PRINTD( GRP_LOG, " -> %sScanLine -> OK\n", DISPSCAN ? "" : "No " );
 	
-    // 4:3表示有効の場合、表示比率を設定する
-    if(DISPNTSC){
-        SBuf->SetAspectRatio(double(HBBUS) / (P6WINH));
-    } else {
-        SBuf->SetAspectRatio(1.0);
-    }
+	// 4:3表示有効の場合、表示比率を設定する
+	if(DISPNTSC){
+		SBuf->SetAspectRatio(double(HBBUS) / (P6WINH));
+	} else {
+		SBuf->SetAspectRatio(1.0);
+	}
 
 	return true;
 }
@@ -427,7 +428,7 @@ void DSP6::SnapShot( const char *path )
 	
 	// スナップショットファイル名を決める
 	do{
-        sprintf( img_file, "%s/%s%03d.%s", path, img_name, ++Index, IMG_EXT );
+		sprintf( img_file, "%s/%s%03d.%s", path, img_name, ++Index, IMG_EXT );
 	}while( OSD_FileExist( img_file ) || (Index > 999) );
 	
 	// 連番が有効なら画像ファイル保存

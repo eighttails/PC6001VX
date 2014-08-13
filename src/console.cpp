@@ -52,11 +52,11 @@ bool JFont::OpenFont( char *zfilename, char *hfilename )
 	// フォントファイルが無ければダミー作成
 	if( !HFont ){
 		HFont = new VSurface;
-        HFont->InitSurface( hWidth*96*2, hHeight* 2 );
+		HFont->InitSurface( hWidth*96*2, hHeight* 2 );
 	}
 	if( !ZFont ){
 		ZFont = new VSurface;
-        ZFont->InitSurface( zWidth*96*2, zHeight*96 );
+		ZFont->InitSurface( zWidth*96*2, zHeight*96 );
 	}
 	
 	// 半角と全角でサイズが異なった場合は小さいほうに合わせる(当然表示がズレる)
@@ -111,11 +111,11 @@ void JFont::PutCharh( VSurface *dst, int dx, int dy, BYTE txt, DWORD fg, DWORD b
 	// 転送
 	for( int y=0; y<sr.h; y++ )
 		for( int x=0; x<sr.w; x++ )
-			#if INBPP == 8	// 8bit
+#if INBPP == 8	// 8bit
 			dst->PSet( dr.x + x, dr.y + y, HFont && HFont->PGet( sr.x + x, sr.y + y )                           ? fg : bg );
-			#else			// 32bit
+#else			// 32bit
 			dst->PSet( dr.x + x, dr.y + y, HFont && HFont->PGet( sr.x + x, sr.y + y )&(RMASK32|GMASK32|BMASK32) ? fg : bg );
-			#endif
+#endif
 }
 
 
@@ -148,11 +148,11 @@ void JFont::PutCharz( VSurface *dst, int dx, int dy, WORD txt, DWORD fg, DWORD b
 	// 転送
 	for( int y=0; y<sr.h; y++ )
 		for( int x=0; x<sr.w; x++ )
-			#if INBPP == 8	// 8bit
+#if INBPP == 8	// 8bit
 			dst->PSet( dr.x + x, dr.y + y, ZFont && ZFont->PGet( sr.x + x, sr.y + y )                           ? fg : bg );
-			#else			// 32bit
+#else			// 32bit
 			dst->PSet( dr.x + x, dr.y + y, ZFont && ZFont->PGet( sr.x + x, sr.y + y )&(RMASK32|GMASK32|BMASK32) ? fg : bg );
-			#endif
+#endif
 }
 
 
@@ -266,8 +266,8 @@ void ZCons::LocateR( int xx, int yy )
 {
 	x += xx;
 	if( x < 0 ){
-	    x += Xmax;
-	    y--;
+		x += Xmax;
+		y--;
 	}
 	if( x > Xmax ){
 		x -= Xmax;
@@ -345,26 +345,26 @@ void ZCons::PutCharZ( WORD c )
 ////////////////////////////////////////////////////////////////
 void ZCons::Print( const char *text, ... )
 {
-    char buf[1024];
-    int num = 0;
-    va_list ap;
+	char buf[1024];
+	int num = 0;
+	va_list ap;
 
-    // 可変長引数展開（文字列に変換）
-    va_start( ap, text );
-    vsprintf(buf, TRANS(text), ap);
-    QString str = buf;
-    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
+	// 可変長引数展開（文字列に変換）
+	va_start( ap, text );
+	vsprintf(buf, TRANS(text), ap);
+	QString str = buf;
+	const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
 
-    for( int i=0; i<array.size(); i++ ){
-        if( isprint( array[i] ) )
-            PutCharH( array[i] );
-        else{
-            const unsigned char c1 = array[i];
-            const unsigned char c2 = array[i+1];
-            PutCharZ( c1<<8 | c2 );
-            i++;
-        }
-    }
+	for( int i=0; i<array.size(); i++ ){
+		if( isprint( array[i] ) )
+			PutCharH( array[i] );
+		else{
+			const unsigned char c1 = array[i];
+			const unsigned char c2 = array[i+1];
+			PutCharZ( c1<<8 | c2 );
+			i++;
+		}
+	}
 }
 
 
@@ -373,45 +373,45 @@ void ZCons::Print( const char *text, ... )
 ////////////////////////////////////////////////////////////////
 void ZCons::Printf( const char *text, ... )
 {
-    char buf[1024];
-    int num = 0;
-    va_list ap;
+	char buf[1024];
+	int num = 0;
+	va_list ap;
 
-    // 可変長引数展開（文字列に変換）
-    va_start( ap, text );
-    vsprintf(buf, TRANS(text), ap);
-    QString str = buf;
-    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
-    for( int i=0; i<array.size(); i++ ){
-        switch( array[i] ){
-        case '\n':	// 改行
-            x = 0;
-            y++;
-            break;
+	// 可変長引数展開（文字列に変換）
+	va_start( ap, text );
+	vsprintf(buf, TRANS(text), ap);
+	QString str = buf;
+	const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
+	for( int i=0; i<array.size(); i++ ){
+		switch( array[i] ){
+		case '\n':	// 改行
+			x = 0;
+			y++;
+			break;
 
-        default:	// 普通の文字
-            if( isprint( array[i] ) )
-                PutCharH( array[i] );
-            else{
-                const unsigned char c1 = array[i];
-                const unsigned char c2 = array[i+1];
-                PutCharZ( c1<<8 | c2 );
-                i++;
-            }
+		default:	// 普通の文字
+			if( isprint( array[i] ) )
+				PutCharH( array[i] );
+			else{
+				const unsigned char c1 = array[i];
+				const unsigned char c2 = array[i+1];
+				PutCharZ( c1<<8 | c2 );
+				i++;
+			}
 
-            // 次のカーソルを設定
-            if( x >= Xmax ){
-                x = 0;
-                y++;
-            }
-        }
+			// 次のカーソルを設定
+			if( x >= Xmax ){
+				x = 0;
+				y++;
+			}
+		}
 
-        // スクロール?
-        if( y >= Ymax){
-            y = Ymax - 1;
-            ScrollUp();
-        }
-    }
+		// スクロール?
+		if( y >= Ymax){
+			y = Ymax - 1;
+			ScrollUp();
+		}
+	}
 }
 
 
@@ -420,29 +420,29 @@ void ZCons::Printf( const char *text, ... )
 ////////////////////////////////////////////////////////////////
 void ZCons::Printfr( const char *text, ... )
 {
-    char buf[1024];
-    int num = 0;
-    va_list ap;
+	char buf[1024];
+	int num = 0;
+	va_list ap;
 
-    // 可変長引数展開（文字列に変換）
-    va_start( ap, text );
-    vsprintf(buf, TRANS(text), ap);
-    QString str = buf;
-    const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
+	// 可変長引数展開（文字列に変換）
+	va_start( ap, text );
+	vsprintf(buf, TRANS(text), ap);
+	QString str = buf;
+	const QByteArray array = QTextCodec::codecForName("Shift-JIS")->fromUnicode(str);
 
-    if( array.size() > Xmax ) num = Xmax;
-    Locate( -array.size(), y );
+	if( array.size() > Xmax ) num = Xmax;
+	Locate( -array.size(), y );
 
-    for( int i=0; i<array.size(); i++ ){
-        if( isprint( array[i] ) )
-            PutCharH( array[i] );
-        else{
-            const unsigned char c1 = array[i];
-            const unsigned char c2 = array[i+1];
-            PutCharZ( c1<<8 | c2 );
-            i++;
-        }
-    }
+	for( int i=0; i<array.size(); i++ ){
+		if( isprint( array[i] ) )
+			PutCharH( array[i] );
+		else{
+			const unsigned char c1 = array[i];
+			const unsigned char c2 = array[i+1];
+			PutCharZ( c1<<8 | c2 );
+			i++;
+		}
+	}
 }
 
 

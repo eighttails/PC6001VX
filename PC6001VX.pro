@@ -98,7 +98,6 @@ SOURCES += \
     src/movie.cpp \
     src/p6t2.cpp \
     src/pio.cpp \
-    src/psg.cpp \
     src/replay.cpp \
     src/schedule.cpp \
     src/sound.cpp \
@@ -133,7 +132,14 @@ SOURCES += \
     src/Qt/semaphore.cpp \
     src/Qt/thread.cpp \
     src/console.cpp \
-    src/common.cpp
+    src/common.cpp \
+    src/device/fmgen/fmgen.cpp \
+    src/device/fmgen/fmtimer.cpp \
+    src/device/fmgen/opm.cpp \
+    src/device/fmgen/opna.cpp \
+    src/device/ym2203.cpp \
+    src/psg.cpp \
+    src/device/fmgen/psg_fmgen.cpp
 
 
 HEADERS  += \
@@ -205,7 +211,19 @@ HEADERS  += \
     openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
     src/id_menu.h \
     src/Qt/wavfile.h \
-    src/Qt/utils.h
+    src/Qt/utils.h \
+    src/device/fmgen/types.h \
+    src/device/fmgen/diag.h \
+    src/device/fmgen/fmgen.h \
+    src/device/fmgen/fmgeninl.h \
+    src/device/fmgen/fmtimer.h \
+    src/device/fmgen/headers.h \
+    src/device/fmgen/misc.h \
+    src/device/fmgen/opm.h \
+    src/device/fmgen/opna.h \
+    src/device/psgbase.h \
+    src/device/ym2203.h \
+    src/device/fmgen/psg_fmgen.h
 
 FORMS    += \
     src/Qt/configdialog.ui \
@@ -241,6 +259,7 @@ OTHER_FILES += \
     src/Qt/translation/PC6001VX_en.qm \
     android/AndroidManifest.xml \
     openpandora/pandora_develop_environment/qtmultimedia53.patch \
+    src/device/fmgen/readme.txt \
     win32/angle.patch \
     win32/safemode.bat \
     win32/angle52.patch

@@ -65,16 +65,16 @@ void EL6::OnThread( void *inst )
 	
 	p6 = STATIC_CAST( EL6 *, inst );	// 自分自身のオブジェクトポインタ取得
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( p6->cfg->GetMonDisp() ){
-	// モニタモード
+		// モニタモード
 		while( !this->cThread::IsCancel() ){
 			// 画面更新
 			if( p6->sche->IsScreenUpdate() ) p6->ScreenUpdate();
 			p6->Wait();		// ウェイト
 		}
 	}else
-	// 通常モード
+		// 通常モード
 		if( p6->vm->BpExistBreakPoint() ){
 			// ブレークポイントあり
 			while( !this->cThread::IsCancel() ){
@@ -111,81 +111,81 @@ void EL6::OnThread( void *inst )
 				if( p6->vm->BpCheckBreakPoint( BPoint::BP_PC, p6->vm->cpum->GetPC(), 0, NULL ) || p6->vm->BpIsReqBreak() ){
 					this->cThread::Cancel();	// スレッド終了フラグ立てる
 					p6->vm->BpResetBreak();
-                    Event ev;
-                    ev.type = EV_DEBUGMODEBP;
-                    ev.bp.addr = p6->vm->cpum->GetPC();
-                    OSD_PushEvent( ev );
+					Event ev;
+					ev.type = EV_DEBUGMODEBP;
+					ev.bp.addr = p6->vm->cpum->GetPC();
+					OSD_PushEvent( ev );
 				}
 			}
 		}else
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	{	// 通常実行
-		while( !this->cThread::IsCancel() ){
-			// ポーズ中なら画面更新のみ
-			if( p6->sche->GetPauseEnable() ){
-				// 画面更新時期を迎えていたら画面更新
-				// ノーウェイトの時にFPSが変わらないようにする
-				if( p6->sche->IsScreenUpdate() ) p6->ScreenUpdate();
-			}else{
-				// キーマトリクススキャン
-				bool matchg = p6->vm->key->ScanMatrix();
-				
-				// リプレイ記録中
-                if( REPLAY::GetStatus() == REP_RECORD ){
-                    REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
-#ifdef REPLAYDEBUG
-                    char fullPath[PATH_MAX];
-                    char fileName[PATH_MAX];
-                    sprintf(fileName, "record/%06d.dds", REPLAY::RepFrm);
-                    OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
-                    DokoDemoSave(fullPath);
-#endif
-                }
-
-				// リプレイ再生中
-				if( REPLAY::GetStatus() == REP_REPLAY ){
-#ifdef REPLAYDEBUG
-                    char fullPath[PATH_MAX];
-                    char fileName[PATH_MAX];
-                    sprintf(fileName, "replay/%06d.dds", REPLAY::RepFrm);
-                    OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
-                    DokoDemoSave(fullPath);
-#endif
-                    REPLAY::ReplayReadFrame( p6->vm->key->GetMatrix() );
-				}
-				
-				p6->EmuVSYNC();			// 1画面分実行
-				
-				// ビデオキャプチャ中?
-				if( AVI6::IsAVI() ){
-					// ビデオキャプチャ中ならここでAVI保存処理
-					// サウンド更新
-					p6->SoundUpdate( 0, AVI6::GetAudioBuffer() );
-					// 画面更新されたら AVI1画面保存
-					if( p6->ScreenUpdate() ) AVI6::AVIWriteFrame( p6->graph->GetWindowHandle() );
-				}else{
-					// ビデオキャプチャ中でないなら通常の更新
-					// サウンド更新
-					p6->SoundUpdate( 0 );
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		{	// 通常実行
+			while( !this->cThread::IsCancel() ){
+				// ポーズ中なら画面更新のみ
+				if( p6->sche->GetPauseEnable() ){
 					// 画面更新時期を迎えていたら画面更新
 					// ノーウェイトの時にFPSが変わらないようにする
 					if( p6->sche->IsScreenUpdate() ) p6->ScreenUpdate();
-				}
-				
-				// 自動キー入力
-				if( IsAutoKey() ){
-					BYTE key = GetAutoKey();
-					if( key ){
-						if( key == 0x14 ) p6->vm->cpus->ReqKeyIntr( 6, GetAutoKey() );
-						else			  p6->vm->cpus->ReqKeyIntr( 0, key );
+				}else{
+					// キーマトリクススキャン
+					bool matchg = p6->vm->key->ScanMatrix();
+
+					// リプレイ記録中
+					if( REPLAY::GetStatus() == REP_RECORD ){
+						REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
+#ifdef REPLAYDEBUG
+						char fullPath[PATH_MAX];
+						char fileName[PATH_MAX];
+						sprintf(fileName, "record/%06d.dds", REPLAY::RepFrm);
+						OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+						DokoDemoSave(fullPath);
+#endif
+					}
+
+					// リプレイ再生中
+					if( REPLAY::GetStatus() == REP_REPLAY ){
+#ifdef REPLAYDEBUG
+						char fullPath[PATH_MAX];
+						char fileName[PATH_MAX];
+						sprintf(fileName, "replay/%06d.dds", REPLAY::RepFrm);
+						OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+						DokoDemoSave(fullPath);
+#endif
+						REPLAY::ReplayReadFrame( p6->vm->key->GetMatrix() );
+					}
+
+					p6->EmuVSYNC();			// 1画面分実行
+
+					// ビデオキャプチャ中?
+					if( AVI6::IsAVI() ){
+						// ビデオキャプチャ中ならここでAVI保存処理
+						// サウンド更新
+						p6->SoundUpdate( 0, AVI6::GetAudioBuffer() );
+						// 画面更新されたら AVI1画面保存
+						if( p6->ScreenUpdate() ) AVI6::AVIWriteFrame( p6->graph->GetWindowHandle() );
+					}else{
+						// ビデオキャプチャ中でないなら通常の更新
+						// サウンド更新
+						p6->SoundUpdate( 0 );
+						// 画面更新時期を迎えていたら画面更新
+						// ノーウェイトの時にFPSが変わらないようにする
+						if( p6->sche->IsScreenUpdate() ) p6->ScreenUpdate();
+					}
+
+					// 自動キー入力
+					if( IsAutoKey() ){
+						BYTE key = GetAutoKey();
+						if( key ){
+							if( key == 0x14 ) p6->vm->cpus->ReqKeyIntr( 6, GetAutoKey() );
+							else			  p6->vm->cpus->ReqKeyIntr( 0, key );
+						}
 					}
 				}
+
+				// ウェイト
+				p6->Wait();
 			}
-			
-			// ウェイト
-			p6->Wait();
 		}
-	}
 }
 
 
@@ -292,15 +292,15 @@ bool EL6::Init( const CFG6 *config )
 		cfg->GetColor( i, &GPal.colors[i] );
 		VSurface::SetColor( i, COL2DW( GPal.colors[i] ) );
 
-        // スキャンライン用カラー設定
-        GPal.colors[i+128].r = ( GPal.colors[i].r * cfg->GetScanLineBr() ) / 100;
-        GPal.colors[i+128].g = ( GPal.colors[i].g * cfg->GetScanLineBr() ) / 100;
-        GPal.colors[i+128].b = ( GPal.colors[i].b * cfg->GetScanLineBr() ) / 100;
-        VSurface::SetColor( i+128, COL2DW( GPal.colors[i+128] ) );
+		// スキャンライン用カラー設定
+		GPal.colors[i+128].r = ( GPal.colors[i].r * cfg->GetScanLineBr() ) / 100;
+		GPal.colors[i+128].g = ( GPal.colors[i].g * cfg->GetScanLineBr() ) / 100;
+		GPal.colors[i+128].b = ( GPal.colors[i].b * cfg->GetScanLineBr() ) / 100;
+		VSurface::SetColor( i+128, COL2DW( GPal.colors[i+128] ) );
 	}
 
-    // パレット設定
-    OSD_SetPalette(NULL, &GPal);
+	// パレット設定
+	OSD_SetPalette(NULL, &GPal);
 
 	// 機種別 VM確保
 	switch( cfg->GetModel() ){
@@ -321,11 +321,11 @@ bool EL6::Init( const CFG6 *config )
 		graph  = new DSP6( vm );									// 画面描画
 		joy    = new JOY6;											// ジョイスティック
 		staw   = new cWndStat( vm );								// ステータスバー
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		regw   = new cWndReg( vm, DEV_ID("REGW") );					// レジスタウィンドウ
 		memw   = new cWndMem( vm, DEV_ID("MEMW") );					// メモリウィンドウ
 		monw   = new cWndMon( vm, DEV_ID("MONW") );					// モニタウィンドウ
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	}
 	// new に失敗した場合
 	catch( std::bad_alloc ){
@@ -334,30 +334,30 @@ bool EL6::Init( const CFG6 *config )
 		if( graph ){ delete graph; graph = NULL; }
 		if( staw ) { delete staw;  staw  = NULL; }
 		if( joy )  { delete joy;   joy   = NULL; }
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        if( regw ) { delete regw;  regw  = NULL; }
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		if( regw ) { delete regw;  regw  = NULL; }
 		if( memw ) { delete memw;  memw  = NULL; }
 		if( monw ) { delete monw;  monw  = NULL; }
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 		return false;
 	}
 	
 	// サウンド -----
-    if( !snd->Init( this, NULL, cfg->GetSampleRate(), cfg->GetSoundBuffer() ) ) return false;
+	if( !snd->Init( this, NULL, cfg->GetSampleRate(), cfg->GetSoundBuffer() ) ) return false;
 	snd->SetVolume( cfg->GetMasterVol() );
 	
-    // ステータスバー -----
-    if( !staw->Init( graph->ScreenX(), cfg->GetFddNum() ) ) return false;
+	// ステータスバー -----
+	if( !staw->Init( graph->ScreenX(), cfg->GetFddNum() ) ) return false;
 
-    // 画面描画 -----
-    graph->SetIcon( cfg->GetModel() );	// アイコン設定
+	// 画面描画 -----
+	graph->SetIcon( cfg->GetModel() );	// アイコン設定
 	if( !graph->Init() ) return false;
 	
 	// ジョイスティック -----
 	if( !joy->Init() ) return false;
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// レジスタウィンドウ　-----
 	if( !regw->Init() ) return false;
 	
@@ -366,14 +366,14 @@ bool EL6::Init( const CFG6 *config )
 	
 	// モニタウィンドウ　-----
 	if( !monw->Init() ) return false;
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	// FPS表示タイマ設定
-    //FPS表示タイマはQtで実装
-    //	if( !SetFPSTimer( 1 ) ){
-    //		Stop();
-    //		return false;
-    //	}
+	//FPS表示タイマはQtで実装
+	//	if( !SetFPSTimer( 1 ) ){
+	//		Stop();
+	//		return false;
+	//	}
 	
 	// ビデオキャプチャ -----
 	if( !AVI6::Init() ) return false;
@@ -457,32 +457,32 @@ EL6::ReturnCode EL6::EventLoop( void )
 	while( OSD_GetEvent( &event ) ){
 		switch( event.type ){
 		case EV_FPSUPDATE:		// FPS表示
-			{
+		{
 			char str[256];
 			if( sche->GetPauseEnable() )
 				sprintf( str, "%s === PAUSE ===", cfg->GetCaption() );
 			else
 				sprintf( str, "%s (%3d%%  %2d/%2d fps)", cfg->GetCaption(), sche->GetRatio(), event.fps.fps, FRAMERATE );
-				if( sche->GetSpeedRatio() != 100 )
-					sprintf( str+strlen(str), " [x%3.1f]", (double)sche->GetSpeedRatio()/100 );
-					
+			if( sche->GetSpeedRatio() != 100 )
+				sprintf( str+strlen(str), " [x%3.1f]", (double)sche->GetSpeedRatio()/100 );
+
 			OSD_SetWindowCaption( graph->GetWindowHandle(), str );
-			}
+		}
 			break;
 			
 		case EV_KEYDOWN:		// キー入力
-			#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			// モニタモード?
 			if( cfg->GetMonDisp() ){
 				monw->KeyIn( event.key.sym, event.key.mod & KVM_SHIFT, event.key.unicode );
 				break;
 			}else
-			#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-			// 各種機能キーチェック
-			if( CheckFuncKey( event.key.sym,
-							  event.key.mod & KVM_ALT  ? true : false,
-							  event.key.mod & KVM_META ? true : false ) )
-				break;
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+				// 各種機能キーチェック
+				if( CheckFuncKey( event.key.sym,
+								  event.key.mod & KVM_ALT  ? true : false,
+								  event.key.mod & KVM_META ? true : false ) )
+					break;
 			// リプレイ再生中 or 自動キー入力実行中でなければ
 			if( REPLAY::GetStatus() != REP_REPLAY && !IsAutoKey() )
 				// キーマトリクス更新(キー)
@@ -500,51 +500,51 @@ EL6::ReturnCode EL6::EventLoop( void )
 		case EV_JOYBUTTONDOWN:
 		case EV_JOYBUTTONUP:
 			// リプレイ再生中 or 自動キー入力実行中でなければ
-            if( REPLAY::GetStatus() != REP_REPLAY && !IsAutoKey() ){
-                OSD_UpdateJoy();
+			if( REPLAY::GetStatus() != REP_REPLAY && !IsAutoKey() ){
+				OSD_UpdateJoy();
 				// キーマトリクス更新(ジョイスティック)
 				vm->key->UpdateMatrixJoy( joy->GetJoyState( 0 ), joy->GetJoyState( 1 ) );
-            }
-            break;
+			}
+			break;
 
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		case EV_DEBUGMODEBP:	// モニタモード変更(ブレークポイント到達時)
 			monw->BreakIn( event.bp.addr );		// ブレークポイントの情報を表示
 			ToggleMonitor();					// モニタモード変更
 			
 			break;
 			
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        case EV_CONTEXTMENU:	// コンテキストメニュー
-            // ポップアップメニュー表示
-            Stop();
-            ShowPopupMenu( event.mousebt.x, event.mousebt.y );
-            Start();
-            break;
-        case EV_MOUSEBUTTONUP:	// マウスボタンクリック(離した時)
-            if( event.mousebt.state != false ) break;
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+		case EV_CONTEXTMENU:	// コンテキストメニュー
+			// ポップアップメニュー表示
+			Stop();
+			ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+			Start();
+			break;
+		case EV_MOUSEBUTTONUP:	// マウスボタンクリック(離した時)
+			if( event.mousebt.state != false ) break;
 
-            if( event.mousebt.button == MBT_WHEELUP )
-                // スピードアップ
-                sche->SetSpeedRatio( 1 );
+			if( event.mousebt.button == MBT_WHEELUP )
+				// スピードアップ
+				sche->SetSpeedRatio( 1 );
 
-            if( event.mousebt.button == MBT_WHEELDOWN )
-                // スピードダウン
-                sche->SetSpeedRatio( -1 );
+			if( event.mousebt.button == MBT_WHEELDOWN )
+				// スピードダウン
+				sche->SetSpeedRatio( -1 );
 
-            if( event.mousebt.button == MBT_LEFT )
-                // 等速
-                sche->SetSpeedRatio( 0 );
+			if( event.mousebt.button == MBT_LEFT )
+				// 等速
+				sche->SetSpeedRatio( 0 );
 
-//			if( event.mousebt.button == MBT_MIDDLE ){}
+			//			if( event.mousebt.button == MBT_MIDDLE ){}
 
-            if( event.mousebt.button == MBT_RIGHT ){
-                // ポップアップメニュー表示
-                Stop();
-                ShowPopupMenu( event.mousebt.x, event.mousebt.y );
-                Start();
-            }
-            break;
+			if( event.mousebt.button == MBT_RIGHT ){
+				// ポップアップメニュー表示
+				Stop();
+				ShowPopupMenu( event.mousebt.x, event.mousebt.y );
+				Start();
+			}
+			break;
 		case EV_QUIT:			// 終了
 			if( cfg->GetCkQuit() )
 				if( OSD_Message( MSG_QUIT, MSG_QUITC, OSDM_YESNO | OSDM_ICONQUESTION ) != OSDR_YES )
@@ -562,20 +562,20 @@ EL6::ReturnCode EL6::EventLoop( void )
 
 		case EV_DROPFILE:		// Drag & Drop
 			if( !stricmp( "p6",  OSD_GetFileNameExt( event.drop.file ) ) ||
-				!stricmp( "cas", OSD_GetFileNameExt( event.drop.file ) ) ||
-				!stricmp( "p6t", OSD_GetFileNameExt( event.drop.file ) ) ){
+					!stricmp( "cas", OSD_GetFileNameExt( event.drop.file ) ) ||
+					!stricmp( "p6t", OSD_GetFileNameExt( event.drop.file ) ) ){
 				UI_TapeInsert( event.drop.file );
 			}else if( !stricmp( "d88", OSD_GetFileNameExt( event.drop.file ) ) ){
 				UI_DiskInsert( 0, event.drop.file );
 			}else if( !stricmp( "rom",  OSD_GetFileNameExt( event.drop.file ) ) ||
-				!stricmp( "bin", OSD_GetFileNameExt( event.drop.file ) ) ){
+					  !stricmp( "bin", OSD_GetFileNameExt( event.drop.file ) ) ){
 				UI_RomInsert( event.drop.file );
 			}else if( !stricmp( "dds", OSD_GetFileNameExt( event.drop.file ) ) ){
 				UI_DokoLoad( event.drop.file );
 			}else if( !stricmp( "ddr", OSD_GetFileNameExt( event.drop.file ) ) ){
 				UI_ReplayLoad( event.drop.file );
 			}else if( !stricmp( "bas",  OSD_GetFileNameExt( event.drop.file ) ) ||
-				!stricmp( "txt", OSD_GetFileNameExt( event.drop.file ) ) ){
+					  !stricmp( "txt", OSD_GetFileNameExt( event.drop.file ) ) ){
 				UI_AutoType( event.drop.file );
 			}
 
@@ -617,9 +617,9 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 			graph->ResizeScreen();	// スクリーンサイズ変更
 			Start();
 		}else{
-			#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			ToggleMonitor();
-			#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		}
 		break;
 		
@@ -736,13 +736,13 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 ////////////////////////////////////////////////////////////////
 void EL6::DeleteAllObject( void )
 {
-    //if( UpDateFPSID ) OSD_DelTimer( UpDateFPSID );
+	//if( UpDateFPSID ) OSD_DelTimer( UpDateFPSID );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( monw ) { delete monw;	monw = NULL; }
 	if( memw ) { delete memw;	memw = NULL; }
 	if( regw ) { delete regw;	regw = NULL; }
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	if( staw ) { delete staw;	staw  = NULL; }
 	if( joy )  { delete joy;	joy   = NULL; }
@@ -771,13 +771,13 @@ bool EL6::ScreenUpdate( void )
 		vm->vdg->UpdateBackBuf();	// バックバッファ更新
 		graph->DrawScreen();		// 画面描画
 		
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		if( cfg->GetMonDisp() ){
 			regw->Update();
 			memw->Update();
 			monw->Update();
 		}
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		
 		UDFPSCount++;
 		FSkipCount = 0;
@@ -810,8 +810,8 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 	// サウンドバッファ更新
 	int ret = snd->PreUpdate( size, exbuf );
 	
-    // サウンド更新
-    snd->Update();
+	// サウンド更新
+	snd->Update();
 	return ret;
 }
 
@@ -828,19 +828,19 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 //void EL6::StreamUpdate( void *userdata, BYTE *stream, int len )
 //{
 //	EL6 *p6 = STATIC_CAST( EL6 *, userdata );	// 自分自身のオブジェクトポインタ取得
-	
+
 //	// サウンドバッファ更新
 //	//  もしサンプル数が足りなければここで追加
 //	//  ただしビデオキャプチャ中は無視
 //	int addsam = len/sizeof(int16_t) - p6->snd->cRing::ReadySize();
-	
+
 //	p6->snd->Update( stream, min( (int)(len/sizeof(int16_t)), p6->snd->cRing::ReadySize() ) );
-	
+
 //	if( addsam > 0 && !p6->AVI6::IsAVI() ){
 //		p6->SoundUpdate( addsam );
 //		p6->snd->Update( stream, addsam );
 //	}
-	
+
 //}
 
 
@@ -851,10 +851,10 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 //DWORD EL6::UpDateFPS( DWORD interval, void *obj )
 //{
 //	EL6 *p6 = STATIC_CAST( EL6 *, obj );	// 自分自身のオブジェクトポインタ取得
-	
+
 //	OSD_PushEvent( EV_FPSUPDATE, p6->UDFPSCount );
 //	p6->UDFPSCount = 0;
-	
+
 //	return interval;
 //}
 
@@ -870,11 +870,11 @@ int EL6::SoundUpdate( int samples, cRing *exbuf )
 //		OSD_DelTimer( UpDateFPSID );
 //		UpDateFPSID = NULL;
 //	}
-	
+
 //	// タイマ設定
 //	if( fps > 0 )
 //		UpDateFPSID = OSD_AddTimer( 1000/fps, EL6::UpDateFPS, this );
-	
+
 //	return UpDateFPSID ? true : false;
 //}
 
@@ -1104,7 +1104,7 @@ void EL6::SetAutoStart( void )
 		
 	}
 	strcat( kbuf, ainf->ask );
-		
+
 	// 自動キー入力設定
 	if( SetAutoKey( kbuf, strlen(kbuf) ) );
 }
@@ -1138,33 +1138,33 @@ bool EL6::DokoDemoSave( const char *filename )
 	cIni *Ini = NULL;
 
 	// とりあえずエラー設定
-    Error::Reset();
+	Error::Reset();
 	try{
 		FILE *fp = FOPENEN( filename, "wt" );
-        if( !fp ) throw Error::DokoWriteFailed;
+		if( !fp ) throw Error::DokoWriteFailed;
 		// タイトル行を出力して一旦閉じる
 		fprintf( fp, MSDOKO_TITLE );
 		fclose( fp );
 		
 		// どこでもSAVEファイルを開く
 		Ini = new cIni();
-        if( !Ini->Init( filename ) ) throw Error::DokoWriteFailed;
+		if( !Ini->Init( filename ) ) throw Error::DokoWriteFailed;
 		
 		// 各オブジェクトのパラメータ書込み
 		if( !cfg->DokoSave( Ini )      ||
-			!vm->evsc->DokoSave( Ini ) ||
-			!vm->intr->DokoSave( Ini ) ||
-			!vm->cpum->DokoSave( Ini ) ||
-			!vm->cpus->DokoSave( Ini ) ||
-			!vm->mem->DokoSave( Ini )  ||
-			!vm->vdg->DokoSave( Ini )  ||
-			!vm->psg->DokoSave( Ini )  ||
-			!vm->pio->DokoSave( Ini )  ||
-			!vm->key->DokoSave( Ini )  ||
-			!vm->cmtl->DokoSave( Ini ) ||
-			!vm->disk->DokoSave( Ini )
-        ) throw Error::GetError();
-        if( vm->voice && !vm->voice->DokoSave( Ini ) ) throw Error::GetError();
+				!vm->evsc->DokoSave( Ini ) ||
+				!vm->intr->DokoSave( Ini ) ||
+				!vm->cpum->DokoSave( Ini ) ||
+				!vm->cpus->DokoSave( Ini ) ||
+				!vm->mem->DokoSave( Ini )  ||
+				!vm->vdg->DokoSave( Ini )  ||
+				!vm->psg->DokoSave( Ini )  ||
+				!vm->pio->DokoSave( Ini )  ||
+				!vm->key->DokoSave( Ini )  ||
+				!vm->cmtl->DokoSave( Ini ) ||
+				!vm->disk->DokoSave( Ini )
+				) throw Error::GetError();
+		if( vm->voice && !vm->voice->DokoSave( Ini ) ) throw Error::GetError();
 		
 		
 		Ini->PutEntry( "KEY", NULL, "AK_Num",		"%d",	ak.Num );
@@ -1245,17 +1245,17 @@ bool EL6::DokoDemoLoad( const char *filename )
 		
 		// 各オブジェクトのパラメータ読込み
 		if(	!vm->evsc->DokoLoad( Ini ) ||
-			!vm->intr->DokoLoad( Ini ) ||
-			!vm->cpum->DokoLoad( Ini ) ||
-			!vm->cpus->DokoLoad( Ini ) ||
-			!vm->mem->DokoLoad( Ini )  ||
-			!vm->vdg->DokoLoad( Ini )  ||
-			!vm->psg->DokoLoad( Ini )  ||
-			!vm->pio->DokoLoad( Ini )  ||
-			!vm->key->DokoLoad( Ini )  ||
-			!vm->cmtl->DokoLoad( Ini ) ||
-			!vm->disk->DokoLoad( Ini )
-		) throw Error::GetError();
+				!vm->intr->DokoLoad( Ini ) ||
+				!vm->cpum->DokoLoad( Ini ) ||
+				!vm->cpus->DokoLoad( Ini ) ||
+				!vm->mem->DokoLoad( Ini )  ||
+				!vm->vdg->DokoLoad( Ini )  ||
+				!vm->psg->DokoLoad( Ini )  ||
+				!vm->pio->DokoLoad( Ini )  ||
+				!vm->key->DokoLoad( Ini )  ||
+				!vm->cmtl->DokoLoad( Ini ) ||
+				!vm->disk->DokoLoad( Ini )
+				) throw Error::GetError();
 		if( vm->voice && !vm->voice->DokoLoad( Ini ) ) throw Error::GetError();
 		
 		Ini->GetInt(   "KEY", "AK_Num",		&ak.Num,		ak.Num );
@@ -1424,23 +1424,23 @@ bool EL6::ReplayRecStart( const char *filename )
 ////////////////////////////////////////////////////////////////
 bool EL6::ReplayRecResume( const char *filename )
 {
-    // 途中セーブファイルを探す
-    char strsave[PATH_MAX];
-    strncpy(strsave, OSD_GetFolderNamePart(filename), PATH_MAX);
-    OSD_AddDelimiter(strsave);
-    const char savefile[] = "resume.dds";
-    strncat(strsave, savefile, sizeof(savefile));
-    if(OSD_FileExist(strsave)){
-        cIni save;
-        save.Init(strsave);
-        int frame = 0;
-        save.GetInt("REPLAY", "frame", &frame, frame);
-        if(frame == 0) return false;
+	// 途中セーブファイルを探す
+	char strsave[PATH_MAX];
+	strncpy(strsave, OSD_GetFolderNamePart(filename), PATH_MAX);
+	OSD_AddDelimiter(strsave);
+	const char savefile[] = "resume.dds";
+	strncat(strsave, savefile, sizeof(savefile));
+	if(OSD_FileExist(strsave)){
+		cIni save;
+		save.Init(strsave);
+		int frame = 0;
+		save.GetInt("REPLAY", "frame", &frame, frame);
+		if(frame == 0) return false;
 
-        DokoDemoLoad(strsave);
-        return REPLAY::ResumeRecord( filename, frame );
-    }
-    return false;
+		DokoDemoLoad(strsave);
+		return REPLAY::ResumeRecord( filename, frame );
+	}
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1451,14 +1451,14 @@ bool EL6::ReplayRecResume( const char *filename )
 ////////////////////////////////////////////////////////////////
 bool EL6::ReplayRecDokoLoad()
 {
-    if(REPLAY::GetStatus() == REP_RECORD){
-        char filename[PATH_MAX];
-        strncpy(filename, REPLAY::Ini->getFileName(), PATH_MAX);
-        REPLAY::StopRecord();
-        return ReplayRecResume(filename);
-    } else {
-        return false;
-    }
+	if(REPLAY::GetStatus() == REP_RECORD){
+		char filename[PATH_MAX];
+		strncpy(filename, REPLAY::Ini->getFileName(), PATH_MAX);
+		REPLAY::StopRecord();
+		return ReplayRecResume(filename);
+	} else {
+		return false;
+	}
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1469,29 +1469,29 @@ bool EL6::ReplayRecDokoLoad()
 ////////////////////////////////////////////////////////////////
 bool EL6::ReplayRecDokoSave()
 {
-    if(REPLAY::GetStatus() == REP_RECORD){
-        // 途中セーブファイルを保存
-        char strsave[PATH_MAX];
-        strncpy(strsave, OSD_GetFolderNamePart(REPLAY::Ini->getFileName()), PATH_MAX);
-        OSD_AddDelimiter(strsave);
-        const char savefile[] = "resume.dds";
-        strncat(strsave, savefile, sizeof(savefile));
-        if(!DokoDemoSave(strsave)) return false;
+	if(REPLAY::GetStatus() == REP_RECORD){
+		// 途中セーブファイルを保存
+		char strsave[PATH_MAX];
+		strncpy(strsave, OSD_GetFolderNamePart(REPLAY::Ini->getFileName()), PATH_MAX);
+		OSD_AddDelimiter(strsave);
+		const char savefile[] = "resume.dds";
+		strncat(strsave, savefile, sizeof(savefile));
+		if(!DokoDemoSave(strsave)) return false;
 
-        // 途中セーブ情報を追記
-        cIni save;
-        if(!save.Init(strsave)) return false;
-        save.PutEntry("REPLAY", NULL, "frame", "%d", REPLAY::RepFrm);
-        // 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
-        save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-        save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+		// 途中セーブ情報を追記
+		cIni save;
+		if(!save.Init(strsave)) return false;
+		save.PutEntry("REPLAY", NULL, "frame", "%d", REPLAY::RepFrm);
+		// 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
+		save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+		save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
 
-        save.Write();
+		save.Write();
 
-        return true;
-    } else {
-        return false;
-    }
+		return true;
+	} else {
+		return false;
+	}
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1502,8 +1502,8 @@ bool EL6::ReplayRecDokoSave()
 ////////////////////////////////////////////////////////////////
 void EL6::ReplayRecStop( void )
 {
-    ReplayRecDokoSave();
-    REPLAY::StopRecord();
+	ReplayRecDokoSave();
+	REPLAY::StopRecord();
 }
 
 
@@ -1634,7 +1634,7 @@ void EL6::UI_DokoSave( void )
 	char str[PATH_MAX];
 	
 	if( OSD_FileSelect( graph->GetWindowHandle(), FD_DokoSave, str, cfg->GetDokoSavePath() ) )
-	DokoDemoSave( str );
+		DokoDemoSave( str );
 }
 
 
@@ -1675,8 +1675,8 @@ void EL6::UI_ReplaySave( void )
 			if( DokoDemoSave( str ) ) ReplayRecStart( str );
 		}
 	}else if( REPLAY::GetStatus() == REP_RECORD ){
-        ReplayRecStop();
-    }
+		ReplayRecStop();
+	}
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1687,13 +1687,13 @@ void EL6::UI_ReplaySave( void )
 ////////////////////////////////////////////////////////////////
 void EL6::UI_ReplayResumeSave()
 {
-    char strreplay[PATH_MAX];
+	char strreplay[PATH_MAX];
 
-    if( REPLAY::GetStatus() == REP_IDLE ){
-        if( OSD_FileSelect( graph->GetWindowHandle(), FD_RepSave, strreplay, (char *)OSD_GetModulePath() ) ){
-            ReplayRecResume( strreplay);
-        }
-    }
+	if( REPLAY::GetStatus() == REP_IDLE ){
+		if( OSD_FileSelect( graph->GetWindowHandle(), FD_RepSave, strreplay, (char *)OSD_GetModulePath() ) ){
+			ReplayRecResume( strreplay);
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1704,7 +1704,7 @@ void EL6::UI_ReplayResumeSave()
 ////////////////////////////////////////////////////////////////
 void EL6::UI_ReplayDokoLoad()
 {
-    ReplayRecDokoLoad();
+	ReplayRecDokoLoad();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1715,7 +1715,7 @@ void EL6::UI_ReplayDokoLoad()
 ////////////////////////////////////////////////////////////////
 void EL6::UI_ReplayDokoSave()
 {
-    ReplayRecDokoSave();
+	ReplayRecDokoSave();
 }
 
 

@@ -51,7 +51,7 @@ protected:
 	BYTE GetFont2( WORD ) const;				// Font2データ取得
 	BYTE GetFont3( WORD ) const;				// Font3データ取得
 	
-	virtual WORD GerVramAddr() const = 0;		// VRAMアドレス取得
+	virtual WORD GetVramAddr() const = 0;		// VRAMアドレス取得
 	virtual WORD GerAttrAddr() const = 0;		// ATTRアドレス取得
 	virtual void SetAttrAddr( BYTE );			// ATTRアドレス設定
 	
@@ -88,7 +88,7 @@ public:
 
 class VDG60 : public VDG6, public MC6847 {
 protected:
-	WORD GerVramAddr() const;					// VRAMアドレス取得
+	WORD GetVramAddr() const;					// VRAMアドレス取得
 	WORD GerAttrAddr() const;					// ATTRアドレス取得
 	
 	// デバイス定義
@@ -109,7 +109,7 @@ public:
 
 class VDG62 : public VDG6, public virtual PCZ80_07 {
 protected:
-	WORD GerVramAddr() const;					// VRAMアドレス取得
+	WORD GetVramAddr() const;					// VRAMアドレス取得
 	WORD GerAttrAddr() const;					// ATTRアドレス取得
 	
 	// デバイス定義
@@ -131,7 +131,7 @@ public:
 class VDG64 : public VDG6, public PCZ80_12 {
 protected:
 	BYTE GetVram() const;						// VRAMデータ取得
-	WORD GerVramAddr() const;					// VRAMアドレス取得
+	WORD GetVramAddr() const;					// VRAMアドレス取得
 	WORD GerAttrAddr() const;					// ATTRアドレス取得
 	void SetAttrAddr( BYTE );					// ATTRアドレス設定
 	

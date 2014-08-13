@@ -27,61 +27,61 @@
 // カラーコード
 // --------- 60 ---------
 const BYTE VDG6::COL60_AN[] =			// mode 1 -----
-				{ 17,18,19,20,16 };
+{ 17,18,19,20,16 };
 
 const BYTE VDG6::COL60_SG[] =			// mode 2 -----
-				{ 21,22,23,24,25,26,27,28,16 };
+{ 21,22,23,24,25,26,27,28,16 };
 
 const BYTE VDG6::COL60_CG[][8] = {		// mode 3 -----
-				{ 29,30,31,32, 0, 0, 0, 0 },
-				{ 33,34,35,36, 0, 0, 0, 0 },
-				{ 37,41,42,38,45,46,47,48 },	// mode4(Set1) Jにじみ
-				{ 39,53,54,40,57,58,59,60 },	// mode4(Set2) Jにじみ
-				{ 37,42,41,38,47,48,45,46 },	// mode4(Set1) Jにじみ
-				{ 39,54,53,40,59,60,57,58 },	// mode4(Set2) Jにじみ
-				{ 37,43,44,38,49,50,51,52 },	// mode4(Set1) Jにじみ
-				{ 39,55,56,40,61,62,63,64 },	// mode4(Set2) Jにじみ
-				{ 37,44,43,38,51,52,49,50 },	// mode4(Set1) Jにじみ
-				{ 39,56,55,40,63,64,61,62 }		// mode4(Set2) Jにじみ
-			};
+										{ 29,30,31,32, 0, 0, 0, 0 },
+										{ 33,34,35,36, 0, 0, 0, 0 },
+										{ 37,41,42,38,45,46,47,48 },	// mode4(Set1) Jにじみ
+										{ 39,53,54,40,57,58,59,60 },	// mode4(Set2) Jにじみ
+										{ 37,42,41,38,47,48,45,46 },	// mode4(Set1) Jにじみ
+										{ 39,54,53,40,59,60,57,58 },	// mode4(Set2) Jにじみ
+										{ 37,43,44,38,49,50,51,52 },	// mode4(Set1) Jにじみ
+										{ 39,55,56,40,61,62,63,64 },	// mode4(Set2) Jにじみ
+										{ 37,44,43,38,51,52,49,50 },	// mode4(Set1) Jにじみ
+										{ 39,56,55,40,63,64,61,62 }		// mode4(Set2) Jにじみ
+								 };
 
 const BYTE VDG6::COL60_RG[][2] = {		// mode 4 -----
-				{ 37,38 },
-				{ 39,40 }
-			};
+										{ 37,38 },
+										{ 39,40 }
+								 };
 
 // --------- mk2 ---------
 const BYTE VDG6::COL62_AN[] =			// mode 1-1 -----
-				{ 80,73,75,73,73 };
+{ 80,73,75,73,73 };
 
 const BYTE VDG6::COL62_SG[] =			// mode 1-2 -----
-				{ 75,76,77,74,80,79,78,66,73 };
+{ 75,76,77,74,80,79,78,66,73 };
 
 const BYTE VDG6::COL62_CG[][8] = {		// mode 1-3 -----
-				{ 75,76,77,74, 0, 0, 0, 0 },	// mode1-4(Set1) Jにじみ
-				{ 80,79,78,66, 0, 0, 0, 0 },	// mode1-4(Set1) Jにじみ
-				{ 73,41,42,75,45,46,47,48 },	// mode1-4(Set1) Jにじみ
-				{ 73,53,54,80,57,58,59,60 },	// mode1-4(Set1) Jにじみ
-				{ 73,42,41,75,47,48,45,46 },	// mode1-4(Set1) Jにじみ
-				{ 73,54,53,80,59,60,57,58 },	// mode1-4(Set1) Jにじみ
-				{ 73,43,44,75,49,50,51,52 },	// mode1-4(Set1) Jにじみ
-				{ 73,55,56,80,61,62,63,64 },	// mode1-4(Set1) Jにじみ
-				{ 73,44,43,75,51,52,49,50 },	// mode1-4(Set1) Jにじみ
-				{ 73,56,55,80,63,64,61,62 }		// mode1-4(Set1) Jにじみ
-			};
+										{ 75,76,77,74, 0, 0, 0, 0 },	// mode1-4(Set1) Jにじみ
+										{ 80,79,78,66, 0, 0, 0, 0 },	// mode1-4(Set1) Jにじみ
+										{ 73,41,42,75,45,46,47,48 },	// mode1-4(Set1) Jにじみ
+										{ 73,53,54,80,57,58,59,60 },	// mode1-4(Set1) Jにじみ
+										{ 73,42,41,75,47,48,45,46 },	// mode1-4(Set1) Jにじみ
+										{ 73,54,53,80,59,60,57,58 },	// mode1-4(Set1) Jにじみ
+										{ 73,43,44,75,49,50,51,52 },	// mode1-4(Set1) Jにじみ
+										{ 73,55,56,80,61,62,63,64 },	// mode1-4(Set1) Jにじみ
+										{ 73,44,43,75,51,52,49,50 },	// mode1-4(Set1) Jにじみ
+										{ 73,56,55,80,63,64,61,62 }		// mode1-4(Set1) Jにじみ
+								 };
 
 const BYTE VDG6::COL62_RG[][2] = {		// mode 1-4 -----
-				{ 73,75 },
-				{ 73,80 }
-			};
+										{ 73,75 },
+										{ 73,80 }
+								 };
 
 const BYTE VDG6::COL62_AN2[] =			// mode 2-1,2 -----
-				{ 65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80 };
+{ 65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80 };
 
 const BYTE VDG6::COL62_CG2[][16] = {	// mode 2-3,4 -----
-				{ 65,69,66,70,67,71,68,72,73,77,74,78,75,79,76,80 },
-				{ 75,76,77,74,80,79,78,66,75,76,77,74,80,79,78,66 }
-			};
+										{ 65,69,66,70,67,71,68,72,73,77,74,78,75,79,76,80 },
+										{ 75,76,77,74,80,79,78,66,75,76,77,74,80,79,78,66 }
+								   };
 
 
 
@@ -89,7 +89,7 @@ const BYTE VDG6::COL62_CG2[][16] = {	// mode 2-3,4 -----
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 VDG6::VDG6( VM6 *vm, const ID& id ) : Device(vm,id),
-		AddrOff(0), VSYNC(false), HSYNC(false), VLcnt(VLINES60) {}
+	AddrOff(0), VSYNC(false), HSYNC(false), VLcnt(VLINES60) {}
 
 VDG60::VDG60( VM6 *vm, const ID& id ) : VDG6(vm,id)
 {
@@ -313,12 +313,12 @@ BYTE VDG6::GetAttr( void ) const
 
 
 ////////////////////////////////////////////////////////////////
-// VRAMデータ取得
+// VRAMデータ取得 (表示)
 ////////////////////////////////////////////////////////////////
 BYTE VDG6::GetVram( void ) const
 {
 	WORD addr = VAddr * ( N60Win ? 32 : 40 ) + HAddr;
-	return vm->MemReadMainRam( GerVramAddr() + addr );
+	return vm->MemReadMainRam( GetVramAddr() + addr );
 }
 
 BYTE VDG64::GetVram( void ) const
@@ -349,7 +349,7 @@ BYTE VDG64::GetVram( void ) const
 		// HAddrは8dot毎
 		addr = VAddr * ( N60Win ? 32 : 40 ) + HAddr;
 	}
-	return vm->MemReadMainRam( GerVramAddr() + addr );
+	return vm->MemReadMainRam( GetVramAddr() + addr );
 }
 
 
@@ -439,7 +439,7 @@ bool VDG6::IsBusReqStop( void ) const
 ////////////////////////////////////////////////////////////////
 bool VDG6::IsBusReqExec( void ) const
 {
-    return BusReq && (!SRBusReq);
+	return BusReq && (!SRBusReq);
 }
 
 
@@ -457,16 +457,19 @@ bool VDG6::IsSRmode( void ) const
 ////////////////////////////////////////////////////////////////
 bool VDG6::IsSRGVramAccess( WORD addr ) const
 {
-	return SRmode && SRBitmap;
+	return SRmode && SRBitmap && (SRBMPage == (addr&0x8000));
+	//	return SRmode && SRBitmap;
 }
 
 
 ////////////////////////////////////////////////////////////////
-// SRのG-VRAMアドレス取得
+// SRのG-VRAMアドレス取得 (メモリアクセス)
 ////////////////////////////////////////////////////////////////
 WORD VDG6::SRGVramAddr( WORD addr ) const
 {
-	WORD ad = GerVramAddr();
+	//	WORD ad = GetVramAddr();
+	WORD ad = SRmode && SRBMPage ? 0x8000 : 0x0000;
+
 	WORD hh = addr & 0x1ff;
 	WORD vv = SRVramAddrY;
 	
@@ -485,17 +488,17 @@ WORD VDG6::SRGVramAddr( WORD addr ) const
 
 
 ////////////////////////////////////////////////////////////////
-// VRAMアドレス取得
+// VRAMアドレス取得 (メモリアクセス,表示)
 //   注! アドレスはMainRamブロック先頭からのオフセットとする
 ////////////////////////////////////////////////////////////////
-WORD VDG60::GerVramAddr( void ) const
+WORD VDG60::GetVramAddr( void ) const
 {
 	//	[00]C200H  [01]E200H  [10]8200H  [11]A200H
 	// 実アドレスは +0x8000
 	return AddrOff + 0x0200;
 }
 
-WORD VDG62::GerVramAddr( void ) const
+WORD VDG62::GetVramAddr( void ) const
 {
 	// mk2以降の場合は実アドレスに一致
 	if( N60Win )			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
@@ -506,7 +509,7 @@ WORD VDG62::GerVramAddr( void ) const
 	}
 }
 
-WORD VDG64::GerVramAddr( void ) const
+WORD VDG64::GetVramAddr( void ) const
 {
 	if( SRmode ){	// SRモード
 		if( CharMode ) return (WORD)SRTextAddr<<12;			// テキストモード
@@ -523,7 +526,7 @@ WORD VDG64::GerVramAddr( void ) const
 
 
 ////////////////////////////////////////////////////////////////
-// ATTRアドレス取得
+// ATTRアドレス取得 (表示)
 //   注! アドレスはMainRamブロック先頭からのオフセットとする
 ////////////////////////////////////////////////////////////////
 WORD VDG60::GerAttrAddr( void ) const
@@ -541,7 +544,7 @@ WORD VDG62::GerAttrAddr( void ) const
 
 WORD VDG64::GerAttrAddr( void ) const
 {
-	if( SRmode ) return GerVramAddr() + 1;	// SRモード(テキストモードアクセスのみ)
+	if( SRmode ) return GetVramAddr() + 1;	// SRモード(テキストモードアクセスのみ)
 	else		 return AddrOff;			// 旧モード
 }
 
@@ -562,13 +565,13 @@ void VDG64::SetAttrAddr( BYTE data )
 	// N60  [00]C000H  [01]E000H  [10]8000H  [11]A000H
 	// N60m [00]8000H  [01]C000H  [10]0000H  [11]4000H
 	PRINTD( VDG_LOG, "[VDG][SetAttrAddr]" );
-//	if( !SRmode ){		// SRモードの時は無効?わからんのでとりあえず有効にしておく
-		AddrOff = ((~data&4)|(data&2))<<12;
-		if( N60Win ) AddrOff |= 0x8000;	// N60
-		else		 AddrOff <<= 1;		// N60m
-		
-		PRINTD( VDG_LOG, " %d%d -> %04X", data&4 ? 1 : 0, data&2 ? 1 : 0, AddrOff );
-//	}
+	//	if( !SRmode ){		// SRモードの時は無効?わからんのでとりあえず有効にしておく
+	AddrOff = ((~data&4)|(data&2))<<12;
+	if( N60Win ) AddrOff |= 0x8000;	// N60
+	else		 AddrOff <<= 1;		// N60m
+
+	PRINTD( VDG_LOG, " %d%d -> %04X", data&4 ? 1 : 0, data&2 ? 1 : 0, AddrOff );
+	//	}
 	PRINTD( VDG_LOG, "\n" );
 }
 

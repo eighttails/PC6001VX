@@ -543,7 +543,7 @@ void PCZ80_12::UpdateBackBuf( void )
 ////////////////////////////////////////////////////////////////
 void MC6847::Draw1line1( int line )
 {
-	if( !line) PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line );
+	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line ); }
 	
 	BYTE data=0xff, prevdata=0, nextdata=0, bdat=0;
 	BYTE LAT_AG=0, LAT_GM=0;
@@ -746,7 +746,7 @@ void MC6847::Draw1line1( int line )
 
 void PCZ80_07::Draw1line1( int line )
 {
-	if( !line) PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line );
+	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line ) };
 	
 	BYTE data=0, prevdata=0, nextdata=0, bdat=0;
 	BYTE LAT_AG=0;
@@ -883,7 +883,7 @@ void PCZ80_07::Draw1line1( int line )
 ////////////////////////////////////////////////////////////////
 void PCZ80_07::Draw1line2( int line )
 {
-	if( !line) PRINTD( VDG_LOG, "[VDG][Draw1line2] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph3" : "Graph4" );
+	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line2] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph3" : "Graph4" ); }
 	
 	BYTE attr, data, bdat;
 	
@@ -971,7 +971,7 @@ void PCZ80_07::Draw1line2( int line )
 ////////////////////////////////////////////////////////////////
 void PCZ80_12::Draw1line3( int line )
 {
-	if( !line) PRINTD( VDG_LOG, "[VDG][Draw1line3] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph2" : "Graph3" );
+	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line3] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph2" : "Graph3" ); }
 	
 	BYTE attr, data, bdat;
 	BYTE attr1=0, data1=0, scrl1=0, scrl2=0;

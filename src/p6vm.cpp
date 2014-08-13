@@ -34,10 +34,10 @@ VM6::VM6( EL6 *emuobj ) : cclock(0), pclock(0), el(emuobj), evsc(NULL), iom(NULL
 	intr(NULL), cpum(NULL), cpus(NULL), mem(NULL),
 	vdg(NULL), psg(NULL), voice(NULL), pio(NULL), key(NULL),
 	cmtl(NULL), cmts(NULL), disk(NULL)
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	, bp(NULL)
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	{}
+  #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  , bp(NULL)
+  #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+{}
 
 VM60::VM60( EL6 *emuobj ) : VM6(emuobj)
 {
@@ -144,9 +144,9 @@ VM68::VM68( EL6 *emuobj ) : VM6(emuobj)
 ////////////////////////////////////////////////////////////////
 VM6::~VM6( void )
 {
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	if( bp )     delete bp;
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	if( voice )  delete voice;
 	if( key )    delete key;
@@ -276,12 +276,12 @@ BYTE VM6::IomIn( int port, int *wcnt )
 {
 	BYTE data = iom->In( port, wcnt );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ブレークポイントチェック
 	if( BpCheckBreakPoint( BPoint::BP_IN, port&0xff, data, NULL ) ){
 		PRINTD( IO_LOG, " -> Break!\n" );
 	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	return data;
 }
@@ -299,12 +299,12 @@ void VM6::IomOut( int port, BYTE data, int *wcnt )
 {
 	iom->Out( port, data, wcnt );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ブレークポイントチェック
 	if( BpCheckBreakPoint( BPoint::BP_OUT, port&0xff, data, NULL ) ){
 		PRINTD( IO_LOG, " -> Break!\n" );
 	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 }
 
 void VM6::IosOut( int port, BYTE data, int *wcnt )
@@ -421,12 +421,12 @@ BYTE VM6::MemFetch( WORD addr, int *m1wait )
 {
 	BYTE data = mem->Fetch( addr, m1wait );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ブレークポイントチェック
 	if( BpCheckBreakPoint( BPoint::BP_READ, addr, data, NULL ) ){
 		PRINTD( MEM_LOG, " -> Break!\n" );
 	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	return data;
 }
@@ -439,12 +439,12 @@ BYTE VM6::MemRead( WORD addr, int *wcnt )
 {
 	BYTE data = mem->Read( addr, wcnt );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ブレークポイントチェック
 	if( BpCheckBreakPoint( BPoint::BP_READ, addr, data, NULL ) ){
 		PRINTD( MEM_LOG, " -> Break!\n" );
 	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	return data;
 }
@@ -457,12 +457,12 @@ void VM6::MemWrite( WORD addr, BYTE data, int *wcnt )
 {
 	mem->Write( addr, data, wcnt );
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ブレークポイントチェック
 	if( BpCheckBreakPoint( BPoint::BP_WRITE, addr, data, NULL ) ){
 		PRINTD( MEM_LOG, " -> Break!\n" );
 	}
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 }
 
 
@@ -556,7 +556,7 @@ bool VM6::VdgIsSRGVramAccess( WORD addr, bool rflag ) const
 
 
 ////////////////////////////////////////////////////////////////
-// SRのG-VRAMアドレス取得
+// SRのG-VRAMアドレス取得 (メモリアクセス)
 ////////////////////////////////////////////////////////////////
 WORD VM6::VdgSRGVramAddr( WORD addr ) const
 {
@@ -945,7 +945,7 @@ bool VM68::AllocObjSpecific( void )
 	mem    = new MEM68( this, DEV_ID("MEM1") );		// メモリ
 	vdg    = new VDG64( this, DEV_ID("VDG3") );		// VDG
 	key    = new KEY6 ( this, DEV_ID("KEYB") );		// キー
-	psg    = new OPN6 ( this, DEV_ID("OPN2") );		// OPN
+	psg    = new OPN6 ( this, DEV_ID("OPN1") );		// OPN
 	voice  = new VCE64( this, DEV_ID("VCE2") );		// 音声合成
 	disk   = new DSK68( this, DEV_ID("DSK4") );		// DISK
 	
@@ -968,9 +968,9 @@ bool VM6::AllocObject( CFG6 *cnfg )
 		pio    = new PIO6 ( this, DEV_ID("8255") );	// 8255
 		cmtl   = new CMTL ( this, DEV_ID("TAPE") );	// CMT(LOAD)
 		cmts   = new CMTS ( this, DEV_ID("SAVE") );	// CMT(SAVE)
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		bp     = new BPoint();						// ブレークポイント
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	}
 	// new に失敗した場合
 	catch( std::bad_alloc ){
@@ -981,9 +981,9 @@ bool VM6::AllocObject( CFG6 *cnfg )
 		if( pio ) { delete pio;  pio  = NULL; }
 		if( cmtl ){ delete cmtl; cmtl = NULL; }
 		if( cmts ){ delete cmts; cmts = NULL; }
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		if( bp )  { delete bp;   bp   = NULL; }
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		return false;
 	}
 	
@@ -1086,8 +1086,8 @@ bool VM6::Init( CFG6 *cnfg  )
 	if( !cmts->Init( cnfg->GetSaveFile() ) ) return false;
 	
 	// DISK -----
-//	if( cnfg->GetFddNum() )
-		if( !disk->Init( cnfg->GetFddNum() ) ) return false;
+	//	if( cnfg->GetFddNum() )
+	if( !disk->Init( cnfg->GetFddNum() ) ) return false;
 	
 	// 音声合成 -----
 	if( DevTable.Voice ){
@@ -1095,10 +1095,10 @@ bool VM6::Init( CFG6 *cnfg  )
 		voice->SetVolume( cnfg->GetVoiceVol() );	// 音量設定
 	}
 	
-	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ブレークポイント
 	bp->ClearStatus();
-	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	
 	

@@ -5,8 +5,11 @@
 
 
 // ストリームの最大数
-// PSG + TAPE + VOICE = 3
-#define	MAXSTREAM	(3)
+// PSG/OPN
+// TAPE
+// VOICE
+// FMカートリッジ
+#define	MAXSTREAM	(4)
 
 ////////////////////////////////////////////////////////////////
 // クラス定義

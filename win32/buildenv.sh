@@ -19,9 +19,9 @@ mkdir extlib
 
 #Qt
 cd ~/extlib
-export QT_VERSION=5.3.1
+export QT_VERSION=5.2.1
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
-wget -c  http://download.qt-project.org/official_releases/qt/5.3/$QT_VERSION/single/$QT_SOURCE_DIR.zip
+wget -c  http://download.qt-project.org/official_releases/qt/5.2/$QT_VERSION/single/$QT_SOURCE_DIR.zip
 
 if [ -e $QT_SOURCE_DIR ]; then
     # 存在する場合
@@ -37,7 +37,7 @@ else
     sed -i -e "s|/Fh |//Fh |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
 
     #gcc4.9でクラッシュする問題への対策パッチ
-    patch -p1 < $SCRIPT_DIR/angle.patch
+    patch -p1 < $SCRIPT_DIR/angle52.patch
 
     #Osで最適化するためのパッチ(サイズ削減のため)
     patch -p0 --binary < $SCRIPT_DIR/optimize.patch

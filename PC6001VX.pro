@@ -79,13 +79,44 @@ SOURCES += \
 }
 
 SOURCES += \
+    src/Qt/aboutdialog.cpp \
+    src/Qt/colorbutton.cpp \
+    src/Qt/configdialog.cpp \
+    src/Qt/emulationadaptor.cpp \
+    src/Qt/osdQt.cpp \
+    src/Qt/pc6001v.cpp \
+    src/Qt/qtel6.cpp \
+    src/Qt/qtp6vxapplication.cpp \
+    src/Qt/qtsingleapplication/qtlocalpeer.cpp \
+    src/Qt/qtsingleapplication/qtlockedfile.cpp \
+    src/Qt/qtsingleapplication/qtlockedfile_unix.cpp \
+    src/Qt/qtsingleapplication/qtlockedfile_win.cpp \
+    src/Qt/qtsingleapplication/qtsingleapplication.cpp \
+    src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
+    src/Qt/renderview.cpp \
+    src/Qt/semaphore.cpp \
+    src/Qt/thread.cpp \
     src/breakpoint.cpp \
+    src/common.cpp \
     src/config.cpp \
+    src/console.cpp \
     src/cpum.cpp \
     src/cpus.cpp \
     src/d88.cpp \
     src/debug.cpp \
     src/device.cpp \
+    src/device/ay8910.cpp \
+    src/device/fmgen/fmgen.cpp \
+    src/device/fmgen/fmtimer.cpp \
+    src/device/fmgen/opm.cpp \
+    src/device/fmgen/opna.cpp \
+    src/device/fmgen/psg_fmgen.cpp \
+    src/device/mc6847.cpp \
+    src/device/pd7752.cpp \
+    src/device/pd8255.cpp \
+    src/device/ym2203.cpp \
+    src/device/z80-dbg.cpp \
+    src/device/z80.cpp \
     src/disk.cpp \
     src/error.cpp \
     src/graph.cpp \
@@ -96,8 +127,11 @@ SOURCES += \
     src/keyboard.cpp \
     src/memory.cpp \
     src/movie.cpp \
+    src/p6el.cpp \
     src/p6t2.cpp \
+    src/p6vm.cpp \
     src/pio.cpp \
+    src/psg.cpp \
     src/replay.cpp \
     src/schedule.cpp \
     src/sound.cpp \
@@ -105,44 +139,27 @@ SOURCES += \
     src/tape.cpp \
     src/vdg.cpp \
     src/voice.cpp \
-    src/vsurface.cpp \
-    src/device/ay8910.cpp \
-    src/device/mc6847.cpp \
-    src/device/pd7752.cpp \
-    src/device/pd8255.cpp \
-    src/device/z80.cpp \
-    src/device/z80-dbg.cpp \
-    src/Qt/osdQt.cpp \
-    src/Qt/pc6001v.cpp \
-    src/Qt/configdialog.cpp \
-    src/Qt/colorbutton.cpp \
-    src/Qt/aboutdialog.cpp \
-    src/p6el.cpp \
-    src/p6vm.cpp \
-    src/Qt/qtsingleapplication/qtlocalpeer.cpp \
-    src/Qt/qtsingleapplication/qtlockedfile.cpp \
-    src/Qt/qtsingleapplication/qtlockedfile_unix.cpp \
-    src/Qt/qtsingleapplication/qtlockedfile_win.cpp \
-    src/Qt/qtsingleapplication/qtsingleapplication.cpp \
-    src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
-    src/Qt/qtp6vxapplication.cpp \
-    src/Qt/emulationadaptor.cpp \
-    src/Qt/renderview.cpp \
-    src/Qt/qtel6.cpp \
-    src/Qt/semaphore.cpp \
-    src/Qt/thread.cpp \
-    src/console.cpp \
-    src/common.cpp \
-    src/device/fmgen/fmgen.cpp \
-    src/device/fmgen/fmtimer.cpp \
-    src/device/fmgen/opm.cpp \
-    src/device/fmgen/opna.cpp \
-    src/device/ym2203.cpp \
-    src/psg.cpp \
-    src/device/fmgen/psg_fmgen.cpp
+    src/vsurface.cpp 
 
 
 HEADERS  += \
+    openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
+    src/Qt/aboutdialog.h \
+    src/Qt/colorbutton.h \
+    src/Qt/configdialog.h \
+    src/Qt/emulationadaptor.h \
+    src/Qt/qtel6.h \
+    src/Qt/qtp6vxapplication.h \
+    src/Qt/qtsingleapplication/QtLockedFile \
+    src/Qt/qtsingleapplication/QtSingleApplication \
+    src/Qt/qtsingleapplication/qtlocalpeer.h \
+    src/Qt/qtsingleapplication/qtlockedfile.h \
+    src/Qt/qtsingleapplication/qtsingleapplication.h \
+    src/Qt/qtsingleapplication/qtsinglecoreapplication.h \
+    src/Qt/qtutil.h \
+    src/Qt/renderview.h \
+    src/Qt/utils.h \
+    src/Qt/wavfile.h \
     src/breakpoint.h \
     src/common.h \
     src/config.h \
@@ -152,9 +169,34 @@ HEADERS  += \
     src/d88.h \
     src/debug.h \
     src/device.h \
+    src/device/ay8910.h \
+    src/device/fmgen/diag.h \
+    src/device/fmgen/fmgen.h \
+    src/device/fmgen/fmgeninl.h \
+    src/device/fmgen/fmtimer.h \
+    src/device/fmgen/headers.h \
+    src/device/fmgen/misc.h \
+    src/device/fmgen/opm.h \
+    src/device/fmgen/opna.h \
+    src/device/fmgen/psg_fmgen.h \
+    src/device/fmgen/types.h \
+    src/device/mc6847.h \
+    src/device/pd7752.h \
+    src/device/pd8255.h \
+    src/device/psgbase.h \
+    src/device/ym2203.h \
+    src/device/z80-cdCB.h \
+    src/device/z80-cdED.h \
+    src/device/z80-cdXC.h \
+    src/device/z80-cdXX.h \
+    src/device/z80-code.h \
+    src/device/z80-tbl.h \
+    src/device/z80.h \
     src/disk.h \
     src/error.h \
+    src/event.h \
     src/graph.h \
+    src/id_menu.h \
     src/ini.h \
     src/intr.h \
     src/io.h \
@@ -165,7 +207,9 @@ HEADERS  += \
     src/memory.h \
     src/movie.h \
     src/osd.h \
+    src/p6el.h \
     src/p6t2.h \
+    src/p6vm.h \
     src/pc6001v.h \
     src/pio.h \
     src/psg.h \
@@ -179,90 +223,46 @@ HEADERS  += \
     src/typedef.h \
     src/vdg.h \
     src/voice.h \
-    src/vsurface.h \
-    src/device/ay8910.h \
-    src/device/mc6847.h \
-    src/device/pd7752.h \
-    src/device/pd8255.h \
-    src/device/z80.h \
-    src/device/z80-cdCB.h \
-    src/device/z80-cdED.h \
-    src/device/z80-cdXC.h \
-    src/device/z80-cdXX.h \
-    src/device/z80-code.h \
-    src/device/z80-tbl.h \
-    src/Qt/configdialog.h \
-    src/Qt/colorbutton.h \
-    src/Qt/aboutdialog.h \
-    src/event.h \
-    src/p6el.h \
-    src/p6vm.h \
-    src/Qt/qtsingleapplication/QtLockedFile \
-    src/Qt/qtsingleapplication/QtSingleApplication \
-    src/Qt/qtsingleapplication/qtlocalpeer.h \
-    src/Qt/qtsingleapplication/qtlockedfile.h \
-    src/Qt/qtsingleapplication/qtsingleapplication.h \
-    src/Qt/qtsingleapplication/qtsinglecoreapplication.h \
-    src/Qt/qtp6vxapplication.h \
-    src/Qt/emulationadaptor.h \
-    src/Qt/renderview.h \
-    src/Qt/qtel6.h \
-    src/Qt/qtutil.h \
-    openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
-    src/id_menu.h \
-    src/Qt/wavfile.h \
-    src/Qt/utils.h \
-    src/device/fmgen/types.h \
-    src/device/fmgen/diag.h \
-    src/device/fmgen/fmgen.h \
-    src/device/fmgen/fmgeninl.h \
-    src/device/fmgen/fmtimer.h \
-    src/device/fmgen/headers.h \
-    src/device/fmgen/misc.h \
-    src/device/fmgen/opm.h \
-    src/device/fmgen/opna.h \
-    src/device/psgbase.h \
-    src/device/ym2203.h \
-    src/device/fmgen/psg_fmgen.h
+    src/vsurface.h 
 
 FORMS    += \
     src/Qt/configdialog.ui \
     src/Qt/aboutdialog.ui
 
 OTHER_FILES += \
+    COPYING \
+    README.txt \
+    android/AndroidManifest.xml \
+    openpandora/PC-6001.png \
+    openpandora/PC6001VX.sh \
+    openpandora/PXML.xml \
+    openpandora/create_pnd.sh \
+    openpandora/pandora_develop_environment/environment_build.log \
+    openpandora/pandora_develop_environment/linux-pandora-g++/qmake.conf \
+    openpandora/pandora_develop_environment/pandora_develop_environment.sh \
+    openpandora/pandora_develop_environment/qtmultimedia.patch \
+    openpandora/pandora_develop_environment/qtmultimedia53.patch \
+    openpandora/pandora_develop_environment/sdk_installer_openpandora_toolchain.sh \
     src/Qt/res/PC-6001.ico \
     src/Qt/res/PC-6001mk2.ico \
     src/Qt/res/PC-6001mk2SR.ico \
     src/Qt/res/PC-6601.ico \
     src/Qt/res/PC-6601SR.ico \
-    src/Qt/res/fontz12.png \
-    src/win32/PC6001VX.ico \
-    src/win32/PC6001VX.rc \
-    COPYING \
-    README.txt \
+    src/Qt/res/background.png \
     src/Qt/res/font/fonth12.png \
     src/Qt/res/font/fontz12.png \
-    src/Qt/res/background.png \
-    openpandora/create_pnd.sh \
-    openpandora/PXML.xml \
-    openpandora/PC-6001.png \
-    openpandora/PC6001VX.sh \
-    openpandora/pandora_develop_environment/sdk_installer_openpandora_toolchain.sh \
-    openpandora/pandora_develop_environment/qtmultimedia.patch \
-    openpandora/pandora_develop_environment/pandora_develop_environment.sh \
-    openpandora/pandora_develop_environment/environment_build.log \
-    openpandora/pandora_develop_environment/linux-pandora-g++/qmake.conf \
-    win32/buildenv.sh \
-    win32/toolchain.sh \
-    win32/optimize.patch \
-    src/Qt/translation/PC6001VX_en.ts \
+    src/Qt/res/fontz12.png \
     src/Qt/translation/PC6001VX_en.qm \
-    android/AndroidManifest.xml \
-    openpandora/pandora_develop_environment/qtmultimedia53.patch \
+    src/Qt/translation/PC6001VX_en.ts \
     src/device/fmgen/readme.txt \
+    src/win32/PC6001VX.ico \
+    src/win32/PC6001VX.rc \
     win32/angle.patch \
+    win32/angle52.patch \
+    win32/buildenv.sh \
+    win32/optimize.patch \
     win32/safemode.bat \
-    win32/angle52.patch
+    win32/toolchain.sh 
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

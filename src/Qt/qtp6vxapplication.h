@@ -105,7 +105,7 @@ private slots:
 
 protected:
 	// 特殊キー対策
-	void handleSpecialKeys(QKeyEvent* ke, int keyCode);
+	void handleSpecialKeys(QKeyEvent* ke, int &keyCode);
 private:
     QPointer<QtEL6> P6Core;		// オブジェクトポインタ
     EL6::ReturnCode Restart;	// 再起動フラグ

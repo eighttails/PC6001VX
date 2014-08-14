@@ -375,7 +375,7 @@ void QtP6VXApplication::executeEmulation()
 {
 	// カスタムROMパスが設定されている場合はそちらを使う
 	if(getCustomRomPath() != ""){
-		Cfg.SetRomPath(getCustomRomPath().toLocal8Bit().data());
+        Cfg.SetRomPath(getCustomRomPath().toUtf8().data());
 	}
 
 	// ROMファイル存在チェック&機種変更
@@ -514,7 +514,7 @@ void QtP6VXApplication::terminateEmulation()
 	OSD_PushEvent( EV_QUIT );
 }
 
-void QtP6VXApplication::handleSpecialKeys(QKeyEvent* ke, int keyCode)
+void QtP6VXApplication::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 {
 	quint32 nativeKey = ke->nativeScanCode();
 	qDebug("keycode 0x%x\n", keyCode);

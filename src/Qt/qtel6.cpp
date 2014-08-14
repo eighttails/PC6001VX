@@ -321,9 +321,10 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(dispSizeMenu, tr("倍率を指定..."), ID_SIZEMANUAL);
 	QAction* fixMagnification = addCommand(dispSizeMenu, tr("倍率を固定"), ID_FIXMAGNIFICATION, true);
 	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
-
+#ifndef ALWAYSFULLSCREEN
 	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
 	if (cfg->GetFullScreen()) fullScreen->setChecked(true);
+#endif
 	QAction* statusBar = addCommand(settingsMenu, tr("ステータスバー"), ID_STATUS, true);
 	if (cfg->GetDispStat()) statusBar->setChecked(true);
 	QAction* disp43 = addCommand(settingsMenu, tr("4:3表示"), ID_DISP43, true);
@@ -331,7 +332,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
 	if (cfg->GetScanLine()) scanLine->setChecked(true);
 #ifndef NOOPENGL
-
 	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
 	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool()) hwAccel->setChecked(true);
 #endif

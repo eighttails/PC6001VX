@@ -102,8 +102,12 @@ void ConfigDialog::readConfig()
     // 4:3表示
     ui->checkBoxDispNTSC->setChecked(config->GetDispNTSC());
 
-    // フルスクリーン
-    ui->checkBoxFullscreen->setChecked(config->GetFullScreen());
+	// フルスクリーン
+#ifdef ALWAYSFULLSCREEN
+	ui->checkBoxFullscreen->setVisible(false);
+#else
+	ui->checkBoxFullscreen->setChecked(config->GetFullScreen());
+#endif
 
     // ステータスバー表示状態
     ui->checkBoxStatDisp->setChecked(config->GetDispStat());
@@ -376,9 +380,10 @@ void ConfigDialog::writeConfig()
     // 4:3表示
     config->SetDispNTSC(ui->checkBoxDispNTSC->isChecked());
 
+#ifndef ALWAYSFULLSCREEN
     // フルスクリーン
     config->SetFullScreen(ui->checkBoxFullscreen->isChecked());
-
+#endif
     // ステータスバー表示状態
     config->SetDispStat(ui->checkBoxStatDisp->isChecked());
 

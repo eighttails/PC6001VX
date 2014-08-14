@@ -848,7 +848,8 @@ char *CFG6::GetDokoSavePath( void )
 {
 	Ini->GetString( "PATH", "DokoSavePath", DokoSavePath, DokoSavePath );
 	OSD_AddDelimiter( DokoSavePath );
-	return DokoSavePath;
+    OSD_AbsolutePath( DokoSavePath );
+    return DokoSavePath;
 }
 
 // どこでもSAVEパス設定
@@ -857,7 +858,7 @@ void CFG6::SetDokoSavePath( const char *str )
 	char temp[PATH_MAX];
 	strncpy( temp, str, PATH_MAX );
 	OSD_DelDelimiter( temp );
-	OSD_AbsolutePath( temp );
+    OSD_RelativePath( temp );
 	Ini->PutEntry( "PATH", MSINI_DokoSavePath, "DokoSavePath", temp );
 }
 

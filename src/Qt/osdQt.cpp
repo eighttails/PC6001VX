@@ -1072,7 +1072,7 @@ void OSD_RelativePath( char *path )
 	if( QDir( path ).isRelative() || !strlen( path ) ) return;
 	QDir dir(OSD_GetModulePath());
 	QString relPath = dir.relativeFilePath(path);
-	strcpy(path, relPath.toLocal8Bit().data());
+	strcpy(path, relPath.toUtf8().constData());
 }
 
 
@@ -1086,7 +1086,7 @@ void OSD_AbsolutePath( char *path )
 {
 	if( !QDir( path ).isRelative()  || !strlen( path ) ) return;
 	QDir dir(OSD_GetModulePath());
-	strcpy(path, dir.absoluteFilePath(path).toLocal8Bit().data());
+	strcpy(path, dir.absoluteFilePath(path).toUtf8().constData());
 }
 
 
@@ -1102,7 +1102,7 @@ void OSD_AddPath( char *pdst, const char *psrc1, const char *psrc2 )
 {
 	QDir dir(psrc1);
 	QString path = dir.path() + QDir::separator() + psrc2;
-	strcpy(pdst, path.toLocal8Bit().data());
+	strcpy(pdst, path.toUtf8().constData());
 }
 
 ////////////////////////////////////////////////////////////////

@@ -262,7 +262,8 @@ OTHER_FILES += \
     win32/buildenv.sh \
     win32/optimize.patch \
     win32/safemode.bat \
-    win32/toolchain.sh 
+    win32/toolchain.sh \ 
+    android/res/drawable-ldpi/icon.png
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

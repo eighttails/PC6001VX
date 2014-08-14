@@ -12,6 +12,7 @@ TEMPLATE = app
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 
 CONFIG += link_prl
+QTPLUGIN += qico
 
 #Define for Qt dependent code
 DEFINES += QTP6VX
@@ -31,7 +32,6 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 #Configuration for Android
 android:{
-QTPLUGIN += qico
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"

@@ -1271,7 +1271,7 @@ bool OSD_FileReadOnly( const char *fullpath )
 ///////////////////////////////////////////////////////////
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
-	QByteArray result = QFileDialog::getExistingDirectory(NULL, TRANS("フォルダを選択してください。"), QDir::homePath()).toUtf8();
+	QByteArray result = QFileDialog::getExistingDirectory(NULL, QString(), QDir::homePath()).toUtf8();
 	strcpy(Result, result);
 	return result.constData();
 }

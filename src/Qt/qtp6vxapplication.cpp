@@ -11,6 +11,7 @@
 #include "../common.h"
 
 #include "renderview.h"
+#include "keypanel.h"
 #include "qtp6vxapplication.h"
 
 const QString QtP6VXApplication::keyGeometry			= "window/geometry";
@@ -19,6 +20,8 @@ const QString QtP6VXApplication::keyHwAccel				= "graph/hwAccel";
 const QString QtP6VXApplication::keyFiltering			= "graph/filtering";
 const QString QtP6VXApplication::keyFixMagnification	= "graph/fixMagnification";
 const QString QtP6VXApplication::keyMagnification		= "graph/magnification";
+const QString QtP6VXApplication::keyKeyPanelVisible		= "keypalette/visible";
+const QString QtP6VXApplication::keyKeyPanelPosition		= "keypalette/position";
 
 QMutex QtP6VXApplication::SettingMutex;
 
@@ -73,6 +76,9 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv)
 	, P6Core(NULL)
 	, Restart(EL6::Quit)
 	, Adaptor(new EmulationAdaptor())
+	, View(NULL)
+	, Scene(NULL)
+	, KPanel(NULL)
 	, TiltEnabled(false)
 	, TiltDir(NEWTRAL)
 	, TiltStep(0)
@@ -102,6 +108,13 @@ QtP6VXApplication::~QtP6VXApplication()
 	Adaptor->thread()->exit();
 	Adaptor->thread()->wait();
 	Adaptor->deleteLater();
+	View->deleteLater();
+	KPanel->deleteLater();
+}
+
+RenderView *QtP6VXApplication::getView()
+{
+	return View;
 }
 
 void QtP6VXApplication::startup()
@@ -153,6 +166,7 @@ void QtP6VXApplication::startup()
 #endif
 	setDefaultSetting(keyFiltering, true);
 	setDefaultSetting(keyFixMagnification, false);
+	setDefaultSetting(keyKeyPanelVisible, false);
 
 	// INIファイル読込み
 	if( !Cfg.Init() ){
@@ -169,6 +183,13 @@ void QtP6VXApplication::startup()
 			return;
 		}
 	}
+
+	Scene = new QGraphicsScene();
+	View = new RenderView(Scene);
+	KPanel = new KeyPanel(View);
+
+	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
+	QObject::connect(this, SIGNAL(aboutToQuit()), Scene, SLOT(deleteLater()));
 
 	emit initialized();
 }
@@ -308,6 +329,11 @@ void QtP6VXApplication::showPopupMenu(int x, int y)
 		P6Core->Start();
 		MenuMutex.unlock();
 	}
+}
+
+void QtP6VXApplication::showKeyPanel()
+{
+	KPanel->show();
 }
 
 bool QtP6VXApplication::isTiltEnabled()
@@ -571,9 +597,10 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 				&& keyCode != Qt::Key_F12){
 			processKeyEventInQt = true;
 		}
-		// ・エミュレータウィンドウ以外のウィンドウ(Aboutダイアログ、環境設定ダイアログ)が
-		// 　最前面にある場合
-		if(activeWindow() && activeWindow()->metaObject()->className() != QString("RenderView")){
+		// ・エミュレータウィンドウ、キーパレット以外のウィンドウ
+		// (Aboutダイアログ、環境設定ダイアログ)が最前面にある場合
+		QString activeWindowClass = activeWindow() ? activeWindow()->metaObject()->className() : "";
+		if(activeWindowClass != "RenderView" && activeWindowClass != "KeyPanel"){
 			processKeyEventInQt = true;
 		}
 		// メニュー表示中の場合

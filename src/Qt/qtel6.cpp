@@ -42,6 +42,7 @@ void EL6::ShowPopupMenu( int x, int y )
 ////////////////////////////////////////////////////////////////
 void EL6::ExecMenu( int id )
 {
+	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
 	char str[PATH_MAX];
 	// 項目ごとの処理
 	switch( id ){
@@ -92,6 +93,7 @@ void EL6::ExecMenu( int id )
 	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
 	case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
 	case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
+	case ID_KEYPANEL:		app->showKeyPanel();				break;// キーパネル
 	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
 	case ID_QUIT:			UI_Quit();								break;	// 終了
 	case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
@@ -104,7 +106,6 @@ void EL6::ExecMenu( int id )
 	case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
 	case ID_TILT:                                                           // TILTモード変更
 	{
-		QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
 		app->enableTilt(!app->isTiltEnabled());
 		graph->ResizeScreen();	// スクリーンサイズ変更
 		break;
@@ -255,6 +256,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(systemMenu, AVI6::IsAVI() ? MSMEN_AVI1 : MSMEN_AVI0, ID_AVISAVE);
 	systemMenu->addSeparator();
 #endif
+	addCommand(systemMenu, tr("キーパネル"), ID_KEYPANEL);
+	systemMenu->addSeparator();
 
 	addCommand(systemMenu, tr("打込み代行..."), ID_AUTOTYPE);
 	systemMenu->addSeparator();

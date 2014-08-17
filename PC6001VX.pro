@@ -139,7 +139,9 @@ SOURCES += \
     src/tape.cpp \
     src/vdg.cpp \
     src/voice.cpp \
-    src/vsurface.cpp 
+    src/vsurface.cpp \ 
+    src/Qt/keypanelbutton.cpp \
+    src/Qt/keypanel.cpp
 
 
 HEADERS  += \
@@ -223,7 +225,9 @@ HEADERS  += \
     src/typedef.h \
     src/vdg.h \
     src/voice.h \
-    src/vsurface.h 
+    src/vsurface.h \ 
+    src/Qt/keypanelbutton.h \
+    src/Qt/keypanel.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

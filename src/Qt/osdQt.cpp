@@ -776,15 +776,12 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
 {
-	static QGraphicsScene* scene = new QGraphicsScene();
-	static RenderView* view = new RenderView(scene);
+	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+
+	RenderView* view = app->getView();
+	QGraphicsScene* scene = view->scene();
 
 	scene->setSceneRect(0, 0, w, h);
-
-	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
-	QObject::connect(qApp, SIGNAL(aboutToQuit()), scene, SLOT(deleteLater()));
-
-	view->moveToThread(qApp->thread());
 	*pwh = view;
 
 	QMetaObject::invokeMethod(qApp, "createWindow",

@@ -44,6 +44,7 @@ public:
 
 	// ウィンドウ関連
 	RenderView* getView();
+	KeyPanel* getKeyPanel();
 
 	// P6VX固有の設定
 	static const QVariant getSetting(const QString& key);
@@ -91,7 +92,7 @@ public slots:
     void showPopupMenu(int x, int y);
 
 	// キーパネルを表示
-	void showKeyPanel();
+	void toggleKeyPanel();
 
 signals:
     //初期化終了シグナル

@@ -117,6 +117,11 @@ RenderView *QtP6VXApplication::getView()
 	return View;
 }
 
+KeyPanel *QtP6VXApplication::getKeyPanel()
+{
+	return KPanel;
+}
+
 void QtP6VXApplication::startup()
 {
 #ifndef NOSINGLEAPP
@@ -331,9 +336,13 @@ void QtP6VXApplication::showPopupMenu(int x, int y)
 	}
 }
 
-void QtP6VXApplication::showKeyPanel()
+void QtP6VXApplication::toggleKeyPanel()
 {
-	KPanel->show();
+	if(KPanel->isVisible()){
+		KPanel->close();
+	} else {
+		KPanel->show();
+	}
 }
 
 bool QtP6VXApplication::isTiltEnabled()

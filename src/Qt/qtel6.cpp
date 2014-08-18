@@ -19,6 +19,7 @@
 #include "../id_menu.h"
 
 #include "renderview.h"
+#include "keypanel.h"
 #include "qtel6.h"
 #include "qtp6vxapplication.h"
 
@@ -93,7 +94,7 @@ void EL6::ExecMenu( int id )
 	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
 	case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
 	case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
-	case ID_KEYPANEL:		app->showKeyPanel();				break;// キーパネル
+	case ID_KEYPANEL:		app->toggleKeyPanel();				break;// キーパネル
 	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
 	case ID_QUIT:			UI_Quit();								break;	// 終了
 	case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
@@ -256,7 +257,9 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(systemMenu, AVI6::IsAVI() ? MSMEN_AVI1 : MSMEN_AVI0, ID_AVISAVE);
 	systemMenu->addSeparator();
 #endif
-	addCommand(systemMenu, tr("キーパネル"), ID_KEYPANEL);
+
+	QAction* keyPanel = addCommand(systemMenu, tr("キーパネル"), ID_KEYPANEL, true);
+	keyPanel->setChecked(app->getKeyPanel()->isVisible());
 	systemMenu->addSeparator();
 
 	addCommand(systemMenu, tr("打込み代行..."), ID_AUTOTYPE);

@@ -410,7 +410,7 @@ void P6VXApp::executeEmulation()
 {
 	// カスタムROMパスが設定されている場合はそちらを使う
 	if(getCustomRomPath() != ""){
-        Cfg.SetRomPath(getCustomRomPath().toUtf8().data());
+		Cfg.SetRomPath(getCustomRomPath().toUtf8().data());
 	}
 
 	// ROMファイル存在チェック&機種変更
@@ -448,28 +448,28 @@ void P6VXApp::executeEmulation()
 	}
 
 	// 機種別P6オブジェクト確保
-    QPointer<QtEL6> P6CoreObj = new QtEL6;
-    if( !P6CoreObj ){
+	QPointer<QtEL6> P6CoreObj = new QtEL6;
+	if( !P6CoreObj ){
 		exit();
 		return;
 	}
 
 	// VM初期化
-    if( !P6CoreObj->Init( &Cfg ) ){
+	if( !P6CoreObj->Init( &Cfg ) ){
 		if(Error::GetError() == Error::RomCrcNG){
 			// CRCが合わない場合
 			int ret = OSD_Message( tr("ROMイメージのCRCが不正です。\n"
 									  "CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。\n"
-                                      "それでも起動しますか?").toUtf8().constData(),
+									  "それでも起動しますか?").toUtf8().constData(),
 								   MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING );
 			if(ret == OSDR_YES) {
 				Cfg.SetCheckCRC(false);
 				Cfg.Write();
-                P6CoreObj->deleteLater();
+				P6CoreObj->deleteLater();
 				emit vmRestart();
 				return;
 			} else {
-                P6CoreObj->deleteLater();
+				P6CoreObj->deleteLater();
 				exit();
 				return;
 			}
@@ -481,16 +481,22 @@ void P6VXApp::executeEmulation()
 	}
 
 	switch( Restart ){
+	case EL6::Quit:	// 通常起動
+#ifdef AUTOSUSPEND
+		// 自動サスペンド有効時はここでLOAD
+		P6CoreObj->DokoDemoLoad1();
+#endif
+		break;
 	case EL6::Dokoload:	// どこでもLOAD?
-        P6CoreObj->DokoDemoLoad( Cfg.GetDokoFile() );
+		P6CoreObj->DokoDemoLoad( Cfg.GetDokoFile() );
 		break;
 
 	case EL6::Replay:	// リプレイ再生?
 	{
 		char temp[PATH_MAX];
 		strncpy( temp, Cfg.GetDokoFile(), PATH_MAX );
-        P6CoreObj->DokoDemoLoad( temp );
-        P6CoreObj->REPLAY::StartReplay( temp );
+		P6CoreObj->DokoDemoLoad( temp );
+		P6CoreObj->REPLAY::StartReplay( temp );
 	}
 		break;
 
@@ -498,7 +504,7 @@ void P6VXApp::executeEmulation()
 		break;
 	}
 
-    P6Core = P6CoreObj;
+	P6Core = P6CoreObj;
 
 	// 以降、ウィンドウが閉じたらアプリを終了する
 	connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()));
@@ -515,6 +521,13 @@ void P6VXApp::postExecuteEmulation()
 	Restart = Adaptor->getReturnCode();
 	Adaptor->setEmulationObj(NULL);
 	P6Core->Stop();
+
+#ifdef AUTOSUSPEND
+	// 自動サスペンド有効時はここでSAVE
+	if( Restart == EL6::Quit ){
+		P6Core->DokoDemoSave1();
+	}
+#endif
 
 	// P6オブジェクトを解放
 	// 本来QtオブジェクトはdeleteLater()を使うべきであるが、再起動の場合、
@@ -642,12 +655,12 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		break;
 	}
 	case QEvent::ContextMenu:
-    case QEvent::GraphicsSceneContextMenu:
+	case QEvent::GraphicsSceneContextMenu:
 	{
 		ev.type = EV_CONTEXTMENU;
-        QPoint p = QCursor::pos();
-        ev.mousebt.x = p.x();
-        ev.mousebt.y = p.y();
+		QPoint p = QCursor::pos();
+		ev.mousebt.x = p.x();
+		ev.mousebt.y = p.y();
 		OSD_PushEvent(ev);
 		break;
 	}
@@ -672,19 +685,19 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 			OSD_PushEvent(ev);
 		}
 #if 0
-        // 右クリックはコンテキストメニューイベントとして拾われるので当面実装しない。
-        if(me->button() == Qt::RightButton){
-            ev.type = EV_MOUSEBUTTONUP;
-            ev.mousebt.button = MBT_RIGHT;
-            ev.mousebt.state = false;
-            OSD_PushEvent(ev);
-        }
+		// 右クリックはコンテキストメニューイベントとして拾われるので当面実装しない。
+		if(me->button() == Qt::RightButton){
+			ev.type = EV_MOUSEBUTTONUP;
+			ev.mousebt.button = MBT_RIGHT;
+			ev.mousebt.state = false;
+			OSD_PushEvent(ev);
+		}
 #endif
 		break;
 	}
 #ifdef ALWAYSFULLSCREEN
 	case QEvent::ApplicationActivated:
-        if(P6Core){
+		if(P6Core){
 			P6Core->Start();
 		}
 		break;

@@ -689,36 +689,13 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 #endif
     case KVC_MUHENKAN:      // どこでもSAVE
 		Stop();
-		if(REPLAY::GetStatus() == REP_RECORD){
-			UI_ReplayDokoSave();
-		} else {
-			char str[PATH_MAX];
-			snprintf(str, PATH_MAX, "%s/.1.dds", cfg->GetDokoSavePath());
-			DokoDemoSave( str );
-
-			cIni save;
-			if(save.Init(str)) {
-				// 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
-				save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-				save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-			}
-		}
+		DokoDemoSave1();
 		Start();
 		break;
 
 	case KVC_HENKAN:      // どこでもLOAD
 		Stop();
-		if(REPLAY::GetStatus() == REP_RECORD){
-			UI_ReplayDokoLoad();
-		} else {
-			char str[PATH_MAX];
-			snprintf(str, PATH_MAX, "%s/.1.dds", cfg->GetDokoSavePath());
-			if( OSD_FileExist( str ) ){
-				cfg->SetModel( GetDokoModel( str ) );
-				cfg->SetDokoFile( str );
-				OSD_PushEvent( EV_DOKOLOAD );
-			}
-		}
+		DokoDemoLoad1();
 		Start();
 		break;
 
@@ -728,6 +705,41 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 	return true;
 }
 
+////////////////////////////////////////////////////////////////
+// 簡易どこでもSAVE/LOAD
+////////////////////////////////////////////////////////////////
+void EL6::DokoDemoSave1()
+{
+	if(REPLAY::GetStatus() == REP_RECORD){
+		UI_ReplayDokoSave();
+	} else {
+		char str[PATH_MAX];
+		snprintf(str, PATH_MAX, "%s/.1.dds", cfg->GetDokoSavePath());
+		DokoDemoSave( str );
+
+		cIni save;
+		if(save.Init(str)) {
+			// 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
+			save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+			save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+		}
+	}
+}
+
+void EL6::DokoDemoLoad1()
+{
+	if(REPLAY::GetStatus() == REP_RECORD){
+		UI_ReplayDokoLoad();
+	} else {
+		char str[PATH_MAX];
+		snprintf(str, PATH_MAX, "%s/.1.dds", cfg->GetDokoSavePath());
+		if( OSD_FileExist( str ) ){
+			cfg->SetModel( GetDokoModel( str ) );
+			cfg->SetDokoFile( str );
+			OSD_PushEvent( EV_DOKOLOAD );
+		}
+	}
+}
 
 
 

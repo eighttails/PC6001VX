@@ -10,6 +10,6 @@ EmulationAdaptor::EmulationAdaptor(QObject *parent)
 
 void EmulationAdaptor::doEventLoop()
 {
-    RetCode = P6Core->EventLoop();
-    emit finished();
+	RetCode = P6Core->EventLoop();
+	emit finished();
 }

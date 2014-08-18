@@ -32,7 +32,7 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 #Configuration for Android
 android:{
-DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN
+DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN AUTOSUSPEND
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 }

@@ -2957,9 +2957,9 @@ Save time and PC6001V version </translation>
     </message>
 </context>
 <context>
-    <name>QtP6VXApplication</name>
+    <name>p6vxapp</name>
     <message>
-        <location filename="../qtp6vxapplication.cpp" line="414"/>
+        <location filename="../p6vxapp.cpp" line="414"/>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
@@ -2968,7 +2968,7 @@ Please copy ROM files to ROM folder(%1) or specify another folder.
 Do you want to specify another folder?</translation>
     </message>
     <message>
-        <location filename="../qtp6vxapplication.cpp" line="452"/>
+        <location filename="../p6vxapp.cpp" line="452"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>

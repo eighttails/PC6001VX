@@ -2,7 +2,7 @@
 
 #include "../log.h"
 #include "../common.h"
-#include "qtp6vxapplication.h"
+#include "p6vxapp.h"
 
 #ifdef __APPLE__
 #include <Carbon/Carbon.h>  // add Windy for UTF8 変換
@@ -524,13 +524,13 @@ char *UTF8toLocal( const char *str )
 
 void TiltScreen(TiltDirection dir)
 {
-	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	app->setTiltDirection(dir);
 }
 
 void UpdateTilt()
 {
-	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	if(!app->isTiltEnabled()) return;
 
 	const int maxStep = 30;

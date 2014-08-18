@@ -5,7 +5,7 @@
 
 #include "../config.h"
 #include "../osd.h"
-#include "qtp6vxapplication.h"
+#include "p6vxapp.h"
 
 ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
 	: QDialog(parent)
@@ -114,12 +114,12 @@ void ConfigDialog::readConfig()
 
 	// ハードウェアアクセラレーション
 #ifndef NOOPENGL
-	ui->checkBoxHwAccel->setChecked(QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool());
+	ui->checkBoxHwAccel->setChecked(P6VXApp::getSetting(P6VXApp::keyHwAccel).toBool());
 #else
 	ui->checkBoxHwAccel->setVisible(false);
 #endif
 	// フィルタリング
-	ui->checkBoxFiltering->setChecked(QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool());
+	ui->checkBoxFiltering->setChecked(P6VXApp::getSetting(P6VXApp::keyFiltering).toBool());
 
 	// フレームスキップ
     ui->horizontalSliderFPS->setValue(config->GetFrameSkip());
@@ -388,10 +388,10 @@ void ConfigDialog::writeConfig()
     config->SetDispStat(ui->checkBoxStatDisp->isChecked());
 
 	// ハードウェアアクセラレーション
-	QtP6VXApplication::setSetting(QtP6VXApplication::keyHwAccel, ui->checkBoxHwAccel->isChecked());
+	P6VXApp::setSetting(P6VXApp::keyHwAccel, ui->checkBoxHwAccel->isChecked());
 
 	// フィルタリング
-	QtP6VXApplication::setSetting(QtP6VXApplication::keyFiltering, ui->checkBoxFiltering->isChecked());
+	P6VXApp::setSetting(P6VXApp::keyFiltering, ui->checkBoxFiltering->isChecked());
 
 	// フレームスキップ
     config->SetFrameSkip(ui->horizontalSliderFPS->value());

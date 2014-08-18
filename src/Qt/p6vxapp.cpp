@@ -12,18 +12,18 @@
 
 #include "renderview.h"
 #include "keypanel.h"
-#include "qtp6vxapplication.h"
+#include "p6vxapp.h"
 
-const QString QtP6VXApplication::keyGeometry			= "window/geometry";
-const QString QtP6VXApplication::keyMaximized			= "window/maximized";
-const QString QtP6VXApplication::keyHwAccel				= "graph/hwAccel";
-const QString QtP6VXApplication::keyFiltering			= "graph/filtering";
-const QString QtP6VXApplication::keyFixMagnification	= "graph/fixMagnification";
-const QString QtP6VXApplication::keyMagnification		= "graph/magnification";
-const QString QtP6VXApplication::keyKeyPanelVisible		= "keypalette/visible";
-const QString QtP6VXApplication::keyKeyPanelPosition		= "keypalette/position";
+const QString P6VXApp::keyGeometry			= "window/geometry";
+const QString P6VXApp::keyMaximized			= "window/maximized";
+const QString P6VXApp::keyHwAccel				= "graph/hwAccel";
+const QString P6VXApp::keyFiltering			= "graph/filtering";
+const QString P6VXApp::keyFixMagnification	= "graph/fixMagnification";
+const QString P6VXApp::keyMagnification		= "graph/magnification";
+const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
+const QString P6VXApp::keyKeyPanelPosition		= "keypalette/position";
 
-QMutex QtP6VXApplication::SettingMutex;
+QMutex P6VXApp::SettingMutex;
 
 ///////////////////////////////////////////////////////////
 // フォントファイルチェック(無ければ作成する)
@@ -71,7 +71,7 @@ bool SerchRom( CFG6 *cfg )
 	return false;
 }
 
-QtP6VXApplication::QtP6VXApplication(int &argc, char **argv)
+P6VXApp::P6VXApp(int &argc, char **argv)
 	: ParentAppClass(argc, argv)
 	, P6Core(NULL)
 	, Restart(EL6::Quit)
@@ -103,7 +103,7 @@ QtP6VXApplication::QtP6VXApplication(int &argc, char **argv)
 	connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()));
 }
 
-QtP6VXApplication::~QtP6VXApplication()
+P6VXApp::~P6VXApp()
 {
 	Adaptor->thread()->exit();
 	Adaptor->thread()->wait();
@@ -112,17 +112,17 @@ QtP6VXApplication::~QtP6VXApplication()
 	KPanel->deleteLater();
 }
 
-RenderView *QtP6VXApplication::getView()
+RenderView *P6VXApp::getView()
 {
 	return View;
 }
 
-KeyPanel *QtP6VXApplication::getKeyPanel()
+KeyPanel *P6VXApp::getKeyPanel()
 {
 	return KPanel;
 }
 
-void QtP6VXApplication::startup()
+void P6VXApp::startup()
 {
 #ifndef NOSINGLEAPP
 	// 二重起動禁止
@@ -199,7 +199,7 @@ void QtP6VXApplication::startup()
 	emit initialized();
 }
 
-void QtP6VXApplication::createWindow(HWINDOW Wh, bool fsflag)
+void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 {
 	RenderView* view = static_cast<RenderView*>(Wh);
 	Q_ASSERT(view);
@@ -227,7 +227,7 @@ void QtP6VXApplication::createWindow(HWINDOW Wh, bool fsflag)
 	OSD_ClearWindow(Wh);
 }
 
-void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image)
+void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image)
 {
 	//QtではSceneRectの幅を返す
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
@@ -262,7 +262,7 @@ void QtP6VXApplication::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, do
 	pItem->setTransform(trans);
 }
 
-void QtP6VXApplication::getWindowImage(HWINDOW Wh, QRect pos, void **pixels)
+void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void **pixels)
 {
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
@@ -274,7 +274,7 @@ void QtP6VXApplication::getWindowImage(HWINDOW Wh, QRect pos, void **pixels)
 	memcpy(*pixels, image.bits(), image.byteCount());
 }
 
-void QtP6VXApplication::clearLayout(HWINDOW Wh)
+void P6VXApp::clearLayout(HWINDOW Wh)
 {
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
@@ -325,7 +325,7 @@ void QtP6VXApplication::clearLayout(HWINDOW Wh)
 #endif
 }
 
-void QtP6VXApplication::showPopupMenu(int x, int y)
+void P6VXApp::showPopupMenu(int x, int y)
 {
 	//メニュー表示中に右クリックすると二重にメニューが表示されてしまうため、その対処
 	if(MenuMutex.tryLock()){
@@ -336,7 +336,7 @@ void QtP6VXApplication::showPopupMenu(int x, int y)
 	}
 }
 
-void QtP6VXApplication::toggleKeyPanel()
+void P6VXApp::toggleKeyPanel()
 {
 	if(KPanel->isVisible()){
 		KPanel->close();
@@ -345,68 +345,68 @@ void QtP6VXApplication::toggleKeyPanel()
 	}
 }
 
-bool QtP6VXApplication::isTiltEnabled()
+bool P6VXApp::isTiltEnabled()
 {
 	QMutexLocker lock(&PropretyMutex);
 	return TiltEnabled;
 }
 
-void QtP6VXApplication::enableTilt(bool enable)
+void P6VXApp::enableTilt(bool enable)
 {
 	QMutexLocker lock(&PropretyMutex);
 	TiltEnabled = enable;
 }
 
-TiltDirection QtP6VXApplication::getTiltDirection()
+TiltDirection P6VXApp::getTiltDirection()
 {
 	QMutexLocker lock(&PropretyMutex);
 	return TiltDir;
 }
 
-void QtP6VXApplication::setTiltDirection(TiltDirection dir)
+void P6VXApp::setTiltDirection(TiltDirection dir)
 {
 	QMutexLocker lock(&PropretyMutex);
 	TiltDir = dir;
 }
 
-void QtP6VXApplication::setTiltStep(int step)
+void P6VXApp::setTiltStep(int step)
 {
 	QMutexLocker lock(&PropretyMutex);
 	TiltStep = step;
 }
 
-int QtP6VXApplication::getTiltStep()
+int P6VXApp::getTiltStep()
 {
 	QMutexLocker lock(&PropretyMutex);
 	return TiltStep;
 }
 
-bool QtP6VXApplication::isSafeMode()
+bool P6VXApp::isSafeMode()
 {
 	QMutexLocker lock(&PropretyMutex);
 	return SafeMode;
 }
 
-void QtP6VXApplication::enableSafeMode(bool enable)
+void P6VXApp::enableSafeMode(bool enable)
 {
 	QMutexLocker lock(&PropretyMutex);
 	SafeMode = enable;
 }
 
-QString QtP6VXApplication::getCustomRomPath()
+QString P6VXApp::getCustomRomPath()
 {
 	QMutexLocker lock(&PropretyMutex);
 	return CustomRomPath;
 }
 
-void QtP6VXApplication::setCustomRomPath(QString path)
+void P6VXApp::setCustomRomPath(QString path)
 {
 	QMutexLocker lock(&PropretyMutex);
 	CustomRomPath = path;
 }
 
 //仮想マシンを開始させる
-void QtP6VXApplication::executeEmulation()
+void P6VXApp::executeEmulation()
 {
 	// カスタムROMパスが設定されている場合はそちらを使う
 	if(getCustomRomPath() != ""){
@@ -510,7 +510,7 @@ void QtP6VXApplication::executeEmulation()
 }
 
 //仮想マシン終了後の処理
-void QtP6VXApplication::postExecuteEmulation()
+void P6VXApp::postExecuteEmulation()
 {
 	Restart = Adaptor->getReturnCode();
 	Adaptor->setEmulationObj(NULL);
@@ -544,12 +544,12 @@ void QtP6VXApplication::postExecuteEmulation()
 	}
 }
 
-void QtP6VXApplication::terminateEmulation()
+void P6VXApp::terminateEmulation()
 {
 	OSD_PushEvent( EV_QUIT );
 }
 
-void QtP6VXApplication::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
+void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 {
 	quint32 nativeKey = ke->nativeScanCode();
 	qDebug("keycode 0x%x\n", keyCode);
@@ -582,7 +582,7 @@ void QtP6VXApplication::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 	}
 }
 
-bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
+bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 {
 	Event ev;
 	ev.type = EV_NOEVENT;
@@ -704,21 +704,21 @@ bool QtP6VXApplication::notify ( QObject * receiver, QEvent * event )
 	}
 }
 
-const QVariant QtP6VXApplication::getSetting(const QString &key)
+const QVariant P6VXApp::getSetting(const QString &key)
 {
 	QMutexLocker lock(&SettingMutex);
 	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
 	return Setting.value(key);
 }
 
-void QtP6VXApplication::setSetting(const QString &key, const QVariant &value)
+void P6VXApp::setSetting(const QString &key, const QVariant &value)
 {
 	QMutexLocker lock(&SettingMutex);
 	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
 	Setting.setValue(key, value);
 }
 
-void QtP6VXApplication::setDefaultSetting(const QString &key, const QVariant &value)
+void P6VXApp::setDefaultSetting(const QString &key, const QVariant &value)
 {
 	QMutexLocker lock(&SettingMutex);
 	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);

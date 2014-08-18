@@ -86,7 +86,6 @@ SOURCES += \
     src/Qt/osdQt.cpp \
     src/Qt/pc6001v.cpp \
     src/Qt/qtel6.cpp \
-    src/Qt/qtp6vxapplication.cpp \
     src/Qt/qtsingleapplication/qtlocalpeer.cpp \
     src/Qt/qtsingleapplication/qtlockedfile.cpp \
     src/Qt/qtsingleapplication/qtlockedfile_unix.cpp \
@@ -141,7 +140,8 @@ SOURCES += \
     src/voice.cpp \
     src/vsurface.cpp \ 
     src/Qt/keypanelbutton.cpp \
-    src/Qt/keypanel.cpp
+    src/Qt/keypanel.cpp \
+    src/Qt/p6vxapp.cpp
 
 
 HEADERS  += \
@@ -151,7 +151,6 @@ HEADERS  += \
     src/Qt/configdialog.h \
     src/Qt/emulationadaptor.h \
     src/Qt/qtel6.h \
-    src/Qt/qtp6vxapplication.h \
     src/Qt/qtsingleapplication/QtLockedFile \
     src/Qt/qtsingleapplication/QtSingleApplication \
     src/Qt/qtsingleapplication/qtlocalpeer.h \
@@ -227,7 +226,8 @@ HEADERS  += \
     src/voice.h \
     src/vsurface.h \ 
     src/Qt/keypanelbutton.h \
-    src/Qt/keypanel.h
+    src/Qt/keypanel.h \
+    src/Qt/p6vxapp.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

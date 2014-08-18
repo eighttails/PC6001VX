@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <QtWidgets>
 
-#include "qtp6vxapplication.h"
+#include "p6vxapp.h"
 
 #ifndef NOJOYSTICK
 //SDL使用時にビルドを通すのに必要
@@ -17,7 +17,7 @@ int main( int argc, char *argv[] )
 	//X11の場合用
 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
 
-	QtP6VXApplication app(argc, argv);
+	P6VXApp app(argc, argv);
 
 	QCommandLineParser parser;
 	QCommandLineOption safeModeOption(QStringList() << "s" << "safemode", "Safe Mode");
@@ -41,7 +41,7 @@ int main( int argc, char *argv[] )
         app.installTranslator(&myappTranslator);
     }
 
-    //イベントループが始まったらQtP6VXApplication::startup()を実行
+	//イベントループが始まったらp6vxapp::startup()を実行
     QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);
 
     //イベントループを開始

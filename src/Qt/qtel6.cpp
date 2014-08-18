@@ -21,7 +21,7 @@
 #include "renderview.h"
 #include "keypanel.h"
 #include "qtel6.h"
-#include "qtp6vxapplication.h"
+#include "p6vxapp.h"
 
 #define	FRAMERATE	(VSYNC_HZ/(cfg->GetFrameSkip()+1))
 
@@ -43,7 +43,7 @@ void EL6::ShowPopupMenu( int x, int y )
 ////////////////////////////////////////////////////////////////
 void EL6::ExecMenu( int id )
 {
-	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	char str[PATH_MAX];
 	// 項目ごとの処理
 	switch( id ){
@@ -150,19 +150,19 @@ void EL6::ExecMenu( int id )
 		break;
 	}
 	case ID_FIXMAGNIFICATION:
-		QtP6VXApplication::setSetting(QtP6VXApplication::keyFixMagnification,
-									  !QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool());
+		P6VXApp::setSetting(P6VXApp::keyFixMagnification,
+									  !P6VXApp::getSetting(P6VXApp::keyFixMagnification).toBool());
 		break;
 	case ID_HWACCEL:
         if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
-			QtP6VXApplication::setSetting(QtP6VXApplication::keyHwAccel,
-										  !QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool());
+			P6VXApp::setSetting(P6VXApp::keyHwAccel,
+										  !P6VXApp::getSetting(P6VXApp::keyHwAccel).toBool());
 			UI_Quit();
 		}
 		break;
 	case ID_FILTERING:
-		QtP6VXApplication::setSetting(QtP6VXApplication::keyFiltering,
-									  !QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool());
+		P6VXApp::setSetting(P6VXApp::keyFiltering,
+									  !P6VXApp::getSetting(P6VXApp::keyFiltering).toBool());
 		graph->ResizeScreen();
 		break;
 	default:
@@ -197,7 +197,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 {
 	OSD_ShowCursor( true );
 	QAction* selectedAction = NULL;
-	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
 	QMenu menu;
 
@@ -326,7 +326,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(dispSizeMenu, tr("300%"), ID_SIZE300);
 	addCommand(dispSizeMenu, tr("倍率を指定..."), ID_SIZEMANUAL);
 	QAction* fixMagnification = addCommand(dispSizeMenu, tr("倍率を固定"), ID_FIXMAGNIFICATION, true);
-	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
+	if (P6VXApp::getSetting(P6VXApp::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
 #ifndef ALWAYSFULLSCREEN
 	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
 	if (cfg->GetFullScreen()) fullScreen->setChecked(true);
@@ -339,10 +339,10 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (cfg->GetScanLine()) scanLine->setChecked(true);
 #ifndef NOOPENGL
 	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
-	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyHwAccel).toBool()) hwAccel->setChecked(true);
+	if (P6VXApp::getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
 #endif
 	QAction* filtering = addCommand(settingsMenu, tr("フィルタリング"), ID_FILTERING, true);
-	if (QtP6VXApplication::getSetting(QtP6VXApplication::keyFiltering).toBool()) filtering->setChecked(true);
+	if (P6VXApp::getSetting(P6VXApp::keyFiltering).toBool()) filtering->setChecked(true);
 
 	QAction* tiltMode = addCommand(settingsMenu, tr("TILTモード"), ID_TILT, true);
 	if (app->isTiltEnabled()) tiltMode->setChecked(true);

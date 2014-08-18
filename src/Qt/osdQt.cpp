@@ -22,7 +22,7 @@
 #include "aboutdialog.h"
 
 #include "renderview.h"
-#include "qtp6vxapplication.h"
+#include "p6vxapp.h"
 
 #ifndef NOSOUND
 #include "wavfile.h"
@@ -776,7 +776,7 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
 {
-	QtP6VXApplication* app = qobject_cast<QtP6VXApplication*>(qApp);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
 	RenderView* view = app->getView();
 	QGraphicsScene* scene = view->scene();

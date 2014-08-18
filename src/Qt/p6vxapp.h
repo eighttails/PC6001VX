@@ -1,5 +1,5 @@
-#ifndef QTP6VXAPPLICATION_H
-#define QTP6VXAPPLICATION_H
+#ifndef p6vxapp_H
+#define p6vxapp_H
 
 #include <QtSingleApplication>
 #include <QImage>
@@ -25,7 +25,7 @@ class RenderView;
 class QGraphicsScene;
 class KeyPanel;
 
-class QtP6VXApplication : public ParentAppClass
+class P6VXApp : public ParentAppClass
 {
     Q_OBJECT
 public:
@@ -39,8 +39,8 @@ public:
 	static const QString keyKeyPanelVisible;		// キーパレット表示有効化
 	static const QString keyKeyPanelPosition;		// キーパレット表示位置
 
-	explicit QtP6VXApplication(int &argc, char **argv);
-    virtual ~QtP6VXApplication();
+	explicit P6VXApp(int &argc, char **argv);
+	virtual ~P6VXApp();
 
 	// ウィンドウ関連
 	RenderView* getView();
@@ -142,4 +142,4 @@ private:
 	QString CustomRomPath;
 };
 
-#endif // QTP6VXAPPLICATION_H
+#endif // p6vxapp_H

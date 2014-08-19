@@ -390,6 +390,7 @@ MEM6::~MEM6( void )
 	if( KanjiRom )	delete[] KanjiRom;
 	if( VoiceRom )	delete[] VoiceRom;
 	if( IntRam )	delete[] IntRam;
+	if( ExtRam )	delete[] ExtRam;
 	if( ExtRom )	delete[] ExtRom;
 	if( EmptyRom )	delete[] EmptyRom;
 	if( EmptyRam )	delete[] EmptyRam;

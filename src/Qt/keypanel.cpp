@@ -22,6 +22,8 @@ KeyPanel::KeyPanel(QWidget *parent)
 	l->addWidget(new KeyPanelButton(this, tr("F4"), KVC_F4));
 	l->addWidget(new KeyPanelButton(this, tr("F5"), KVC_F5));
 	l->addWidget(new KeyPanelButton(this, tr("かな"), KVC_HIRAGANA));
+	l->addWidget(new KeyPanelButton(this, tr("\\ / ろ"), KVC_UNDERSCORE));
+	l->addWidget(new KeyPanelButton(this, tr("] / む"), KVC_RBRACKET));
 	l->addWidget(new KeyPanelButton(this, tr("MODE"), KVC_PAGEDOWN));
 	l->addWidget(new KeyPanelButton(this, tr("PAGE"), KVC_PAGEUP));
 	l->addSpacing(10);

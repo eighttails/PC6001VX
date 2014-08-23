@@ -4,9 +4,11 @@
 #include "../common.h"
 #include "p6vxapp.h"
 
+/*  not use   by Windy
 #ifdef __APPLE__
 #include <Carbon/Carbon.h>  // add Windy for UTF8 変換
 #endif
+*/
 
 ////////////////////////////////////////////////////////////////
 // CRC32計算
@@ -236,6 +238,7 @@ void Convert2Jis( BYTE *c1, BYTE *c2 )
 // 引数:	str				SJIS文字列へのポインタ
 // 返値:	char *			UTF8文字列へのポインタ
 ////////////////////////////////////////////////////////////////
+/* not use by Windy
 #ifdef __APPLE__
 const char *Sjis2UTF8( const char *str )
 {
@@ -248,7 +251,7 @@ const char *Sjis2UTF8( const char *str )
 	return dst;
 }
 #endif
-
+*/
 
 // isioさんの txt2bas から流用
 /****************************************************/

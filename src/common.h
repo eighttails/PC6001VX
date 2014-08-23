@@ -24,9 +24,11 @@ void Sjis2Jis( BYTE *, BYTE * );					// SJIS -> JIS
 void Jis2Sjis( BYTE *, BYTE * );					// JIS  -> SJIS
 void Convert2Jis( BYTE *, BYTE * );					// 文字コード形式変換(SJIS,EUC -> JIS)
 
+/* not use by Windy
 #ifdef __APPLE__
 const char *Sjis2UTF8( const char * );				// SJIS -> UTF8
 #endif
+*/
 char *UTF8toLocal( const char * );                  // Utf8 -> システム文字コード
 
 
@@ -34,7 +36,7 @@ int Sjis2P6( char *, const char * );				// SJIS -> P6
 
 // Mac用文字コード変換 ShiftJIS -> UTF-8
 #ifdef __APPLE__
-#define FOPENEN(a,b)	fopen(Sjis2UTF8(a),b)
+#define FOPENEN(a,b)	fopen(a,b)
 #else
 #define FOPENEN(a,b)	fopen(UTF8toLocal(a),b)
 #endif

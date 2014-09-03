@@ -564,9 +564,10 @@ void P6VXApp::terminateEmulation()
 
 void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 {
-	quint32 nativeKey = ke->nativeScanCode();
-	qDebug("keycode 0x%x\n", keyCode);
-	qDebug("nativekeycode %d\n", nativeKey);
+    qDebug("keytext %s\n", ke->text().toStdString().c_str());
+    qDebug("keycode 0x%x\n", keyCode);
+    quint32 nativeKey = ke->nativeScanCode();
+    qDebug("nativekeycode %d\n", nativeKey);
 
 	//X11の場合
 	if (QGuiApplication::platformName() == QLatin1String("xcb")){
@@ -590,9 +591,6 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 			keyCode = Qt::Key_Muhenkan;
 		}
 	}
-	//Androidの場合
-	else if (QGuiApplication::platformName() == QLatin1String("android")){
-	}
 }
 
 bool P6VXApp::notify ( QObject * receiver, QEvent * event )
@@ -606,7 +604,18 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 	{
 		QKeyEvent* ke = dynamic_cast<QKeyEvent*>(event);
 		Q_ASSERT(ke);
-		int keyCode = ke->key();
+
+        // キーコードを特定
+        // 生のキーコードは環境によってアンマッチがあるので
+        // 表示可能文字についてはtextを参照したほうが信頼できる
+        int keyCode = Qt::Key_unknown;
+        if(!ke->text().isEmpty() && ke->text().at(0).isPrint()){
+            keyCode = ke->text().at(0).toUpper().unicode();
+        } else {
+            keyCode = ke->key();
+        }
+        // 特殊キー対策
+        handleSpecialKeys(ke, keyCode);
 
 		// 以下の場合は入力イベントをエミュレータ側に渡さず、Qtに渡す
 		// (メニューやダイアログでキーボードを使えるようにするため)
@@ -635,13 +644,11 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 			return ParentAppClass::notify(receiver, event);
 		}
 
-		// 特殊キー対策
-		handleSpecialKeys(ke, keyCode);
 
 		ev.type        = event->type() == QEvent::KeyPress ? EV_KEYDOWN : EV_KEYUP;
-		ev.key.state   = event->type() == QEvent::KeyPress ? true : false;
-		ev.key.sym     = OSD_ConvertKeyCode( keyCode );
-		ev.key.mod	   = (PCKEYmod)(
+        ev.key.state   = event->type() == QEvent::KeyPress ? true : false;
+        ev.key.sym     = OSD_ConvertKeyCode( keyCode );
+        ev.key.mod	   = (PCKEYmod)(
 					( ke->modifiers() & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
 					| ( ke->modifiers() & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )
 					| ( ke->modifiers() & Qt::AltModifier ? KVM_ALT : KVM_NONE )

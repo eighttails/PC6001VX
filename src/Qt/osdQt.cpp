@@ -74,11 +74,7 @@ static const struct {	// Qtキーコード -> 仮想キーコード定義
 { Qt::Key_6,				KVC_6 },			// 6	&
 { Qt::Key_Ampersand,        KVC_6 },			// 6	&
 { Qt::Key_7,				KVC_7 },			// 7	'
-#ifdef ANDROID
-{ Qt::Key_Apostrophe,   	KVC_COLON },		// :	*
-#else
 { Qt::Key_Apostrophe,   	KVC_7 },			// 7	'
-#endif
 { Qt::Key_8,				KVC_8 },			// 8	(
 { Qt::Key_ParenLeft,    	KVC_8 },			// 8	(
 { Qt::Key_9,				KVC_9 },			// 9	)

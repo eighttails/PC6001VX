@@ -199,6 +199,38 @@ void P6VXApp::startup()
 	emit initialized();
 }
 
+int P6VXApp::showMessageBox(const char *mes, const char *cap, int type)
+{
+	QMessageBox::StandardButtons Type = QMessageBox::Ok;
+	QMessageBox::Icon IconType = QMessageBox::Information;
+
+	// メッセージボックスのタイプ
+	switch( type&0x000f ){
+	case OSDM_OK:		Type = QMessageBox::Ok;                         break;
+	case OSDM_OKCANCEL:		Type = QMessageBox::Ok | QMessageBox::Cancel;	break;
+	case OSDM_YESNO:		Type = QMessageBox::Yes | QMessageBox::No;	break;
+	case OSDM_YESNOCANCEL:	Type = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;    break;
+	}
+
+	// メッセージボックスのアイコンタイプ
+	switch( type&0x00f0 ){
+	case OSDM_ICONERROR:	IconType = QMessageBox::Critical;	break;
+	case OSDM_ICONQUESTION:	IconType = QMessageBox::Question;	break;
+	case OSDM_ICONWARNING:	IconType = QMessageBox::Warning;	break;
+	case OSDM_ICONINFO:		IconType = QMessageBox::Information;	break;
+	}
+
+	QMessageBox mb(IconType, TRANS(cap), TRANS(mes), Type);
+	int res = mb.exec();
+
+	switch( res ){
+	case QMessageBox::Ok:	return OSDR_OK;
+	case QMessageBox::Yes:	return OSDR_YES;
+	case QMessageBox::No:	return OSDR_NO;
+	default:	return OSDR_CANCEL;
+	}
+}
+
 void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 {
 	RenderView* view = static_cast<RenderView*>(Wh);

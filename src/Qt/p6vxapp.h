@@ -72,6 +72,9 @@ public slots:
     //直接呼び出さずに、Qtのイベントループの中で実行する
     void startup();
 
+	//メッセージボックスの表示
+	int showMessageBox(const char *mes, const char *cap, int type);
+
     //ウィンドウを生成
     void createWindow(HWINDOW Wh, bool fsflag );
 

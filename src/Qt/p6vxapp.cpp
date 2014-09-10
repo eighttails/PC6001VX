@@ -607,6 +607,16 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 		if(keyCode == Qt::Key_Backslash){
 			keyCode = nativeKey == 97 ? Qt::Key_Underscore : Qt::Key_Backslash;
 		}
+#ifdef PANDORA
+		// Rボタン(変換:どこでもLOAD)
+		else if(nativeKey == 105){
+			keyCode = Qt::Key_Henkan;
+		}
+		// Lボタン(無変換:どこでもSAVE)
+		else if(nativeKey == 62){
+			keyCode = Qt::Key_Muhenkan;
+		}
+#endif
 	}
 	//Windowsの場合
 	else if (QGuiApplication::platformName() == QLatin1String("windows")){

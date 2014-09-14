@@ -14,7 +14,7 @@
 #include "log.h"
 #include "memory.h"
 #include "pio.h"
-#include "psg.h"
+#include "psgfm.h"
 #include "schedule.h"
 #include "sound.h"
 #include "tape.h"

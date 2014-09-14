@@ -9,7 +9,7 @@
 
 #include "fmgen.h"
 #include "fmtimer.h"
-#include "psg_fmgen.h"
+#include "psg.h"
 
 // ---------------------------------------------------------------------------
 //	class OPM

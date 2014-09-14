@@ -109,7 +109,6 @@ SOURCES += \
     src/device/fmgen/fmtimer.cpp \
     src/device/fmgen/opm.cpp \
     src/device/fmgen/opna.cpp \
-    src/device/fmgen/psg_fmgen.cpp \
     src/device/mc6847.cpp \
     src/device/pd7752.cpp \
     src/device/pd8255.cpp \
@@ -130,7 +129,6 @@ SOURCES += \
     src/p6t2.cpp \
     src/p6vm.cpp \
     src/pio.cpp \
-    src/psg.cpp \
     src/replay.cpp \
     src/schedule.cpp \
     src/sound.cpp \
@@ -141,7 +139,9 @@ SOURCES += \
     src/vsurface.cpp \ 
     src/Qt/keypanelbutton.cpp \
     src/Qt/keypanel.cpp \
-    src/Qt/p6vxapp.cpp
+    src/Qt/p6vxapp.cpp \
+    src/psgfm.cpp \
+    src/device/fmgen/psg.cpp
 
 
 HEADERS  += \
@@ -179,7 +179,6 @@ HEADERS  += \
     src/device/fmgen/misc.h \
     src/device/fmgen/opm.h \
     src/device/fmgen/opna.h \
-    src/device/fmgen/psg_fmgen.h \
     src/device/fmgen/types.h \
     src/device/mc6847.h \
     src/device/pd7752.h \
@@ -227,7 +226,9 @@ HEADERS  += \
     src/vsurface.h \ 
     src/Qt/keypanelbutton.h \
     src/Qt/keypanel.h \
-    src/Qt/p6vxapp.h
+    src/Qt/p6vxapp.h \
+    src/psgfm.h \
+    src/device/fmgen/psg.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

@@ -19,7 +19,7 @@
 #include "memory.h"
 #include "osd.h"
 #include "pio.h"
-#include "psg.h"
+#include "psgfm.h"
 #include "schedule.h"
 #include "sound.h"
 #include "status.h"

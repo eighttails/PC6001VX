@@ -1,7 +1,7 @@
 #include "pc6001v.h"
 #include "log.h"
 #include "osd.h"
-#include "psg.h"
+#include "psgfm.h"
 #include "schedule.h"
 
 #include "p6el.h"

@@ -1,5 +1,5 @@
-#ifndef PSG_H_INCLUDED
-#define PSG_H_INCLUDED
+#ifndef PSGFM_H_INCLUDED
+#define PSGFM_H_INCLUDED
 
 #include "typedef.h"
 #include "device.h"
@@ -18,10 +18,6 @@ protected:
 	BYTE JoyNo;							// 読取るジョイスティックの番号(0-1)
 	int Clock;							// クロック
 	
-	// ポートアクセス関数(ジョイスティック限定)
-	BYTE PortAread();
-	void PortBwrite( BYTE );
-	
 	int GetUpdateSamples();				// 更新サンプル数取得
 	
 public:
@@ -39,6 +35,10 @@ public:
 class PSG6 : public PSGb, public cAY8910 {
 protected:
 	void PreWriteReg();					// レジスタ変更前のストリーム更新
+	
+	// ポートアクセス関数(ジョイスティック限定)
+	BYTE PortAread();
+	void PortBwrite( BYTE );
 	
 	// デバイス定義
 	static const Descriptor descriptor;
@@ -80,6 +80,10 @@ protected:
 	void SetTimerA( int );				// TimerA設定
 	void SetTimerB( int );				// TimerB設定
 	
+	// ポートアクセス関数(ジョイスティック限定)
+	BYTE PortAread();
+	void PortBwrite( BYTE );
+	
 	// デバイス定義
 	static const Descriptor descriptor;
 	static const InFuncPtr  indef[];
@@ -109,4 +113,4 @@ public:
 };
 
 
-#endif	// PSG_H_INCLUDED
+#endif	// PSGFM_H_INCLUDED

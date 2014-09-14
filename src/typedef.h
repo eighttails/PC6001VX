@@ -12,7 +12,7 @@
 // 型,定数定義
 /////////////////////////////////////////////////////////////////////////////
 #if defined(WIN32) || defined(WIN64)
-#define NOMINMAX 1
+#define	NOMINMAX	1				// max,min無効化
 #include <windows.h>
 #else
 typedef uint8_t		BYTE;
@@ -119,11 +119,15 @@ typedef DWORD (*CBF_TMR)( DWORD, void * );		// タイマ
 #define ZeroMemory(d,l)	memset((d), 0, (l))
 #endif
 
-template <class T, class S>
-T max(T v1, S v2){ T v2_(v2); return v1 > v2_ ? v1 : v2_; }
+// 32bit環境だとNOMINMAXが効かないみたい?
+#undef max
+#undef min
 
 template <class T, class S>
-T min(T v1, S v2){ T v2_(v2); return v1 < v2_ ? v1 : v2_; }
+T max( T v1, S v2 ){ T v2_(v2); return v1 > v2_ ? v1 : v2_; }
+
+template <class T, class S>
+T min( T v1, S v2 ){ T v2_(v2); return v1 < v2_ ? v1 : v2_; }
 
 #ifdef QTP6VX
 #include <QCoreApplication>

@@ -101,7 +101,7 @@ protected:
 		bool RelayOn;			// リレースイッチON待ちフラグ
 		int Seek;
 		
-        AKEY() : Buffer(NULL), Num(0), Wait(0), Relay(false), RelayOn(false), Seek(0) {}
+		AKEY() : Buffer(NULL), Num(0), Wait(0), Relay(false), RelayOn(false), Seek(0) {}
 	};
 	AKEY ak;								// 自動キー入力情報
 	
@@ -112,18 +112,19 @@ protected:
 	char TapePathUI[PATH_MAX];	// TAPEパス
 	char DiskPathUI[PATH_MAX];	// DISKパス
 	char ExRomPathUI[PATH_MAX];	// 拡張ROMパス
+	char DokoPathUI[PATH_MAX];	// どこでもSAVEパス
 	
 	void UI_TapeInsert( const char * = NULL );		// TAPE 挿入
 	void UI_DiskInsert( int, const char * = NULL );	// DISK 挿入
 	void UI_RomInsert( const char * = NULL );		// 拡張ROM 挿入
 	void UI_RomEject();								// 拡張ROM 排出
-	void UI_DokoSave();								// どこでもSAVE
+	void UI_DokoSave( const char * = NULL );		// どこでもSAVE
 	void UI_DokoLoad( const char * = NULL );		// どこでもLOAD
-	void UI_ReplaySave();							// リプレイ保存
-    void UI_ReplayResumeSave();						// リプレイ保存再開
-    void UI_ReplayDokoLoad();						// リプレイ中どこでもLOAD
-    void UI_ReplayDokoSave();						// リプレイ中どこでもSAVE
-    void UI_ReplayLoad( const char * = NULL );		// リプレイ再生
+	void UI_ReplaySave( const char * = NULL );		// リプレイ保存
+	void UI_ReplayResumeSave( const char * = NULL );	// リプレイ保存再開
+	void UI_ReplayDokoLoad();						// リプレイ中どこでもLOAD
+	void UI_ReplayDokoSave();						// リプレイ中どこでもSAVE
+	void UI_ReplayLoad( const char * = NULL );		// リプレイ再生
 	void UI_AVISave();								// ビデオキャプチャ
 	void UI_AutoType( const char * = NULL );		// 打込み代行
 	void UI_Reset();						// リセット
@@ -154,10 +155,10 @@ protected:
 	void DiskUnmount( int );				// DISK アンマウント
 	
 	bool ReplayRecStart( const char * );	// リプレイ保存開始
-    bool ReplayRecResume(const char *);     // リプレイ保存再開
-    bool ReplayRecDokoLoad();               // リプレイ中どこでもLOAD
-    bool ReplayRecDokoSave();               // リプレイ中どこでもSAVE
-    void ReplayRecStop();					// リプレイ保存停止
+	bool ReplayRecResume(const char *);     // リプレイ保存再開
+	bool ReplayRecDokoLoad();               // リプレイ中どこでもLOAD
+	bool ReplayRecDokoSave();               // リプレイ中どこでもSAVE
+	void ReplayRecStop();					// リプレイ保存停止
 	void ReplayPlayStart( const char * );	// リプレイ再生開始
 	void ReplayPlayStop();					// リプレイ再生停止
 	
@@ -168,7 +169,7 @@ protected:
 	
 public:
 	EL6();									// コンストラクタ
-    virtual ~EL6();							// デストラクタ
+	virtual ~EL6();									// デストラクタ
 	
 	bool Init( const CFG6 * );				// 初期化
 	
@@ -181,7 +182,6 @@ public:
 	bool IsMonitor() const;					// モニタモード?
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
-
 	// ------------------------------------------
 	bool DokoDemoSave( const char * );	// どこでもSAVE
 	bool DokoDemoLoad( const char * );	// どこでもLOAD

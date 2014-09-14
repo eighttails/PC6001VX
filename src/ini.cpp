@@ -422,19 +422,20 @@ bool cIni::PutEntry( const char *section, const char *comment, const char *entry
 	sprintf( tstr, "%s=%s", entry, rstr );
 	node->SetMember( cNode::NODE_ENTRY, tstr );
 	
-    return true;
+	return true;
 }
 
+
 ////////////////////////////////////////////////////////////////
-// エントリ削除
+// エントリ削除(前)
 ////////////////////////////////////////////////////////////////
-bool cIni::DeleteBefore(const char *section, const char *entry)
+bool cIni::DeleteBefore( const char *section, const char *entry )
 {
 	cNode *node, *tnode;
 	bool Found = false;
-
+	
 	if( !Ready ) return false;
-
+	
 	// セクションを探す
 	node = IniNode;
 	do{
@@ -442,14 +443,14 @@ bool cIni::DeleteBefore(const char *section, const char *entry)
 		if( node->NodeID == cNode::NODE_SECTION )
 			if( !stricmp( node->Section, section ) ) Found = true;
 	}while( (node = node->GetNextNode() ) && !Found );
-
+	
 	// セクションが見つからなければ何もしない
 	if( !Found ){
 		return false;
 	} else {
 		// セクションが見つかった場合
 		Found = false;
-
+		
 		// エントリを探す
 		do{
 			tnode = node;
@@ -457,7 +458,7 @@ bool cIni::DeleteBefore(const char *section, const char *entry)
 				if( !stricmp( node->Entry, entry ) ) Found = true;
 		}while( (node = node->GetNextNode()) && tnode->NodeID != cNode::NODE_SECTION && !Found  );
 		node = tnode;
-
+		
 		// エントリが見つからなければ何もしない
 		if( !Found ){
 			return false;
@@ -474,13 +475,17 @@ bool cIni::DeleteBefore(const char *section, const char *entry)
 	}
 }
 
-bool cIni::DeleteAfter(const char *section, const char *entry)
+
+////////////////////////////////////////////////////////////////
+// エントリ削除(後)
+////////////////////////////////////////////////////////////////
+bool cIni::DeleteAfter( const char *section, const char *entry )
 {
 	cNode *node, *tnode;
 	bool Found = false;
-
+	
 	if( !Ready ) return false;
-
+	
 	// セクションを探す
 	node = IniNode;
 	do{
@@ -488,14 +493,14 @@ bool cIni::DeleteAfter(const char *section, const char *entry)
 		if( node->NodeID == cNode::NODE_SECTION )
 			if( !stricmp( node->Section, section ) ) Found = true;
 	}while( (node = node->GetNextNode() ) && !Found );
-
+	
 	// セクションが見つからなければ何もしない
 	if( !Found ){
 		return false;
 	} else {
 		// セクションが見つかった場合
 		Found = false;
-
+		
 		// エントリを探す
 		do{
 			tnode = node;
@@ -503,7 +508,7 @@ bool cIni::DeleteAfter(const char *section, const char *entry)
 				if( !stricmp( node->Entry, entry ) ) Found = true;
 		}while( (node = node->GetNextNode()) && tnode->NodeID != cNode::NODE_SECTION && !Found  );
 		node = tnode;
-
+		
 		// エントリが見つからなければ何もしない
 		if( !Found ){
 			return false;
@@ -520,4 +525,13 @@ bool cIni::DeleteAfter(const char *section, const char *entry)
 			delete node;
 		}
 	}
+}
+
+
+////////////////////////////////////////////////////////////////
+// ファイル名取得
+////////////////////////////////////////////////////////////////
+const char *cIni::GetFileName( void  )
+{
+	return FileName;
 }

@@ -36,7 +36,7 @@ protected:
 	char DiskFile2[PATH_MAX];				// DISK2ファイル名
 	char ImgPath[PATH_MAX];					// スクリーンショット格納パス
 	char PrinterFile[PATH_MAX];				// プリンタファイル名
-    char DokoSavePath[PATH_MAX];			// どこでもSAVEパス
+	char DokoSavePath[PATH_MAX];			// どこでもSAVEパス
 
 	// 定数
 	static const P6KeyName P6KeyNameDef[];	// P6キーコード 名称定義
@@ -183,14 +183,13 @@ public:
 	void SetMonDisp( bool );				// モニタウィンドウ表示状態設定
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
-	
+	// どこでもSAVE関係
+	char *GetDokoSavePath();				// どこでもSAVEパス取得
+	void SetDokoSavePath( const char * );	//                 設定
 	// ------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
-    // ------------------------------------------
-    char *GetDokoSavePath();                    // どこでもSAVEパス取得
-    void SetDokoSavePath( const char * );		//                 設定
-
+	// ------------------------------------------
 };
 
 #endif	// CONFIG_H_INCLUDED

@@ -223,7 +223,6 @@ void VDG64::EventCallback( int id, int clock )
 	case EID_VSYNCS:	// VSYNC
 		VSYNC = true;
 		vm->EventOnVSYNC();				// VSYNCを通知する
-		vm->IntReqIntr(IREQ_VRTC);		// VRTC割込み
 		VLcnt = N60Win ? VLINES60 : VLINES62;	// 表示ラインカウント初期化
 		vm->EventReset( this->Device::GetID(), EID_HDISPS, (double)( N60Win ? Hclk60 : HCLOCK62 ) / (double)HSdclk );
 		vm->EventReset( this->Device::GetID(), EID_HDISPE );
@@ -231,6 +230,7 @@ void VDG64::EventCallback( int id, int clock )
 		
 	case EID_VSYNCE:	// VSYNC終了
 		VSYNC = false;
+		vm->IntReqIntr(IREQ_VRTC);		// VRTC割込み(立上りエッジで割込発生)
 		break;
 		
 	case EID_HDISPS:	// 表示区間開始
@@ -596,7 +596,7 @@ void VDG64::OutCCH( int, BYTE data ){ SRRollY = (WORD)data; }
 void VDG64::OutCEH( int, BYTE data ){ SRVramAddrY = (SRVramAddrY&0xff00) | (WORD)data; }
 void VDG64::OutCFH( int, BYTE data ){ SRVramAddrY = (SRVramAddrY&0x00ff) | (((WORD)data&1)<<8); }
 
-BYTE VDG6::InA2H( int ){ return (VSYNC ? 0x80 : 0) | (HSYNC ? 0x40 : 0) | 0x3f; }
+BYTE VDG6::InA2H( int ){ return (VSYNC ? 0 : 0x80) | (HSYNC ? 0 : 0x40) | 0x3f; }
 
 
 ////////////////////////////////////////////////////////////////

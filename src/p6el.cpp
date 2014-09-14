@@ -35,6 +35,8 @@
 
 int EL6::Speed = 100;
 
+const char resext[] = "resume";	// リプレイ途中保存用拡張子
+
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
@@ -413,10 +415,10 @@ bool EL6::Init( const CFG6 *config )
 bool EL6::Start( void )
 {
 	// 実行速度を復元
-	while(sche->GetSpeedRatio() != Speed){
-		sche->SetSpeedRatio(Speed > 100 ? 1 : -1);
+	while( sche->GetSpeedRatio() != Speed ){
+		sche->SetSpeedRatio( Speed > 100 ? 1 : -1 );
 	}
-
+	
 	FSkipCount = 0;
 	
 	// スレッド生成
@@ -436,7 +438,7 @@ void EL6::Stop( void )
 {
 	// 実行速度を退避
 	Speed = sche->GetSpeedRatio();
-
+	
 	if( !this->cThread::IsCancel() ){
 		this->cThread::Cancel();	// スレッド終了フラグ立てる
 		this->cThread::Waiting();	// スレッド終了まで待つ
@@ -692,13 +694,13 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 		DokoDemoSave1();
 		Start();
 		break;
-
+		
 	case KVC_HENKAN:      // どこでもLOAD
 		Stop();
 		DokoDemoLoad1();
 		Start();
 		break;
-
+		
 	default:				// どれでもない
 		return false;
 	}
@@ -1147,9 +1149,10 @@ bool EL6::IsMonitor( void ) const
 bool EL6::DokoDemoSave( const char *filename )
 {
 	PRINTD( VM_LOG, "[EL6][DokoDemoSave]\n" );
+	
 	cIni *Ini = NULL;
 
-	// とりあえずエラー設定
+	// とりあえずエラーをリセット
 	Error::Reset();
 	try{
 		FILE *fp = FOPENEN( filename, "wt" );
@@ -1184,7 +1187,7 @@ bool EL6::DokoDemoSave( const char *filename )
 		Ini->PutEntry( "KEY", NULL, "AK_Relay",		"%s",	ak.Relay   ? "Yes" : "No" );
 		Ini->PutEntry( "KEY", NULL, "AK_RelayOn",	"%s",	ak.RelayOn ? "Yes" : "No" );
 		Ini->PutEntry( "KEY", NULL, "AK_Seek",		"%d",	ak.Seek );
-
+		
 		char stren[16],strva[256];
 		int bnum = ak.Num + ak.Seek;
 		
@@ -1203,11 +1206,6 @@ bool EL6::DokoDemoSave( const char *filename )
 			sprintf( stren, "AKBuf_%02X", nn );
 			Ini->PutEntry( "KEY", NULL, stren, "%s", strva );
 		}
-
-
-
-
-
 	}
 	catch( std::bad_alloc ){	// new に失敗した場合
 		Error::SetError( Error::MemAllocFailed );
@@ -1223,9 +1221,6 @@ bool EL6::DokoDemoSave( const char *filename )
 	
 	delete Ini;
 	
-	// 無事だったのでエラーなし
-	Error::Reset();
-	
 	return true;
 }
 
@@ -1239,10 +1234,11 @@ bool EL6::DokoDemoSave( const char *filename )
 bool EL6::DokoDemoLoad( const char *filename )
 {
 	PRINTD( VM_LOG, "[EL6][DokoDemoLoad]\n" );
+	
 	cIni *Ini = NULL;
 	
-	// とりあえずエラー設定
-	Error::SetError( Error::DokoReadFailed );
+	// とりあえずエラーをリセット
+	Error::Reset();
 	try{
 		// どこでもLOADファイルを開く
 		Ini = new cIni();
@@ -1313,9 +1309,6 @@ bool EL6::DokoDemoLoad( const char *filename )
 	}
 	
 	delete Ini;
-	
-	// 無事だったのでエラーなし
-	Error::Reset();
 	
 	return true;
 }
@@ -1411,12 +1404,6 @@ void EL6::DiskUnmount( int drv )
 	vm->disk->Unmount( drv );
 }
 
-
-
-
-
-
-
 ////////////////////////////////////////////////////////////////
 // リプレイ保存開始
 //
@@ -1429,7 +1416,7 @@ bool EL6::ReplayRecStart( const char *filename )
 }
 
 ////////////////////////////////////////////////////////////////
-// リプレイ保存開始
+// リプレイ保存再開
 //
 // 引数:	filename	ファイル名
 // 返値:	bool		true:成功 false:失敗
@@ -1438,22 +1425,22 @@ bool EL6::ReplayRecResume( const char *filename )
 {
 	// 途中セーブファイルを探す
 	char strsave[PATH_MAX];
-	strncpy(strsave, OSD_GetFolderNamePart(filename), PATH_MAX);
-	OSD_AddDelimiter(strsave);
-	const char savefile[] = "resume.dds";
-	strncat(strsave, savefile, sizeof(savefile));
-	if(OSD_FileExist(strsave)){
-		cIni save;
-		save.Init(strsave);
-		int frame = 0;
-		save.GetInt("REPLAY", "frame", &frame, frame);
-		if(frame == 0) return false;
+	strncpy( strsave, filename, PATH_MAX );
+	strncpy( (char *)OSD_GetFileNameExt( strsave ), resext, sizeof(resext) );	// 拡張子を差替え
 
-		DokoDemoLoad(strsave);
+	if( OSD_FileExist( strsave ) ){
+		cIni save;
+		save.Init( strsave );
+		int frame = 0;
+		save.GetInt( "REPLAY", "frame", &frame, frame );
+		if( frame == 0 ) return false;
+
+		DokoDemoLoad( strsave );
 		return REPLAY::ResumeRecord( filename, frame );
 	}
 	return false;
 }
+
 
 ////////////////////////////////////////////////////////////////
 // リプレイ中どこでもLOAD
@@ -1461,17 +1448,18 @@ bool EL6::ReplayRecResume( const char *filename )
 // 引数:	なし
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool EL6::ReplayRecDokoLoad()
+bool EL6::ReplayRecDokoLoad( void )
 {
-	if(REPLAY::GetStatus() == REP_RECORD){
+	if( REPLAY::GetStatus() == REP_RECORD ){
 		char filename[PATH_MAX];
-		strncpy(filename, REPLAY::Ini->getFileName(), PATH_MAX);
+		strncpy( filename, REPLAY::Ini->GetFileName(), PATH_MAX );
 		REPLAY::StopRecord();
-		return ReplayRecResume(filename);
-	} else {
+		return ReplayRecResume( filename );
+	}else{
 		return false;
 	}
 }
+
 
 ////////////////////////////////////////////////////////////////
 // リプレイ中どこでもSAVE
@@ -1479,32 +1467,31 @@ bool EL6::ReplayRecDokoLoad()
 // 引数:	なし
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool EL6::ReplayRecDokoSave()
+bool EL6::ReplayRecDokoSave( void )
 {
-	if(REPLAY::GetStatus() == REP_RECORD){
+	if( REPLAY::GetStatus() == REP_RECORD ){
 		// 途中セーブファイルを保存
 		char strsave[PATH_MAX];
-		strncpy(strsave, OSD_GetFolderNamePart(REPLAY::Ini->getFileName()), PATH_MAX);
-		OSD_AddDelimiter(strsave);
-		const char savefile[] = "resume.dds";
-		strncat(strsave, savefile, sizeof(savefile));
-		if(!DokoDemoSave(strsave)) return false;
+		strncpy( strsave, REPLAY::Ini->GetFileName(), PATH_MAX );
+		strncpy( (char *)OSD_GetFileNameExt( strsave ), resext, sizeof(resext) );	// 拡張子を差替え
+		if( !DokoDemoSave( strsave ) ) return false;
 
 		// 途中セーブ情報を追記
 		cIni save;
-		if(!save.Init(strsave)) return false;
-		save.PutEntry("REPLAY", NULL, "frame", "%d", REPLAY::RepFrm);
+		if( !save.Init( strsave ) ) return false;
+		save.PutEntry( "REPLAY", NULL, "frame", "%d", REPLAY::RepFrm );
 		// 一旦キー入力を無効化する(LOAD時にキーが押しっぱなしになるのを防ぐため)
-		save.PutEntry("KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-		save.PutEntry("KEY", NULL, "P6Mtrx", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
+		save.PutEntry( "KEY", NULL, "P6Matrix", "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" );
+		save.PutEntry( "KEY", NULL, "P6Mtrx",   "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" );
 
 		save.Write();
 
 		return true;
-	} else {
+	}else{
 		return false;
 	}
 }
+
 
 ////////////////////////////////////////////////////////////////
 // リプレイ保存停止
@@ -1641,12 +1628,20 @@ void EL6::UI_RomEject( void )
 // 引数:	なし
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void EL6::UI_DokoSave( void )
+void EL6::UI_DokoSave( const char *path )
 {
 	char str[PATH_MAX];
+	const char *fpath = path;
 	
-	if( OSD_FileSelect( graph->GetWindowHandle(), FD_DokoSave, str, cfg->GetDokoSavePath() ) )
-		DokoDemoSave( str );
+	if( !path ){
+		if( !OSD_FileExist( DokoPathUI ) )
+			strncpy( DokoPathUI, cfg->GetDokoSavePath(), PATH_MAX );
+		if( OSD_FileSelect( graph->GetWindowHandle(), FD_DokoSave, str, DokoPathUI ) )
+			fpath = str;
+	}
+	if( !fpath ) return;
+	
+	if( !DokoDemoSave( fpath ) ) Error::SetError( Error::DokoWriteFailed );
 }
 
 
@@ -1661,9 +1656,12 @@ void EL6::UI_DokoLoad( const char *path )
 	char str[PATH_MAX];
 	const char *fpath = path;
 	
-	if( !path && OSD_FileSelect( graph->GetWindowHandle(), FD_DokoLoad, str, cfg->GetDokoSavePath() ) )
-		fpath = str;
-	
+	if( !path ){
+		if( !OSD_FileExist( DokoPathUI ) )
+			strncpy( DokoPathUI, cfg->GetDokoSavePath(), PATH_MAX );
+		if( OSD_FileSelect( graph->GetWindowHandle(), FD_DokoLoad, str, DokoPathUI ) )
+			fpath = str;
+	}
 	if( !fpath ) return;
 	
 	cfg->SetModel( GetDokoModel( fpath ) );
@@ -1678,18 +1676,28 @@ void EL6::UI_DokoLoad( const char *path )
 // 引数:	なし
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void EL6::UI_ReplaySave( void )
+void EL6::UI_ReplaySave( const char *path )
 {
 	char str[PATH_MAX];
+	const char *fpath = path;
 	
 	if( REPLAY::GetStatus() == REP_IDLE ){
-		if( OSD_FileSelect( graph->GetWindowHandle(), FD_RepSave, str, (char *)OSD_GetModulePath() ) ){
-			if( DokoDemoSave( str ) ) ReplayRecStart( str );
+		if( !path ){
+			if( !OSD_FileExist( DokoPathUI ) )
+				strncpy( DokoPathUI, cfg->GetDokoSavePath(), PATH_MAX );
+			if( OSD_FileSelect( graph->GetWindowHandle(), FD_RepSave, str, DokoPathUI ) )
+				fpath = str;
 		}
+		if( !fpath ) return;
+		
+		if( !DokoDemoSave( fpath ) || !ReplayRecStart( fpath ) )
+			Error::SetError( Error::ReplayRecError );
+		
 	}else if( REPLAY::GetStatus() == REP_RECORD ){
 		ReplayRecStop();
 	}
 }
+
 
 ////////////////////////////////////////////////////////////////
 // UI:リプレイ再開
@@ -1697,16 +1705,24 @@ void EL6::UI_ReplaySave( void )
 // 引数:	なし
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void EL6::UI_ReplayResumeSave()
+void EL6::UI_ReplayResumeSave( const char *path )
 {
-	char strreplay[PATH_MAX];
-
+	char str[PATH_MAX];
+	const char *fpath = path;
+	
 	if( REPLAY::GetStatus() == REP_IDLE ){
-		if( OSD_FileSelect( graph->GetWindowHandle(), FD_RepSave, strreplay, (char *)OSD_GetModulePath() ) ){
-			ReplayRecResume( strreplay);
+		if( !path ){
+			if( !OSD_FileExist( DokoPathUI ) )
+				strncpy( DokoPathUI, cfg->GetDokoSavePath(), PATH_MAX );
+			if( OSD_FileSelect( graph->GetWindowHandle(), FD_RepSave, str, DokoPathUI ) )
+				fpath = str;
 		}
+		if( !fpath ) return;
+		
+		if( !ReplayRecResume( fpath ) ) Error::SetError( Error::ReplayRecError );
 	}
 }
+
 
 ////////////////////////////////////////////////////////////////
 // UI:リプレイ中どこでもLOAD
@@ -1718,6 +1734,7 @@ void EL6::UI_ReplayDokoLoad()
 {
 	ReplayRecDokoLoad();
 }
+
 
 ////////////////////////////////////////////////////////////////
 // UI:リプレイ中どこでもSAVE
@@ -1743,8 +1760,12 @@ void EL6::UI_ReplayLoad( const char *path )
 	const char *fpath = path;
 	
 	if( REPLAY::GetStatus() == REP_IDLE ){
-		if( !path && OSD_FileSelect( graph->GetWindowHandle(), FD_RepLoad, str, (char *)OSD_GetModulePath() ) )
-			fpath = str;
+		if( !path ){
+			if( !OSD_FileExist( DokoPathUI ) )
+				strncpy( DokoPathUI, cfg->GetDokoSavePath(), PATH_MAX );
+			if( OSD_FileSelect( graph->GetWindowHandle(), FD_RepLoad, str, DokoPathUI ) )
+				fpath = str;
+		}
 	}else if( REPLAY::GetStatus() == REP_REPLAY ){
 		ReplayPlayStop();
 	}

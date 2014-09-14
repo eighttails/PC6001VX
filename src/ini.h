@@ -38,7 +38,7 @@ public:
 class cIni {
 protected:
 	cNode *IniNode;				// 先頭ノードへのポインタ
-    char FileName[PATH_MAX];	// ファイル名
+	char FileName[PATH_MAX];	// ファイル名
 	
 	bool Ready;
 	
@@ -55,10 +55,10 @@ public:
 	bool GetInt( const char *, const char *, int *, const int );			// 数値読込み
 	bool GetTruth( const char *, const char *, bool *, const bool );		// YesNo読込み
 	bool PutEntry( const char *, const char *, const char *, const char *, ... );	// エントリ追加
+	bool DeleteBefore( const char *, const char * );						// エントリ削除(前)
+	bool DeleteAfter( const char *, const char * );							// エントリ削除(後)
+	const char *GetFileName();												// ファイル名取得
 	
-    bool DeleteBefore( const char *, const char * );  // エントリ削除
-    bool DeleteAfter( const char *, const char * );  // エントリ削除
-    const char* getFileName() { return FileName; }
 };
 
 

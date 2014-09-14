@@ -112,17 +112,18 @@ bool REPLAY::StartRecord( const char *filename )
 // 引数:	frame       途中再開するフレーム
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool REPLAY::ResumeRecord(const char *filename, int frame)
+bool REPLAY::ResumeRecord( const char *filename, int frame )
 {
-    if(!StartRecord(filename)) return false;
-    char buf[16];
-    sprintf(buf, "%08lX", frame);
-    // 指定されたフレーム以降のリプレイを削除し、そこから再開
-    Ini->DeleteAfter("REPLAY", buf);
-
-    RepFrm = frame;
-    return true;
+	if( !StartRecord( filename ) ) return false;
+	char buf[16];
+	sprintf( buf, "%08lX", frame );
+	// 指定されたフレーム以降のリプレイを削除し、そこから再開
+	Ini->DeleteAfter( "REPLAY", buf );
+	
+	RepFrm = frame;
+	return true;
 }
+
 
 ////////////////////////////////////////////////////////////////
 // リプレイ記録停止
@@ -161,12 +162,12 @@ bool REPLAY::ReplayWriteFrame( const BYTE *mt, bool chg )
 	if( ( RepST != REP_RECORD ) || !mt || !Ini ) return false;
 	
 	// マトリクスに変化があったら書出し
-    if( 1/*chg*/ ){
+//	if( chg ){	// 常に書出すことにする
 		sprintf( stren, "%08lX ", RepFrm );
 		for( int i=0; i<MSize; i++ )
 			sprintf( strva+i*2, "%02X", mt[i] );
 		Ini->PutEntry( "REPLAY", NULL, stren, "%s", strva );
-	}
+//	}
 	
 	RepFrm++;
 	

@@ -385,13 +385,13 @@ MEM6::~MEM6( void )
 {
 	if( MainRom )	delete[] MainRom;
 	if( SysRom2 )	delete[] SysRom2;
+	if( ExtRom )	delete[] ExtRom;
 	if( CGRom1 )	delete[] CGRom1;
 	if( CGRom2 )	delete[] CGRom2;
 	if( KanjiRom )	delete[] KanjiRom;
 	if( VoiceRom )	delete[] VoiceRom;
 	if( IntRam )	delete[] IntRam;
 	if( ExtRam )	delete[] ExtRam;
-	if( ExtRom )	delete[] ExtRom;
 	if( EmptyRom )	delete[] EmptyRom;
 	if( EmptyRam )	delete[] EmptyRam;
 }
@@ -1585,10 +1585,10 @@ bool MEM6::DokoSave( cIni *Ini )
 	}
 
 	// メモリウェイト
-	Ini->PutEntry( "MEMORY", NULL, "Wait",          "%d",		GetWait() );
+	Ini->PutEntry( "MEMORY", NULL, "Wait",			"%d",		GetWait() );
 	// CGRomウェイト
-	Ini->PutEntry( "MEMORY", NULL, "CgRomWait",     "%d",		CGROM1.GetWait() );
-
+	Ini->PutEntry( "MEMORY", NULL, "CgRomWait",		"%d",		CGROM1.GetWait() );
+	
 	return true;
 }
 
@@ -1656,12 +1656,12 @@ bool MEM62::DokoSave( cIni *Ini )
 	if( UseSol ){
 		// 現在の実装では外部RAMを使っていないので無視
 		// 戦士のカートリッジ用外部RAMは0x6000-0x7FFFを使用
-		//		for( int i=0x6000; i<0x8000; i+=64 ){	// 2KB
-		//			char stren[16],strva[256];
-		//			sprintf( stren, "ExtRam_%04X", i );
-		//			for( int j=0; j<64; j++ ) sprintf( &strva[j*2], "%02X", ExtRam[i+j] );
-		//			Ini->PutEntry( "MEMORY", NULL, stren, "%s", strva );
-		//		}
+//		for( int i=0x6000; i<0x8000; i+=64 ){	// 2KB
+//			char stren[16],strva[256];
+//			sprintf( stren, "ExtRam_%04X", i );
+//			for( int j=0; j<64; j++ ) sprintf( &strva[j*2], "%02X", ExtRam[i+j] );
+//			Ini->PutEntry( "MEMORY", NULL, stren, "%s", strva );
+//		}
 	}
 	
 	return true;
@@ -1715,6 +1715,8 @@ bool MEM6::DokoLoad( cIni *Ini )
 
 bool MEM60::DokoLoad( cIni *Ini )
 {
+	int st;
+	
 	if( !Ini || !MEM6::DokoLoad( Ini ) ) return false;
 	
 	// 内部RAM
@@ -1768,24 +1770,25 @@ bool MEM60::DokoLoad( cIni *Ini )
 	SetMemBlockW( 0 );
 	SetCGBank( CGBank );
 	
+	// メモリウェイト
+	Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait( st );
+	// CGRomウェイト
+	Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
+	st &= 0xff;
+	CGROM1.SetWait( st, st );
+	CGROM2.SetWait( st, st );
+	
 	// 戦士のカートリッジ ------------------------------------------
 	if( UseSol ) SetSolBank( SolBank );	// メモリバンク初期化
 	// -------------------------------------------------------------
-
-	// メモリウェイト
-	int st;
-	Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait(st);
-	// CGRomウェイト
-	Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
-	int	cgwait = st&0xff;
-	CGROM1.SetWait( cgwait, cgwait );
-	CGROM2.SetWait( cgwait, cgwait );
-
+	
 	return true;
 }
 
 bool MEM62::DokoLoad( cIni *Ini )
 {
+	int st;
+	
 	if( !Ini || !MEM6::DokoLoad( Ini ) ) return false;
 	
 	// 内部RAM
@@ -1821,18 +1824,18 @@ bool MEM62::DokoLoad( cIni *Ini )
 	if( UseSol ){
 		// 現在の実装では外部RAMを使っていないので無視
 		// 戦士のカートリッジ用外部RAMは0x6000-0x7FFFを使用
-		//		for( int i=0x6000; i<0x8000; i+=64 ){	// 2KB
-		//			char stren[16],strva[256];
-		//			sprintf( stren, "ExtRam_%04X", i );
-		//			memset( strva, '0', 64*2 );
-		//			if( Ini->GetString( "MEMORY", stren, strva, strva ) ){
-		//				for( int j=0; j<64; j++ ){
-		//					char dt[5] = "0x";
-		//					strncpy( &dt[2], &strva[j*2], 2 );
-		//					ExtRam[i+j] = strtol( dt, NULL, 16 );
-		//				}
-		//			}
-		//		}
+//		for( int i=0x6000; i<0x8000; i+=64 ){	// 2KB
+//			char stren[16],strva[256];
+//			sprintf( stren, "ExtRam_%04X", i );
+//			memset( strva, '0', 64*2 );
+//			if( Ini->GetString( "MEMORY", stren, strva, strva ) ){
+//				for( int j=0; j<64; j++ ){
+//					char dt[5] = "0x";
+//					strncpy( &dt[2], &strva[j*2], 2 );
+//					ExtRam[i+j] = strtol( dt, NULL, 16 );
+//				}
+//			}
+//		}
 	}
 	
 	Init( UseExtRam, UseSol );
@@ -1840,19 +1843,18 @@ bool MEM62::DokoLoad( cIni *Ini )
 	SetMemBlockW( Rf[2] );
 	SetCGBank( CGBank );
 	
+	// メモリウェイト
+	Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait( st );
+	// CGRomウェイト
+	Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
+	st &= 0xff;
+	CGROM1.SetWait( st, st );
+	CGROM2.SetWait( st, st );
+	
 	// 戦士のカートリッジ ------------------------------------------
 	if( UseSol ) SetSolBank( SolBank );	// メモリバンク初期化
 	// -------------------------------------------------------------
-
-	// メモリウェイト
-	int st;
-	Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait(st);
-	// CGRomウェイト
-	Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
-	int	cgwait = st&0xff;
-	CGROM1.SetWait( cgwait, cgwait );
-	CGROM2.SetWait( cgwait, cgwait );
-
+	
 	return true;
 }
 

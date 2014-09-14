@@ -1,4 +1,5 @@
 #include "pc6001v.h"
+
 #include "log.h"
 #include "osd.h"
 #include "psgfm.h"
@@ -6,6 +7,7 @@
 
 #include "p6el.h"
 #include "p6vm.h"
+
 // イベントID
 #define	EID_PSG		(1)
 #define	EID_TIMERA	(2)
@@ -59,13 +61,6 @@ void OPN6::EventCallback( int id, int clock )
 		break;
 	}
 }
-
-
-////////////////////////////////////////////////////////////////
-// ポートアクセス関数
-////////////////////////////////////////////////////////////////
-BYTE PSGb::PortAread( void ){ return vm->KeyGetJoy( JoyNo ); }
-void PSGb::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
 
 
 ////////////////////////////////////////////////////////////////
@@ -158,7 +153,7 @@ bool OPN6::Init( int clock, int srate )
 	cYM2203::Init( Clock, srate );
 	
 	// OPN ボリュームテーブル設定
-	cYM2203::SetVolumeTable( Volume );
+	cYM2203::SetVolumeTable( DEFAULT_PSGVOL );
 	
 	// リセット
 	cYM2203::Reset();
@@ -255,6 +250,16 @@ int OPN6::SoundUpdate( int samples )
 
 
 ////////////////////////////////////////////////////////////////
+// ポートアクセス関数
+////////////////////////////////////////////////////////////////
+BYTE PSG6::PortAread( void ){ return vm->KeyGetJoy( JoyNo ); }
+void PSG6::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
+
+BYTE OPN6::PortAread( void ){ return vm->KeyGetJoy( JoyNo ); }
+void OPN6::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
+
+
+////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
 // PSGレジスタアドレスラッチ
@@ -323,7 +328,7 @@ bool PSG6::DokoSave( cIni *Ini )
 	
 	Ini->PutEntry( "PSG", NULL, "BufSize",		"%d",		SndDev::FreeSize() );
 	
-    return true;
+	return true;
 }
 
 
@@ -346,7 +351,7 @@ bool PSG6::DokoLoad( cIni *Ini )
 	while( SndDev::FreeSize() > st )
 		SndDev::Put(0);
 	
-    return true;
+	return true;
 }
 
 

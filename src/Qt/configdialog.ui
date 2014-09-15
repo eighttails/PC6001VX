@@ -560,7 +560,7 @@
            <item>
             <widget class="QGroupBox" name="groupBoxPSGVol">
              <property name="title">
-              <string>PSG音量(&amp;P)</string>
+              <string>PSG、FM音量(&amp;P)</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_16">
               <item row="0" column="0">

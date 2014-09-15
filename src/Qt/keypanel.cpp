@@ -33,7 +33,7 @@ KeyPanel::KeyPanel(QWidget *parent)
 
 	adjustSize();
 	QPoint p = P6VXApp::getSetting(P6VXApp::keyKeyPanelPosition).toPoint();
-	setGeometry(p.x(), p.y(), width(), height());
+	move(p);
 	if(P6VXApp::getSetting(P6VXApp::keyKeyPanelVisible).toBool()){
 		show();
 	}

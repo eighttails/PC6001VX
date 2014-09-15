@@ -1208,7 +1208,7 @@ const char *OSD_GetFileNameExt( const char *path )
 	static QByteArray ext;
 	QFileInfo info(QString::fromUtf8(path));
 	ext = info.suffix().toUtf8();
-	return ext.constData();
+	return strstr(path, ext.constData());
 }
 
 ////////////////////////////////////////////////////////////////

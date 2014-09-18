@@ -77,7 +77,7 @@ make -j3 && make install
 #Qt
 cd $SDKHOME
 QT_MAJOR_VER=5.3
-QT_VER=$QT_MAJOR_VER.1
+QT_VER=$QT_MAJOR_VER.2
 wget -c http://download.qt-project.org/official_releases/qt/$QT_MAJOR_VER/$QT_VER/single/qt-everywhere-opensource-src-$QT_VER.tar.gz -P $INSTALLER_DIR/tmp
 tar xf $INSTALLER_DIR/tmp/qt-everywhere-opensource-src-$QT_VER.tar.gz
 cd qt-everywhere-opensource-src-$QT_VER
@@ -92,7 +92,7 @@ patch -p1  < $INSTALLER_DIR/qtmultimedia53.patch
 cd qtbase
 #make confclean -j3
 cd ..
-./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -c++11 -opengl es2 -qt-xcb -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -silent
+./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -c++11 -qt-xcb -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -silent
 #echo "Hit Enter.";read Wait
 make -j3 && make install
 

@@ -19,9 +19,11 @@ mkdir extlib
 
 #Qt
 cd ~/extlib
-export QT_VERSION=5.2.1
+export QT_MAJOR_VERSION=5.3
+export QT_MINOR_VERSION=.2
+export QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
-wget -c  http://download.qt-project.org/official_releases/qt/5.2/$QT_VERSION/single/$QT_SOURCE_DIR.zip
+wget -c  http://download.qt-project.org/official_releases/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
 
 if [ -e $QT_SOURCE_DIR ]; then
     # 存在する場合
@@ -42,7 +44,6 @@ else
     #Osで最適化するためのパッチ(サイズ削減のため)
     patch -p0 --binary < $SCRIPT_DIR/optimize.patch
     popd
-    dos2unix $QT_SOURCE_DIR/qtwebkit/Source/JavaScriptCore/llint/*.asm
 fi
 
 export PATH=$PWD/$QT_SOURCE_DIR/gnuwin32/bin:$PATH
@@ -62,7 +63,7 @@ popd
 
 #qbs
 cd ~/extlib
-export QBS_VER=1.2.2
+export QBS_VER=1.3.1
 export QBS_SOURCE_DIR=qbs-$QBS_VER
 wget -c  http://download.qt-project.org/official_releases/qbs/$QBS_VER/$QBS_SOURCE_DIR.src.zip
 if [ -e $QBS_SOURCE_DIR ]; then
@@ -83,9 +84,11 @@ popd
 
 #Qt Creator
 cd ~/extlib
-export QTC_VER=3.1.2
+export QTC_MAJOR_VER=3.2
+export QTC_MINOR_VER=.1
+export QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
-wget -c  http://download.qt-project.org/official_releases/qtcreator/3.1/$QTC_VER/$QTC_SOURCE_DIR.zip
+wget -c  http://download.qt-project.org/official_releases/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
 if [ -e $QTC_SOURCE_DIR ]; then
     # 存在する場合
     echo "$QTC_SOURCE_DIR already exists."

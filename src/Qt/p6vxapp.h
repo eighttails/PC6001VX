@@ -116,11 +116,15 @@ private slots:
     //仮想マシンを終了させる
     void terminateEmulation();
 
+	// スクリーンセーバー無効化
+	void inhibitScreenSaver();
+
 protected:
 	virtual bool notify(QObject *receiver, QEvent *event);
 
 	// 特殊キー対策
 	void handleSpecialKeys(QKeyEvent* ke, int &keyCode);
+
 private:
     QPointer<QtEL6> P6Core;		// オブジェクトポインタ
     EL6::ReturnCode Restart;	// 再起動フラグ

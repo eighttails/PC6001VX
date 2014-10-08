@@ -1,4 +1,5 @@
 #include <QtWidgets>
+#include <QTimer>
 
 #include "../event.h"
 #include "../osd.h"
@@ -101,6 +102,12 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	connect(this, SIGNAL(vmPrepared()), Adaptor, SLOT(doEventLoop()));
 	connect(this, SIGNAL(vmRestart()), this, SLOT(executeEmulation()));
 	connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()));
+
+	//スクリーンセーバー抑止用タイマー
+	QTimer* timer = new QTimer(this);
+	timer->setInterval(30000);
+	connect(timer, SIGNAL(timeout()), this, SLOT(inhibitScreenSaver()));
+	timer->start();
 }
 
 P6VXApp::~P6VXApp()
@@ -594,6 +601,8 @@ void P6VXApp::terminateEmulation()
 	OSD_PushEvent( EV_QUIT );
 }
 
+
+
 void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 {
     qDebug("keytext %s\n", ke->text().toStdString().c_str());
@@ -789,5 +798,19 @@ void P6VXApp::setDefaultSetting(const QString &key, const QVariant &value)
 	}
 }
 
-
+#ifdef USE_X11
+#include <QX11Info>
+#include <X11/Xlib.h>
+#endif
+void P6VXApp::inhibitScreenSaver()
+{
+#if defined USE_X11
+	if(View && View->isFullScreen()){
+		XResetScreenSaver(QX11Info::display());
+	}
+#elif defined WIN32
+#else
+	//何もしない
+#endif
+}
 

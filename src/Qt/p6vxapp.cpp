@@ -809,6 +809,11 @@ void P6VXApp::inhibitScreenSaver()
 		XResetScreenSaver(QX11Info::display());
 	}
 #elif defined WIN32
+	if(View && View->isFullScreen()){
+		SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);
+	} else {
+		SetThreadExecutionState(ES_CONTINUOUS);
+	}
 #else
 	//何もしない
 #endif

@@ -30,12 +30,7 @@ DEFINES += QTP6VX
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
-#Configuration for Android
-android:{
-DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN AUTOSUSPEND
-#Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
-debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
-}
+
 
 #Configuration for OpenPandora
 pandora:{
@@ -50,6 +45,20 @@ sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
 
 INSTALLS += target sharedlibs
 DEFINES += NOJOYSTICK NOMONITOR NOOPENGL
+}
+
+linux:{
+#Configuration for Android
+android:{
+DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN AUTOSUSPEND
+#Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
+debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
+} else {
+#Configuration for X11(XCB)
+DEFINES += USE_X11
+QT += x11extras
+LIBS += -lX11
+}
 }
 
 #Configuration for Windows

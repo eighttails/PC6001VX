@@ -39,7 +39,7 @@ else
     sed -i -e "s|/Fh |//Fh |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
 
     #gcc4.9でクラッシュする問題への対策パッチ
-    patch -p1 < $SCRIPT_DIR/angle52.patch
+    patch -p1 < $SCRIPT_DIR/angle.patch
 
     #Osで最適化するためのパッチ(サイズ削減のため)
     patch -p0 --binary < $SCRIPT_DIR/optimize.patch
@@ -55,7 +55,7 @@ rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
 
-cmd.exe "/c %CD%/../$QT_SOURCE_DIR/configure.bat -I %CD%/../../../../mingw32/include -L %CD%/../../../../mingw32/lib -L %CD%/../../../../mingw32/i686-w64-mingw32/lib -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local -shared -release -nomake examples -nomake tests -skip qtwebkit-examples"
+cmd.exe "/c %CD%/../$QT_SOURCE_DIR/configure.bat -I %CD%/../../../../mingw32/include -L %CD%/../../../../mingw32/lib -L %CD%/../../../../mingw32/i686-w64-mingw32/lib -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local -shared -release  -nomake tests -skip qtwebkit-examples"
 
 PATH=$PWD/qtbase/lib:$PATH mingw32-make -j$NUMBER_OF_PROCESSORS && mingw32-make install && mingw32-make docs && mingw32-make install_qch_docs
 exitOnError

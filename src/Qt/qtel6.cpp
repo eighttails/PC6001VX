@@ -224,17 +224,24 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	// リプレイメニュー
 	QMenu* replayMenu = systemMenu->addMenu(tr("リプレイ"));
 	systemMenu->addSeparator();
-	QAction* repleyLoad = addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
 	// モニタモード or ブレークポインタが設定されている
 	// またはリプレイ記録中だったらリプレイ再生無効
-	if(
+	if(!(
 		#ifndef NOMONITOR
 			cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
 		#endif
-			( REPLAY::GetStatus() == REP_RECORD ) )
-		repleyLoad->setEnabled(false);
-
-	QAction* repleySave = addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
+			( REPLAY::GetStatus() == REP_RECORD ) )){
+		addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
+	}
+	// モニタモード or ブレークポインタが設定されている
+	// またはリプレイ再生中だったらリプレイ記録無効
+	if(!(
+		#ifndef NOMONITOR
+			cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+		#endif
+			( REPLAY::GetStatus() == REP_REPLAY ) )){
+		addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
+	}
 	if (REPLAY::GetStatus() == REP_IDLE){
 		addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
 	}
@@ -243,14 +250,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
 		addCommand(replayMenu, tr("途中保存から再開"), ID_REPLAYDOKOLOAD);
 	}
 	systemMenu->addSeparator();
-	// モニタモード or ブレークポインタが設定されている
-	// またはリプレイ再生中だったらリプレイ記録無効
-	if(
-		#ifndef NOMONITOR
-			cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
-		#endif
-			( REPLAY::GetStatus() == REP_REPLAY ) )
-		repleySave->setEnabled(false);
 
 #if 0
 	// ビデオキャプチャ

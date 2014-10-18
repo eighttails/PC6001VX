@@ -247,7 +247,6 @@ FORMS    += \
 
 OTHER_FILES += \
     COPYING \
-    README.txt \
     android/AndroidManifest.xml \
     openpandora/PC-6001.png \
     openpandora/PC6001VX.sh \
@@ -280,7 +279,27 @@ OTHER_FILES += \
     win32/safemode.bat \
     win32/toolchain.sh \ 
     android/res/drawable-ldpi/icon.png \
-    win32/release.sh
+    win32/release.sh \
+    README.html \
+    README.mkd \
+    doc/about.png \
+    doc/firstboot.png \
+    doc/keypanel.png \
+    doc/menu.png \
+    doc/monitormode.png \
+    doc/overview.png \
+    doc/romcrc.png \
+    doc/setting_basic.png \
+    doc/setting_color1.png \
+    doc/setting_color2.png \
+    doc/setting_file.png \
+    doc/setting_folder.png \
+    doc/setting_input.png \
+    doc/setting_other.png \
+    doc/setting_screen.png \
+    doc/setting_sound.png \
+    doc/tilt.png \
+    doc/markdown.css
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

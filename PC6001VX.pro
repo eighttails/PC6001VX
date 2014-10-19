@@ -299,7 +299,13 @@ OTHER_FILES += \
     doc/setting_screen.png \
     doc/setting_sound.png \
     doc/tilt.png \
-    doc/markdown.css
+    doc/markdown.css \
+    data/PC-6001_16.png \
+    data/PC-6001_32.png \
+    data/PC-6001_48.png \
+    data/PC-6001_64.png \
+    data/PC-6001_256.png \
+    data/PC-6001.svg
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

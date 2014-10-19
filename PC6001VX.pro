@@ -65,7 +65,7 @@ LIBS += -lX11
 win32:{
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
-RC_FILE = src/win32/PC6001VX.rc
+RC_ICONS += src/win32/PC6001VX.ico
 
 !contains(DEFINES, NOJOYSTICK) {
 #On Windows, referes SDL_DIR environment variable to search SDL2

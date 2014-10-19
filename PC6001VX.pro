@@ -271,7 +271,6 @@ OTHER_FILES += \
     src/Qt/translation/PC6001VX_en.ts \
     src/device/fmgen/readme.txt \
     src/win32/PC6001VX.ico \
-    src/win32/PC6001VX.rc \
     win32/angle.patch \
     win32/angle52.patch \
     win32/buildenv.sh \

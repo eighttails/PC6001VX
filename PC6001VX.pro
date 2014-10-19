@@ -223,7 +223,6 @@ HEADERS  += \
     src/p6vm.h \
     src/pc6001v.h \
     src/pio.h \
-    src/psg.h \
     src/replay.h \
     src/schedule.h \
     src/semaphore.h \

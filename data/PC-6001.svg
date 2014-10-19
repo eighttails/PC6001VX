@@ -17,9 +17,9 @@
    version="1.1"
    inkscape:version="0.48.5 r10040"
    sodipodi:docname="PC-6001.svg"
-   inkscape:export-filename="/home/tadahito/develop/PC6001VX/data/PC-6001_16.png"
-   inkscape:export-xdpi="22.5"
-   inkscape:export-ydpi="22.5">
+   inkscape:export-filename="/home/tadahito/develop/PC6001VX/data/PC-6001_128.png"
+   inkscape:export-xdpi="180"
+   inkscape:export-ydpi="180">
   <defs
      id="defs2987">
     <linearGradient
@@ -59,7 +59,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11"
-     inkscape:cx="21.423749"
+     inkscape:cx="21.605567"
      inkscape:cy="33.729853"
      inkscape:current-layer="layer4"
      showgrid="true"
@@ -96,28 +96,7 @@
        y="0"
        x="0"
        id="image3055"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAABFlJREFU
-eJztm1lIFVEYx+eWUEaWC0SmVJL1UGn1UFkGLSotXm8ZmUlE9JgvERRpq9geRVFB9BD1UphULmkL
-LkWklSktVg9hWhCtqC2QEak9/M8nnEPnntluGPf8X3535s755jDzn+/MWcbz+XNvr2EYRvZawzAM
-w6i9YzhSViaYswJcvtpZvJIL4Pli8FKps3gpc8Gic+AAZ+H+f3mSU+GAsiLsWLcevHrdXsCoSLC1
-GYyOB390WYszJBR83wLGTQY7Ou3VK2MxePYU6MsGg94BIXX38WPpKtCpE9o7wKbHYMo8e3FS54ON
-j0C373z9A1A7gH647YSSctC3xF55Kld61Vo5kurOk4LeAR5jKFoBUclJoF0nxESDj+tBag1+d/sv
-FzIQpOw/ZRb47oO585q98yTtAJkDSOSEu1X/ojruKTkVlN15knaAygGk3u9geztoNifs2AIOCwM3
-b/d//OG94Jev4J5D/o8Xn/moKNAT5r8cSTvAqgPmpIFmW4fESeAV1quLn+L/PC1PwMwcsPnF34+T
-Zfu6alA7wKQsO4CubH9pHcRsL9ZTJe0Auw4Q96tah2MHQerVFR7g/9+ZB0aEgxvz+P/NZnvtAIvy
-ZK2BA6pqsYPaX1EqB1DrEOicQM+8LNurHBA+HKTxBu2Ai5fhgDR2RZ4+A0tYP7y0AnzN2mPVFZfl
-hGs3QerlJS3g49AdjRkPpi8CZc+8ypFjJ4LLvGBmBpjIxharboFB74AQmg8IHQzSGF76QrC+hi+w
-Kx8sq/AfmEaWZDnhVfPf93d/47fFZ17U1AR2Pi+/n+pdXgkePg7W3Aa7foLaAfSDrkjFDZ65G8Ee
-9mwNHgSeP8MHOnmE325odKeCD5v8n4fqUVbJ74+dAKpecrQDVAeIVzC/gCdl3U5h3P5Tm6N6SeN0
-dPDbk2bw2/mbWL1Mxg96B7jWFxDb5xFxoFMniHHMvgfovoBJKXOAXY2O7V9xZNIOcCvQbmG0t9rm
-nJ4oMU7hNnfikrQDVAd4hO39BSDN3pIiIvhtyt6/bM7ry+JERvL/P28AxTdBqrd+E1So7z1A1hv0
-pYOj2GxvwT6QeoOP2Oyv2D77VoLlxc4qKMYRzzNtNki9wYKt4Lv3rBxzRiUbj9C9QUEBHxGiGRvq
-1X1sBRNm8nGe3ANHjgNnTgdpBkqPCAVIro0Ku/XMqyTLCWJ99KiwSbk+MyRbk+N0Zkhcs6RnhlyS
-bQfQXF2gn3mVKCfQXKR2gEVZ7g2Ks7Sq1ViBWiEiW8doVdoBVguYXYFJonf0EpPjA/TmSeVkDpCt
-bbaqoHeAshXoL9neqsTWQaagd4A0B1jN9qLixoA0q0tzdT2Kt44BbCjn7Uv+vG1vzJ3X6ip37QBx
-h9X19jJ52QqPSjbLrLrzJDqOVpRQnBOnzZW3+uVL0DugrxVw686TatlY3NGToN1vhjbkgile+bH+
-pMoJ2gEZWXCAW3e+v345KnOCdoD+ejzI9Qe/sPgFtKNRmAAAAABJRU5ErkJggg==
-"
+       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAABFlJREFU eJztm1lIFVEYx+eWUEaWC0SmVJL1UGn1UFkGLSotXm8ZmUlE9JgvERRpq9geRVFB9BD1UphULmkL LkWklSktVg9hWhCtqC2QEak9/M8nnEPnntluGPf8X3535s755jDzn+/MWcbz+XNvr2EYRvZawzAM w6i9YzhSViaYswJcvtpZvJIL4Pli8FKps3gpc8Gic+AAZ+H+f3mSU+GAsiLsWLcevHrdXsCoSLC1 GYyOB390WYszJBR83wLGTQY7Ou3VK2MxePYU6MsGg94BIXX38WPpKtCpE9o7wKbHYMo8e3FS54ON j0C373z9A1A7gH647YSSctC3xF55Kld61Vo5kurOk4LeAR5jKFoBUclJoF0nxESDj+tBag1+d/sv FzIQpOw/ZRb47oO585q98yTtAJkDSOSEu1X/ojruKTkVlN15knaAygGk3u9geztoNifs2AIOCwM3 b/d//OG94Jev4J5D/o8Xn/moKNAT5r8cSTvAqgPmpIFmW4fESeAV1quLn+L/PC1PwMwcsPnF34+T Zfu6alA7wKQsO4CubH9pHcRsL9ZTJe0Auw4Q96tah2MHQerVFR7g/9+ZB0aEgxvz+P/NZnvtAIvy ZK2BA6pqsYPaX1EqB1DrEOicQM+8LNurHBA+HKTxBu2Ai5fhgDR2RZ4+A0tYP7y0AnzN2mPVFZfl hGs3QerlJS3g49AdjRkPpi8CZc+8ypFjJ4LLvGBmBpjIxharboFB74AQmg8IHQzSGF76QrC+hi+w Kx8sq/AfmEaWZDnhVfPf93d/47fFZ17U1AR2Pi+/n+pdXgkePg7W3Aa7foLaAfSDrkjFDZ65G8Ee 9mwNHgSeP8MHOnmE325odKeCD5v8n4fqUVbJ74+dAKpecrQDVAeIVzC/gCdl3U5h3P5Tm6N6SeN0 dPDbk2bw2/mbWL1Mxg96B7jWFxDb5xFxoFMniHHMvgfovoBJKXOAXY2O7V9xZNIOcCvQbmG0t9rm nJ4oMU7hNnfikrQDVAd4hO39BSDN3pIiIvhtyt6/bM7ry+JERvL/P28AxTdBqrd+E1So7z1A1hv0 pYOj2GxvwT6QeoOP2Oyv2D77VoLlxc4qKMYRzzNtNki9wYKt4Lv3rBxzRiUbj9C9QUEBHxGiGRvq 1X1sBRNm8nGe3ANHjgNnTgdpBkqPCAVIro0Ku/XMqyTLCWJ99KiwSbk+MyRbk+N0Zkhcs6RnhlyS bQfQXF2gn3mVKCfQXKR2gEVZ7g2Ks7Sq1ViBWiEiW8doVdoBVguYXYFJonf0EpPjA/TmSeVkDpCt bbaqoHeAshXoL9neqsTWQaagd4A0B1jN9qLixoA0q0tzdT2Kt44BbCjn7Uv+vG1vzJ3X6ip37QBx h9X19jJ52QqPSjbLrLrzJDqOVpRQnBOnzZW3+uVL0DugrxVw686TatlY3NGToN1vhjbkgile+bH+ pMoJ2gEZWXCAW3e+v345KnOCdoD+ejzI9Qe/sPgFtKNRmAAAAABJRU5ErkJggg== "
        height="64"
        width="64" />
   </g>

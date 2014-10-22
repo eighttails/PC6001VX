@@ -88,6 +88,8 @@ sed -i -e "s|\$\$PNDSDK|$PNDSDK|" qtbase/mkspecs/linux-pandora-g++/qmake.conf
 
 #ALSAで音が出ない問題に対処するパッチを当てる
 patch -p1  < $INSTALLER_DIR/qtmultimedia53.patch
+#カメラ関係でビルドが通らないのを回避
+rm -rf qtmultimedia/config.tests/gstreamer_encodingprofiles
 
 cd qtbase
 #make confclean -j3

@@ -17,6 +17,7 @@ INSTALLER_DIR=$PWD
 #(予め編集しておく)
 ./sdk_installer_openpandora_toolchain.sh
 export PNDSDK=$HOME/pandora-dev/arm-2010q1
+ln -sf $PNDSDK $HOME/pandora-dev/arm
 
 #cmathの不具合対策
 find $PNDSDK/arm-none-linux-gnueabi/include/c++ -name cmath | xargs sed -i -e "s|  using ::\([a-z0-9]\+\)l;|  //using ::\1l;|"
@@ -94,7 +95,7 @@ rm -rf qtmultimedia/config.tests/gstreamer_encodingprofiles
 cd qtbase
 #make confclean -j3
 cd ..
-./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -c++11 -qt-xcb -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -silent
+./configure -opensource -confirm-license -prefix $PNDSDK/usr -headerdir $PNDSDK/usr/include/qt5 -xplatform linux-pandora-g++ -static -opengl desktop -c++11 -qt-xcb -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -silent
 #echo "Hit Enter.";read Wait
 make -j3 && make install
 

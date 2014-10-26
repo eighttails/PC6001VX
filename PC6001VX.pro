@@ -42,7 +42,7 @@ sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
                     $${PANDORA_SDK}/usr/lib/libGL.so.1* \
                     $${PANDORA_SDK}/usr/lib/libXxf86vm.so.1* \
                     $${PANDORA_SDK}/usr/lib/libxcb.so.1*
-
+QMAKE_LFLAGS += $${QMAKE_LFLAGS_RPATH}$${DEPLOY_PATH}
 INSTALLS += target sharedlibs
 DEFINES += NOJOYSTICK NOMONITOR NOOPENGL
 }

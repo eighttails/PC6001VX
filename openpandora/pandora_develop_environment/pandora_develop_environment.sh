@@ -17,7 +17,7 @@ INSTALLER_DIR=$PWD
 #(予め編集しておく)
 ./sdk_installer_openpandora_toolchain.sh
 export PNDSDK=$HOME/pandora-dev/arm-2010q1
-ln -sf $PNDSDK $HOME/pandora-dev/arm
+ln -snf $PNDSDK $HOME/pandora-dev/arm
 
 #cmathの不具合対策
 find $PNDSDK/arm-none-linux-gnueabi/include/c++ -name cmath | xargs sed -i -e "s|  using ::\([a-z0-9]\+\)l;|  //using ::\1l;|"

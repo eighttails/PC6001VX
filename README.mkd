@@ -413,7 +413,7 @@ QtCreatorが/usr/local/bin/qtcreator.exe,Qtスタティック版が/usr/local/qt
 ####Linux
 Debian系のディストリビューションについて解説します。
 
-1. "apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qt5-sdk qtcreator libqt5multimedia5-plugins" を実行。  
+1. "apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev" を実行。  
 1. ダウンロードしたPC6001VXのソースを解凍してください。  
 1. PC6001VX.proをQtCreatorで開いてビルドしてください。  
 IDEが嫌な人はQtCreatorの代わりにqmakeとqtライブラリを揃えればビルドできるでしょう。

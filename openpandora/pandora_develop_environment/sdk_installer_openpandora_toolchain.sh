@@ -446,7 +446,7 @@ gather_package_list()
 	# Remove lots of useless stuff (useless for the sdk!) as well as missing
 	# things. If more packages should be removed, extend the list of "grep -v"
 	# entries.
-	cat $TMPDIR/packages.txt.tmp2 | grep -E "\-dev$|\-devel$|\-dev\-|\-static$" | \
+	cat $TMPDIR/packages.txt.tmp2 | grep -E "\-dev$|\-devel$|\-dev\-|\-static$|\libgles\-" | \
 		grep -v "^abiword" | \
 		grep -v "^libgoffice" | \
 		grep -v "^claws-mail" | \
@@ -465,7 +465,7 @@ gather_package_list()
 		> $TMPDIR/packages.txt
 	
 	# Cleanup.
-	rm $TMPDIR/packages.txt.tmp* $TMPDIR/Packages.stamps.*
+	#rm $TMPDIR/packages.txt.tmp* $TMPDIR/Packages.stamps.*
 	
 	echo -e
 	cecho "Finished creation of $TMPDIR/packages.txt" $green

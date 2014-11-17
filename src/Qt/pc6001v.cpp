@@ -19,6 +19,8 @@ int main( int argc, char *argv[] )
 	setenv("DISPLAY", ":0.0", 1);
 	//GlibのOSと開発環境のバージョン不一致に対する暫定対応
 	setenv("QT_NO_GLIB", "0", 1);
+	//GlibのOSと開発環境のバージョン不一致に対する暫定対応
+	setenv("EGLFS_X11_SIZE", "800x480", 1);
 #endif
 	//X11の場合用
 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);

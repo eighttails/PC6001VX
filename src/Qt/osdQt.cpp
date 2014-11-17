@@ -911,6 +911,7 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
 		memcpy( pdst, psrc, length );
 		psrc += src->Pitch();
 	}
+	image = image.convertToFormat(QImage::Format_RGBX8888);
 	// 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
 	// スロットを呼び出してメインスレッドでSceneを更新する
 	// (直接呼び出すと呼び出し側スレッドで実行されてしまう)

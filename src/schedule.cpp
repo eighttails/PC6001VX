@@ -225,7 +225,7 @@ void EVSC::Reset( Device::ID devid, int id, double ini )
 		PRINTD( TIC_LOG, " -> %d/%d clock", e->Clock, e->Period );
 	}
 	
-	PRINTD( TIC_LOG, "\n" );
+        PRINTD( TIC_LOG, "\n" );
 }
 
 
@@ -506,6 +506,7 @@ void SCH6::OnThread( void *inst )
     now  = OSD_GetTicks();
     last = now;
     DWORD NextWait = now + Vint[VintCnt++];
+    bool needScreenUpdate = false;
 
     while( !this->cThread::IsCancel() ){
         // TILTモード
@@ -518,7 +519,7 @@ void SCH6::OnThread( void *inst )
         ti->WaitReset();
 
         // 画面更新フラグを立てる
-        EnableScrUpdate++;
+        if (needScreenUpdate) EnableScrUpdate++;
 
 #ifndef NOJOYSTICK
         // ジョイスティックをポーリング
@@ -527,6 +528,10 @@ void SCH6::OnThread( void *inst )
         now = OSD_GetTicks();
         if(NextWait >= now){
             OSD_Delay( NextWait - now );
+            needScreenUpdate = true;
+        } else {
+            OSD_Delay( 0 );
+            needScreenUpdate = false;
         }
         if( now - last >= WRUPDATE ){
             for( int i=SPDCNT-1; i>0; i-- )
@@ -652,7 +657,7 @@ void SCH6::WaitReset( void )
 	if( (SpeedRatio < 100 ) && ( (SpeedCnt1 * 100) / SpeedCnt2 >= SpeedRatio ) )
 		return;
 	
-	if( !cSemaphore::Value() ) cSemaphore::Post();
+        if( !cSemaphore::Value() ) cSemaphore::Post();
 	
 }
 

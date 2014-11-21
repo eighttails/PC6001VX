@@ -44,6 +44,11 @@ if [ $FIRSTRUN -eq 1 ]; then
 find $PNDSDK/arm-none-linux-gnueabi/include/c++ -name cmath | xargs sed -i -e "s|  using ::\([a-z0-9]\+\)l;|  //using ::\1l;|"
 find $PNDSDK/arm-none-linux-gnueabi/include/c++ -name cmath | xargs sed -i -e "s|  //using ::ceil;|  using ::ceil;|"
 
+#EGLにおける、X11とQtのシンボル衝突対策
+pushd $PNDSDK/usr/incude/EGL
+patch < $INSTALLER_DIR/eglplatform.patch
+popd
+
 #libtoolはクロスコンパイルで問題が出るので関連ファイルを消しておく
 rm $PNDSDK/usr/lib/*.la
 
@@ -65,17 +70,17 @@ make -j3 && make install
 
 #xcb-proto 
 cd $SDKHOME
-wget -c http://xcb.freedesktop.org/dist/xcb-proto-1.10.tar.gz -P $INSTALLER_DIR/tmp
-tar xf $INSTALLER_DIR/tmp/xcb-proto-1.10.tar.gz
-cd xcb-proto-1.10
+wget -c http://xcb.freedesktop.org/dist/xcb-proto-1.11.tar.gz -P $INSTALLER_DIR/tmp
+tar xf $INSTALLER_DIR/tmp/xcb-proto-1.11.tar.gz
+cd xcb-proto-1.11
 ../../../../sdk_utils/pandora_configure.sh --prefix=$PNDSDK/usr
 make -j3 && make install
 
 #libxcb
 cd $SDKHOME
-wget -c http://xcb.freedesktop.org/dist/libxcb-1.10.tar.gz -P $INSTALLER_DIR/tmp
-tar xf $INSTALLER_DIR/tmp/libxcb-1.10.tar.gz
-cd libxcb-1.10
+wget -c http://xcb.freedesktop.org/dist/libxcb-1.11.tar.gz -P $INSTALLER_DIR/tmp
+tar xf $INSTALLER_DIR/tmp/libxcb-1.11.tar.gz
+cd libxcb-1.11
 ../../../../sdk_utils/pandora_configure.sh --prefix=$PNDSDK/usr
 make -j3 && make install
 
@@ -92,7 +97,7 @@ fi #if [ $FIRSTRUN -eq 1 ]
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt540-beta-release
+QT_INSTALLNAME=qt540-beta-release-xcb
 
 QT_MAJOR_VER=5.4
 QT_VER=$QT_MAJOR_VER.0
@@ -103,7 +108,6 @@ QT_SOURCE_NAME=qt-everywhere-opensource-src-$QT_FULL_VER
 
 cd $SDKHOME
 rm -rf $QT_INSTALLNAME
-rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME
 mkdir $QT_INSTALLNAME
 
 wget -c http://download.qt-project.org/$QT_RELEASE/qt/$QT_MAJOR_VER/$QT_FULL_VER/single/$QT_SOURCE_NAME.tar.xz -P $INSTALLER_DIR/tmp
@@ -122,14 +126,14 @@ fi #if [ ! -d $QT_SOURCE_NAME ]; then
 
 #mkspecをコピー
 cd $QT_SOURCE_NAME
-cp -rf $INSTALLER_DIR/linux-pandora-g++ qtbase/mkspecs
+cp -rf $INSTALLER_DIR/linux-pandora-g++ qtbase/mkspecs/
 sed -i -e "s|\$\$PNDSDK|$PNDSDK|" qtbase/mkspecs/linux-pandora-g++/qmake.conf
 
 cd $SDKHOME/$QT_INSTALLNAME
 #make confclean -j3
-../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -qreal float -opengl es2 -c++11 -qpa eglfs -no-xcb -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -continue -silent
+../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -qreal float -opengl es2 -c++11 -qpa xcb -qt-xcb -no-xinput2 -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -continue -silent 
 
 #echo "Hit Enter.";read Wait
-make -j3 && make install
+make -j3 && rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME && make install
 ln -snf $PNDSDK/usr/local/$QT_INSTALLNAME $PNDSDK/usr/local/qt5
 

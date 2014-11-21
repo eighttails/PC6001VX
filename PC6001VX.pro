@@ -40,6 +40,7 @@ debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 } else
 pandora:{
 #Configuration for OpenPandora
+QT += x11extras
 DEPLOY_PATH = /media/sddev/pc6001vx
 target.path = $${DEPLOY_PATH}
 sharedlibs.path = $${DEPLOY_PATH}
@@ -50,7 +51,8 @@ sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
                     $${PANDORA_SDK}/usr/lib/libxcb.so.1*
 QMAKE_LFLAGS += $${QMAKE_LFLAGS_RPATH}$${DEPLOY_PATH}
 INSTALLS += target sharedlibs
-DEFINES += NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN
+DEFINES += NOJOYSTICK NOMONITOR NOOPENGL USE_X11
+QTPLUGIN += qxcb qeglfs
 } else {
 #Configuration for X11(XCB)
 DEFINES += USE_X11

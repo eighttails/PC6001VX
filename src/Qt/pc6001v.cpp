@@ -18,10 +18,14 @@ int main( int argc, char *argv[] )
 	//VALGRIND実行時用の環境変数
 	setenv("DISPLAY", ":0.0", 1);
 	//GlibのOSと開発環境のバージョン不一致に対する暫定対応
-	setenv("QT_NO_GLIB", "0", 1);
-	//GlibのOSと開発環境のバージョン不一致に対する暫定対応
+	//setenv("QT_NO_GLIB", "0", 1);
+	//EGLFS対応
 	setenv("EGLFS_X11_SIZE", "800x480", 1);
+	setenv("EGLFS_X11_FULLSCREEN", "1", 1);
+	setenv("QT_QPA_EGLFS_PHYSICAL_WIDTH", "200", 1);
+	setenv("QT_QPA_EGLFS_PHYSICAL_HEIGHT", "150", 1);
 #endif
+
 	//X11の場合用
 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
 

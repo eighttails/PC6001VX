@@ -517,6 +517,7 @@ void SCH6::OnThread( void *inst )
 		NextWait += Vint[VintCnt++];
 		if( VintCnt >= VSYNC_HZ ){
 			VintCnt -= VSYNC_HZ;
+			// １秒間に１回は強制的に画面を更新
 			EnableScrUpdate = 1;
 		}
 		ti->WaitReset();

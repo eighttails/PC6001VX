@@ -225,7 +225,7 @@ void EVSC::Reset( Device::ID devid, int id, double ini )
 		PRINTD( TIC_LOG, " -> %d/%d clock", e->Clock, e->Period );
 	}
 	
-        PRINTD( TIC_LOG, "\n" );
+	PRINTD( TIC_LOG, "\n" );
 }
 
 
@@ -488,58 +488,53 @@ SCH6::~SCH6( void )
 ////////////////////////////////////////////////////////////////
 void SCH6::OnThread( void *inst )
 {
-    SCH6 *ti;
-    int Vint[VSYNC_HZ];
-    int VintCnt = 0;
-    DWORD now,last;
+	SCH6 *ti;
+	int Vint[VSYNC_HZ];
+	int VintCnt = 0;
+	int now,last;
 
-    EnableScrUpdate = 0;
+	EnableScrUpdate = 0;
 
-    ti = STATIC_CAST( SCH6 *, inst );	// 自分自身のオブジェクトポインタ取得
+	ti = STATIC_CAST( SCH6 *, inst );	// 自分自身のオブジェクトポインタ取得
 
-    // 1秒間のインターバル設定
-    for( int i=0; i<VSYNC_HZ; i++ ) Vint[i] = (int)( 1000 / VSYNC_HZ );
-    int Vrem = 1000 - (int)( 1000 / VSYNC_HZ ) * VSYNC_HZ;
-    for( int i=0; i<Vrem; i++ ) Vint[(int)(VSYNC_HZ * i / Vrem)]++;
+	// 1秒間のインターバル設定
+	for( int i=0; i<VSYNC_HZ; i++ ) Vint[i] = (int)( 1000 / VSYNC_HZ );
+	int Vrem = 1000 - (int)( 1000 / VSYNC_HZ ) * VSYNC_HZ;
+	for( int i=0; i<Vrem; i++ ) Vint[(int)(VSYNC_HZ * i / Vrem)]++;
 
-    // 最初の待ち時間を設定
-    now  = OSD_GetTicks();
-    last = now;
-    DWORD NextWait = now + Vint[VintCnt++];
-    bool needScreenUpdate = false;
+	// 最初の待ち時間を設定
+	now  = OSD_GetTicks();
+	last = now;
+	int NextWait = now + Vint[VintCnt++];
 
-    while( !this->cThread::IsCancel() ){
-        // TILTモード
-        UpdateTilt();
+	while( !this->cThread::IsCancel() ){
+		// TILTモード
+		UpdateTilt();
 
-        NextWait += Vint[VintCnt++];
-        if( VintCnt >= VSYNC_HZ ){
-            VintCnt -= VSYNC_HZ;
-        }
-        ti->WaitReset();
+		// エミュレーション本体の処理が溜まっていなければ画面更新フラグを立てる
+		if (!cSemaphore::Value()) EnableScrUpdate = 1;
 
-        // 画面更新フラグを立てる
-        if (needScreenUpdate) EnableScrUpdate++;
+		NextWait += Vint[VintCnt++];
+		if( VintCnt >= VSYNC_HZ ){
+			VintCnt -= VSYNC_HZ;
+			EnableScrUpdate = 1;
+		}
+		ti->WaitReset();
 
 #ifndef NOJOYSTICK
-        // ジョイスティックをポーリング
-        OSD_PushEvent(EV_JOYAXISMOTION);
+		// ジョイスティックをポーリング
+		OSD_PushEvent(EV_JOYAXISMOTION);
 #endif
-        now = OSD_GetTicks();
-        if(NextWait >= now){
-            OSD_Delay( NextWait - now );
-            needScreenUpdate = true;
-        } else {
-            OSD_Delay( 0 );
-            needScreenUpdate = false;
-        }
-        if( now - last >= WRUPDATE ){
-            for( int i=SPDCNT-1; i>0; i-- )
-                WRClock[i] = WRClock[i-1];
-            WRClock[0] = 0;
-            last       += WRUPDATE;
-        }
-    }
+		now = int(OSD_GetTicks());
+		OSD_Delay( max( NextWait - now, 0 ));
+
+		if( now - last >= WRUPDATE ){
+			for( int i=SPDCNT-1; i>0; i-- )
+				WRClock[i] = WRClock[i-1];
+			WRClock[0] = 0;
+			last       += WRUPDATE;
+		}
+	}
 }
 
 
@@ -657,7 +652,8 @@ void SCH6::WaitReset( void )
 	if( (SpeedRatio < 100 ) && ( (SpeedCnt1 * 100) / SpeedCnt2 >= SpeedRatio ) )
 		return;
 	
-        if( !cSemaphore::Value() ) cSemaphore::Post();
+	//10フレーム分くらいまでためられるようにする
+	if( !(cSemaphore::Value() > 10) ) cSemaphore::Post();
 	
 }
 
@@ -809,10 +805,10 @@ void SCH6::CalcCpuState( void )
 	else       CpuState = CpuClock;
 
 CpuState = CpuClock;
-	
+
 	// このままだと速すぎるので適当に調整
 //	CpuState = CpuState * 86 / 100;
-	
+
 	// マスタクロック数を設定
 	EVSC::SetMasterClock( CpuState );
 }

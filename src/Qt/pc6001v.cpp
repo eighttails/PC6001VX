@@ -22,6 +22,7 @@ int main( int argc, char *argv[] )
 	//EGLFS対応
 	setenv("EGLFS_X11_SIZE", "800x480", 1);
 	setenv("EGLFS_X11_FULLSCREEN", "1", 1);
+        setenv("QT_QPA_EGLFS_DEPTH", "16", 1);
 	setenv("QT_QPA_EGLFS_PHYSICAL_WIDTH", "200", 1);
 	setenv("QT_QPA_EGLFS_PHYSICAL_HEIGHT", "150", 1);
 #endif

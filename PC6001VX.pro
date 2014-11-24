@@ -51,8 +51,8 @@ sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
                     $${PANDORA_SDK}/usr/lib/libxcb.so.1*
 QMAKE_LFLAGS += $${QMAKE_LFLAGS_RPATH}$${DEPLOY_PATH}
 INSTALLS += target sharedlibs
-DEFINES += NOJOYSTICK NOMONITOR NOOPENGL USE_X11
-QTPLUGIN += qxcb qeglfs
+DEFINES += NOJOYSTICK NOMONITOR USE_X11 NOOPENGL
+#QTPLUGIN += qxcb qeglfs
 } else {
 #Configuration for X11(XCB)
 DEFINES += USE_X11

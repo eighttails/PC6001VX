@@ -45,7 +45,7 @@ find $PNDSDK/arm-none-linux-gnueabi/include/c++ -name cmath | xargs sed -i -e "s
 find $PNDSDK/arm-none-linux-gnueabi/include/c++ -name cmath | xargs sed -i -e "s|  //using ::ceil;|  using ::ceil;|"
 
 #EGLにおける、X11とQtのシンボル衝突対策
-pushd $PNDSDK/usr/incude/EGL
+pushd $PNDSDK/usr/include/EGL
 patch < $INSTALLER_DIR/eglplatform.patch
 popd
 
@@ -97,7 +97,7 @@ fi #if [ $FIRSTRUN -eq 1 ]
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt540-beta-release-xcb
+QT_INSTALLNAME=qt540-beta-release
 
 QT_MAJOR_VER=5.4
 QT_VER=$QT_MAJOR_VER.0
@@ -118,6 +118,8 @@ pushd $QT_SOURCE_NAME
 
 #ALSAで音が出ない問題に対処するパッチを当てる
 patch -p1  < $INSTALLER_DIR/qtmultimedia53.patch
+#EGLFS関連でコンパイルが通らない問題に対処するパッチを当てる
+patch -p1  < $INSTALLER_DIR/eglfs.patch
 #カメラ関係でビルドが通らないのを回避
 rm -rf qtmultimedia/config.tests/gstreamer_encodingprofiles
 
@@ -131,7 +133,7 @@ sed -i -e "s|\$\$PNDSDK|$PNDSDK|" qtbase/mkspecs/linux-pandora-g++/qmake.conf
 
 cd $SDKHOME/$QT_INSTALLNAME
 #make confclean -j3
-../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -qreal float -opengl es2 -c++11 -qpa xcb -qt-xcb -no-xinput2 -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -continue -silent 
+../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -qreal float -opengl es2 -c++11 -qpa xcb -qt-xcb -no-xinput2 -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -continue -silent
 
 #echo "Hit Enter.";read Wait
 make -j3 && rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME && make install

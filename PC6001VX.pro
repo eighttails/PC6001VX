@@ -304,7 +304,9 @@ OTHER_FILES += \
     data/PC-6001_64.png \
     data/PC-6001_256.png \
     data/PC-6001.svg \
-    data/PC-6001_128.png
+    data/PC-6001_128.png \
+    openpandora/pandora_develop_environment/eglfs.patch \
+    openpandora/pandora_develop_environment/eglplatform.patch
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

@@ -25,6 +25,7 @@ const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
 const QString P6VXApp::keyKeyPanelPosition		= "keypalette/position";
 
 QMutex P6VXApp::SettingMutex;
+QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
 
 ///////////////////////////////////////////////////////////
 // フォントファイルチェック(無ければ作成する)
@@ -321,7 +322,7 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 	QGraphicsScene* scene = view->scene();
 	scene->clear();
 
-#ifndef PANDORA
+#ifndef NOOPENGL
 	// ステータスバー非表示またはフルスクリーン、かつTILTモードが有効になっている場合、背景を描く
 	if( (!Cfg.GetDispStat() || Cfg.GetFullScreen()) &&
 		#ifndef NOMONITOR
@@ -778,21 +779,20 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 const QVariant P6VXApp::getSetting(const QString &key)
 {
 	QMutexLocker lock(&SettingMutex);
-	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
 	return Setting.value(key);
 }
 
 void P6VXApp::setSetting(const QString &key, const QVariant &value)
 {
 	QMutexLocker lock(&SettingMutex);
-	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
-	Setting.setValue(key, value);
+	if(Setting.value(key) != value){
+		Setting.setValue(key, value);
+	}
 }
 
 void P6VXApp::setDefaultSetting(const QString &key, const QVariant &value)
 {
 	QMutexLocker lock(&SettingMutex);
-	QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
 	if(!Setting.contains(key)){
 		Setting.setValue(key, value);
 	}

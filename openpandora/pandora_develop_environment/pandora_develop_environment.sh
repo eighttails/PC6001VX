@@ -97,11 +97,11 @@ fi #if [ $FIRSTRUN -eq 1 ]
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt540-beta-release
+QT_INSTALLNAME=qt540-rc-release
 
 QT_MAJOR_VER=5.4
 QT_VER=$QT_MAJOR_VER.0
-QT_FULL_VER=$QT_VER-beta
+QT_FULL_VER=$QT_VER-rc
 QT_RELEASE=development_releases
 #QT_RELEASE=official_releases
 QT_SOURCE_NAME=qt-everywhere-opensource-src-$QT_FULL_VER
@@ -129,7 +129,7 @@ fi #if [ ! -d $QT_SOURCE_NAME ]; then
 #mkspecをコピー
 cd $QT_SOURCE_NAME
 cp -rf $INSTALLER_DIR/linux-pandora-g++ qtbase/mkspecs/
-sed -i -e "s|\$\$PNDSDK|$PNDSDK|" qtbase/mkspecs/linux-pandora-g++/qmake.conf
+sed -i -e "s|\$\$PNDSDK|$HOME/pandora-dev/arm|" qtbase/mkspecs/linux-pandora-g++/qmake.conf
 
 cd $SDKHOME/$QT_INSTALLNAME
 #make confclean -j3

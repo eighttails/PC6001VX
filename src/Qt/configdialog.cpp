@@ -618,7 +618,7 @@ void ConfigDialog::selectFolder(QWidget *widget)
     if(edit){
         strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
         OSD_AddDelimiter(folder);
-        OSD_FolderDiaog(NULL, folder);
+		OSD_FolderDiaog(this, folder);
         OSD_DelDelimiter(folder);
         if(strlen(folder) > 0){
             edit->setText(QString::fromUtf8(folder));

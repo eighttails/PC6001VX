@@ -1266,7 +1266,13 @@ bool OSD_FileReadOnly( const char *fullpath )
 ///////////////////////////////////////////////////////////
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
-	QByteArray result = QFileDialog::getExistingDirectory(NULL, QString(), QDir::homePath()).toUtf8();
+	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
+	QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
+	if (QGuiApplication::platformName() == QLatin1String("xcb")){
+		opt |= QFileDialog::DontUseNativeDialog;
+	}
+	QWidget* parent = static_cast<QWidget*>(hwnd);
+	QByteArray result = QFileDialog::getExistingDirectory(NULL, QString(), QDir::homePath(), opt).toUtf8();
 	strcpy(Result, result);
 	return result.constData();
 }
@@ -1289,15 +1295,23 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 	QString result;
 	//検索パスが指定されていない場合はホームフォルダとする
 	QString pathStr = strlen(path) ? path : QDir::homePath();
+
+	QWidget* parent = static_cast<QWidget*>(hwnd);
+	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
+	QFileDialog::Options opt = 0;
+	if (QGuiApplication::platformName() == QLatin1String("xcb")){
+		opt |= QFileDialog::DontUseNativeDialog;
+	}
+
 	if(mode == FM_Save){
-		result = QFileDialog::getSaveFileName(NULL, title, pathStr, filter);
+		result = QFileDialog::getSaveFileName(parent, title, pathStr, filter, NULL, opt);
 		// 入力されたファイル名に拡張子がついていない場合は付与する
 		QFileInfo info(result);
 		if(info.suffix() != ext){
 			result += QString(".") + ext;
 		}
 	} else {
-		result = QFileDialog::getOpenFileName(NULL, title, pathStr, filter);
+		result = QFileDialog::getOpenFileName(parent, title, pathStr, filter, NULL, opt);
 	}
 	if(result.isEmpty())    return NULL;
 
@@ -1436,7 +1450,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		break;
 	}
 
-	return OSD_FileDiaog( NULL, mode, TRANS(title), TRANS(filter), fullpath, path, ext );
+	return OSD_FileDiaog( hwnd, mode, TRANS(title), TRANS(filter), fullpath, path, ext );
 }
 
 

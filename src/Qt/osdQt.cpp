@@ -1542,7 +1542,6 @@ void OSD_StartAudio( void )
 			audioOutput->resume();
 		} else {
 			audioBuffer = audioOutput->start();
-			qDebug() << "bytes avaliable:"<<audioBuffer->bytesToWrite();
 		}
 	}
 #endif

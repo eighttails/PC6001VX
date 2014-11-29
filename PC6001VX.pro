@@ -31,14 +31,14 @@ debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 
-linux:{
+linux{
 #Configuration for Android
-android:{
+android{
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN AUTOSUSPEND
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
-} else
-pandora:{
+}
+pandora {
 #Configuration for OpenPandora
 QT += x11extras
 DEPLOY_PATH = /media/sddev/pc6001vx
@@ -51,11 +51,11 @@ QMAKE_LFLAGS += $${QMAKE_LFLAGS_RPATH}$${DEPLOY_PATH}
 INSTALLS += target sharedlibs
 DEFINES += NOJOYSTICK NOMONITOR USE_X11 NOOPENGL
 #QTPLUGIN += qxcb qeglfs
-} else {
+}
+!android:!pandora {
 #Configuration for X11(XCB)
 DEFINES += USE_X11
 QT += x11extras
-LIBS += -lX11
 }
 }
 

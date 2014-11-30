@@ -56,6 +56,7 @@ DEFINES += NOJOYSTICK NOMONITOR USE_X11 NOOPENGL
 #Configuration for X11(XCB)
 DEFINES += USE_X11
 QT += x11extras
+LIBS += -lX11
 }
 }
 

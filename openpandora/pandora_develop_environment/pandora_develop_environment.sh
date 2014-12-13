@@ -97,13 +97,13 @@ fi #if [ $FIRSTRUN -eq 1 ]
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt540-rc-release
+QT_INSTALLNAME=qt540-release
 
 QT_MAJOR_VER=5.4
 QT_VER=$QT_MAJOR_VER.0
-QT_FULL_VER=$QT_VER-rc
-QT_RELEASE=development_releases
-#QT_RELEASE=official_releases
+QT_FULL_VER=$QT_VER
+#QT_RELEASE=development_releases
+QT_RELEASE=official_releases
 QT_SOURCE_NAME=qt-everywhere-opensource-src-$QT_FULL_VER
 
 cd $SDKHOME

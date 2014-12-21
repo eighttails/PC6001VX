@@ -24,9 +24,10 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
     if(!app->isSafeMode() &&
             P6VXApp::getSetting(P6VXApp::keyHwAccel).toBool()){
-#if QT_VERSION >= 0x050400
+#if QT_VERSION >= 0x050400 && !defined (USE_QGLWIDGET)
 		QOpenGLWidget* glw = new QOpenGLWidget(this);
 #else
+		// 描画に不具合が見られるプラットフォームでは当面QGLWidgetを使う。
 		QGLWidget* glw = new QGLWidget(this);
 #endif
         // QGraphicsViewに使うにはOpenGL2以上が必要

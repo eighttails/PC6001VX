@@ -34,7 +34,7 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 linux{
 #Configuration for Android
 android{
-DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN AUTOSUSPEND
+DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN AUTOSUSPEND USE_QGLWIDGET
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 }
@@ -62,6 +62,7 @@ LIBS += -lX11
 
 #Configuration for Windows
 win32:{
+DEFINES += USE_QGLWIDGET
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
 RC_ICONS += src/win32/PC6001VX.ico

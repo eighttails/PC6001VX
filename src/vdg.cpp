@@ -457,8 +457,8 @@ bool VDG6::IsSRmode( void ) const
 ////////////////////////////////////////////////////////////////
 bool VDG6::IsSRGVramAccess( WORD addr ) const
 {
-	return SRmode && SRBitmap && (SRBMPage == (addr&0x8000));
-	//	return SRmode && SRBitmap;
+//	return SRmode && SRBitmap && (SRBMPage == (addr&0x8000));
+	return SRmode && SRBitmap;
 }
 
 
@@ -703,6 +703,7 @@ bool VDG6::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "VDG", "SRRollY",		&st,			SRRollY );		SRRollY     = st;
 	Ini->GetInt(   "VDG", "SRVramAddrY",	&st,			SRVramAddrY );	SRVramAddrY = st;
 	
+	// VDG6
 	Ini->GetInt(   "VDG", "AddrOff",		&st,			AddrOff );	AddrOff = st;
 	Ini->GetTruth( "VDG", "VSYNC",			&VSYNC,			VSYNC );
 	Ini->GetTruth( "VDG", "HSYNC",			&HSYNC,			HSYNC );

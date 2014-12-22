@@ -386,6 +386,7 @@ int Sjis2P6( char *dstr, const char *sstr )
 
 
 
+extern QVector<QRgb> PaletteTable;              //パレットテーブル
 
 ////////////////////////////////////////////////////////////////
 // Img SAVE from Data
@@ -400,13 +401,12 @@ int Sjis2P6( char *dstr, const char *sstr )
 //			pos				保存する領域情報へのポインタ
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-extern QVector<QRgb> PaletteTable;              //パレットテーブル
-bool SaveImgData( const char *filename, BYTE *pixels, int bpp, int ww, int hh, VRect *pos )
+bool SaveImgData( const char *filename, BYTE *pixels, const int bpp, const int ww, const int hh, VRect *pos )
 {
 	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
 	
 	VRect rec;
-	const int pitch = ww * bpp / 8;
+	int pitch = ww * bpp / 8;
 	
 	// 領域設定
 	if( pos ){

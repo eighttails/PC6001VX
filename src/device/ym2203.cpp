@@ -65,8 +65,8 @@ void cYM2203::SetVolumeTable( int vol )
 	PRINTD( PSG_LOG, "[OPN][SetVolumeTable] %d\n", vol );
 	
 	// とりあえず
-	opn.SetVolumeFM( (vol - DEFAULT_PSGVOL) / 100 - 15 );
-	opn.SetVolumePSG( (vol - DEFAULT_PSGVOL) / 100 );
+	opn.SetVolumeFM( -18 );
+	opn.SetVolumePSG( 0 );
 //	opn.SetVolume( vol );
 }
 

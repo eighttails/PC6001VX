@@ -562,7 +562,9 @@ void MC6847::Draw1line1( int line )
 	
 	// 表示エリア描画
 	for( int x=0; x<( P60W / 8 ); x++ ){
-		if( CrtDisp ){
+		if( !CrtDisp ){
+			data = AT_AG ? rand() : 0;	// ホント？ 後でどうにかする
+		}else{
 			LatchAttr();
 			// 1バイト前のデータ(色にじみ算出に使用)
 			prevdata = data;
@@ -580,8 +582,6 @@ void MC6847::Draw1line1( int line )
 				// モード判定の時には1byte先のアドレスから読んでしまうようだ
 				// 右端の場合はそのラインの先頭(左端)のデータを読むらしい
 				// mk2,66ではどちらも正しく読める
-		}else{
-			data = AT_AG ? rand() : 0;	// ホント？ 後でどうにかする
 		}
 		
 		if( AT_AG ){	// グラフィック
@@ -765,7 +765,9 @@ void PCZ80_07::Draw1line1( int line )
 	
 	// 表示エリア描画
 	for( int x=0; x<( P60W / 8 ); x++ ){
-		if( CrtDisp ){
+		if( !CrtDisp ){
+			data = 0;	// ホント？RGB出力とビデオ出力で異なるはず
+		}else{
 			LatchAttr();
 			// 1バイト前のデータ(色にじみ算出に使用)
 			prevdata = data;
@@ -774,8 +776,6 @@ void PCZ80_07::Draw1line1( int line )
 			// 1バイト後のデータ(色にじみ算出に使用)
 			nextdata = ( x < (P60W/8-1) ) ? GetVram() : 0;
 			LAT_AG |= AT_AG;				// とりあえず
-		}else{
-			data = 0;	// ホント？RGB出力とビデオ出力で異なるはず
 		}
 		
 		if( AT_AG ){	// グラフィック
@@ -901,13 +901,13 @@ void PCZ80_07::Draw1line2( int line )
 	
 	// 表示エリア描画
 	for( int x=0; x<( P62W / 8 ); x++){
-		if( CrtDisp ){
+		if( !CrtDisp ){
+			attr = 0;	// ホント？
+			data = 0;	// ホント？
+		}else{
 			attr = GetAttr();
 			data = GetVram();
 			HAddr++;
-		}else{
-			attr = 0;	// ホント？
-			data = 0;	// ホント？
 		}
 		
 		if( CharMode ){	// キャラクタモード
@@ -993,10 +993,15 @@ void PCZ80_12::Draw1line3( int line )
 	// 表示エリア描画
 	for( int x=0; x<( P64W / 8 * xsc ); x++){
 		if( CharMode ){	// テキストモード
-			data = GetVram();
-			HAddr++;
-			attr = GetVram();
-			HAddr++;
+			if( !CrtDisp ){
+				attr = 0;	// ホント？
+				data = 0;	// ホント？
+			}else{
+				data = GetVram();
+				HAddr++;
+				attr = GetVram();
+				HAddr++;
+			}
 			
 			#if INBPP == 8	// 8bit
 			fg   = COL_AN2[attr&0x0f];
@@ -1024,7 +1029,9 @@ void PCZ80_12::Draw1line3( int line )
 				}
 				
 				for( int i=0; i<4; i++ ){
-					if( SRRollX&1 ){
+					if( !CrtDisp ){
+						data = 0;	// ホント？
+					}else if( SRRollX&1 ){
 						if( HAddr < 320 ){
 							d1 = GetVram();
 							HAddr += 2;
@@ -1047,7 +1054,10 @@ void PCZ80_12::Draw1line3( int line )
 					#endif
 				}
 			}else{				// グラフィック モード3
-				if( SRRollX&3 ){				// スクロールあり
+				if( !CrtDisp ){
+					attr = 0;	// ホント？
+					data = 0;	// ホント？
+				}else if( SRRollX&3 ){	// スクロールあり
 					BYTE d1, d2;
 					if( x == 0 ){
 						data1 = GetVram(); HAddr += 2;
@@ -1072,7 +1082,7 @@ void PCZ80_12::Draw1line3( int line )
 						data = data1 | scrl1;
 						attr = attr1 | scrl2;
 					}
-				}else{					// スクロールなし
+				}else{				// スクロールなし
 					data = GetVram(); HAddr += 2;
 					attr = GetVram(); HAddr += 2;
 				}

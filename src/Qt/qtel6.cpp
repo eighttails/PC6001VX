@@ -152,19 +152,19 @@ void EL6::ExecMenu( int id )
 		break;
 	}
 	case ID_FIXMAGNIFICATION:
-		P6VXApp::setSetting(P6VXApp::keyFixMagnification,
-									  !P6VXApp::getSetting(P6VXApp::keyFixMagnification).toBool());
+		app->setSetting(P6VXApp::keyFixMagnification,
+									  !app->getSetting(P6VXApp::keyFixMagnification).toBool());
 		break;
 	case ID_HWACCEL:
         if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
-			P6VXApp::setSetting(P6VXApp::keyHwAccel,
-										  !P6VXApp::getSetting(P6VXApp::keyHwAccel).toBool());
+			app->setSetting(P6VXApp::keyHwAccel,
+										  !app->getSetting(P6VXApp::keyHwAccel).toBool());
 			UI_Quit();
 		}
 		break;
 	case ID_FILTERING:
-		P6VXApp::setSetting(P6VXApp::keyFiltering,
-									  !P6VXApp::getSetting(P6VXApp::keyFiltering).toBool());
+		app->setSetting(P6VXApp::keyFiltering,
+									  !app->getSetting(P6VXApp::keyFiltering).toBool());
 		graph->ResizeScreen();
 		break;
 	default:
@@ -327,7 +327,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(dispSizeMenu, tr("300%"), ID_SIZE300);
 	addCommand(dispSizeMenu, tr("倍率を指定..."), ID_SIZEMANUAL);
 	QAction* fixMagnification = addCommand(dispSizeMenu, tr("倍率を固定"), ID_FIXMAGNIFICATION, true);
-	if (P6VXApp::getSetting(P6VXApp::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
+	if (app->getSetting(P6VXApp::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
 #ifndef ALWAYSFULLSCREEN
 	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
 	if (cfg->GetFullScreen()) fullScreen->setChecked(true);
@@ -340,10 +340,10 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (cfg->GetScanLine()) scanLine->setChecked(true);
 #ifndef NOOPENGL
 	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
-	if (P6VXApp::getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
+	if (app->getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
 #endif
 	QAction* filtering = addCommand(settingsMenu, tr("フィルタリング"), ID_FILTERING, true);
-	if (P6VXApp::getSetting(P6VXApp::keyFiltering).toBool()) filtering->setChecked(true);
+	if (app->getSetting(P6VXApp::keyFiltering).toBool()) filtering->setChecked(true);
 
 	QAction* tiltMode = addCommand(settingsMenu, tr("TILTモード"), ID_TILT, true);
 	if (app->isTiltEnabled()) tiltMode->setChecked(true);

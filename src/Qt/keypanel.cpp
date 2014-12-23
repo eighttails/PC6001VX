@@ -8,6 +8,7 @@
 KeyPanel::KeyPanel(QWidget *parent)
 	: QWidget(parent)
 {
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	setWindowFlags(Qt::Tool);
 	setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	setMaximumSize(1,1);
@@ -32,25 +33,28 @@ KeyPanel::KeyPanel(QWidget *parent)
 	l->addWidget(new KeyPanelButton(this, tr("LOAD"), KVC_HENKAN));
 
 	adjustSize();
-	QPoint p = P6VXApp::getSetting(P6VXApp::keyKeyPanelPosition).toPoint();
+	QPoint p = app->getSetting(P6VXApp::keyKeyPanelPosition).toPoint();
 	move(p);
-	if(P6VXApp::getSetting(P6VXApp::keyKeyPanelVisible).toBool()){
+	if(app->getSetting(P6VXApp::keyKeyPanelVisible).toBool()){
 		show();
 	}
 }
 
 void KeyPanel::moveEvent(QMoveEvent *)
 {
-	P6VXApp::setSetting(P6VXApp::keyKeyPanelPosition, pos());
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	app->setSetting(P6VXApp::keyKeyPanelPosition, pos());
 }
 
 
 void KeyPanel::showEvent(QShowEvent *)
 {
-	P6VXApp::setSetting(P6VXApp::keyKeyPanelVisible, true);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	app->setSetting(P6VXApp::keyKeyPanelVisible, true);
 }
 
 void KeyPanel::closeEvent(QCloseEvent *)
 {
-	P6VXApp::setSetting(P6VXApp::keyKeyPanelVisible, false);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	app->setSetting(P6VXApp::keyKeyPanelVisible, false);
 }

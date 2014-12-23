@@ -48,6 +48,7 @@ ConfigDialog::~ConfigDialog()
 void ConfigDialog::readConfig()
 {
     char str[PATH_MAX];		// 文字列取得用
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
     //基本------------------------------------------------------
     //機種
@@ -114,12 +115,12 @@ void ConfigDialog::readConfig()
 
 	// ハードウェアアクセラレーション
 #ifndef NOOPENGL
-	ui->checkBoxHwAccel->setChecked(P6VXApp::getSetting(P6VXApp::keyHwAccel).toBool());
+	ui->checkBoxHwAccel->setChecked(app->getSetting(P6VXApp::keyHwAccel).toBool());
 #else
 	ui->checkBoxHwAccel->setVisible(false);
 #endif
 	// フィルタリング
-	ui->checkBoxFiltering->setChecked(P6VXApp::getSetting(P6VXApp::keyFiltering).toBool());
+	ui->checkBoxFiltering->setChecked(app->getSetting(P6VXApp::keyFiltering).toBool());
 
 	// フレームスキップ
     ui->horizontalSliderFPS->setValue(config->GetFrameSkip());
@@ -330,7 +331,8 @@ void ConfigDialog::readConfig()
 
 void ConfigDialog::writeConfig()
 {
-    // 一時変数
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	// 一時変数
     int iVal = 0;
     QString qStr;
     bool conv = false;
@@ -388,10 +390,10 @@ void ConfigDialog::writeConfig()
     config->SetDispStat(ui->checkBoxStatDisp->isChecked());
 
 	// ハードウェアアクセラレーション
-	P6VXApp::setSetting(P6VXApp::keyHwAccel, ui->checkBoxHwAccel->isChecked());
+	app->setSetting(P6VXApp::keyHwAccel, ui->checkBoxHwAccel->isChecked());
 
 	// フィルタリング
-	P6VXApp::setSetting(P6VXApp::keyFiltering, ui->checkBoxFiltering->isChecked());
+	app->setSetting(P6VXApp::keyFiltering, ui->checkBoxFiltering->isChecked());
 
 	// フレームスキップ
     config->SetFrameSkip(ui->horizontalSliderFPS->value());

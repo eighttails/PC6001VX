@@ -47,9 +47,9 @@ public:
 	KeyPanel* getKeyPanel();
 
 	// P6VX固有の設定
-	static const QVariant getSetting(const QString& key);
-	static void setSetting(const QString& key, const QVariant& value);
-	static void setDefaultSetting(const QString &key, const QVariant &value);
+	const QVariant getSetting(const QString& key);
+	void setSetting(const QString& key, const QVariant& value);
+	void setDefaultSetting(const QString &key, const QVariant &value);
 
     // TILT関連
     bool isTiltEnabled();
@@ -139,7 +139,8 @@ private:
 	KeyPanel* KPanel;
 
 	// P6VX固有の設定
-	static QMutex SettingMutex; // 設定読み書き用Mutex
+	QSettings Setting;
+	QMutex SettingMutex; // 設定読み書き用Mutex
 	bool TiltEnabled;
     TiltDirection TiltDir;
 	int TiltStep;

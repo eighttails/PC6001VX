@@ -24,8 +24,6 @@ const QString P6VXApp::keyMagnification		= "graph/magnification";
 const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
 const QString P6VXApp::keyKeyPanelPosition		= "keypalette/position";
 
-QMutex P6VXApp::SettingMutex;
-QSettings Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat);
 
 ///////////////////////////////////////////////////////////
 // フォントファイルチェック(無ければ作成する)
@@ -81,6 +79,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, View(NULL)
 	, Scene(NULL)
 	, KPanel(NULL)
+	, Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat)
 	, TiltEnabled(false)
 	, TiltDir(NEWTRAL)
 	, TiltStep(0)

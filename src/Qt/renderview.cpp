@@ -14,7 +14,7 @@
 RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     : QGraphicsView(scene, parent)
 {
-    setSizeIncrement(1, 1);
+	setSizeIncrement(1, 1);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setBackgroundBrush(Qt::black);
@@ -23,7 +23,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 #ifndef NOOPENGL
     P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
     if(!app->isSafeMode() &&
-            P6VXApp::getSetting(P6VXApp::keyHwAccel).toBool()){
+			app->getSetting(P6VXApp::keyHwAccel).toBool()){
 #if QT_VERSION >= 0x050400 && !defined (USE_QGLWIDGET)
 		QOpenGLWidget* glw = new QOpenGLWidget(this);
 #else
@@ -47,8 +47,8 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 #endif
 
     // ウィンドウ位置とサイズを復元
-    restoreGeometry(P6VXApp::getSetting(P6VXApp::keyGeometry).toByteArray());
-    if(P6VXApp::getSetting(P6VXApp::keyMaximized).toBool()){
+	restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
+	if(app->getSetting(P6VXApp::keyMaximized).toBool()){
         showMaximized();
     }
 
@@ -60,10 +60,11 @@ RenderView::~RenderView()
 
 void RenderView::fitContent()
 {
-    const bool fixMag = P6VXApp::getSetting(P6VXApp::keyFixMagnification).toBool();
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	const bool fixMag = app->getSetting(P6VXApp::keyFixMagnification).toBool();
     //ウィンドウ全体に表示されるように表示倍率を調整
     qreal scaleRatio = fixMag
-            ? P6VXApp::getSetting(P6VXApp::keyMagnification).toReal()
+			? app->getSetting(P6VXApp::keyMagnification).toReal()
             : qMin(width() / scene()->width(), height() / scene()->height());
     resetTransform();
     scale(scaleRatio, scaleRatio);
@@ -72,20 +73,21 @@ void RenderView::fitContent()
     if (fixMag){
         translate((width() - scene()->width()) / 2, (height() - scene()->height()) / 2);
     }else {
-        P6VXApp::setSetting(P6VXApp::keyMagnification, scaleRatio);
+		app->setSetting(P6VXApp::keyMagnification, scaleRatio);
     }
 }
 
 void RenderView::resizeWindowByRatio(int ratio)
 {
-    qreal r = double(ratio) / 100;
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	qreal r = double(ratio) / 100;
     // 最大化、フルスクリーン中は倍率固定モードにする。
     if((windowState() & Qt::WindowMaximized) || (windowState() & Qt::WindowFullScreen)){
-        P6VXApp::setSetting(P6VXApp::keyFixMagnification, true);
-        P6VXApp::setSetting(P6VXApp::keyMagnification, r);
+		app->setSetting(P6VXApp::keyFixMagnification, true);
+		app->setSetting(P6VXApp::keyMagnification, r);
         return;
     } else {
-        P6VXApp::setSetting(P6VXApp::keyFixMagnification, false);
+		app->setSetting(P6VXApp::keyFixMagnification, false);
     }
     setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
 }
@@ -125,9 +127,10 @@ void RenderView::paintEvent(QPaintEvent *event)
 
 void RenderView::closeEvent(QCloseEvent *event)
 {
-    // ウィンドウ位置とサイズを保存
-    P6VXApp::setSetting(P6VXApp::keyGeometry, saveGeometry());
-    P6VXApp::setSetting(P6VXApp::keyMaximized, isMaximized());
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	// ウィンドウ位置とサイズを保存
+	app->setSetting(P6VXApp::keyGeometry, saveGeometry());
+	app->setSetting(P6VXApp::keyMaximized, isMaximized());
     QGraphicsView::closeEvent(event);
 }
 

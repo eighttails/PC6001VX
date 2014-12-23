@@ -199,6 +199,7 @@ void P6VXApp::startup()
 
 	Scene = new QGraphicsScene();
 	View = new RenderView(Scene);
+	View->show();
 	KPanel = new KeyPanel(View);
 
 	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)

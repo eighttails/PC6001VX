@@ -34,16 +34,16 @@ public:
 	struct evinfo {
 		Device::ID devid;		// イベントデバイスオブジェクトID
 		int id;					// イベントID
-		bool Active;			// イベント有効フラグ true:有効 false:停止
 		int Period;				// 1周期のクロック数
 		int Clock;				// 残りクロック数
 		double nps;				// イベント発生周波数(Hz)
 		
-		evinfo() : devid(0), id(0), Active(false), Period(0), Clock(0), nps(0) {}
+		evinfo() : devid(0), id(0), Period(0), Clock(0), nps(0) {}
 	};
 	
 protected:
-	evinfo ev[MAXEVENT];		// イベント情報
+	typedef std::map<std::pair<Device::ID, int>, evinfo> EvMap;
+	EvMap ev;					// イベント情報
 	DeviceList devlist;			// デバイスリスト
 	
 	bool VSYNC;					// VSYNCフラグ true:VSYNCに達した false:達してない

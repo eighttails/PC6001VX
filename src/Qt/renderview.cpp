@@ -20,9 +20,9 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     setBackgroundBrush(Qt::black);
     setStyleSheet( "QGraphicsView { border-style: none; }" );
 
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 #ifndef NOOPENGL
-    P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-    if(!app->isSafeMode() &&
+	if(!app->isSafeMode() &&
 			app->getSetting(P6VXApp::keyHwAccel).toBool()){
 #if QT_VERSION >= 0x050400 && !defined (USE_QGLWIDGET)
 		QOpenGLWidget* glw = new QOpenGLWidget(this);

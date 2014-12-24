@@ -60,12 +60,10 @@ public:
 private:
 	struct Node{
 		IDevice *entry;
-		Node *next;
 		int count;
 	};
 
-	
-	Node *node;
+	std::map<int, Node> nodeMap;
 	Node *FindNode( const ID );
 	
 public:

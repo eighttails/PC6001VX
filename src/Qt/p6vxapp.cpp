@@ -293,7 +293,7 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 			pItem->setTransformationMode(Qt::SmoothTransformation);
 		}
 	}
-	pItem->setPixmap(QPixmap::fromImage(image, Qt::NoFormatConversion));
+	pItem->setPixmap(QPixmap::fromImage(image));
 	pItem->resetTransform();
 	// アスペクト比に従って縦サイズを調整
 	QTransform trans;

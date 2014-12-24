@@ -19,7 +19,7 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-DeviceList::DeviceList( void ) : node(NULL) {}
+DeviceList::DeviceList( void ) {}
 
 
 ////////////////////////////////////////////////////////////////
@@ -36,9 +36,9 @@ DeviceList::~DeviceList( void )
 ////////////////////////////////////////////////////////////////
 DeviceList::Node *DeviceList::FindNode( const ID id )
 {
-	for( Node *n = node; n; n = n->next ){
-		if( n->entry->GetID() == id )
-			return n;
+	std::map<int, Node>::iterator p = nodeMap.find(id);
+	if ( p != nodeMap.end() ){
+		return &p->second;
 	}
 	return NULL;
 }
@@ -49,13 +49,7 @@ DeviceList::Node *DeviceList::FindNode( const ID id )
 ////////////////////////////////////////////////////////////////
 void DeviceList::Cleanup( void )
 {
-	Node *n = node;
-	while( n ){
-		Node *nx = n->next;
-		delete n;
-		n = nx;
-	}
-	node = NULL;
+	nodeMap.clear();
 }
 
 
@@ -72,12 +66,9 @@ bool DeviceList::Add( IDevice *t )
 		n->count++;
 		return true;
 	}else{
-		n = new Node;
-		if( !n ) return false;
-		n->entry = t;
-		n->next  = node;
-		n->count = 1;
-		node = n;
+		Node& n = nodeMap[id];
+		n.entry = t;
+		n.count = 1;
 		return true;
 	}
 }
@@ -97,17 +88,9 @@ bool DeviceList::Del( IDevice *t )
 ////////////////////////////////////////////////////////////////
 bool DeviceList::Del( const ID id )
 {
-	for( Node **r = &node; *r; r = &((*r)->next) ){
-		if( ((*r)->entry->GetID() == id) && ((*r)->count) ){
-			((*r)->count)--;
-//		if( (*r)->entry->GetID() == id ){
-//			Node* d = *r;
-//			if( !--d->count ){
-//				*r = d->next;
-//				delete d;
-//			}
-			return true;
-		}
+	if ( Node *n = FindNode(id) ) {
+		n->count--;
+		return true;
 	}
 	return false;
 }

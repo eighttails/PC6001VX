@@ -169,9 +169,13 @@ void EVSC::Update( int clk )
 	int cnt;
 	do{
 		cnt = 0;
-		for( EvMap::iterator p = ev.begin(); p != ev.end(); ++p ){
+		for( EvMap::iterator p = ev.begin(); p != ev.end(); ){
 			evinfo& event = p->second;
 			event.Clock -= SaveClock;
+
+			// イベント削除に備えてイテレータを退避
+			EvMap::iterator q = ++p;
+
 			// 更新間隔が長い場合は複数回発生する可能性あり
 			// とりあえず全てこなすまで繰り返すってことでいいのか?
 			if( event.Clock <= 0 ){
@@ -189,6 +193,9 @@ void EVSC::Update( int clk )
 			// 次のイベントまでのクロック数更新
 			if( NextEvent < 0 ) NextEvent = event.Clock;
 			else                NextEvent = min( NextEvent, event.Clock );
+
+			// 次のイベントへ
+			p = q;
 		}
 		SaveClock = 0;
 	}while( cnt > 0 );

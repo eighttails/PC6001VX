@@ -198,7 +198,6 @@ void P6VXApp::startup()
 
 	Scene = new QGraphicsScene();
 	View = new RenderView(Scene);
-	View->show();
 	KPanel = new KeyPanel(View);
 
 	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
@@ -265,6 +264,15 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 #endif
 	view->fitContent();
 	OSD_ClearWindow(Wh);
+
+	processEvents();
+	if(getSetting(keyKeyPanelVisible).toBool()){
+		// プラットフォームによっては子ウィンドウをここで作りなおさないと表示されない場合がある
+		if(KPanel) KPanel->deleteLater();
+		KPanel = new KeyPanel(view);
+		KPanel->show();
+	}
+	processEvents();
 }
 
 void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image)

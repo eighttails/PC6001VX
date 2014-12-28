@@ -826,8 +826,8 @@ LIBTOOL_SYSROOT_PATH=\$PNDSDK \\
 PKG_CONFIG_PATH=\$PNDSDK/usr/share/pkgconfig:\$PNDSDK/usr/lib/pkgconfig \\
 PKG_CONFIG=\$PNDSDK/bin/arm-none-linux-gnueabi-pkg-config \\
 CPATH="\$PNDSDK/usr/include:\$CPATH" \\
-CFLAGS="-DPANDORA -O2 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
-CPPFLAGS="-DPANDORA -O2 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
+CFLAGS="-DPANDORA -O3 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
+CPPFLAGS="-DPANDORA -O3 -pipe -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=softfp -fPIC -ftree-vectorize -ffast-math " \\
 CXXFLAGS="-I\$PNDSDK/usr/include" \\
 LDFLAGS="-L\$PNDSDK/usr/lib -Wl,-rpath,\$PNDSDK/usr/lib" \\
 CXX=\$CROSSTOOL-g++ \\

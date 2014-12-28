@@ -66,8 +66,9 @@ void RenderView::fitContent()
     qreal scaleRatio = fixMag
 			? app->getSetting(P6VXApp::keyMagnification).toReal()
             : qMin(width() / scene()->width(), height() / scene()->height());
-    resetTransform();
-    scale(scaleRatio, scaleRatio);
+	resetTransform();
+	centerOn(sceneRect().center());
+	scale(scaleRatio, scaleRatio);
 
     //表示倍率固定の場合は中心に配置
     if (fixMag){

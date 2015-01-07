@@ -12,7 +12,6 @@ TEMPLATE = app
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 
 CONFIG += link_prl
-QTPLUGIN += qico
 
 #Define for Qt dependent code
 DEFINES += QTP6VX

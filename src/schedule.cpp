@@ -29,8 +29,11 @@ EVSC::~EVSC( void ){}
 ////////////////////////////////////////////////////////////////
 const EVSC::evinfo *EVSC::Find( Device::ID devid, int id ) const
 {
-	EvMap::const_iterator p = ev.find(std::make_pair(devid, id));
-	return p != ev.end() ? &p->second : NULL;
+	for(EvVec::const_iterator p = ev.begin(); p != ev.end(); ++p){
+		const evinfo& event = *p;
+		if(event.devid == devid && event.id == id) return &event;
+	}
+	return NULL;
 }
 
 
@@ -67,7 +70,7 @@ bool EVSC::Add( Device *dev, int id, double hz, int flag )
 	const evinfo *e = Find( dev->GetID(), id );
 	if( e ) Del( (Device *)devlist.Find( e->devid ), e->id );
 
-	evinfo& event = ev[std::make_pair(dev->GetID(), id)];
+	evinfo event;
 	devlist.Add( dev );
 
 	event.devid  = dev->GetID();
@@ -103,6 +106,7 @@ bool EVSC::Add( Device *dev, int id, double hz, int flag )
 	if( NextEvent < 0 ) NextEvent = event.Clock;
 	else                NextEvent = min( NextEvent, event.Clock );
 
+	ev.push_back(event);
 	return true;
 }
 
@@ -118,13 +122,17 @@ bool EVSC::Del( Device *dev, int id )
 {
 	if( dev == NULL ) return false;
 
-	evinfo *e = (evinfo *)Find( dev->GetID(), id );
-	if( e ){
-		devlist.Del( dev );
-		ev.erase(std::make_pair( dev->GetID(), id ));
-		return true;
-	}else
-		return false;
+	const int devid = dev->GetID();
+	for(EvVec::iterator p = ev.begin(); p != ev.end();){
+		const evinfo& event = *p;
+		if(event.devid == devid && event.id == id){
+			p = ev.erase(p);
+			return true;
+		} else {
+			++p;
+		}
+	}
+	return false;
 }
 
 
@@ -169,12 +177,12 @@ void EVSC::Update( int clk )
 	int cnt;
 	do{
 		cnt = 0;
-		for( EvMap::iterator p = ev.begin(); p != ev.end(); ){
-			evinfo& event = p->second;
+		for( size_t i = 0; i < ev.size(); i++){
+			evinfo& event = ev[i];
 			event.Clock -= SaveClock;
 
-			// イベント削除に備えてイテレータを退避
-			EvMap::iterator q = ++p;
+			// イベントが削除される場合に備えて退避
+			int nextClock = event.Clock;
 
 			// 更新間隔が長い場合は複数回発生する可能性あり
 			// とりあえず全てこなすまで繰り返すってことでいいのか?
@@ -184,6 +192,7 @@ void EVSC::Update( int clk )
 
 				if( event.Period > 0 ){	// ループイベント
 					event.Clock += event.Period;
+					nextClock = event.Clock;
 					if( event.Clock <= 0 ) cnt++;	// 次のイベントも発生していたらカウント
 				}else{					// ワンタイムイベント
 					Del( (Device *)devlist.Find( event.devid ), event.id );
@@ -191,11 +200,8 @@ void EVSC::Update( int clk )
 				}
 			}
 			// 次のイベントまでのクロック数更新
-			if( NextEvent < 0 ) NextEvent = event.Clock;
-			else                NextEvent = min( NextEvent, event.Clock );
-
-			// 次のイベントへ
-			p = q;
+			if( NextEvent < 0 ) NextEvent = nextClock;
+			else                NextEvent = min( NextEvent, nextClock );
 		}
 		SaveClock = 0;
 	}while( cnt > 0 );
@@ -322,8 +328,8 @@ bool EVSC::SetEvinfo( evinfo *info )
 void EVSC::SetMasterClock( int clock )
 {
 	MasterClock = clock;
-	for( EvMap::iterator p = ev.begin(); p != ev.end(); ++p ){
-		evinfo& event = p->second;
+	for( EvVec::iterator p = ev.begin(); p != ev.end(); ++p ){
+		evinfo& event = *p;
 		if( event.devid && event.nps > 0 && event.Period > 0 ){
 			event.Period = (int)((double)clock / event.nps);
 			if( event.Period < 1 ) event.Period = 1;
@@ -394,8 +400,8 @@ bool EVSC::DokoSave( cIni *Ini )
 	char stren[16];
 	int i = 0;
 	
-	for( EvMap::iterator p = ev.begin(); p != ev.end(); ++p ){
-		evinfo& event = p->second;
+	for( EvVec::iterator p = ev.begin(); p != ev.end(); ++p ){
+		evinfo& event = *p;
 		BYTE id1,id2,id3,id4;
 		DWTOB( event.devid, id4, id3, id2, id1 );
 		sprintf( stren, "Event%02X", i );

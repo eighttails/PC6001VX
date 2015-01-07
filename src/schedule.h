@@ -42,8 +42,8 @@ public:
 	};
 	
 protected:
-	typedef std::map<std::pair<Device::ID, int>, evinfo> EvMap;
-	EvMap ev;					// イベント情報
+	typedef std::vector<evinfo> EvVec;
+	EvVec ev;					// イベント情報
 	DeviceList devlist;			// デバイスリスト
 	
 	bool VSYNC;					// VSYNCフラグ true:VSYNCに達した false:達してない

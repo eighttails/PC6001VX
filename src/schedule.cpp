@@ -29,10 +29,11 @@ EVSC::~EVSC( void ){}
 ////////////////////////////////////////////////////////////////
 const EVSC::evinfo *EVSC::Find( Device::ID devid, int id ) const
 {
-	for(EvVec::const_iterator p = ev.begin(); p != ev.end(); ++p){
+	for( EvVec::const_iterator p = ev.begin(); p != ev.end(); ++p ){
 		const evinfo& event = *p;
-		if(event.devid == devid && event.id == id) return &event;
+		if( event.devid == devid && event.id == id ) return &event;
 	}
+
 	return NULL;
 }
 
@@ -70,11 +71,12 @@ bool EVSC::Add( Device *dev, int id, double hz, int flag )
 	const evinfo *e = Find( dev->GetID(), id );
 	if( e ) Del( (Device *)devlist.Find( e->devid ), e->id );
 
-	evinfo event;
 	devlist.Add( dev );
 
+	evinfo event;
 	event.devid  = dev->GetID();
 	event.id     = id;
+	event.Active = true;
 
 	// イベント発生周波数の設定
 	switch( flag&(EV_US|EV_MS|EV_STATE) ){
@@ -106,6 +108,15 @@ bool EVSC::Add( Device *dev, int id, double hz, int flag )
 	if( NextEvent < 0 ) NextEvent = event.Clock;
 	else                NextEvent = min( NextEvent, event.Clock );
 
+	for( EvVec::iterator p = ev.begin(); p != ev.end(); ++p ){
+		if( !(*p).devid ){
+			// 無効化しているイベントがあったらその領域を再利用
+			*p = event;
+			return true;
+		}
+	}
+
+	// 再利用できる領域が無かったら新規に要素を追加
 	ev.push_back(event);
 	return true;
 }
@@ -120,19 +131,16 @@ bool EVSC::Add( Device *dev, int id, double hz, int flag )
 ////////////////////////////////////////////////////////////////
 bool EVSC::Del( Device *dev, int id )
 {
-	if( dev == NULL ) return false;
+	evinfo *e = (evinfo *)Find( dev->GetID(), id );
+	if( e ){
+		devlist.Del( dev );
 
-	const int devid = dev->GetID();
-	for(EvVec::iterator p = ev.begin(); p != ev.end();){
-		const evinfo& event = *p;
-		if(event.devid == devid && event.id == id){
-			p = ev.erase(p);
-			return true;
-		} else {
-			++p;
-		}
-	}
-	return false;
+		e->devid  = 0;
+		e->id     = 0;
+		e->Active = false;
+		return true;
+	}else
+		return false;
 }
 
 
@@ -165,43 +173,42 @@ bool EVSC::SetHz( Device::ID devid, int id, double hz )
 void EVSC::Update( int clk )
 {
 	PRINTD( TIC_LOG, "[SCHE][Update] %d clock\n", clk );
-	
+
 	// クロックを溜め込む
 	SaveClock  += clk;	// 次のイベント発生用
-	
+
 	// 次のイベント発生クロックに達していなかったら戻る
 	// ただし clk=0 の場合は更新を行う
 	if( NextEvent > SaveClock && clk ) return;
 	NextEvent = -1;
-	
+
 	int cnt;
 	do{
 		cnt = 0;
-		for( size_t i = 0; i < ev.size(); i++){
+		for( size_t i = 0; i < ev.size(); i++ ){
 			evinfo& event = ev[i];
-			event.Clock -= SaveClock;
 
-			// イベントが削除される場合に備えて退避
-			int nextClock = event.Clock;
+			// 有効なイベント?
+			if( event.Active ){
+				event.Clock -= SaveClock;
+				// 更新間隔が長い場合は複数回発生する可能性あり
+				// とりあえず全てこなすまで繰り返すってことでいいのか?
+				if( event.Clock <= 0 ){
+					// イベントコールバックを実行
+					devlist.Find( event.devid )->EventCallback( event.id, event.Clock );
 
-			// 更新間隔が長い場合は複数回発生する可能性あり
-			// とりあえず全てこなすまで繰り返すってことでいいのか?
-			if( event.Clock <= 0 ){
-				// イベントコールバックを実行
-				devlist.Find( event.devid )->EventCallback( event.id, event.Clock );
-
-				if( event.Period > 0 ){	// ループイベント
-					event.Clock += event.Period;
-					nextClock = event.Clock;
-					if( event.Clock <= 0 ) cnt++;	// 次のイベントも発生していたらカウント
-				}else{					// ワンタイムイベント
-					Del( (Device *)devlist.Find( event.devid ), event.id );
-					break;
+					if( event.Period > 0 ){	// ループイベント
+						event.Clock += event.Period;
+						if( event.Clock <= 0 ) cnt++;	// 次のイベントも発生していたらカウント
+					}else{					// ワンタイムイベント
+						Del( (Device *)devlist.Find( event.devid ), event.id );
+						break;
+					}
 				}
+				// 次のイベントまでのクロック数更新
+				if( NextEvent < 0 ) NextEvent = event.Clock;
+				else                NextEvent = min( NextEvent, event.Clock );
 			}
-			// 次のイベントまでのクロック数更新
-			if( NextEvent < 0 ) NextEvent = nextClock;
-			else                NextEvent = min( NextEvent, nextClock );
 		}
 		SaveClock = 0;
 	}while( cnt > 0 );
@@ -219,15 +226,15 @@ void EVSC::Update( int clk )
 void EVSC::Reset( Device::ID devid, int id, double ini )
 {
 	PRINTD( TIC_LOG, "[SCHE][Reset] ID:%d %3f%%", id, ini );
-	
+
 	evinfo *e = (evinfo *)Find( devid, id );
 	if( e ){
 		// 溜め込んだクロック分を考慮
 		e->Clock = (int)((double)e->Period * ( 1.0 - min( max( 0.0, ini ), 1.0 ) )) - SaveClock;
-		
+
 		PRINTD( TIC_LOG, " -> %d/%d clock", e->Clock, e->Period );
 	}
-	
+
 	PRINTD( TIC_LOG, "\n" );
 }
 
@@ -257,19 +264,19 @@ int EVSC::Rest( Device::ID devid, int id ) const
 double EVSC::GetProgress( Device::ID devid, int id ) const
 {
 	PRINTD( TIC_LOG, "[SCHE][GetProgress] ID:%d", id );
-	
+
 	const evinfo *e = Find( devid, id );
 	// イベントが存在し1周期のクロック数が設定されている?
 	if( e && e->Period > 0 ){
 		PRINTD( TIC_LOG, " %d/%d SAVE:%d\n", e->Clock, e->Period, SaveClock );
-		
+
 		// 溜め込んだクロックを考慮
 		double sc = (double)( (double)( e->Period - max( e->Clock - SaveClock, 0 ) ) / (double)e->Period );
 		return min( max( 0.0, sc ), 1.0 );
 	}else{
 		PRINTD( TIC_LOG, " Disable\n" );
 	}
-	
+
 	return 0;
 }
 
@@ -283,9 +290,10 @@ double EVSC::GetProgress( Device::ID devid, int id ) const
 bool EVSC::GetEvinfo( evinfo *info ) const
 {
 	if( !info ) return false;
-	
+
 	const evinfo *e = Find( info->devid, info->id );
 	if( e ){
+		info->Active = e->Active;
 		info->Period = e->Period;
 		info->Clock  = e->Clock;
 		info->nps    = e->nps;
@@ -304,12 +312,13 @@ bool EVSC::GetEvinfo( evinfo *info ) const
 bool EVSC::SetEvinfo( evinfo *info )
 {
 	if( !info ) return false;
-	
+
 	// 問答無用で追加
 	if( !Add( (Device *)devlist.Find( info->devid ), info->id, 1, EV_HZ ) ) return false;
-	
+
 	evinfo *e = (evinfo *)Find( info->devid, info->id );
 	if( e ){
+		e->Active = info->Active;
 		e->Period = info->Period;
 		e->Clock  = info->Clock;
 		e->nps    = info->nps;
@@ -389,26 +398,26 @@ void EVSC::ReVSYNC( void )
 bool EVSC::DokoSave( cIni *Ini )
 {
 	if( !Ini ) return false;
-	
+
 	Ini->PutEntry( "SCHEDULE", NULL, "MasterClock",	"%d",	MasterClock );
 	Ini->PutEntry( "SCHEDULE", NULL, "VSYNC",		"%s",	VSYNC ? "Yes" : "No" );
 	Ini->PutEntry( "SCHEDULE", NULL, "NextEvent",	"%d",	NextEvent );
 	Ini->PutEntry( "SCHEDULE", NULL, "SaveClock",	"%d",	SaveClock );
-	
-	
+
+
 	// イベント
 	char stren[16];
 	int i = 0;
-	
-	for( EvVec::iterator p = ev.begin(); p != ev.end(); ++p ){
+
+	for( EvVec::iterator p = ev.begin(); p  != ev.end(); ++p ){
 		evinfo& event = *p;
 		BYTE id1,id2,id3,id4;
 		DWTOB( event.devid, id4, id3, id2, id1 );
 		sprintf( stren, "Event%02X", i );
-		Ini->PutEntry( "SCHEDULE", NULL, stren, "%c%c%c%c %d %d %d %lf", id1, id2, id3, id4, event.id, event.Period, event.Clock, event.nps );
+		Ini->PutEntry( "SCHEDULE", NULL, stren, "%c%c%c%c %d %d %d %d %lf", id1, id2, id3, id4, event.id, event.Active ? 1 : 0, event.Period, event.Clock, event.nps );
 		i++;
 	}
-	
+
 	return true;
 }
 
@@ -422,7 +431,7 @@ bool EVSC::DokoSave( cIni *Ini )
 bool EVSC::DokoLoad( cIni *Ini )
 {
 	if( !Ini ) return false;
-	
+
 	// 全てのイベントをひとまず無効にする
 	ev.clear();
 
@@ -430,25 +439,27 @@ bool EVSC::DokoLoad( cIni *Ini )
 	Ini->GetTruth(  "SCHEDULE", "VSYNC",		&VSYNC, 		VSYNC );
 	Ini->GetInt(    "SCHEDULE", "NextEvent",	&NextEvent,		NextEvent );	// イベント再設定時に再現される?
 	Ini->GetInt(    "SCHEDULE", "SaveClock",	&SaveClock,		SaveClock );
-	
-	
+
+
 	// イベント
 	char stren[16];
 	char strrs[64];
-	
-	for( size_t i=0; i<MAXEVENT; i++ ){
+
+	for( int i=0; ; i++ ){
 		sprintf( stren, "Event%02X", i );
 		if( Ini->GetString( "SCHEDULE", stren, strrs, "" ) ){
 			evinfo e;
 			BYTE id1,id2,id3,id4;
-			
-			sscanf( strrs,"%c%c%c%c %d %d %d %lf", &id1, &id2, &id3, &id4, &e.id, &e.Period, &e.Clock, &e.nps );
+			int yn;
+
+			sscanf( strrs,"%c%c%c%c %d %d %d %d %lf", &id1, &id2, &id3, &id4, &e.id, &yn, &e.Period, &e.Clock, &e.nps );
 			e.devid = BTODW( id1, id2, id3, id4 );
+			e.Active = yn ? true : false;
 			if( !SetEvinfo( &e ) ) return false;
 		}else
 			break;
 	}
-	
+
 	return true;
 }
 
@@ -497,7 +508,7 @@ void SCH6::OnThread( void *inst )
 	for( int i=0; i<Vrem; i++ ) Vint[(int)(VSYNC_HZ * i / Vrem)]++;
 
 	// 最初の待ち時間を設定
-	now  = OSD_GetTicks();
+	now  = int(OSD_GetTicks());
 	last = now;
 	int NextWait = now + Vint[VintCnt++];
 
@@ -557,7 +568,7 @@ void SCH6::Stop( void )
 {
 	this->cThread::Cancel();	// スレッド終了フラグ立てる
 	this->cThread::Waiting();	// スレッド終了まで待つ
-	
+
 	INITARRAY( WRClock, 0 );
 }
 
@@ -619,12 +630,12 @@ void SCH6::SetPauseEnable( bool en )
 void SCH6::VWait( void )
 {
 	if( !WaitEnable ) return;
-	
+
 	SpeedCnt1++;
-	
+
 	if( (SpeedRatio > 100 ) && ( (SpeedCnt1 * 100) / SpeedCnt2 < SpeedRatio ) )
 		return;
-	
+
 	cSemaphore::Wait();
 }
 
@@ -641,15 +652,14 @@ void SCH6::WaitReset( void )
 		SpeedCnt1 /= 2;
 		SpeedCnt2 /= 2;
 	}
-	
+
 	SpeedCnt2++;
-	
+
 	if( (SpeedRatio < 100 ) && ( (SpeedCnt1 * 100) / SpeedCnt2 >= SpeedRatio ) )
 		return;
-	
+
 	//10フレーム分くらいまでためられるようにする
 	if( !(cSemaphore::Value() > 10) ) cSemaphore::Post();
-	
 }
 
 
@@ -664,7 +674,7 @@ void SCH6::SetSpeedRatio( int spd )
 	if     ( spd > 0 && SpeedRatio < 2000 ) SpeedRatio += SpeedRatio <  200 ? 10 : 100;
 	else if( spd < 0 && SpeedRatio >   10 ) SpeedRatio -= SpeedRatio <= 200 ? 10 : 100;
 	else if( spd == 0 )                     SpeedRatio = 100;
-	
+
 	SpeedCnt2 = VSYNC_HZ * 1000;
 	SpeedCnt1 = (SpeedCnt2 * SpeedRatio) / 100;
 }
@@ -691,10 +701,10 @@ int SCH6::GetSpeedRatio( void ) const
 int SCH6::GetRatio( void ) const
 {
 	DWORD sum = 0;
-	
+
 	for( int i=1; i<SPDCNT; i++ )
 		sum += WRClock[i];
-	
+
 	return (int)(double)( sum * 100.0 / MasterClock * 1000.0 / (WRUPDATE*(SPDCNT-1)) + 0.5 );
 }
 
@@ -793,7 +803,7 @@ void SCH6::CalcCpuState( void )
 {
 	bool disp = vm->vdg->GetCrtDisp();
 	bool win  = vm->vdg->GetWinSize();
-	
+
 	// 1秒あたりのステート数を求める
 	int CpuState;
 	if( disp ) CpuState = (int)( (win ? Ref1 : Ref2) * (double)CpuClock );
@@ -808,5 +818,4 @@ CpuState = CpuClock;
 	EVSC::SetMasterClock( CpuState );
 }
 */
-
 

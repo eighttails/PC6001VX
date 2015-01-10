@@ -186,28 +186,26 @@ void EVSC::Update( int clk )
 	do{
 		cnt = 0;
 		for( size_t i = 0; i < ev.size(); i++ ){
-			evinfo& event = ev[i];
-
 			// 有効なイベント?
-			if( event.Active ){
-				event.Clock -= SaveClock;
+			if( ev[i].Active ){
+				ev[i].Clock -= SaveClock;
 				// 更新間隔が長い場合は複数回発生する可能性あり
 				// とりあえず全てこなすまで繰り返すってことでいいのか?
-				if( event.Clock <= 0 ){
+				if( ev[i].Clock <= 0 ){
 					// イベントコールバックを実行
-					devlist.Find( event.devid )->EventCallback( event.id, event.Clock );
+					devlist.Find( ev[i].devid )->EventCallback( ev[i].id, ev[i].Clock );
 
-					if( event.Period > 0 ){	// ループイベント
-						event.Clock += event.Period;
-						if( event.Clock <= 0 ) cnt++;	// 次のイベントも発生していたらカウント
+					if( ev[i].Period > 0 ){	// ループイベント
+						ev[i].Clock += ev[i].Period;
+						if( ev[i].Clock <= 0 ) cnt++;	// 次のイベントも発生していたらカウント
 					}else{					// ワンタイムイベント
-						Del( (Device *)devlist.Find( event.devid ), event.id );
+						Del( (Device *)devlist.Find( ev[i].devid ), ev[i].id );
 						break;
 					}
 				}
 				// 次のイベントまでのクロック数更新
-				if( NextEvent < 0 ) NextEvent = event.Clock;
-				else                NextEvent = min( NextEvent, event.Clock );
+				if( NextEvent < 0 ) NextEvent = ev[i].Clock;
+				else                NextEvent = min( NextEvent, ev[i].Clock );
 			}
 		}
 		SaveClock = 0;

@@ -614,10 +614,12 @@ void P6VXApp::terminateEmulation()
 
 void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 {
+	quint32 nativeKey = ke->nativeScanCode();
+#if 0
     qDebug("keytext %s\n", ke->text().toStdString().c_str());
     qDebug("keycode 0x%x\n", keyCode);
-    quint32 nativeKey = ke->nativeScanCode();
     qDebug("nativekeycode %d\n", nativeKey);
+#endif
 
 	//X11の場合
 	if (QGuiApplication::platformName() == QLatin1String("xcb")){

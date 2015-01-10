@@ -58,7 +58,5 @@ int main( int argc, char *argv[] )
     QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);
 
     //イベントループを開始
-    app.exec();
-	
-	return true;
+	return app.exec();
 }

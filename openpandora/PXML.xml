@@ -2,7 +2,7 @@
 <!-- This is an example how a "common" pnd with just one application could look. Most of the information for the <package> block can in this case directly be copied over from the respective parts in the <application> block.-->
 <PXML xmlns="http://openpandora.org/namespaces/PXML">
   <package id="PC6001VX-eighttails">
-    <version major="2" minor="0" release="Alpha" build="3"/>
+    <version major="2" minor="0" release="1" build="0"/>
     <author name="eighttails" website="http://eighttails.seesaa.net"/>
     <titles>
       <title lang="en_US">PC6001VX</title>
@@ -15,7 +15,7 @@
   
   <application id="PC6001VX">
     <exec command="PC6001VX.sh" x11="req"/>
-    <version major="2" minor="0" release="Alpha" build="3"/>
+    <version major="2" minor="0" release="1" build="0"/>
     <author name="eighttails" website="http://eighttails.seesaa.net"/>
     <titles>
       <title lang="en_US">PC6001VX</title>

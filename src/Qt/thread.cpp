@@ -17,7 +17,6 @@ public:
 protected:
     virtual void run(){
         thread_->OnThread(param_);
-        thread_->m_hThread = NULL;
     }
 
 private:
@@ -37,11 +36,7 @@ cThread::cThread( void )
 // Destructer
 cThread::~cThread( void )
 {
-	bool bWaiting = this->Waiting();
-    if( m_hThread && bWaiting == false ){
-        ((InternalTherad*)m_hThread)->terminate();
-    }
-    ((InternalTherad*)m_hThread)->deleteLater();
+	Cancel();
 }
 
 
@@ -69,9 +64,10 @@ bool cThread::Waiting( void )
 {
 	bool bSuccess = false;
 	
-	if( this->m_hThread != NULL ){
-        bSuccess = ((InternalTherad*)m_hThread)->wait();
-        this->m_hThread = NULL;
+	if( m_hThread != NULL ){
+		bSuccess = ((InternalTherad*)m_hThread)->wait();
+		((InternalTherad*)m_hThread)->deleteLater();
+		m_hThread = NULL;
 	}else{
 		bSuccess = true;
 	}
@@ -82,18 +78,19 @@ bool cThread::Waiting( void )
 
 void cThread::Cancel()
 {
-	this->cCritical::Lock();
-	this->m_bCancel = true;
-	this->cCritical::UnLock();
+	cCritical::Lock();
+	m_bCancel = true;
+	cCritical::UnLock();
+	Waiting();
 }
 
 
 bool cThread::IsCancel()
 {
 	bool bCancel = false;
-	this->cCritical::Lock();
+	cCritical::Lock();
 	bCancel = this->m_bCancel;
-	this->cCritical::UnLock();
+	cCritical::UnLock();
 	return bCancel;
 }
 

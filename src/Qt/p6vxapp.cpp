@@ -686,6 +686,9 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		// 　例外としてF9キー(ポーズ解除)とF12(スナップショット)は
 		// 　エミュレータで受け付ける
 		if(!(P6Core && !P6Core->IsCancel() && !P6Core->GetPauseEnable())
+		#ifdef PANDORA
+				&& keyCode != Qt::Key_PageUp
+		#endif
 				&& keyCode != Qt::Key_F9
 				&& keyCode != Qt::Key_F12){
 			processKeyEventInQt = true;

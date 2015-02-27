@@ -97,10 +97,10 @@ fi #if [ $FIRSTRUN -eq 1 ]
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt540-release
+QT_INSTALLNAME=qt541-release
 
 QT_MAJOR_VER=5.4
-QT_VER=$QT_MAJOR_VER.0
+QT_VER=$QT_MAJOR_VER.1
 QT_FULL_VER=$QT_VER
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases
@@ -136,6 +136,7 @@ cd $SDKHOME/$QT_INSTALLNAME
 ../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -qreal float -opengl es2 -c++11 -qpa xcb -qt-xcb -no-xinput2 -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -continue -silent
 
 #echo "Hit Enter.";read Wait
-make -j3 && rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME && make install
+#並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
+make -j3 || make -j3 && rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME && make install
 ln -snf $PNDSDK/usr/local/$QT_INSTALLNAME $PNDSDK/usr/local/qt5
 

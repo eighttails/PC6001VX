@@ -48,7 +48,7 @@ popd
 #Qt Creator
 cd ~/extlib
 export QTC_MAJOR_VER=3.3
-export QTC_MINOR_VER=.0
+export QTC_MINOR_VER=.1
 export QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 wget -c  http://download.qt-project.org/official_releases/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
@@ -58,6 +58,11 @@ if [ -e $QTC_SOURCE_DIR ]; then
 else
     # 存在しない場合
     unzip -q -b -n $QTC_SOURCE_DIR.zip
+    pushd $QTC_SOURCE_DIR
+    
+    #MinGWでコンパイルが通らない問題の修正
+    patch -p1 < $SCRIPT_DIR/qt-creator-3.3.0-MinGW-w64-MIB_TCP_STATE-not-defined-until-Vista.patch
+    popd
 fi
 
 rm -rf qtcreator
@@ -98,7 +103,7 @@ mkdir extlib
 #Qt
 cd ~/extlib
 export QT_MAJOR_VERSION=5.4
-export QT_MINOR_VERSION=.0
+export QT_MINOR_VERSION=.1
 export QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
 wget -c  http://download.qt-project.org/official_releases/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip

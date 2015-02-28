@@ -61,7 +61,6 @@ LIBS += -lX11
 
 #Configuration for Windows
 win32:{
-DEFINES += USE_QGLWIDGET
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
 RC_ICONS += src/win32/PC6001VX.ico
@@ -311,3 +310,6 @@ RESOURCES += \
     src/Qt/pc6001vx.qrc
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+DISTFILES += \
+    win32/qt-creator-3.3.0-MinGW-w64-MIB_TCP_STATE-not-defined-until-Vista.patch

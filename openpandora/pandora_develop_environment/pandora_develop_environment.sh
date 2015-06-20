@@ -3,6 +3,10 @@ sudo dpkg --add-architecture i386
 sudo apt-get install libssl-dev libcurl4-openssl-dev libgpgme11-dev libtool build-essential libglib2.0-dev xsltproc squashfs-tools libncurses5:i386
 sudo apt-get build-dep gdb
 
+#コマンドのエイリアス
+makeparallel='nice -n 19 make -j3'
+makeinstall='make install'
+
 #カレントディレクトリ
 INSTALLER_DIR=$PWD                                                  
 
@@ -20,6 +24,8 @@ else
 FIRSTRUN=0
 fi
 	
+
+
 #sdk_installer_openpandora_toolchain.sh中の
 #pandora_configure.sh
 #CPPFLAGSとCXXFLAGSを交換
@@ -58,7 +64,7 @@ wget -c http://ftp.gnu.org/gnu/gdb/gdb-7.7.1.tar.gz -P $INSTALLER_DIR/tmp
 tar xf $INSTALLER_DIR/tmp/gdb-7.7.1.tar.gz
 cd gdb-7.7.1
 ./configure --prefix=$PNDSDK/usr/local/gdb-with-python --target=arm-linux-gnueabi --with-python
-make -j3 && make install
+$makeparallel && $makeinstall
 
 #libpthread-stubs
 cd $SDKHOME
@@ -66,7 +72,7 @@ wget -c http://xcb.freedesktop.org/dist/libpthread-stubs-0.3.tar.gz -P $INSTALLE
 tar xf $INSTALLER_DIR/tmp/libpthread-stubs-0.3.tar.gz
 cd libpthread-stubs-0.3
 ../../../../sdk_utils/pandora_configure.sh --prefix=$PNDSDK/usr
-make -j3 && make install
+$makeparallel && $makeinstall
 
 #xcb-proto 
 cd $SDKHOME
@@ -74,7 +80,7 @@ wget -c http://xcb.freedesktop.org/dist/xcb-proto-1.11.tar.gz -P $INSTALLER_DIR/
 tar xf $INSTALLER_DIR/tmp/xcb-proto-1.11.tar.gz
 cd xcb-proto-1.11
 ../../../../sdk_utils/pandora_configure.sh --prefix=$PNDSDK/usr
-make -j3 && make install
+$makeparallel && $makeinstall
 
 #libxcb
 cd $SDKHOME
@@ -82,7 +88,7 @@ wget -c http://xcb.freedesktop.org/dist/libxcb-1.11.tar.gz -P $INSTALLER_DIR/tmp
 tar xf $INSTALLER_DIR/tmp/libxcb-1.11.tar.gz
 cd libxcb-1.11
 ../../../../sdk_utils/pandora_configure.sh --prefix=$PNDSDK/usr
-make -j3 && make install
+$makeparallel && $makeinstall
 
 #libX11
 cd $SDKHOME
@@ -90,20 +96,20 @@ wget -c http://ftp.x.org/pub/individual/lib/libX11-1.3.6.tar.gz -P $INSTALLER_DI
 tar xf $INSTALLER_DIR/tmp/libX11-1.3.6.tar.gz
 cd libX11-1.3.6
 ../../../../sdk_utils/pandora_configure.sh --prefix=$PNDSDK/usr --disable-malloc0returnsnull
-make -j3 && make install
+$makeparallel && $makeinstall
 
 fi #if [ $FIRSTRUN -eq 1 ] 
 
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt541-release
+QT_INSTALLNAME=qt550-beta-release
 
-QT_MAJOR_VER=5.4
-QT_VER=$QT_MAJOR_VER.1
-QT_FULL_VER=$QT_VER
-#QT_RELEASE=development_releases
-QT_RELEASE=official_releases
+QT_MAJOR_VER=5.5
+QT_VER=$QT_MAJOR_VER.0
+QT_FULL_VER=$QT_VER-beta
+QT_RELEASE=development_releases
+#QT_RELEASE=official_releases
 QT_SOURCE_NAME=qt-everywhere-opensource-src-$QT_FULL_VER
 
 cd $SDKHOME
@@ -117,9 +123,9 @@ tar Jxf $INSTALLER_DIR/tmp/$QT_SOURCE_NAME.tar.xz
 pushd $QT_SOURCE_NAME
 
 #ALSAで音が出ない問題に対処するパッチを当てる
-patch -p1  < $INSTALLER_DIR/qtmultimedia53.patch
+#patch -p1  < $INSTALLER_DIR/qtmultimedia53.patch
 #EGLFS関連でコンパイルが通らない問題に対処するパッチを当てる
-patch -p1  < $INSTALLER_DIR/eglfs.patch
+#patch -p1  < $INSTALLER_DIR/eglfs.patch
 #カメラ関係でビルドが通らないのを回避
 rm -rf qtmultimedia/config.tests/gstreamer_encodingprofiles
 
@@ -133,10 +139,10 @@ sed -i -e "s|\$\$PNDSDK|$HOME/pandora-dev/arm|" qtbase/mkspecs/linux-pandora-g++
 
 cd $SDKHOME/$QT_INSTALLNAME
 #make confclean -j3
-../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -qreal float -opengl es2 -c++11 -qpa xcb -qt-xcb -no-xinput2 -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -continue -silent
+../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -opengl es2 -c++11 -qpa xcb -qt-xcb -no-xinput2 -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -continue -silent
 
 #echo "Hit Enter.";read Wait
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
-make -j3 || make -j3 && rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME && make install
+$makeparallel || $makeparallel && rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME && $makeinstall
 ln -snf $PNDSDK/usr/local/$QT_INSTALLNAME $PNDSDK/usr/local/qt5
 

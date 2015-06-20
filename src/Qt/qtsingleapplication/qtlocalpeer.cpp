@@ -42,6 +42,7 @@
 #include "qtlocalpeer.h"
 #include <QCoreApplication>
 #include <QTime>
+#include <QDataStream>
 
 #if defined(Q_OS_WIN)
 #include <QLibrary>
@@ -157,7 +158,7 @@ bool QtLocalPeer::sendMessage(const QString &message, int timeout)
         return false;
 
     QByteArray uMsg(message.toUtf8());
-    QDataStream ds(&socket);
+	QDataStream ds(&socket);
     ds.writeBytes(uMsg.constData(), uMsg.size());
     bool res = socket.waitForBytesWritten(timeout);
     if (res) {

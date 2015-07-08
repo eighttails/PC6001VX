@@ -1,8 +1,9 @@
 function exitOnError(){
 if [ $? -ne 0 ]; then 
+    echo "ERROR."
     exit
 else
-    echo "success"
+    echo "SUCCESS."
 fi
 }
 
@@ -11,47 +12,28 @@ echo "Hit Enter"
 read Wait
 }
 
-function buildQtCreator(){
+function buildQtShared(){
 #shared版(QtCreator用)
 rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local -shared -release -opengl es2 -angle -nomake tests -skip qtwebkit-examples"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local -shared -release -opengl es2 -angle -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
 PATH=$PWD/qtbase/lib:$PATH $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install && $MINGW32MAKE docs && $MINGW32MAKE install_qch_docs
 exitOnError
 popd
+}
 
-#qbs
-cd ~/extlib
-export QBS_VER=1.3.3
-export QBS_SOURCE_DIR=qbs-$QBS_VER
-wget -c  http://download.qt-project.org/official_releases/qbs/$QBS_VER/$QBS_SOURCE_DIR.src.zip
-if [ -e $QBS_SOURCE_DIR ]; then
-    # 存在する場合
-    echo "$QBS_SOURCE_DIR already exists."
-else
-    # 存在しない場合
-    unzip -q -b -n $QBS_SOURCE_DIR.src.zip
-fi
-rm -rf qbs
-mkdir qbs
-pushd qbs
-
-qmake ../$QBS_SOURCE_DIR/qbs.pro
-$MINGW32MAKE && INSTALL_ROOT=/usr/local $MINGW32MAKE install 
-exitOnError
-popd
-
+function buildQtCreator(){
 #Qt Creator
 cd ~/extlib
-export QTC_MAJOR_VER=3.3
-export QTC_MINOR_VER=.1
+export QTC_MAJOR_VER=3.4
+export QTC_MINOR_VER=.2
 export QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
-wget -c  http://download.qt-project.org/official_releases/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
+wget -c  http://download.qt.io/official_releases/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
 if [ -e $QTC_SOURCE_DIR ]; then
     # 存在する場合
     echo "$QTC_SOURCE_DIR already exists."
@@ -81,7 +63,7 @@ rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local/qt5-static -static -opengl es2 -angle  -no-icu -no-openssl -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake examples -nomake tests -skip qtwebkit-examples"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local/qt5-static -static -opengl es2 -angle  -no-icu -no-openssl -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake examples -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
 $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install 
@@ -102,11 +84,11 @@ mkdir extlib
 
 #Qt
 cd ~/extlib
-export QT_MAJOR_VERSION=5.4
-export QT_MINOR_VERSION=.1
+export QT_MAJOR_VERSION=5.5
+export QT_MINOR_VERSION=.0
 export QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
-wget -c  http://download.qt-project.org/official_releases/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
+wget -c  http://download.qt.io/official_releases/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
 
 if [ -e $QT_SOURCE_DIR ]; then
     # 存在する場合
@@ -137,6 +119,9 @@ export DXSDK_DIR=`pwd -W`/$DX_REL_PATH/
 cp $DX_REL_PATH/lib/libd3dx11.a $DX_REL_PATH/lib/d3d11.lib
 mkdir -p $DX_REL_PATH/Utilities/bin/x86
 cp "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\fxc.exe" $DX_REL_PATH/Utilities/bin/x86/
+
+#shared版Qtをビルド(QtCreator用)
+buildQtShared
 
 #QtCreatorをビルド
 buildQtCreator

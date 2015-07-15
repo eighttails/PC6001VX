@@ -18,7 +18,7 @@ rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local -shared -release -opengl es2 -angle -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local -shared -release -angle -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
 PATH=$PWD/qtbase/lib:$PATH $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install && $MINGW32MAKE docs && $MINGW32MAKE install_qch_docs
@@ -63,7 +63,7 @@ rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local/qt5-static -static -opengl es2 -angle  -no-icu -no-openssl -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake examples -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local/qt5-static -static -angle  -no-icu -no-openssl -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake examples -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
 $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install 
@@ -113,12 +113,7 @@ fi
 
 export PATH=$PWD/$QT_SOURCE_DIR/gnuwin32/bin:$PATH
 #ANGLEのコンパイルを通すための対策
-export DX_REL_PATH=../../../mingw32/i686-w64-mingw32
-export DXSDK_DIR=`pwd -W`/$DX_REL_PATH/
 #export DXSDK_DIR="C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)"
-cp $DX_REL_PATH/lib/libd3dx11.a $DX_REL_PATH/lib/d3d11.lib
-mkdir -p $DX_REL_PATH/Utilities/bin/x86
-cp "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\fxc.exe" $DX_REL_PATH/Utilities/bin/x86/
 
 #shared版Qtをビルド(QtCreator用)
 buildQtShared

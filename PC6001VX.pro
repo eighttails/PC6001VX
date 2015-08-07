@@ -86,6 +86,10 @@ SOURCES += \
     src/Qt/wavfile.cpp \
     src/Qt/utils.cpp
 }
+!contains(DEFINES, NOAVI) {
+LIBS += -lavcodec -lavformat
+}
+
 
 SOURCES += \
     src/Qt/aboutdialog.cpp \

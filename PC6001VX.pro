@@ -87,7 +87,7 @@ SOURCES += \
     src/Qt/utils.cpp
 }
 !contains(DEFINES, NOAVI) {
-LIBS += -lavcodec -lavformat
+LIBS += -lavcodec -lavformat -lswscale -lavutil
 }
 
 

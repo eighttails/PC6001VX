@@ -2,13 +2,24 @@
 
 extern "C"{
 #include <libavcodec/avcodec.h>
+#include <libavutil/avassert.h>
 #include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
+#include <libswresample/swresample.h>
 }
+#define SCALE_FLAGS SWS_BICUBIC
 
 #include "common.h"
 #include "log.h"
 #include "movie.h"
 #include "osd.h"
+
+const char* av_make_error_string(int errnum)
+{
+	char errbuf[AV_ERROR_MAX_STRING_SIZE];
+	av_strerror(errnum, errbuf, AV_ERROR_MAX_STRING_SIZE);
+	return (std::string(errbuf)).c_str();
+}
 
 // FFMpegのサンプルmuxing.cより抜粋,改変
 // ---------------------------------------------------
@@ -153,15 +164,9 @@ static void open_audio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, A
 	ret = avcodec_open2(c, codec, &opt);
 	av_dict_free(&opt);
 	if (ret < 0) {
-		fprintf(stderr, "Could not open audio codec: %s\n", av_err2str(ret));
+		fprintf(stderr, "Could not open audio codec: %s\n", av_make_error_string(ret));
 		exit(1);
 	}
-
-	/* init signal generator */
-	ost->t     = 0;
-	ost->tincr = 2 * M_PI * 110.0 / c->sample_rate;
-	/* increment frequency by 110 Hz per second */
-	ost->tincr2 = 2 * M_PI * 110.0 / c->sample_rate / c->sample_rate;
 
 	if (c->codec->capabilities & CODEC_CAP_VARIABLE_FRAME_SIZE)
 		nb_samples = 10000;
@@ -179,21 +184,9 @@ static void open_audio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, A
 static AVFrame *get_audio_frame(OutputStream *ost)
 {
 	AVFrame *frame = ost->tmp_frame;
-	int j, i, v;
 	int16_t *q = (int16_t*)frame->data[0];
 
-	/* check if we want to generate more frames */
-	if (av_compare_ts(ost->next_pts, ost->st->codec->time_base,
-					  STREAM_DURATION, (AVRational){ 1, 1 }) >= 0)
-		return NULL;
-
-	for (j = 0; j <frame->nb_samples; j++) {
-		v = (int)(sin(ost->t) * 10000);
-		for (i = 0; i < ost->st->codec->channels; i++)
-			*q++ = v;
-		ost->t     += ost->tincr;
-		ost->tincr += ost->tincr2;
-	}
+	// #PENDING サンプルを実際に入れる
 
 	frame->pts = ost->next_pts;
 	ost->next_pts  += frame->nb_samples;
@@ -250,7 +243,7 @@ static int write_audio_frame(AVFormatContext *oc, OutputStream *ost)
 
 	ret = avcodec_encode_audio2(c, &pkt, frame, &got_packet);
 	if (ret < 0) {
-		fprintf(stderr, "Error encoding audio frame: %s\n", av_err2str(ret));
+		fprintf(stderr, "Error encoding audio frame: %s\n", av_make_error_string(ret));
 		exit(1);
 	}
 
@@ -258,7 +251,7 @@ static int write_audio_frame(AVFormatContext *oc, OutputStream *ost)
 		ret = write_frame(oc, &c->time_base, ost->st, &pkt);
 		if (ret < 0) {
 			fprintf(stderr, "Error while writing audio frame: %s\n",
-					av_err2str(ret));
+					av_make_error_string(ret));
 			exit(1);
 		}
 	}
@@ -304,7 +297,7 @@ static void open_video(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, A
 	ret = avcodec_open2(c, codec, &opt);
 	av_dict_free(&opt);
 	if (ret < 0) {
-		fprintf(stderr, "Could not open video codec: %s\n", av_err2str(ret));
+		fprintf(stderr, "Could not open video codec: %s\n", av_make_error_string(ret));
 		exit(1);
 	}
 
@@ -361,11 +354,6 @@ static void fill_yuv_image(AVFrame *pict, int frame_index,
 static AVFrame *get_video_frame(OutputStream *ost)
 {
 	AVCodecContext *c = ost->st->codec;
-
-	/* check if we want to generate more frames */
-	if (av_compare_ts(ost->next_pts, ost->st->codec->time_base,
-					  STREAM_DURATION, (AVRational){ 1, 1 }) >= 0)
-		return NULL;
 
 	if (c->pix_fmt != AV_PIX_FMT_YUV420P) {
 		/* as we only generate a YUV420P picture, we must convert it
@@ -434,7 +422,7 @@ static int write_video_frame(AVFormatContext *oc, OutputStream *ost)
 		/* encode the image */
 		ret = avcodec_encode_video2(c, &pkt, frame, &got_packet);
 		if (ret < 0) {
-			fprintf(stderr, "Error encoding video frame: %s\n", av_err2str(ret));
+			fprintf(stderr, "Error encoding video frame: %s\n", av_make_error_string(ret));
 			exit(1);
 		}
 
@@ -446,7 +434,7 @@ static int write_video_frame(AVFormatContext *oc, OutputStream *ost)
 	}
 
 	if (ret < 0) {
-		fprintf(stderr, "Error while writing video frame: %s\n", av_err2str(ret));
+		fprintf(stderr, "Error while writing video frame: %s\n", av_make_error_string(ret));
 		exit(1);
 	}
 

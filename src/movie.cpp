@@ -97,7 +97,7 @@ static void add_stream(OutputStream *ost, AVFormatContext *oc,
 		c->time_base       = ost->st->time_base;
 
 		c->gop_size      = 12; /* emit one intra frame every twelve frames at most */
-		c->pix_fmt       = AV_PIX_FMT_RGBA;
+		c->pix_fmt       = AV_PIX_FMT_YUV420P;
 		if (c->codec_id == AV_CODEC_ID_MPEG2VIDEO) {
 			/* just for testing, we also add B frames */
 			c->max_b_frames = 2;
@@ -554,6 +554,13 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 ////////////////////////////////////////////////////////////////
 void AVI6::StopAVI( void )
 {
+	if(oc){
+		close_stream(oc, &video_st);
+		close_stream(oc, &audio_st);
+		avio_close(oc->pb);
+		avformat_free_context(oc);
+		oc = NULL;
+	}
 }
 
 
@@ -565,7 +572,7 @@ void AVI6::StopAVI( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::IsAVI( void )
 {
-	return false;
+	return oc ? true : false;
 }
 
 
@@ -624,7 +631,9 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	}
 #endif
 
-	
+	write_video_frame(oc, &video_st);
+	write_audio_frame(oc, &audio_st);
+
 	// オーディオ出力
 	if( ABuf.ReadySize() > 0 ){
 		anum += ABuf.ReadySize();

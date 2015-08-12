@@ -35,7 +35,7 @@ static int write_frame(AVFormatContext *fmt_ctx, const AVRational *time_base, AV
 /* Add an output stream. */
 static void add_stream(OutputStream *ost, AVFormatContext *oc,
 					   AVCodec **codec,
-					   enum AVCodecID codec_id)
+					   enum AVCodecID codec_id, int source_width, int source_height)
 {
 	AVCodecContext *c;
 	int i;
@@ -87,8 +87,8 @@ static void add_stream(OutputStream *ost, AVFormatContext *oc,
 
 		c->bit_rate = 400000;
 		/* Resolution must be a multiple of two. */
-		c->width    = 352;
-		c->height   = 288;
+		c->width    = source_width - (source_width % 2);
+		c->height   = source_height - (source_height % 2);
 		/* timebase: This is the fundamental unit of time (in seconds) in terms
 		 * of which frame timestamps are represented. For fixed-fps content,
 		 * timebase should be 1/framerate and timestamp increments should be
@@ -312,71 +312,37 @@ static void open_video(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, A
 	 * picture is needed too. It is then converted to the required
 	 * output format. */
 	ost->tmp_frame = NULL;
-	if (c->pix_fmt != AV_PIX_FMT_YUV420P) {
-		ost->tmp_frame = alloc_picture(AV_PIX_FMT_YUV420P, c->width, c->height);
-		if (!ost->tmp_frame) {
-			fprintf(stderr, "Could not allocate temporary picture\n");
-			exit(1);
-		}
-	}
-}
-
-/* Prepare a dummy image. */
-static void fill_yuv_image(AVFrame *pict, int frame_index,
-						   int width, int height)
-{
-	int x, y, i, ret;
-
-	/* when we pass a frame to the encoder, it may keep a reference to it
-	 * internally;
-	 * make sure we do not overwrite it here
-	 */
-	ret = av_frame_make_writable(pict);
-	if (ret < 0)
+	ost->tmp_frame = alloc_picture(AV_PIX_FMT_BGR0, c->width, c->height);
+	if (!ost->tmp_frame) {
+		fprintf(stderr, "Could not allocate temporary picture\n");
 		exit(1);
-
-	i = frame_index;
-
-	/* Y */
-	for (y = 0; y < height; y++)
-		for (x = 0; x < width; x++)
-			pict->data[0][y * pict->linesize[0] + x] = x + y + i * 3;
-
-	/* Cb and Cr */
-	for (y = 0; y < height / 2; y++) {
-		for (x = 0; x < width / 2; x++) {
-			pict->data[1][y * pict->linesize[1] + x] = 128 + y + i * 2;
-			pict->data[2][y * pict->linesize[2] + x] = 64 + x + i * 5;
-		}
 	}
 }
 
-static AVFrame *get_video_frame(OutputStream *ost)
+static AVFrame *get_video_frame(OutputStream *ost, BYTE* src_img)
 {
 	AVCodecContext *c = ost->st->codec;
 
-	if (c->pix_fmt != AV_PIX_FMT_YUV420P) {
-		/* as we only generate a YUV420P picture, we must convert it
-		 * to the codec pixel format if needed */
+	if (!ost->sws_ctx) {
+		ost->sws_ctx = sws_getContext(c->width, c->height,
+									  AV_PIX_FMT_BGR0,
+									  c->width, c->height,
+									  c->pix_fmt,
+									  SCALE_FLAGS, NULL, NULL, NULL);
 		if (!ost->sws_ctx) {
-			ost->sws_ctx = sws_getContext(c->width, c->height,
-										  AV_PIX_FMT_YUV420P,
-										  c->width, c->height,
-										  c->pix_fmt,
-										  SCALE_FLAGS, NULL, NULL, NULL);
-			if (!ost->sws_ctx) {
-				fprintf(stderr,
-						"Could not initialize the conversion context\n");
-				exit(1);
-			}
+			fprintf(stderr,
+					"Could not initialize the conversion context\n");
+			exit(1);
 		}
-		fill_yuv_image(ost->tmp_frame, ost->next_pts, c->width, c->height);
-		sws_scale(ost->sws_ctx,
-				  (const uint8_t * const *)ost->tmp_frame->data, ost->tmp_frame->linesize,
-				  0, c->height, ost->frame->data, ost->frame->linesize);
-	} else {
-		fill_yuv_image(ost->frame, ost->next_pts, c->width, c->height);
 	}
+	// 画像をここでコピーする
+	av_frame_make_writable(ost->tmp_frame);
+	avpicture_fill((AVPicture*)ost->tmp_frame, src_img, AV_PIX_FMT_BGR0, c->width, c->height);
+
+	sws_scale(ost->sws_ctx,
+			  (const uint8_t * const *)ost->tmp_frame->data, ost->tmp_frame->linesize,
+			  0, c->height, ost->frame->data, ost->frame->linesize);
+
 
 	ost->frame->pts = ost->next_pts++;
 
@@ -387,7 +353,7 @@ static AVFrame *get_video_frame(OutputStream *ost)
  * encode one video frame and send it to the muxer
  * return 1 when encoding is finished, 0 otherwise
  */
-static int write_video_frame(AVFormatContext *oc, OutputStream *ost)
+static int write_video_frame(AVFormatContext *oc, OutputStream *ost, BYTE* src_img)
 {
 	int ret;
 	AVCodecContext *c;
@@ -396,7 +362,7 @@ static int write_video_frame(AVFormatContext *oc, OutputStream *ost)
 
 	c = ost->st->codec;
 
-	frame = get_video_frame(ost);
+	frame = get_video_frame(ost, src_img);
 
 	if (oc->oformat->flags & AVFMT_RAWPICTURE) {
 		/* a hack to avoid data copy with some raw video muxers */
@@ -519,14 +485,16 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 	/* Add the audio and video streams using the default format codecs
 		 * and initialize the codecs. */
 	if (fmt->video_codec != AV_CODEC_ID_NONE) {
-		add_stream(&video_st, oc, &video_codec, fmt->video_codec);
+		add_stream(&video_st, oc, &video_codec, fmt->video_codec, sw, sh);
 	}
 	if (fmt->audio_codec != AV_CODEC_ID_NONE) {
-		add_stream(&audio_st, oc, &audio_codec, fmt->audio_codec);
+		//#PENDING あとで戻す
+		//add_stream(&audio_st, oc, &audio_codec, fmt->audio_codec, sw, sh);
 	}
 
 	open_video(oc, video_codec, &video_st, opt);
-	open_audio(oc, audio_codec, &audio_st, opt);
+	//#PENDING あとで戻す
+	//open_audio(oc, audio_codec, &audio_st, opt);
 
 	av_dump_format(oc, 0, filename, 1);
 
@@ -555,8 +523,10 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 void AVI6::StopAVI( void )
 {
 	if(oc){
+		av_write_trailer(oc);
 		close_stream(oc, &video_st);
-		close_stream(oc, &audio_st);
+		//#PENDING あとで戻す
+		//close_stream(oc, &audio_st);
 		avio_close(oc->pb);
 		avformat_free_context(oc);
 		oc = NULL;
@@ -589,7 +559,7 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	int xx = OSD_GetWindowWidth(wh);
 	int yy =  OSD_GetWindowHeight(wh);
 
-	Sbuf.resize(xx * yy * sizeof(DWORD));
+	Sbuf.resize(xx * yy * ABPP / 4);
 
 	VRect ss;
 	ss.x = 0;
@@ -631,8 +601,8 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	}
 #endif
 
-	write_video_frame(oc, &video_st);
-	write_audio_frame(oc, &audio_st);
+	write_video_frame(oc, &video_st, &Sbuf[0]);
+	//write_audio_frame(oc, &audio_st);
 
 	// オーディオ出力
 	if( ABuf.ReadySize() > 0 ){

@@ -1787,8 +1787,9 @@ void EL6::UI_AVISave( void )
 	char str[PATH_MAX];
 	
 	if( !AVI6::IsAVI() ){
-		if( OSD_FileSelect( graph->GetWindowHandle(), FD_AVISave, str, (char *)OSD_GetModulePath() ) ){
-			AVI6::StartAVI( str, graph->ScreenX(), graph->ScreenY(), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviBpp() );
+		HWINDOW wh = graph->GetWindowHandle();
+		if( OSD_FileSelect( wh, FD_AVISave, str, (char *)OSD_GetModulePath() ) ){
+			AVI6::StartAVI( str, OSD_GetWindowWidth(wh), OSD_GetWindowHeight(wh), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviBpp() );
 		}
 	}else{
 		AVI6::StopAVI();

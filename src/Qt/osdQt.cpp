@@ -1308,6 +1308,7 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 
 	if(mode == FM_Save){
 		result = QFileDialog::getSaveFileName(parent, title, pathStr, filter, NULL, opt);
+		if(result.isEmpty())    return NULL;
 		// 入力されたファイル名に拡張子がついていない場合は付与する
 		QFileInfo info(result);
 		if(info.suffix() != ext){
@@ -1315,8 +1316,8 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 		}
 	} else {
 		result = QFileDialog::getOpenFileName(parent, title, pathStr, filter, NULL, opt);
+		if(result.isEmpty())    return NULL;
 	}
-	if(result.isEmpty())    return NULL;
 
 	QDir dir(result);
 

@@ -557,7 +557,13 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	if( !wh ) return false;
 	
 	int xx = OSD_GetWindowWidth(wh);
-	int yy =  OSD_GetWindowHeight(wh);
+	int yy = OSD_GetWindowHeight(wh);
+
+	// 途中でウィンドウサイズが変わっていたら記録を中断
+	if(xx != video_st.tmp_frame->width || yy != video_st.tmp_frame->height){
+		StopAVI();
+		return false;
+	}
 
 	Sbuf.resize(xx * yy * ABPP / 4);
 
@@ -567,41 +573,9 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	ss.w = xx;
 	ss.h = yy;
 	if( !OSD_GetWindowImage( wh, (void **)&Sbuf, &ss ) ) return false;
-	
-#if 0
-	switch( ABPP ){
-	case 16:	// 16bitの場合
-		for( int y = yy - 1; y >= 0; y-- ){
-			DWORD *src = (DWORD *)Sbuf + vmh.dwWidth * y;
-			for( int x=0; x < xx; x++ ){
-				WORD dat = (((*src)&RMASK32)>>(RSHIFT32+3))<<10 |
-						   (((*src)&GMASK32)>>(GSHIFT32+3))<<5 |
-						   (((*src)&BMASK32)>>(BSHIFT32+3));
-				FPUTWORD( dat, vfp );
-				src++;
-			}
-		}
-		break;
-		
-	case 24:	// 24bitの場合
-		for( int y = yy - 1; y >= 0; y-- ){
-			DWORD *src = (DWORD *)Sbuf + vmh.dwWidth * y;
-			for( int x=0; x < xx; x++ ){
-				FPUTBYTE( ((*src)&BMASK32)>>BSHIFT32, vfp );
-				FPUTBYTE( ((*src)&GMASK32)>>GSHIFT32, vfp );
-				FPUTBYTE( ((*src)&RMASK32)>>RSHIFT32, vfp );
-				src++;
-			}
-		}
-		break;
-		
-	case 32:	// 32bitの場合
-		for( int y = yy - 1; y >= 0; y-- )
-			fwrite( (BYTE *)((DWORD *)Sbuf + vmh.dwWidth * y), sizeof(DWORD), xx, vfp );
-	}
-#endif
 
 	write_video_frame(oc, &video_st, &Sbuf[0]);
+	//#PENDING あとで戻す
 	//write_audio_frame(oc, &audio_st);
 
 	// オーディオ出力

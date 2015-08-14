@@ -135,15 +135,4 @@ void RenderView::closeEvent(QCloseEvent *event)
 	QGraphicsView::closeEvent(event);
 }
 
-void RenderView::resizeEvent(QResizeEvent *event)
-{
-	//幅、高さともに偶数となるようにする。
-	if(event->size().width() % 2){
-		resize(event->size().width() - 1, event->size().height());
-	}
-	if(event->size().height() % 2){
-		resize(event->size().width(), event->size().height() - 1);
-	}
-}
-
 

@@ -375,7 +375,7 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 
 void P6VXApp::showPopupMenu(int x, int y)
 {
-	//メニュー表示中に右クリックすると二重にメニューが表示されてしまうため、その対処
+	// メニュー表示中に右クリックすると二重にメニューが表示されてしまうため、その対処
 	if(MenuMutex.tryLock()){
 		P6Core->Stop();
 		P6Core->ShowPopupImpl(x, y);

@@ -22,7 +22,6 @@ protected:
 	virtual bool event(QEvent *);
 	virtual void paintEvent(QPaintEvent* event);
 	virtual void closeEvent(QCloseEvent* event);
-	virtual void resizeEvent(QResizeEvent* event);
 
 public:
 };

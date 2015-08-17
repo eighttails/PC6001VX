@@ -37,7 +37,7 @@ const char* Ts2TimeStr(int64_t ts, AVRational *tb)
 	return (std::string(buf)).c_str();
 }
 
-static void log_packet(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
+static void LogPacket(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
 {
 	AVRational *time_base = &fmt_ctx->streams[pkt->stream_index]->time_base;
 
@@ -57,7 +57,7 @@ static int WriteFrame(AVFormatContext *fmt_ctx, const AVRational *time_base, AVS
 	pkt->stream_index = st->index;
 
 	// フレームを書き込み
-	//log_packet(fmt_ctx, pkt);
+	//LogPacket(fmt_ctx, pkt);
 	return av_interleaved_write_frame(fmt_ctx, pkt);
 }
 
@@ -164,7 +164,7 @@ static AVFrame *AllocAudioFrame(enum AVSampleFormat sample_fmt,
 	return frame;
 }
 
-static void OpenAudio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg)
+static void OpenAudio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg, int sample_rate)
 {
 	AVCodecContext *c = NULL;
 	int nb_samples = 0;
@@ -190,7 +190,7 @@ static void OpenAudio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AV
 	ost->frame     = AllocAudioFrame(c->sample_fmt, c->channel_layout,
 									   c->sample_rate, nb_samples);
 	ost->tmp_frame = AllocAudioFrame(AV_SAMPLE_FMT_S16, c->channel_layout,
-									   c->sample_rate, nb_samples);
+									   sample_rate, nb_samples/(c->sample_rate/sample_rate));
 
 	// サンプル変換部
 	ost->swr_ctx = swr_alloc();
@@ -201,7 +201,7 @@ static void OpenAudio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AV
 
 	// 音声フォーマットの設定
 	av_opt_set_int       (ost->swr_ctx, "in_channel_count",   c->channels,       0);
-	av_opt_set_int       (ost->swr_ctx, "in_sample_rate",     c->sample_rate,    0);
+	av_opt_set_int       (ost->swr_ctx, "in_sample_rate",     sample_rate,       0);
 	av_opt_set_sample_fmt(ost->swr_ctx, "in_sample_fmt",      AV_SAMPLE_FMT_S16, 0);
 	av_opt_set_int       (ost->swr_ctx, "out_channel_count",  c->channels,       0);
 	av_opt_set_int       (ost->swr_ctx, "out_sample_rate",    c->sample_rate,    0);
@@ -253,9 +253,9 @@ static int WriteAudioFrame(AVFormatContext *oc, OutputStream *ost, AVI6 *avi)
 
 	if (frame) {
 		// フォーマット変換後のサンプル数を決定
-		dst_nb_samples = av_rescale_rnd(swr_get_delay(ost->swr_ctx, c->sample_rate) + frame->nb_samples,
+		dst_nb_samples = av_rescale_rnd(swr_get_delay(ost->swr_ctx, frame->sample_rate) + frame->nb_samples,
 										c->sample_rate, c->sample_rate, AV_ROUND_UP);
-		av_assert0(dst_nb_samples == frame->nb_samples);
+		//av_assert0(dst_nb_samples == frame->nb_samples);
 
 		// フレームを書き込み可能にする
 		ret = av_frame_make_writable(ost->frame);
@@ -514,7 +514,7 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 	}
 
 	OpenVideo(oc, video_codec, &video_st, opt);
-	OpenAudio(oc, audio_codec, &audio_st, opt);
+	OpenAudio(oc, audio_codec, &audio_st, opt, arate);
 
 	av_dump_format(oc, 0, filename, 1);
 

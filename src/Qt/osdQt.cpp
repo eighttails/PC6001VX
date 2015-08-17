@@ -1441,9 +1441,9 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 	case FD_AVISave:	// ビデオキャプチャ出力ファイル選択
 		mode   = FM_Save;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "ビデオキャプチャ出力ファイル選択");
-		filter = QT_TRANSLATE_NOOP("PC6001VX", "MP4ファイル (*.mp4);;"
+		filter = QT_TRANSLATE_NOOP("PC6001VX", "WebMファイル (*.webm);;"
 								   "全てのファイル (*.*)");
-		ext    = "mp4";
+		ext    = "webm";
 		break;
 
 	case FD_LoadAll:	// 汎用LOAD

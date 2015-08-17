@@ -55,8 +55,8 @@ protected:
 	OutputStream audio_st;
 
 	cRing ABuf;					// オーディオバッファ
-	DWORD anum;					// オーディオサンプル数カウント用
-	
+	//DWORD anum;					// オーディオサンプル数カウント用
+
 public:
 	AVI6();									// コンストラクタ
 	~AVI6();								// デストラクタ

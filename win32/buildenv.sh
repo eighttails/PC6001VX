@@ -24,6 +24,7 @@ cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -p
 PATH=$PWD/qtbase/lib:$PATH $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install
 exitOnError
 popd
+rm -rf qt5-shared
 }
 
 function buildQtCreator(){
@@ -52,9 +53,10 @@ mkdir qtcreator
 pushd qtcreator
 
 qmake ../$QTC_SOURCE_DIR/qtcreator.pro
-$MINGW32MAKE && INSTALL_ROOT=/usr/local $MINGW32MAKE install 
+$MINGW32MAKE && INSTALL_ROOT=/usr/local $MINGW32MAKE install
 exitOnError
 popd
+rm -rf qtcreator
 }
 
 function buildQtStatic(){
@@ -69,6 +71,7 @@ cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -p
 $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install && $MINGW32MAKE docs && $MINGW32MAKE install_qch_docs
 exitOnError
 popd
+rm -rf qt5-static
 }
 
 

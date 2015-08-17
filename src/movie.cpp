@@ -439,6 +439,7 @@ static void CloseStream(AVFormatContext *oc, OutputStream *ost)
 	av_frame_free(&ost->frame);
 	av_frame_free(&ost->tmp_frame);
 	sws_freeContext(ost->sws_ctx);
+	ost->sws_ctx = NULL;
 	swr_free(&ost->swr_ctx);
 }
 // ---------------------------------------------------
@@ -470,8 +471,6 @@ AVI6::~AVI6( void )
 bool AVI6::Init( void )
 {
 	PRINTD( GRP_LOG, "[MOVIE][Init]\n" );
-
-	ABPP     = 32;
 
 	// FFMpegの初期化
 	av_register_all();

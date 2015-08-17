@@ -154,6 +154,11 @@ void EL6::OnThread( void *inst )
 						DokoDemoSave(fullPath);
 #endif
 						REPLAY::ReplayReadFrame( p6->vm->key->GetMatrix() );
+
+						// リプレイ終了時にビデオキャプチャ中だったらキャプチャを停止する
+						if( REPLAY::GetStatus() == REP_IDLE && AVI6::IsAVI() ){
+							AVI6::StopAVI();
+						}
 					}
 
 					p6->EmuVSYNC();			// 1画面分実行

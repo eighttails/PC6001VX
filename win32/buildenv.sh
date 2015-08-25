@@ -24,16 +24,19 @@ cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -p
 PATH=$PWD/qtbase/lib:$PATH $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install
 exitOnError
 popd
+rm -rf qt5-shared
 }
 
 function buildQtCreator(){
 #Qt Creator
 cd ~/extlib
-export QTC_MAJOR_VER=3.4
-export QTC_MINOR_VER=.2
+export QTC_MAJOR_VER=3.5
+export QTC_MINOR_VER=.0
 export QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
-wget -c  http://download.qt.io/official_releases/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
+#QTC_RELEASE=development_releases
+QTC_RELEASE=official_releases
+wget -c  http://download.qt.io/$QTC_RELEASE/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
 if [ -e $QTC_SOURCE_DIR ]; then
     # 存在する場合
     echo "$QTC_SOURCE_DIR already exists."
@@ -44,6 +47,8 @@ else
     
     #MinGWでコンパイルが通らない問題の修正
     patch -p1 < $SCRIPT_DIR/qt-creator-3.3.0-MinGW-w64-MIB_TCP_STATE-not-defined-until-Vista.patch
+    patch -p1 < $SCRIPT_DIR/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch
+    patch -p1 < $SCRIPT_DIR/qt-creator-3.5.0-Hacky-fix-for-__GNUC_PREREQ-usage.patch
     popd
 fi
 
@@ -52,9 +57,11 @@ mkdir qtcreator
 pushd qtcreator
 
 qmake ../$QTC_SOURCE_DIR/qtcreator.pro
-$MINGW32MAKE && INSTALL_ROOT=/usr/local $MINGW32MAKE install 
+#並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
+$MINGW32MAKE || $MINGW32MAKE && INSTALL_ROOT=/usr/local $MINGW32MAKE install 
 exitOnError
 popd
+rm -rf qtcreator
 }
 
 function buildQtStatic(){
@@ -63,12 +70,17 @@ rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local/qt5-static -static -no-icu -no-openssl -qt-pcre -qt-zlib -qt-libpng -qt-libjpeg -nomake examples -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../usr/local/qt5-static -static -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
 $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install && $MINGW32MAKE docs && $MINGW32MAKE install_qch_docs
 exitOnError
+
+#MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
+sed -i -e "s|-ltiff|-ltiff -llzma|g" /usr/local/qt5-static/plugins/imageformats/qtiff.prl
+
 popd
+rm -rf qt5-static
 }
 
 
@@ -88,7 +100,9 @@ export QT_MAJOR_VERSION=5.5
 export QT_MINOR_VERSION=.0
 export QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
-wget -c  http://download.qt.io/official_releases/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
+#QT_RELEASE=development_releases
+QT_RELEASE=official_releases
+wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
 
 if [ -e $QT_SOURCE_DIR ]; then
     # 存在する場合

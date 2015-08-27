@@ -88,7 +88,7 @@ SOURCES += \
 }
 !contains(DEFINES, NOAVI) {
 DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
-LIBS += -lavcodec -lavformat -lswscale -lavutil -lswresample
+LIBS += -lavformat -lavcodec -lswscale -lavutil -lswresample -lvorbisenc -lvorbis -logg -lvpx
 }
 
 SOURCES += \

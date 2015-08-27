@@ -78,11 +78,29 @@ exitOnError
 
 #MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
 sed -i -e "s|-ltiff|-ltiff -llzma|g" /usr/local/qt5-static/plugins/imageformats/qtiff.prl
+sed -i -e "s|-ltiff|-ltiff -llzma|g" /usr/local/qt5-static/plugins/imageformats/qtiffd.prl
 
 popd
 rm -rf qt5-static
 }
 
+function buildFFmpeg(){
+FFMPEG_VERSION=2.7.2
+FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
+wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz 
+	
+rm -rf $FFMPEG_SRC_DIR
+tar xf $FFMPEG_SRC_DIR.tar.xz
+pushd $FFMPEG_SRC_DIR
+
+./configure --target-os=mingw32 --prefix=/mingw32 --enable-small --disable-programs --disable-doc --disable-everything --disable-sdl --disable-iconv --enable-libvpx --enable-encoder=libvpx_vp8 --enable-libvorbis --enable-encoder=libvorbis --enable-muxer=webm --enable-protocol=file
+
+#並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
+$MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install
+
+exitOnError
+popd
+}
 
 #並列ビルド
 MINGW32MAKE="mingw32-make -j$NUMBER_OF_PROCESSORS"
@@ -138,6 +156,7 @@ buildQtCreator
 #static版Qtをビルド(P6VX用)
 buildQtStatic
 
-
+#FFmpegをビルド
+buildFFmpeg
 
 

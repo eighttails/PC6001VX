@@ -1,33 +1,456 @@
+#ifndef NOAVI
+
+extern "C"{
+#include <libavcodec/avcodec.h>
+#include <libavutil/avassert.h>
+#include <libavutil/opt.h>
+#include <libavutil/timestamp.h>
+#include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
+#include <libswresample/swresample.h>
+}
+#define SCALE_FLAGS SWS_BICUBIC
+
 #include "common.h"
 #include "log.h"
 #include "movie.h"
 #include "osd.h"
 
+const char* MakeErrorString(int errnum)
+{
+	char errbuf[AV_ERROR_MAX_STRING_SIZE];
+	av_strerror(errnum, errbuf, AV_ERROR_MAX_STRING_SIZE);
+	return (std::string(errbuf)).c_str();
+}
 
-// [参考] MSDN
-// AVI ファイル フォーマット
-// http://msdn.microsoft.com/ja-jp/library/cc352258.aspx
-// AVI ファイル フォーマットの DV データ(アーカイブコンテンツ)
-// http://msdn.microsoft.com/ja-jp/library/cc354259.aspx
+const char* TS2Str(int64_t ts)
+{
+	char buf[AV_TS_MAX_STRING_SIZE];
+	av_ts_make_string(&buf[0], ts);
+	return (std::string(buf)).c_str();
+}
 
-// 16bitモードについてのメモ
-// SDLは R:G:B=5:6:5 らしいのだがこのフォーマットはQuickTimeで上手く再生できないようなので
-// R:G:B=5:5:5 としてみる。
+const char* Ts2TimeStr(int64_t ts, AVRational *tb)
+{
+	char buf[AV_TS_MAX_STRING_SIZE];
+	av_ts_make_time_string(&buf[0], ts, tb);
+	return (std::string(buf)).c_str();
+}
 
-#define	CIDVIDS		(CTODW( 'v', 'i', 'd', 's' ))
-#define	CIDAUDS		(CTODW( 'a', 'u', 'd', 's' ))
-#define	CIDRLE		(CTODW( 'R', 'L', 'E', ' ' ))
-#define	CIDDIB		(CTODW( 'D', 'I', 'B', ' ' ))
-#define	CID00DC		(CTODW( '0', '0', 'd', 'c' ))
-#define	CID00DB		(CTODW( '0', '0', 'd', 'b' ))
-#define	CID01WB		(CTODW( '0', '1', 'w', 'b' ))
+static void LogPacket(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
+{
+	AVRational *time_base = &fmt_ctx->streams[pkt->stream_index]->time_base;
+
+	printf("pts:%s pts_time:%s dts:%s dts_time:%s duration:%s duration_time:%s stream_index:%d\n",
+		   TS2Str(pkt->pts), Ts2TimeStr(pkt->pts, time_base),
+		   TS2Str(pkt->dts), Ts2TimeStr(pkt->dts, time_base),
+		   TS2Str(pkt->duration), Ts2TimeStr(pkt->duration, time_base),
+		   pkt->stream_index);
+}
+
+// FFMpegのサンプルmuxing.cより抜粋,改変
+// ---------------------------------------------------
+static int WriteFrame(AVFormatContext *fmt_ctx, const AVRational *time_base, AVStream *st, AVPacket *pkt)
+{
+	// タイムスタンプを変換
+	av_packet_rescale_ts(pkt, *time_base, st->time_base);
+	pkt->stream_index = st->index;
+
+	// フレームを書き込み
+	//LogPacket(fmt_ctx, pkt);
+	return av_interleaved_write_frame(fmt_ctx, pkt);
+}
+
+/* Add an output stream. */
+static void AddStream(OutputStream *ost, AVFormatContext *oc,
+					   AVCodec **codec,
+					   enum AVCodecID codec_id, int source_width, int source_height)
+{
+	AVCodecContext *c = NULL;
+	int i = 0;
+
+	// エンコーダーを探索
+	*codec = avcodec_find_encoder(codec_id);
+	if (!(*codec)) {
+		fprintf(stderr, "Could not find encoder for '%s'\n",
+				avcodec_get_name(codec_id));
+		return;
+	}
+
+	ost->st = avformat_new_stream(oc, *codec);
+	if (!ost->st) {
+		fprintf(stderr, "Could not allocate stream\n");
+		return;
+	}
+	ost->st->id = oc->nb_streams-1;
+	c = ost->st->codec;
+
+	switch ((*codec)->type) {
+	case AVMEDIA_TYPE_AUDIO:
+		c->sample_fmt  = (*codec)->sample_fmts ?
+			(*codec)->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
+		c->bit_rate    = 64000;
+		c->sample_rate = 44100;
+		if ((*codec)->supported_samplerates) {
+			c->sample_rate = (*codec)->supported_samplerates[0];
+			for (i = 0; (*codec)->supported_samplerates[i]; i++) {
+				if ((*codec)->supported_samplerates[i] == 44100)
+					c->sample_rate = 44100;
+			}
+		}
+		c->channels        = av_get_channel_layout_nb_channels(c->channel_layout);
+		c->channel_layout = AV_CH_LAYOUT_STEREO;
+		if ((*codec)->channel_layouts) {
+			c->channel_layout = (*codec)->channel_layouts[0];
+			for (i = 0; (*codec)->channel_layouts[i]; i++) {
+				if ((*codec)->channel_layouts[i] == AV_CH_LAYOUT_STEREO)
+					c->channel_layout = AV_CH_LAYOUT_STEREO;
+			}
+		}
+		c->channels        = av_get_channel_layout_nb_channels(c->channel_layout);
+		ost->st->time_base = (AVRational){ 1, c->sample_rate };
+		break;
+
+	case AVMEDIA_TYPE_VIDEO:
+		c->codec_id = codec_id;
+
+		c->bit_rate = 1000000;
+		c->width    = source_width;
+		c->height   = source_height;
+		// 60FPSに設定
+		ost->st->time_base = (AVRational){ 1, 60 };
+		c->time_base       = ost->st->time_base;
+
+		c->gop_size      = 12;
+		c->pix_fmt       = AV_PIX_FMT_YUV420P;
+	break;
+
+	default:
+		break;
+	}
+
+	if (oc->oformat->flags & AVFMT_GLOBALHEADER)
+		c->flags |= CODEC_FLAG_GLOBAL_HEADER;
+}
+
+/**************************************************************/
+/* audio output */
+
+static AVFrame *AllocAudioFrame(enum AVSampleFormat sample_fmt,
+								  uint64_t channel_layout,
+								  int sample_rate, int nb_samples)
+{
+	AVFrame *frame = av_frame_alloc();
+	int ret = 0;
+
+	if (!frame) {
+		fprintf(stderr, "Error allocating an audio frame\n");
+		return NULL;
+	}
+
+	frame->format = sample_fmt;
+	frame->channel_layout = channel_layout;
+	frame->sample_rate = sample_rate;
+	frame->nb_samples = nb_samples;
+
+	if (nb_samples) {
+		ret = av_frame_get_buffer(frame, 0);
+		if (ret < 0) {
+			fprintf(stderr, "Error allocating an audio buffer\n");
+			return NULL;
+		}
+	}
+
+	return frame;
+}
+
+static void OpenAudio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg, int sample_rate)
+{
+	AVCodecContext *c = NULL;
+	int nb_samples = 0;
+	int ret = 0;
+	AVDictionary *opt = NULL;
+
+	c = ost->st->codec;
+
+	// コーデックを初期化
+	av_dict_copy(&opt, opt_arg, 0);
+	ret = avcodec_open2(c, codec, &opt);
+	av_dict_free(&opt);
+	if (ret < 0) {
+		fprintf(stderr, "Could not open audio codec: %s\n", MakeErrorString(ret));
+		return;
+	}
+
+	if (c->codec->capabilities & CODEC_CAP_VARIABLE_FRAME_SIZE)
+		nb_samples = 10000;
+	else
+		nb_samples = c->frame_size;
+
+	ost->frame     = AllocAudioFrame(c->sample_fmt, c->channel_layout,
+									   c->sample_rate, nb_samples);
+	ost->tmp_frame = AllocAudioFrame(AV_SAMPLE_FMT_S16, c->channel_layout,
+									   sample_rate, nb_samples/(c->sample_rate/sample_rate));
+
+	// サンプル変換部
+	ost->swr_ctx = swr_alloc();
+	if (!ost->swr_ctx) {
+		fprintf(stderr, "Could not allocate resampler context\n");
+		return;
+	}
+
+	// 音声フォーマットの設定
+	av_opt_set_int       (ost->swr_ctx, "in_channel_count",   c->channels,       0);
+	av_opt_set_int       (ost->swr_ctx, "in_sample_rate",     sample_rate,       0);
+	av_opt_set_sample_fmt(ost->swr_ctx, "in_sample_fmt",      AV_SAMPLE_FMT_S16, 0);
+	av_opt_set_int       (ost->swr_ctx, "out_channel_count",  c->channels,       0);
+	av_opt_set_int       (ost->swr_ctx, "out_sample_rate",    c->sample_rate,    0);
+	av_opt_set_sample_fmt(ost->swr_ctx, "out_sample_fmt",     c->sample_fmt,     0);
+
+	// サンプル変換部を初期化
+	if ((ret = swr_init(ost->swr_ctx)) < 0) {
+		fprintf(stderr, "Failed to initialize the resampling context\n");
+		return;
+	}
+}
+
+static AVFrame *GetAudioFrame(OutputStream *ost, AVI6 *avi)
+{
+	AVFrame *frame = ost->tmp_frame;
+	int16_t *q = (int16_t*)frame->data[0];
+
+	if(avi->GetAudioBuffer()->ReadySize() < frame->nb_samples){
+		return NULL;
+	}
+
+	// オーディオ出力
+	for (int j = 0; j <frame->nb_samples; j++) {
+		short dat = avi->GetAudioBuffer()->Get();
+		for (int i = 0; i < ost->st->codec->channels; i++){
+			*q++ = dat;
+		}
+	}
+
+	frame->pts = ost->next_pts;
+	ost->next_pts  += frame->nb_samples;
+
+	return frame;
+}
+
+static int WriteAudioFrame(AVFormatContext *oc, OutputStream *ost, AVI6 *avi)
+{
+	AVCodecContext *c = NULL;
+	AVPacket pkt = { 0 };
+	AVFrame *frame = NULL;
+	int ret = 0;
+	int got_packet = 0;
+	int dst_nb_samples = 0;
+
+	av_init_packet(&pkt);
+	c = ost->st->codec;
+
+	frame = GetAudioFrame(ost, avi);
+
+	if (frame) {
+		// フォーマット変換後のサンプル数を決定
+		dst_nb_samples = av_rescale_rnd(swr_get_delay(ost->swr_ctx, frame->sample_rate) + frame->nb_samples,
+										c->sample_rate, c->sample_rate, AV_ROUND_UP);
+		//av_assert0(dst_nb_samples == frame->nb_samples);
+
+		// フレームを書き込み可能にする
+		ret = av_frame_make_writable(ost->frame);
+		if (ret < 0)
+			exit(1);
+
+		// 音声フォーマットを変換
+		ret = swr_convert(ost->swr_ctx,
+						  ost->frame->data, dst_nb_samples,
+						  (const uint8_t **)frame->data, frame->nb_samples);
+		if (ret < 0) {
+			fprintf(stderr, "Error while converting\n");
+			return 0;
+		}
+		frame = ost->frame;
+
+		frame->pts = av_rescale_q(ost->samples_count, (AVRational){1, c->sample_rate}, c->time_base);
+		ost->samples_count += dst_nb_samples;
+
+		ret = avcodec_encode_audio2(c, &pkt, frame, &got_packet);
+		if (ret < 0) {
+			fprintf(stderr, "Error encoding audio frame: %s\n", MakeErrorString(ret));
+			return 0;
+		}
+
+		if (got_packet) {
+			ret = WriteFrame(oc, &c->time_base, ost->st, &pkt);
+			if (ret < 0) {
+				fprintf(stderr, "Error while writing audio frame: %s\n",
+						MakeErrorString(ret));
+				return 0;
+			}
+		}
+	}
+
+	return (frame || got_packet) ? 0 : 1;
+}
+
+static AVFrame *AllocPicture(enum AVPixelFormat pix_fmt, int width, int height)
+{
+	AVFrame *picture = 0;
+	int ret = 0;
+
+	picture = av_frame_alloc();
+	if (!picture)
+		return NULL;
+
+	picture->format = pix_fmt;
+	picture->width  = width;
+	picture->height = height;
+
+	// 画像バッファを確保
+	ret = av_frame_get_buffer(picture, 32);
+	if (ret < 0) {
+		fprintf(stderr, "Could not allocate frame data.\n");
+		return NULL;
+	}
+
+	return picture;
+}
+
+static void OpenVideo(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg)
+{
+	int ret = 0;
+	AVCodecContext *c = ost->st->codec;
+	AVDictionary *opt = NULL;
+
+	av_dict_copy(&opt, opt_arg, 0);
+
+	// コーデックを初期化
+	ret = avcodec_open2(c, codec, &opt);
+	av_dict_free(&opt);
+	if (ret < 0) {
+		fprintf(stderr, "Could not open video codec: %s\n", MakeErrorString(ret));
+		return;
+	}
+
+	// フレームを初期化
+	ost->frame = AllocPicture(c->pix_fmt, c->width, c->height);
+	if (!ost->frame) {
+		fprintf(stderr, "Could not allocate video frame\n");
+		return;
+	}
+
+	// 画像フォーマットの変換元(OSD_GetWindowImage)のフォーマットがBGR0(0は未使用)であることを想定
+	ost->tmp_frame = NULL;
+	ost->tmp_frame = AllocPicture(AV_PIX_FMT_BGR0, c->width, c->height);
+	if (!ost->tmp_frame) {
+		fprintf(stderr, "Could not allocate temporary picture\n");
+		return;
+	}
+}
+
+static AVFrame *GetVideoFrame(OutputStream *ost, BYTE* src_img)
+{
+	AVCodecContext *c = ost->st->codec;
+
+	if (!ost->sws_ctx) {
+		ost->sws_ctx = sws_getContext(c->width, c->height,
+									  AV_PIX_FMT_BGR0,
+									  c->width, c->height,
+									  c->pix_fmt,
+									  SCALE_FLAGS, NULL, NULL, NULL);
+		if (!ost->sws_ctx) {
+			fprintf(stderr,
+					"Could not initialize the conversion context\n");
+			return NULL;
+		}
+	}
+	// 画像をここでコピーする
+	av_frame_make_writable(ost->tmp_frame);
+	avpicture_fill((AVPicture*)ost->tmp_frame, src_img, AV_PIX_FMT_BGR0, c->width, c->height);
+
+	sws_scale(ost->sws_ctx,
+			  (const uint8_t * const *)ost->tmp_frame->data, ost->tmp_frame->linesize,
+			  0, c->height, ost->frame->data, ost->frame->linesize);
+
+
+	ost->frame->pts = ost->next_pts++;
+
+	return ost->frame;
+}
+
+static int WriteVideoFrame(AVFormatContext *oc, OutputStream *ost, BYTE* src_img)
+{
+	int ret = 0;
+	AVCodecContext *c = NULL;
+	AVFrame *frame = NULL;
+	int got_packet = 0;
+
+	c = ost->st->codec;
+
+	frame = GetVideoFrame(ost, src_img);
+
+	if (oc->oformat->flags & AVFMT_RAWPICTURE) {
+		/* a hack to avoid data copy with some raw video muxers */
+		AVPacket pkt;
+		av_init_packet(&pkt);
+
+		if (!frame)
+			return 1;
+
+		pkt.flags        |= AV_PKT_FLAG_KEY;
+		pkt.stream_index  = ost->st->index;
+		pkt.data          = (uint8_t *)frame;
+		pkt.size          = sizeof(AVPicture);
+
+		pkt.pts = pkt.dts = frame->pts;
+		av_packet_rescale_ts(&pkt, c->time_base, ost->st->time_base);
+
+		ret = av_interleaved_write_frame(oc, &pkt);
+	} else {
+		AVPacket pkt = { 0 };
+		av_init_packet(&pkt);
+
+		// 映像をエンコード
+		ret = avcodec_encode_video2(c, &pkt, frame, &got_packet);
+		if (ret < 0) {
+			fprintf(stderr, "Error encoding video frame: %s\n", MakeErrorString(ret));
+			return 0;
+		}
+
+		if (got_packet) {
+			ret = WriteFrame(oc, &c->time_base, ost->st, &pkt);
+		} else {
+			ret = 0;
+		}
+	}
+
+	if (ret < 0) {
+		fprintf(stderr, "Error while writing video frame: %s\n", MakeErrorString(ret));
+		return 0;
+	}
+
+	return (frame || got_packet) ? 0 : 1;
+}
+
+static void CloseStream(AVFormatContext *oc, OutputStream *ost)
+{
+	avcodec_close(ost->st->codec);
+	av_frame_free(&ost->frame);
+	av_frame_free(&ost->tmp_frame);
+	sws_freeContext(ost->sws_ctx);
+	ost->sws_ctx = NULL;
+	swr_free(&ost->swr_ctx);
+}
+// ---------------------------------------------------
 
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-AVI6::AVI6( void ) : vfp(NULL), ABPP(32), Sbuf(NULL), PosMOVI(0),
-						RiffSize(0), MoviSize(0), anum(0) {}
+AVI6::AVI6( void ) : isAVI(false), ABPP(32), fmt(NULL), oc(NULL),
+	audio_codec(NULL), video_codec(NULL), opt(NULL), video_st{0}, audio_st{0}
+	{}
 
 
 ////////////////////////////////////////////////////////////////
@@ -40,86 +463,6 @@ AVI6::~AVI6( void )
 
 
 ////////////////////////////////////////////////////////////////
-// 各種ヘッダ出力
-////////////////////////////////////////////////////////////////
-void AVI6::putBMPINFOHEADER6( BMPINFOHEADER6 *p )
-{
-	FPUTDWORD( p->biSize,			vfp );
-	FPUTDWORD( p->biWidth,			vfp );	// LONG
-	FPUTDWORD( p->biHeight,			vfp );	// LONG
-	FPUTWORD(  p->biPlanes,			vfp );
-	FPUTWORD(  p->biBitCount,		vfp );
-	FPUTDWORD( p->biCompression,	vfp );
-	FPUTDWORD( p->biSizeImage,		vfp );
-	FPUTDWORD( p->biXPelsPerMeter,	vfp );	// LONG
-	FPUTDWORD( p->biYPelsPerMeter,	vfp );	// LONG
-	FPUTDWORD( p->biClrUsed,		vfp );
-	FPUTDWORD( p->biClrImportant,	vfp );
-}
-
-void AVI6::putMAINAVIHEADER6( MAINAVIHEADER6 *p )
-{
-	FPUTDWORD( p->dwMicroSecPerFrame,		vfp );
-	FPUTDWORD( p->dwMaxBytesPerSec,			vfp );
-	FPUTDWORD( p->dwReserved1,				vfp );
-	FPUTDWORD( p->dwFlags,					vfp );
-	FPUTDWORD( p->dwTotalFrames,			vfp );
-	FPUTDWORD( p->dwInitialFrames,			vfp );
-	FPUTDWORD( p->dwStreams,				vfp );
-	FPUTDWORD( p->dwSuggestedBufferSize,	vfp );
-	FPUTDWORD( p->dwWidth,					vfp );
-	FPUTDWORD( p->dwHeight,					vfp );
-	fwrite( (DWORD *)&p->dwReserved ,sizeof(DWORD), 4, vfp );
-}
-
-void AVI6::putAVISTRMHEADER6( AVISTRMHEADER6 *p )
-{
-	FPUTDWORD( p->fccType,					vfp );
-	FPUTDWORD( p->fccHandler,				vfp );
-	FPUTDWORD( p->dwFlags,					vfp );
-	FPUTDWORD( p->dwPriority,				vfp );
-	FPUTDWORD( p->dwInitialFrames,			vfp );
-	FPUTDWORD( p->dwScale,					vfp );
-	FPUTDWORD( p->dwRate,					vfp );
-	FPUTDWORD( p->dwStart,					vfp );
-	FPUTDWORD( p->dwLength,					vfp );
-	FPUTDWORD( p->dwSuggestedBufferSize,	vfp );
-	FPUTDWORD( p->dwQuality,				vfp );
-	FPUTDWORD( p->dwSampleSize,				vfp );
-	
-	FPUTDWORD( p->rcFrame.left,		vfp );	// LONG
-	FPUTDWORD( p->rcFrame.top,		vfp );	// LONG
-	FPUTDWORD( p->rcFrame.right,	vfp );	// LONG
-	FPUTDWORD( p->rcFrame.bottom,	vfp );	// LONG
-}
-
-// AVIINDEXENTRY相当
-void AVI6::putAVIINDEXENTRY6( AVIINDEXENTRY6 *p )
-{
-	FPUTDWORD( p->ckid,				vfp );
-	FPUTDWORD( p->dwFlags,			vfp );
-	FPUTDWORD( p->dwChunkOffset,	vfp );
-	FPUTDWORD( p->dwChunkLength,	vfp );
-} 
-
-// WAVEFORMATEX相当
-void AVI6::putWAVEFORMATEX6( WAVEFORMATEX6 *p )
-{
-	FPUTWORD( p->wFormatTag,		vfp );
-	FPUTWORD( p->nChannels,			vfp );
-	FPUTDWORD(p->nSamplesPerSec,	vfp );
-	FPUTDWORD(p->nAvgBytesPerSec,	vfp );
-	FPUTWORD( p->nBlockAlign,		vfp );
-	FPUTWORD( p->wBitsPerSample,	vfp );
-	FPUTWORD( p->cbSize,			vfp );
-	
-	FPUTWORD( 0,            		vfp );
-}
-
-
-
-
-////////////////////////////////////////////////////////////////
 // 初期化
 //
 // 引数:	なし
@@ -128,25 +471,9 @@ void AVI6::putWAVEFORMATEX6( WAVEFORMATEX6 *p )
 bool AVI6::Init( void )
 {
 	PRINTD( GRP_LOG, "[MOVIE][Init]\n" );
-	
-	if( vfp ) fclose( vfp );
-	vfp = NULL;
-	
-	ZeroMemory( &vmh, sizeof(MAINAVIHEADER6) );
-	ZeroMemory( &vsh, sizeof(AVISTRMHEADER6) );
-	ZeroMemory( &ash, sizeof(AVISTRMHEADER6) );
-	ZeroMemory( &vbf, sizeof(BMPINFOHEADER6) );
-	ZeroMemory( &awf, sizeof(WAVEFORMATEX6) );
-	
-	ABPP     = 32;
-	
-	if( Sbuf ) delete [] Sbuf;
-	Sbuf     = NULL;
-	
-	PosMOVI  = 0;
-	
-	RiffSize = 0;
-	MoviSize = 0;
+
+	// FFMpegの初期化
+	av_register_all();
 	
 	return true;
 }
@@ -165,190 +492,50 @@ bool AVI6::Init( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate, int bpp )
 {
+	cCritical::Lock();
 	Init();
 	
-	// イメージデータバッファ取得
-	Sbuf = new BYTE[sw*sh*sizeof(DWORD)];
-	if( !Sbuf ) return false;
-	
-	vfp = FOPENEN( filename, "w+b" );
-	if( !vfp ) return false;
-	
 	ABPP = bpp;
-	
-	// AVIメインヘッダーの設定
-	// フレーム間の間隔をマイクロ秒単位で指定する。この値はファイルの全体のタイミングを示す。
-	vmh.dwMicroSecPerFrame = 1000000 / vrate;
-	// ファイルの概算最大データレートを指定する。この値は,メインヘッダーおよびストリームヘッダーチャンクに含まれる
-	// 他のパラメータに従って AVIシーケンスを表示するために,システムが処理しなければならない毎秒のバイト数を示す。
-	// (とりあえず無視)
-	vmh.dwMaxBytesPerSec = 0;
-	// ファイルに対するフラグを含む。以下のフラグが定義されている。
-	//  AVIF_HASINDEX AVI	ファイルの終わりにインデックスを含む 'idx1'チャンクがあることを示す。
-	//						良好なパフォーマンスのためには,すべての AVIファイルがインデックスを含む必要がある。
-	//  AVIF_MUSTUSEINDEX	データのプレゼンテーションの順序を決定するために,ファイル内のチャンクの物理的な順序ではなく
-	//						インデックスを使用することを示す。たとえば,これを使ってフレームのリストを作成して編集することができる。
-	//  AVIF_ISINTERLEAVED	AVIファイルがインターリーブされていることを示す。
-	//  AVIF_WASCAPTUREFILE	AVIファイルが,リアルタイムビデオのキャプチャ用に特別に割り当てられたファイルであることを示す。
-	//						アプリケーションは,このフラグが設定されたファイルをオーバーライドする前に,ユーザーに警告を発する必要がある。
-	//						これは,ユーザーがこのファイルをデフラグメントしている可能性が高いからである。
-	//  AVIF_COPYRIGHTED	AVIファイルに著作権のあるデータおよびソフトウェアが含まれていることを示す。
-	//						このフラグが使用されている場合,ソフトウェアはデータの複製を許可すべきではない。
-	vmh.dwFlags = 0x00000110;	// AVIF_HASINDEX | AVIF_ISINTERLEAVED
-	// ファイル内のデータのフレームの総数を指定する。
-	// (後で)
-	vmh.dwTotalFrames = 0;
-	// インターリーブされたファイルの開始フレームを指定する。インターリーブされたファイル以外では,ゼロを指定する。
-	// インターリーブされたファイルを作成する場合,ファイル内で AVIシーケンスの開始フレームより前にあるフレーム数を
-	// このメンバに指定する。このメンバの内容に関する詳細については
-	// 『Video for Windows Programmer's Guide』の「Special Information for Interleaved Files」を参照すること。
-	vmh.dwInitialFrames = 0;
-	// ファイル内のストリーム数を指定する。たとえば,オーディオとビデオを含むファイルには 2つのストリームがある。
-	vmh.dwStreams = 2;
-	// AVIファイルの幅をピクセル単位で指定する。
-	vmh.dwWidth  = sw;
-	// AVIファイルの高さをピクセル単位で指定する。
-	vmh.dwHeight = sh;
-	// ファイルを読み取るためのバッファサイズを指定する。一般に,このサイズはファイル内の最大のチャンクを格納するのに
-	// 十分な大きさにする。ゼロに設定したり,小さすぎる値に設定した場合,再生ソフトウェアは再生中にメモリを
-	// 再割り当てしなければならず,パフォーマンスが低下する。インターリーブされたファイルの場合,バッファサイズはチャンクではなく
-	// レコード全体を読み取るのに十分な大きさでなければならない。
-	// (とりあえず1フレーム分)
-	vmh.dwSuggestedBufferSize = vmh.dwWidth * vmh.dwHeight * ( ABPP / 8 );
-	
-	// AVIストリームヘッダーの設定
-	// ストリームに含まれるデータのタイプを指定する FOURCC を含む。ビデオおよびオーディオに対して以下の標準AVI値が定義されている。
-	//  'vids'	ストリームにビデオデータが含まれることを示す。ストリームフォーマットチャンクには,パレット情報を含むことが可能な
-	//			BITMAPINFO 構造体が含まれる。
-	//  'auds'	ストリームにオーディオデータが含まれることを示す。ストリームフォーマットチャンクには,WAVEFORMATEX
-	//			または PCMWAVEFORMAT 構造体が含まれる。
-	//  'txts'	ストリームにテキスト データが含まれることを示す。
-	vsh.fccType = CIDVIDS;
-	ash.fccType = CIDAUDS;
-	// 特定のデータハンドラを示す FOURCC を含む (オプション)。データハンドラは,ストリームに対して適切なハンドラである。
-	// オーディオおよびビデオストリームの場合は,インストール可能なコンプレッサまたはデコンプレッサを指定する。
-	vsh.fccHandler = CIDDIB;
-	ash.fccHandler = 0x00000001;	//(PCM)
-	// データ ストリームに対するフラグを含む。これらのフラグの上位ワードのビットは,ストリームに含まれるデータのタイプに固有である。
-	// 以下の標準フラグが定義されている。
-	//  AVISF_DISABLED			このストリームをデフォルトで有効にしないことを示す。
-	//  AVISF_VIDEO_PALCHANGES	このビデオストリームにパレットの変更が含まれることを示す。このフラグは,再生ソフトウェアに対して
-	//							パレットをアニメーションする必要があることを警告する。
-	vsh.dwFlags = 0;
-	ash.dwFlags = 0;
-	// ストリーム タイプの優先順位を指定する。たとえば,複数のオーディオストリームを含むファイルでは,優先順位の最も高いストリームが
-	// デフォルトのストリームになる。
-	vsh.dwPriority = 0;
-	ash.dwPriority = 0;
-	// インターリーブされたファイルで,オーディオデータがビデオフレームからどのくらいスキューされているかを指定する。
-	// 通常は,約 0.75 秒である。インターリーブされたファイルを作成する場合,ファイル内で AVIシーケンスの開始フレームより
-	// 前にあるフレーム数を,このメンバに指定する。このメンバの内容に関する詳細については,『Video for Windows Programmer's Guide』の
-	// 「Special Information for Interleaved Files」を参照すること。
-	vsh.dwInitialFrames = 0;
-	ash.dwInitialFrames = 0;
-	// dwRate とともに使用して,このストリームが使用するタイムスケールを指定する。dwRate を dwScale で割ることにより
-	// 1 秒あたりのサンプル数が求められる。ビデオストリームの場合,このレートはフレームレートに等しくなる。
-	// オーディオストリームの場合,このレートは nBlockAlign バイトのオーディオデータに必要な時間に対応する。
-	// これは PCMオーディオの場合はサンプルレートに等しくなる。
-	vsh.dwScale = 10000;
-	ash.dwScale = 2;
-	// dwScale を参照すること。
-	vsh.dwRate = vsh.dwScale * vrate;
-	ash.dwRate = ash.dwScale * arate;
-	// AVIファイルの開始タイムを指定する。単位は,メインファイルヘッダーの dwRate および dwScale メンバによって定義される。
-	// 通常,これはゼロであるが,ファイルと同時に開始されないストリームに対しては,遅延時間を指定することができる。
-	vsh.dwStart = 0;
-	ash.dwStart = 0;
-	// このストリームの長さを指定する。単位は,ストリームのヘッダーの dwRate および dwScale メンバによって定義される。
-	// (後で)
-	vsh.dwLength = 0;
-	ash.dwLength = 0;
-	// このストリームを読み取るために必要なバッファの大きさを指定する。通常は,ストリーム内の最大のチャンクに対応する値である。
-	// 正しいバッファサイズを使用することで,再生の効率が高まる。正しいバッファサイズがわからない場合は,ゼロを指定する。
-	// (とりあえず1フレーム分)
-	vsh.dwSuggestedBufferSize = vmh.dwWidth * vmh.dwHeight * ( ABPP / 8 );
-	ash.dwSuggestedBufferSize = arate / vrate * 2;
-	// ストリーム内のデータの品質を示す値を指定する。品質は,0〜10,000 の範囲の値で示される。圧縮データの場合,これは通常
-	// 圧縮ソフトウェアに渡される品質パラメータの値を示す。-1に設定した場合,ドライバはデフォルトの品質値を使用する。
-	vsh.dwQuality = 0;
-	ash.dwQuality = 0;
-	// データの 1 サンプルのサイズを指定する。サンプルのサイズが変化する場合は,ゼロに設定する。この値がゼロでない場合
-	// ファイル内で複数のデータサンプルを 1つのチャンクにグループ化できる。ゼロの場合,各データサンプル(ビデオフレームなど)
-	// はそれぞれ別のチャンクに含まれなければならない。ビデオストリームの場合,この値は通常ゼロであるが
-	// すべてのビデオフレームが同じサイズであれば,ゼロ以外の値にもできる。オーディオストリームの場合,この値はオーディオを
-	// 記述する WAVEFORMATEX 構造体の nBlockAlign メンバと同じでなければならない。
-	vsh.dwSampleSize = 0;
-	ash.dwSampleSize = 2;
-	// AVI メインヘッダー構造体の dwWidth および dwHeight メンバによって指定される動画矩形内のテキストまたはビデオストリームに
-	// 対する転送先矩形を指定する。通常,rcFrame メンバは,複数のビデオストリームをサポートするために使用される。この矩形は
-	// 動画矩形に対応する座標に設定して,動画矩形全体を更新する。このメンバの単位はピクセルである。転送先矩形の左上隅は
-	// 動画矩形の左上隅からの相対指定となる。
-	vsh.rcFrame.left   = 0;
-	vsh.rcFrame.top    = 0;
-	vsh.rcFrame.right  = vmh.dwWidth  - 1;
-	vsh.rcFrame.bottom = vmh.dwHeight - 1;
-	
-	// BMPINFOHEADER6構造体の設定
-	// 構造体が必要とするバイト数を指定する。
-	vbf.biSize = sizeof(BMPINFOHEADER6);
-	// ビットマップの幅をピクセル単位で指定する。
-	vbf.biWidth  = vmh.dwWidth;
-	// ビットマップの高さをピクセル単位で指定する。biHeight の値が正である場合,ビットマップはボトムアップDIB
-	// (device-independent bitmap : デバイスに依存しないビットマップ) であり,左下隅が原点となる。biHeight の値が負である場合
-	// ビットマップはトップダウンDIB であり,左上隅が原点となる。
-	vbf.biHeight = vmh.dwHeight;
-	// ターゲット デバイスに対する面の数を指定する。これは必ず 1 に設定する。
-	vbf.biPlanes = 1;
-	// 1 ピクセルあたりのビット数を指定する。圧縮フォーマットによっては,ピクセルの色を正しくデコードするためにこの情報が必要である。
-	vbf.biBitCount = ABPP;
-	// 使用されている,または要求されている圧縮のタイプを指定する。既存の圧縮フォーマットと新しい圧縮フォーマットの両方で
-	// このメンバを使用する。
-	vbf.biCompression = 0;	// 0:BI_RGB
-	// イメージのサイズをバイト単位で指定する。非圧縮RGBビットマップの場合は,0 に設定できる。
-	vbf.biSizeImage = vmh.dwWidth * vmh.dwHeight * ( ABPP / 8 );
-	// ビットマップのターゲットデバイスの水平解像度を 1メートルあたりのピクセル単位で指定する。アプリケーションはこの値を
-	// 使用して,リソースグループの中から現在のデバイスの特性に最も適合するビットマップを選択することができる。
-	vbf.biXPelsPerMeter = 0;
-	// ビットマップのターゲット デバイスの垂直解像度を 1メートルあたりのピクセル単位で指定する。
-	vbf.biYPelsPerMeter = 0;
-	// カラー テーブル内のカラー インデックスのうち,ビットマップ内で実際に使用されるインデックスの数を指定する。この値が
-	// ゼロの場合,ビットマップは,biCompression で指定される圧縮モードに対して,biBitCount メンバの値に対応する最大色数を使用する。
-	// Macの場合は256でないと色がおかしくなるらしい。(by 西田さん&Windyさん)
-	// でも24bitの時は0にしておかないとちゃんと再生されないみたい。
-	vbf.biClrUsed = 0;
-	// ビットマップを表示するために重要とみなされるカラーインデックス数を指定する。この値がゼロの場合は,すべての色が重要とみなされる。
-	vbf.biClrImportant = 0;
-	
-	// WAVEFORMATEX6構造体の設定
-	// オーディオストリームのオーディオ波形タイプを定義する。フォーマットタグの完全なリストは,Microsoft Visual C++ および
-	// 他の Microsoft 製品に付属する Mmreg.h ヘッダー ファイルにある。
-	awf.wFormatTag = 0x0001;	// WAVE_FORMAT_PCM
-	// オーディオストリーム内のチャンネル数を指定する。1はモノ,2はステレオを示す。
-	awf.nChannels = 1;
-	// オーディオストリームのサンプルレート周波数をサンプル/秒 (Hz) で指定する。たとえば,11,025,22,050,または 44,100。
-	awf.nSamplesPerSec = arate;
-	// 平均データレートを指定する。再生ソフトウェアはこの値を使ってバッファサイズを見積もることができる。
-	awf.nAvgBytesPerSec = arate * 2;
-	// データのブロック アラインメントをバイト単位で指定する。再生ソフトウェアが 1回に処理するデータのバイト数は
-	// nBlockAlign の整数倍でなければならないため,nBlockAlign の値を使用してバッファのアラインメントを行うことができる。
-	awf.nBlockAlign = 2;
-	// チャンネルデータごとの 1サンプルあたりのビット数を指定する。各チャンネルのサンプル解像度は同じであると仮定される。
-	// このフィールドが必要ない場合は,ゼロに設定する。
-	awf.wBitsPerSample = 16;
-	// フォーマットヘッダー内の追加情報のサイズをバイト単位で指定する。これには,WAVEFORMATEX 構造体のサイズは含まれない。
-	// たとえば,wFormatTag WAVE_FORMAT_IMA_ADPCM に対応する waveフォーマットの場合,cbSize は
-	// sizeof(IMAADPCMWAVEFORMAT) - sizeof(WAVEFORMATEX) として計算され,結果は 2となる。
-	awf.cbSize = 0;
-	
-	// ヘッダチャンク書出し
-	WriteHeader();
-	
+
 	// オーディオバッファ作成
 	ABuf.InitBuffer( arate / vrate * 2 );
-	// カウンタ初期化
-	anum = 0;
 	
-	
+	// 出力コンテキスト作成
+	avformat_alloc_output_context2(&oc, NULL, NULL, filename);
+	if (!oc) return false;
+
+	fmt = oc->oformat;
+
+	// 音声、ビデオストリームを作成
+	if (fmt->video_codec != AV_CODEC_ID_NONE) {
+		AddStream(&video_st, oc, &video_codec, fmt->video_codec, sw, sh);
+	}
+	if (fmt->audio_codec != AV_CODEC_ID_NONE) {
+		AddStream(&audio_st, oc, &audio_codec, fmt->audio_codec, sw, sh);
+	}
+
+	OpenVideo(oc, video_codec, &video_st, opt);
+	OpenAudio(oc, audio_codec, &audio_st, opt, arate);
+
+	av_dump_format(oc, 0, filename, 1);
+
+	int ret = 0;
+	// ファイルを開く
+	if (!(fmt->flags & AVFMT_NOFILE)) {
+		ret = avio_open(&oc->pb, filename, AVIO_FLAG_WRITE);
+		if (0 > ret) {
+			return false;
+		}
+	}
+
+	// ストリームヘッダを書き込み
+	ret = avformat_write_header(oc, &opt);
+	if (0 > ret) {
+		return false;
+	}
+
+	isAVI = true;
+	cCritical::UnLock();
 	return true;
 }
 
@@ -361,31 +548,17 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 ////////////////////////////////////////////////////////////////
 void AVI6::StopAVI( void )
 {
-	if( !vfp ) return;
-	
-	// 総フレーム数
-	vsh.dwLength = vmh.dwTotalFrames;
-	ash.dwLength = anum;
-	
-	// この時点でファイルポインタは末尾にあるはずだが念のため
-	fseek( vfp, 0, SEEK_END );
-	
-	// Moviチャンクのサイズ取得
-	MoviSize = ftell( vfp ) - PosMOVI;
-	
-	// インデックスチャンク出力
-	WriteIndexr();
-	
-	RiffSize = ftell( vfp ) - 8;
-	
-	// ヘッダチャンク再書出し
-	WriteHeader();
-	
-	fclose( vfp );
-	vfp = NULL;
-	
-	if( Sbuf ) delete [] Sbuf;
-	Sbuf = NULL;
+	if(oc){
+		cCritical::Lock();
+		isAVI = false;
+		av_write_trailer(oc);
+		CloseStream(oc, &video_st);
+		CloseStream(oc, &audio_st);
+		avio_closep(&oc->pb);
+		avformat_free_context(oc);
+		oc = NULL;
+		cCritical::UnLock();
+	}
 }
 
 
@@ -397,7 +570,7 @@ void AVI6::StopAVI( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::IsAVI( void )
 {
-	return vfp ? true : false;
+	return isAVI;
 }
 
 
@@ -409,68 +582,42 @@ bool AVI6::IsAVI( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::AVIWriteFrame( HWINDOW wh )
 {
-	if( !vfp || !wh ) return false;
+	if( !wh ) return false;
 	
-//	int xx = min( sbuf->Width(),  vbf.biWidth  );
-//	int yy = min( sbuf->Height(), vbf.biHeight );
-	int xx = vbf.biWidth;
-	int yy = vbf.biHeight;
-	
-	FPUTDWORD( CID00DB, vfp );
-	FPUTDWORD( vbf.biSizeImage, vfp );
-	
+	cCritical::Lock();
+
+	int xx = OSD_GetWindowWidth(wh);
+	int yy = OSD_GetWindowHeight(wh);
+
+	// 途中でウィンドウサイズが変わっていたら記録を中断
+	if(xx != video_st.tmp_frame->width || yy != video_st.tmp_frame->height){
+		StopAVI();
+		cCritical::UnLock();
+		return false;
+	}
+
+	Sbuf.resize(xx * yy * ABPP / 4);
+
 	VRect ss;
 	ss.x = 0;
 	ss.y = 0;
 	ss.w = xx;
 	ss.h = yy;
 	if( !OSD_GetWindowImage( wh, (void **)&Sbuf, &ss ) ) return false;
-	
-	switch( ABPP ){
-	case 16:	// 16bitの場合
-		for( int y = yy - 1; y >= 0; y-- ){
-			DWORD *src = (DWORD *)Sbuf + vmh.dwWidth * y;
-			for( int x=0; x < xx; x++ ){
-				WORD dat = (((*src)&RMASK32)>>(RSHIFT32+3))<<10 |
-						   (((*src)&GMASK32)>>(GSHIFT32+3))<<5 |
-						   (((*src)&BMASK32)>>(BSHIFT32+3));
-				FPUTWORD( dat, vfp );
-				src++;
-			}
-		}
-		break;
-		
-	case 24:	// 24bitの場合
-		for( int y = yy - 1; y >= 0; y-- ){
-			DWORD *src = (DWORD *)Sbuf + vmh.dwWidth * y;
-			for( int x=0; x < xx; x++ ){
-				FPUTBYTE( ((*src)&BMASK32)>>BSHIFT32, vfp );
-				FPUTBYTE( ((*src)&GMASK32)>>GSHIFT32, vfp );
-				FPUTBYTE( ((*src)&RMASK32)>>RSHIFT32, vfp );
-				src++;
-			}
-		}
-		break;
-		
-	case 32:	// 32bitの場合
-		for( int y = yy - 1; y >= 0; y-- )
-			fwrite( (BYTE *)((DWORD *)Sbuf + vmh.dwWidth * y), sizeof(DWORD), xx, vfp );
-	}
-	
-	// 総フレーム数を1増やす
-	vmh.dwTotalFrames++;
-	
-	// オーディオ出力
-	if( ABuf.ReadySize() > 0 ){
-		anum += ABuf.ReadySize();
-		FPUTDWORD( CID01WB, vfp );
-		FPUTDWORD( ABuf.ReadySize()*2, vfp );
-		while( ABuf.ReadySize() > 0 ){
-			short dat = ABuf.Get();
-			FPUTWORD( dat, vfp );
+
+	int encode_video = 1, encode_audio = 1;
+	while (encode_video || encode_audio) {
+		/* select the stream to encode */
+		if (encode_video &&
+				(!encode_audio || av_compare_ts(video_st.next_pts, video_st.st->codec->time_base,
+												audio_st.next_pts, audio_st.st->codec->time_base) <= 0)) {
+			WriteVideoFrame(oc, &video_st, &Sbuf[0]);
+			encode_video = 0;
+		} else {
+			encode_audio = !WriteAudioFrame(oc, &audio_st, this);
 		}
 	}
-	
+	cCritical::UnLock();
 	return true;
 }
 
@@ -487,106 +634,6 @@ cRing *AVI6::GetAudioBuffer( void )
 }
 
 
-////////////////////////////////////////////////////////////////
-// ヘッダチャンク書出し
-//
-// 引数:	なし
-// 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool AVI6::WriteHeader( void )
-{
-	if( !vfp ) return false;
-	
-	DWORD SIZESTRLV	= sizeof(AVISTRMHEADER6) + sizeof(BMPINFOHEADER6) + sizeof(DWORD)*5 + (ABPP==8 ? (sizeof(RGBPAL6)*256) : 0);
-	DWORD SIZESTRLA	= sizeof(AVISTRMHEADER6) + sizeof(WAVEFORMATEX6)  + sizeof(DWORD)*5;
-	DWORD SIZEHDRL  = SIZESTRLV + SIZESTRLA  + sizeof(MAINAVIHEADER6) + sizeof(DWORD)*7;
-	DWORD SIZEJUNK  = 2048 - SIZEHDRL - sizeof(DWORD)*10;
-	
-	fseek( vfp, 0, SEEK_SET );
-	
-	fputs( "RIFF", vfp );
-	FPUTDWORD( RiffSize, vfp );
-		fputs( "AVI ", vfp );
-			fputs( "LIST", vfp );
-			FPUTDWORD( SIZEHDRL, vfp );
-			fputs( "hdrl", vfp );
-				fputs( "avih", vfp );
-				FPUTDWORD( sizeof(MAINAVIHEADER6), vfp );
-				putMAINAVIHEADER6( &vmh );
-				
-				// ビデオ
-				fputs( "LIST", vfp );
-				FPUTDWORD( SIZESTRLV, vfp );
-				fputs( "strl", vfp );
-					fputs( "strh", vfp );
-					FPUTDWORD( sizeof(AVISTRMHEADER6), vfp );
-					putAVISTRMHEADER6( &vsh );
-					
-					fputs( "strf", vfp );
-					FPUTDWORD( sizeof(BMPINFOHEADER6), vfp );
-					putBMPINFOHEADER6( &vbf );
-					
-				// オーディオ
-				fputs( "LIST", vfp );
-				FPUTDWORD( SIZESTRLA, vfp );
-				fputs( "strl", vfp );
-					fputs( "strh", vfp );
-					FPUTDWORD( sizeof(AVISTRMHEADER6), vfp );
-					putAVISTRMHEADER6( &ash );
-					
-					fputs( "strf", vfp );
-					FPUTDWORD( sizeof(WAVEFORMATEX6), vfp );
-					putWAVEFORMATEX6( &awf );
-				
-			fputs( "JUNK", vfp );
-			FPUTDWORD( SIZEJUNK, vfp );
-			for( DWORD i=0; i<SIZEJUNK; i++ ) FPUTBYTE( 0, vfp );
-			
-			fputs( "LIST", vfp );
-			FPUTDWORD( MoviSize, vfp );
-			
-			PosMOVI = ftell( vfp );
-			
-			fputs( "movi", vfp );
-	
-	fseek( vfp, 0, SEEK_END );
-	
-	return true;
-}
 
 
-////////////////////////////////////////////////////////////////
-// インデックスチャンク書出し
-//
-// 引数:	なし
-// 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool AVI6::WriteIndexr( void )
-{
-	if( !vfp ) return false;
-	
-	DWORD frames = vmh.dwTotalFrames * 2;
-	
-	fseek( vfp, 0, SEEK_END );
-	
-	// インデックスチャンク出力
-	fputs( "idx1", vfp );
-	FPUTDWORD( sizeof(AVIINDEXENTRY6) * frames, vfp );
-	DWORD ipos = 4;
-	for( DWORD i=0; i<frames; i++ ){
-		AVIINDEXENTRY6 idx;
-		
-		fseek( vfp, PosMOVI + ipos, SEEK_SET );
-		idx.ckid          = FGETDWORD( vfp );
-//		if( idx.ckid == CID01WB ) idx.dwFlags = 0x00000000;
-//		else                      idx.dwFlags = 0x00000010;	// AVIIF_KEYFRAME
-		idx.dwFlags = 0x00000010;	// AVIIF_KEYFRAME
-		idx.dwChunkOffset = ipos;
-		idx.dwChunkLength = FGETDWORD( vfp );
-		fseek( vfp, 0, SEEK_END );
-		putAVIINDEXENTRY6( &idx );
-		ipos += idx.dwChunkLength + 8;
-	}
-	
-	return true;
-}
+#endif //NOAVI

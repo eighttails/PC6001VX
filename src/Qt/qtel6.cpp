@@ -253,7 +253,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	}
 	systemMenu->addSeparator();
 
-#if 0
+#ifndef NOAVI
 	// ビデオキャプチャ
 	addCommand(systemMenu, AVI6::IsAVI() ? MSMEN_AVI1 : MSMEN_AVI0, ID_AVISAVE);
 	systemMenu->addSeparator();

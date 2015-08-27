@@ -1308,6 +1308,7 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 
 	if(mode == FM_Save){
 		result = QFileDialog::getSaveFileName(parent, title, pathStr, filter, NULL, opt);
+		if(result.isEmpty())    return NULL;
 		// 入力されたファイル名に拡張子がついていない場合は付与する
 		QFileInfo info(result);
 		if(info.suffix() != ext){
@@ -1315,8 +1316,8 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 		}
 	} else {
 		result = QFileDialog::getOpenFileName(parent, title, pathStr, filter, NULL, opt);
+		if(result.isEmpty())    return NULL;
 	}
-	if(result.isEmpty())    return NULL;
 
 	QDir dir(result);
 
@@ -1440,9 +1441,9 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 	case FD_AVISave:	// ビデオキャプチャ出力ファイル選択
 		mode   = FM_Save;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "ビデオキャプチャ出力ファイル選択");
-		filter = QT_TRANSLATE_NOOP("PC6001VX", "AVIファイル (*.avi);;"
+		filter = QT_TRANSLATE_NOOP("PC6001VX", "WebMファイル (*.webm);;"
 								   "全てのファイル (*.*)");
-		ext    = "avi";
+		ext    = "webm";
 		break;
 
 	case FD_LoadAll:	// 汎用LOAD

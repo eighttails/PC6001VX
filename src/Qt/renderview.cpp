@@ -132,7 +132,7 @@ void RenderView::closeEvent(QCloseEvent *event)
 	// ウィンドウ位置とサイズを保存
 	app->setSetting(P6VXApp::keyGeometry, saveGeometry());
 	app->setSetting(P6VXApp::keyMaximized, isMaximized());
-    QGraphicsView::closeEvent(event);
+	QGraphicsView::closeEvent(event);
 }
 
 

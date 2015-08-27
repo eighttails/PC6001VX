@@ -118,6 +118,17 @@ Androidではメイン画面上でロングタップするとメニューが出�
             「(リプレイファイル名).resume」ファイルをリプレイファイル(.ddr)と同じフォルダに残します。  
             * 途中保存から再開  
             ゲームのリプレイ記録中に失敗した場合など、リプレイの記録を停止せずに「途中保存」した地点に戻ってやり直すことができます。
+    * ビデオキャプチャ  
+    エミュレータの動作を動画ファイルとして記録します。   
+    記録を終了するにはもう一度このメニュー(「ビデオキャプチャ停止」に変わっています)を選択します。   
+    動画の記録方式はWebM形式です。  
+    (MP4形式はライセンス面でリスクがあるため、対応を見送っています。)  
+    世の中ではあまり使われていない形式ですが、YouTubeは正式に対応しています。  
+    ニコニコ動画は正式対応をうたってはいませんが、実はアップロードには対応しています。  
+    動画の記録中は動作速度が極端に落ちるため(作者の環境で1/10くらい)、ゲームをプレイしながら動画にするといった使い方は現時点では無理です。  
+    あらかじめプレイをリプレイとして記録しておき、そのリプレイを再生しながら動画にするといった使い方を想定しています。(動画の記録中にリプレイが終了した場合、その時点で動画の記録も終了します。)  
+    マシンの処理速度にかかわらず、出来上がった動画は60FPSになります。
+
     * キーパネル  
     ![KeyPanel](doc/keypanel.png)    
     英語キーボードやモバイル機のキーボードで入力できないことが多いキーをボタンで入力できる補助キーパネルを表示します。  
@@ -401,8 +412,10 @@ MSYS2環境上でビルドします。
 
 1. こちら(<http://sourceforge.net/projects/msys2/>)からMSYS2をダウンロードしてインストールしてください。  
 VC++はサポートしていません。
-1. MSYSをインストールしたフォルダのmsys2_shell.batを実行  
-1. MSYS Shell上で"pacman -Sy && pacman -Su"を実行し、環境をアップグレード  
+1. MSYSをインストールしたフォルダのmingw32_shell.batを実行  
+1. /etc/pacman.d/mirrorlist.mingw32の1行目を以下のように変更し、gcc4.9を使う設定に変更。    
+`Server = http://downloads.sourceforge.net/project/msys2/REPOS/MINGW_GCC_4_9/i686`
+1. MSYS Shell上で"pacman -Syy && pacman -Suu"を実行し、環境をアップグレード  
 1. ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  
 1. ソースフォルダのwin32フォルダにカレントを移動  
 1. "bash ./toochain.sh"を実行。ツールチェインをインストール  
@@ -413,7 +426,7 @@ QtCreatorが/usr/local/bin/qtcreator.exe,Qtスタティック版が/usr/local/qt
 ####Linux
 Debian系のディストリビューションについて解説します。
 
-1. "apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins" を実行。  
+1. `apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev` を実行。  
 1. ダウンロードしたPC6001VXのソースを解凍してください。  
 1. PC6001VX.proをQtCreatorで開いてビルドしてください。  
 IDEが嫌な人はQtCreatorの代わりにqmakeとqtライブラリを揃えればビルドできるでしょう。
@@ -428,7 +441,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。
 
 ##更新履歴
-■2.01 2015/1/10
+■2.1 2015/08/29
+
+* (Windows)(Linux)ffmpeg/libavを利用したビデオキャプチャ機能を実装
+
+■2.01 2015/01/10
 
 * テープロード中にクラッシュすることがあるのを修正
 

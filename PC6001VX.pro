@@ -86,6 +86,11 @@ SOURCES += \
     src/Qt/wavfile.cpp \
     src/Qt/utils.cpp
 }
+!contains(DEFINES, NOAVI) {
+DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
+LIBS += -lavformat -lavcodec -lswscale -lavutil -lswresample
+win32:LIBS += -lvorbisenc -lvorbis -logg -lvpx
+}
 
 SOURCES += \
     src/Qt/aboutdialog.cpp \
@@ -312,4 +317,8 @@ RESOURCES += \
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DISTFILES += \
-    win32/qt-creator-3.3.0-MinGW-w64-MIB_TCP_STATE-not-defined-until-Vista.patch
+    win32/qt-creator-3.3.0-MinGW-w64-MIB_TCP_STATE-not-defined-until-Vista.patch \
+    win32/qt-creator-3.5.0-Hacky-fix-for-__GNUC_PREREQ-usage.patch \
+    win32/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch
+
+

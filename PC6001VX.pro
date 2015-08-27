@@ -33,7 +33,7 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 linux{
 #Configuration for Android
 android{
-DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR ALWAYSFULLSCREEN AUTOSUSPEND USE_QGLWIDGET
+DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND USE_QGLWIDGET
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 }
@@ -48,7 +48,7 @@ sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
                     $${PANDORA_SDK}/usr/lib/libxcb.so.1*
 QMAKE_LFLAGS += $${QMAKE_LFLAGS_RPATH}$${DEPLOY_PATH}
 INSTALLS += target sharedlibs
-DEFINES += NOJOYSTICK NOOPENGL NOMONITOR
+DEFINES += NOJOYSTICK NOOPENGL NOMONITOR NOAVI
 #QTPLUGIN += qxcb qeglfs
 }
 !android:!pandora {

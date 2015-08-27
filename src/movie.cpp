@@ -10,12 +10,14 @@ extern "C"{
 #include <libswresample/swresample.h>
 }
 #define SCALE_FLAGS SWS_BICUBIC
+#endif //NOAVI
 
 #include "common.h"
 #include "log.h"
 #include "movie.h"
 #include "osd.h"
 
+#ifndef NOAVI
 const char* MakeErrorString(int errnum)
 {
 	char errbuf[AV_ERROR_MAX_STRING_SIZE];
@@ -443,7 +445,7 @@ static void CloseStream(AVFormatContext *oc, OutputStream *ost)
 	swr_free(&ost->swr_ctx);
 }
 // ---------------------------------------------------
-
+#endif //NOAVI
 
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
@@ -470,11 +472,12 @@ AVI6::~AVI6( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::Init( void )
 {
+#ifndef NOAVI
 	PRINTD( GRP_LOG, "[MOVIE][Init]\n" );
 
 	// FFMpegの初期化
 	av_register_all();
-	
+#endif
 	return true;
 }
 
@@ -492,6 +495,7 @@ bool AVI6::Init( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate, int bpp )
 {
+#ifndef NOAVI
 	cCritical::Lock();
 	Init();
 	
@@ -537,6 +541,9 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 	isAVI = true;
 	cCritical::UnLock();
 	return true;
+#else
+	return false;
+#endif
 }
 
 
@@ -548,6 +555,7 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 ////////////////////////////////////////////////////////////////
 void AVI6::StopAVI( void )
 {
+#ifndef NOAVI
 	if(oc){
 		cCritical::Lock();
 		isAVI = false;
@@ -559,6 +567,7 @@ void AVI6::StopAVI( void )
 		oc = NULL;
 		cCritical::UnLock();
 	}
+#endif
 }
 
 
@@ -582,6 +591,7 @@ bool AVI6::IsAVI( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::AVIWriteFrame( HWINDOW wh )
 {
+#ifndef NOAVI
 	if( !wh ) return false;
 	
 	cCritical::Lock();
@@ -619,6 +629,9 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	}
 	cCritical::UnLock();
 	return true;
+#else
+	return false;
+#endif
 }
 
 
@@ -636,4 +649,3 @@ cRing *AVI6::GetAudioBuffer( void )
 
 
 
-#endif //NOAVI

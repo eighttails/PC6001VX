@@ -1,7 +1,6 @@
 #ifndef MOVIE_H_INCLUDED
 #define MOVIE_H_INCLUDED
 
-#ifndef NOAVI
 
 #include "sound.h"
 #include "vsurface.h"
@@ -67,5 +66,4 @@ public:
 	cRing *GetAudioBuffer();				// オーディオバッファ取得
 };
 
-#endif	// NOAVI
 #endif	// MOVIE_H_INCLUDED

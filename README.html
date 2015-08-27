@@ -122,7 +122,9 @@ Androidの場合設定ファイルの生成場所は機種依存になり、一�
 Androidではメイン画面上でロングタップするとメニューが出ます。</p>
 <p><img alt="Menu" src="doc/menu.png"></p>
 <ul>
-<li>システム<ul>
+<li>
+<p>システム</p>
+<ul>
 <li>リセット<br>
 エミュレータをリセットします。</li>
 <li>再起動<br>
@@ -168,26 +170,36 @@ TAPEやDISKに書き込んでいる最中などは全く考えていませんの
 </li>
 </ul>
 </li>
-<li>キーパネル<br>
+<li>
+<p>ビデオキャプチャ<br>
+エミュレータの動作を動画ファイルとして記録します。 <br>
+記録を終了するにはもう一度このメニュー(「ビデオキャプチャ停止」に変わっています)を選択します。 <br>
+動画の記録方式はWebM形式です。<br>
+(MP4形式はライセンス面でリスクがあるため、対応を見送っています。)<br>
+世の中ではあまり使われていない形式ですが、YouTubeは正式に対応しています。<br>
+ニコニコ動画は正式対応をうたってはいませんが、実はアップロードには対応しています。<br>
+動画の記録中は動作速度が極端に落ちるため(作者の環境で1/10くらい)、ゲームをプレイしながら動画にするといった使い方は現時点では無理です。<br>
+あらかじめプレイをリプレイとして記録しておき、そのリプレイを再生しながら動画にするといった使い方を想定しています。(動画の記録中にリプレイが終了した場合、その時点で動画の記録も終了します。)<br>
+マシンの処理速度にかかわらず、出来上がった動画は60FPSになります。</p>
+</li>
+<li>
+<p>キーパネル<br>
 <img alt="KeyPanel" src="doc/keypanel.png">  <br>
 英語キーボードやモバイル機のキーボードで入力できないことが多いキーをボタンで入力できる補助キーパネルを表示します。<br>
-ボタンはシフトキーと同時押しでも機能します。シフトキーを押してF1ボタンを押すとF6キーとして機能します。  </li>
+ボタンはシフトキーと同時押しでも機能します。シフトキーを押してF1ボタンを押すとF6キーとして機能します。  </p>
+</li>
 <li>打ち込み代行<br>
 テキストファイルから自動入力する機能です。<br>
 対応しているファイルはtxt2bas仕様準拠です。  </li>
 <li>終了<br>
 PC6001VXを終了します。</li>
-</ul>
-</li>
 <li>TAPE<br>
 テープイメージの挿入、取り出しの操作をします。<br>
-対応するイメージファイルはP6T形式ですが、P6,CAS形式のファイルもマウントできます。<ul>
+対応するイメージファイルはP6T形式ですが、P6,CAS形式のファイルもマウントできます。</li>
 <li>挿入<br>
 テープイメージファイルをマウントします。  </li>
 <li>取出<br>
 テープイメージファイルを取り出します。</li>
-</ul>
-</li>
 <li>DISK<br>
 ディスクイメージの挿入、取り出しの操作をします。<br>
 対応するイメージファイルはd88形式です。<br>
@@ -197,9 +209,7 @@ PC6001VXを終了します。</li>
 操作はTAPEと同様です。  </li>
 <li>ジョイスティック<br>
 ジョイスティックがつながっている場合、P6のジョイスティック1,2に対する割り当てを設定します。</li>
-<li>
-<p>設定  </p>
-<ul>
+<li>設定  </li>
 <li>表示サイズ  <ul>
 <li>50%~300％<br>
 表示倍率を変えることができます。  </li>
@@ -585,8 +595,10 @@ TAPEの読込み中はノーウェイトで動作させる機能です。  </li>
 <ol>
 <li>こちら(<a href="http://sourceforge.net/projects/msys2/">http://sourceforge.net/projects/msys2/</a>)からMSYS2をダウンロードしてインストールしてください。<br>
 VC++はサポートしていません。</li>
-<li>MSYSをインストールしたフォルダのmsys2_shell.batを実行  </li>
-<li>MSYS Shell上で"pacman -Sy &amp;&amp; pacman -Su"を実行し、環境をアップグレード  </li>
+<li>MSYSをインストールしたフォルダのmingw32_shell.batを実行  </li>
+<li>/etc/pacman.d/mirrorlist.mingw32の1行目を以下のように変更し、gcc4.9を使う設定に変更。  <br>
+<code>Server = http://downloads.sourceforge.net/project/msys2/REPOS/MINGW_GCC_4_9/i686</code></li>
+<li>MSYS Shell上で"pacman -Syy &amp;&amp; pacman -Suu"を実行し、環境をアップグレード  </li>
 <li>ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  </li>
 <li>ソースフォルダのwin32フォルダにカレントを移動  </li>
 <li>"bash ./toochain.sh"を実行。ツールチェインをインストール  </li>
@@ -597,7 +609,7 @@ QtCreatorが/usr/local/bin/qtcreator.exe,Qtスタティック版が/usr/local/qt
 <h4 id="linux_1">Linux</h4>
 <p>Debian系のディストリビューションについて解説します。</p>
 <ol>
-<li>"apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev" を実行。  </li>
+<li><code>apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev</code> を実行。  </li>
 <li>ダウンロードしたPC6001VXのソースを解凍してください。  </li>
 <li>PC6001VX.proをQtCreatorで開いてビルドしてください。<br>
 IDEが嫌な人はQtCreatorの代わりにqmakeとqtライブラリを揃えればビルドできるでしょう。</li>
@@ -612,7 +624,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。</li>
 <li>X11では、なぜかかなキー(PAUSE)の利きが悪いです。</li>
 </ul>
 <h2 id="_15">更新履歴</h2>
-<p>■2.01 2015/1/10</p>
+<p>■2.1 2015/08/29</p>
+<ul>
+<li>(Windows)(Linux)ffmpeg/libavを利用したビデオキャプチャ機能を実装</li>
+</ul>
+<p>■2.01 2015/01/10</p>
 <ul>
 <li>テープロード中にクラッシュすることがあるのを修正</li>
 </ul>

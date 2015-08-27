@@ -34,18 +34,13 @@ typedef struct OutputStream {
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
-class AVI6 {
+class AVI6 : public cCritical{
 protected:
-
+	bool isAVI;
 
 	int ABPP;					// 色深度 (16,24,32)
 	std::vector<BYTE> Sbuf;		// イメージデータバッファ
-//	BYTE *Sbuf;					// イメージデータバッファポインタ
-	
-//	DWORD PosMOVI;
-	
-//	DWORD RiffSize;
-//	DWORD MoviSize;
+
 	AVOutputFormat *fmt;
 	AVFormatContext *oc;
 	AVCodec *audio_codec;
@@ -55,7 +50,6 @@ protected:
 	OutputStream audio_st;
 
 	cRing ABuf;					// オーディオバッファ
-	//DWORD anum;					// オーディオサンプル数カウント用
 
 public:
 	AVI6();									// コンストラクタ

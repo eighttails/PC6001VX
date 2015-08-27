@@ -448,7 +448,7 @@ static void CloseStream(AVFormatContext *oc, OutputStream *ost)
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-AVI6::AVI6( void ) : ABPP(32), fmt(NULL), oc(NULL),
+AVI6::AVI6( void ) : isAVI(false), ABPP(32), fmt(NULL), oc(NULL),
 	audio_codec(NULL), video_codec(NULL), opt(NULL), video_st{0}, audio_st{0}
 	{}
 
@@ -492,6 +492,7 @@ bool AVI6::Init( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate, int bpp )
 {
+	cCritical::Lock();
 	Init();
 	
 	ABPP = bpp;
@@ -518,18 +519,23 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 
 	av_dump_format(oc, 0, filename, 1);
 
+	int ret = 0;
 	// ファイルを開く
 	if (!(fmt->flags & AVFMT_NOFILE)) {
-		if (0 > avio_open(&oc->pb, filename, AVIO_FLAG_WRITE)) {
+		ret = avio_open(&oc->pb, filename, AVIO_FLAG_WRITE);
+		if (0 > ret) {
 			return false;
 		}
 	}
 
 	// ストリームヘッダを書き込み
-	if (0 > avformat_write_header(oc, &opt)) {
+	ret = avformat_write_header(oc, &opt);
+	if (0 > ret) {
 		return false;
 	}
 
+	isAVI = true;
+	cCritical::UnLock();
 	return true;
 }
 
@@ -543,12 +549,15 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 void AVI6::StopAVI( void )
 {
 	if(oc){
+		cCritical::Lock();
+		isAVI = false;
 		av_write_trailer(oc);
 		CloseStream(oc, &video_st);
 		CloseStream(oc, &audio_st);
 		avio_closep(&oc->pb);
 		avformat_free_context(oc);
 		oc = NULL;
+		cCritical::UnLock();
 	}
 }
 
@@ -561,7 +570,7 @@ void AVI6::StopAVI( void )
 ////////////////////////////////////////////////////////////////
 bool AVI6::IsAVI( void )
 {
-	return oc ? true : false;
+	return isAVI;
 }
 
 
@@ -575,12 +584,15 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 {
 	if( !wh ) return false;
 	
+	cCritical::Lock();
+
 	int xx = OSD_GetWindowWidth(wh);
 	int yy = OSD_GetWindowHeight(wh);
 
 	// 途中でウィンドウサイズが変わっていたら記録を中断
 	if(xx != video_st.tmp_frame->width || yy != video_st.tmp_frame->height){
 		StopAVI();
+		cCritical::UnLock();
 		return false;
 	}
 
@@ -605,6 +617,7 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 			encode_audio = !WriteAudioFrame(oc, &audio_st, this);
 		}
 	}
+	cCritical::UnLock();
 	return true;
 }
 

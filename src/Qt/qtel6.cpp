@@ -91,6 +91,7 @@ void EL6::ExecMenu( int id )
 	case ID_REPLAYSAVE:		UI_ReplaySave();						break;	// リプレイ保存
 	case ID_REPLAYRESUME:	UI_ReplayResumeSave();					break;	// リプレイ保存再開
 	case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();					break;	// リプレイ中どこでもLOAD
+	case ID_REPLAYROLLBACK:	UI_ReplayRollback();					break;	// リプレイ中どこでもLOADを巻き戻し
 	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
 	case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
 	case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
@@ -250,6 +251,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (REPLAY::GetStatus() == REP_RECORD){
 		addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);
 		addCommand(replayMenu, tr("途中保存から再開"), ID_REPLAYDOKOLOAD);
+		addCommand(replayMenu, tr("1つ前の途中保存から再開"), ID_REPLAYROLLBACK);
 	}
 	systemMenu->addSeparator();
 

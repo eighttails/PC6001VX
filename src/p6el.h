@@ -123,6 +123,7 @@ protected:
 	void UI_ReplaySave( const char * = NULL );		// リプレイ保存
 	void UI_ReplayResumeSave( const char * = NULL );	// リプレイ保存再開
 	void UI_ReplayDokoLoad();						// リプレイ中どこでもLOAD
+	void UI_ReplayRollback();						// リプレイ中どこでもLOADを巻き戻す
 	void UI_ReplayDokoSave();						// リプレイ中どこでもSAVE
 	void UI_ReplayLoad( const char * = NULL );		// リプレイ再生
 	void UI_AVISave();								// ビデオキャプチャ
@@ -157,6 +158,7 @@ protected:
 	bool ReplayRecStart( const char * );	// リプレイ保存開始
 	bool ReplayRecResume(const char *);     // リプレイ保存再開
 	bool ReplayRecDokoLoad();               // リプレイ中どこでもLOAD
+	bool ReplayRecRollback();               // リプレイ中どこでもLOADを巻き戻す
 	bool ReplayRecDokoSave();               // リプレイ中どこでもSAVE
 	void ReplayRecStop();					// リプレイ保存停止
 	void ReplayPlayStart( const char * );	// リプレイ再生開始

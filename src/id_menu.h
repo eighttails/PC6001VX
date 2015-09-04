@@ -64,6 +64,7 @@ enum MenuCommand{
     ID_VERSION,
 
 	// 以下、P6VX独自設定
+	ID_REPLAYROLLBACK,
 	ID_TILT,
 	ID_SIZE50,
 	ID_SIZE100,

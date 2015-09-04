@@ -33,6 +33,9 @@
 
 #define	FRAMERATE	(VSYNC_HZ/(cfg->GetFrameSkip()+1))
 
+// リプレイ中どこでもSAVEの履歴数
+static const int REPLAY_DOKOSAVE_HISTORY = 5;
+
 int EL6::Speed = 100;
 
 const char resext[] = "resume";	// リプレイ途中保存用拡張子
@@ -1417,6 +1420,15 @@ void EL6::DiskUnmount( int drv )
 ////////////////////////////////////////////////////////////////
 bool EL6::ReplayRecStart( const char *filename )
 {
+	// 途中セーブファイルを探して削除
+	char strsave[PATH_MAX];
+	strncpy( strsave, filename, PATH_MAX );
+	strncpy( (char *)OSD_GetFileNameExt( strsave ), resext, sizeof(resext) );	// 拡張子を差替え
+	for(int i = 0; i < REPLAY_DOKOSAVE_HISTORY; i++){
+		const std::string resumeFileName = strsave + (i == 0 ? "" : std::to_string(i));
+		std::remove(resumeFileName.c_str());
+	}
+
 	return REPLAY::StartRecord( filename );
 }
 
@@ -1467,6 +1479,39 @@ bool EL6::ReplayRecDokoLoad( void )
 
 
 ////////////////////////////////////////////////////////////////
+// リプレイ中どこでもLOADを巻き戻す
+//
+// 引数:	なし
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool EL6::ReplayRecRollback( void )
+{
+	if( REPLAY::GetStatus() == REP_RECORD ){
+		char filename[PATH_MAX];
+		strncpy( filename, REPLAY::Ini->GetFileName(), PATH_MAX );
+
+		// 途中セーブファイルを探す
+		char strsave[PATH_MAX];
+		strncpy( strsave, filename, PATH_MAX );
+		strncpy( (char *)OSD_GetFileNameExt( strsave ), resext, sizeof(resext) );	// 拡張子を差替え
+
+		// リプレイの途中保存ファイルの履歴を1つ戻す
+		for(int i = 0; i < REPLAY_DOKOSAVE_HISTORY; i++){
+			const std::string beforeFileName = strsave + std::to_string(i + 1);
+			const std::string afterFileName = strsave + (i == 0 ? "" : std::to_string(i));
+			if(!OSD_FileExist(beforeFileName.c_str())) break;
+			std::remove(afterFileName.c_str());
+			std::rename(beforeFileName.c_str(), afterFileName.c_str());
+		}
+
+		REPLAY::StopRecord();
+		return ReplayRecResume( filename );
+	}else{
+		return false;
+	}
+}
+
+////////////////////////////////////////////////////////////////
 // リプレイ中どこでもSAVE
 //
 // 引数:	なし
@@ -1479,6 +1524,17 @@ bool EL6::ReplayRecDokoSave( void )
 		char strsave[PATH_MAX];
 		strncpy( strsave, REPLAY::Ini->GetFileName(), PATH_MAX );
 		strncpy( (char *)OSD_GetFileNameExt( strsave ), resext, sizeof(resext) );	// 拡張子を差替え
+
+		// リプレイの途中保存ファイルの履歴を1つ進める
+		for(int i = REPLAY_DOKOSAVE_HISTORY - 2; i >= 0; i--){
+			const std::string beforeFileName = strsave + (i == 0 ? "" : std::to_string(i));
+			const std::string afterFileName = strsave + std::to_string(i + 1);
+			if(!OSD_FileExist(beforeFileName.c_str())) continue;
+			std::remove(afterFileName.c_str());
+			std::rename(beforeFileName.c_str(), afterFileName.c_str());
+		}
+
+
 		if( !DokoDemoSave( strsave ) ) return false;
 
 		// 途中セーブ情報を追記
@@ -1740,6 +1796,16 @@ void EL6::UI_ReplayDokoLoad()
 	ReplayRecDokoLoad();
 }
 
+////////////////////////////////////////////////////////////////
+// UI:リプレイ中どこでもLOADを巻き戻す
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void EL6::UI_ReplayRollback()
+{
+	ReplayRecRollback();
+}
 
 ////////////////////////////////////////////////////////////////
 // UI:リプレイ中どこでもSAVE

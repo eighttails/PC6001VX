@@ -30,6 +30,7 @@ DEFINES += QTP6VX
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
+QMAKE_CXXFLAGS += -std=c++11
 
 linux{
 #Configuration for Android

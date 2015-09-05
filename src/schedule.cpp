@@ -410,6 +410,7 @@ bool EVSC::DokoSave( cIni *Ini )
 	for( EvVec::iterator p = ev.begin(); p  != ev.end(); ++p ){
 		evinfo& event = *p;
 		BYTE id1,id2,id3,id4;
+		if(!event.Active) continue;
 		DWTOB( event.devid, id4, id3, id2, id1 );
 		sprintf( stren, "Event%02X", i );
 		Ini->PutEntry( "SCHEDULE", NULL, stren, "%c%c%c%c %d %d %d %d %lf", id1, id2, id3, id4, event.id, event.Active ? 1 : 0, event.Period, event.Clock, event.nps );

@@ -630,6 +630,7 @@ bool VDG6::DokoSave( cIni *Ini )
 	
 	// 64,68
 	Ini->PutEntry( "VDG", NULL, "SRmode",		"%s",		SRmode      ? "Yes" : "No" );
+	Ini->PutEntry( "VDG", NULL, "SRBusReq",		"%s",		SRBusReq    ? "Yes" : "No" );
 	Ini->PutEntry( "VDG", NULL, "SRBitmap",		"%s",		SRBitmap    ? "Yes" : "No" );
 	Ini->PutEntry( "VDG", NULL, "SRBMPage",		"%s",		SRBMPage    ? "Yes" : "No" );
 	Ini->PutEntry( "VDG", NULL, "SRLine204",	"%s",		SRLine204   ? "Yes" : "No" );
@@ -693,6 +694,7 @@ bool VDG6::DokoLoad( cIni *Ini )
 
 	// 64,68
 	Ini->GetTruth( "VDG", "SRmode",			&SRmode,		SRmode );
+	Ini->GetTruth( "VDG", "SRBusReq",		&SRBusReq,		SRBusReq );
 	Ini->GetTruth( "VDG", "SRBitmap",		&SRBitmap,		SRBitmap );
 	Ini->GetTruth( "VDG", "SRBMPage",		&SRBMPage,		SRBMPage );
 	Ini->GetTruth( "VDG", "SRLine204",		&SRLine204,		SRLine204 );

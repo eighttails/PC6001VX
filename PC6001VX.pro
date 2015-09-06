@@ -250,7 +250,6 @@ FORMS    += \
     src/Qt/aboutdialog.ui
 
 OTHER_FILES += \
-    COPYING \
     android/AndroidManifest.xml \
     openpandora/PC-6001.png \
     openpandora/PC6001VX.sh \
@@ -321,6 +320,7 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 DISTFILES += \
     win32/qt-creator-3.3.0-MinGW-w64-MIB_TCP_STATE-not-defined-until-Vista.patch \
     win32/qt-creator-3.5.0-Hacky-fix-for-__GNUC_PREREQ-usage.patch \
-    win32/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch
+    win32/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch \
+    LICENSE
 
 

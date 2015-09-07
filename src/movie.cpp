@@ -451,7 +451,7 @@ static void CloseStream(AVFormatContext *oc, OutputStream *ost)
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
 AVI6::AVI6( void ) : isAVI(false), ABPP(32), fmt(NULL), oc(NULL),
-	audio_codec(NULL), video_codec(NULL), opt(NULL), video_st{0}, audio_st{0}
+	audio_codec(NULL), video_codec(NULL), opt(NULL), video_st(), audio_st()
 	{}
 
 

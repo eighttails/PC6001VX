@@ -422,7 +422,7 @@ VC++はサポートしていません。
 1. "bash ./toochain.sh"を実行。ツールチェインをインストール  
 1. "bash ./buildenv.sh"を実行。QtのライブラリとQtCreatorをビルド  
 QtCreatorが/usr/local/bin/qtcreator.exe,Qtスタティック版が/usr/local/qt5-staticにインストールされます。
-1. PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。
+1. PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。コンパイラの候補にMinGWとGCCが表示された場合はGCCを選択してください。
 
 ####Linux
 Debian系のディストリビューションについて解説します。

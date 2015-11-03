@@ -18,10 +18,10 @@ rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../mingw32/local -shared -release -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local/qt-creator -shared -release -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
-PATH=$PWD/qtbase/lib:$PATH $MINGW32MAKE || $MINGW32MAKE_SINGLE && $MINGW32MAKE install
+PATH=$PWD/qtbase/lib:$PATH $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install
 exitOnError
 popd
 rm -rf qt5-shared
@@ -56,12 +56,12 @@ rm -rf qt-creator
 mkdir qt-creator
 pushd qt-creator
 
-qmake QTC_PREFIX=/mingw32/local ../$QTC_SOURCE_DIR/qtcreator.pro
+/mingw32/local/qt-creator/bin/qmake QTC_PREFIX=/mingw32/local/qt-creator ../$QTC_SOURCE_DIR/qtcreator.pro
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
-$MINGW32MAKE || $MINGW32MAKE_SINGLE && $MINGW32MAKE install 
+$MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install 
 exitOnError
 popd
-rm -rf qtcreator
+rm -rf qt-creator
 }
 
 function buildQtStatic(){
@@ -70,15 +70,15 @@ rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %CD%/../../../../mingw32/local/qt5-static -static -debug-and-release -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
-$MINGW32MAKE || $MINGW32MAKE_SINGLE && $MINGW32MAKE install && $MINGW32MAKE docs && $MINGW32MAKE install_qch_docs
+$MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install && $MINGW32MAKE docs && $MINGW32MAKE install_qch_docs
 exitOnError
 
 #MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
-sed -i -e "s|-ltiff|-ltiff -llzma|g" /mingw32/local/qt5-static/plugins/imageformats/qtiff.prl
-sed -i -e "s|-ltiff|-ltiff -llzma|g" /mingw32/local/qt5-static/plugins/imageformats/qtiffd.prl
+sed -i -e "s|-ltiff|-ltiff -llzma|g" /mingw32/local/plugins/imageformats/qtiff.prl
+sed -i -e "s|-ltiff|-ltiff -llzma|g" /mingw32/local/plugins/imageformats/qtiffd.prl
 
 popd
 rm -rf qt5-static
@@ -96,14 +96,15 @@ pushd $FFMPEG_SRC_DIR
 ./configure --target-os=mingw32 --prefix=/mingw32/local --enable-small --disable-programs --disable-doc --disable-everything --disable-sdl --disable-iconv --enable-libvpx --enable-encoder=libvpx_vp8 --enable-libvorbis --enable-encoder=libvorbis --enable-muxer=webm --enable-protocol=file
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
-$MINGW32MAKE || $MINGW32MAKE_SINGLE && $MINGW32MAKE install
+$MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install
 
 exitOnError
 popd
 }
 
-#直列ビルド
-MINGW32MAKE_SINGLE="mingw32-make"
+#MSYSルート
+export MSYS_ROOT=`cygpath -w /`
+
 #並列ビルド
 MINGW32MAKE="mingw32-make -j$NUMBER_OF_PROCESSORS"
 
@@ -141,19 +142,19 @@ else
     patch -p0 < $SCRIPT_DIR/angle.patch
 
     #Osで最適化するためのパッチ(サイズ削減のため)
-    patch -p0 --binary < $SCRIPT_DIR/optimize.patch
+    sed -i -e "s|= -O2|= -Os|g" qtbase/mkspecs/win32-g++/qmake.conf
+    #プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
+    sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf    
     popd
 fi
 
 export PATH=$PWD/$QT_SOURCE_DIR/gnuwin32/bin:$PATH
-#ANGLEのコンパイルを通すための対策
-#export DXSDK_DIR="C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)"
 
 #shared版Qtをビルド(QtCreator用)
-#buildQtShared
+buildQtShared
 
 #QtCreatorをビルド
-#buildQtCreator
+buildQtCreator
 
 #static版Qtをビルド(P6VX用)
 buildQtStatic

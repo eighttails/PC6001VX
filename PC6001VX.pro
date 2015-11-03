@@ -64,9 +64,9 @@ LIBS += -lX11
 #Configuration for Windows
 win32:{
 DEFINES += WIN32
-INCLUDEPATH += /mingw32/local/include
+#INCLUDEPATH += /mingw32/local/include
 #On Windows, links libraries statically as long as possible.
-QMAKE_LFLAGS += -L/mingw32/local/lib -static -lpthread
+#QMAKE_LFLAGS += -L/mingw32/local/lib -static -lpthread
 RC_ICONS += src/win32/PC6001VX.ico
 
 !contains(DEFINES, NOJOYSTICK) {

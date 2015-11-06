@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="generator" content="ReText 5.1.0">
+<meta name="generator" content="ReText 5.2.1">
 <title>README</title>
 </head>
 <body>
@@ -595,16 +595,16 @@ TAPEの読込み中はノーウェイトで動作させる機能です。  </li>
 <ol>
 <li>こちら(<a href="http://sourceforge.net/projects/msys2/">http://sourceforge.net/projects/msys2/</a>)からMSYS2をダウンロードしてインストールしてください。<br>
 VC++はサポートしていません。</li>
+<li>MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。  </li>
 <li>MSYSをインストールしたフォルダのmingw32_shell.batを実行  </li>
-<li>/etc/pacman.d/mirrorlist.mingw32の1行目を以下のように変更し、gcc4.9を使う設定に変更。  <br>
-<code>Server = http://downloads.sourceforge.net/project/msys2/REPOS/MINGW_GCC_4_9/i686</code></li>
-<li>MSYS Shell上で"pacman -Syy &amp;&amp; pacman -Suu"を実行し、環境をアップグレード  </li>
+<li>MSYS Shell上で<code>pacman -Syy &amp;&amp; pacman -Suu</code>を実行し、環境をアップグレードし、MSYS Shellを再起動。  </li>
 <li>ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  </li>
-<li>ソースフォルダのwin32フォルダにカレントを移動  </li>
-<li>"bash ./toochain.sh"を実行。ツールチェインをインストール  </li>
-<li>"bash ./buildenv.sh"を実行。QtのライブラリとQtCreatorをビルド<br>
-QtCreatorが/usr/local/bin/qtcreator.exe,Qtスタティック版が/usr/local/qt5-staticにインストールされます。</li>
-<li>PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。</li>
+<li><code>cd PC6001VX/win32</code>を実行し、ソースフォルダのwin32フォルダにカレントを移動  </li>
+<li><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール  </li>
+<li><code>bash ./buildenv.sh</code>を実行。QtのライブラリとQtCreatorをビルド<br>
+QtCreatorが/mingw32/local/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。</li>
+<li><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。</li>
+<li>自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。</li>
 </ol>
 <h4 id="linux_1">Linux</h4>
 <p>Debian系のディストリビューションについて解説します。</p>

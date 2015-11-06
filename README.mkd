@@ -412,17 +412,16 @@ MSYS2環境上でビルドします。
 
 1. こちら(<http://sourceforge.net/projects/msys2/>)からMSYS2をダウンロードしてインストールしてください。  
 VC++はサポートしていません。
-1. MSYSをインストールしたフォルダ下の/usr/bin,/mingw32/bin,/mingw32/local/binにPATHを通す。  
+1. MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。  
 1. MSYSをインストールしたフォルダのmingw32_shell.batを実行  
-1. /etc/pacman.d/mirrorlist.mingw32の1行目を以下のように変更し、gcc4.9を使う設定に変更。    
-`Server = http://downloads.sourceforge.net/project/msys2/REPOS/MINGW_GCC_4_9/i686`
-1. MSYS Shell上で"pacman -Syy && pacman -Suu"を実行し、環境をアップグレード  
+1. MSYS Shell上で`pacman -Syy && pacman -Suu`を実行し、環境をアップグレードし、MSYS Shellを再起動。  
 1. ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  
-1. ソースフォルダのwin32フォルダにカレントを移動  
-1. "bash ./toochain.sh"を実行。ツールチェインをインストール  
-1. "bash ./buildenv.sh"を実行。QtのライブラリとQtCreatorをビルド  
-QtCreatorが/usr/local/bin/qtcreator.exe,Qtスタティック版が/usr/local/qt5-staticにインストールされます。
-1. PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。コンパイラの候補にMinGWとGCCが表示された場合はGCCを選択してください。
+1. `cd PC6001VX/win32`を実行し、ソースフォルダのwin32フォルダにカレントを移動  
+1. `bash ./toochain.sh`を実行。ツールチェインをインストール  
+1. `bash ./buildenv.sh`を実行。QtのライブラリとQtCreatorをビルド  
+QtCreatorが/mingw32/local/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。
+1. `bash ./buildrelease.sh`を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。
+1. 自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。
 
 ####Linux
 Debian系のディストリビューションについて解説します。

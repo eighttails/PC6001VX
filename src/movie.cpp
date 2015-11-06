@@ -515,6 +515,8 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 		AddStream(&video_st, oc, &video_codec, fmt->video_codec, sw, sh);
 	}
 	if (fmt->audio_codec != AV_CODEC_ID_NONE) {
+		// オーディオコーデックにOPUSを選択されると落ちるため、暫定措置として強制的にVORBISにする。
+		fmt->audio_codec = AV_CODEC_ID_VORBIS;
 		AddStream(&audio_st, oc, &audio_codec, fmt->audio_codec, sw, sh);
 	}
 

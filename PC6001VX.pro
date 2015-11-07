@@ -11,7 +11,7 @@ TEMPLATE = app
 
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 
-CONFIG += link_prl
+CONFIG += link_prl c++11
 
 #Define for Qt dependent code
 DEFINES += QTP6VX
@@ -30,8 +30,6 @@ DEFINES += QTP6VX
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
-QMAKE_CXXFLAGS += -std=c++11
-
 linux{
 #Configuration for Android
 android{
@@ -42,6 +40,7 @@ debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 pandora {
 #Configuration for OpenPandora
 QT += x11extras
+
 DEPLOY_PATH = /media/sddev/pc6001vx
 target.path = $${DEPLOY_PATH}
 sharedlibs.path = $${DEPLOY_PATH}

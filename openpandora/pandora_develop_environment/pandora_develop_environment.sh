@@ -103,10 +103,10 @@ fi #if [ $FIRSTRUN -eq 1 ]
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt550-release
+QT_INSTALLNAME=qt551-release
 
 QT_MAJOR_VER=5.5
-QT_VER=$QT_MAJOR_VER.0
+QT_VER=$QT_MAJOR_VER.1
 QT_FULL_VER=$QT_VER
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases
@@ -116,7 +116,7 @@ cd $SDKHOME
 rm -rf $QT_INSTALLNAME
 mkdir $QT_INSTALLNAME
 
-wget -c http://download.qt-project.org/$QT_RELEASE/qt/$QT_MAJOR_VER/$QT_FULL_VER/single/$QT_SOURCE_NAME.tar.xz -P $INSTALLER_DIR/tmp
+wget -c http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VER/$QT_FULL_VER/single/$QT_SOURCE_NAME.tar.xz -P $INSTALLER_DIR/tmp
 
 if [ ! -d $QT_SOURCE_NAME ]; then
 tar Jxf $INSTALLER_DIR/tmp/$QT_SOURCE_NAME.tar.xz

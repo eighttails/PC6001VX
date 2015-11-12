@@ -512,6 +512,8 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 
 	// 音声、ビデオストリームを作成
 	if (fmt->video_codec != AV_CODEC_ID_NONE) {
+		// ビデオコーデックにVP9を選択されると画像が崩れるため、暫定措置として強制的にVP8にする。
+		fmt->video_codec = AV_CODEC_ID_VP8;
 		AddStream(&video_st, oc, &video_codec, fmt->video_codec, sw, sh);
 	}
 	if (fmt->audio_codec != AV_CODEC_ID_NONE) {

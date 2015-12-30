@@ -759,7 +759,7 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 {
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
 	if(view == NULL) return;
-	qDebug() << str;
+	//qDebug() << str;
 	QMetaObject::invokeMethod(view, "setWindowTitle",
 							  Q_ARG(QString, str));
 }

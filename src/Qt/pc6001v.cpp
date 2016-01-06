@@ -52,7 +52,11 @@ int main( int argc, char *argv[] )
 		qDebug() << "LANG = " << lang;
         myappTranslator.load(":/translation/PC6001VX_en");
         app.installTranslator(&myappTranslator);
-    }
+	} else {
+#ifdef ANDROID
+		app.setFont(QFont("MotoyaLMaru"));
+#endif
+	}
 
 	//イベントループが始まったらp6vxapp::startup()を実行
     QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);

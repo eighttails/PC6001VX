@@ -85,7 +85,7 @@ rm -rf qt5-static
 }
 
 function buildFFmpeg(){
-FFMPEG_VERSION=2.7.2
+FFMPEG_VERSION=2.8.5
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz 
 	

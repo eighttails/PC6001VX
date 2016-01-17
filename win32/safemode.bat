@@ -1,2 +1,2 @@
 del *.ini
-PC6001VX -safemode
+PC6001VX --safemode

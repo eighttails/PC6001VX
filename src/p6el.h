@@ -189,9 +189,9 @@ public:
 	bool DokoDemoLoad( const char * );	// どこでもLOAD
 	int GetDokoModel( const char * );	// どこでもLOADファイルから機種名読込
 	// ------------------------------------------
-	// 簡易どこでもSAVE/LOAD(スロット１番を使用)
-	void DokoDemoSave1();
-	void DokoDemoLoad1();
+	// 簡易どこでもSAVE/LOAD(スロット使用)
+	void DokoDemoSave( int );
+	void DokoDemoLoad( int );
 };
 
 

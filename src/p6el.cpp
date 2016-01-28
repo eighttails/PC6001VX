@@ -699,13 +699,13 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 #endif
     case KVC_MUHENKAN:      // どこでもSAVE
 		Stop();
-		DokoDemoSave1();
+		DokoDemoSave(1);
 		Start();
 		break;
 		
 	case KVC_HENKAN:      // どこでもLOAD
 		Stop();
-		DokoDemoLoad1();
+		DokoDemoLoad(1);
 		Start();
 		break;
 		
@@ -718,13 +718,13 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 ////////////////////////////////////////////////////////////////
 // 簡易どこでもSAVE/LOAD
 ////////////////////////////////////////////////////////////////
-void EL6::DokoDemoSave1()
+void EL6::DokoDemoSave(int slot)
 {
 	if(REPLAY::GetStatus() == REP_RECORD){
 		UI_ReplayDokoSave();
 	} else {
 		char str[PATH_MAX];
-		snprintf(str, PATH_MAX, "%s/.1.dds", cfg->GetDokoSavePath());
+		snprintf(str, PATH_MAX, "%s/.%d.dds", cfg->GetDokoSavePath(), slot);
 		DokoDemoSave( str );
 
 		cIni save;
@@ -736,13 +736,13 @@ void EL6::DokoDemoSave1()
 	}
 }
 
-void EL6::DokoDemoLoad1()
+void EL6::DokoDemoLoad(int slot)
 {
 	if(REPLAY::GetStatus() == REP_RECORD){
 		UI_ReplayDokoLoad();
 	} else {
 		char str[PATH_MAX];
-		snprintf(str, PATH_MAX, "%s/.1.dds", cfg->GetDokoSavePath());
+		snprintf(str, PATH_MAX, "%s/.%d.dds", cfg->GetDokoSavePath(), slot);
 		if( OSD_FileExist( str ) ){
 			cfg->SetModel( GetDokoModel( str ) );
 			cfg->SetDokoFile( str );

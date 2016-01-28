@@ -532,7 +532,7 @@ void P6VXApp::executeEmulation()
 	case EL6::Quit:	// 通常起動
 #ifdef AUTOSUSPEND
 		// 自動サスペンド有効時はここでLOAD
-		P6CoreObj->DokoDemoLoad1();
+		P6CoreObj->DokoDemoLoad(0);
 #endif
 		break;
 	case EL6::Dokoload:	// どこでもLOAD?
@@ -573,7 +573,7 @@ void P6VXApp::postExecuteEmulation()
 #ifdef AUTOSUSPEND
 	// 自動サスペンド有効時はここでSAVE
 	if( Restart == EL6::Quit ){
-		P6Core->DokoDemoSave1();
+		P6Core->DokoDemoSave(0);
 	}
 #endif
 
@@ -768,14 +768,17 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		break;
 	}
 #ifdef ALWAYSFULLSCREEN
-	case QEvent::ApplicationActivated:
+	case QEvent::ApplicationStateChange:
 		if(P6Core){
-			P6Core->Start();
-		}
-		break;
-	case QEvent::ApplicationDeactivated:
-		if(P6Core){
-			P6Core->Stop();
+			if(static_cast<QApplicationStateChangeEvent*>(event)->applicationState()){
+				P6Core->Start();
+			}else{
+				P6Core->Stop();
+#ifdef AUTOSUSPEND
+				// 自動サスペンド有効時はここでSAVE
+				P6Core->DokoDemoSave(0);
+#endif
+			}
 		}
 		break;
 #endif

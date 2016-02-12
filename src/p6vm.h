@@ -34,7 +34,7 @@ class BPoint;
 
 // 基本仮想マシンクラス
 class VM6 {
-    friend class QtEL6;
+	friend class QtEL6;
 
 	friend class EL6;
 	friend class DSP6;
@@ -127,6 +127,7 @@ public:
 	int	IntIntrCheck();							// 割込みチェック
 	void IntReqIntr( DWORD );					// 割込み要求
 	void IntCancelIntr( DWORD );				// 割込み撤回
+	bool IntGetTimerIntr();						// タイマ割込みスイッチ取得
 	// CPU6
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	int CpumDisasm( char *, WORD );				// 1ライン逆アセンブル
@@ -144,8 +145,9 @@ public:
 	void MemWrite( WORD, BYTE, int * = NULL );	// メモリライト
 	void MemSetCGBank( bool );					// CG ROM BANK を切り替える
 	BYTE MemReadMainRom( WORD ) const;			// 直接読込み
-	BYTE MemReadMainRam( WORD ) const;			// 直接読込み
+	BYTE MemReadIntRam ( WORD ) const;			// 直接読込み
 	BYTE MemReadExtRom ( WORD ) const;			// 直接読込み
+	BYTE MemReadExtRam ( WORD ) const;			// 直接読込み
 	BYTE MemReadCGrom1 ( WORD ) const;			// 直接読込み
 	BYTE MemReadCGrom2 ( WORD ) const;			// 直接読込み
 	BYTE MemReadCGrom3 ( WORD ) const;			// 直接読込み
@@ -159,6 +161,8 @@ public:
 	bool VdgGetWinSize() const;					// ウィンドウサイズ取得
 	bool VdgIsBusReqStop() const;				// バスリクエスト区間停止フラグ取得
 	bool VdgIsBusReqExec() const;				// バスリクエスト区間実行フラグ取得
+	WORD VdgGetVramAddr() const;				// VRAMアドレス取得
+	WORD VdgGerAttrAddr() const;				// ATTRアドレス取得
 	bool VdgIsSRmode() const;					// SRモード取得
 	bool VdgIsSRGVramAccess( WORD, bool ) const;	// SRのG-VRAMアクセス?
 	WORD VdgSRGVramAddr( WORD ) const;			// SRのG-VRAMアドレス取得
@@ -204,6 +208,7 @@ public:
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 };
 
+
 // PC-6001 仮想マシンクラス
 class VM60 : public VM6 {
 private:
@@ -221,7 +226,10 @@ public:
 	const static IOBus::Connector c_8255s[];	// I/O(SUB CPU側)
 	const static IOBus::Connector c_disk[];		// DISK
 	const static IOBus::Connector c_cmtl[];		// CMT(LOAD)
+	const static IOBus::Connector c_soldier[];	// 戦士のカートリッジ
+	
 };
+
 
 // PC-6001A 仮想マシンクラス
 class VM61 : public VM6 {
@@ -232,6 +240,8 @@ public:
 	VM61( EL6 * );								// コンストラクタ
 	~VM61();									// デストラクタ
 };
+
+
 // PC-6001mk2 仮想マシンクラス
 class VM62 : public VM6 {
 private:
@@ -252,6 +262,7 @@ public:
 	const static IOBus::Connector c_disk[];		// DISK
 	const static IOBus::Connector c_cmtl[];		// CMT(LOAD)
 };
+
 
 // PC-6601 仮想マシンクラス
 class VM66 : public VM6 {
@@ -301,5 +312,6 @@ public:
 	// デバイスコネクタ
 	const static IOBus::Connector c_disk[];		// DISK
 };
+
 
 #endif		// P6VM_H_INCLUDED

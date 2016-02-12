@@ -33,14 +33,14 @@
 #define SRMENROM0	(RomB[20])	//					SysRom2
 #define SRMENROM1	(RomB[21])	//					SysRom2+0x2000
 
-#define MAINRAM0	(RamB[0])	// IntRam
-#define MAINRAM1	(RamB[1])	// IntRam+0x2000
-#define MAINRAM2	(RamB[2])	// IntRam+0x4000
-#define MAINRAM3	(RamB[3])	// IntRam+0x6000
-#define MAINRAM4	(RamB[4])	// IntRam+0x8000
-#define MAINRAM5	(RamB[5])	// IntRam+0xa000
-#define MAINRAM6	(RamB[6])	// IntRam+0xc000
-#define MAINRAM7	(RamB[7])	// IntRam+0xe000
+#define INTRAM0		(RamB[0])	// IntRam
+#define INTRAM1		(RamB[1])	// IntRam+0x2000
+#define INTRAM2		(RamB[2])	// IntRam+0x4000
+#define INTRAM3		(RamB[3])	// IntRam+0x6000
+#define INTRAM4		(RamB[4])	// IntRam+0x8000
+#define INTRAM5		(RamB[5])	// IntRam+0xa000
+#define INTRAM6		(RamB[6])	// IntRam+0xc000
+#define INTRAM7		(RamB[7])	// IntRam+0xe000
 #define EXTRAM0		(RamB[8])	// ExtRam
 #define EXTRAM1		(RamB[9])	// ExtRam+0x2000
 #define EXTRAM2		(RamB[10])	// ExtRam+0x4000
@@ -49,11 +49,17 @@
 #define EXTRAM5		(RamB[13])	// ExtRam+0xa000
 #define EXTRAM6		(RamB[14])	// ExtRam+0xc000
 #define EXTRAM7		(RamB[15])	// ExtRam+0xe000
-#define SOLRAM		(RamB[11])	// EXTRAM3と共用
+#define INEXRAM		(RamB[16])	// IntRam+ExtRam
 
 
-#define pEXTROM0	(UseExtRom ? &EXTROM0 : &EMPTYROM)
-#define pEXTROM1	(UseExtRom ? &EXTROM1 : &EMPTYROM)
+#define rMAINROM0	((UseSol && Sol60Mode) ? &EXTRAM0 : &MAINROM0)
+#define rMAINROM1	((UseSol && Sol60Mode) ? &EXTRAM1 : &MAINROM1)
+#define wMAINROM0	((UseSol && Sol60Mode) ? &EXTRAM0 : &EMPTYROM)
+#define wMAINROM1	((UseSol && Sol60Mode) ? &EXTRAM1 : &EMPTYROM)
+#define pEXTRAM0	(UseSol ? &EXTRAM4 : &EXTRAM0)
+#define pEXTRAM1	(UseSol ? &EXTRAM5 : &EXTRAM1)
+#define wEXTROM0	(UseSol ? &EXTRAM2 : &EMPTYROM)
+#define wEXTROM1	(UseSol ? &EXTRAM3 : &EMPTYROM)
 
 
 #define pKNJROM0	(kj_rom ? ( kj_LR ? &KANJIROM2 : &KANJIROM0 ) : &VOICEROM0 )
@@ -64,6 +70,13 @@
 #define	INIT_RF0	(0x71)
 #define INIT_RF1	(0xdd)
 #define INIT_RF2	(0x50)
+
+#define ROMBANK		(0x00)
+#define RAMBANK		(0x40)
+#define SCCBANK		(0x80)
+#define NONBANK		(0xc0)
+
+
 
 
 ////////////////////////////////////////////////////////////////
@@ -76,6 +89,7 @@ const MEM6::ROMINFO MEM60::ACGROM1[]  = { { "CGROM60.60",		0xb0142d32 } };
 // PC-6001A                                 ROMファイル名		CRC32
 const MEM6::ROMINFO MEM61::AMAINROM[] = { { "BASICROM.61",		0xfa8e88d9 } };
 const MEM6::ROMINFO MEM61::ACGROM1[]  = { { "CGROM60.61",		0x49c21d08 } };
+
 // PC-6001mk2                               ROMファイル名		CRC32
 const MEM6::ROMINFO MEM62::AMAINROM[] = { { "BASICROM.62",		0x950ac401 },	// 前期
 										  { "BASICROM.62",		0xd7e61957 } };	// 後期
@@ -103,50 +117,48 @@ const MEM6::ROMINFO MEM64::ACGROM[]   = { { "CGROM68.64",		0x73bc3256 },
 ////////////////////////////////////////////////////////////////
 // メモリ情報
 ////////////////////////////////////////////////////////////////
-// 共通                                 ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
-const MEM6::MEMINFO MEM6::IEMPTROM  = { NULL,     0,                 0x02000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM6::IEMPTRAM  = { NULL,     0,                 0x02000, 0xff,  0, 0 };
-const MEM6::MEMINFO MEM6::IEXTROM   = { NULL,     0,                 0x20000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM6::IEXTRAM   = { NULL,     0,                 0x20000, 0x00,  0, 0 };
-// MEGA-ROM/RAMカートリッジ対応のため
-// 拡張ROM/RAM領域は128KB確保しておく
+// 共通                                 ROM情報   ROM情報要素数      サイズ   初期値 Wait
+const MEM6::MEMINFO MEM6::IEMPTROM  = { NULL,     0,                 0x02000, 0xff,  1 };
+const MEM6::MEMINFO MEM6::IEMPTRAM  = { NULL,     0,                 0x02000, 0xff,  0 };
+const MEM6::MEMINFO MEM6::IEXTROM16 = { NULL,     0,                 0x04000, 0xff,  1 };
+const MEM6::MEMINFO MEM6::IEXTRAM16 = { NULL,     0,                 0x04000, 0x00,  0 };
+const MEM6::MEMINFO MEM6::IEXTRAM64 = { NULL,     0,                 0x10000, 0x00,  0 };
+const MEM6::MEMINFO MEM6::IEXTROMS  = { NULL,     0,                 0x80000, 0xff,  1 };
+const MEM6::MEMINFO MEM6::IEXTRAMS  = { NULL,     0,                 0x20000, 0x00,  0 };
+										// 戦士のカートリッジ対応のため
+										// 拡張ROM領域は512KB,拡張RAM領域は128KB確保しておく
 
-// ----------------------------------------------------------------------------------------
-// 戦士のカートリッジ                   ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
-const MEM6::MEMINFO MEM6::ISOLRAM   = { NULL,     0,                 0x02000, 0xff,  1, 1 };
-// ----------------------------------------------------------------------------------------
+// PC-6001                              ROM情報   ROM情報要素数      サイズ   初期値 Wait
+const MEM6::MEMINFO MEM60::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x04000, 0xff,  1 };
+const MEM6::MEMINFO MEM60::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x01000, 0xff,  1 };
+const MEM6::MEMINFO MEM60::IINTRAM  = { NULL,     0,                 0x04000, 0x00,  0 };
 
-// PC-6001                              ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
-const MEM6::MEMINFO MEM60::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x04000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM60::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x01000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM60::IINTRAM  = { NULL,     0,                 0x04000, 0x00,  0, 0 };
+// PC-6001A                             ROM情報   ROM情報要素数      サイズ   初期値 Wait
+const MEM6::MEMINFO MEM61::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x04000, 0xff,  1 };
+const MEM6::MEMINFO MEM61::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x01000, 0xff,  1 };
+const MEM6::MEMINFO MEM61::IINTRAM  = { NULL,     0,                 0x04000, 0x00,  0 };
 
-// PC-6001A                             ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
-const MEM6::MEMINFO MEM61::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x04000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM61::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x01000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM61::IINTRAM  = { NULL,     0,                 0x04000, 0x00,  0, 0 };
-// PC-6001mk2                           ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
-const MEM6::MEMINFO MEM62::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x08000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x02000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::ICGROM2  = { ACGROM2,  COUNTOF(ACGROM2),  0x02000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::IKANJI   = { AKANJI,   COUNTOF(AKANJI),   0x08000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::IVOICE   = { AVOICE,   COUNTOF(AVOICE),   0x04000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM62::IINTRAM  = { NULL,     0,                 0x10000, 0x00,  0, 0 };
+// PC-6001mk2                           ROM情報   ROM情報要素数      サイズ   初期値 Wait
+const MEM6::MEMINFO MEM62::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x08000, 0xff,  1 };
+const MEM6::MEMINFO MEM62::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x02000, 0xff,  1 };
+const MEM6::MEMINFO MEM62::ICGROM2  = { ACGROM2,  COUNTOF(ACGROM2),  0x02000, 0xff,  1 };
+const MEM6::MEMINFO MEM62::IKANJI   = { AKANJI,   COUNTOF(AKANJI),   0x08000, 0xff,  1 };
+const MEM6::MEMINFO MEM62::IVOICE   = { AVOICE,   COUNTOF(AVOICE),   0x04000, 0xff,  1 };
+const MEM6::MEMINFO MEM62::IINTRAM  = { NULL,     0,                 0x10000, 0x00,  0 };
 
-// PC-6601                              ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
-const MEM6::MEMINFO MEM66::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x08000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x02000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::ICGROM2  = { ACGROM2,  COUNTOF(ACGROM2),  0x02000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::IKANJI   = { AKANJI,   COUNTOF(AKANJI),   0x08000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::IVOICE   = { AVOICE,   COUNTOF(AVOICE),   0x04000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM66::IINTRAM  = { NULL,     0,                 0x10000, 0x00,  0, 0 };
+// PC-6601                              ROM情報   ROM情報要素数      サイズ   初期値 Wait
+const MEM6::MEMINFO MEM66::IMAINROM = { AMAINROM, COUNTOF(AMAINROM), 0x08000, 0xff,  1 };
+const MEM6::MEMINFO MEM66::ICGROM1  = { ACGROM1,  COUNTOF(ACGROM1),  0x02000, 0xff,  1 };
+const MEM6::MEMINFO MEM66::ICGROM2  = { ACGROM2,  COUNTOF(ACGROM2),  0x02000, 0xff,  1 };
+const MEM6::MEMINFO MEM66::IKANJI   = { AKANJI,   COUNTOF(AKANJI),   0x08000, 0xff,  1 };
+const MEM6::MEMINFO MEM66::IVOICE   = { AVOICE,   COUNTOF(AVOICE),   0x04000, 0xff,  1 };
+const MEM6::MEMINFO MEM66::IINTRAM  = { NULL,     0,                 0x10000, 0x00,  0 };
 
-// PC-6001mk2SR / PC-6601SR             ROM情報   ROM情報要素数      サイズ   初期値 Wait(Read/Write)
-const MEM6::MEMINFO MEM64::ISYSROM1 = { ASYSROM1, COUNTOF(ASYSROM1), 0x10000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM64::ISYSROM2 = { ASYSROM2, COUNTOF(ASYSROM2), 0x10000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM64::ICGROM   = { ACGROM,   COUNTOF(ACGROM),   0x04000, 0xff,  1, 1 };
-const MEM6::MEMINFO MEM64::IINTRAM  = { NULL,     0,                 0x10000, 0x00,  0, 0 };
-
+// PC-6001mk2SR / PC-6601SR             ROM情報   ROM情報要素数      サイズ   初期値 Wait
+const MEM6::MEMINFO MEM64::ISYSROM1 = { ASYSROM1, COUNTOF(ASYSROM1), 0x10000, 0xff,  1 };
+const MEM6::MEMINFO MEM64::ISYSROM2 = { ASYSROM2, COUNTOF(ASYSROM2), 0x10000, 0xff,  1 };
+const MEM6::MEMINFO MEM64::ICGROM   = { ACGROM,   COUNTOF(ACGROM),   0x04000, 0xff,  1 };
+const MEM6::MEMINFO MEM64::IINTRAM  = { NULL,     0,                 0x10000, 0x00,  0 };
 
 
 //--------------------------------------------------------------
@@ -156,7 +168,8 @@ const MEM6::MEMINFO MEM64::IINTRAM  = { NULL,     0,                 0x10000, 0x
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-MemBlock::MemBlock( void ) : MB(NULL), RWait(0), WWait(0), WPt(false)
+MemBlock::MemBlock( void ) : PRead(NULL), PWrite(NULL), FRead(NULL), FWrite(NULL),
+							 Inst(NULL), Wait(0), WPt(false)
 {
 	INITARRAY( Name, '\0' );
 }
@@ -169,36 +182,87 @@ MemBlock::~MemBlock( void ){}
 
 
 ////////////////////////////////////////////////////////////////
-// メモリブロック設定
+// メモリ割当て
 //
 // 引数:	name	メモリブロック名
 //			mem		メモリブロックへのポインタ
-//			rw		アクセスウェイト(読込み)
-//			ww		アクセスウェイト(書込み)
+//			wait	アクセスウェイト(-1:変更しない)
 //			prt		ライトプロテクトフラグ true:セット false：解除
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void MemBlock::SetMemory( const char *name, BYTE *mem, int rw, int ww, bool prt )
+void MemBlock::SetMemory( const char *name, BYTE *mem, int wait, bool prt )
 {
-	strncpy( Name, name, 32 );
-	MB    = mem;
-	RWait = rw;
-	WWait = ww;
-	WPt = prt;
+	if( name ) strncpy( Name, name, 32 );
+	PRead  = PWrite = mem;
+	FRead  = NULL;
+	FWrite = NULL;
+	Inst   = NULL;
+	Wait   = wait == -1 ? Wait : wait;
+	WPt    = prt;
+}
+
+
+////////////////////////////////////////////////////////////////
+// ROM割当て
+//
+// 引数:	name	メモリブロック名
+//			mem		メモリブロックへのポインタ
+//			wait	アクセスウェイト(-1:変更しない)
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void MemBlock::SetRom( const char *name, BYTE *mem, int wait )
+{
+	SetMemory( name, mem, wait, true );
+}
+
+
+////////////////////////////////////////////////////////////////
+// RAM割当て
+//
+// 引数:	name	メモリブロック名
+//			mem		メモリブロックへのポインタ
+//			wait	アクセスウェイト(-1:変更しない)
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void MemBlock::SetRam( const char *name, BYTE *mem, int wait )
+{
+	SetMemory( name, mem, wait, false );
+}
+
+
+////////////////////////////////////////////////////////////////
+// 関数割当て
+//
+// 引数:	name	メモリブロック名
+//			data	関数用データポインタ
+//			inst	オブジェクトポインタ
+//			rd		読込み関数ポインタ
+//			wr		書込み関数ポインタ
+//			wait	アクセスウェイト(-1:変更しない)
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void MemBlock::SetFunc( const char *name, BYTE *data, IDevice *inst, RFuncPtr rd, WFuncPtr wr, int wait )
+{
+	if( name ) strncpy( Name, name, 32 );
+	Inst   = inst;
+	FRead  = Inst ? rd   : NULL;
+	FWrite = Inst ? wr   : NULL;
+	PRead  = rd   ? data : NULL;
+	PWrite = wr   ? data : NULL;
+	Wait   = wait == -1 ? Wait : wait;
+	WPt    = wr ? false : true;
 }
 
 
 ////////////////////////////////////////////////////////////////
 // アクセスウェイト設定
 //
-// 引数:	rw		アクセスウェイト(読込み)
-//			ww		アクセスウェイト(書込み)
+// 引数:	wait	アクセスウェイト
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void MemBlock::SetWait( int rw, int ww )
+void MemBlock::SetWait( int wait )
 {
-	RWait = rw;
-	WWait = ww;
+	Wait = wait;
 }
 
 
@@ -206,12 +270,11 @@ void MemBlock::SetWait( int rw, int ww )
 // アクセスウェイト取得
 //
 // 引数:	なし
-// 返値:	bit0-7	読込み時ウェイト
-//			bit8-15	書込み時ウェイト
+// 返値:	ウェイト
 ////////////////////////////////////////////////////////////////
 int MemBlock::GetWait( void ) const
 {
-	return ((WWait&0xff)<<8) | (RWait&0xff);
+	return (Wait&0xff);
 }
 
 
@@ -256,8 +319,12 @@ const char *MemBlock::GetName( void ) const
 ////////////////////////////////////////////////////////////////
 BYTE MemBlock::Read( WORD addr, int *wcnt ) const
 {
-	if( wcnt ) (*wcnt) += RWait;
-	return MB[addr&0x1fff];
+	if( wcnt ) (*wcnt) += Wait;
+	
+	if( Inst && FRead ) return (Inst->*FRead)( PRead, addr );
+	else if( PRead )    return ((BYTE *)PRead)[addr & PAGEMASK];
+	
+	return 0xff;
 }
 
 
@@ -266,9 +333,19 @@ BYTE MemBlock::Read( WORD addr, int *wcnt ) const
 ////////////////////////////////////////////////////////////////
 void MemBlock::Write( WORD addr, BYTE data, int *wcnt ) const
 {
-	if( wcnt ) (*wcnt) += WWait;
-	if( !WPt ) MB[addr&0x1fff] = data;
+	if( wcnt ) (*wcnt) += Wait;
+	
+	if( WPt ) return;
+	
+	if( Inst && FWrite ) (Inst->*FWrite)( PWrite, addr, data );
+	else if( PWrite)     ((BYTE *)PWrite)[addr & PAGEMASK] = data;
 }
+
+
+
+
+
+
 
 
 
@@ -280,11 +357,10 @@ MEM6::MEM6( VM6 *vm, const ID& id ) : Device(vm,id),
 	CGBank(false), UseExtRom(false), UseExtRam(false),
 	MainRom(NULL), SysRom2(NULL), ExtRom(NULL), CGRom1(NULL), CGRom2(NULL),
 	KanjiRom(NULL), VoiceRom(NULL), IntRam(NULL), ExtRam(NULL),
-	EmptyRom(NULL), EmptyRam(NULL),	M1Wait(1), EnableChkCRC(true),
+	M1Wait(1), EnableChkCRC(true),
 	
 	cgrom(true), kj_rom(true), kj_LR(true), cgenable(true), cgaddr(3),
-	
-	UseSol(false), SolBank(0)
+	UseSol(false), Sol60Mode(false), SolBankSet(0)
 {
 	Rf[0] = INIT_RF0;
 	Rf[1] = INIT_RF1;
@@ -300,9 +376,10 @@ MEM6::MEM6( VM6 *vm, const ID& id ) : Device(vm,id),
 	
 	MemTable.EmptRom = &MEM6::IEMPTROM;
 	MemTable.EmptRam = &MEM6::IEMPTRAM;
-	MemTable.ExtRom  = &MEM6::IEXTROM;
-	MemTable.ExtRam  = &MEM6::IEXTRAM;
-	MemTable.SolRam  = &MEM6::ISOLRAM;
+	MemTable.ExtRom  = &MEM6::IEXTROM16;
+	MemTable.ExtRam  = &MEM6::IEXTRAM16;
+	
+	INITARRAY( SolBank, NONBANK );
 }
 
 MEM60::MEM60( VM6 *vm, const ID& id ) : MEM6(vm,id)
@@ -339,6 +416,7 @@ MEM62::MEM62( VM6 *vm, const ID& id ) : MEM6(vm,id)
 	MemTable.CGRom2  = &MEM62::ICGROM2;
 	MemTable.Kanji   = &MEM62::IKANJI;
 	MemTable.Voice   = &MEM62::IVOICE;
+	MemTable.ExtRam  = &MEM6::IEXTRAM64;
 }
 
 MEM66::MEM66( VM6 *vm, const ID& id ) : MEM62(vm,id)
@@ -355,6 +433,7 @@ MEM66::MEM66( VM6 *vm, const ID& id ) : MEM62(vm,id)
 	MemTable.CGRom2  = &MEM66::ICGROM2;
 	MemTable.Kanji   = &MEM66::IKANJI;
 	MemTable.Voice   = &MEM66::IVOICE;
+	MemTable.ExtRam  = &MEM6::IEXTRAM64;
 }
 
 MEM64::MEM64( VM6 *vm, const ID& id ) : MEM62(vm,id)
@@ -373,6 +452,7 @@ MEM64::MEM64( VM6 *vm, const ID& id ) : MEM62(vm,id)
 	MemTable.CGRom2  = NULL;
 	MemTable.Kanji   = NULL;
 	MemTable.Voice   = NULL;
+	MemTable.ExtRam  = &MEM6::IEXTRAM64;
 }
 
 MEM68::MEM68( VM6 *vm, const ID& id ) : MEM64(vm,id){}
@@ -392,13 +472,12 @@ MEM6::~MEM6( void )
 	if( VoiceRom )	delete[] VoiceRom;
 	if( IntRam )	delete[] IntRam;
 	if( ExtRam )	delete[] ExtRam;
-	if( EmptyRom )	delete[] EmptyRom;
-	if( EmptyRam )	delete[] EmptyRam;
 }
 
 MEM60::~MEM60( void ){}
 
 MEM61::~MEM61( void ){}
+
 MEM62::~MEM62( void ){}
 
 MEM66::~MEM66( void ){}
@@ -406,6 +485,97 @@ MEM66::~MEM66( void ){}
 MEM64::~MEM64( void ){}
 
 MEM68::~MEM68( void ){}
+
+
+
+////////////////////////////////////////////////////////////////
+// メモリブロック用関数
+////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////
+// 戦士のカートリッジ読込み(拡張ROM領域)
+//   mkII以降の場合,拡張ROMは4000-7FFFH以外に割当てることができるので
+//   どこに割当てられてもアクセスできるように一段階かませる
+////////////////////////////////////////////////////////////////
+BYTE MEM6::SolReadEx( BYTE *ptr, WORD addr )
+{
+	MemBlock *mb = &EXTRAM0;
+	
+	return mb[addr>>MemBlock::PAGEBITS].Read( addr );
+}
+
+
+////////////////////////////////////////////////////////////////
+// 戦士のカートリッジROM/RAM読込み
+////////////////////////////////////////////////////////////////
+BYTE MEM6::SolMemRead( BYTE *ptr, WORD addr )
+{
+	return ptr[addr & MemBlock::PAGEMASK];
+}
+
+
+////////////////////////////////////////////////////////////////
+// 戦士のカートリッジRAM書込み
+////////////////////////////////////////////////////////////////
+void MEM6::SolMemWrite( BYTE *ptr, WORD addr, BYTE data )
+{
+	ptr[addr & MemBlock::PAGEMASK] = data;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 戦士のカートリッジSCC読込み
+////////////////////////////////////////////////////////////////
+BYTE MEM6::SolSccRead( BYTE *ptr, WORD addr )
+{
+	// 後で書く
+	return 0xff;
+}
+
+
+////////////////////////////////////////////////////////////////
+// 戦士のカートリッジSCC書込み
+////////////////////////////////////////////////////////////////
+void MEM6::SolSccWrite( BYTE *ptr, WORD addr, BYTE data )
+{
+	// 後で書く
+}
+
+
+////////////////////////////////////////////////////////////////
+// PC-6001 CGROM読込み
+////////////////////////////////////////////////////////////////
+BYTE MEM60::CGromRead( BYTE *ptr, WORD addr )
+{
+	// 前半4KBはそのままデータを返す
+	if( !(addr & 0x1000) )	return ptr[addr & MemBlock::PAGEMASK];
+	
+	// 後半4KBを読込んだ時の挙動を記述
+	// 拡張ROMが無い場合はCGROMのイメージとなるらしい
+	// 戦士のカートリッジの場合はホントはコレジャナイんだけど後回し
+	return UseExtRom ? ExtRom[0x3000 + (addr & MemBlock::PAGEMASK)] : ptr[addr & (MemBlock::PAGEMASK>>1)];
+}
+
+
+////////////////////////////////////////////////////////////////
+// PC-6001mk2以降 内部/外部RAM書込み
+////////////////////////////////////////////////////////////////
+void MEM62::IERamWrite( BYTE *ptr, WORD addr, BYTE data )
+{
+	MemBlock *imb = &INTRAM0;
+	MemBlock *emb = &EXTRAM0;
+	
+	imb[addr>>MemBlock::PAGEBITS].Write( addr, data );
+	emb[addr>>MemBlock::PAGEBITS].Write( addr, data );
+}
+
+
+
+////////////////////////////////////////////////////////////////
+// メモリブロック用関数 ここまで
+////////////////////////////////////////////////////////////////
+
+
 
 
 ////////////////////////////////////////////////////////////////
@@ -421,7 +591,7 @@ bool MEM6::MountExtRom( const char *filename )
 	try{
 		FILE *fp = FOPENEN( filename, "rb" );
 		if( !fp ) throw Error::ExtRomMountFailed;
-		fread( ExtRom, sizeof(BYTE), IEXTROM.Size, fp );
+		fread( ExtRom, sizeof(BYTE), MemTable.ExtRom->Size, fp );
 		fclose( fp );
 		
 		// ファイルパス保存
@@ -452,7 +622,7 @@ void MEM6::UnmountExtRom( void )
 {
 	PRINTD( MEM_LOG, "[MEM][UnmountExtRom]\n" );
 	
-	memset( ExtRom, IEXTROM.Init, IEXTROM.Size );
+	memset( ExtRom, MemTable.ExtRom->Init, MemTable.ExtRom->Size );
 	*FilePath = '\0';
 	
 	UseExtRom = false;
@@ -511,7 +681,7 @@ bool MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, const char *path )
 				// CRCチェック
 				// EnableChkCRC=false または CRC=0の時はチェックしない
 				else if( EnableChkCRC && (info->Rinf[i].Crc != 0) &&
-						 ( CalcCrc32( *buf, info->Size ) != info->Rinf[i].Crc ) )
+					( CalcCrc32( *buf, info->Size ) != info->Rinf[i].Crc ) )
 					ErrCrc = true;
 				else{
 					PRINTD( MEM_LOG, "-> OK\n" );
@@ -554,16 +724,21 @@ bool MEM6::AllocMemory( BYTE **buf, const MEMINFO *info, const char *path )
 ////////////////////////////////////////////////////////////////
 // 全メモリ確保とROMファイル読込み
 ////////////////////////////////////////////////////////////////
-bool MEM6::AllocAllMemory( const char *path, bool chkcrc )
+bool MEM6::AllocAllMemory( const char *path, BYTE data )
 {
 	PRINTD( MEM_LOG, "[MEM][AllocAllMemory]\n" );
 	
-	EnableChkCRC = chkcrc;		// CRCチェック有効
+	EnableChkCRC = data & MCRCCHK   ? true : false;		// CRCチェック有効
+	UseExtRam    = data & MUSEEXRAM ? true : false;		// 外部RAM有効
+	UseSol       = data & MUSESOL   ? true : false;		// 戦士のカートリッジ有効
+	
+	// 戦士のカートリッジ使用時はRAM128KB
+	if( UseSol ){
+		MemTable.ExtRom = &MEM6::IEXTROMS;
+		MemTable.ExtRam = &MEM6::IEXTRAMS;
+	}
 	
 	// 共通
-	if( !AllocMemory( &EmptyRom, MemTable.EmptRom, NULL ) ) return false;
-	if( !AllocMemory( &EmptyRam, MemTable.EmptRam, NULL ) ) return false;
-	
 	if( !AllocMemory( &ExtRom,   MemTable.ExtRom,  NULL ) ) return false;
 	if( !AllocMemory( &ExtRam,   MemTable.ExtRam,  NULL ) ) return false;
 	if( !AllocMemory( &IntRam,   MemTable.IntRam,  NULL ) ) return false;
@@ -571,18 +746,45 @@ bool MEM6::AllocAllMemory( const char *path, bool chkcrc )
 	if( !AllocMemory( &MainRom,  MemTable.System1, path ) ) return false;
 	if( !AllocMemory( &CGRom1,   MemTable.CGRom1,  path ) ) return false;
 	
-	// 62,66
-	if( MemTable.CGRom2 )  if( !AllocMemory( &CGRom2,   MemTable.CGRom2, path ) ) return false;
-	if( MemTable.Kanji )   if( !AllocMemory( &KanjiRom, MemTable.Kanji,  path ) ) return false;
-	if( MemTable.Voice )   if( !AllocMemory( &VoiceRom, MemTable.Voice,  path ) ) return false;
-	
-	// 64,68
-	if( MemTable.System2 ) if( !AllocMemory( &SysRom2,  MemTable.System2, path ) ) return false;
+	 // 全メモリ確保とROMファイル読込み(機種別)
+	if( !AllocMemorySpecific( path ) ) return false;
 	
 	SetRamValue();
 	
 	return true;
 }
+
+
+////////////////////////////////////////////////////////////////
+// 全メモリ確保とROMファイル読込み(機種別)
+////////////////////////////////////////////////////////////////
+bool MEM60::AllocMemorySpecific( const char *path )
+{
+	PRINTD( MEM_LOG, "[MEM][AllocMemorySpecific]\n" );
+	
+	return true;
+}
+
+bool MEM62::AllocMemorySpecific( const char *path )
+{
+	PRINTD( MEM_LOG, "[MEM][AllocMemorySpecific]\n" );
+	
+	if( !AllocMemory( &CGRom2,   MemTable.CGRom2, path ) ) return false;
+	if( !AllocMemory( &KanjiRom, MemTable.Kanji,  path ) ) return false;
+	if( !AllocMemory( &VoiceRom, MemTable.Voice,  path ) ) return false;
+	
+	return true;
+}
+
+bool MEM64::AllocMemorySpecific( const char *path )
+{
+	PRINTD( MEM_LOG, "[MEM][AllocMemorySpecific]\n" );
+	
+	if( !AllocMemory( &SysRom2,  MemTable.System2, path ) ) return false;
+	
+	return true;
+}
+
 
 ////////////////////////////////////////////////////////////////
 // RAMの初期値を設定
@@ -590,16 +792,16 @@ bool MEM6::AllocAllMemory( const char *path, bool chkcrc )
 void MEM60::SetRamValue( void )
 {
 	BYTE *addr = IntRam;
-	for( int i=0; i<(int)IINTRAM.Size/128; i++ ){
-		for( int j=0; j<64; j++ ) *addr++ = 0x00;
+	for( int i=0; i<(int)MemTable.IntRam->Size/128; i++ ){
 		for( int j=0; j<64; j++ ) *addr++ = 0xff;
+		for( int j=0; j<64; j++ ) *addr++ = 0x00;
 	}
 }
 
 void MEM62::SetRamValue( void )
 {
 	BYTE *addr = IntRam;
-	for( int i=0; i<(int)IINTRAM.Size/256; i++ ){
+	for( int i=0; i<(int)MemTable.IntRam->Size/256; i++ ){
 		for( int j=0; j<64; j++ ){
 			*addr++ = 0x00;
 			*addr++ = 0xff;
@@ -656,48 +858,50 @@ void MEM68::SetRamValue( void )
 ////////////////////////////////////////////////////////////////
 // 初期化
 ////////////////////////////////////////////////////////////////
-bool MEM6::Init( bool useexram, bool usesol )
+bool MEM6::Init( void )
 {
 	PRINTD( MEM_LOG, "[MEM][Init]\n" );
 	
-	UseExtRam = useexram;	// 外部RAM有効
-	UseSol    = usesol;		// 戦士のカートリッジ有効
-	
 	// メモリブロック設定
-	// とりあえず全てEmptyに設定
+	// とりあえず全てEmptyに設定(ROMはウェイトあり)
 	for( int i=0; i<MAXRMB; i++ )
-		RomB[i].SetMemory( "EmpRom", EmptyRom, MemTable.EmptRom->WaitR, MemTable.EmptRom->WaitW, true );
+		RomB[i].SetFunc( "Empty", NULL, NULL, NULL, NULL, 1 );
 	for( int i=0; i<MAXWMB; i++ )
-		RamB[i].SetMemory( "EmpRam", EmptyRam, MemTable.EmptRam->WaitR, MemTable.EmptRam->WaitW, true );
+		RamB[i].SetFunc( "Empty", NULL, NULL, NULL, NULL, 0 );
 	
 	// 拡張ROM領域
-	EXTROM0.SetMemory( "ExRom0", ExtRom,        MemTable.ExtRom->WaitR, MemTable.ExtRom->WaitW, true );
-	EXTROM1.SetMemory( "ExRom1", ExtRom+0x2000, MemTable.ExtRom->WaitR, MemTable.ExtRom->WaitW, true );
+	if( UseSol ){			// 戦士のカートリッジ
+		EXTROM0.SetFunc( "ExRom0", ExtRom,        this, (RFuncPtr)&MEM6::SolReadEx, NULL, MemTable.ExtRom->Wait );
+		EXTROM1.SetFunc( "ExRom1", ExtRom+0x2000, this, (RFuncPtr)&MEM6::SolReadEx, NULL, MemTable.ExtRom->Wait );
+	}else{
+		EXTROM0.SetRom ( "ExRom0", ExtRom,        MemTable.ExtRom->Wait );
+		EXTROM1.SetRom ( "ExRom1", ExtRom+0x2000, MemTable.ExtRom->Wait );
+	}
 	
 	// 外部RAM設定(排他)
 	if( UseSol ){			// 戦士のカートリッジ
-		EXTRAM0.SetMemory( "ExRam0", ExtRam,        MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM1.SetMemory( "ExRam1", ExtRam+0x2000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		SOLRAM.SetMemory ( "SolRam", ExtRam+0x6000, MemTable.SolRam->WaitR, MemTable.SolRam->WaitW, false );
+		SetSolBank( 3, RAMBANK | 3 );
+		SetSolBank( 4, RAMBANK | 4 );
+		SetSolBank( 5, RAMBANK | 5 );
 	}else if( UseExtRam ){	// RAMカートリッジ
-		EXTRAM0.SetMemory( "ExRam0", ExtRam,        MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM1.SetMemory( "ExRam1", ExtRam+0x2000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM2.SetMemory( "ExRam2", ExtRam+0x4000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM3.SetMemory( "ExRam3", ExtRam+0x6000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM4.SetMemory( "ExRam4", ExtRam+0x8000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM5.SetMemory( "ExRam5", ExtRam+0xa000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM6.SetMemory( "ExRam6", ExtRam+0xc000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
-		EXTRAM7.SetMemory( "ExRam7", ExtRam+0xe000, MemTable.ExtRam->WaitR, MemTable.ExtRam->WaitW, false );
+		MemBlock *mb = &EXTRAM0;
+		char stren[16];
+		
+		for( int i=0; i<(int)MemTable.ExtRam->Size/0x2000; i++ ){
+			sprintf( stren, "ExRam%d", i );
+			(mb++)->SetRam ( stren, ExtRam+0x2000*i, MemTable.ExtRam->Wait );
+		}
 	}
 	
-	// 機種別初期化
+	 // 初期化(機種別)
 	if( !InitSpecific() ) return false;
 	
 	return true;
 }
 
+
 ////////////////////////////////////////////////////////////////
-// 機種別初期化
+// 初期化(機種別)
 ////////////////////////////////////////////////////////////////
 bool MEM60::InitSpecific( void )
 {
@@ -705,15 +909,22 @@ bool MEM60::InitSpecific( void )
 	
 	// メモリブロック設定
 	// BASIC ROM
-	MAINROM0.SetMemory( "Basic0", MainRom,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM1.SetMemory( "Basic1", MainRom+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM0.SetRom( "Basic0", MainRom,        MemTable.System1->Wait );
+	MAINROM1.SetRom( "Basic1", MainRom+0x2000, MemTable.System1->Wait );
 	
 	// CG ROM
-	CGROM1.SetMemory  ( "CGRom1", CGRom1,         MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
+	CGROM1.SetFunc ( "CGRom1", CGRom1, this, (RFuncPtr)&MEM60::CGromRead, NULL, MemTable.CGRom1->Wait );
 	
 	// 内部RAM
-	MAINRAM0.SetMemory( "InRam0", IntRam,         MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM1.SetMemory( "InRam1", IntRam+0x2000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	INTRAM0.SetRam ( "InRam0", IntRam,         MemTable.IntRam->Wait );
+	INTRAM1.SetRam ( "InRam1", IntRam+0x2000,  MemTable.IntRam->Wait );
+	
+	if( UseSol ){			// 戦士のカートリッジ
+		EXTRAM0.SetWait( MemTable.System1->Wait );
+		EXTRAM1.SetWait( MemTable.System1->Wait );
+		EXTRAM2.SetWait( MemTable.ExtRom->Wait );
+		EXTRAM3.SetWait( MemTable.ExtRom->Wait );
+	}
 	
 	return true;
 }
@@ -724,34 +935,37 @@ bool MEM62::InitSpecific( void )
 	
 	// メモリブロック設定
 	// BASIC ROM
-	MAINROM0.SetMemory ( "Basic0", MainRom,         MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM1.SetMemory ( "Basic1", MainRom+0x2000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM2.SetMemory ( "Basic2", MainRom+0x4000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM3.SetMemory ( "Basic3", MainRom+0x6000,  MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM0.SetRom ( "Basic0", MainRom,         MemTable.System1->Wait );
+	MAINROM1.SetRom ( "Basic1", MainRom+0x2000,  MemTable.System1->Wait );
+	MAINROM2.SetRom ( "Basic2", MainRom+0x4000,  MemTable.System1->Wait );
+	MAINROM3.SetRom ( "Basic3", MainRom+0x6000,  MemTable.System1->Wait );
 	
 	// CG ROM
-	CGROM1.SetMemory   ( "CGRom1", CGRom1,          MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
-	CGROM2.SetMemory   ( "CGRom2", CGRom2,          MemTable.CGRom2->WaitR,  MemTable.CGRom2->WaitW,  true );
+	CGROM1.SetRom   ( "CGRom1", CGRom1,          MemTable.CGRom1->Wait );
+	CGROM2.SetRom   ( "CGRom2", CGRom2,          MemTable.CGRom2->Wait );
 	
 	// 漢字ROM
-	KANJIROM0.SetMemory( "KjRom0", KanjiRom,        MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
-	KANJIROM1.SetMemory( "KjRom1", KanjiRom+0x2000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
-	KANJIROM2.SetMemory( "KjRom2", KanjiRom+0x4000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
-	KANJIROM3.SetMemory( "KjRom3", KanjiRom+0x6000, MemTable.Kanji->WaitR,   MemTable.Kanji->WaitW,   true );
+	KANJIROM0.SetRom( "KjRom0", KanjiRom,        MemTable.Kanji->Wait );
+	KANJIROM1.SetRom( "KjRom1", KanjiRom+0x2000, MemTable.Kanji->Wait );
+	KANJIROM2.SetRom( "KjRom2", KanjiRom+0x4000, MemTable.Kanji->Wait );
+	KANJIROM3.SetRom( "KjRom3", KanjiRom+0x6000, MemTable.Kanji->Wait );
 	
 	// 音声合成ROM
-	VOICEROM0.SetMemory( "VoRom0", VoiceRom,        MemTable.Voice->WaitR,   MemTable.Voice->WaitW,   true );
-	VOICEROM1.SetMemory( "VoRom1", VoiceRom+0x2000, MemTable.Voice->WaitR,   MemTable.Voice->WaitW,   true );
+	VOICEROM0.SetRom( "VoRom0", VoiceRom,        MemTable.Voice->Wait );
+	VOICEROM1.SetRom( "VoRom1", VoiceRom+0x2000, MemTable.Voice->Wait );
 	
 	// 内部RAM
-	MAINRAM0.SetMemory ( "InRam0", IntRam,          MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM1.SetMemory ( "InRam1", IntRam+0x2000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM2.SetMemory ( "InRam2", IntRam+0x4000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM3.SetMemory ( "InRam3", IntRam+0x6000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM4.SetMemory ( "InRam4", IntRam+0x8000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM5.SetMemory ( "InRam5", IntRam+0xa000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM6.SetMemory ( "InRam6", IntRam+0xc000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM7.SetMemory ( "InRam7", IntRam+0xe000,   MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	INTRAM0.SetRam  ( "InRam0", IntRam,          MemTable.IntRam->Wait );
+	INTRAM1.SetRam  ( "InRam1", IntRam+0x2000,   MemTable.IntRam->Wait );
+	INTRAM2.SetRam  ( "InRam2", IntRam+0x4000,   MemTable.IntRam->Wait );
+	INTRAM3.SetRam  ( "InRam3", IntRam+0x6000,   MemTable.IntRam->Wait );
+	INTRAM4.SetRam  ( "InRam4", IntRam+0x8000,   MemTable.IntRam->Wait );
+	INTRAM5.SetRam  ( "InRam5", IntRam+0xa000,   MemTable.IntRam->Wait );
+	INTRAM6.SetRam  ( "InRam6", IntRam+0xc000,   MemTable.IntRam->Wait );
+	INTRAM7.SetRam  ( "InRam7", IntRam+0xe000,   MemTable.IntRam->Wait );
+	
+	// 内部/外部RAM書込み
+	INEXRAM.SetFunc( "IERam", NULL, this, NULL, (WFuncPtr)&MEM62::IERamWrite, MemTable.IntRam->Wait );
 	
 	return true;
 }
@@ -762,44 +976,44 @@ bool MEM64::InitSpecific( void )
 	
 	// メモリブロック設定
 	// N66-BASIC ROM
-	MAINROM0.SetMemory ( "SYS1-0", MainRom,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM1.SetMemory ( "SYS1-1", MainRom+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM2.SetMemory ( "SYS1-2", MainRom+0x4000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM3.SetMemory ( "SYS1-3", MainRom+0x6000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM0.SetRom ( "SYS1-0", MainRom,        MemTable.System1->Wait );
+	MAINROM1.SetRom ( "SYS1-1", MainRom+0x2000, MemTable.System1->Wait );
+	MAINROM2.SetRom ( "SYS1-2", MainRom+0x4000, MemTable.System1->Wait );
+	MAINROM3.SetRom ( "SYS1-3", MainRom+0x6000, MemTable.System1->Wait );
 	
 	// N66SR-BASIC ROM
-	MAINROM4.SetMemory ( "SYS1-4", MainRom+0x8000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM5.SetMemory ( "SYS1-5", MainRom+0xa000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM6.SetMemory ( "SYS1-6", MainRom+0xc000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	MAINROM7.SetMemory ( "SYS1-7", MainRom+0xe000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	MAINROM4.SetRom ( "SYS1-4", MainRom+0x8000, MemTable.System1->Wait );
+	MAINROM5.SetRom ( "SYS1-5", MainRom+0xa000, MemTable.System1->Wait );
+	MAINROM6.SetRom ( "SYS1-6", MainRom+0xc000, MemTable.System1->Wait );
+	MAINROM7.SetRom ( "SYS1-7", MainRom+0xe000, MemTable.System1->Wait );
 	
 	// SR メニューROM
-	SRMENROM0.SetMemory( "SYS2-0", SysRom2,        MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	SRMENROM1.SetMemory( "SYS2-1", SysRom2+0x2000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	SRMENROM0.SetRom( "SYS2-0", SysRom2,        MemTable.System1->Wait );
+	SRMENROM1.SetRom( "SYS2-1", SysRom2+0x2000, MemTable.System1->Wait );
 	
 	// 音声合成ROM
-	VOICEROM0.SetMemory( "SYS2-2", SysRom2+0x4000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	VOICEROM1.SetMemory( "SYS2-3", SysRom2+0x6000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	VOICEROM0.SetRom( "SYS2-2", SysRom2+0x4000, MemTable.System1->Wait );
+	VOICEROM1.SetRom( "SYS2-3", SysRom2+0x6000, MemTable.System1->Wait );
 	
 	// 漢字ROM
-	KANJIROM0.SetMemory( "SYS2-4", SysRom2+0x8000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	KANJIROM1.SetMemory( "SYS2-5", SysRom2+0xa000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	KANJIROM2.SetMemory( "SYS2-6", SysRom2+0xc000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
-	KANJIROM3.SetMemory( "SYS2-7", SysRom2+0xe000, MemTable.System1->WaitR, MemTable.System1->WaitW, true );
+	KANJIROM0.SetRom( "SYS2-4", SysRom2+0x8000, MemTable.System1->Wait );
+	KANJIROM1.SetRom( "SYS2-5", SysRom2+0xa000, MemTable.System1->Wait );
+	KANJIROM2.SetRom( "SYS2-6", SysRom2+0xc000, MemTable.System1->Wait );
+	KANJIROM3.SetRom( "SYS2-7", SysRom2+0xe000, MemTable.System1->Wait );
 	
 	// CG ROM
-	CGROM1.SetMemory   ( "CGRom1", CGRom1,         MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
-	CGROM2.SetMemory   ( "CGRom2", CGRom1+0x2000,  MemTable.CGRom1->WaitR,  MemTable.CGRom1->WaitW,  true );
+	CGROM1.SetRom   ( "CGRom1", CGRom1,         MemTable.CGRom1->Wait );
+	CGROM2.SetRom   ( "CGRom2", CGRom1+0x2000,  MemTable.CGRom1->Wait );
 	
 	// 内部RAM
-	MAINRAM0.SetMemory ( "InRam0", IntRam,         MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM1.SetMemory ( "InRam1", IntRam+0x2000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM2.SetMemory ( "InRam2", IntRam+0x4000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM3.SetMemory ( "InRam3", IntRam+0x6000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM4.SetMemory ( "InRam4", IntRam+0x8000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM5.SetMemory ( "InRam5", IntRam+0xa000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM6.SetMemory ( "InRam6", IntRam+0xc000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
-	MAINRAM7.SetMemory ( "InRam7", IntRam+0xe000,  MemTable.IntRam->WaitR,  MemTable.IntRam->WaitW,  false );
+	INTRAM0.SetRam  ( "InRam0", IntRam,         MemTable.IntRam->Wait );
+	INTRAM1.SetRam  ( "InRam1", IntRam+0x2000,  MemTable.IntRam->Wait );
+	INTRAM2.SetRam  ( "InRam2", IntRam+0x4000,  MemTable.IntRam->Wait );
+	INTRAM3.SetRam  ( "InRam3", IntRam+0x6000,  MemTable.IntRam->Wait );
+	INTRAM4.SetRam  ( "InRam4", IntRam+0x8000,  MemTable.IntRam->Wait );
+	INTRAM5.SetRam  ( "InRam5", IntRam+0xa000,  MemTable.IntRam->Wait );
+	INTRAM6.SetRam  ( "InRam6", IntRam+0xc000,  MemTable.IntRam->Wait );
+	INTRAM7.SetRam  ( "InRam7", IntRam+0xe000,  MemTable.IntRam->Wait );
 	
 	return true;
 }
@@ -829,33 +1043,12 @@ void MEM64::Patch( void )
 ////////////////////////////////////////////////////////////////
 // リセット
 ////////////////////////////////////////////////////////////////
-void MEM6::Reset(){}
-
-void MEM60::Reset( void )
+void MEM6::Reset()
 {
 	PRINTD( MEM_LOG, "[MEM][Reset]\n" );
 	
 	CGBank = false;	// CG ROM BANK 無効
 	
-	// CGROMの後半4KBに拡張ROMの内容をコピー
-	// (バンク切り替えを8KB単位で行うため)
-	// 拡張ROMが無い場合はCGROMのイメージとなるらしい
-	memcpy( &CGRom1[0x1000], UseExtRom ? &ExtRom[0x3000] : &CGRom1[0x0000], 0x1000 );
-	
-	SetMemBlockR( 0, 0 );
-	SetMemBlockW( 0 );
-	
-	
-	// 戦士のカートリッジ ------------------------------------------
-	if( UseSol ) SetSolBank( 0 );	// メモリバンク初期化
-	// -------------------------------------------------------------
-}
-
-void MEM62::Reset( void )
-{
-	PRINTD( MEM_LOG, "[MEM][Reset]\n" );
-	
-	CGBank = false;	// CG ROM BANK 無効
 	Rf[0] = INIT_RF0;	// メモリコントローラ内部レジスタ初期値設定
 	Rf[1] = INIT_RF1;	// メモリコントローラ内部レジスタ初期値設定
 	Rf[2] = INIT_RF2;	// メモリコントローラ内部レジスタ初期値設定
@@ -864,31 +1057,27 @@ void MEM62::Reset( void )
 	SetMemBlockW( Rf[2] );
 	
 	// 戦士のカートリッジ ------------------------------------------
-	if( UseSol ) SetSolBank( 0 );	// メモリバンク初期化
+	if( UseSol ){
+		Sol60Mode = false;
+		
+		// メモリバンク初期化
+		BYTE bk[] = { NONBANK,     NONBANK,     ROMBANK | 0, RAMBANK | 3,
+					  RAMBANK | 4, RAMBANK | 5, NONBANK,     NONBANK      };
+		for( int i=0; i<8; i++ )
+			SetSolBank( i, bk[i] );
+	}
 	// -------------------------------------------------------------
 }
 
 void MEM64::Reset( void )
 {
-	PRINTD( MEM_LOG, "[MEM][Reset]\n" );
-	
-	CGBank = false;	// CG ROM BANK 無効
-	Rf[0] = INIT_RF0;	// メモリコントローラ内部レジスタ初期値設定
-	Rf[1] = INIT_RF1;	// メモリコントローラ内部レジスタ初期値設定
-	Rf[2] = INIT_RF2;	// メモリコントローラ内部レジスタ初期値設定
-	
-	SetMemBlockR( Rf[0], Rf[1] );
-	SetMemBlockW( Rf[2] );
+	MEM6::Reset();
 	
 	// TO DO
 	const BYTE initmb[] = { 0xf8, 0xfa, 0xfc, 0xfe, 0x08, 0x0a, 0x0c, 0x0e,
 							0x00, 0x02, 0x04, 0x06, 0x08, 0x0a, 0x0c, 0x0e };
 	for( int i=0; i<16; i++ )
 		SetMemBlockSR( i, initmb[i] );
-	
-	// 戦士のカートリッジ ------------------------------------------
-	if( UseSol ) SetSolBank( 0 );	// メモリバンク初期化
-	// -------------------------------------------------------------
 }
 
 
@@ -898,7 +1087,7 @@ void MEM64::Reset( void )
 BYTE MEM6::Fetch( WORD addr, int *m1wait ) const
 {
 	BYTE data = vm->VdgIsSRmode() ? Rm_blkSR[addr>>13]->Read( addr )
-												   : Rm_blk  [addr>>13]->Read( addr );
+								  : Rm_blk  [addr>>13]->Read( addr );
 	
 	PRINTD( MEM_LOG, "[MEM][Fetch] -> %04X:%02X\n", addr, data );
 	
@@ -918,7 +1107,7 @@ BYTE MEM6::Fetch( WORD addr, int *m1wait ) const
 BYTE MEM6::Read( WORD addr, int *wcnt ) const
 {
 	BYTE data = 0xff;
-
+	
 	if( vm->VdgIsSRmode() ){
 		if( vm->VdgIsSRGVramAccess( addr, true ) ){
 			WORD ad = vm->VdgSRGVramAddr( addr );
@@ -927,10 +1116,10 @@ BYTE MEM6::Read( WORD addr, int *wcnt ) const
 			data = Rm_blkSR[addr>>13]->Read( addr, wcnt );
 	}else
 		data = Rm_blk[addr>>13]->Read( addr, wcnt );
-
+	
 	// バスリクエスト区間実行時ウェイト追加
 	if( wcnt && vm->VdgIsBusReqExec() ) (*wcnt)++;
-
+	
 	PRINTD( MEM_LOG, "[MEM][Read]  -> %04X:%02X\n", addr, data );
 	
 	return data;
@@ -973,45 +1162,45 @@ void MEM6::SetWait( BYTE data )
 	
 	// ROM
 	int romwait = data&0x40 ? 1 : 0;
-	EMPTYROM.SetWait ( romwait, romwait );
-	EXTROM0.SetWait  ( romwait, romwait );
-	EXTROM1.SetWait  ( romwait, romwait );
-	MAINROM0.SetWait ( romwait, romwait );
-	MAINROM1.SetWait ( romwait, romwait );
-	MAINROM2.SetWait ( romwait, romwait );
-	MAINROM3.SetWait ( romwait, romwait );
-	MAINROM4.SetWait ( romwait, romwait );	// SR
-	MAINROM5.SetWait ( romwait, romwait );	// SR
-	MAINROM6.SetWait ( romwait, romwait );	// SR
-	MAINROM7.SetWait ( romwait, romwait );	// SR
-	KANJIROM0.SetWait( romwait, romwait );
-	KANJIROM1.SetWait( romwait, romwait );
-	KANJIROM2.SetWait( romwait, romwait );
-	KANJIROM3.SetWait( romwait, romwait );
-	VOICEROM0.SetWait( romwait, romwait );
-	VOICEROM1.SetWait( romwait, romwait );
-	SRMENROM0.SetWait( romwait, romwait );	// SR
-	SRMENROM1.SetWait( romwait, romwait );	// SR
+	EMPTYROM.SetWait ( romwait );
+	EXTROM0.SetWait  ( romwait );
+	EXTROM1.SetWait  ( romwait );
+	MAINROM0.SetWait ( romwait );
+	MAINROM1.SetWait ( romwait );
+	MAINROM2.SetWait ( romwait );
+	MAINROM3.SetWait ( romwait );
+	MAINROM4.SetWait ( romwait );	// SR
+	MAINROM5.SetWait ( romwait );	// SR
+	MAINROM6.SetWait ( romwait );	// SR
+	MAINROM7.SetWait ( romwait );	// SR
+	KANJIROM0.SetWait( romwait );
+	KANJIROM1.SetWait( romwait );
+	KANJIROM2.SetWait( romwait );
+	KANJIROM3.SetWait( romwait );
+	VOICEROM0.SetWait( romwait );
+	VOICEROM1.SetWait( romwait );
+	SRMENROM0.SetWait( romwait );	// SR
+	SRMENROM1.SetWait( romwait );	// SR
 	
 	// RAM
 	int ramwait = data&0x20 ? 1 : 0;
-	EMPTYRAM.SetWait( ramwait, ramwait );
-	MAINRAM0.SetWait( ramwait, ramwait );
-	MAINRAM1.SetWait( ramwait, ramwait );
-	MAINRAM2.SetWait( ramwait, ramwait );
-	MAINRAM3.SetWait( ramwait, ramwait );
-	MAINRAM4.SetWait( ramwait, ramwait );
-	MAINRAM5.SetWait( ramwait, ramwait );
-	MAINRAM6.SetWait( ramwait, ramwait );
-	MAINRAM7.SetWait( ramwait, ramwait );
-	EXTRAM0.SetWait ( ramwait, ramwait );
-	EXTRAM1.SetWait ( ramwait, ramwait );
-	EXTRAM2.SetWait ( ramwait, ramwait );
-	EXTRAM3.SetWait ( ramwait, ramwait );
-	EXTRAM4.SetWait ( ramwait, ramwait );
-	EXTRAM5.SetWait ( ramwait, ramwait );
-	EXTRAM6.SetWait ( ramwait, ramwait );
-	EXTRAM7.SetWait ( ramwait, ramwait );
+	EMPTYRAM.SetWait( ramwait );
+	INTRAM0.SetWait ( ramwait );
+	INTRAM1.SetWait ( ramwait );
+	INTRAM2.SetWait ( ramwait );
+	INTRAM3.SetWait ( ramwait );
+	INTRAM4.SetWait ( ramwait );
+	INTRAM5.SetWait ( ramwait );
+	INTRAM6.SetWait ( ramwait );
+	INTRAM7.SetWait ( ramwait );
+	EXTRAM0.SetWait ( ramwait );
+	EXTRAM1.SetWait ( ramwait );
+	EXTRAM2.SetWait ( ramwait );
+	EXTRAM3.SetWait ( ramwait );
+	EXTRAM4.SetWait ( ramwait );
+	EXTRAM5.SetWait ( ramwait );
+	EXTRAM6.SetWait ( ramwait );
+	EXTRAM7.SetWait ( ramwait );
 }
 
 
@@ -1029,19 +1218,28 @@ BYTE MEM6::GetWait( void ) const
 ////////////////////////////////////////////////////////////////
 void MEM60::SetMemBlockR( BYTE mem1, BYTE mem2 )
 {
-	// 引数はダミー
 	PRINTD( MEM_LOG, "[MEM][SetMemBlockR]\n" );
 	
-	// Read
-	Rm_blk[0] = &MAINROM0; Rm_blk[1] = &MAINROM1;
-	Rm_blk[2] = pEXTROM0;  Rm_blk[3] = UseSol ? &SOLRAM : pEXTROM1;	// 戦士のカートリッジ対応
-	Rm_blk[4] = &EXTRAM0;  Rm_blk[5] = &EXTRAM1;
-	Rm_blk[6] = &MAINRAM0; Rm_blk[7] = &MAINRAM1;
+	// Port F0H
+	switch( mem1 & 0x0f ){	// RF0下位 (0000 - 3FFF)
+		case 0x01:
+		case 0x02:
+		case 0x05:
+		case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &MAINROM1;	break;
+		default:	Rm_blk[0] = rMAINROM0;	Rm_blk[1] = rMAINROM1;	// 戦士のカートリッジ対応
+	}
 	
-#if (MEM_LOG)
+	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM1;
+	Rm_blk[4] = pEXTRAM0;	Rm_blk[5] = pEXTRAM1;
+	Rm_blk[6] = &INTRAM0;	Rm_blk[7] = &INTRAM1;
+	
+	// 内部レジスタ保存
+	Rf[0] = mem1;
+	
+	#if (MEM_LOG)
 	for( int i=0; i<8; i+=2 )
 		fprintf( stdout, "\t%d:%8s\t%d:%8s\n", i, Rm_blk[i]->GetName(), i+1, Rm_blk[i+1]->GetName() );
-#endif
+	#endif
 }
 
 void MEM62::SetMemBlockR( BYTE mem1, BYTE mem2 )
@@ -1050,78 +1248,78 @@ void MEM62::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	
 	// Port F0H
 	switch( mem1 & 0x0f ){	// RF0下位 (0000 - 3FFF)
-	case 0x00:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
-	case 0x01:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &MAINROM1;	break;
-	case 0x02:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = pKNJROM1;	break;
-	case 0x03:	Rm_blk[0] = pEXTROM1;	Rm_blk[1] = pEXTROM1;	break;
-	case 0x04:	Rm_blk[0] = pEXTROM0;	Rm_blk[1] = pEXTROM0;	break;
-	case 0x05:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = &MAINROM1;	break;
-	case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = pKNJROM1;	break;
-	case 0x07:	Rm_blk[0] = pEXTROM0;	Rm_blk[1] = pEXTROM1;	break;
-	case 0x08:	Rm_blk[0] = pEXTROM1;	Rm_blk[1] = pEXTROM0;	break;
-	case 0x09:	Rm_blk[0] = pEXTROM1;	Rm_blk[1] = &MAINROM1;	break;
-	case 0x0a:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = pEXTROM1;	break;
-	case 0x0b:	Rm_blk[0] = pEXTROM0;	Rm_blk[1] = pKNJROM1;	break;
-	case 0x0c:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = pEXTROM0;	break;
-	case 0x0d:	Rm_blk[0] = &MAINRAM0;	Rm_blk[1] = &MAINRAM1;	break;
-	case 0x0e:	Rm_blk[0] = &EXTRAM0;	Rm_blk[1] = &EXTRAM1;	break;
-	case 0x0f:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
+		case 0x00:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
+		case 0x01:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &MAINROM1;	break;
+		case 0x02:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = pKNJROM1;	break;
+		case 0x03:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &EXTROM1;	break;
+		case 0x04:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &EXTROM0;	break;
+		case 0x05:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = &MAINROM1;	break;
+		case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = pKNJROM1;	break;
+		case 0x07:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &EXTROM1;	break;
+		case 0x08:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &EXTROM0;	break;
+		case 0x09:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &MAINROM1;	break;
+		case 0x0a:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &EXTROM1;	break;
+		case 0x0b:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = pKNJROM1;	break;
+		case 0x0c:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = &EXTROM0;	break;
+		case 0x0d:	Rm_blk[0] = &INTRAM0;	Rm_blk[1] = &INTRAM1;	break;
+		case 0x0e:	Rm_blk[0] = &EXTRAM0;	Rm_blk[1] = &EXTRAM1;	break;
+		case 0x0f:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
 	}
 	switch( mem1 & 0xf0 ){	// RF0上位 (4000 - 7FFF)
-	case 0x00:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
-	case 0x10:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &MAINROM3;	break;
-	case 0x20:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = pKNJROM1;	break;
-	case 0x30:	Rm_blk[2] = pEXTROM1;	Rm_blk[3] = UseSol ? &SOLRAM : pEXTROM1;	break;	// 戦士のカートリッジ対応
-	case 0x40:	Rm_blk[2] = pEXTROM0;	Rm_blk[3] = pEXTROM0;	break;
-	case 0x50:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &MAINROM3;	break;
-	case 0x60:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = pKNJROM1;	break;
-	case 0x70:	Rm_blk[2] = pEXTROM0;	Rm_blk[3] = UseSol ? &SOLRAM : pEXTROM1;	break;	// 戦士のカートリッジ対応
-	case 0x80:	Rm_blk[2] = pEXTROM1;	Rm_blk[3] = pEXTROM0;	break;
-	case 0x90:	Rm_blk[2] = pEXTROM1;	Rm_blk[3] = &MAINROM3;	break;
-	case 0xa0:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = UseSol ? &SOLRAM : pEXTROM1;	break;	// 戦士のカートリッジ対応
-	case 0xb0:	Rm_blk[2] = pEXTROM0;	Rm_blk[3] = pKNJROM1;	break;
-	case 0xc0:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = pEXTROM0;	break;
-	case 0xd0:	Rm_blk[2] = &MAINRAM2;	Rm_blk[3] = &MAINRAM3;	break;
-	case 0xe0:	Rm_blk[2] = &EXTRAM2;	Rm_blk[3] = &EXTRAM3;	break;
-	case 0xf0:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
+		case 0x00:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
+		case 0x10:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &MAINROM3;	break;
+		case 0x20:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = pKNJROM1;	break;
+		case 0x30:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &EXTROM1;	break;
+		case 0x40:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM0;	break;
+		case 0x50:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &MAINROM3;	break;
+		case 0x60:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = pKNJROM1;	break;
+		case 0x70:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM1;	break;
+		case 0x80:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &EXTROM0;	break;
+		case 0x90:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &MAINROM3;	break;
+		case 0xa0:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &EXTROM1;	break;
+		case 0xb0:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = pKNJROM1;	break;
+		case 0xc0:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &EXTROM0;	break;
+		case 0xd0:	Rm_blk[2] = &INTRAM2;	Rm_blk[3] = &INTRAM3;	break;
+		case 0xe0:	Rm_blk[2] = &EXTRAM2;	Rm_blk[3] = &EXTRAM3;	break;
+		case 0xf0:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
 	}
 	
 	// Port F1H
 	switch( mem2 & 0x0f ){	// RF1下位 (8000 - BFFF)
-	case 0x00:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
-	case 0x01:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &MAINROM1;	break;
-	case 0x02:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = pKNJROM1;	break;
-	case 0x03:	Rm_blk[4] = pEXTROM1;	Rm_blk[5] = pEXTROM1;	break;
-	case 0x04:	Rm_blk[4] = pEXTROM0;	Rm_blk[5] = pEXTROM0;	break;
-	case 0x05:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &MAINROM1;	break;
-	case 0x06:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pKNJROM1;	break;
-	case 0x07:	Rm_blk[4] = pEXTROM0;	Rm_blk[5] = pEXTROM1;	break;
-	case 0x08:	Rm_blk[4] = pEXTROM1;	Rm_blk[5] = pEXTROM0;	break;
-	case 0x09:	Rm_blk[4] = pEXTROM1;	Rm_blk[5] = &MAINROM1;	break;
-	case 0x0a:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pEXTROM1;	break;
-	case 0x0b:	Rm_blk[4] = pEXTROM0;	Rm_blk[5] = pKNJROM1;	break;
-	case 0x0c:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = pEXTROM0;	break;
-	case 0x0d:	Rm_blk[4] = &MAINRAM4;	Rm_blk[5] = &MAINRAM5;	break;
-	case 0x0e:	Rm_blk[4] = &EXTRAM4;	Rm_blk[5] = &EXTRAM5;	break;
-	case 0x0f:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
+		case 0x00:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
+		case 0x01:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &MAINROM1;	break;
+		case 0x02:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x03:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &EXTROM1;	break;
+		case 0x04:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = &EXTROM0;	break;
+		case 0x05:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &MAINROM1;	break;
+		case 0x06:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x07:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = &EXTROM1;	break;
+		case 0x08:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &EXTROM0;	break;
+		case 0x09:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &MAINROM1;	break;
+		case 0x0a:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &EXTROM1;	break;
+		case 0x0b:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x0c:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &EXTROM0;	break;
+		case 0x0d:	Rm_blk[4] = &INTRAM4;	Rm_blk[5] = &INTRAM5;	break;
+		case 0x0e:	Rm_blk[4] = &EXTRAM4;	Rm_blk[5] = &EXTRAM5;	break;
+		case 0x0f:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
 	}
 	switch( mem2 & 0xf0 ){	// RF1上位 (C000 - FFFF)
-	case 0x00:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
-	case 0x10:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &MAINROM3;	break;
-	case 0x20:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = pKNJROM1;	break;
-	case 0x30:	Rm_blk[6] = pEXTROM1;	Rm_blk[7] = pEXTROM1;	break;
-	case 0x40:	Rm_blk[6] = pEXTROM0;	Rm_blk[7] = pEXTROM0;	break;
-	case 0x50:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &MAINROM3;	break;
-	case 0x60:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pKNJROM1;	break;
-	case 0x70:	Rm_blk[6] = pEXTROM0;	Rm_blk[7] = pEXTROM1;	break;
-	case 0x80:	Rm_blk[6] = pEXTROM1;	Rm_blk[7] = pEXTROM0;	break;
-	case 0x90:	Rm_blk[6] = pEXTROM1;	Rm_blk[7] = &MAINROM3;	break;
-	case 0xa0:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pEXTROM1;	break;
-	case 0xb0:	Rm_blk[6] = pEXTROM0;	Rm_blk[7] = pKNJROM1;	break;
-	case 0xc0:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = pEXTROM0;	break;
-	case 0xd0:	Rm_blk[6] = &MAINRAM6;	Rm_blk[7] = &MAINRAM7;	break;
-	case 0xe0:	Rm_blk[6] = &EXTRAM6;	Rm_blk[7] = &EXTRAM7;	break;
-	case 0xf0:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
+		case 0x00:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
+		case 0x10:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &MAINROM3;	break;
+		case 0x20:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = pKNJROM1;	break;
+		case 0x30:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &EXTROM1;	break;
+		case 0x40:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = &EXTROM0;	break;
+		case 0x50:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &MAINROM3;	break;
+		case 0x60:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pKNJROM1;	break;
+		case 0x70:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = &EXTROM1;	break;
+		case 0x80:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &EXTROM0;	break;
+		case 0x90:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &MAINROM3;	break;
+		case 0xa0:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &EXTROM1;	break;
+		case 0xb0:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = pKNJROM1;	break;
+		case 0xc0:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &EXTROM0;	break;
+		case 0xd0:	Rm_blk[6] = &INTRAM6;	Rm_blk[7] = &INTRAM7;	break;
+		case 0xe0:	Rm_blk[6] = &EXTRAM6;	Rm_blk[7] = &EXTRAM7;	break;
+		case 0xf0:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
 	}
 	
 	if( CGBank ) Rm_blk[cgaddr] = cgrom ? &CGROM1 : &CGROM2;
@@ -1130,10 +1328,10 @@ void MEM62::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	Rf[0] = mem1;
 	Rf[1] = mem2;
 	
-#if (MEM_LOG)
+	#if (MEM_LOG)
 	for( int i=0; i<8; i+=2 )
 		fprintf( stdout, "\t%d:%8s\t%d:%8s\n", i, Rm_blk[i]->GetName(), i+1, Rm_blk[i+1]->GetName() );
-#endif
+	#endif
 }
 
 void MEM64::SetMemBlockR( BYTE mem1, BYTE mem2 )
@@ -1142,81 +1340,81 @@ void MEM64::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	
 	// Port F0H
 	switch( mem1 & 0x0f ){	// RF0下位 (0000 - 3FFF)
-	// SRの場合，この領域に音声合成ROMを選択するとSYSROM2の先頭16KBが割当てられる
-	// mk2,66の場合は音声合成ROMが16KBしかないので
-	// 4000-7FFFHは0000-3FFFHのイメージと考えればよいようだ
-	case 0x00:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
-	case 0x01:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &MAINROM1;	break;
-	case 0x02:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
-	case 0x03:	Rm_blk[0] = pEXTROM1;	Rm_blk[1] = pEXTROM1;	break;
-	case 0x04:	Rm_blk[0] = pEXTROM0;	Rm_blk[1] = pEXTROM0;	break;
-	case 0x05:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = &MAINROM1;	break;	// ココ
-	case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
-	case 0x07:	Rm_blk[0] = pEXTROM0;	Rm_blk[1] = pEXTROM1;	break;
-	case 0x08:	Rm_blk[0] = pEXTROM1;	Rm_blk[1] = pEXTROM0;	break;
-	case 0x09:	Rm_blk[0] = pEXTROM1;	Rm_blk[1] = &MAINROM1;	break;
-	case 0x0a:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = pEXTROM1;	break;
-	case 0x0b:	Rm_blk[0] = pEXTROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
-	case 0x0c:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = pEXTROM0;	break;	// ココ
-	case 0x0d:	Rm_blk[0] = &MAINRAM0;	Rm_blk[1] = &MAINRAM1;	break;
-	case 0x0e:	Rm_blk[0] = &EXTRAM0;	Rm_blk[1] = &EXTRAM1;	break;
-	case 0x0f:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
+		// SRの場合，この領域に音声合成ROMを選択するとSYSROM2の先頭16KBが割当てられる
+		// mk2,66の場合は音声合成ROMが16KBしかないので
+		// 4000-7FFFHは0000-3FFFHのイメージと考えればよいようだ
+		case 0x00:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
+		case 0x01:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &MAINROM1;	break;
+		case 0x02:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
+		case 0x03:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &EXTROM1;	break;
+		case 0x04:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &EXTROM0;	break;
+		case 0x05:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = &MAINROM1;	break;	// ココ
+		case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
+		case 0x07:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &EXTROM1;	break;
+		case 0x08:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &EXTROM0;	break;
+		case 0x09:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &MAINROM1;	break;
+		case 0x0a:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &EXTROM1;	break;
+		case 0x0b:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
+		case 0x0c:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = &EXTROM0;	break;	// ココ
+		case 0x0d:	Rm_blk[0] = &INTRAM0;	Rm_blk[1] = &INTRAM1;	break;
+		case 0x0e:	Rm_blk[0] = &EXTRAM0;	Rm_blk[1] = &EXTRAM1;	break;
+		case 0x0f:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
 	}
 	switch( mem1 & 0xf0 ){	// RF0上位 (4000 - 7FFF)
-	case 0x00:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
-	case 0x10:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &MAINROM3;	break;
-	case 0x20:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = pKNJROM1;	break;
-	case 0x30:	Rm_blk[2] = pEXTROM1;	Rm_blk[3] = UseSol ? &SOLRAM : pEXTROM1;	break;	// 戦士のカートリッジ対応
-	case 0x40:	Rm_blk[2] = pEXTROM0;	Rm_blk[3] = pEXTROM0;	break;
-	case 0x50:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &MAINROM3;	break;
-	case 0x60:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = pKNJROM1;	break;
-	case 0x70:	Rm_blk[2] = pEXTROM0;	Rm_blk[3] = UseSol ? &SOLRAM : pEXTROM1;	break;	// 戦士のカートリッジ対応
-	case 0x80:	Rm_blk[2] = pEXTROM1;	Rm_blk[3] = pEXTROM0;	break;
-	case 0x90:	Rm_blk[2] = pEXTROM1;	Rm_blk[3] = &MAINROM3;	break;
-	case 0xa0:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = UseSol ? &SOLRAM : pEXTROM1;	break;	// 戦士のカートリッジ対応
-	case 0xb0:	Rm_blk[2] = pEXTROM0;	Rm_blk[3] = pKNJROM1;	break;
-	case 0xc0:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = pEXTROM0;	break;
-	case 0xd0:	Rm_blk[2] = &MAINRAM2;	Rm_blk[3] = &MAINRAM3;	break;
-	case 0xe0:	Rm_blk[2] = &EXTRAM2;	Rm_blk[3] = &EXTRAM3;	break;
-	case 0xf0:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
+		case 0x00:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
+		case 0x10:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &MAINROM3;	break;
+		case 0x20:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = pKNJROM1;	break;
+		case 0x30:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &EXTROM1;	break;
+		case 0x40:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM0;	break;
+		case 0x50:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &MAINROM3;	break;
+		case 0x60:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = pKNJROM1;	break;
+		case 0x70:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM1;	break;
+		case 0x80:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &EXTROM0;	break;
+		case 0x90:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &MAINROM3;	break;
+		case 0xa0:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &EXTROM1;	break;
+		case 0xb0:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = pKNJROM1;	break;
+		case 0xc0:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &EXTROM0;	break;
+		case 0xd0:	Rm_blk[2] = &INTRAM2;	Rm_blk[3] = &INTRAM3;	break;
+		case 0xe0:	Rm_blk[2] = &EXTRAM2;	Rm_blk[3] = &EXTRAM3;	break;
+		case 0xf0:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
 	}
 	
 	// Port F1H
 	switch( mem2 & 0x0f ){	// RF1下位 (8000 - BFFF)
-	case 0x00:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
-	case 0x01:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &MAINROM1;	break;
-	case 0x02:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = pKNJROM1;	break;
-	case 0x03:	Rm_blk[4] = pEXTROM1;	Rm_blk[5] = pEXTROM1;	break;
-	case 0x04:	Rm_blk[4] = pEXTROM0;	Rm_blk[5] = pEXTROM0;	break;
-	case 0x05:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &MAINROM1;	break;
-	case 0x06:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pKNJROM1;	break;
-	case 0x07:	Rm_blk[4] = pEXTROM0;	Rm_blk[5] = pEXTROM1;	break;
-	case 0x08:	Rm_blk[4] = pEXTROM1;	Rm_blk[5] = pEXTROM0;	break;
-	case 0x09:	Rm_blk[4] = pEXTROM1;	Rm_blk[5] = &MAINROM1;	break;
-	case 0x0a:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pEXTROM1;	break;
-	case 0x0b:	Rm_blk[4] = pEXTROM0;	Rm_blk[5] = pKNJROM1;	break;
-	case 0x0c:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = pEXTROM0;	break;
-	case 0x0d:	Rm_blk[4] = &MAINRAM4;	Rm_blk[5] = &MAINRAM5;	break;
-	case 0x0e:	Rm_blk[4] = &EXTRAM4;	Rm_blk[5] = &EXTRAM5;	break;
-	case 0x0f:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
+		case 0x00:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
+		case 0x01:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &MAINROM1;	break;
+		case 0x02:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x03:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &EXTROM1;	break;
+		case 0x04:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = &EXTROM0;	break;
+		case 0x05:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &MAINROM1;	break;
+		case 0x06:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x07:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = &EXTROM1;	break;
+		case 0x08:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &EXTROM0;	break;
+		case 0x09:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &MAINROM1;	break;
+		case 0x0a:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &EXTROM1;	break;
+		case 0x0b:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x0c:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &EXTROM0;	break;
+		case 0x0d:	Rm_blk[4] = &INTRAM4;	Rm_blk[5] = &INTRAM5;	break;
+		case 0x0e:	Rm_blk[4] = &EXTRAM4;	Rm_blk[5] = &EXTRAM5;	break;
+		case 0x0f:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
 	}
 	switch( mem2 & 0xf0 ){	// RF1上位 (C000 - FFFF)
-	case 0x00:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
-	case 0x10:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &MAINROM3;	break;
-	case 0x20:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = pKNJROM1;	break;
-	case 0x30:	Rm_blk[6] = pEXTROM1;	Rm_blk[7] = pEXTROM1;	break;
-	case 0x40:	Rm_blk[6] = pEXTROM0;	Rm_blk[7] = pEXTROM0;	break;
-	case 0x50:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &MAINROM3;	break;
-	case 0x60:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pKNJROM1;	break;
-	case 0x70:	Rm_blk[6] = pEXTROM0;	Rm_blk[7] = pEXTROM1;	break;
-	case 0x80:	Rm_blk[6] = pEXTROM1;	Rm_blk[7] = pEXTROM0;	break;
-	case 0x90:	Rm_blk[6] = pEXTROM1;	Rm_blk[7] = &MAINROM3;	break;
-	case 0xa0:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pEXTROM1;	break;
-	case 0xb0:	Rm_blk[6] = pEXTROM0;	Rm_blk[7] = pKNJROM1;	break;
-	case 0xc0:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = pEXTROM0;	break;
-	case 0xd0:	Rm_blk[6] = &MAINRAM6;	Rm_blk[7] = &MAINRAM7;	break;
-	case 0xe0:	Rm_blk[6] = &EXTRAM6;	Rm_blk[7] = &EXTRAM7;	break;
-	case 0xf0:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
+		case 0x00:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
+		case 0x10:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &MAINROM3;	break;
+		case 0x20:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = pKNJROM1;	break;
+		case 0x30:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &EXTROM1;	break;
+		case 0x40:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = &EXTROM0;	break;
+		case 0x50:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &MAINROM3;	break;
+		case 0x60:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pKNJROM1;	break;
+		case 0x70:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = &EXTROM1;	break;
+		case 0x80:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &EXTROM0;	break;
+		case 0x90:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &MAINROM3;	break;
+		case 0xa0:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &EXTROM1;	break;
+		case 0xb0:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = pKNJROM1;	break;
+		case 0xc0:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &EXTROM0;	break;
+		case 0xd0:	Rm_blk[6] = &INTRAM6;	Rm_blk[7] = &INTRAM7;	break;
+		case 0xe0:	Rm_blk[6] = &EXTRAM6;	Rm_blk[7] = &EXTRAM7;	break;
+		case 0xf0:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
 	}
 	
 	if( CGBank ) Rm_blk[cgaddr] = cgrom ? &CGROM1 : &CGROM2;
@@ -1225,10 +1423,10 @@ void MEM64::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	Rf[0] = mem1;
 	Rf[1] = mem2;
 	
-#if (MEM_LOG)
+	#if (MEM_LOG)
 	for( int i=0; i<8; i+=2 )
 		fprintf( stdout, "\t%d:%8s\t%d:%8s\n", i, Rm_blk[i]->GetName(), i+1, Rm_blk[i+1]->GetName() );
-#endif
+	#endif
 }
 
 
@@ -1237,58 +1435,64 @@ void MEM64::SetMemBlockR( BYTE mem1, BYTE mem2 )
 ////////////////////////////////////////////////////////////////
 void MEM60::SetMemBlockW( BYTE data )
 {
-	// 引数はダミー
 	PRINTD( MEM_LOG, "[MEM][SetMemBlockW]\n" );
 	
-	// Write
-	Wm_blk[0] = &MAINROM0; Wm_blk[1] = &MAINROM1;
-	Wm_blk[2] = pEXTROM0;  Wm_blk[3] = UseSol ? &SOLRAM : pEXTROM1; // 戦士のカートリッジ対応
-	Wm_blk[4] = &EXTRAM0;  Wm_blk[5] = &EXTRAM1;
-	Wm_blk[6] = &MAINRAM0; Wm_blk[7] = &MAINRAM1;
+	switch( data & 3 ){	// 0000 - 3FFF
+		case 0:	Wm_blk[0] = &EMPTYROM;	Wm_blk[1] = &EMPTYROM;	break;
+		case 1:
+		case 2:
+		case 3:	Wm_blk[0] = wMAINROM0;	Wm_blk[1] = wMAINROM1;	break;	// 戦士のカートリッジ対応
+	}
 	
-#if (MEM_LOG)
+	Wm_blk[2] = wEXTROM0;	Wm_blk[3] = wEXTROM1;	// 戦士のカートリッジ対応
+	Wm_blk[4] = pEXTRAM0;	Wm_blk[5] = pEXTRAM1;
+	Wm_blk[6] = &INTRAM0;	Wm_blk[7] = &INTRAM1;
+	
+	// 内部レジスタ保存
+	Rf[2] = data;
+	
+	#if (MEM_LOG)
 	for( int i=0; i<8; i+=2 )
 		fprintf( stdout, "\t%d:%8s\t%d:%8s\n", i, Wm_blk[i]->GetName(), i+1, Wm_blk[i+1]->GetName() );
-#endif
+	#endif
 }
 
 void MEM62::SetMemBlockW( BYTE data )
 {
 	PRINTD( MEM_LOG, "[MEM][SetMemBlockW] -> %02X\n", data );
 	
-	switch( data & 3 ){
-	case 0: Wm_blk[0] = &EMPTYRAM;	Wm_blk[1] = &EMPTYRAM;	break;
-	case 1: Wm_blk[0] = &MAINRAM0;	Wm_blk[1] = &MAINRAM1;	break;
-	case 2: Wm_blk[0] = &EXTRAM0;	Wm_blk[1] = &EXTRAM1;	break;
-	case 3: Wm_blk[0] = &MAINRAM0;	Wm_blk[1] = &MAINRAM1;	break;	// とりあえず内部にしておく(本当は内部外部とも)
+	switch( data & 3 ){			// 0000 - 3FFF
+		case 0: Wm_blk[0] = &EMPTYRAM;	Wm_blk[1] = &EMPTYRAM;	break;
+		case 1: Wm_blk[0] = &INTRAM0;	Wm_blk[1] = &INTRAM1;	break;
+		case 2: Wm_blk[0] = &EXTRAM0;	Wm_blk[1] = &EXTRAM1;	break;
+		case 3: Wm_blk[0] = &INEXRAM;	Wm_blk[1] = &INEXRAM;	break;
 	}
-	switch( (data>>2) & 3 ){
-	case 0: Wm_blk[2] = &EMPTYRAM;	Wm_blk[3] = &EMPTYRAM;	break;
-	case 1: Wm_blk[2] = &MAINRAM2;	Wm_blk[3] = UseSol ? &SOLRAM : &MAINRAM3;	break;	// 戦士のカートリッジ対応
-	case 2: Wm_blk[2] = &EXTRAM2;	Wm_blk[3] = UseSol ? &SOLRAM : &EXTRAM3;	break;	// 戦士のカートリッジ対応
-	case 3: Wm_blk[2] = &MAINRAM2;	Wm_blk[3] = UseSol ? &SOLRAM : &MAINRAM3;	break;	// 戦士のカートリッジ対応
-		// とりあえず内部にしておく(本当は内部外部とも)
+	switch( (data>>2) & 3 ){	// 4000 - 7FFF
+		case 0: Wm_blk[2] = &EMPTYRAM;	Wm_blk[3] = &EMPTYRAM;	break;
+		case 1: Wm_blk[2] = &INTRAM2;	Wm_blk[3] = &INTRAM3;	break;
+		case 2: Wm_blk[2] = &EXTRAM2;	Wm_blk[3] = &EXTRAM3;	break;
+		case 3: Wm_blk[2] = &INEXRAM;	Wm_blk[3] = &INEXRAM;	break;
 	}
-	switch( (data>>4) & 3 ){
-	case 0: Wm_blk[4] = &EMPTYRAM;	Wm_blk[5] = &EMPTYRAM;	break;
-	case 1: Wm_blk[4] = &MAINRAM4;	Wm_blk[5] = &MAINRAM5;	break;
-	case 2: Wm_blk[4] = &EXTRAM4;	Wm_blk[5] = &EXTRAM5;	break;
-	case 3: Wm_blk[4] = &MAINRAM4;	Wm_blk[5] = &MAINRAM5;	break;	// とりあえず内部にしておく(本当は内部外部とも)
+	switch( (data>>4) & 3 ){	// 8000 - BFFF
+		case 0: Wm_blk[4] = &EMPTYRAM;	Wm_blk[5] = &EMPTYRAM;	break;
+		case 1: Wm_blk[4] = &INTRAM4;	Wm_blk[5] = &INTRAM5;	break;
+		case 2: Wm_blk[4] = &EXTRAM4;	Wm_blk[5] = &EXTRAM5;	break;
+		case 3: Wm_blk[4] = &INEXRAM;	Wm_blk[5] = &INEXRAM;	break;
 	}
-	switch( (data>>6) & 3 ){
-	case 0: Wm_blk[6] = &EMPTYRAM;	Wm_blk[7] = &EMPTYRAM;	break;
-	case 1: Wm_blk[6] = &MAINRAM6;	Wm_blk[7] = &MAINRAM7;	break;
-	case 2: Wm_blk[6] = &EXTRAM6;	Wm_blk[7] = &EXTRAM7;	break;
-	case 3: Wm_blk[6] = &MAINRAM6;	Wm_blk[7] = &MAINRAM7;	break;	// とりあえず内部にしておく(本当は内部外部とも)
+	switch( (data>>6) & 3 ){	// C000 - FFFF
+		case 0: Wm_blk[6] = &EMPTYRAM;	Wm_blk[7] = &EMPTYRAM;	break;
+		case 1: Wm_blk[6] = &INTRAM6;	Wm_blk[7] = &INTRAM7;	break;
+		case 2: Wm_blk[6] = &EXTRAM6;	Wm_blk[7] = &EXTRAM7;	break;
+		case 3: Wm_blk[6] = &INEXRAM;	Wm_blk[7] = &INEXRAM;	break;
 	}
 	
 	// 内部レジスタ保存
 	Rf[2] = data;
 	
-#if (MEM_LOG)
+	#if (MEM_LOG)
 	for( int i=0; i<8; i+=2 )
 		fprintf( stdout, "\t%d:%8s\t%d:%8s\n", i, Wm_blk[i]->GetName(), i+1, Wm_blk[i+1]->GetName() );
-#endif
+	#endif
 }
 
 
@@ -1310,14 +1514,14 @@ void MEM64::SetMemBlockSR( BYTE port, BYTE data )
 	switch( cs ){
 	case 0x00:	// System RAM (16KB毎)
 		switch( addr ){
-		case 0x00: *mb = port&1 ? &MAINRAM1 : &MAINRAM0; break;
-		case 0x01: *mb = port&1 ? &MAINRAM1 : &MAINRAM0; break;
-		case 0x02: *mb = port&1 ? &MAINRAM3 : &MAINRAM2; break;
-		case 0x03: *mb = port&1 ? &MAINRAM3 : &MAINRAM2; break;
-		case 0x04: *mb = port&1 ? &MAINRAM5 : &MAINRAM4; break;
-		case 0x05: *mb = port&1 ? &MAINRAM5 : &MAINRAM4; break;
-		case 0x06: *mb = port&1 ? &MAINRAM7 : &MAINRAM6; break;
-		case 0x07: *mb = port&1 ? &MAINRAM7 : &MAINRAM6; break;
+		case 0x00: *mb = port&1 ? &INTRAM1 : &INTRAM0; break;
+		case 0x01: *mb = port&1 ? &INTRAM1 : &INTRAM0; break;
+		case 0x02: *mb = port&1 ? &INTRAM3 : &INTRAM2; break;
+		case 0x03: *mb = port&1 ? &INTRAM3 : &INTRAM2; break;
+		case 0x04: *mb = port&1 ? &INTRAM5 : &INTRAM4; break;
+		case 0x05: *mb = port&1 ? &INTRAM5 : &INTRAM4; break;
+		case 0x06: *mb = port&1 ? &INTRAM7 : &INTRAM6; break;
+		case 0x07: *mb = port&1 ? &INTRAM7 : &INTRAM6; break;
 		}
 		break;
 		
@@ -1335,11 +1539,11 @@ void MEM64::SetMemBlockSR( BYTE port, BYTE data )
 		break;
 		
 	case 0x0b:	// Ext ROM1
-		*mb = pEXTROM1;
+		*mb = &EXTROM1;
 		break;
 		
 	case 0x0c:	// Ext ROM2
-		*mb = pEXTROM0;
+		*mb = &EXTROM0;
 		break;
 		
 	case 0x0d:	// CGROM
@@ -1379,10 +1583,10 @@ void MEM64::SetMemBlockSR( BYTE port, BYTE data )
 		*mb = &EMPTYROM;
 	}
 	
-#if (MEM_LOG)
+	#if (MEM_LOG)
 	fprintf( stdout, "              [Read]\t\t[Write]\n" );
 	for( int i=0; i<8; i++ ) fprintf( stdout, "               %d:%8s\t%8s\n", i, Rm_blkSR[i]->GetName(), Wm_blkSR[i]->GetName() );
-#endif
+	#endif
 }
 
 
@@ -1395,8 +1599,8 @@ void MEM6::SetCGrom( BYTE data )
 	
 	// bit 7
 	int	cgwait = data&0x80 ? 0 : 1;
-	CGROM1.SetWait( cgwait, cgwait );
-	CGROM2.SetWait( cgwait, cgwait );
+	CGROM1.SetWait( cgwait );
+	CGROM2.SetWait( cgwait );
 	
 	// bit 6
 	cgenable = data&0x40 ? true : false;
@@ -1431,7 +1635,7 @@ void MEM6::SetCGBank( bool data )
 	PRINTD( MEM_LOG, "[MEM][SetCGBank] -> %d\n", data );
 	
 	CGBank = data;
-	Rm_blk[3] = CGBank ? &CGROM1 : UseSol ? &SOLRAM : pEXTROM1;
+	Rm_blk[3] = CGBank ? &CGROM1 : &EXTROM1;
 }
 
 void MEM62::SetCGBank( bool data )
@@ -1457,58 +1661,87 @@ void MEM6::SelectKanjiRom( BYTE mode )
 	SetMemBlockR( Rf[0], Rf[1] );
 }
 
-/*
-void MEM66::SelectKanjiRom( BYTE mode )
+
+////////////////////////////////////////////////////////////////
+// 戦士のカートリッジ メモリバンクレジスタ設定
+//
+//  [ROMの場合]
+//    bit7   : 0
+//    bit6   : 0
+//    bit5-4 : Bank Set No. (0-3)
+//    bit0-3 : Bank No. (0-15)
+//  [RAMの場合]
+//    bit7   : 0
+//    bit6   : 1
+//    bit4-5 : 未使用
+//    bit0-3 : Bank No. (0-15)
+//  [SCCの場合]
+//    bit7   : 1
+//    bit6   : 0
+//    bit3-5 : 未使用
+//    bit2   : 必ず1にする(AA15に出力される)
+//    bit1   : 必ず0にする(AA14に出力される)
+//    bit0   : 0:互換モード 1:SCC-Iモード
+//  [無効の場合]
+//    bit7   : 1
+//    bit6   : 1
+//    bit0-5 : 未使用
+////////////////////////////////////////////////////////////////
+void MEM6::SetSolBank( BYTE port, BYTE data )
 {
-	PRINTD( MEM_LOG, "[MEM][SelectKanjiRom] -> %02X\n", mode );
+	char stren[16];
+	int area     = port & 7;
+	MemBlock *mb = &EXTRAM0;
 	
-	// mode bit0 0:音声合成ROM選択 1:漢字ROM選択
-	//      bit1 0:漢字ROM左側     1:漢字ROM右側
-	kj_LR  = mode&0x02 ? true : false;	// 漢字 左？右？
-	kj_rom = mode&0x01 ? true : false;	// 漢字ROM？音声合成ROM？
-	SetMemBlockR( Rf[0], Rf[1] );
+	SolBank[area] = data;
 	
-	// 66の場合,ちょっと違うらしい
-	if( !kj_rom ){
-		if( Rm_blk[0] != &MAINROM0 ) Rm_blk[0] = &VOICEROM0;
-		if( Rm_blk[1] != &MAINROM1 ) Rm_blk[1] = &VOICEROM1;
+	switch( data & 0xc0 ){
+	case ROMBANK:	// ROM
+		SolBankSet = data & 0x30;
+		sprintf( stren, "ERom%02d", data );
+		mb[area].SetFunc( stren, ExtRom + 0x2000 * data, this, (RFuncPtr)&MEM6::SolMemRead, NULL );
+		
+		// Bank Setが変わった場合の修正
+		for( int i=0; i<8; i++ ){
+			if( ((SolBank[i] & 0xc0) == ROMBANK) && ((SolBank[i] & 0x30) != SolBankSet) ){
+				SolBank[i] = (SolBank[i] & 0x0f) | SolBankSet | ROMBANK;
+				mb[i].SetFunc( NULL, ExtRom + 0x2000 * (SolBank[i] & 0x3f), this, (RFuncPtr)&MEM6::SolMemRead, NULL );
+			}
+		}
+		break;
+		
+	case RAMBANK:	// RAM
+		sprintf( stren, "ERam%02d", data & 0x0f );
+		mb[area].SetFunc( stren, ExtRam + 0x2000 * (data & 0x0f), this, (RFuncPtr)&MEM6::SolMemRead, (WFuncPtr)&MEM6::SolMemWrite );
+		break;
+		
+	case SCCBANK:	// SCC
+		mb[area].SetFunc( "SCC", NULL, this, (RFuncPtr)&MEM6::SolSccRead, (WFuncPtr)&MEM6::SolSccWrite );
+		break;
+		
+	case NONBANK:	// 無効
+	default:
+		mb[area].SetFunc( "Empty", NULL, NULL, NULL, NULL );
 	}
-}
-*/
-
-
-////////////////////////////////////////////////////////////////
-// 戦士のカートリッジ ROMバンク設定
-////////////////////////////////////////////////////////////////
-void MEM6::SetSolBank( BYTE data )
-{
-	SolBank = data & 0xf;
-	EXTROM0.SetMemory( EXTROM0.GetName(), ExtRom + 0x2000 * SolBank, MemTable.ExtRom->WaitR, MemTable.ExtRom->WaitW, true );
-	
-	// RAMのライトプロテクト
-	SOLRAM.SetProtect( data & 0x10 ? true : false );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // 直接アクセス関数
 ////////////////////////////////////////////////////////////////
-BYTE MEM6::ReadMainRom( WORD addr ) const { return MainRom[addr&0x3fff]; }
-BYTE MEM6::ReadMainRam( WORD addr ) const { return IntRam[addr&0x3fff]; }
-BYTE MEM6::ReadExtRom ( WORD addr ) const { return ExtRom ? ExtRom[addr&0x3fff] : 0xff; }
-	BYTE MEM6::ReadCGrom1 ( WORD addr ) const { return CGRom1[addr&0x1fff]; }
+BYTE MEM6::ReadMainRom( WORD addr ) const { return MainRom[addr&(MemTable.System1->Size-1)]; }
+BYTE MEM6::ReadIntRam( WORD addr )  const { return IntRam[addr&(MemTable.IntRam->Size-1)]; }
+BYTE MEM6::ReadExtRom ( WORD addr ) const { return ExtRom ? ExtRom[addr&(MemTable.ExtRom->Size-1)] : 0xff; }
+BYTE MEM6::ReadExtRam ( WORD addr ) const { return ExtRam[addr&(MemTable.ExtRam->Size-1)]; }
+
+BYTE MEM6::ReadCGrom1 ( WORD addr ) const { return CGRom1[addr&0x1fff]; }
 BYTE MEM6::ReadCGrom2 ( WORD )      const { return 0xff; }
 BYTE MEM6::ReadCGrom3 ( WORD )      const { return 0xff; }
 
-BYTE MEM60::ReadMainRam( WORD addr ) const { return addr<0x4000 ? ExtRam[addr&0x3fff] : IntRam[addr&0x3fff]; }
-
-	BYTE MEM62::ReadMainRom( WORD addr )  const { return MainRom[addr&0x7fff]; }
-BYTE MEM62::ReadMainRam( WORD addr )  const { return IntRam[addr&0xffff]; }
 BYTE MEM62::ReadCGrom2( WORD addr )   const { return CGRom2[addr&0x1fff]; }
 BYTE MEM62::ReadKanjiRom( WORD addr ) const { return KanjiRom[addr&0x7fff]; }
 BYTE MEM62::ReadVoiceRom( WORD addr ) const { return VoiceRom[addr&0x3fff]; }
 
-BYTE MEM64::ReadMainRom( WORD addr )  const { return MainRom[addr&0xffff]; }
 BYTE MEM64::ReadCGrom1 ( WORD addr )  const { return CGRom1[addr&0x0fff]; }
 BYTE MEM64::ReadCGrom2 ( WORD addr )  const { return CGRom1[(addr&0x1fff)+0x2000]; }
 BYTE MEM64::ReadCGrom3 ( WORD addr )  const { return CGRom1[(addr&0x0fff)+0x1000]; }
@@ -1521,7 +1754,17 @@ BYTE MEM64::ReadVoiceRom( WORD addr ) const { return SysRom2[(addr&0x3fff)+0x400
 ////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 ////////////////////////////////////////////////////////////////
-void MEM6::Out7FH( int, BYTE data ){ SetSolBank( data ); }
+void MEM6::Out06H( int, BYTE data ){ Sol60Mode = (data == 0x66) ? true : false; }
+void MEM60::Out06H( int, BYTE data )
+{
+	Sol60Mode = (data == 0x66) ? true : false;
+	SetMemBlockR( Rf[0], Rf[1] );
+	SetMemBlockW( Rf[2] );
+}
+
+void MEM6::Out3xH( int port, BYTE data ){ SetSolBank( port, data ); }
+void MEM6::Out7FH( int, BYTE data ){ SetSolBank( 2, ROMBANK | (data & 0xf) ); }
+
 void MEM6::OutC1H( int, BYTE data ){ SelectCGrom( (data>>1)&1 ); }
 void MEM6::OutC2H( int, BYTE data ){ SelectKanjiRom( data ); }
 void MEM6::OutC3H( int, BYTE data ){}
@@ -1551,13 +1794,16 @@ BYTE MEM68::InB2H( int port ){ return 0xff; }	// bit1 0:mk2SR 1:66SR
 ////////////////////////////////////////////////////////////////
 bool MEM6::DokoSave( cIni *Ini )
 {
+	PRINTD( MEM_LOG, "[MEM][DokoSave]\n" );
+	
 	if( !Ini ) return false;
 	
 	Ini->PutEntry( "MEMORY", NULL, "CGBank",		"%s",		CGBank    ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "UseExtRam",		"%s",		UseExtRam ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "M1Wait",		"%d",		M1Wait );
 	Ini->PutEntry( "MEMORY", NULL, "UseSoldier",	"%s",		UseSol    ? "Yes" : "No" );
-	Ini->PutEntry( "MEMORY", NULL, "SolBank",		"%d",		SolBank );
+	Ini->PutEntry( "MEMORY", NULL, "Soldier60",		"%s",		Sol60Mode ? "Yes" : "No" );
+	Ini->PutEntry( "MEMORY", NULL, "SoldierBank",	"%d",		SolBankSet );
 	
 	// 62,66,64,68
 	Ini->PutEntry( "MEMORY", NULL, "cgrom",			"%s",		cgrom    ? "Yes" : "No" );
@@ -1569,13 +1815,6 @@ bool MEM6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "MEMORY", NULL, "Rf1",	 		"0x%02X",	Rf[1] );
 	Ini->PutEntry( "MEMORY", NULL, "Rf2",	 		"0x%02X",	Rf[2] );
 	
-	// 64,68
-	for( int i=0; i<16; i++ ){
-		char stren[16];
-		sprintf( stren, "RfSR_%02d", i );
-		Ini->PutEntry( "MEMORY", NULL, stren, "0x%02X", RfSR[i] );
-	}
-	
 	// 拡張ROMがマウントされている場合
 	if( UseExtRom ){
 		char pathstr[PATH_MAX+1];
@@ -1583,23 +1822,14 @@ bool MEM6::DokoSave( cIni *Ini )
 		OSD_RelativePath( pathstr );
 		Ini->PutEntry( "MEMORY", NULL, "FilePath",	"%s",	pathstr );
 	}
-
+	
 	// メモリウェイト
 	Ini->PutEntry( "MEMORY", NULL, "Wait",			"%d",		GetWait() );
 	// CGRomウェイト
 	Ini->PutEntry( "MEMORY", NULL, "CgRomWait",		"%d",		CGROM1.GetWait() );
 	
-	return true;
-}
-
-bool MEM60::DokoSave( cIni *Ini )
-{
-	PRINTD( MEM_LOG, "[MEM][DokoSave]\n" );
-	
-	if( !Ini || !MEM6::DokoSave( Ini ) ) return false;
-	
 	// 内部RAM
-	for( int i=0; i<(int)IINTRAM.Size; i+=64 ){
+	for( int i=0; i<(int)MemTable.IntRam->Size; i+=64 ){
 		char stren[16],strva[256];
 		sprintf( stren, "IntRam_%04X", i );
 		for( int j=0; j<64; j++ ) sprintf( &strva[j*2], "%02X", IntRam[i+j] );
@@ -1608,60 +1838,35 @@ bool MEM60::DokoSave( cIni *Ini )
 	
 	// 外部RAM
 	if( UseExtRam || UseSol ){
-		for( int i=0; i<0x4000; i+=64 ){		// 16KB
+		for( int i=0; i<(int)MemTable.ExtRam->Size; i+=64 ){
 			char stren[16],strva[256];
-			sprintf( stren, "ExtRam_%04X", i );
+			sprintf( stren, "ExtRam_%06X", i );
 			for( int j=0; j<64; j++ ) sprintf( &strva[j*2], "%02X", ExtRam[i+j] );
 			Ini->PutEntry( "MEMORY", NULL, stren, "%s", strva );
 		}
 	}
 	
+	// 戦士のカートリッジ
 	if( UseSol ){
-		// 戦士のカートリッジ用外部RAMは0x6000-0x7FFFを使用
-		for( int i=0x6000; i<0x8000; i+=64 ){	// 2KB
-			char stren[16],strva[256];
-			sprintf( stren, "ExtRam_%04X", i );
-			for( int j=0; j<64; j++ ) sprintf( &strva[j*2], "%02X", ExtRam[i+j] );
-			Ini->PutEntry( "MEMORY", NULL, stren, "%s", strva );
+		// メモリバンクレジスタ
+		for( int i=0; i<8; i++ ){
+			char stren[16];
+			sprintf( stren, "SolBank%d", i );
+			Ini->PutEntry( "MEMORY", NULL, stren, "0x%02X", SolBank[i] );
 		}
 	}
 	
 	return true;
 }
 
-bool MEM62::DokoSave( cIni *Ini )
+bool MEM64::DokoSave( cIni *Ini )
 {
-	PRINTD( MEM_LOG, "[MEM][DokoSave]\n" );
+	if( !MEM6::DokoSave( Ini ) ) return false;
 	
-	if( !Ini || !MEM6::DokoSave( Ini ) ) return false;
-	
-	// 内部RAM
-	for( int i=0; i<(int)IINTRAM.Size; i+=64 ){
-		char stren[16],strva[256];
-		sprintf( stren, "IntRam_%04X", i );
-		for( int j=0; j<64; j++ ) sprintf( &strva[j*2], "%02X", IntRam[i+j] );
-		Ini->PutEntry( "MEMORY", NULL, stren, "%s", strva );
-	}
-	
-	// 外部RAM
-	if( UseExtRam ){
-		for( int i=0; i<0x10000; i+=64 ){		// 64KB
-			char stren[16],strva[256];
-			sprintf( stren, "ExtRam_%04X", i );
-			for( int j=0; j<64; j++ ) sprintf( &strva[j*2], "%02X", ExtRam[i+j] );
-			Ini->PutEntry( "MEMORY", NULL, stren, "%s", strva );
-		}
-	}
-	
-	if( UseSol ){
-		// 現在の実装では外部RAMを使っていないので無視
-		// 戦士のカートリッジ用外部RAMは0x6000-0x7FFFを使用
-//		for( int i=0x6000; i<0x8000; i+=64 ){	// 2KB
-//			char stren[16],strva[256];
-//			sprintf( stren, "ExtRam_%04X", i );
-//			for( int j=0; j<64; j++ ) sprintf( &strva[j*2], "%02X", ExtRam[i+j] );
-//			Ini->PutEntry( "MEMORY", NULL, stren, "%s", strva );
-//		}
+	for( int i=0; i<16; i++ ){
+		char stren[16];
+		sprintf( stren, "RfSR_%02d", i );
+		Ini->PutEntry( "MEMORY", NULL, stren, "0x%02X", RfSR[i] );
 	}
 	
 	return true;
@@ -1683,11 +1888,12 @@ bool MEM6::DokoLoad( cIni *Ini )
 	
 	if( !Ini ) return false;
 	
-	Ini->GetTruth( "MEMORY", "CGBank",		&CGBank,	CGBank );
-	Ini->GetTruth( "MEMORY", "UseExtRam",	&UseExtRam,	UseExtRam );
-	Ini->GetInt(   "MEMORY", "M1Wait",		&M1Wait,	M1Wait );
-	Ini->GetTruth( "MEMORY", "UseSoldier",	&UseSol,	UseSol );
-	Ini->GetInt(   "MEMORY", "SolBank",		&SolBank,	SolBank );
+	Ini->GetTruth( "MEMORY", "CGBank",		&CGBank,		CGBank );
+	Ini->GetTruth( "MEMORY", "UseExtRam",	&UseExtRam,		UseExtRam );
+	Ini->GetInt(   "MEMORY", "M1Wait",		&M1Wait,		M1Wait );
+	Ini->GetTruth( "MEMORY", "UseSoldier",	&UseSol,		UseSol );
+	Ini->GetTruth( "MEMORY", "Soldier60",	&Sol60Mode,		Sol60Mode );
+	Ini->GetInt(   "MEMORY", "SoldierBank",	&SolBankSet,	SolBankSet );
 	
 	// 62,66,64,68
 	Ini->GetTruth( "MEMORY", "cgrom",		&cgrom,		cgrom );
@@ -1699,28 +1905,27 @@ bool MEM6::DokoLoad( cIni *Ini )
 	Ini->GetInt(   "MEMORY", "Rf1",			&st,		Rf[1] );	Rf[1]  = st;
 	Ini->GetInt(   "MEMORY", "Rf2",			&st,		Rf[2] );	Rf[2]  = st;
 	
-	// 64,68
-	for( int i=0; i<16; i++ ){
-		char stren[16];
-		sprintf( stren, "RfSR_%02d", i );
-		Ini->GetInt( "MEMORY", stren,	&st,	RfSR[i] );	RfSR[i] = st;
-	}
-	
 	// 拡張ROM
-	if( Ini->GetString( "MEMORY", "FilePath", strfp, "" ) )
+	if( Ini->GetPath( "MEMORY", "FilePath", strfp, "" ) )
 		MountExtRom( strfp );
 	
-	return true;
-}
-
-bool MEM60::DokoLoad( cIni *Ini )
-{
-	int st;
+	// メモリブロック設定
+	Init();
+	SetMemBlockR( Rf[0], Rf[1] );
+	SetMemBlockW( Rf[2] );
+	SetCGBank( CGBank );
 	
-	if( !Ini || !MEM6::DokoLoad( Ini ) ) return false;
+	// メモリウェイト
+	Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait( st );
+	// CGRomウェイト
+	Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
+	st &= 0xff;
+	CGROM1.SetWait( st );
+	CGROM2.SetWait( st );
+	
 	
 	// 内部RAM
-	for( int i=0; i<(int)IINTRAM.Size; i+=64 ){
+	for( int i=0; i<(int)MemTable.IntRam->Size; i+=64 ){
 		char stren[16],strva[256];
 		sprintf( stren, "IntRam_%04X", i );
 		memset( strva, '0', 64*2 );
@@ -1735,9 +1940,9 @@ bool MEM60::DokoLoad( cIni *Ini )
 	
 	// 外部RAM
 	if( UseExtRam || UseSol ){
-		for( int i=0; i<0x4000; i+=64 ){		// 16KB
+		for( int i=0; i<(int)MemTable.ExtRam->Size; i+=64 ){
 			char stren[16],strva[256];
-			sprintf( stren, "ExtRam_%04X", i );
+			sprintf( stren, "ExtRam_%06X", i );
 			memset( strva, '0', 64*2 );
 			if( Ini->GetString( "MEMORY", stren, strva, strva ) ){
 				for( int j=0; j<64; j++ ){
@@ -1749,121 +1954,32 @@ bool MEM60::DokoLoad( cIni *Ini )
 		}
 	}
 	
+	// 戦士のカートリッジ
 	if( UseSol ){
-		// 戦士のカートリッジ用外部RAMは0x6000-0x7FFFを使用
-		for( int i=0x6000; i<0x8000; i+=64 ){	// 2KB
-			char stren[16],strva[256];
-			sprintf( stren, "ExtRam_%04X", i );
-			memset( strva, '0', 64*2 );
-			if( Ini->GetString( "MEMORY", stren, strva, strva ) ){
-				for( int j=0; j<64; j++ ){
-					char dt[5] = "0x";
-					strncpy( &dt[2], &strva[j*2], 2 );
-					ExtRam[i+j] = strtol( dt, NULL, 16 );
-				}
-			}
+		// メモリバンクレジスタ
+		for( int i=0; i<8; i++ ){
+			char stren[16];
+			sprintf( stren, "SolBank%d", i );
+			Ini->GetInt( "MEMORY", stren,	&st,	SolBank[i] );	SolBank[i] = st;
+			SetSolBank( i, st );	// メモリバンク設定
 		}
 	}
-	
-	Init( UseExtRam, UseSol );
-	SetMemBlockR( 0, 0 );
-	SetMemBlockW( 0 );
-	SetCGBank( CGBank );
-	
-	// メモリウェイト
-	Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait( st );
-	// CGRomウェイト
-	Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
-	st &= 0xff;
-	CGROM1.SetWait( st, st );
-	CGROM2.SetWait( st, st );
-	
-	// 戦士のカートリッジ ------------------------------------------
-	if( UseSol ) SetSolBank( SolBank );	// メモリバンク初期化
-	// -------------------------------------------------------------
-	
-	return true;
-}
-
-bool MEM62::DokoLoad( cIni *Ini )
-{
-	int st;
-	
-	if( !Ini || !MEM6::DokoLoad( Ini ) ) return false;
-	
-	// 内部RAM
-	for( int i=0; i<(int)IINTRAM.Size; i+=64 ){
-		char stren[16],strva[256];
-		sprintf( stren, "IntRam_%04X", i );
-		memset( strva, '0', 64*2 );
-		if( Ini->GetString( "MEMORY", stren, strva, strva ) ){
-			for( int j=0; j<64; j++ ){
-				char dt[5] = "0x";
-				strncpy( &dt[2], &strva[j*2], 2 );
-				IntRam[i+j] = strtol( dt, NULL, 16 );
-			}
-		}
-	}
-	
-	// 外部RAM
-	if( UseExtRam ){
-		for( int i=0; i<0x10000; i+=64 ){
-			char stren[16],strva[256];
-			sprintf( stren, "ExtRam_%04X", i );
-			memset( strva, '0', 64*2 );
-			if( Ini->GetString( "MEMORY", stren, strva, strva ) ){
-				for( int j=0; j<64; j++ ){
-					char dt[5] = "0x";
-					strncpy( dt, &strva[j*2], 2 );
-					ExtRam[i+j] = strtol( dt, NULL, 16 );
-				}
-			}
-		}
-	}
-	
-	if( UseSol ){
-		// 現在の実装では外部RAMを使っていないので無視
-		// 戦士のカートリッジ用外部RAMは0x6000-0x7FFFを使用
-//		for( int i=0x6000; i<0x8000; i+=64 ){	// 2KB
-//			char stren[16],strva[256];
-//			sprintf( stren, "ExtRam_%04X", i );
-//			memset( strva, '0', 64*2 );
-//			if( Ini->GetString( "MEMORY", stren, strva, strva ) ){
-//				for( int j=0; j<64; j++ ){
-//					char dt[5] = "0x";
-//					strncpy( &dt[2], &strva[j*2], 2 );
-//					ExtRam[i+j] = strtol( dt, NULL, 16 );
-//				}
-//			}
-//		}
-	}
-	
-	Init( UseExtRam, UseSol );
-	SetMemBlockR( Rf[0], Rf[1] );
-	SetMemBlockW( Rf[2] );
-	SetCGBank( CGBank );
-	
-	// メモリウェイト
-	Ini->GetInt(    "MEMORY", "Wait",       &st,        GetWait() );    SetWait( st );
-	// CGRomウェイト
-	Ini->GetInt(    "MEMORY", "CgRomWait",  &st,        CGROM1.GetWait() );
-	st &= 0xff;
-	CGROM1.SetWait( st, st );
-	CGROM2.SetWait( st, st );
-	
-	// 戦士のカートリッジ ------------------------------------------
-	if( UseSol ) SetSolBank( SolBank );	// メモリバンク初期化
-	// -------------------------------------------------------------
 	
 	return true;
 }
 
 bool MEM64::DokoLoad( cIni *Ini )
 {
-	if( !Ini || !MEM62::DokoLoad( Ini ) ) return false;
+	int st;
 	
-	for( int i=0; i<16; i++ )
-		SetMemBlockSR( i, RfSR[i] );
+	if( !MEM6::DokoLoad( Ini ) ) return false;
+	
+	for( int i=0; i<16; i++ ){
+		char stren[16];
+		sprintf( stren, "RfSR_%02d", i );
+		Ini->GetInt( "MEMORY", stren,	&st,	RfSR[i] );	RfSR[i] = st;
+		SetMemBlockSR( i, st );
+	}
 	
 	return true;
 }
@@ -1896,7 +2012,12 @@ const Device::Descriptor MEM60::descriptor = {
 };
 
 const Device::OutFuncPtr MEM60::outdef[] = {
-	STATIC_CAST( Device::OutFuncPtr, &MEM60::Out7FH )
+	STATIC_CAST( Device::OutFuncPtr, &MEM60::Out06H ),	// 共通 順番固定
+	STATIC_CAST( Device::OutFuncPtr, &MEM60::Out3xH ),	// 共通 順番固定
+	STATIC_CAST( Device::OutFuncPtr, &MEM60::Out7FH ),	// 共通 順番固定
+	
+	STATIC_CAST( Device::OutFuncPtr, &MEM60::OutF0H ),	// 戦士のカートリッジ対応
+	STATIC_CAST( Device::OutFuncPtr, &MEM60::OutF2H )	// 戦士のカートリッジ対応
 };
 
 const Device::InFuncPtr MEM60::indef[] = { NULL };
@@ -1906,7 +2027,10 @@ const Device::Descriptor MEM62::descriptor = {
 };
 
 const Device::OutFuncPtr MEM62::outdef[] = {
-	STATIC_CAST( Device::OutFuncPtr, &MEM62::Out7FH ),
+	STATIC_CAST( Device::OutFuncPtr, &MEM62::Out06H ),	// 共通 順番固定
+	STATIC_CAST( Device::OutFuncPtr, &MEM62::Out3xH ),	// 共通 順番固定
+	STATIC_CAST( Device::OutFuncPtr, &MEM62::Out7FH ),	// 共通 順番固定
+	
 	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutC1H ),
 	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutC2H ),
 	STATIC_CAST( Device::OutFuncPtr, &MEM62::OutC3H ),
@@ -1929,8 +2053,11 @@ const Device::Descriptor MEM64::descriptor = {
 };
 
 const Device::OutFuncPtr MEM64::outdef[] = {
+	STATIC_CAST( Device::OutFuncPtr, &MEM64::Out06H ),	// 共通 順番固定
+	STATIC_CAST( Device::OutFuncPtr, &MEM64::Out3xH ),	// 共通 順番固定
+	STATIC_CAST( Device::OutFuncPtr, &MEM64::Out7FH ),	// 共通 順番固定
+	
 	STATIC_CAST( Device::OutFuncPtr, &MEM64::Out6xH ),
-	STATIC_CAST( Device::OutFuncPtr, &MEM64::Out7FH ),
 	STATIC_CAST( Device::OutFuncPtr, &MEM64::OutC1H ),
 	STATIC_CAST( Device::OutFuncPtr, &MEM64::OutC2H ),
 	STATIC_CAST( Device::OutFuncPtr, &MEM64::OutC3H ),

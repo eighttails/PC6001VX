@@ -25,7 +25,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // オプション 初期値
 /////////////////////////////////////////////////////////////////////////////
-#define	DEFAULT_MODEL			(60)				/* 機種 60:PC-6001 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR */
+#define	DEFAULT_MODEL			(60)				/* 機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR */
 #define	DEFAULT_EXTRAM			(1)					/* 拡張RAM 0:なし 1:あり */
 #define	DEFAULT_REPEAT			(70)				/* キーリピートの間隔(単位:ms 0で無効) */
 #define	DEFAULT_SAMPLE_RATE		(44100)				/* サンプリングレート */
@@ -41,6 +41,7 @@
 #define DEFAULT_MAXBOOST60		(8)					/* BoostUp最大倍率(N60モード) */
 #define DEFAULT_MAXBOOST62		(5)					/* BoostUp最大倍率(N60m/N66モード) */
 #define	DEFAULT_FDD				(0)					/* FDD接続台数 */
+#define	DEFAULT_FDDWAIT			(true)				/* FDDウェイト true:有効 false:無効 */
 #define	DEFAULT_MODE4_COLOR		(1)					/* モード４カラーモード 0:モノ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク */
 #define	DEFAULT_SCANLINE		(true) 				/* スキャンライン true:あり false:なし */
 #define	DEFAULT_SCANLINEBR		(75)				/* スキャンライン輝度 (0-100)% */
@@ -57,14 +58,14 @@
 #define	DEFAULT_SOLDIER			(false) 			/* 戦士のカートリッジ使うフラグ */
 
 
-#define	CPUM_CLOCK60			(3993600)			/* メインCPUクロック(Hz) 60 */
-#define	CPUM_CLOCK62			(4000000)			/* メインCPUクロック(Hz) 62,66 */
+#define	CPUM_CLOCK60			(3993600)			/* メインCPUクロック(Hz) 60,62 */
+#define	CPUM_CLOCK66			(4000000)			/* メインCPUクロック(Hz) 66 */
 #define	CPUM_CLOCK64			(3580000)			/* メインCPUクロック(Hz) 64,68 */
-#define	CPUS_CLOCK60			(CPUM_CLOCK60*2)	/* サブCPUクロック(Hz) 60 */
-#define	CPUS_CLOCK62			(CPUM_CLOCK62*2)	/* サブCPUクロック(Hz) 62,66 */
+#define	CPUS_CLOCK60			(CPUM_CLOCK60*2)	/* サブCPUクロック(Hz) 60,62 */
+#define	CPUS_CLOCK66			(CPUM_CLOCK66*2)	/* サブCPUクロック(Hz) 66 */
 #define	CPUS_CLOCK64			(CPUM_CLOCK64*2)	/* サブCPUクロック(Hz) 64,68 */
-#define	PSG_CLOCK60				(CPUM_CLOCK60/2)	/* PSGクロック(Hz) 60 */
-#define	PSG_CLOCK62				(CPUM_CLOCK62/2)	/* PSGクロック(Hz) 62,66 */
+#define	PSG_CLOCK60				(CPUM_CLOCK60/2)	/* PSGクロック(Hz) 60,62 */
+#define	PSG_CLOCK66				(CPUM_CLOCK66/2)	/* PSGクロック(Hz) 66 */
 #define	PSG_CLOCK64				(2000000)			/* PSGクロック(Hz) 64,68 CPUクロックとは別?? */
 
 #define	VSYNC_HZ				(60)				/* VSYNC周波数 */

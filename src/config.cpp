@@ -648,9 +648,8 @@ void CFG6::SetOverClock( int data )
 // ROMパス取得
 char *CFG6::GetRomPath( void )
 {
-	Ini->GetString( "PATH", "RomPath", RomPath, RomPath );
+	Ini->GetPath( "PATH", "RomPath", RomPath, RomPath );
 	OSD_AddDelimiter( RomPath );
-	OSD_AbsolutePath( RomPath );
 	return RomPath;
 }
 
@@ -681,9 +680,8 @@ void CFG6::SetUseExtRam( bool yn )
 // 拡張ROMパス取得
 char *CFG6::GetExtRomPath( void )
 {
-	Ini->GetString( "PATH", "ExtRomPath", ExtRomPath, ExtRomPath );
+	Ini->GetPath( "PATH", "ExtRomPath", ExtRomPath, ExtRomPath );
 	OSD_AddDelimiter( ExtRomPath );
-	OSD_AbsolutePath( ExtRomPath );
 	return ExtRomPath;
 }
 // 拡張ROMパス設定
@@ -699,8 +697,7 @@ void CFG6::SetExtRomPath( const char *str )
 // 拡張ROMファイル名取得
 char *CFG6::GetExtRomFile( void )
 {
-	Ini->GetString( "FILES", "ExtRom", ExtRomFile, ExtRomFile );
-	OSD_AbsolutePath( ExtRomFile );
+	Ini->GetPath( "FILES", "ExtRom", ExtRomFile, ExtRomFile );
 	return ExtRomFile;
 }
 
@@ -827,9 +824,8 @@ void CFG6::SetPsgLPF( int data )
 // WAVEパス取得
 char *CFG6::GetWavePath( void )
 {
-	Ini->GetString( "PATH", "WavePath", WavePath, WavePath );
+	Ini->GetPath( "PATH", "WavePath", WavePath, WavePath );
 	OSD_AddDelimiter( WavePath );
-	OSD_AbsolutePath( WavePath );
 	return WavePath;
 }
 
@@ -846,9 +842,8 @@ void CFG6::SetWavePath( const char *str )
 // どこでもSAVEパス取得
 char *CFG6::GetDokoSavePath( void )
 {
-	Ini->GetString( "PATH", "DokoSavePath", DokoSavePath, DokoSavePath );
+	Ini->GetPath( "PATH", "DokoSavePath", DokoSavePath, DokoSavePath );
 	OSD_AddDelimiter( DokoSavePath );
-	OSD_AbsolutePath( DokoSavePath );
 	return DokoSavePath;
 }
 
@@ -879,9 +874,8 @@ void CFG6::SetVoiceVol( int data )
 // TAPEパス取得
 char *CFG6::GetTapePath( void )
 {
-	Ini->GetString( "PATH", "TapePath", TapePath, TapePath );
+	Ini->GetPath( "PATH", "TapePath", TapePath, TapePath );
 	OSD_AddDelimiter( TapePath );
-	OSD_AbsolutePath( TapePath );
 	return TapePath;
 }
 
@@ -898,8 +892,7 @@ void CFG6::SetTapePath( const char *str )
 // TAPEファイル名取得
 char *CFG6::GetTapeFile( void )
 {
-	Ini->GetString( "FILES", "tape", TapeFile, TapeFile );
-	OSD_AbsolutePath( TapeFile );
+	Ini->GetPath( "FILES", "tape", TapeFile, TapeFile );
 	return TapeFile;
 }
 
@@ -985,8 +978,7 @@ void CFG6::SetMaxBoost2( int data )
 // TAPE(SAVE)ファイル名取得
 char *CFG6::GetSaveFile( void )
 {
-	Ini->GetString( "FILES", "save", SaveFile, SaveFile );
-	OSD_AbsolutePath( SaveFile );
+	Ini->GetPath( "FILES", "save", SaveFile, SaveFile );
 	return SaveFile;
 }
 
@@ -1003,9 +995,8 @@ void CFG6::SetSaveFile( const char *str )
 // DISKパス取得
 char *CFG6::GetDiskPath( void )
 {
-	Ini->GetString( "PATH", "DiskPath", DiskPath, DiskPath );
+	Ini->GetPath( "PATH", "DiskPath", DiskPath, DiskPath );
 	OSD_AddDelimiter( DiskPath );
-	OSD_AbsolutePath( DiskPath );
 	return DiskPath;
 }
 
@@ -1023,11 +1014,9 @@ void CFG6::SetDiskPath( const char *str )
 char *CFG6::GetDiskFile( int drv )
 {
 	switch( drv ){
-	case 1:	Ini->GetString( "FILES", "disk1", DiskFile1, DiskFile1 );
-		OSD_AbsolutePath( DiskFile1 );
+	case 1:	Ini->GetPath( "FILES", "disk1", DiskFile1, DiskFile1 );
 		return DiskFile1;
-	case 2: Ini->GetString( "FILES", "disk2", DiskFile2, DiskFile2 );
-		OSD_AbsolutePath( DiskFile2 );
+	case 2: Ini->GetPath( "FILES", "disk2", DiskFile2, DiskFile2 );
 		return DiskFile2;
 	}
 	return NULL;
@@ -1060,12 +1049,25 @@ void CFG6::SetFddNum( int data )
 	Ini->PutEntry( "CONFIG", MSINI_FDD, "FDD", "%d", data );
 }
 
+// FDDウェイト有効フラグ取得
+bool CFG6::GetFddWaitEnable( void )
+{
+	bool st = DEFAULT_FDDWAIT;
+	Ini->GetTruth( "CONFIG", "FDDWait", &st, st );
+	return st;
+}
+
+// FDDウェイト有効フラグ設定
+void CFG6::SetFddWaitEnable( bool yn )
+{
+	Ini->PutEntry( "CONFIG", MSINI_FDDWait, "FDDWait", "%s", yn ? "Yes" : "No" );
+}
+
 // スクリーンショット格納パス取得
 const char *CFG6::GetImgPath( void )
 {
-	Ini->GetString( "PATH", "ImgPath", ImgPath, ImgPath );
+	Ini->GetPath( "PATH", "ImgPath", ImgPath, ImgPath );
 	OSD_AddDelimiter( ImgPath );
-	OSD_AbsolutePath( ImgPath );
 	return ImgPath;
 }
 
@@ -1195,8 +1197,7 @@ void CFG6::SetAviBpp( int bpp )
 // プリンタファイル名取得
 char *CFG6::GetPrinterFile( void )
 {
-	Ini->GetString( "FILES", "printer", PrinterFile, PrinterFile );
-	OSD_AbsolutePath( PrinterFile );
+	Ini->GetPath( "FILES", "printer", PrinterFile, PrinterFile );
 	return PrinterFile;
 }
 
@@ -1407,6 +1408,10 @@ void CFG6::InitIni( cIni *ini, bool over )
 	// ROMパッチ
 	if( over || !ini->GetString( "CONFIG", "RomPatch", str, str ) )
 		SetRomPatch( DEFAULT_ROMPATCH );
+	
+	// FDDウェイト有効フラグ
+	if( over || !ini->GetString( "CONFIG", "FDDWait", str, str ) )
+		SetFddWaitEnable( DEFAULT_FDDWAIT );
 	
 	// [DISPLAY]
 	// MODE4カラー

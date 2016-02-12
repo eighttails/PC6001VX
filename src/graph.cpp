@@ -17,6 +17,7 @@
 #define	HBBUS		((282-12)*2)	/* 4:3表示時画面高さ */
 
 // フルスクリーンウィンドウサイズ
+// Mac のフルスクリーンは 640x480, 800x600, 1024x768 に限られるらしい。by Windyさん
 #define	P6WIFW		640
 #define	P6WIFH		480
 
@@ -48,7 +49,6 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
-//DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL), SBuf(NULL) {}
 DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL) {}
 
 
@@ -57,7 +57,6 @@ DSP6::DSP6( VM6 *pvm ) : vm(pvm), Wh(NULL) {}
 ////////////////////////////////////////////////////////////////
 DSP6::~DSP6( void )
 {
-	//	if( SBuf ) delete SBuf;
 	if( Wh ) OSD_DestroyWindow( Wh );
 }
 
@@ -114,16 +113,17 @@ bool DSP6::SetScreenSurface( void )
 	}else
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
-		x      = P6WINW;
-		y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
-	}
+		x      = ScreenX();
+		y      = ScreenY();
 
-	if( DISPFULL ){	// フルスクリーン?
-		fsflag = true;
-		PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d )\n", x, y );
-	}else{
-		fsflag = false;
-		PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d )\n", x, y );
+		if( DISPFULL ){	// フルスクリーン?
+			fsflag = true;
+			PRINTD( GRP_LOG, " -> FullScreen ( X:%d Y:%d )\n", x, y );
+		}else{
+			fsflag = false;
+			y     += DISPSTAT ? vm->el->staw->Height() : 0;
+			PRINTD( GRP_LOG, " -> Window ( X:%d Y:%d )\n", x, y );
+		}
 	}
 
 	// スクリーンサーフェス作成
@@ -169,8 +169,8 @@ bool DSP6::ResizeScreen( void )
 	}else
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	{
-		x      = P6WINW;
-		y      = (DISPNTSC ? HBBUS : P6WINH) + ( DISPSTAT ? vm->el->staw->Height() : 0 );
+		x = ScreenX();
+		y = ScreenY();
 		
 		// ステータスバー表示?
 		if( !DISPFULL && DISPSTAT ) y += vm->el->staw->Height();
@@ -226,7 +226,7 @@ void DSP6::DrawScreen( void )
 	{
 		if( 0/*DISPFULL P6VXではフルスクリーンでもサイズを変えない*/ ){	// フルスクリーン表示
 			PRINTD( GRP_LOG, " -> FullScreen" );
-			OSD_BlitToWindowEx( Wh, BBuf, ( OSD_GetWindowWidth( Wh ) - ScreenX() ) / 2, ( OSD_GetWindowHeight( Wh ) - ScreenY() ) / 2, ScreenY(), DISPNTSC, DISPSCAN, vm->el->cfg->GetScanLineBr() );
+			OSD_BlitToWindowEx( Wh, BBuf, ( P6WIFW - P6WINW ) / 2, ( P6WIFH - (DISPNTSC ? HBBUS : P6WINH) ) / 2, DISPNTSC ? HBBUS : P6WINH, DISPNTSC, DISPSCAN, vm->el->cfg->GetScanLineBr() );
 		}else{			// ウィンドウ表示
 			PRINTD( GRP_LOG, " -> Window" );
 			OSD_BlitToWindowEx( Wh, BBuf, 0, 0, ScreenY(), DISPNTSC, DISPSCAN, vm->el->cfg->GetScanLineBr() );
@@ -258,7 +258,8 @@ void DSP6::DrawScreen( void )
 ////////////////////////////////////////////////////////////////
 int DSP6::ScreenX( void ) const
 {
-	return DISPFULL ? P6WIFW : P6WINW;
+	// P6VXではスクリーンサイズは変化しない
+	return P6WINW;
 }
 
 
@@ -270,21 +271,8 @@ int DSP6::ScreenX( void ) const
 ////////////////////////////////////////////////////////////////
 int DSP6::ScreenY( void ) const
 {
-	// P6VXでは4:3モードでもスクリーンサイズは変化しない
-	return P6WINH;
-}
-
-
-////////////////////////////////////////////////////////////////
-// サブバッファ取得
-//
-// 引数:	なし
-// 返値:	VSurface *	サブバッファへのポインタ
-////////////////////////////////////////////////////////////////
-VSurface *DSP6::GetSubBuffer( void )
-{
-	return NULL;
-	//	return SBuf;
+	// P6VXではフルスクリーンモードでもスクリーンサイズは変化しない
+	return DISPNTSC ? HBBUS : P6WINH;
 }
 
 
@@ -298,115 +286,6 @@ HWINDOW DSP6::GetWindowHandle( void )
 {
 	return (HWINDOW)Wh;
 }
-
-
-////////////////////////////////////////////////////////////////
-// サブバッファ更新
-//
-// 引数:	なし
-// 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-#define	RESO43		256		/* 中間色計算用分解能(1ラインをRESO43分割する) */
-/*
-bool DSP6::UpdateSubBuf( void )
-{
-	PRINTD( GRP_LOG, "[GRP][UpdateSubBuf]\n" );
-	
-	VSurface *BBuf = vm->vdg;
-	
-	if( !BBuf ) return false;
-	if( !RefreshSubBuf() ) return false;
-	
-	const bool dntsc = DISPNTSC;
-	const bool dscan = DISPSCAN;
-	const int brscan = vm->el->cfg->GetScanLineBr();
-	const int xsc    = BBuf->XScale();
-	const int yy     = SBuf->Height();
-	const int xx     = BBuf->Width();
-	
-	for( int y=0; y<yy; y++ ){
-		DWORD y0 = ( y * BBuf->Height() ) / yy;
-		DWORD a1 = ( y * BBuf->Height() * RESO43 ) / yy - y0 * RESO43;
-		DWORD a2 = RESO43 - a1;
-		
-		DWORD *sof1 = (DWORD *)BBuf->GetPixels() + BBuf->Pitch()/sizeof(DWORD) * y0;
-		DWORD *sof2 = sof1 + ( y0 < (DWORD)BBuf->Height()-1 ? BBuf->Pitch()/sizeof(DWORD) : 0 );
-		DWORD *doff = (DWORD *)SBuf->GetPixels() + SBuf->Pitch()/sizeof(DWORD) * y ;
-		
-		for( int x=0; x<xx; x++ ){
-			DWORD r,g,b;
-			DWORD d1 = *sof1++;
-			DWORD d2 = *sof2++;
-			
-			if( dntsc ){
-				r = ( ( ( (d1>>RSHIFT32)&0xff ) * a2 + ( (d2>>RSHIFT32)&0xff ) * a1 ) / RESO43 ) & 0xff;
-				g = ( ( ( (d1>>GSHIFT32)&0xff ) * a2 + ( (d2>>GSHIFT32)&0xff ) * a1 ) / RESO43 ) & 0xff;
-				b = ( ( ( (d1>>BSHIFT32)&0xff ) * a2 + ( (d2>>BSHIFT32)&0xff ) * a1 ) / RESO43 ) & 0xff;
-			}else{
-				r = (d1>>RSHIFT32)&0xff;
-				g = (d1>>GSHIFT32)&0xff;
-				b = (d1>>BSHIFT32)&0xff;
-			}
-			
-			if( dscan && y&1 ){
-				r = ( ( r * brscan ) / 100 ) & 0xff;
-				g = ( ( g * brscan ) / 100 ) & 0xff;
-				b = ( ( b * brscan ) / 100 ) & 0xff;
-			}
-			*doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
-			if( xsc == 1 ) *doff++ = (r<<RSHIFT32) | (g<<GSHIFT32) | (b<<BSHIFT32);
-		}
-	}
-	
-	PRINTD( GRP_LOG, " -> %sScanLine -> OK\n", DISPSCAN ? "" : "No " );
-	
-	// 4:3表示有効の場合、表示比率を設定する
-	if(DISPNTSC){
-		SBuf->SetAspectRatio(double(HBBUS) / (P6WINH));
-	} else {
-		SBuf->SetAspectRatio(1.0);
-	}
-
-	return true;
-}
-
-
-////////////////////////////////////////////////////////////////
-// サブバッファリフレッシュ
-//
-// 引数:	なし
-// 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool DSP6::RefreshSubBuf( void )
-{
-	PRINTD( GRP_LOG, "[GRP][RefreshSubBuf]\n" );
-	
-	if( SBuf ){
-		if( SBuf->Width() == ScreenX() && SBuf->Height() == ScreenY() ){
-			// サイズが変わっていなければOK
-			PRINTD( GRP_LOG, " X:%d Y:%d -> OK\n", SBuf->Width(), SBuf->Height() );
-			return true;
-		}else{
-			// サブバッファ一旦削除
-			delete SBuf;
-			SBuf = NULL;
-		}
-	}
-	
-	// サブバッファ作成
-	PRINTD( GRP_LOG, " Create SubBuffer X:%d Y:%d\n", ScreenX(), ScreenY() );
-	SBuf = new VSurface;
-	if( !SBuf ) return false;
-	
-	if( !SBuf->InitSurface( ScreenX(), ScreenY() ) ){
-		delete SBuf;
-		SBuf = NULL;
-		return false;
-	}
-	
-	return true;
-}
-*/
 
 
 ////////////////////////////////////////////////////////////////
@@ -436,8 +315,8 @@ void DSP6::SnapShot( const char *path )
 		VRect scr;
 		
 		scr.x = scr.y = 0;
-		scr.w = DISPFULL ? P6WIFW : P6WINW;
-		scr.h = DISPFULL ? P6WIFH : DISPNTSC ? HBBUS : P6WINH;
+		scr.w = ScreenX();
+		scr.h = ScreenY();
 		
 		BYTE *pixels = new BYTE[scr.w * scr.h * sizeof(DWORD)];
 		if( !pixels ) return;
@@ -448,3 +327,4 @@ void DSP6::SnapShot( const char *path )
 		if( pixels ) delete [] pixels;
 	}
 }
+

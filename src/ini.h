@@ -54,6 +54,7 @@ public:
 	bool GetString( const char *, const char *, char *, const char * );		// 文字列読込み
 	bool GetInt( const char *, const char *, int *, const int );			// 数値読込み
 	bool GetTruth( const char *, const char *, bool *, const bool );		// YesNo読込み
+	bool GetPath( const char *, const char *, char *, const char * );		// パス読込み
 	bool PutEntry( const char *, const char *, const char *, const char *, ... );	// エントリ追加
 	bool DeleteBefore( const char *, const char * );						// エントリ削除(前)
 	bool DeleteAfter( const char *, const char * );							// エントリ削除(後)

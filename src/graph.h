@@ -15,12 +15,8 @@ protected:
 	VM6* vm;
 	
 	HWINDOW Wh;				// ウィンドウハンドル
-//	VSurface *SBuf;			// サブバッファポインタ
 	
 	bool SetScreenSurface();				// スクリーンサーフェス作成
-//	bool UpdateSubBuf();					// サブバッファ更新
-//	bool RefreshSubBuf();					// サブバッファリフレッシュ
-	
 
 public:
 	DSP6( VM6 * );							// コンストラクタ
@@ -37,7 +33,6 @@ public:
 	int ScreenX() const;					// 有効スクリーン幅取得
 	int ScreenY() const;					// 有効スクリーン高さ取得
 	
-	VSurface *GetSubBuffer();				// サブバッファ取得
 	HWINDOW GetWindowHandle();				// ウィンドウハンドル取得
 };
 

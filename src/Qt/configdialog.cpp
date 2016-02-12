@@ -322,7 +322,10 @@ void ConfigDialog::readConfig()
     // BoostUp 最大倍率(N60m/N66モード)
     ui->lineEditBoost66->setText(QString::number(qMin(qMax(1, config->GetMaxBoost2()), 100)));
 
-    // 終了時 確認する
+	// 終了時 確認する
+	ui->checkBoxFDDWaitEnable->setChecked(config->GetFddWaitEnable());
+
+	// 終了時 確認する
     ui->checkBoxCkQuit->setChecked(config->GetCkQuit());
 
     // 終了時 INIファイルを保存する
@@ -548,6 +551,9 @@ void ConfigDialog::writeConfig()
     if(conv){
         config->SetMaxBoost2(min(max(1, iVal), 100));
     }
+
+	// FDDアクセスウェイト有効
+	config->SetFddWaitEnable(ui->checkBoxFDDWaitEnable->isChecked());
 
     // 終了時 確認する
     config->SetCkQuit(ui->checkBoxCkQuit->isChecked());

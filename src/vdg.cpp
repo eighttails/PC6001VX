@@ -16,11 +16,13 @@
 #define	VLINES60	192			/* 垂直表示ライン(N60)  */
 #define	VLINES62	200			/* 垂直表示ライン(N60m) */
 
-#define	HSDCLK60	455			/* 水平トータル期間(ドットクロック) 60    */
-#define	HSDCLK62	456			/* 水平トータル期間(ドットクロック) 62,66 */
+#define	HSDCLK60	455			/* 水平トータル期間(ドットクロック) 60    		*/
+#define	HSDCLK62	456			/* 水平トータル期間(ドットクロック) 62,66,64,68 */
 #define	HCLK6060	(256+40)	/* 水平表示期間(N60)  60    */
 #define	HCLK6062	(256+48)	/* 水平表示期間(N60)  62,66 */
-#define	HCLOCK62	(320+48)	/* 水平表示期間(N60m)   */
+#define	HCLK6064	(256+ 8)	/* 水平表示期間(N60)  64,68 */
+#define	HCLOCK62	(320+48)	/* 水平表示期間(N60m) 62,66	*/
+#define	HCLOCK64	(320+16)	/* 水平表示期間(N60m) 64,68	*/
 
 
 
@@ -143,7 +145,7 @@ VDG62::VDG62( VM6 *vm, const ID& id ) : VDG6(vm,id)
 VDG64::VDG64( VM6 *vm, const ID& id ) : VDG6(vm,id)
 {
 	HSdclk = HSDCLK62;
-	Hclk60 = HCLK6062;
+	Hclk60 = HCLK6064;
 	
 	// カラーテーブル設定
 	for( int i=0; i<COUNTOF(COL_AN); i++ )
@@ -224,7 +226,7 @@ void VDG64::EventCallback( int id, int clock )
 		VSYNC = true;
 		vm->EventOnVSYNC();				// VSYNCを通知する
 		VLcnt = N60Win ? VLINES60 : VLINES62;	// 表示ラインカウント初期化
-		vm->EventReset( this->Device::GetID(), EID_HDISPS, (double)( N60Win ? Hclk60 : HCLOCK62 ) / (double)HSdclk );
+		vm->EventReset( this->Device::GetID(), EID_HDISPS, (double)( N60Win ? Hclk60 : HCLOCK64 ) / (double)HSdclk );
 		vm->EventReset( this->Device::GetID(), EID_HDISPE );
 		break;
 		
@@ -305,20 +307,38 @@ void VDG6::LatchGMODE( void )
 ////////////////////////////////////////////////////////////////
 // アトリビュートデータ取得
 ////////////////////////////////////////////////////////////////
-BYTE VDG6::GetAttr( void ) const
+BYTE VDG60::GetAttr( void ) const
+{
+	WORD addr = GerAttrAddr() + (( VAddr * 32 + HAddr ) & 0x01ff);
+	return addr < 0xc000 ? vm->MemReadExtRam( addr ) : vm->MemReadIntRam( addr );
+}
+
+BYTE VDG62::GetAttr( void ) const
 {
 	WORD addr = ( VAddr * ( N60Win ? 32 : 40 ) + HAddr ) & ( N60Win ? 0x01ff : 0x1fff );
-	return vm->MemReadMainRam( GerAttrAddr() +  addr );
+	return vm->MemReadIntRam( GerAttrAddr() +  addr );
+}
+
+BYTE VDG64::GetAttr( void ) const
+{
+	WORD addr = ( VAddr * ( N60Win ? 32 : 40 ) + HAddr ) & ( N60Win ? 0x01ff : 0x1fff );
+	return vm->MemReadIntRam( GerAttrAddr() +  addr );
 }
 
 
 ////////////////////////////////////////////////////////////////
 // VRAMデータ取得 (表示)
 ////////////////////////////////////////////////////////////////
-BYTE VDG6::GetVram( void ) const
+BYTE VDG60::GetVram( void ) const
+{
+	WORD addr = GetVramAddr() + VAddr * 32 + HAddr;
+	return addr < 0xc000 ? vm->MemReadExtRam( addr ) : vm->MemReadIntRam( addr );
+}
+
+BYTE VDG62::GetVram( void ) const
 {
 	WORD addr = VAddr * ( N60Win ? 32 : 40 ) + HAddr;
-	return vm->MemReadMainRam( GetVramAddr() + addr );
+	return vm->MemReadIntRam( GetVramAddr() + addr );
 }
 
 BYTE VDG64::GetVram( void ) const
@@ -349,7 +369,7 @@ BYTE VDG64::GetVram( void ) const
 		// HAddrは8dot毎
 		addr = VAddr * ( N60Win ? 32 : 40 ) + HAddr;
 	}
-	return vm->MemReadMainRam( GetVramAddr() + addr );
+	return vm->MemReadIntRam( GetVramAddr() + addr );
 }
 
 
@@ -489,18 +509,14 @@ WORD VDG6::SRGVramAddr( WORD addr ) const
 
 ////////////////////////////////////////////////////////////////
 // VRAMアドレス取得 (メモリアクセス,表示)
-//   注! アドレスはMainRamブロック先頭からのオフセットとする
 ////////////////////////////////////////////////////////////////
 WORD VDG60::GetVramAddr( void ) const
 {
-	//	[00]C200H  [01]E200H  [10]8200H  [11]A200H
-	// 実アドレスは +0x8000
-	return AddrOff + 0x0200;
+	return ( 0x8000 | AddrOff ) + 0x0200;	//	[00]C200H  [01]E200H  [10]8200H  [11]A200H
 }
 
 WORD VDG62::GetVramAddr( void ) const
 {
-	// mk2以降の場合は実アドレスに一致
 	if( N60Win )			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
 		return ( 0x8000 | AddrOff ) + 0x0200;
 	else{					// N60m
@@ -527,17 +543,14 @@ WORD VDG64::GetVramAddr( void ) const
 
 ////////////////////////////////////////////////////////////////
 // ATTRアドレス取得 (表示)
-//   注! アドレスはMainRamブロック先頭からのオフセットとする
 ////////////////////////////////////////////////////////////////
 WORD VDG60::GerAttrAddr( void ) const
 {
-	// 実アドレスは +0x8000
-	return AddrOff;		// [00]C000H  [01]E000H  [10]8000H  [11]A000H
+	return 0x8000 | AddrOff;				// [00]C000H  [01]E000H  [10]8000H  [11]A000H
 }
 
 WORD VDG62::GerAttrAddr( void ) const
 {
-	// mk2以降の場合は実アドレスに一致
 	if( N60Win ) return 0x8000 | AddrOff;	// N60  [00]C000H  [01]E000H  [10]8000H  [11]A000H
 	else		 return AddrOff<<1;			// N60m [00]8000H  [01]C000H  [10]0000H  [11]4000H
 }

@@ -597,7 +597,7 @@ bool CMTL::DokoLoad( cIni *Ini )
 	Ini->GetTruth( "TAPE", "Relay",		&Relay,	Relay );
 	Ini->GetTruth( "TAPE", "BoostUp",	&Boost,	Boost );
 	
-	Ini->GetString( "TAPE", "FilePath", FilePath, "" );
+	Ini->GetPath( "TAPE", "FilePath", FilePath, "" );
 	if( *FilePath ){
 		if( !Mount( FilePath ) ) return false;
 		if( !p6t->DokoLoad( Ini ) ) return false;

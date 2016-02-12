@@ -66,7 +66,7 @@ protected:
 	BYTE Timer1st;			// タイマ割込み初回周期比率
 	
 	virtual void SetIntrEnable( BYTE );		// 割込み許可フラグ設定
-	void SetTimerIntr( bool );				// タイマ割込みスイッチ
+	void SetTimerIntr( bool );				// タイマ割込みスイッチ設定
 	void SetTimerIntrHz( BYTE, BYTE=0 );	// タイマ割込み周波数設定
 	
 	// I/Oアクセス関数
@@ -97,6 +97,8 @@ public:
 	
 	void ReqIntr( DWORD );					// 割込み要求
 	void CancelIntr( DWORD );				// 割込み撤回
+	
+	bool GetTimerIntr();					// タイマ割込みスイッチ取得
 	
 	// ------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE

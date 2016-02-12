@@ -3551,6 +3551,13 @@ border-radius: 1;</string>
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="checkBoxFDDWaitEnable">
+         <property name="text">
+          <string>FDDアクセスウェイト有効(&amp;W)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="checkBoxCkQuit">
          <property name="text">
           <string>終了時に確認する(&amp;F)</string>

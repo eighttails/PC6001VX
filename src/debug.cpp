@@ -16,8 +16,8 @@
 #define	SCRWINW		(380)
 #define	SCRWINH		(250)
 
-#define	REGWINW		(40)
-#define	REGWINH		( 8)
+#define	REGWINW		(40+32)
+#define	REGWINH		( 8+10)
 #define	MEMWINW		(72)
 #define	MEMWINH		(31)
 #define	MONWINW		(60)
@@ -167,9 +167,9 @@ void cWndMem::Update( void )
 		ZCons::Printf( "%04X ", addr );
 		ZCons::SetColor( FC_WHITE );
 		for( j=0; j<16; j++)
-			ZCons::Printf( "%02X ", vm->MemReadMainRam(addr+j) );
+			ZCons::Printf( "%02X ", vm->MemReadIntRam(addr+j) );
 		for( j=0; j<16; j++)
-			ZCons::PutCharH( vm->MemReadMainRam(addr+j) );
+			ZCons::PutCharH( vm->MemReadIntRam(addr+j) );
 		addr += 16;
 	}
 }
@@ -224,7 +224,6 @@ bool cWndReg::Init( void )
 void cWndReg::Update( void )
 {
 	const char flags[9] = "SZ.H.PNC";
-	char fbuf[9];
 	cZ80::Register reg;
 	char DisCode[128];
 	int i,j;
@@ -232,19 +231,38 @@ void cWndReg::Update( void )
 	// レジスタ値取得
 	vm->CpumGetRegister( &reg );
 	
-	// フラグの状態取得
-	for( j=0,i=reg.AF.B.l; j<8; j++,i<<=1 ) fbuf[j] = i&0x80 ? flags[j] : '.';
-	fbuf[8]='\0';
-	
 	// 1ライン逆アセンブル
 	vm->CpumDisasm( DisCode, reg.PC.W );
 	
-	ZCons::Locate( 0, 0 ); ZCons::Print( "AF :%04X  BC :%04X  DE :%04X  HL :%04X", reg.AF.W, reg.BC.W, reg.DE.W, reg.HL.W );
-	ZCons::Locate( 0, 1 ); ZCons::Print( "AF':%04X  BC':%04X  DE':%04X  HL':%04X", reg.AF1.W, reg.BC1.W, reg.DE1.W, reg.HL1.W );
-	ZCons::Locate( 0, 2 ); ZCons::Print( "IX :%04X  IY :%04X  PC :%04X  SP :%04X", reg.IX.W, reg.IY.W, reg.PC.W, reg.SP.W );
-	ZCons::Locate( 0, 3 ); ZCons::Print( "FLAG:[%s] I:%02X IFF:%d IM:%1d HALT:%1d",  fbuf, reg.I, reg.IFF, reg.IM, reg.Halt );
-	ZCons::Locate( 0, 4 ); ZCons::Print( "--------------------------------------" );
-	ZCons::Locate( 0, 5 ); ZCons::Print( "%-36s", DisCode );
+	ZCons::Locate( 0, 0 ); ZCons::Print( "AF :%04X BC :%04X DE :%04X HL :%04X", reg.AF.W, reg.BC.W, reg.DE.W, reg.HL.W );
+	ZCons::Locate( 0, 1 ); ZCons::Print( "AF':%04X BC':%04X DE':%04X HL':%04X", reg.AF1.W, reg.BC1.W, reg.DE1.W, reg.HL1.W );
+	ZCons::Locate( 0, 2 ); ZCons::Print( "IX :%04X IY :%04X PC :%04X SP :%04X", reg.IX.W, reg.IY.W, reg.PC.W, reg.SP.W );
+	
+	ZCons::Locate( 0, 3 ); ZCons::Print( "FLAG:");
+	for( j=0,i=reg.AF.B.l; j<8; j++,i<<=1 ){
+		ZCons::SetColor( i&0x80 ? FC_WHITE : FC_GRAY );
+		ZCons::Print( "%c", flags[j] );
+	}
+	ZCons::SetColor( FC_WHITE );
+	ZCons::Print( " I:%02X IFF:%d IM:%1d HALT:%1d", reg.I, reg.IFF, reg.IM, reg.Halt );
+	
+	ZCons::SetColor( FC_WHITE, FC_DCYAN );
+	ZCons::Locate( 0, 4 ); ZCons::Print( "%-36s", DisCode );
+	ZCons::SetColor( FC_WHITE, FC_BLACK );
+
+	ZCons::Locate( 0, 5 );
+
+// PRINTER STROBE 0/1
+	ZCons::Printf( "CRT  :%s\n", vm->VdgGetCrtDisp() ? "DISP" : "KILL" );
+// CGROM ON/OFF
+	ZCons::Printf( "TIMER:%s\n", vm->IntGetTimerIntr() ? "ON" : "OFF" );
+	ZCons::Printf( "VRAM:%04X ATTR:%04X\n", vm->VdgGetVramAddr(), vm->VdgGerAttrAddr() );
+// RELAY ON/OFF
+
+
+
+
+
 }
 
 

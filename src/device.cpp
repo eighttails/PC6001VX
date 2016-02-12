@@ -19,7 +19,11 @@
 ////////////////////////////////////////////////////////////////
 // コンストラクタ
 ////////////////////////////////////////////////////////////////
+// 8888888888888888888888888888888888888
+//DeviceList::DeviceList( void ) : node(NULL) {}
+// 8888888888888888888888888888888888888
 DeviceList::DeviceList( void ) {}
+// 8888888888888888888888888888888888888
 
 
 ////////////////////////////////////////////////////////////////
@@ -36,10 +40,17 @@ DeviceList::~DeviceList( void )
 ////////////////////////////////////////////////////////////////
 DeviceList::Node *DeviceList::FindNode( const ID id )
 {
-	std::map<int, Node>::iterator p = nodeMap.find(id);
-	if ( p != nodeMap.end() ){
-		return &p->second;
+// 8888888888888888888888888888888888888
+//	for( Node *n = node; n; n = n->next ){
+//		if( n->entry->GetID() == id )
+//			return n;
+//	}
+// 8888888888888888888888888888888888888
+	std::map<int, Node>::iterator p = nodeMap.find( id );
+	if( p != nodeMap.end() ){
+		return &p->second;	// 要素の値を返す (first:キー second:値)
 	}
+// 8888888888888888888888888888888888888
 	return NULL;
 }
 
@@ -49,7 +60,17 @@ DeviceList::Node *DeviceList::FindNode( const ID id )
 ////////////////////////////////////////////////////////////////
 void DeviceList::Cleanup( void )
 {
+// 8888888888888888888888888888888888888
+//	Node *n = node;
+//	while( n ){
+//		Node *nx = n->next;
+//		delete n;
+//		n = nx;
+//	}
+//	node = NULL;
+// 8888888888888888888888888888888888888
 	nodeMap.clear();
+// 8888888888888888888888888888888888888
 }
 
 
@@ -66,9 +87,18 @@ bool DeviceList::Add( IDevice *t )
 		n->count++;
 		return true;
 	}else{
+// 8888888888888888888888888888888888888
+//		n = new Node;
+//		if( !n ) return false;
+//		n->entry = t;
+//		n->next  = node;
+//		n->count = 1;
+//		node = n;
+// 8888888888888888888888888888888888888
 		Node& n = nodeMap[id];
 		n.entry = t;
 		n.count = 1;
+// 8888888888888888888888888888888888888
 		return true;
 	}
 }
@@ -88,10 +118,25 @@ bool DeviceList::Del( IDevice *t )
 ////////////////////////////////////////////////////////////////
 bool DeviceList::Del( const ID id )
 {
-	if ( Node *n = FindNode(id) ) {
+// 8888888888888888888888888888888888888
+//	for( Node **r = &node; *r; r = &((*r)->next) ){
+//		if( ((*r)->entry->GetID() == id) && ((*r)->count) ){
+//			((*r)->count)--;
+////		if( (*r)->entry->GetID() == id ){
+////			Node* d = *r;
+////			if( !--d->count ){
+////				*r = d->next;
+////				delete d;
+////			}
+//			return true;
+//		}
+//	}
+// 8888888888888888888888888888888888888
+	if( Node *n = FindNode(id) ){
 		n->count--;
 		return true;
 	}
+// 8888888888888888888888888888888888888
 	return false;
 }
 

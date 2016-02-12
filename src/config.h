@@ -131,6 +131,8 @@ public:
 	void SetDiskFile( int, const char * );	//               設定
 	int GetFddNum();						// FDD接続台数取得
 	void SetFddNum( int );					//            設定
+	bool GetFddWaitEnable();				// FDDウェイト有効フラグ取得
+	void SetFddWaitEnable( bool );			//                      設定
 	
 	// 画面関係
 	const char *GetImgPath();				// スクリーンショット格納パス取得

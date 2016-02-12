@@ -45,14 +45,12 @@ protected:
 	
 	void LatchAttr();							// アトリビュートデータラッチ
 	void LatchGMODE();							// アトリビュートデータラッチ(グラフィックモードのみ)
-	BYTE GetAttr() const;						// アトリビュートデータ取得
-	virtual BYTE GetVram() const;				// VRAMデータ取得
+	virtual BYTE GetAttr() const = 0;			// アトリビュートデータ取得
+	virtual BYTE GetVram() const = 0;			// VRAMデータ取得
 	BYTE GetFont1( WORD ) const;				// Font1データ取得
 	BYTE GetFont2( WORD ) const;				// Font2データ取得
 	BYTE GetFont3( WORD ) const;				// Font3データ取得
 	
-	virtual WORD GetVramAddr() const = 0;		// VRAMアドレス取得
-	virtual WORD GerAttrAddr() const = 0;		// ATTRアドレス取得
 	virtual void SetAttrAddr( BYTE );			// ATTRアドレス設定
 	
 	// I/Oアクセス関数
@@ -73,6 +71,9 @@ public:
 	virtual bool Init();						// 初期化
 	virtual void Reset();						// リセット
 	
+	virtual WORD GetVramAddr() const = 0;		// VRAMアドレス取得
+	virtual WORD GerAttrAddr() const = 0;		// ATTRアドレス取得
+	
 	bool IsBusReqStop() const;					// バスリクエスト区間停止フラグ取得
 	bool IsBusReqExec() const;					// バスリクエスト区間実行フラグ取得
 	bool IsSRmode() const;						// SRモード取得
@@ -88,8 +89,8 @@ public:
 
 class VDG60 : public VDG6, public MC6847 {
 protected:
-	WORD GetVramAddr() const;					// VRAMアドレス取得
-	WORD GerAttrAddr() const;					// ATTRアドレス取得
+	BYTE GetAttr() const;						// アトリビュートデータ取得
+	BYTE GetVram() const;						// VRAMデータ取得
 	
 	// デバイス定義
 	static const Descriptor descriptor;
@@ -101,6 +102,9 @@ public:
 	VDG60( VM6 *, const ID& );					// コンストラクタ
 	virtual  ~VDG60();							// デストラクタ
 	
+	WORD GetVramAddr() const;					// VRAMアドレス取得
+	WORD GerAttrAddr() const;					// ATTRアドレス取得
+	
 	// デバイスID
 	enum IDOut{ outB0H=0 };
 	enum IDIn {};
@@ -109,8 +113,8 @@ public:
 
 class VDG62 : public VDG6, public virtual PCZ80_07 {
 protected:
-	WORD GetVramAddr() const;					// VRAMアドレス取得
-	WORD GerAttrAddr() const;					// ATTRアドレス取得
+	BYTE GetAttr() const;						// アトリビュートデータ取得
+	BYTE GetVram() const;						// VRAMデータ取得
 	
 	// デバイス定義
 	static const Descriptor descriptor;
@@ -122,6 +126,9 @@ public:
 	VDG62( VM6 *, const ID& );					// コンストラクタ
 	virtual ~VDG62();							// デストラクタ
 	
+	WORD GetVramAddr() const;					// VRAMアドレス取得
+	WORD GerAttrAddr() const;					// ATTRアドレス取得
+	
 	// デバイスID
 	enum IDOut{ outB0H=0, outC0H, outC1H };
 	enum IDIn {  inA2H=0 };
@@ -130,9 +137,8 @@ public:
 
 class VDG64 : public VDG6, public PCZ80_12 {
 protected:
+	BYTE GetAttr() const;						// アトリビュートデータ取得
 	BYTE GetVram() const;						// VRAMデータ取得
-	WORD GetVramAddr() const;					// VRAMアドレス取得
-	WORD GerAttrAddr() const;					// ATTRアドレス取得
 	void SetAttrAddr( BYTE );					// ATTRアドレス設定
 	
 	// デバイス定義
@@ -158,6 +164,9 @@ public:
 	void EventCallback( int, int );				// イベントコールバック関数
 	
 	void Reset();								// リセット
+	
+	WORD GetVramAddr() const;					// VRAMアドレス取得
+	WORD GerAttrAddr() const;					// ATTRアドレス取得
 	
 	// デバイスID
 	enum IDOut{ out4xH=0, outB0H, outC0H, outC1H, outC8H, outC9H,

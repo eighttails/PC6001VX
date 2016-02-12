@@ -9,6 +9,7 @@
 #define	MAXDRV	4	// 最大ドライブ接続数
 
 
+
 // 装置タイプ
 enum UnitType
 {
@@ -58,9 +59,14 @@ enum FddCommand
 struct DISK60 {
 	FddType Type;		// ドライブタイプ
 	
-	bool DAC;			// Data Accepted	:データ受信完
-	bool RFD;			// Ready For Data	:データ受信準備完
-	bool DAV;			// Data Valid		:データ送信完
+	bool PD_ATN;		// Attention		:P6->FDD 1=コマンド送信 0=データ送信
+	bool PD_DAC;		// Data Accepted	:P6->FDD データ受信完
+	bool PD_RFD;		// Ready For Data	:P6->FDD データ受信準備完
+	bool PD_DAV;		// Data Valid		:P6->FDD データ送信完
+	
+	bool DP_DAC;		// Data Accepted	:FDD->P6 データ受信完
+	bool DP_RFD;		// Ready For Data	:FDD->P6 データ受信準備完
+	bool DP_DAV;		// Data Valid		:FDD->P6 データ送信完
 	
 	int command;		// 受け取ったコマンド
 	int step;			// パラメータ入力待ちステータス
@@ -86,7 +92,9 @@ struct DISK60 {
 	bool error;			// エラーフラグ true:エラーあり false:エラーなし
 	
 	DISK60() :
-		Type(FDD1D), DAC(0), RFD(0), DAV(0),
+		Type(FDD1D),
+		PD_DAC(false), PD_RFD(false), PD_DAV(false), PD_ATN(false),
+		DP_DAC(false), DP_RFD(false), DP_DAV(false),
 		command(IDLE), step(0),
 		blk(0), drv(0), trk(0), sct(0),
 		size(0), Fast(false), FastStat(false),
@@ -174,10 +182,11 @@ protected:
 	bool Sys[MAXDRV];					// システムディスクフラグ
 	bool DDDrv[MAXDRV];					// 1DDドライブフラグ
 	int waitcnt;						// ウェイトカウンタ
+	bool waiten;						// ウェイト有効フラグ
 	
 	void ResetWait();					// ウェイトカウンタリセット
 	void AddWait( int );				// ウェイトカウンタ加算
-	bool SetWait( int );				// ウェイト設定
+	bool SetWait( int, int=0 );			// ウェイト設定
 	
 public:
 	DSK6( VM6 *, const ID& );			// コンストラクタ
@@ -201,6 +210,8 @@ public:
 	const char *GetFile( int ) const;	// ファイルパス取得
 	const char *GetName( int ) const;	// DISK名取得
 	
+	void WaitEnable( bool );			// ウェイト有効フラグ設定
+	
 	// ------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
@@ -216,7 +227,6 @@ protected:
 	BYTE WBuf[4096];		// 書込みバッファ
 	
 	BYTE io_D1H;
-	BYTE io_D2H;
 	
 	BYTE FddIn();			// DISKユニットからのデータ入力 		(port D0H)
 	void FddOut( BYTE );	// DISKユニットへのコマンド，データ出力 (port D1H)

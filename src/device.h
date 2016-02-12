@@ -2,6 +2,9 @@
 #ifndef DEVICE_H_INCLUDE
 #define DEVICE_H_INCLUDE
 
+// 8888888888888888888888888888888888888
+#include <map>
+// 8888888888888888888888888888888888888
 #include "typedef.h"
 
 #define DEV_ID(a)	BTODW((BYTE)a[0], (BYTE)a[1], (BYTE)a[2], (BYTE)a[3])
@@ -26,6 +29,10 @@ struct IDevice {
 	virtual const ID &GetID() const = 0;
 	virtual const Descriptor *GetDesc() const = 0;
 	virtual void EventCallback( int, int ) = 0;
+	
+	
+	typedef BYTE (IDevice::*RFuncPtr)( BYTE *, WORD );
+	typedef void (IDevice::*WFuncPtr)( BYTE *, WORD, BYTE );
 };
 
 
@@ -63,8 +70,12 @@ private:
 		int count;
 	};
 
+// 8888888888888888888888888888888888888
+//	Node *node;
+// 8888888888888888888888888888888888888
 	std::map<int, Node> nodeMap;
 	Node *FindNode( const ID );
+// 8888888888888888888888888888888888888
 	
 public:
 	DeviceList();

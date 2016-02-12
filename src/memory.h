@@ -7,27 +7,50 @@
 
 
 // メモリブロック数
-#define MAXRMB	(22)
-#define MAXWMB	(16)
+#define MAXRMB		(22)
+#define MAXWMB		(17)
+
+// 各種フラグ
+#define MCRCCHK		0b00000001	// CRCチェック有効
+#define MUSEEXRAM	0b00000010	// 拡張RAM使う
+#define MUSESOL		0b00000100	// 戦士のカートリッジ使う
+
 
 ////////////////////////////////////////////////////////////////
 // クラス定義
 ////////////////////////////////////////////////////////////////
+class MEM6;
+
 // メモリブロッククラス
 class MemBlock {
+public:
+	enum {
+		PAGEBITS = 13,	// 8KB
+		PAGEMASK = (1 << PAGEBITS) - 1
+	};
+	
+	typedef IDevice::RFuncPtr RFuncPtr;
+	typedef IDevice::WFuncPtr WFuncPtr;
+
 protected:
 	char Name[33];				// メモリブロック名
-	BYTE *MB;					// メモリブロックへのポインタ
-	int RWait;					// アクセスウェイト(読込み)
-	int WWait;					// アクセスウェイト(書込み)
+	BYTE *PRead;				// メモリポインタ(読込み)
+	BYTE *PWrite;				// メモリポインタ(書込み)
+	RFuncPtr FRead;				// 関数ポインタ(読込み)
+	WFuncPtr FWrite;			// 関数ポインタ(書込み)
+	IDevice *Inst;				// オブジェクトポインタ
+	int Wait;					// アクセスウェイト
 	bool WPt;					// ライトプロテクトフラグ
 	
 public:
 	MemBlock();									// コンストラクタ
 	~MemBlock();								// デストラクタ
 	
-	void SetMemory( const char *, BYTE *, int, int, bool );	// メモリブロック設定
-	void SetWait( int, int );					// アクセスウェイト設定
+	void SetMemory( const char *, BYTE *, int, bool );	// メモリ割当て
+	void SetRom   ( const char *, BYTE *, int = -1 );	// ROM割当て
+	void SetRam   ( const char *, BYTE *, int = -1 );	// RAM割当て
+	void SetFunc  ( const char *, BYTE *, IDevice *, RFuncPtr, WFuncPtr, int = -1 );	// 関数割当て
+	void SetWait( int );						// アクセスウェイト設定
 	int GetWait() const;						// アクセスウェイト取得
 	void SetProtect( bool );					// ライトプロテクト設定
 	bool GetProtect() const;					// ライトプロテクト取得
@@ -42,20 +65,19 @@ public:
 class MEM6 : public Device, public IDoko {
 protected:
 	// ROM情報構造体
-	typedef struct{
+	struct ROMINFO {
 		const char *FileName;	// ファイル名
 		DWORD Crc;				// CRC32
-	} ROMINFO;
+	};
 	
 	// メモリ情報構造体
-	typedef struct{
+	struct MEMINFO {
 		const ROMINFO *Rinf;	// ROM情報へのポインタ
 		const int Rnum;			// ROM情報の要素数
 		DWORD Size;				// サイズ
 		BYTE Init;				// 初期化データ
-		int WaitR;				// アクセスウェイト(Read)
-		int WaitW;				// アクセスウェイト(Write)
-	} MEMINFO;
+		int Wait;				// アクセスウェイト
+	};
 	
 	// ROM情報テーブル構造体
 	struct ROMINFOTABLE {
@@ -77,7 +99,6 @@ protected:
 		const MEMINFO *ExtRom;
 		const MEMINFO *IntRam;
 		const MEMINFO *ExtRam;
-		const MEMINFO *SolRam;
 		
 		const MEMINFO *System1;
 		const MEMINFO *System2;
@@ -87,15 +108,18 @@ protected:
 		const MEMINFO *Voice;
 		
 		MEMINFOTABLE() : EmptRom(NULL), EmptRam(NULL), ExtRom(NULL), IntRam(NULL), ExtRam(NULL),
-						 SolRam(NULL), System1(NULL), System2(NULL), CGRom1(NULL), CGRom2(NULL),
+						 System1(NULL), System2(NULL), CGRom1(NULL), CGRom2(NULL),
 						 Kanji(NULL), Voice(NULL) {}
 	};
 	
 	// メモリ情報
 	static const MEMINFO IEMPTROM;
 	static const MEMINFO IEMPTRAM;
-	static const MEMINFO IEXTROM;
-	static const MEMINFO IEXTRAM;
+	static const MEMINFO IEXTROM16;
+	static const MEMINFO IEXTRAM16;
+	static const MEMINFO IEXTRAM64;
+	static const MEMINFO IEXTROMS;
+	static const MEMINFO IEXTRAMS;
 	
 	ROMINFOTABLE RomTable;		// ROM情報テーブル
 	MEMINFOTABLE MemTable;		// メモリ情報テーブル
@@ -114,8 +138,6 @@ protected:
 	
 	BYTE *IntRam;				// 内部 RAM		ALL
 	BYTE *ExtRam;				// 外部 RAM		ALL
-	BYTE *EmptyRom;				// 未実装ROM	ALL
-	BYTE *EmptyRam;				// 未実装RAM	ALL
 	
 	MemBlock RomB[MAXRMB];		// ROMブロック
 	MemBlock RamB[MAXWMB];		// RAMブロック
@@ -142,10 +164,10 @@ protected:
 	BYTE RfSR[16];				// メモリコントローラ内部レジスタ			SRモード用
 	// ---------------------------------------------------------------------------------------
 	
-	
 	bool AllocMemory( BYTE **, const MEMINFO *, const char * );	// メモリ確保とROMファイル読込み
+	virtual bool AllocMemorySpecific( const char * ) = 0;		// 全メモリ確保とROMファイル読込み(機種別)
 	virtual void SetRamValue() = 0;			// RAMの初期値を設定
-	virtual bool InitSpecific() = 0;		// 機種別初期化
+	virtual bool InitSpecific() = 0;		// 初期化(機種別)
 	virtual void SetMemBlockR( BYTE, BYTE ) = 0;	// メモリリード時のメモリブロック指定(62,66)
 	virtual void SetMemBlockW( BYTE ) = 0;	// メモリライト時のメモリブロック指定(62,66)
 	
@@ -158,13 +180,24 @@ protected:
 	// ---------------------------------------------------------------------------------------
 	
 	// 戦士のカートリッジ --------------------------------------------------------------------
-	static const MEMINFO ISOLRAM;	// メモリ情報
 	bool UseSol;					// true:有効 false:無効
-	int SolBank;					// ROMバンク(0-15)
-	void SetSolBank( BYTE );				// ROMバンク設定
+	bool Sol60Mode;					// 初代機モード　true:有効 false:無効
+	BYTE SolBank[8];				// メモリバンクレジスタ
+	int SolBankSet;					// ROMバンクセット
+	
+	void SetSolBank( BYTE, BYTE );			// メモリバンクレジスタ設定
+	
+	// メモリブロック用関数 ------------------------------------------------------------------
+	BYTE SolReadEx( BYTE *, WORD );			// 戦士のカートリッジ読込み(拡張ROM領域)
+	BYTE SolMemRead( BYTE *, WORD );		// 戦士のカートリッジROM/RAM読込み
+	void SolMemWrite( BYTE *, WORD, BYTE );	// 戦士のカートリッジRAM書込み
+	BYTE SolSccRead( BYTE *, WORD );		// 戦士のカートリッジSCC読込み
+	void SolSccWrite( BYTE *, WORD, BYTE );	// 戦士のカートリッジSCC書込み
 	// ---------------------------------------------------------------------------------------
 	
-	// I/Oアクセス関数
+	// I/Oアクセス関数 -----------------------------------------------------------------------
+	virtual void Out06H( int, BYTE );
+	void Out3xH( int, BYTE );
 	void Out7FH( int, BYTE );
 	
 	// for 62,66,64,68 -----------------------------------------------------------------------
@@ -186,8 +219,8 @@ public:
 	MEM6( VM6 *, const ID& );				// コンストラクタ
 	virtual ~MEM6();						// デストラクタ
 	
-	bool AllocAllMemory( const char *, bool );	// 全メモリ確保とROMファイル読込み
-	bool Init( bool, bool );				// 初期化
+	bool AllocAllMemory( const char *, BYTE );	// 全メモリ確保とROMファイル読込み
+	bool Init();							// 初期化
 	virtual void Patch();					// パッチ
 	virtual void Reset();					// リセット
 	
@@ -203,9 +236,10 @@ public:
 	virtual void SetCGBank( bool );			// CG ROM BANK を切り替える
 	
 	// 直接アクセス関数
-	virtual BYTE ReadMainRom( WORD ) const;
-	virtual BYTE ReadMainRam( WORD ) const;
+	BYTE ReadMainRom( WORD ) const;
+	BYTE ReadIntRam ( WORD ) const;
 	virtual BYTE ReadExtRom ( WORD ) const;
+	virtual BYTE ReadExtRam ( WORD ) const;
 	virtual BYTE ReadCGrom1 ( WORD ) const;
 	virtual BYTE ReadCGrom2 ( WORD ) const;
 	virtual BYTE ReadCGrom3 ( WORD ) const;
@@ -216,7 +250,7 @@ public:
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	// デバイスID
-	enum IDOut{ out7FH=0 };
+	enum IDOut{ out06H=0, out3xH, out7FH };
 	enum IDIn {};
 	
 	// ------------------------------------------
@@ -238,10 +272,15 @@ private:
 	static const MEMINFO ICGROM1;
 	static const MEMINFO IINTRAM;
 	
+	bool AllocMemorySpecific( const char * );	// 全メモリ確保とROMファイル読込み(機種別)
 	void SetRamValue();						// RAMの初期値を設定
-	bool InitSpecific();					// 機種別初期化
+	bool InitSpecific();					// 初期化(機種別)
 	void SetMemBlockR( BYTE, BYTE );		// メモリリード時のメモリブロック指定
 	void SetMemBlockW( BYTE );				// メモリライト時のメモリブロック指定
+	
+	// メモリブロック用関数 ------------------------------------------------------------------
+	BYTE CGromRead( BYTE *, WORD );			// PC-6001 CGROM読込み
+	// ---------------------------------------------------------------------------------------
 	
 	// デバイス定義
 	static const Descriptor descriptor;
@@ -249,19 +288,16 @@ private:
 	static const OutFuncPtr outdef[];
 	const Descriptor* GetDesc() const { return &descriptor; }
 	
+	// I/Oアクセス関数 -----------------------------------------------------------------------
+	void Out06H( int, BYTE );
+	
 public:
 	MEM60( VM6 *, const ID& );				// コンストラクタ
 	~MEM60();								// デストラクタ
 	
-	void Reset();							// リセット
-	
-	// 直接アクセス関数
-	BYTE ReadMainRam( WORD ) const ;
-	
-	// ------------------------------------------
-	bool DokoSave( cIni * );	// どこでもSAVE
-	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	// デバイスID
+	enum IDOut{ out06H=0, out3xH, out7FH, outF0H, outF2H };
+	enum IDIn {};
 };
 
 
@@ -300,10 +336,15 @@ protected:
 	static const MEMINFO IVOICE;
 	static const MEMINFO IINTRAM;
 	
+	virtual bool AllocMemorySpecific( const char * );	// 全メモリ確保とROMファイル読込み(機種別)
 	virtual void SetRamValue();				// RAMの初期値を設定
-	virtual bool InitSpecific();			// 機種別初期化
+	virtual bool InitSpecific();			// 初期化(機種別)
 	virtual void SetMemBlockR( BYTE, BYTE );// メモリリード時のメモリブロック指定
 	void SetMemBlockW( BYTE );				// メモリライト時のメモリブロック指定
+	
+	// メモリブロック用関数 ------------------------------------------------------------------
+	void IERamWrite( BYTE *, WORD, BYTE );	// PC-6001mk2以降 内部/外部RAM書込み
+	// ---------------------------------------------------------------------------------------
 	
 	// デバイス定義
 	static const Descriptor descriptor;
@@ -315,26 +356,17 @@ public:
 	MEM62( VM6 *, const ID& );				// コンストラクタ
 	virtual ~MEM62();						// デストラクタ
 	
-	virtual void Reset();					// リセット
-	
 	// 8255入出力関連関数
 	void SetCGBank( bool );					// CG ROM BANK を切り替える
 	
 	// 直接アクセス関数
-	virtual BYTE ReadMainRom( WORD ) const;
-	BYTE ReadMainRam( WORD ) const;
 	virtual BYTE ReadCGrom2( WORD ) const;
 	virtual BYTE ReadKanjiRom( WORD ) const;
 	virtual BYTE ReadVoiceRom( WORD ) const;
 	
 	// デバイスID
-	enum IDOut{ out7FH=0, outC1H, outC2H, outC3H, outF0H,  outF1H, outF2H, outF3H, outF8H };
-	enum IDIn {                                    inF0H=0, inF1H,  inF2H,  inF3H         };
-	
-	// ------------------------------------------
-	bool DokoSave( cIni * );			// どこでもSAVE
-	virtual bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	enum IDOut{ out06H=0, out3xH, out7FH, outC1H, outC2H, outC3H, outF0H,  outF1H, outF2H, outF3H, outF8H };
+	enum IDIn {                                                    inF0H=0, inF1H,  inF2H,  inF3H         };
 };
 
 
@@ -374,8 +406,9 @@ protected:
 	static const MEMINFO ICGROM;
 	static const MEMINFO IINTRAM;
 	
+	bool AllocMemorySpecific( const char * );	// 全メモリ確保とROMファイル読込み(機種別)
 	virtual void SetRamValue();				// RAMの初期値を設定
-	bool InitSpecific();					// 機種別初期化
+	bool InitSpecific();					// 初期化(機種別)
 	void SetMemBlockR( BYTE, BYTE );		// メモリリード時のメモリブロック指定
 	void SetMemBlockSR( BYTE, BYTE );		// メモリリード/ライト時のメモリブロック指定(64,68)
 	
@@ -385,6 +418,7 @@ protected:
 	static const OutFuncPtr outdef[];
 	const Descriptor* GetDesc() const { return &descriptor; }
 	
+	// I/Oアクセス関数 -----------------------------------------------------------------------
 	void Out6xH( int, BYTE );
 	void OutC8H( int, BYTE );
 	
@@ -399,7 +433,6 @@ public:
 	void Reset();							// ** リセット
 	
 	// 直接アクセス関数
-	BYTE ReadMainRom( WORD ) const;
 	BYTE ReadCGrom1( WORD ) const;
 	BYTE ReadCGrom2( WORD ) const;
 	BYTE ReadCGrom3( WORD ) const;
@@ -407,11 +440,12 @@ public:
 	BYTE ReadVoiceRom( WORD ) const;
 	
 	// デバイスID
-	enum IDOut{ out6xH=0, out7FH, outC1H, outC2H, outC3H, outF0H, outF1H, outF2H, outF3H, outF8H };
-	enum IDIn {  in6xH=0,                                  inF0H,  inF1H,  inF2H,  inF3H,
+	enum IDOut{ out06H=0, out3xH, out7FH, out6xH,   outC1H, outC2H, outC3H, outF0H, outF1H, outF2H, outF3H, outF8H };
+	enum IDIn {                            in6xH=0,                          inF0H,  inF1H,  inF2H,  inF3H,
 				 inB2H };
 	
 	// ------------------------------------------
+	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
 	// ------------------------------------------
 };

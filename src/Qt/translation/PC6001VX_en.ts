@@ -718,11 +718,16 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../configdialog.ui" line="3556"/>
+        <source>FDDアクセスウェイト有効(&amp;W)</source>
+        <translation>Enable FDD access &amp;wait</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="3563"/>
         <source>終了時に確認する(&amp;F)</source>
         <translation>Con&amp;firm at exit</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3563"/>
+        <location filename="../configdialog.ui" line="3570"/>
         <source>終了時にINIファイルを保存する(&amp;Q)</source>
         <translation>Save the INI file when &amp;Quit</translation>
     </message>
@@ -2253,163 +2258,163 @@ Save time and PC6001V version </translation>
         <translation>File selection</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="292"/>
+        <location filename="../../debug.cpp" line="310"/>
         <source>ヘルプを表示</source>
         <translation>Show the help</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="293"/>
-        <location filename="../../debug.cpp" line="295"/>
-        <location filename="../../debug.cpp" line="297"/>
-        <location filename="../../debug.cpp" line="299"/>
-        <location filename="../../debug.cpp" line="300"/>
-        <location filename="../../debug.cpp" line="302"/>
+        <location filename="../../debug.cpp" line="311"/>
+        <location filename="../../debug.cpp" line="313"/>
+        <location filename="../../debug.cpp" line="315"/>
+        <location filename="../../debug.cpp" line="317"/>
+        <location filename="../../debug.cpp" line="318"/>
+        <location filename="../../debug.cpp" line="320"/>
         <source>    〃</source>
         <translation>Show the help</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="294"/>
+        <location filename="../../debug.cpp" line="312"/>
         <source>実行</source>
         <translation>Run</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="296"/>
+        <location filename="../../debug.cpp" line="314"/>
         <source>トレース実行</source>
         <translation>Trace execution</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="298"/>
+        <location filename="../../debug.cpp" line="316"/>
         <source>ステップ実行</source>
         <translation>Step</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="301"/>
+        <location filename="../../debug.cpp" line="319"/>
         <source>ブレークポイント設定</source>
         <translation>Set breakpoints</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="303"/>
+        <location filename="../../debug.cpp" line="321"/>
         <source>メモリを読込む</source>
         <translation>Read the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="304"/>
+        <location filename="../../debug.cpp" line="322"/>
         <source>メモリに書込む</source>
         <translation>Write into the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="305"/>
+        <location filename="../../debug.cpp" line="323"/>
         <source>メモリを埋める</source>
         <translation>Fill the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="306"/>
+        <location filename="../../debug.cpp" line="324"/>
         <source>メモリを移動</source>
         <translation>Move the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="307"/>
+        <location filename="../../debug.cpp" line="325"/>
         <source>メモリを検索</source>
         <translation>Search the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="308"/>
+        <location filename="../../debug.cpp" line="326"/>
         <source>ポート出力</source>
         <translation>Output port</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="309"/>
+        <location filename="../../debug.cpp" line="327"/>
         <source>ファイルからメモリに読込む</source>
         <translation>Read from a file into memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="310"/>
+        <location filename="../../debug.cpp" line="328"/>
         <source>メモリからファイルに書込む</source>
         <translation>Write into the file from memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="311"/>
+        <location filename="../../debug.cpp" line="329"/>
         <source>PC6001Vをリセット</source>
         <translation>Reset the PC6001V</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="312"/>
+        <location filename="../../debug.cpp" line="330"/>
         <source>CPUレジスタを参照/設定</source>
         <translation>Reference/Setting for the CPU register</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="313"/>
+        <location filename="../../debug.cpp" line="331"/>
         <source>逆アセンブル</source>
         <translation>Disassemle</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="427"/>
+        <location filename="../../debug.cpp" line="445"/>
         <source>***********************************************
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="428"/>
+        <location filename="../../debug.cpp" line="446"/>
         <source>* PC6001V  - monitor mode -                   *
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="429"/>
+        <location filename="../../debug.cpp" line="447"/>
         <source>*  help 又は ? と入力するとヘルプを表示します *
 </source>
         <translation>*  Type help or ? to show the help            *
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="430"/>
+        <location filename="../../debug.cpp" line="448"/>
         <source>***********************************************
 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="585"/>
+        <location filename="../../debug.cpp" line="603"/>
         <source>無効なコマンドです : %s
 </source>
         <translation>Invalid command : %s
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="659"/>
+        <location filename="../../debug.cpp" line="677"/>
         <source>引数が無効です (arg %d)
 </source>
         <translation>Invalid argument (arg %d)
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="693"/>
+        <location filename="../../debug.cpp" line="711"/>
         <source>     注: &quot;help &lt;コマンド名&gt;&quot; と入力すると 更に詳細なヘルプを表示します。
 </source>
         <translation>     Note: &quot;help &lt;Command name&gt;&quot; Displays help for more details.
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="904"/>
+        <location filename="../../debug.cpp" line="922"/>
         <source>-- なし --
 </source>
         <translation>-- None --
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="928"/>
+        <location filename="../../debug.cpp" line="946"/>
         <source>ブレークポイント #%02d を消去します。
 </source>
         <translation>Breakpoint #%02d will be cleared.
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="955"/>
+        <location filename="../../debug.cpp" line="973"/>
         <source>ブレークポイント #%02d を設定します。[ </source>
         <translation>Breakpoint #%02d will be set.[ </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1316"/>
+        <location filename="../../debug.cpp" line="1334"/>
         <source>  help [&lt;cmd&gt;]
     ヘルプを表示します
     &lt;cmd&gt; ... ヘルプを表示したいコマンド
@@ -2422,7 +2427,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1327"/>
+        <location filename="../../debug.cpp" line="1345"/>
         <source>  go
     プログラムを実行します
 </source>
@@ -2431,7 +2436,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1336"/>
+        <location filename="../../debug.cpp" line="1354"/>
         <source>  trace [#&lt;steps&gt;|&lt;steps&gt;]
     execute program specityes times
     [all omit]        ... trace some steps (previous steps)
@@ -2440,7 +2445,7 @@ Save time and PC6001V version </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1347"/>
+        <location filename="../../debug.cpp" line="1365"/>
         <source>  step [call][jp][rep]
     execute program 1 time
     [all omit] ... execute 1 step
@@ -2453,7 +2458,7 @@ Save time and PC6001V version </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1362"/>
+        <location filename="../../debug.cpp" line="1380"/>
         <source>  S
     &apos;step all&apos; と同じ   (stepを参照)
 </source>
@@ -2462,7 +2467,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1371"/>
+        <location filename="../../debug.cpp" line="1389"/>
         <source>  break [&lt;action&gt;] &lt;addr|port&gt; [#&lt;No&gt;]
   break CLEAR [#&lt;No&gt;]
   break
@@ -2503,7 +2508,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1396"/>
+        <location filename="../../debug.cpp" line="1414"/>
         <source>  read &lt;addr&gt;
     メモリを読込みます
     &lt;addr&gt; ... 指定アドレス
@@ -2514,7 +2519,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1406"/>
+        <location filename="../../debug.cpp" line="1424"/>
         <source>  write &lt;addr&gt; &lt;data&gt;
     メモリに書込みます
     &lt;addr&gt; ... 指定アドレス
@@ -2527,7 +2532,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1417"/>
+        <location filename="../../debug.cpp" line="1435"/>
         <source>  fill &lt;start-addr&gt; &lt;end-addr&gt; &lt;value&gt;
   fill &lt;start-addr&gt; #&lt;size&gt;    &lt;value&gt;
     メモリを指定値で埋めます
@@ -2546,7 +2551,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1431"/>
+        <location filename="../../debug.cpp" line="1449"/>
         <source>  move &lt;src-addr&gt; &lt;end-addr&gt; &lt;dist-addr&gt;
   move &lt;src-addr&gt; #&lt;size&gt;    &lt;dist-addr&gt;
     メモリを転送します
@@ -2565,7 +2570,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1445"/>
+        <location filename="../../debug.cpp" line="1463"/>
         <source>  search [&lt;value&gt; [&lt;start-addr&gt; &lt;end-addr&gt;]]
   search [&lt;value&gt; [&lt;start-addr&gt; #&lt;size&gt;]]
     メモリを検索します
@@ -2586,7 +2591,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1460"/>
+        <location filename="../../debug.cpp" line="1478"/>
         <source>  out &lt;port&gt; &lt;data&gt;
     I/Oポートに出力します
     &lt;port&gt; ... I/Oポートアドレス
@@ -2599,7 +2604,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1471"/>
+        <location filename="../../debug.cpp" line="1489"/>
         <source>  loadmem &lt;filename&gt; &lt;start-addr&gt; &lt;end-addr&gt;
   loadmem &lt;filename&gt; &lt;start-addr&gt; #&lt;size&gt;
     ファイルからメモリにロードします
@@ -2618,7 +2623,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1485"/>
+        <location filename="../../debug.cpp" line="1503"/>
         <source>  savemem &lt;filename&gt; &lt;start-addr&gt; &lt;end-addr&gt;
   savemem &lt;filename&gt; &lt;start-addr&gt; #&lt;size&gt;
     メモリイメージをファイルにセーブします
@@ -2637,7 +2642,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1499"/>
+        <location filename="../../debug.cpp" line="1517"/>
         <source>  reset
     PC6001Vをリセットし，アドレス 0000H から実行します
 </source>
@@ -2646,7 +2651,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1508"/>
+        <location filename="../../debug.cpp" line="1526"/>
         <source>  reg &lt;name&gt; &lt;value&gt;
     レジスタの値を参照，設定します
     &lt;name&gt;     ... specity register name.
@@ -2661,7 +2666,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1520"/>
+        <location filename="../../debug.cpp" line="1538"/>
         <source>  disasm [[&lt;start-addr&gt;][#&lt;steps&gt;]]
     逆アセンブルします
     [all omit]   ... PCレジスタアドレスから16ステップ分を逆アセンブル

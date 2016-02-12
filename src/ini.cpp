@@ -240,7 +240,7 @@ bool cIni::Write( void )
 	do{
 		switch( node->NodeID ){
 		case cNode::NODE_COMMENT:	// Comment
-            if( strlen(node->Comment) ) fprintf( fp, ";%s\n", TRANS(node->Comment) );
+		if( strlen(node->Comment) ) fprintf( fp, ";%s\n", TRANS(node->Comment) );
 			else                        fprintf( fp, "\n" );
 			break;
 			
@@ -354,6 +354,19 @@ bool cIni::GetTruth( const char *section, const char *entry, bool *val, const bo
 			return false;
 	}
 	return res;
+}
+
+
+////////////////////////////////////////////////////////////////
+// パス読込み
+////////////////////////////////////////////////////////////////
+bool cIni::GetPath( const char *section, const char *entry, char *val, const char *def )
+{
+	if( !GetString( section, entry, val, def ) ) return false;
+	
+	OSD_AbsolutePath( val );
+	
+	return true;
 }
 
 

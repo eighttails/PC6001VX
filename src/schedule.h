@@ -1,12 +1,18 @@
 #ifndef SCHEDULE_H_INCLUDED
 #define SCHEDULE_H_INCLUDED
 
+// 8888888888888888888888888888888888888
+#include <vector>
+// 8888888888888888888888888888888888888
 #include "typedef.h"
 
 #include "device.h"
 #include "ini.h"
 #include "thread.h"
 
+// 8888888888888888888888888888888888888
+//#define	MAXEVENT	(32)
+// 8888888888888888888888888888888888888
 // イベントスタイルフラグ
 // bit0: 繰り返し指示
 #define	EV_ONETIME	(0x00)	/* ワンタイム */
@@ -39,8 +45,12 @@ public:
 	};
 
 protected:
+// 8888888888888888888888888888888888888
+//	evinfo ev[MAXEVENT];		// イベント情報
+// 8888888888888888888888888888888888888
 	typedef std::vector<evinfo> EvVec;
 	EvVec ev;					// イベント情報
+// 8888888888888888888888888888888888888
 	DeviceList devlist;			// デバイスリスト
 
 	bool VSYNC;					// VSYNCフラグ true:VSYNCに達した false:達してない

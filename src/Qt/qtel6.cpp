@@ -130,7 +130,8 @@ void EL6::ExecMenu( int id )
 	case ID_SPR11:			UI_SampleRate( 44100 >> (id - ID_SPR44 ) );	break;	// サンプリングレート 11025Hz
 	case ID_ONLINEHELP:
 #ifdef WIN32
-		QDesktopServices::openUrl(QUrl(QString("file://") + OSD_GetModulePath() + "/README.html"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile(QString("file://") + OSD_GetModulePath() + "/README.html"));
+		break;
 #else
 		QDesktopServices::openUrl(QUrl("https://github.com/eighttails/PC6001VX/blob/master/README.mkd"));
 		break;

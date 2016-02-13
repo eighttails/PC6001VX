@@ -2,8 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="generator" content="ReText 5.2.1">
-<title>README</title>
+<meta name="generator" content="ReText 5.3.0">
 </head>
 <body>
 <p><link href="doc/markdown.css" rel="stylesheet"></link></p>
@@ -302,9 +301,20 @@ BASICモードにより限界が異なるのは 内部処理の違いと思わ�
 <li>
 <p>ヘルプ</p>
 <ul>
-<li>バージョン情報<br>
+<li>
+<p>オンラインヘルプ<br>
+オンラインヘルプを表示します。
+WindowsではローカルのHTML、それ以外ではGitHub上のREADMEを表示します。</p>
+</li>
+<li>
+<p>バージョン情報<br>
 <img alt="About" src="doc/about.png"><br>
-バージョン情報ダイアログを表示します。</li>
+バージョン情報ダイアログを表示します。</p>
+</li>
+<li>
+<p>About Qt<br>
+PC6001VXに組み込んでいるQtのバージョンを表示します。</p>
+</li>
 </ul>
 </li>
 </ul>
@@ -581,6 +591,8 @@ ROMにバグフィックスのパッチを当てます。  </li>
 TAPEの読込み中はノーウェイトで動作させる機能です。  </li>
 <li>BoostUp<br>
 テープ読み込み高速化機能の高速化倍率を指定します。  </li>
+<li>FDDアクセスウェイト有効　
+FDDアクセス時にウェイトを入れるようにします。</li>
 <li>終了時に確認する<br>
 終了時に確認ダイアログが出るようになります。  </li>
 <li>終了時にINIファイルを保存する<br>
@@ -629,6 +641,14 @@ Qt5の音量制御周りはまだあまり枯れていないようです。</li>
 <li>X11では、なぜかかなキー(PAUSE)の利きが悪いです。</li>
 </ul>
 <h2 id="_15">更新履歴</h2>
+<p>■2.2 2016/02/XX</p>
+<ul>
+<li>P6V1.24ベースに更新</li>
+<li>ヘルプメニューにオンラインリファレンスへのリンクを入れた。</li>
+<li>(Windows)safemode.batのオプションの書式が間違っていたので修正。</li>
+<li>(Android)レジュームに失敗することがあるのを修正。</li>
+<li>(Android)UIが中華フォントで表示されていたのをMotoyaLMaruで表示するようにした。</li>
+</ul>
 <p>■2.11 2015/11/11</p>
 <ul>
 <li>リプレイに「1つ前の途中保存から再開」を追加</li>

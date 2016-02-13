@@ -128,6 +128,13 @@ void EL6::ExecMenu( int id )
 	case ID_SPR44:															// サンプリングレート 44100Hz
 	case ID_SPR22:															// サンプリングレート 22050Hz
 	case ID_SPR11:			UI_SampleRate( 44100 >> (id - ID_SPR44 ) );	break;	// サンプリングレート 11025Hz
+	case ID_ONLINEHELP:
+#ifdef WIN32
+		QDesktopServices::openUrl(QUrl(QString("file://") + OSD_GetModulePath() + "/README.html"));
+#else
+		QDesktopServices::openUrl(QUrl("https://github.com/eighttails/PC6001VX/blob/master/README.mkd"));
+		break;
+#endif
 	case ID_VERSION:		OSD_VersionDialog( graph->GetWindowHandle(), cfg->GetModel() );	break;	// バージョン情報
 	case ID_ABOUTQT:		QMessageBox::aboutQt(static_cast<RenderView*>(graph->GetWindowHandle()));
 		break;
@@ -408,6 +415,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	// ヘルプメニュー
 	QMenu* helpMenu = menu.addMenu(tr("ヘルプ"));
+	addCommand(helpMenu, tr("オンラインヘルプ"), ID_ONLINEHELP);
 	addCommand(helpMenu, tr("バージョン情報..."), ID_VERSION);
 	addCommand(helpMenu, tr("About Qt..."), ID_ABOUTQT);
 

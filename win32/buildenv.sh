@@ -18,7 +18,7 @@ rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/%HOME%/qt-creator -shared -release -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -release -nomake tests -skip qtwebkit-examples -skip qtactiveqt"
 
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
 PATH=$PWD/qtbase/lib:$PATH $MINGW32MAKE || $MINGW32MAKE && $MINGW32MAKE install

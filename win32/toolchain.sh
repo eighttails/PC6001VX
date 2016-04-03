@@ -1,6 +1,3 @@
-#リポジトリをGCC4.9リポジトリに差し替え(GCC5が安定するまでの暫定策)
-cp -f mirrorlist.mingw32 /etc/pacman.d
-
 #リポジトリを更新
 pacman -Syy
 

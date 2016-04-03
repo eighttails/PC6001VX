@@ -8,8 +8,8 @@ fi
 }
 
 function makeParallel(){
-#並列ビルドの場合依存関係でビルドに失敗することがあるので5回までmakeする。
-for (( i=0; i<5; i++))
+#並列ビルドの場合依存関係でビルドに失敗することがあるので3回までmakeする。
+for (( i=0; i<3; i++))
 do
     mingw32-make -j$NUMBER_OF_PROCESSORS "$@"
     if [ $? -eq 0 ]; then
@@ -41,7 +41,7 @@ rm -rf qt5-shared
 function buildQtCreator(){
 #Qt Creator
 cd ~/extlib
-export QTC_MAJOR_VER=3.5
+export QTC_MAJOR_VER=3.6
 export QTC_MINOR_VER=.1
 export QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
@@ -94,7 +94,7 @@ rm -rf qt5-static
 }
 
 function buildFFmpeg(){
-FFMPEG_VERSION=2.8.5
+FFMPEG_VERSION=3.0
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz 
 	
@@ -122,8 +122,8 @@ mkdir extlib
 
 #Qt
 cd ~/extlib
-export QT_MAJOR_VERSION=5.5
-export QT_MINOR_VERSION=.1
+export QT_MAJOR_VERSION=5.6
+export QT_MINOR_VERSION=.0
 export QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
 #QT_RELEASE=development_releases

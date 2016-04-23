@@ -17,8 +17,6 @@ signals:
 public slots:
 public:
     void initialize(int id, CFG6* cfg);
-    // ボタンサイズは30x20を基準とする
-    virtual QSize sizeHint () const {return QSize (30, 20);}
 
     const COLOR24& getColor() const {return color;};
 

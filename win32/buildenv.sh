@@ -143,8 +143,9 @@ else
     sed -i -e "s|/T |//T |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
     sed -i -e "s|/Fh |//Fh |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
 
-    #Osで最適化するためのパッチ(サイズ削減のため)
-    sed -i -e "s|= -O2|= -Os|g" qtbase/mkspecs/win32-g++/qmake.conf
+    #Ogで最適化するためのパッチ(現行のMinGWでは最適化でクラッシュするため)
+    sed -i -e "s|= -O2|= -Og|g" qtbase/mkspecs/win32-g++/qmake.conf
+
     #プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
     sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf    
     

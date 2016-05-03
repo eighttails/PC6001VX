@@ -156,7 +156,6 @@ else
     
     popd
     
-    waitEnter
 fi
 
 #shared版Qtをビルド(QtCreator用)

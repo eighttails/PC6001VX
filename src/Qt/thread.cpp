@@ -11,24 +11,24 @@
 class InternalTherad : public QThread
 {
 public:
-    InternalTherad(cThread* thread, void* param)
-        : thread_(thread)
-        , param_(param){};
+	InternalTherad(cThread* thread, void* param)
+		: thread_(thread)
+		, param_(param){};
 protected:
-    virtual void run(){
-        thread_->OnThread(param_);
-    }
+	virtual void run(){
+		thread_->OnThread(param_);
+	}
 
 private:
-    cThread* thread_;
-    void* param_;
+	cThread* thread_;
+	void* param_;
 };
 
 // Constructer
 cThread::cThread( void )
 {
-    this->m_bCancel			= true;
-    this->m_hThread			= NULL;
+	this->m_bCancel			= true;
+	this->m_hThread			= NULL;
 	this->m_BeginTheadParam	= NULL;
 }
 
@@ -49,9 +49,9 @@ bool cThread::BeginThread ( void *lpVoid )
 		this->m_BeginTheadParam = lpVoid;
 		this->m_bCancel			= false;
 		
-        this->m_hThread = new InternalTherad(this, lpVoid);
-        ((InternalTherad*)m_hThread)->start();
-        bSuccess = true;
+		this->m_hThread = new InternalTherad(this, lpVoid);
+		((InternalTherad*)m_hThread)->start();
+		bSuccess = true;
 	}
 	
 	return bSuccess;
@@ -65,11 +65,7 @@ bool cThread::Waiting( void )
 	bool bSuccess = false;
 	
 	if( m_hThread != NULL ){
-		while(!(bSuccess = ((InternalTherad*)m_hThread)->wait(100))){
-			// Qtのイベントを処理しないとデッドロックで終われないスレッドがあるためその対策
-			qApp->processEvents();
-		}
-
+		bSuccess = ((InternalTherad*)m_hThread)->wait();
 		((InternalTherad*)m_hThread)->deleteLater();
 		m_hThread = NULL;
 	}else{
@@ -101,5 +97,5 @@ bool cThread::IsCancel()
 // Default thread procedure. Don't call this method in direct!
 void cThread::ThreadProc(void *lpVoid)
 {
-    //何もしない(InternalTherad::run()で代替)
+	//何もしない(InternalTherad::run()で代替)
 }

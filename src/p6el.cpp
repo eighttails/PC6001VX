@@ -114,7 +114,6 @@ void EL6::OnThread( void *inst )
 				
 				// ブレークポイントチェック
 				if( p6->vm->BpCheckBreakPoint( BPoint::BP_PC, p6->vm->cpum->GetPC(), 0, NULL ) || p6->vm->BpIsReqBreak() ){
-					this->cThread::Cancel();	// スレッド終了フラグ立てる
 					p6->vm->BpResetBreak();
 					Event ev;
 					ev.type = EV_DEBUGMODEBP;

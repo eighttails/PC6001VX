@@ -30,7 +30,7 @@ rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -release -target xp -nomake tests"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -release -target xp -no-wmf-backend -nomake tests"
 
 makeParallel && makeParallel install
 exitOnError
@@ -80,7 +80,7 @@ rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -target xp -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -target xp -no-wmf-backend -opengl es2 -angle -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests"
 
 makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
 exitOnError
@@ -149,7 +149,14 @@ else
     #プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
     sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf    
     
+    #XPでWMFに依存してしまう問題へのパッチ
+    sed -i -e "s|qtCompileTest(evr)|#qtCompileTest(evr)|g" qtmultimedia/qtmultimedia.pro   
+    sed -i -e "s|qtCompileTest(wmsdk)|#qtCompileTest(wmsdk)|g" qtmultimedia/qtmultimedia.pro   
+    sed -i -e "s|contains(QT_CONFIG, wmf-backend)|#contains(QT_CONFIG, wmf-backend)|g" qtmultimedia/qtmultimedia.pro   
+    
     popd
+    
+    waitEnter
 fi
 
 #shared版Qtをビルド(QtCreator用)

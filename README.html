@@ -611,15 +611,16 @@ FDDアクセス時にウェイトを入れるようにします。</li>
 <p>MSYS2環境上でビルドします。</p>
 <ol>
 <li>こちら(<a href="http://sourceforge.net/projects/msys2/">http://sourceforge.net/projects/msys2/</a>)からMSYS2をダウンロードしてインストールしてください。<br>
-VC++はサポートしていません。</li>
+VC++はサポートしていません。  </li>
 <li>MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。  </li>
-<li>MSYSをインストールしたフォルダのmingw32_shell.batを実行  </li>
-<li>MSYS Shell上で<code>pacman -Syy &amp;&amp; pacman -Suu</code>を実行し、環境をアップグレードし、MSYS Shellを再起動。  </li>
+<li>MSYSをインストールしたフォルダのmingw32_shell.batを実行。  </li>
+<li>MSYS Shell上で<code>pacman -Syyuu</code>を実行し、環境をアップグレードし、MSYS Shellを再起動。  </li>
 <li>ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  </li>
-<li><code>cd PC6001VX/win32</code>を実行し、ソースフォルダのwin32フォルダにカレントを移動  </li>
-<li><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール  </li>
-<li><code>bash ./buildenv.sh</code>を実行。QtのライブラリとQtCreatorをビルド<br>
-QtCreatorが/mingw32/local/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。</li>
+<li><code>cd PC6001VX/win32</code>を実行し、ソースフォルダのwin32フォルダにカレントを移動。  </li>
+<li><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール。途中でMSYSの再起動を要求されたらもう一度toolchain.shを実行。<br>
+MSYS2で現在使用しているMinGWコンパイラはGCC5.3ですが、吐き出されるバイナリがあまりに不安定なため、このスクリプトではGCCを4.9に差し替えて環境を構築します。他の開発作業との共用は避けてください。</li>
+<li><code>bash ./buildenv.sh</code>を実行。QtのライブラリとQtCreatorをビルド。<br>
+QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。</li>
 <li><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。</li>
 <li>自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。</li>
 </ol>
@@ -641,11 +642,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。</li>
 <li>X11では、なぜかかなキー(PAUSE)の利きが悪いです。</li>
 </ul>
 <h2 id="_15">更新履歴</h2>
-<p>■2.21.0 2016/05/03</p>
+<p>■2.21.0 2016/05/04</p>
 <ul>
 <li>バージョン番号のスキームを変えました。今後のバージョン番号は(メジャーバージョン).(マイナーバージョン).(バグフィックス)とします。</li>
 <li>モニタモードでブレークポイントにヒットすると固まるのを修正。</li>
 <li>(Windows)ビルドオプションを変更。もしかしたらXPで動かくかも(無保証)</li>
+<li>(Windows)MSYS2に同梱のMinGW5.3があまりに不安定なため、GCC4.9を使ってビルドすることにした。</li>
 </ul>
 <p>■2.2 2016/04/24</p>
 <ul>

@@ -425,15 +425,16 @@ Androidではメイン画面上でロングタップするとメニューが出�
 MSYS2環境上でビルドします。
 
 1. こちら(<http://sourceforge.net/projects/msys2/>)からMSYS2をダウンロードしてインストールしてください。  
-VC++はサポートしていません。
+VC++はサポートしていません。  
 1. MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。  
-1. MSYSをインストールしたフォルダのmingw32_shell.batを実行  
-1. MSYS Shell上で`pacman -Syy && pacman -Suu`を実行し、環境をアップグレードし、MSYS Shellを再起動。  
+1. MSYSをインストールしたフォルダのmingw32_shell.batを実行。  
+1. MSYS Shell上で`pacman -Syyuu`を実行し、環境をアップグレードし、MSYS Shellを再起動。  
 1. ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  
-1. `cd PC6001VX/win32`を実行し、ソースフォルダのwin32フォルダにカレントを移動  
-1. `bash ./toochain.sh`を実行。ツールチェインをインストール  
-1. `bash ./buildenv.sh`を実行。QtのライブラリとQtCreatorをビルド  
-QtCreatorが/mingw32/local/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。
+1. `cd PC6001VX/win32`を実行し、ソースフォルダのwin32フォルダにカレントを移動。  
+1. `bash ./toochain.sh`を実行。ツールチェインをインストール。途中でMSYSの再起動を要求されたらもう一度toolchain.shを実行。  
+MSYS2で現在使用しているMinGWコンパイラはGCC5.3ですが、吐き出されるバイナリがあまりに不安定なため、このスクリプトではGCCを4.9に差し替えて環境を構築します。他の開発作業との共用は避けてください。
+1. `bash ./buildenv.sh`を実行。QtのライブラリとQtCreatorをビルド。  
+QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。
 1. `bash ./buildrelease.sh`を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。
 1. 自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。
 
@@ -455,11 +456,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。
 
 ##更新履歴
-■2.21.0 2016/05/03
+■2.21.0 2016/05/04
 
 * バージョン番号のスキームを変えました。今後のバージョン番号は(メジャーバージョン).(マイナーバージョン).(バグフィックス)とします。
 * モニタモードでブレークポイントにヒットすると固まるのを修正。
 * (Windows)ビルドオプションを変更。もしかしたらXPで動かくかも(無保証)
+* (Windows)MSYS2に同梱のMinGW5.3があまりに不安定なため、GCC4.9を使ってビルドすることにした。
 
 ■2.2 2016/04/24
 

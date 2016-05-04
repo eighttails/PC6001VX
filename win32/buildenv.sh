@@ -122,8 +122,8 @@ mkdir extlib
 
 #Qt
 cd ~/extlib
-export QT_MAJOR_VERSION=5.6
-export QT_MINOR_VERSION=.0
+export QT_MAJOR_VERSION=5.5
+export QT_MINOR_VERSION=.1
 export QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
 #QT_RELEASE=development_releases
@@ -143,8 +143,8 @@ else
     sed -i -e "s|/T |//T |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
     sed -i -e "s|/Fh |//Fh |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
 
-    #Ogで最適化するためのパッチ(現行のMinGWでは最適化でクラッシュするため)
-    sed -i -e "s|= -O2|= -Og|g" qtbase/mkspecs/win32-g++/qmake.conf
+    #Osで最適化するためのパッチ
+    sed -i -e "s|= -O2|= -Os|g" qtbase/mkspecs/win32-g++/qmake.conf
 
     #プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
     sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf    

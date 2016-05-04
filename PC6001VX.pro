@@ -322,6 +322,7 @@ DISTFILES += \
     win32/qt-creator-3.5.0-Hacky-fix-for-__GNUC_PREREQ-usage.patch \
     win32/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch \
     LICENSE \
-    win32/buildrelease.sh
+    win32/buildrelease.sh \
+    win32/mirrorlist.mingw32
 
 

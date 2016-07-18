@@ -30,7 +30,7 @@ rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -release -target xp -no-wmf-backend -nomake tests"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -release -no-wmf-backend -nomake tests"
 
 makeParallel && makeParallel install
 exitOnError
@@ -41,8 +41,8 @@ rm -rf qt5-shared
 function buildQtCreator(){
 #Qt Creator
 cd ~/extlib
-export QTC_MAJOR_VER=3.6
-export QTC_MINOR_VER=.1
+export QTC_MAJOR_VER=4.0
+export QTC_MINOR_VER=.3
 export QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 #QTC_RELEASE=development_releases
@@ -57,7 +57,6 @@ else
     pushd $QTC_SOURCE_DIR
     
     #MinGWでコンパイルが通らない問題の修正
-    patch -p1 < $SCRIPT_DIR/qt-creator-3.3.0-MinGW-w64-MIB_TCP_STATE-not-defined-until-Vista.patch
     patch -p1 < $SCRIPT_DIR/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch
     patch -p1 < $SCRIPT_DIR/qt-creator-3.5.0-Hacky-fix-for-__GNUC_PREREQ-usage.patch
     popd
@@ -80,7 +79,7 @@ rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -target xp -no-wmf-backend -opengl es2 -angle -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -no-wmf-backend -opengl es2 -angle -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests"
 
 makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
 exitOnError
@@ -122,8 +121,8 @@ mkdir extlib
 
 #Qt
 cd ~/extlib
-export QT_MAJOR_VERSION=5.5
-export QT_MINOR_VERSION=.1
+export QT_MAJOR_VERSION=5.7
+export QT_MINOR_VERSION=.0
 export QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
 #QT_RELEASE=development_releases
@@ -142,6 +141,12 @@ else
     sed -i -e "s|/E |//E |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
     sed -i -e "s|/T |//T |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
     sed -i -e "s|/Fh |//Fh |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
+
+    sed -i -e "s|#ifdef __MINGW32__|#if 0|g"  qtbase/src/3rdparty/angle/src/libANGLE/renderer/d3d/d3d11/Query11.cpp
+
+    pushd qtbase
+    patch -p1 < $SCRIPT_DIR/0050-disable-default-lib-include-detection.patch
+    popd
 
     #Osで最適化するためのパッチ
     sed -i -e "s|= -O2|= -Os|g" qtbase/mkspecs/win32-g++/qmake.conf

@@ -1,5 +1,5 @@
 #GCC4.9環境に切り替え
-cp -f mirrorlist.mingw32 /etc/pacman.d/
+#cp -f mirrorlist.mingw32 /etc/pacman.d/
 
 #リポジトリを更新
 pacman -Syyuu

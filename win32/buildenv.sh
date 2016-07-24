@@ -30,7 +30,8 @@ rm -rf qt5-shared
 mkdir qt5-shared
 pushd qt5-shared
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -release -no-wmf-backend -nomake tests"
+#最適化によるクラッシュ回避のため、デバッグ情報を入れてOg最適化でビルドさせる
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -force-debug-info -no-pch -release -no-wmf-backend -nomake tests"
 
 makeParallel && makeParallel install
 exitOnError
@@ -66,7 +67,7 @@ rm -rf qt-creator
 mkdir qt-creator
 pushd qt-creator
 
-~/qt-creator/bin/qmake QTC_PREFIX=~/qt-creator ../$QTC_SOURCE_DIR/qtcreator.pro
+~/qt-creator/bin/qmake CONFIG-=precompile_header QTC_PREFIX=~/qt-creator ../$QTC_SOURCE_DIR/qtcreator.pro
 makeParallel && makeParallel install 
 exitOnError
 popd
@@ -79,7 +80,7 @@ rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -no-wmf-backend -opengl es2 -angle -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -no-pch -no-wmf-backend -opengl es2 -angle -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests"
 
 makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
 exitOnError
@@ -93,7 +94,7 @@ rm -rf qt5-static
 }
 
 function buildFFmpeg(){
-FFMPEG_VERSION=3.0
+FFMPEG_VERSION=3.1.1
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz 
 	
@@ -144,10 +145,6 @@ else
 
     sed -i -e "s|#ifdef __MINGW32__|#if 0|g"  qtbase/src/3rdparty/angle/src/libANGLE/renderer/d3d/d3d11/Query11.cpp
 
-    pushd qtbase
-    patch -p1 < $SCRIPT_DIR/0050-disable-default-lib-include-detection.patch
-    popd
-
     #Osで最適化するためのパッチ
     sed -i -e "s|= -O2|= -Os|g" qtbase/mkspecs/win32-g++/qmake.conf
 
@@ -164,7 +161,7 @@ else
 fi
 
 #shared版Qtをビルド(QtCreator用)
-buildQtShared
+#buildQtShared
 
 #QtCreatorをビルド
 buildQtCreator

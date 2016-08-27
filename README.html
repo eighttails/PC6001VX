@@ -2,7 +2,8 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="generator" content="ReText 5.3.1">
+<meta name="generator" content="ReText 6.0.1">
+<title>README</title>
 </head>
 <body>
 <p><link href="doc/markdown.css" rel="stylesheet"></link></p>
@@ -617,8 +618,7 @@ VC++はサポートしていません。  </li>
 <li>MSYS Shell上で<code>pacman -Syyuu</code>を実行し、環境をアップグレードし、MSYS Shellを再起動。  </li>
 <li>ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  </li>
 <li><code>cd PC6001VX/win32</code>を実行し、ソースフォルダのwin32フォルダにカレントを移動。  </li>
-<li><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール。途中でMSYSの再起動を要求されたらもう一度toolchain.shを実行。<br>
-MSYS2で現在使用しているMinGWコンパイラはGCC5.3ですが、吐き出されるバイナリがあまりに不安定なため、このスクリプトではGCCを4.9に差し替えて環境を構築します。他の開発作業との共用は避けてください。</li>
+<li><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール。途中でMSYSの再起動を要求されたらもう一度toolchain.shを実行。  </li>
 <li><code>bash ./buildenv.sh</code>を実行。QtのライブラリとQtCreatorをビルド。<br>
 QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。</li>
 <li><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。</li>
@@ -642,6 +642,13 @@ Qt5の音量制御周りはまだあまり枯れていないようです。</li>
 <li>X11では、なぜかかなキー(PAUSE)の利きが悪いです。</li>
 </ul>
 <h2 id="_15">更新履歴</h2>
+<p>■2.30.0 2016/08/27</p>
+<ul>
+<li>P6V1.25ベースに更新</li>
+<li>動画記録中にメニューを出そうとすると固まっていたのを修正。</li>
+<li>(Windows)MSYS2に同梱のMinGWのバグが取れたので、最新版の6.1を使ってビルドすることにした。<br>
+QtおよびMSYS2がXPのサポートを落としたため、今回のバージョンからXPでは動きません。XPでどうしても動かしたいという方は2.21を使ってください。</li>
+</ul>
 <p>■2.21.0 2016/05/04</p>
 <ul>
 <li>バージョン番号のスキームを変えました。今後のバージョン番号は(メジャーバージョン).(マイナーバージョン).(バグフィックス)とします。</li>

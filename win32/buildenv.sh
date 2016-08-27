@@ -31,7 +31,7 @@ mkdir qt5-shared
 pushd qt5-shared
 
 #最適化によるクラッシュ回避のため、デバッグ情報を入れてOg最適化でビルドさせる
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -force-debug-info -no-pch -release -no-wmf-backend -nomake tests"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %HOME%/qt-creator -shared -force-debug-info -no-pch -release -nomake tests"
 
 makeParallel && makeParallel install
 exitOnError
@@ -42,8 +42,8 @@ rm -rf qt5-shared
 function buildQtCreator(){
 #Qt Creator
 cd ~/extlib
-export QTC_MAJOR_VER=4.0
-export QTC_MINOR_VER=.3
+export QTC_MAJOR_VER=4.1
+export QTC_MINOR_VER=.0
 export QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 #QTC_RELEASE=development_releases
@@ -80,7 +80,7 @@ rm -rf qt5-static
 mkdir qt5-static
 pushd qt5-static
 
-cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -no-pch -no-wmf-backend -opengl es2 -angle -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests"
+cmd.exe /c "%CD%/../$QT_SOURCE_DIR/configure.bat -opensource -confirm-license -platform win32-g++ -prefix %MSYS_ROOT%/mingw32/local -static -no-pch -opengl es2 -angle -no-icu -no-openssl -qt-pcre -nomake examples -nomake tests"
 
 makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
 exitOnError
@@ -161,7 +161,7 @@ else
 fi
 
 #shared版Qtをビルド(QtCreator用)
-#buildQtShared
+buildQtShared
 
 #QtCreatorをビルド
 buildQtCreator

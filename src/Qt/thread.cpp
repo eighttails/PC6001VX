@@ -65,7 +65,10 @@ bool cThread::Waiting( void )
 	bool bSuccess = false;
 	
 	if( m_hThread != NULL ){
-		bSuccess = ((InternalTherad*)m_hThread)->wait();
+		while(!(bSuccess = ((InternalTherad*)m_hThread)->wait(100))){
+			// Qtのイベントを処理しないとデッドロックで終われないスレッドがあるためその対策
+			qApp->processEvents();
+		}
 		((InternalTherad*)m_hThread)->deleteLater();
 		m_hThread = NULL;
 	}else{

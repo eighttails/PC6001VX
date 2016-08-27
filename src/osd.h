@@ -167,7 +167,7 @@ void OSD_VersionDialog( HWINDOW, int );
 // イベント取得(イベントが発生するまで待つ)
 bool OSD_GetEvent( Event * );
 // イベントをキューにプッシュする
-bool OSD_PushEvent( EventType );
+bool OSD_PushEvent( EventType, ... );
 bool OSD_PushEvent(const Event& ev);
 
 // --- その他の雑関数 ---

@@ -1,4 +1,3 @@
-
 #ifndef DEVICE_H_INCLUDE
 #define DEVICE_H_INCLUDE
 
@@ -11,6 +10,7 @@
 
 
 class VM6;
+
 
 // ---------------------------------------------------------------------------
 //	デバイスのインターフェース
@@ -55,6 +55,7 @@ public:
 	virtual void EventCallback( int, int ){};
 };
 
+
 // ---------------------------------------------------------------------------
 // デバイスリストクラス
 //	  Original     : cisc
@@ -67,9 +68,10 @@ public:
 private:
 	struct Node{
 		IDevice *entry;
+		Node *next;
 		int count;
 	};
-
+	
 // 8888888888888888888888888888888888888
 //	Node *node;
 // 8888888888888888888888888888888888888

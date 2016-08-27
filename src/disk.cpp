@@ -10,6 +10,7 @@
 #include "schedule.h"
 
 #include "p6vm.h"
+
 // イベントID
 // --- mini FDD ---
 #define EID_INIT1	(1)		// 00h INITIALIZE(ドライブ1)
@@ -1317,7 +1318,11 @@ bool DSK66::SearchSector( BYTE *sta )
 				DSK6::AddWait( WAIT_GAP0 );
 			}
 			
+		Dimg[fdc.US]->GetID( &c0, &h0, &r0, &n0 );
+		PRINTD( FDC_LOG, "=== C:%d H:%d R:%d N:%d ", c0, h0, r0, n0 );
 			Dimg[fdc.US]->NextSector();
+		Dimg[fdc.US]->GetID( &c0, &h0, &r0, &n0 );
+		PRINTD( FDC_LOG, "--- C:%d H:%d R:%d N:%d\n", c0, h0, r0, n0 );
 			DSK6::AddWait( WAIT_ID );
 			
 			Dimg[fdc.US]->GetID( &c0, &h0, &r0, &n0 );

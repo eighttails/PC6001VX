@@ -705,18 +705,6 @@ bool OSD_GetEvent( Event *ev )
 
 	return true;
 }
-////////////////////////////////////////////////////////////////
-// イベントをキューにプッシュする
-//
-// 引数:	ev			イベントタイプ
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_PushEvent(EventType ev)
-{
-	Event event;
-	event.type = ev;
-	return OSD_PushEvent(event);
-}
 
 ////////////////////////////////////////////////////////////////
 // イベントをキューにプッシュする
@@ -734,6 +722,31 @@ bool OSD_PushEvent(const Event& ev)
 	return true;
 }
 
+////////////////////////////////////////////////////////////////
+// イベントをキューにプッシュする
+//
+// 引数:	ev			イベントタイプ
+//			...			イベントタイプに応じた引数
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_PushEvent( EventType ev, ... )
+{
+	Event event;
+	event.type = ev;
+	va_list args;
+	va_start( args, ev );
+
+	switch( ev ){
+	case EV_DEBUGMODEBP:
+		event.bp.addr = va_arg( args, int );
+		break;
+	default:;
+	}
+
+	va_end( args );
+
+	return OSD_PushEvent( event ) ? false : true;
+}
 
 
 ////////////////////////////////////////////////////////////////

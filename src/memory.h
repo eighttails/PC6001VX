@@ -154,6 +154,7 @@ protected:
 	bool kj_rom;				// 漢字ROM,音声合成ROM 選択用 true:漢字ROM false:音声合成ROM
 	bool kj_LR;					// 漢字ROM 左右選択用 true:右 false:左
 	bool cgenable;				// CG ROMアクセスフラグ true:アクセス可 false:アクセス不可
+	BYTE cgaden;				// CG ROMアドレスイネーブル
 	BYTE cgaddr;				// CG ROMアドレス A13,14,15
 	BYTE Rf[3];					// メモリコントローラ内部レジスタ
 	// ---------------------------------------------------------------------------------------

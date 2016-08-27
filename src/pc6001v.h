@@ -96,8 +96,8 @@
 #define	DOKODEMO_FILE	"dokodemo.dds"		/* どこでもSAVEファイル */
 #define	SERIAL_FILE		"serial.txt"		/* シリアル出力ファイル */
 #define	SAVE_FILE		"_csave.p6t"		/* TAPE(CSAVE)ファイル */
-#define	FONTZ_FILE		"fontz12."IMG_EXT	/* 半角フォントファイル */
-#define	FONTH_FILE		"fonth12."IMG_EXT	/* 全角フォントファイル */
+#define	FONTZ_FILE		"fontz12." IMG_EXT	/* 半角フォントファイル */
+#define	FONTH_FILE		"fonth12." IMG_EXT	/* 全角フォントファイル */
 
 #define	SUBCPU60		"subcpu.60"			/* サブCPU ROM(PC-6001) */
 #define	SUBCPU61		"subcpu.61"			/* サブCPU ROM(PC-6001A) */

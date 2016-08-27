@@ -61,9 +61,11 @@
 #define wEXTROM0	(UseSol ? &EXTRAM2 : &EMPTYROM)
 #define wEXTROM1	(UseSol ? &EXTRAM3 : &EMPTYROM)
 
+#define pKNJROM0	(kj_rom ? ( kj_LR ? &KANJIROM2 : &KANJIROM0 ) : &SRMENROM0 )
+#define pKNJROM1	(kj_rom ? ( kj_LR ? &KANJIROM3 : &KANJIROM1 ) : &SRMENROM1 )
+#define pKNJROM2	(kj_rom ? ( kj_LR ? &KANJIROM2 : &KANJIROM0 ) : &VOICEROM0 )
+#define pKNJROM3	(kj_rom ? ( kj_LR ? &KANJIROM3 : &KANJIROM1 ) : &VOICEROM1 )
 
-#define pKNJROM0	(kj_rom ? ( kj_LR ? &KANJIROM2 : &KANJIROM0 ) : &VOICEROM0 )
-#define pKNJROM1	(kj_rom ? ( kj_LR ? &KANJIROM3 : &KANJIROM1 ) : &VOICEROM1 )
 
 
 // メモリコントローラ内部レジスタ初期値
@@ -359,7 +361,7 @@ MEM6::MEM6( VM6 *vm, const ID& id ) : Device(vm,id),
 	KanjiRom(NULL), VoiceRom(NULL), IntRam(NULL), ExtRam(NULL),
 	M1Wait(1), EnableChkCRC(true),
 	
-	cgrom(true), kj_rom(true), kj_LR(true), cgenable(true), cgaddr(3),
+	cgrom(true), kj_rom(true), kj_LR(true), cgenable(true), cgaden(7), cgaddr(3),
 	UseSol(false), Sol60Mode(false), SolBankSet(0)
 {
 	Rf[0] = INIT_RF0;
@@ -1250,17 +1252,17 @@ void MEM62::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	switch( mem1 & 0x0f ){	// RF0下位 (0000 - 3FFF)
 		case 0x00:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
 		case 0x01:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &MAINROM1;	break;
-		case 0x02:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = pKNJROM1;	break;
+		case 0x02:	Rm_blk[0] = pKNJROM2;	Rm_blk[1] = pKNJROM3;	break;
 		case 0x03:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &EXTROM1;	break;
 		case 0x04:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &EXTROM0;	break;
-		case 0x05:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = &MAINROM1;	break;
-		case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = pKNJROM1;	break;
+		case 0x05:	Rm_blk[0] = pKNJROM2;	Rm_blk[1] = &MAINROM1;	break;
+		case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = pKNJROM3;	break;
 		case 0x07:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &EXTROM1;	break;
 		case 0x08:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &EXTROM0;	break;
 		case 0x09:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &MAINROM1;	break;
 		case 0x0a:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &EXTROM1;	break;
-		case 0x0b:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = pKNJROM1;	break;
-		case 0x0c:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = &EXTROM0;	break;
+		case 0x0b:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = pKNJROM3;	break;
+		case 0x0c:	Rm_blk[0] = pKNJROM2;	Rm_blk[1] = &EXTROM0;	break;
 		case 0x0d:	Rm_blk[0] = &INTRAM0;	Rm_blk[1] = &INTRAM1;	break;
 		case 0x0e:	Rm_blk[0] = &EXTRAM0;	Rm_blk[1] = &EXTRAM1;	break;
 		case 0x0f:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
@@ -1268,17 +1270,17 @@ void MEM62::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	switch( mem1 & 0xf0 ){	// RF0上位 (4000 - 7FFF)
 		case 0x00:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
 		case 0x10:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &MAINROM3;	break;
-		case 0x20:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = pKNJROM1;	break;
+		case 0x20:	Rm_blk[2] = pKNJROM2;	Rm_blk[3] = pKNJROM3;	break;
 		case 0x30:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &EXTROM1;	break;
 		case 0x40:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM0;	break;
-		case 0x50:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &MAINROM3;	break;
-		case 0x60:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = pKNJROM1;	break;
+		case 0x50:	Rm_blk[2] = pKNJROM2;	Rm_blk[3] = &MAINROM3;	break;
+		case 0x60:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = pKNJROM3;	break;
 		case 0x70:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM1;	break;
 		case 0x80:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &EXTROM0;	break;
 		case 0x90:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &MAINROM3;	break;
 		case 0xa0:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &EXTROM1;	break;
-		case 0xb0:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = pKNJROM1;	break;
-		case 0xc0:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &EXTROM0;	break;
+		case 0xb0:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = pKNJROM3;	break;
+		case 0xc0:	Rm_blk[2] = pKNJROM2;	Rm_blk[3] = &EXTROM0;	break;
 		case 0xd0:	Rm_blk[2] = &INTRAM2;	Rm_blk[3] = &INTRAM3;	break;
 		case 0xe0:	Rm_blk[2] = &EXTRAM2;	Rm_blk[3] = &EXTRAM3;	break;
 		case 0xf0:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
@@ -1288,17 +1290,17 @@ void MEM62::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	switch( mem2 & 0x0f ){	// RF1下位 (8000 - BFFF)
 		case 0x00:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
 		case 0x01:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &MAINROM1;	break;
-		case 0x02:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x02:	Rm_blk[4] = pKNJROM2;	Rm_blk[5] = pKNJROM3;	break;
 		case 0x03:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &EXTROM1;	break;
 		case 0x04:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = &EXTROM0;	break;
-		case 0x05:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &MAINROM1;	break;
-		case 0x06:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x05:	Rm_blk[4] = pKNJROM2;	Rm_blk[5] = &MAINROM1;	break;
+		case 0x06:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pKNJROM3;	break;
 		case 0x07:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = &EXTROM1;	break;
 		case 0x08:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &EXTROM0;	break;
 		case 0x09:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &MAINROM1;	break;
 		case 0x0a:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &EXTROM1;	break;
-		case 0x0b:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = pKNJROM1;	break;
-		case 0x0c:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &EXTROM0;	break;
+		case 0x0b:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = pKNJROM3;	break;
+		case 0x0c:	Rm_blk[4] = pKNJROM2;	Rm_blk[5] = &EXTROM0;	break;
 		case 0x0d:	Rm_blk[4] = &INTRAM4;	Rm_blk[5] = &INTRAM5;	break;
 		case 0x0e:	Rm_blk[4] = &EXTRAM4;	Rm_blk[5] = &EXTRAM5;	break;
 		case 0x0f:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
@@ -1306,23 +1308,26 @@ void MEM62::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	switch( mem2 & 0xf0 ){	// RF1上位 (C000 - FFFF)
 		case 0x00:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
 		case 0x10:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &MAINROM3;	break;
-		case 0x20:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = pKNJROM1;	break;
+		case 0x20:	Rm_blk[6] = pKNJROM2;	Rm_blk[7] = pKNJROM3;	break;
 		case 0x30:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &EXTROM1;	break;
 		case 0x40:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = &EXTROM0;	break;
-		case 0x50:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &MAINROM3;	break;
-		case 0x60:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pKNJROM1;	break;
+		case 0x50:	Rm_blk[6] = pKNJROM2;	Rm_blk[7] = &MAINROM3;	break;
+		case 0x60:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pKNJROM3;	break;
 		case 0x70:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = &EXTROM1;	break;
 		case 0x80:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &EXTROM0;	break;
 		case 0x90:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &MAINROM3;	break;
 		case 0xa0:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &EXTROM1;	break;
-		case 0xb0:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = pKNJROM1;	break;
-		case 0xc0:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &EXTROM0;	break;
+		case 0xb0:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = pKNJROM3;	break;
+		case 0xc0:	Rm_blk[6] = pKNJROM2;	Rm_blk[7] = &EXTROM0;	break;
 		case 0xd0:	Rm_blk[6] = &INTRAM6;	Rm_blk[7] = &INTRAM7;	break;
 		case 0xe0:	Rm_blk[6] = &EXTRAM6;	Rm_blk[7] = &EXTRAM7;	break;
 		case 0xf0:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
 	}
 	
-	if( CGBank ) Rm_blk[cgaddr] = cgrom ? &CGROM1 : &CGROM2;
+	// (暫定)A13を無視して16KB単位でCG ROMが現れるようにする
+	if( CGBank )
+		Rm_blk[ cgaddr&6]    =
+		Rm_blk[(cgaddr&6)+1] = cgrom ? &CGROM1 : &CGROM2;
 	
 	// 内部レジスタ保存
 	Rf[0] = mem1;
@@ -1345,17 +1350,17 @@ void MEM64::SetMemBlockR( BYTE mem1, BYTE mem2 )
 		// 4000-7FFFHは0000-3FFFHのイメージと考えればよいようだ
 		case 0x00:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
 		case 0x01:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &MAINROM1;	break;
-		case 0x02:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
+		case 0x02:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = pKNJROM1;	break;	// ココ
 		case 0x03:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &EXTROM1;	break;
 		case 0x04:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &EXTROM0;	break;
-		case 0x05:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = &MAINROM1;	break;	// ココ
-		case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
+		case 0x05:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = &MAINROM1;	break;	// ココ
+		case 0x06:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = pKNJROM1;	break;	// ココ
 		case 0x07:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &EXTROM1;	break;
 		case 0x08:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &EXTROM0;	break;
 		case 0x09:	Rm_blk[0] = &EXTROM1;	Rm_blk[1] = &MAINROM1;	break;
 		case 0x0a:	Rm_blk[0] = &MAINROM0;	Rm_blk[1] = &EXTROM1;	break;
-		case 0x0b:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = &SRMENROM1;	break;	// ココ
-		case 0x0c:	Rm_blk[0] = &SRMENROM0;	Rm_blk[1] = &EXTROM0;	break;	// ココ
+		case 0x0b:	Rm_blk[0] = &EXTROM0;	Rm_blk[1] = pKNJROM1;	break;	// ココ
+		case 0x0c:	Rm_blk[0] = pKNJROM0;	Rm_blk[1] = &EXTROM0;	break;	// ココ
 		case 0x0d:	Rm_blk[0] = &INTRAM0;	Rm_blk[1] = &INTRAM1;	break;
 		case 0x0e:	Rm_blk[0] = &EXTRAM0;	Rm_blk[1] = &EXTRAM1;	break;
 		case 0x0f:	Rm_blk[0] = &EMPTYROM;	Rm_blk[1] = &EMPTYROM;	break;
@@ -1363,17 +1368,17 @@ void MEM64::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	switch( mem1 & 0xf0 ){	// RF0上位 (4000 - 7FFF)
 		case 0x00:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
 		case 0x10:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &MAINROM3;	break;
-		case 0x20:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = pKNJROM1;	break;
+		case 0x20:	Rm_blk[2] = pKNJROM2;	Rm_blk[3] = pKNJROM3;	break;
 		case 0x30:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &EXTROM1;	break;
 		case 0x40:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM0;	break;
-		case 0x50:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &MAINROM3;	break;
-		case 0x60:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = pKNJROM1;	break;
+		case 0x50:	Rm_blk[2] = pKNJROM2;	Rm_blk[3] = &MAINROM3;	break;
+		case 0x60:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = pKNJROM3;	break;
 		case 0x70:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = &EXTROM1;	break;
 		case 0x80:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &EXTROM0;	break;
 		case 0x90:	Rm_blk[2] = &EXTROM1;	Rm_blk[3] = &MAINROM3;	break;
 		case 0xa0:	Rm_blk[2] = &MAINROM2;	Rm_blk[3] = &EXTROM1;	break;
-		case 0xb0:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = pKNJROM1;	break;
-		case 0xc0:	Rm_blk[2] = pKNJROM0;	Rm_blk[3] = &EXTROM0;	break;
+		case 0xb0:	Rm_blk[2] = &EXTROM0;	Rm_blk[3] = pKNJROM3;	break;
+		case 0xc0:	Rm_blk[2] = pKNJROM2;	Rm_blk[3] = &EXTROM0;	break;
 		case 0xd0:	Rm_blk[2] = &INTRAM2;	Rm_blk[3] = &INTRAM3;	break;
 		case 0xe0:	Rm_blk[2] = &EXTRAM2;	Rm_blk[3] = &EXTRAM3;	break;
 		case 0xf0:	Rm_blk[2] = &EMPTYROM;	Rm_blk[3] = &EMPTYROM;	break;
@@ -1383,17 +1388,17 @@ void MEM64::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	switch( mem2 & 0x0f ){	// RF1下位 (8000 - BFFF)
 		case 0x00:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
 		case 0x01:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &MAINROM1;	break;
-		case 0x02:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x02:	Rm_blk[4] = pKNJROM2;	Rm_blk[5] = pKNJROM3;	break;
 		case 0x03:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &EXTROM1;	break;
 		case 0x04:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = &EXTROM0;	break;
-		case 0x05:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &MAINROM1;	break;
-		case 0x06:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pKNJROM1;	break;
+		case 0x05:	Rm_blk[4] = pKNJROM2;	Rm_blk[5] = &MAINROM1;	break;
+		case 0x06:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = pKNJROM3;	break;
 		case 0x07:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = &EXTROM1;	break;
 		case 0x08:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &EXTROM0;	break;
 		case 0x09:	Rm_blk[4] = &EXTROM1;	Rm_blk[5] = &MAINROM1;	break;
 		case 0x0a:	Rm_blk[4] = &MAINROM0;	Rm_blk[5] = &EXTROM1;	break;
-		case 0x0b:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = pKNJROM1;	break;
-		case 0x0c:	Rm_blk[4] = pKNJROM0;	Rm_blk[5] = &EXTROM0;	break;
+		case 0x0b:	Rm_blk[4] = &EXTROM0;	Rm_blk[5] = pKNJROM3;	break;
+		case 0x0c:	Rm_blk[4] = pKNJROM2;	Rm_blk[5] = &EXTROM0;	break;
 		case 0x0d:	Rm_blk[4] = &INTRAM4;	Rm_blk[5] = &INTRAM5;	break;
 		case 0x0e:	Rm_blk[4] = &EXTRAM4;	Rm_blk[5] = &EXTRAM5;	break;
 		case 0x0f:	Rm_blk[4] = &EMPTYROM;	Rm_blk[5] = &EMPTYROM;	break;
@@ -1401,23 +1406,26 @@ void MEM64::SetMemBlockR( BYTE mem1, BYTE mem2 )
 	switch( mem2 & 0xf0 ){	// RF1上位 (C000 - FFFF)
 		case 0x00:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
 		case 0x10:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &MAINROM3;	break;
-		case 0x20:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = pKNJROM1;	break;
+		case 0x20:	Rm_blk[6] = pKNJROM2;	Rm_blk[7] = pKNJROM3;	break;
 		case 0x30:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &EXTROM1;	break;
 		case 0x40:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = &EXTROM0;	break;
-		case 0x50:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &MAINROM3;	break;
-		case 0x60:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pKNJROM1;	break;
+		case 0x50:	Rm_blk[6] = pKNJROM2;	Rm_blk[7] = &MAINROM3;	break;
+		case 0x60:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = pKNJROM3;	break;
 		case 0x70:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = &EXTROM1;	break;
 		case 0x80:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &EXTROM0;	break;
 		case 0x90:	Rm_blk[6] = &EXTROM1;	Rm_blk[7] = &MAINROM3;	break;
 		case 0xa0:	Rm_blk[6] = &MAINROM2;	Rm_blk[7] = &EXTROM1;	break;
-		case 0xb0:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = pKNJROM1;	break;
-		case 0xc0:	Rm_blk[6] = pKNJROM0;	Rm_blk[7] = &EXTROM0;	break;
+		case 0xb0:	Rm_blk[6] = &EXTROM0;	Rm_blk[7] = pKNJROM3;	break;
+		case 0xc0:	Rm_blk[6] = pKNJROM2;	Rm_blk[7] = &EXTROM0;	break;
 		case 0xd0:	Rm_blk[6] = &INTRAM6;	Rm_blk[7] = &INTRAM7;	break;
 		case 0xe0:	Rm_blk[6] = &EXTRAM6;	Rm_blk[7] = &EXTRAM7;	break;
 		case 0xf0:	Rm_blk[6] = &EMPTYROM;	Rm_blk[7] = &EMPTYROM;	break;
 	}
 	
-	if( CGBank ) Rm_blk[cgaddr] = cgrom ? &CGROM1 : &CGROM2;
+	// (暫定)A13を無視して16KB単位でCG ROMが現れるようにする
+	if( CGBank )
+		Rm_blk[ cgaddr&6]    =
+		Rm_blk[(cgaddr&6)+1] = cgrom ? &CGROM1 : &CGROM2;
 	
 	// 内部レジスタ保存
 	Rf[0] = mem1;
@@ -1602,14 +1610,14 @@ void MEM6::SetCGrom( BYTE data )
 	CGROM1.SetWait( cgwait );
 	CGROM2.SetWait( cgwait );
 	
-	// bit 6
+	// bit 6 CG ROMアクセスフラグ true:アクセス可 false:アクセス不可
 	cgenable = data&0x40 ? true : false;
 	
-	// bit 5,4,3
-	// とりあえず無視
+	// bit 5,4,3 CG ROMアドレスイネーブル
+	cgaden   = (data>>3)&7;
 	
-	// bit 2,1,0
-	cgaddr   = data&3;
+	// bit 2,1,0 CG ROMアドレス A13,14,15
+	cgaddr   = data&7;
 	
 	SetMemBlockR( Rf[0], Rf[1] );
 }
@@ -1810,6 +1818,7 @@ bool MEM6::DokoSave( cIni *Ini )
 	Ini->PutEntry( "MEMORY", NULL, "kj_rom",		"%s",		kj_rom   ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "kj_LR",			"%s",		kj_LR    ? "Yes" : "No" );
 	Ini->PutEntry( "MEMORY", NULL, "cgenable",		"%s",		cgenable ? "Yes" : "No" );
+	Ini->PutEntry( "MEMORY", NULL, "cgaden",		"%d",		cgaden );
 	Ini->PutEntry( "MEMORY", NULL, "cgaddr",		"%d",		cgaddr );
 	Ini->PutEntry( "MEMORY", NULL, "Rf0",	 		"0x%02X",	Rf[0] );
 	Ini->PutEntry( "MEMORY", NULL, "Rf1",	 		"0x%02X",	Rf[1] );
@@ -1900,6 +1909,7 @@ bool MEM6::DokoLoad( cIni *Ini )
 	Ini->GetTruth( "MEMORY", "kj_rom",		&kj_rom,	kj_rom );
 	Ini->GetTruth( "MEMORY", "kj_LR",		&kj_LR,		kj_LR );
 	Ini->GetTruth( "MEMORY", "cgenable",	&cgenable,	cgenable );
+	Ini->GetInt(   "MEMORY", "cgaden",		&st,		cgaden );	cgaden = st;
 	Ini->GetInt(   "MEMORY", "cgaddr",		&st,		cgaddr );	cgaddr = st;
 	Ini->GetInt(   "MEMORY", "Rf0",			&st,		Rf[0] );	Rf[0]  = st;
 	Ini->GetInt(   "MEMORY", "Rf1",			&st,		Rf[1] );	Rf[1]  = st;

@@ -1873,7 +1873,8 @@ void EL6::UI_AVISave( void )
 	
 	if( !AVI6::IsAVI() ){
 		if( OSD_FileSelect( graph->GetWindowHandle(), FD_AVISave, str, (char *)OSD_GetModulePath() ) ){
-			AVI6::StartAVI( str, graph->ScreenX(), graph->ScreenY(), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviBpp() );
+			// P6VXではウィンドウのサイズを使う
+			AVI6::StartAVI( str, OSD_GetWindowWidth(graph->GetWindowHandle()), OSD_GetWindowHeight(graph->GetWindowHandle()), FRAMERATE, cfg->GetSampleRate(), cfg->GetAviBpp() );
 		}
 	}else{
 		AVI6::StopAVI();

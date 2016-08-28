@@ -16,14 +16,19 @@ CONFIG += link_prl c++11
 #Define for Qt dependent code
 DEFINES += QTP6VX
 
-#Disable joystick support.If joystick support is disabled, PC6001VX does not depend on SDL2.
+#Disable joystick support.If uncommented below, PC6001VX does not depend on SDL2.
 #DEFINES += NOJOYSTICK
+
+#Disable joystick support.If uncommented below, PC6001VX does not depend on ffmpeg.
+#DEFINES += NOAVI
+
+#Disable debug features.For low performance machine.
+#DEFINES += NOMONITOR
 
 #Other feature control flags.
 #DEFINES += NOSINGLEAPP
 #DEFINES += NOOPENGL
 #DEFINES += NOSOUND
-#DEFINES += NOAVI
 #DEFINES += REPLAYDEBUG
 #DEFINES += AUTOSUSPEND
 

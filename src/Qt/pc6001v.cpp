@@ -29,6 +29,9 @@ int main( int argc, char *argv[] )
 
 	//X11の場合用
 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
+#if QT_VERSION >= 0x050700
+	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
 
 	P6VXApp app(argc, argv);
 

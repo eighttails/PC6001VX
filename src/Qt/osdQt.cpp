@@ -1287,8 +1287,21 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 	if (QGuiApplication::platformName() == QLatin1String("xcb")){
 		opt |= QFileDialog::DontUseNativeDialog;
 	}
+
 	QWidget* parent = static_cast<QWidget*>(hwnd);
-	QByteArray result = QFileDialog::getExistingDirectory(NULL, QString(), QDir::homePath(), opt).toUtf8();
+	QFileDialog dialog(parent);
+	dialog.setDirectory(QDir::homePath());
+	dialog.setFileMode(QFileDialog::DirectoryOnly);
+	dialog.setOptions(opt);
+#ifdef ALWAYSFULLSCREEN
+	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
+#endif
+
+	QByteArray result;
+	if (dialog.exec() == QDialog::Accepted) {
+		result = dialog.selectedFiles().value(0).toUtf8();
+	}
+
 	strcpy(Result, result);
 	return result.constData();
 }
@@ -1319,8 +1332,20 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 		opt |= QFileDialog::DontUseNativeDialog;
 	}
 
+	QFileDialog dialog(parent);
+	dialog.setWindowTitle(title);
+	dialog.setDirectory(pathStr);
+	dialog.setNameFilter(filter);
+	dialog.setOptions(opt);
+#ifdef ALWAYSFULLSCREEN
+	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
+#endif
+
 	if(mode == FM_Save){
-		result = QFileDialog::getSaveFileName(parent, title, pathStr, filter, NULL, opt);
+		dialog.setFileMode(QFileDialog::AnyFile);
+		if (dialog.exec() == QDialog::Accepted) {
+			result = dialog.selectedFiles().value(0);
+		}
 		if(result.isEmpty())    return NULL;
 		// 入力されたファイル名に拡張子がついていない場合は付与する
 		QFileInfo info(result);
@@ -1328,7 +1353,10 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 			result += QString(".") + ext;
 		}
 	} else {
-		result = QFileDialog::getOpenFileName(parent, title, pathStr, filter, NULL, opt);
+		dialog.setFileMode(QFileDialog::ExistingFile);
+		if (dialog.exec() == QDialog::Accepted) {
+			result = dialog.selectedFiles().value(0);
+		}
 		if(result.isEmpty())    return NULL;
 	}
 
@@ -1939,6 +1967,9 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 	}
 
 	ConfigDialog dialog(ecfg);
+#ifdef ALWAYSFULLSCREEN
+	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
+#endif
 	dialog.exec();
 	int ret = dialog.result();
 	// OKボタンが押されたならINIファイル書込み

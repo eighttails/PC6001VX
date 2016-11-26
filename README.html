@@ -104,7 +104,7 @@ TAPEやDISKに書き込んでいる最中などは全く考えていませんの
 イメージを破壊する可能性が大です。ご注意ください。<br>
 <strong>注意！その2</strong><br>
 どこでもSAVEファイルにはメモリの内容が含まれますので
-著作権者の許可なく配布しないでください。 </li>
+著作権者の許可なく配布しないでください。</li>
 <li>
 <p>リプレイ<br>
 リプレイのメニューはその時の状態により変化します。  </p>
@@ -574,13 +574,14 @@ FDDアクセス時にウェイトを入れるようにします。</li>
 <p>MSYS2環境上でビルドします。</p>
 <ol>
 <li>こちら(<a href="http://sourceforge.net/projects/msys2/">http://sourceforge.net/projects/msys2/</a>)からMSYS2をダウンロードしてインストールしてください。<br>
-VC++はサポートしていません。  </li>
+VC++はサポートしていません。<br>
+MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(<code>pacman -Sy</code>)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用)
+<a href="https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe">https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe</a>  </li>
 <li>MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。  </li>
 <li>MSYSをインストールしたフォルダのmingw32_shell.batを実行。  </li>
-<li>MSYS Shell上で<code>pacman -Syyuu</code>を実行し、環境をアップグレードし、MSYS Shellを再起動。  </li>
 <li>ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  </li>
 <li><code>cd PC6001VX/win32</code>を実行し、ソースフォルダのwin32フォルダにカレントを移動。  </li>
-<li><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール。途中でMSYSの再起動を要求されたらもう一度toolchain.shを実行。  </li>
+<li><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール。</li>
 <li><code>bash ./buildenv.sh</code>を実行。QtのライブラリとQtCreatorをビルド。<br>
 QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。</li>
 <li><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。</li>
@@ -604,6 +605,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。</li>
 <li>X11では、なぜかかなキー(PAUSE)の利きが悪いです。</li>
 </ul>
 <h2>更新履歴</h2>
+<p>■Git master(リリース前の最新版)</p>
+<ul>
+<li>ALWAYSFULLSCREENフラグを付加してビルドした場合にファイルダイアログ、設定ダイアログもフルスクリーンになるようにした。(PocketChipなどの低解像度デバイス用)</li>
+<li>(Windows)ビルド手順を更新。MSYS2のバージョンを固定する運用を推奨。</li>
+</ul>
 <p>■2.30.0 2016/08/27</p>
 <ul>
 <li>P6V1.25ベースに更新</li>

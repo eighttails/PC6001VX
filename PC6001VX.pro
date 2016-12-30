@@ -37,7 +37,7 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 linux|unix {
 #Configuration for Android
-android{
+android {
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
@@ -72,14 +72,15 @@ DEFINES += WIN32
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
 RC_ICONS += src/win32/PC6001VX.ico
+}
 
 !contains(DEFINES, NOJOYSTICK) {
+win32 {
 #On Windows, referes SDL_DIR environment variable to search SDL2
 QMAKE_CXXFLAGS += -I$$(SDL_DIR)/include -Dmain=SDL_main
 LIBS += -L$$(SDL_DIR)/lib -lmingw32 -lSDL2main -lSDL2 -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -luuid
 }
-} else {
-!contains(DEFINES, NOJOYSTICK) {
+linux|unix {
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
 LIBS += $$system(sdl2-config --libs)
 }
@@ -88,17 +89,23 @@ LIBS += $$system(sdl2-config --libs)
 !contains(DEFINES, NOOPENGL) {
 QT += opengl
 }
+
 !contains(DEFINES, NOSOUND) {
 QT += multimedia
 SOURCES += \
     src/Qt/wavfile.cpp \
     src/Qt/utils.cpp
 }
+
 !contains(DEFINES, NOAVI) {
 DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
+win32 {
+LIBS += -lavformat -lavcodec -lswscale -lavutil -lswresample -lvorbisenc -lvorbis -logg -lvpx
+}
+linux|unix {
 QMAKE_CXXFLAGS += $$system(pkg-config --cflags libavformat libavcodec libswscale libavutil libswresample)
 LIBS += $$system(pkg-config --libs libavformat libavcodec libswscale libavutil libswresample)
-win32:LIBS += -lavformat -lavcodec -lswscale -lavutil -lswresample -lvorbisenc -lvorbis -logg -lvpx
+}
 }
 
 SOURCES += \

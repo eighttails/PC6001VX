@@ -36,7 +36,7 @@ debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 #Configuration for UNIX variants
-linux|unix {
+unix {
 #Configuration for Android
 android {
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
@@ -79,7 +79,7 @@ RC_ICONS += src/win32/PC6001VX.ico
 win32 {
 LIBS += -lmingw32 -lSDL2main -lSDL2 -lversion -mwindows
 }
-linux|unix {
+unix {
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
 LIBS += $$system(sdl2-config --libs)
 }
@@ -101,7 +101,7 @@ DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
 win32 {
 LIBS += -lavformat -lavcodec -lswscale -lavutil -lswresample -lvorbisenc -lvorbis -logg -lvpx
 }
-linux|unix {
+unix {
 QMAKE_CXXFLAGS += $$system(pkg-config --cflags libavformat libavcodec libswscale libavutil libswresample)
 LIBS += $$system(pkg-config --libs libavformat libavcodec libswscale libavutil libswresample)
 }

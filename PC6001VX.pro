@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets network
+QT += core gui widgets network
 
 TARGET = PC6001VX
 TEMPLATE = app
@@ -35,7 +35,7 @@ DEFINES += QTP6VX
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
-linux{
+linux|unix {
 #Configuration for Android
 android{
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
@@ -61,12 +61,13 @@ DEFINES += NOJOYSTICK NOOPENGL NOMONITOR NOAVI
 #Configuration for X11(XCB)
 DEFINES += USE_X11
 QT += x11extras
-LIBS += -lX11
+QMAKE_CXXFLAGS += $$system(pkg-config --cflags x11)
+LIBS += $$system(pkg-config --libs x11)
 }
 }
 
 #Configuration for Windows
-win32:{
+win32 {
 DEFINES += WIN32
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
@@ -95,8 +96,9 @@ SOURCES += \
 }
 !contains(DEFINES, NOAVI) {
 DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
-LIBS += -lavformat -lavcodec -lswscale -lavutil -lswresample
-win32:LIBS += -lvorbisenc -lvorbis -logg -lvpx
+QMAKE_CXXFLAGS += $$system(pkg-config --cflags libavformat libavcodec libswscale libavutil libswresample)
+LIBS += $$system(pkg-config --libs libavformat libavcodec libswscale libavutil libswresample)
+win32:LIBS += -lavformat -lavcodec -lswscale -lavutil -lswresample -lvorbisenc -lvorbis -logg -lvpx
 }
 
 SOURCES += \

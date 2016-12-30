@@ -7,20 +7,58 @@
 </head>
 <body>
 <p><link href="doc/markdown.css" rel="stylesheet"></link></p>
-<h1>PC6001VX マニュアル</h1>
+<h1 id="pc6001vx">PC6001VX マニュアル</h1>
 <p>by eighttails<br>
 <a href="http://eighttails.seesaa.net">http://eighttails.seesaa.net</a></p>
 <p>目次</p>
-<p>[TOC]</p>
-<h2>はじめに</h2>
+<div class="toc">
+<ul>
+<li><a href="#pc6001vx">PC6001VX マニュアル</a><ul>
+<li><a href="#_1">はじめに</a></li>
+<li><a href="#_2">起動方法</a><ul>
+<li><a href="#_3">必要なもの</a></li>
+<li><a href="#_4">初回起動時の設定</a></li>
+<li><a href="#_5">プラットフォーム固有情報</a><ul>
+<li><a href="#windows">Windows</a></li>
+<li><a href="#linux">Linux</a></li>
+<li><a href="#android">Android</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_6">使い方</a><ul>
+<li><a href="#_7">メニュー</a></li>
+<li><a href="#_8">キーボードショートカット</a></li>
+<li><a href="#_9">マウス操作</a></li>
+<li><a href="#_10">環境設定</a></li>
+</ul>
+</li>
+<li><a href="#_11">開発者情報</a><ul>
+<li><a href="#_12">ライセンス</a></li>
+<li><a href="#_13">ビルド方法</a><ul>
+<li><a href="#windows_1">Windows</a></li>
+<li><a href="#linux_1">Linux</a></li>
+<li><a href="#android_1">Android</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_14">既知の不具合、制約事項</a></li>
+<li><a href="#_15">更新履歴</a></li>
+<li><a href="#_16">謝辞</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="_1">はじめに</h2>
 <p><img alt="Overview" src="doc/overview.png"></p>
 <p>本プログラムは、ゆみたろ様(<a href="http://papicom.net">http://papicom.net</a>)作のPC-6001エミュレータ
 PC6001VをLinux等で動作するよう改変したものです。<br>
 PC6001VXの末尾のXはクロスプラットフォームのXです。(^^;<br>
 ターゲットはLinuxなどのUNIXライクOSおよびAndroidを想定していますが、移植性の検証として
 Windows用バイナリもリリースしています。が、こちらはほとんどおまけです。</p>
-<h2>起動方法</h2>
-<h3>必要なもの</h3>
+<h2 id="_2">起動方法</h2>
+<h3 id="_3">必要なもの</h3>
 <ul>
 <li>
 <p>ROMファイル<br>
@@ -38,7 +76,7 @@ mk2以降の場合、音声合成の固定語はWAVファイルとして用意�
 WAVファイルのフォーマットですが、作者は44kHzモノラルのWAVで動作確認しています。</p>
 </li>
 </ul>
-<h3>初回起動時の設定</h3>
+<h3 id="_4">初回起動時の設定</h3>
 <p>必要なファイルが揃ったらPC6001VXを起動してください。起動の方法はお使いのOSに合わせたプラットフォーム固有情報を参照してください。<br>
 初回起動時には以下のエラーが出ると思います。</p>
 <p><img alt="FirstBoot" src="doc/firstboot.png"></p>
@@ -47,8 +85,8 @@ WAVファイルのフォーマットですが、作者は44kHzモノラルのWAV
 <p><img alt="RomCRC" src="doc/romcrc.png"></p>
 <p>警告されますが「Yes」をクリックすると以降ROMのCRCチェックをせずに起動するようになります。<br>
 ただしこの後の動作は自己責任です。</p>
-<h3>プラットフォーム固有情報</h3>
-<h4>Windows</h4>
+<h3 id="_5">プラットフォーム固有情報</h3>
+<h4 id="windows">Windows</h4>
 <ul>
 <li>起動方法<br>
 普通にPC6001VX.exeをダブルクリックして起動してください。</li>
@@ -64,22 +102,22 @@ safemode.batでは設定ファイルを削除し、セーフモード(表示の�
 <li>設定、各種ファイル生成場所<br>
     exeファイルと同じフォルダにiniファイル、各種フォルダが生成されます。</li>
 </ul>
-<h4>Linux</h4>
+<h4 id="linux">Linux</h4>
 <ul>
 <li>起動方法<br>
 ソースからビルドして実行してください。ビルドの仕方については開発者情報の章を参照してください。</li>
 <li>設定、各種ファイル生成場所<br>
 ~/.pc6001vxフォルダ以下にiniファイル、各種フォルダが生成されます。</li>
 </ul>
-<h4>Android</h4>
+<h4 id="android">Android</h4>
 <ul>
 <li>起動方法<br>
 アプリケーションメニュー内に登録されたPC6001VXのアイコンをタップすると起動します。</li>
 <li>設定、各種ファイル生成場所<br>
 Androidの場合設定ファイルの生成場所は機種依存になり、一概に言えませんが、通常のファイルマネージャではアクセスできない場所に作成されることが多いようです。具体的な場所は環境設定ダイアログで確認してください。</li>
 </ul>
-<h2>使い方</h2>
-<h3>メニュー</h3>
+<h2 id="_6">使い方</h2>
+<h3 id="_7">メニュー</h3>
 <p>エミュレータのメイン画面上でマウスを右クリックするとメニューが表示されます。<br>
 Androidではメイン画面上でロングタップするとメニューが出ます。</p>
 <p><img alt="Menu" src="doc/menu.png"></p>
@@ -281,7 +319,7 @@ PC6001VXに組み込んでいるQtのバージョンを表示します。</p>
 </ul>
 </li>
 </ul>
-<h3>キーボードショートカット</h3>
+<h3 id="_8">キーボードショートカット</h3>
 <ul>
 <li>PC-6001シリーズ特有のキー</li>
 </ul>
@@ -384,7 +422,7 @@ PC6001VXに組み込んでいるQtのバージョンを表示します。</p>
 </tr>
 </tbody>
 </table>
-<h3>マウス操作</h3>
+<h3 id="_9">マウス操作</h3>
 <p>ホイール付きマウスを使用している場合，動作速度の変更が出来ます。<br>
 ホイールUPで増速，ホイールDOWNで減速，左クリックで等速に戻ります。<br>
 動作速度の変化量は2倍速までが10%単位，2倍速を超えると100%単位です。  </p>
@@ -414,7 +452,7 @@ PC6001VXに組み込んでいるQtのバージョンを表示します。</p>
 </tr>
 </tbody>
 </table>
-<h3>環境設定</h3>
+<h3 id="_10">環境設定</h3>
 <p>メニューの[設定]-[環境設定]を選ぶと、環境設定ダイアログが表示されます。<br>
 設定変更を反映するには再起動が必要です。  </p>
 <ul>
@@ -564,13 +602,13 @@ FDDアクセス時にウェイトを入れるようにします。</li>
 </ul>
 </li>
 </ul>
-<h2>開発者情報</h2>
-<h3>ライセンス</h3>
+<h2 id="_11">開発者情報</h2>
+<h3 id="_12">ライセンス</h3>
 <p>ライセンスはオリジナルのPC6001Vのライセンスに従い、LGPLとします。<br>
 ただし、FMGEN部分に関してはCISC様(<a href="http://retropc.net/cisc/m88/">http://retropc.net/cisc/m88/</a>)の設定されたライセンスに従います。この部分はフリーウェアにのみ使用を許可されています。<br>
 このプログラムを使用したことによるいかなる損害も作者のeighttailsは責任を持ちません。</p>
-<h3>ビルド方法</h3>
-<h4>Windows</h4>
+<h3 id="_13">ビルド方法</h3>
+<h4 id="windows_1">Windows</h4>
 <p>MSYS2環境上でビルドします。</p>
 <ol>
 <li>DirectX SDK June 2010(<a href="https://www.microsoft.com/en-us/download/details.aspx?id=6812">https://www.microsoft.com/en-us/download/details.aspx?id=6812</a>)をインストールする。</li>
@@ -588,7 +626,7 @@ QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/lo
 <li><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。</li>
 <li>自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。</li>
 </ol>
-<h4>Linux</h4>
+<h4 id="linux_1">Linux</h4>
 <p>Debian系のディストリビューションについて解説します。</p>
 <ol>
 <li><code>apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev</code> を実行。  </li>
@@ -596,20 +634,21 @@ QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/lo
 <li>PC6001VX.proをQtCreatorで開いてビルドしてください。<br>
 IDEが嫌な人はQtCreatorの代わりにqmakeとqtライブラリを揃えればビルドできるでしょう。</li>
 </ol>
-<h4>Android</h4>
+<h4 id="android_1">Android</h4>
 <p>こちらを参考にして環境を構築してください。<br>
 <a href="http://qt-project.org/doc/qtcreator/creator-developing-android.html">http://qt-project.org/doc/qtcreator/creator-developing-android.html</a></p>
-<h2>既知の不具合、制約事項</h2>
+<h2 id="_14">既知の不具合、制約事項</h2>
 <ul>
 <li>起動するたびにシステムの音量を変えてしまうことがあります。
 Qt5の音量制御周りはまだあまり枯れていないようです。</li>
 <li>X11では、なぜかかなキー(PAUSE)の利きが悪いです。</li>
 </ul>
-<h2>更新履歴</h2>
+<h2 id="_15">更新履歴</h2>
 <p>■Git master(リリース前の最新版)</p>
 <ul>
 <li>ALWAYSFULLSCREENフラグを付加してビルドした場合にファイルダイアログ、設定ダイアログもフルスクリーンになるようにした。(PocketChipなどの低解像度デバイス用)</li>
 <li>(Windows)ビルド手順を更新。MSYS2のバージョンを固定する運用を推奨。</li>
+<li>(UNIX)Linux以外のUNIXでビルドできるようにproファイルを修正</li>
 </ul>
 <p>■2.30.0 2016/08/27</p>
 <ul>
@@ -880,7 +919,7 @@ CPU使用率も下がって、サウンドのバッファアンダーフロー�
 <ul>
 <li>初リリース。　P6V1.13ベース</li>
 </ul>
-<h2>謝辞</h2>
+<h2 id="_16">謝辞</h2>
 <p>オリジナルのPC6001Vを製作され、移植を快諾してくださったゆみたろ様、<br>
 Mac版を通じ、移植の障害を取り除いてくれていたであろうWindy様、<br>
 Qtについて勉強する機会を提供してくださった関東Qt勉強会および元NOKIAのエンジニアの皆様、<br>

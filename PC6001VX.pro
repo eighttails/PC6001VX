@@ -35,6 +35,7 @@ DEFINES += QTP6VX
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
+#Configuration for UNIX variants
 linux|unix {
 #Configuration for Android
 android {
@@ -76,9 +77,7 @@ RC_ICONS += src/win32/PC6001VX.ico
 
 !contains(DEFINES, NOJOYSTICK) {
 win32 {
-#On Windows, referes SDL_DIR environment variable to search SDL2
-QMAKE_CXXFLAGS += -I$$(SDL_DIR)/include -Dmain=SDL_main
-LIBS += -L$$(SDL_DIR)/lib -lmingw32 -lSDL2main -lSDL2 -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -luuid
+LIBS += -lmingw32 -lSDL2main -lSDL2 -lversion -mwindows
 }
 linux|unix {
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)

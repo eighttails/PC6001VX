@@ -4,7 +4,9 @@ sudo apt-get install libssl-dev libcurl4-openssl-dev libgpgme11-dev libtool buil
 sudo apt-get build-dep gdb
 
 #コマンドのエイリアス
-makeparallel='nice -n 19 make -j3'
+NUM_OF_PROCESSORS=`getconf _NPROCESSORS_ONLN`
+PARALLEL_JOBS=`expr $NUM_OF_PROCESSORS \* 2`
+makeparallel="nice -n 19 make -j$PARALLEL_JOBS"
 makeinstall='make install'
 
 #カレントディレクトリ
@@ -23,8 +25,6 @@ FIRSTRUN=1
 else
 FIRSTRUN=0
 fi
-	
-
 
 #sdk_installer_openpandora_toolchain.sh中の
 #pandora_configure.sh
@@ -103,9 +103,9 @@ fi #if [ $FIRSTRUN -eq 1 ]
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt551-release
+QT_INSTALLNAME=qt561-release
 
-QT_MAJOR_VER=5.5
+QT_MAJOR_VER=5.6
 QT_VER=$QT_MAJOR_VER.1
 QT_FULL_VER=$QT_VER
 #QT_RELEASE=development_releases
@@ -139,10 +139,11 @@ sed -i -e "s|\$\$PNDSDK|$HOME/pandora-dev/arm|" qtbase/mkspecs/linux-pandora-g++
 
 cd $SDKHOME/$QT_INSTALLNAME
 #make confclean -j3
-../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -opengl es2 -c++11 -qpa xcb -qt-xcb -no-xinput2 -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtwebkit-examples -skip qtlocation -continue -silent
+../$QT_SOURCE_NAME/configure -opensource -confirm-license -prefix $PNDSDK/usr/local/$QT_INSTALLNAME -xplatform linux-pandora-g++ -static -opengl es2 -c++11 -qpa xcb -qt-xcb -no-xinput2 -no-icu -no-pulseaudio -no-sql-sqlite -nomake examples -skip qtlocation -continue -silent
+
 
 #echo "Hit Enter.";read Wait
 #並列ビルドの場合依存関係でビルドに失敗することがあるので2回までmakeする。
-$makeparallel || $makeparallel && rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME && $makeinstall
+$makeparallel || $makeparallel && rm -rf $PNDSDK/usr/local/$QT_INSTALLNAME || $makeinstall
 ln -snf $PNDSDK/usr/local/$QT_INSTALLNAME $PNDSDK/usr/local/qt5
 

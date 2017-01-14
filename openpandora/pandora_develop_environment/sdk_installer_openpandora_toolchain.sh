@@ -99,44 +99,46 @@
 # installed.
 PNDSDK_DIR=$HOME/pandora-dev
 
-
-# Don't edit the line below, it depends on the codesourcery toolchain!
-#PNDSDK=$PNDSDK_DIR/arm-2009q3
-PNDSDK=$PNDSDK_DIR/arm-2010q1
-
-#PNDSDK=$PNDSDK_DIR/arm-2010.09
-#PNDSDK=$PNDSDK_DIR/arm-2011.03
-#PNDSDK=$PNDSDK_DIR/arm-2011.09
-
-#PNDSDK=$PNDSDK_DIR/arm-2012.03
-USEFUL_TOOLS_DIR=$PNDSDK_DIR/sdk_utils
-
 TARGET_SYS=arm-none-linux-gnueabi
 
 # Programs to download and their checksums.
+#PNDSDK=$PNDSDK_DIR/arm-2009q3
 #TOOLCHAIN_URL=http://www.codesourcery.com/sgpp/lite/arm/portal/package5383/public/arm-none-linux-gnueabi/arm-2009q3-67-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_TARBALL_NAME=arm-2009q3-67-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_MD5=2c2b324f0a84916afd9920029286eb10
 
+PNDSDK=$PNDSDK_DIR/arm-2010q1
 TOOLCHAIN_URL=https://sourcery.mentor.com/GNUToolchain/package6488/public/arm-none-linux-gnueabi/arm-2010q1-202-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 TOOLCHAIN_TARBALL_NAME=arm-2010q1-202-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 TOOLCHAIN_MD5=c6930d14801b4fab6705d72df013e58b
 
+#PNDSDK=$PNDSDK_DIR/arm-2010.09
 #TOOLCHAIN_URL=http://www.codesourcery.com/sgpp/lite/arm/portal/package7851/public/arm-none-linux-gnueabi/arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_TARBALL_NAME=arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_MD5=f9dbd7a2daf20724e013cc4b5b64d62f
 
+#PNDSDK=$PNDSDK_DIR/arm-2011.03
 #TOOLCHAIN_URL=http://www.codesourcery.com/sgpp/lite/arm/portal/package8739/public/arm-none-linux-gnueabi/arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_TARBALL_NAME=arm-2011.03-41-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_MD5=63d93a9f7fe9ff007bc69adfadc7c4ab
 
+#PNDSDK=$PNDSDK_DIR/arm-2011.09
 #TOOLCHAIN_URL=http://sourcery.mentor.com/sgpp/lite/arm/portal/package9728/public/arm-none-linux-gnueabi/arm-2011.09-70-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_TARBALL_NAME=arm-2011.09-70-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_MD5=56d9a77654d012914e703dc8d9383246
 
+#PNDSDK=$PNDSDK_DIR/arm-2012.03
 #TOOLCHAIN_URL=https://sourcery.mentor.com/GNUToolchain/package10380/public/arm-none-linux-gnueabi/arm-2012.03-57-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_TARBALL_NAME=arm-2012.03-57-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
 #TOOLCHAIN_MD5=b9cd2e553eb7063691fed235c6bb815a
+
+#PNDSDK=$PNDSDK_DIR/arm-2014.05
+#TOOLCHAIN_URL=https://sourcery.mentor.com/GNUToolchain/package12813/public/arm-none-linux-gnueabi/arm-2014.05-29-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+#TOOLCHAIN_TARBALL_NAME=arm-2014.05-29-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+#TOOLCHAIN_MD5=5755949e3a50d23a3c729c6ef9fdebb9
+
+USEFUL_TOOLS_DIR=$PNDSDK_DIR/sdk_utils
+
 
 OPKG_VERSION=opkg-0.1.8
 OPKG_ARCHIVE_MD5=c714ce0e4863bf1315e3b6913ffe3299
@@ -273,7 +275,7 @@ download_opkg()
 	cecho "Checking if opkg is available, download it if needed" $green
 	if [ ! -f "$TMPDIR/$OPKG_ARCHIVE" ]
 	then
-		wget -O $TMPDIR/$OPKG_ARCHIVE http://opkg.googlecode.com/files/$OPKG_ARCHIVE
+		wget -O $TMPDIR/$OPKG_ARCHIVE https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/opkg/$OPKG_ARCHIVE
 		check_wget_error
 	fi
 }

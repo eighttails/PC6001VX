@@ -60,9 +60,9 @@ rm $PNDSDK/usr/lib/*.la
 
 #gdb(pythonサポート付き)
 cd $SDKHOME
-wget -c http://ftp.gnu.org/gnu/gdb/gdb-7.7.1.tar.gz -P $INSTALLER_DIR/tmp
-tar xf $INSTALLER_DIR/tmp/gdb-7.7.1.tar.gz
-cd gdb-7.7.1
+wget -c http://ftp.gnu.org/gnu/gdb/gdb-7.12.tar.gz -P $INSTALLER_DIR/tmp
+tar xf $INSTALLER_DIR/tmp/gdb-7.12.tar.gz
+cd gdb-7.12
 ./configure --prefix=$PNDSDK/usr/local/gdb-with-python --target=arm-linux-gnueabi --with-python
 $makeparallel && $makeinstall
 
@@ -103,10 +103,10 @@ fi #if [ $FIRSTRUN -eq 1 ]
 
 #Qt
 #インストールに使用するフォルダの名前。「qt5」という名前にしてはならない。
-QT_INSTALLNAME=qt561-release
+QT_INSTALLNAME=qt562-release
 
 QT_MAJOR_VER=5.6
-QT_VER=$QT_MAJOR_VER.1
+QT_VER=$QT_MAJOR_VER.2
 QT_FULL_VER=$QT_VER
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases

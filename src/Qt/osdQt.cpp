@@ -256,6 +256,7 @@ const char *MsgIni[] = {
 	QT_TRANSLATE_NOOP("PC6001VX", "オーバークロック率 (1-1000)%"),
 	QT_TRANSLATE_NOOP("PC6001VX", "CRCチェック Yes:有効 No:無効"),
 	QT_TRANSLATE_NOOP("PC6001VX", "ROMパッチ Yes:あてる No:あてない"),
+	QT_TRANSLATE_NOOP("PC6001VX", "FDDアクセスウェイト Yes:有効 No:無効"),
 	// [DISPLAY]
 	QT_TRANSLATE_NOOP("PC6001VX", "MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク"),
 	QT_TRANSLATE_NOOP("PC6001VX", "スキャンライン Yes:あり No:なし"),

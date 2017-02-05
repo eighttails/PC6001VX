@@ -77,7 +77,8 @@ RC_ICONS += src/win32/PC6001VX.ico
 
 !contains(DEFINES, NOJOYSTICK) {
 win32 {
-LIBS += -lmingw32 -lSDL2main -lSDL2 -lversion -mwindows
+LIBS += -lmingw32 -lSDL2main -lSDL2 -mwindows -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 \
+-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -static-libgcc
 }
 unix {
 QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)

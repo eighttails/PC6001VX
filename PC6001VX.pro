@@ -50,12 +50,16 @@ QT += x11extras
 DEPLOY_PATH = /media/sddev/pc6001vx
 target.path = $${DEPLOY_PATH}
 sharedlibs.path = $${DEPLOY_PATH}
-sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6* \
-                    $${PANDORA_SDK}/usr/lib/libX11-xcb.so.1* \
-                    $${PANDORA_SDK}/usr/lib/libxcb.so.1*
+sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6 \
+                    $${PANDORA_SDK}/usr/lib/libX11.so.6.3.0 \
+                    $${PANDORA_SDK}/usr/lib/libX11-xcb.so.1 \
+                    $${PANDORA_SDK}/usr/lib/libX11-xcb.so.1.0.0 \
+                    $${PANDORA_SDK}/usr/lib/libxcb.so.1 \
+                    $${PANDORA_SDK}/usr/lib/libxcb.so.1.1.0
+
 QMAKE_LFLAGS += $${QMAKE_LFLAGS_RPATH}$${DEPLOY_PATH}
 INSTALLS += target sharedlibs
-DEFINES += NOJOYSTICK NOOPENGL NOMONITOR NOAVI
+DEFINES += NOOPENGL NOJOYSTICK NOMONITOR NOAVI
 #QTPLUGIN += qxcb qeglfs
 }
 !android:!pandora {

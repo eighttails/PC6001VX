@@ -1,0 +1,827 @@
+From 24a1c04b69cec2d7aff70b4dc7e44a19313c62bf Mon Sep 17 00:00:00 2001
+From: Lars Knoll <lars.knoll@qt.io>
+Date: Mon, 21 Nov 2016 10:43:06 +0100
+Subject: [PATCH] Add proper global headers for QtMultimedia
+
+And deprecate the old qtmultimediadefs.h
+
+Change-Id: I2d4164f3a51d8e5d1813413b4f6691a721386fdf
+Reviewed-by: Yoann Lopes <yoann.lopes@qt.io>
+---
+ src/multimedia/audio/qaudio.h                      |  2 +-
+ src/multimedia/audio/qaudiobuffer.h                |  2 +-
+ src/multimedia/audio/qaudiobuffer_p.h              |  2 +-
+ src/multimedia/audio/qaudiodevicefactory_p.h       |  2 +-
+ src/multimedia/audio/qaudiodeviceinfo.h            |  2 +-
+ src/multimedia/audio/qaudioformat.h                |  2 +-
+ src/multimedia/audio/qaudioinput.h                 |  2 +-
+ src/multimedia/audio/qaudiooutput.h                |  2 +-
+ src/multimedia/audio/qaudiosystem.h                |  2 +-
+ src/multimedia/audio/qaudiosystemplugin.h          |  2 +-
+ src/multimedia/audio/qaudiosystempluginext_p.h     |  2 +-
+ src/multimedia/audio/qsound.h                      |  2 +-
+ src/multimedia/audio/qsoundeffect.h                |  2 +-
+ src/multimedia/camera/qcameraviewfindersettings.h  |  2 +-
+ src/multimedia/controls/qmediastreamscontrol.h     |  2 +-
+ src/multimedia/controls/qmetadatareadercontrol.h   |  2 +-
+ src/multimedia/controls/qmetadatawritercontrol.h   |  2 +-
+ src/multimedia/controls/qradiodatacontrol.cpp      |  2 +-
+ src/multimedia/controls/qradiotunercontrol.cpp     |  2 +-
+ src/multimedia/multimedia.pro                      |  5 +-
+ src/multimedia/playback/playlistfileparser_p.h     |  2 +-
+ src/multimedia/playback/qmediacontent.h            |  2 +-
+ src/multimedia/playback/qmediaplaylistioplugin_p.h |  2 +-
+ src/multimedia/playback/qmediaresource.h           |  2 +-
+ src/multimedia/qmediacontrol.h                     |  2 +-
+ src/multimedia/qmediacontrol_p.h                   |  2 +-
+ src/multimedia/qmediametadata.h                    |  2 +-
+ src/multimedia/qmediaobject.h                      |  2 +-
+ src/multimedia/qmediapluginloader_p.h              |  2 +-
+ src/multimedia/qmediaresourcepolicy_p.h            |  2 +-
+ src/multimedia/qmediaresourcepolicyplugin_p.h      |  2 +-
+ src/multimedia/qmediaresourceset_p.h               |  2 +-
+ src/multimedia/qmediaservice.h                     |  2 +-
+ src/multimedia/qmediaserviceprovider_p.h           |  2 +-
+ src/multimedia/qmediaserviceproviderplugin.h       |  2 +-
+ src/multimedia/qmediastoragelocation_p.h           |  2 +-
+ src/multimedia/qmediatimerange.h                   |  2 +-
+ src/multimedia/qmultimedia.h                       |  2 +-
+ src/multimedia/qtmultimediaglobal.h                | 59 ++++++++++++++++++++++
+ src/multimedia/qtmultimediaglobal_p.h              | 58 +++++++++++++++++++++
+ src/multimedia/recording/qmediaencodersettings.h   |  2 +-
+ src/multimedia/video/qabstractvideobuffer.h        |  2 +-
+ src/multimedia/video/qabstractvideobuffer_p.h      |  2 +-
+ .../video/qvideooutputorientationhandler_p.h       |  2 +-
+ src/plugins/avfoundation/camera/avfcameradebug.h   |  2 +-
+ .../avfoundation/camera/avfstoragelocation.h       |  2 +-
+ sync.profile                                       |  6 ++-
+ .../qgraphicsvideoitem/tst_qgraphicsvideoitem.cpp  |  2 +-
+ tests/auto/unit/qvideowidget/tst_qvideowidget.cpp  |  2 +-
+ 49 files changed, 170 insertions(+), 48 deletions(-)
+ create mode 100644 src/multimedia/qtmultimediaglobal.h
+ create mode 100644 src/multimedia/qtmultimediaglobal_p.h
+
+diff --git a/src/multimedia/audio/qaudio.h b/src/multimedia/audio/qaudio.h
+index 457a3b6..1c38e9f 100644
+--- a/src/multimedia/audio/qaudio.h
++++ b/src/multimedia/audio/qaudio.h
+@@ -41,7 +41,7 @@
+ #ifndef QAUDIO_H
+ #define QAUDIO_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ #include <QtCore/qmetatype.h>
+diff --git a/src/multimedia/audio/qaudiobuffer.h b/src/multimedia/audio/qaudiobuffer.h
+index c45b56e..bed3874 100644
+--- a/src/multimedia/audio/qaudiobuffer.h
++++ b/src/multimedia/audio/qaudiobuffer.h
+@@ -42,7 +42,7 @@
+ 
+ #include <QtCore/qshareddata.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ #include <QtMultimedia/qaudio.h>
+diff --git a/src/multimedia/audio/qaudiobuffer_p.h b/src/multimedia/audio/qaudiobuffer_p.h
+index 06233ca..e770989 100644
+--- a/src/multimedia/audio/qaudiobuffer_p.h
++++ b/src/multimedia/audio/qaudiobuffer_p.h
+@@ -51,7 +51,7 @@
+ // We mean it.
+ //
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include <qmultimedia.h>
+ 
+ #include "qaudioformat.h"
+diff --git a/src/multimedia/audio/qaudiodevicefactory_p.h b/src/multimedia/audio/qaudiodevicefactory_p.h
+index 7ad5e4e..238be46 100644
+--- a/src/multimedia/audio/qaudiodevicefactory_p.h
++++ b/src/multimedia/audio/qaudiodevicefactory_p.h
+@@ -54,7 +54,7 @@
+ #include <QtCore/qbytearray.h>
+ #include <QtCore/qlist.h>
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include <qmultimedia.h>
+ 
+ #include "qaudiodeviceinfo.h"
+diff --git a/src/multimedia/audio/qaudiodeviceinfo.h b/src/multimedia/audio/qaudiodeviceinfo.h
+index 709e683..390458b 100644
+--- a/src/multimedia/audio/qaudiodeviceinfo.h
++++ b/src/multimedia/audio/qaudiodeviceinfo.h
+@@ -47,7 +47,7 @@
+ #include <QtCore/qstringlist.h>
+ #include <QtCore/qlist.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ #include <QtMultimedia/qaudio.h>
+diff --git a/src/multimedia/audio/qaudioformat.h b/src/multimedia/audio/qaudioformat.h
+index 2ae6d6a..97779ea 100644
+--- a/src/multimedia/audio/qaudioformat.h
++++ b/src/multimedia/audio/qaudioformat.h
+@@ -44,7 +44,7 @@
+ #include <QtCore/qobject.h>
+ #include <QtCore/qshareddata.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/multimedia/audio/qaudioinput.h b/src/multimedia/audio/qaudioinput.h
+index d1a5842..5794276 100644
+--- a/src/multimedia/audio/qaudioinput.h
++++ b/src/multimedia/audio/qaudioinput.h
+@@ -43,7 +43,7 @@
+ 
+ #include <QtCore/qiodevice.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ #include <QtMultimedia/qaudio.h>
+diff --git a/src/multimedia/audio/qaudiooutput.h b/src/multimedia/audio/qaudiooutput.h
+index fab562a..9f81727 100644
+--- a/src/multimedia/audio/qaudiooutput.h
++++ b/src/multimedia/audio/qaudiooutput.h
+@@ -43,7 +43,7 @@
+ 
+ #include <QtCore/qiodevice.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ #include <QtMultimedia/qaudio.h>
+diff --git a/src/multimedia/audio/qaudiosystem.h b/src/multimedia/audio/qaudiosystem.h
+index 1a92758..dabf8df 100644
+--- a/src/multimedia/audio/qaudiosystem.h
++++ b/src/multimedia/audio/qaudiosystem.h
+@@ -40,7 +40,7 @@
+ #ifndef QAUDIOSYSTEM_H
+ #define QAUDIOSYSTEM_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ #include <QtMultimedia/qaudio.h>
+diff --git a/src/multimedia/audio/qaudiosystemplugin.h b/src/multimedia/audio/qaudiosystemplugin.h
+index b26b2a3..3368c9b 100644
+--- a/src/multimedia/audio/qaudiosystemplugin.h
++++ b/src/multimedia/audio/qaudiosystemplugin.h
+@@ -44,7 +44,7 @@
+ #include <QtCore/qstring.h>
+ #include <QtCore/qplugin.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ #include <QtMultimedia/qaudioformat.h>
+diff --git a/src/multimedia/audio/qaudiosystempluginext_p.h b/src/multimedia/audio/qaudiosystempluginext_p.h
+index 380bc5a..6493b7f 100644
+--- a/src/multimedia/audio/qaudiosystempluginext_p.h
++++ b/src/multimedia/audio/qaudiosystempluginext_p.h
+@@ -40,7 +40,7 @@
+ #ifndef QAUDIOSYSTEMPLUGINEXT_P_H
+ #define QAUDIOSYSTEMPLUGINEXT_P_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qaudio.h>
+ #include <QtCore/qplugin.h>
+ 
+diff --git a/src/multimedia/audio/qsound.h b/src/multimedia/audio/qsound.h
+index f8d4767..304019c 100644
+--- a/src/multimedia/audio/qsound.h
++++ b/src/multimedia/audio/qsound.h
+@@ -40,7 +40,7 @@
+ #ifndef QSOUND_H
+ #define QSOUND_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtCore/qobject.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/multimedia/audio/qsoundeffect.h b/src/multimedia/audio/qsoundeffect.h
+index f59c4d9..7420d7b 100644
+--- a/src/multimedia/audio/qsoundeffect.h
++++ b/src/multimedia/audio/qsoundeffect.h
+@@ -40,7 +40,7 @@
+ #ifndef QSOUNDEFFECT_H
+ #define QSOUNDEFFECT_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtCore/qobject.h>
+ #include <QtCore/qurl.h>
+ #include <QtCore/qstringlist.h>
+diff --git a/src/multimedia/camera/qcameraviewfindersettings.h b/src/multimedia/camera/qcameraviewfindersettings.h
+index df544dd..432bdcf 100644
+--- a/src/multimedia/camera/qcameraviewfindersettings.h
++++ b/src/multimedia/camera/qcameraviewfindersettings.h
+@@ -40,7 +40,7 @@
+ #ifndef QCAMERAVIEWFINDERSETTINGS_H
+ #define QCAMERAVIEWFINDERSETTINGS_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qvideoframe.h>
+ 
+ #include <QtCore/qshareddata.h>
+diff --git a/src/multimedia/controls/qmediastreamscontrol.h b/src/multimedia/controls/qmediastreamscontrol.h
+index ea12dd1..3c36e96 100644
+--- a/src/multimedia/controls/qmediastreamscontrol.h
++++ b/src/multimedia/controls/qmediastreamscontrol.h
+@@ -43,7 +43,7 @@
+ 
+ #include <QtMultimedia/qmediacontrol.h>
+ #include <QtMultimedia/qmultimedia.h>
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmediaenumdebug.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/multimedia/controls/qmetadatareadercontrol.h b/src/multimedia/controls/qmetadatareadercontrol.h
+index 9162d64..455ce81 100644
+--- a/src/multimedia/controls/qmetadatareadercontrol.h
++++ b/src/multimedia/controls/qmetadatareadercontrol.h
+@@ -45,7 +45,7 @@
+ 
+ #include <QtMultimedia/qmediaresource.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/multimedia/controls/qmetadatawritercontrol.h b/src/multimedia/controls/qmetadatawritercontrol.h
+index 1c2f4cf..da3413f 100644
+--- a/src/multimedia/controls/qmetadatawritercontrol.h
++++ b/src/multimedia/controls/qmetadatawritercontrol.h
+@@ -45,7 +45,7 @@
+ 
+ #include <QtMultimedia/qmediaresource.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/multimedia/controls/qradiodatacontrol.cpp b/src/multimedia/controls/qradiodatacontrol.cpp
+index 59c7c8c..eaa9aae 100644
+--- a/src/multimedia/controls/qradiodatacontrol.cpp
++++ b/src/multimedia/controls/qradiodatacontrol.cpp
+@@ -37,7 +37,7 @@
+ **
+ ****************************************************************************/
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include "qradiodatacontrol.h"
+ #include "qmediacontrol_p.h"
+ 
+diff --git a/src/multimedia/controls/qradiotunercontrol.cpp b/src/multimedia/controls/qradiotunercontrol.cpp
+index 5e5c1d5..8b9e865 100644
+--- a/src/multimedia/controls/qradiotunercontrol.cpp
++++ b/src/multimedia/controls/qradiotunercontrol.cpp
+@@ -37,7 +37,7 @@
+ **
+ ****************************************************************************/
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include "qradiotunercontrol.h"
+ #include "qmediacontrol_p.h"
+ 
+diff --git a/src/multimedia/multimedia.pro b/src/multimedia/multimedia.pro
+index 761e488..0f3f3ff 100644
+--- a/src/multimedia/multimedia.pro
++++ b/src/multimedia/multimedia.pro
+@@ -15,6 +15,7 @@ QMAKE_DOCS = $$PWD/doc/qtmultimedia.qdocconf
+ INCLUDEPATH *= .
+ 
+ PRIVATE_HEADERS += \
++    qtmultimediaglobal_p.h \
+     qmediacontrol_p.h \
+     qmediaobject_p.h \
+     qmediapluginloader_p.h \
+@@ -28,6 +29,7 @@ PRIVATE_HEADERS += \
+     qmultimediautils_p.h
+ 
+ PUBLIC_HEADERS += \
++    qtmultimediaglobal.h \
+     qmediabindableinterface.h \
+     qmediacontrol.h \
+     qmediaenumdebug.h \
+@@ -36,8 +38,7 @@ PUBLIC_HEADERS += \
+     qmediaservice.h \
+     qmediaserviceproviderplugin.h \
+     qmediatimerange.h \
+-    qmultimedia.h \
+-    qtmultimediadefs.h \
++    qmultimedia.h
+ 
+ SOURCES += \
+     qmediabindableinterface.cpp \
+diff --git a/src/multimedia/playback/playlistfileparser_p.h b/src/multimedia/playback/playlistfileparser_p.h
+index 353da3e..bdf95fe 100644
+--- a/src/multimedia/playback/playlistfileparser_p.h
++++ b/src/multimedia/playback/playlistfileparser_p.h
+@@ -51,7 +51,7 @@
+ // We mean it.
+ //
+ 
+-#include "qtmultimediadefs.h"
++#include "qtmultimediaglobal.h"
+ #include <QtNetwork/QNetworkRequest>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/multimedia/playback/qmediacontent.h b/src/multimedia/playback/qmediacontent.h
+index 25db6ec..f7c0867 100644
+--- a/src/multimedia/playback/qmediacontent.h
++++ b/src/multimedia/playback/qmediacontent.h
+@@ -45,7 +45,7 @@
+ 
+ #include <QtMultimedia/qmediaresource.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/multimedia/playback/qmediaplaylistioplugin_p.h b/src/multimedia/playback/qmediaplaylistioplugin_p.h
+index 62bb675..73281b2 100644
+--- a/src/multimedia/playback/qmediaplaylistioplugin_p.h
++++ b/src/multimedia/playback/qmediaplaylistioplugin_p.h
+@@ -54,7 +54,7 @@
+ #include <QtCore/qobject.h>
+ #include <QtCore/qplugin.h>
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ 
+ #include "qmediacontent.h"
+ 
+diff --git a/src/multimedia/playback/qmediaresource.h b/src/multimedia/playback/qmediaresource.h
+index 83f998e..9740166 100644
+--- a/src/multimedia/playback/qmediaresource.h
++++ b/src/multimedia/playback/qmediaresource.h
+@@ -44,7 +44,7 @@
+ #include <QtCore/qmetatype.h>
+ #include <QtNetwork/qnetworkrequest.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/multimedia/qmediacontrol.h b/src/multimedia/qmediacontrol.h
+index 3c95444..680b18e 100644
+--- a/src/multimedia/qmediacontrol.h
++++ b/src/multimedia/qmediacontrol.h
+@@ -40,7 +40,7 @@
+ #ifndef QABSTRACTMEDIACONTROL_H
+ #define QABSTRACTMEDIACONTROL_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ 
+ #include <QtCore/qobject.h>
+ #include <QtCore/qstring.h>
+diff --git a/src/multimedia/qmediacontrol_p.h b/src/multimedia/qmediacontrol_p.h
+index 948f9fd..e9827fd 100644
+--- a/src/multimedia/qmediacontrol_p.h
++++ b/src/multimedia/qmediacontrol_p.h
+@@ -51,7 +51,7 @@
+ // We mean it.
+ //
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/multimedia/qmediametadata.h b/src/multimedia/qmediametadata.h
+index 2fb49c8..8d87444 100644
+--- a/src/multimedia/qmediametadata.h
++++ b/src/multimedia/qmediametadata.h
+@@ -44,7 +44,7 @@
+ #include <QtCore/qmetatype.h>
+ #include <QtCore/qstring.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/multimedia/qmediaobject.h b/src/multimedia/qmediaobject.h
+index efd89f8..5788254 100644
+--- a/src/multimedia/qmediaobject.h
++++ b/src/multimedia/qmediaobject.h
+@@ -43,7 +43,7 @@
+ #include <QtCore/qobject.h>
+ #include <QtCore/qstringlist.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/multimedia/qmediapluginloader_p.h b/src/multimedia/qmediapluginloader_p.h
+index 9798f2a..a4e7265 100644
+--- a/src/multimedia/qmediapluginloader_p.h
++++ b/src/multimedia/qmediapluginloader_p.h
+@@ -51,7 +51,7 @@
+ // We mean it.
+ //
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include <QtCore/qobject.h>
+ #include <QtCore/qstring.h>
+ #include <QtCore/qstringlist.h>
+diff --git a/src/multimedia/qmediaresourcepolicy_p.h b/src/multimedia/qmediaresourcepolicy_p.h
+index bfc89df..13e3f49 100644
+--- a/src/multimedia/qmediaresourcepolicy_p.h
++++ b/src/multimedia/qmediaresourcepolicy_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QObject>
+-#include "qtmultimediadefs.h"
++#include "qtmultimediaglobal.h"
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/multimedia/qmediaresourcepolicyplugin_p.h b/src/multimedia/qmediaresourcepolicyplugin_p.h
+index 66cef02..7b53c3b 100644
+--- a/src/multimedia/qmediaresourcepolicyplugin_p.h
++++ b/src/multimedia/qmediaresourcepolicyplugin_p.h
+@@ -52,7 +52,7 @@
+ //
+ 
+ #include <QObject>
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/multimedia/qmediaresourceset_p.h b/src/multimedia/qmediaresourceset_p.h
+index 1df6e19..a015887 100644
+--- a/src/multimedia/qmediaresourceset_p.h
++++ b/src/multimedia/qmediaresourceset_p.h
+@@ -51,7 +51,7 @@
+ // We mean it.
+ //
+ #include <QObject>
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/multimedia/qmediaservice.h b/src/multimedia/qmediaservice.h
+index 64fe63b..9e653b2 100644
+--- a/src/multimedia/qmediaservice.h
++++ b/src/multimedia/qmediaservice.h
+@@ -40,7 +40,7 @@
+ #ifndef QABSTRACTMEDIASERVICE_H
+ #define QABSTRACTMEDIASERVICE_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtCore/qobject.h>
+ #include <QtCore/qstringlist.h>
+ 
+diff --git a/src/multimedia/qmediaserviceprovider_p.h b/src/multimedia/qmediaserviceprovider_p.h
+index 63e1bdd..4ca9c9e 100644
+--- a/src/multimedia/qmediaserviceprovider_p.h
++++ b/src/multimedia/qmediaserviceprovider_p.h
+@@ -53,7 +53,7 @@
+ 
+ #include <QtCore/qobject.h>
+ #include <QtCore/qshareddata.h>
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include "qmultimedia.h"
+ #include "qmediaserviceproviderplugin.h"
+ 
+diff --git a/src/multimedia/qmediaserviceproviderplugin.h b/src/multimedia/qmediaserviceproviderplugin.h
+index 6cdc18d..43fe55d 100644
+--- a/src/multimedia/qmediaserviceproviderplugin.h
++++ b/src/multimedia/qmediaserviceproviderplugin.h
+@@ -43,7 +43,7 @@
+ #include <QtCore/qstringlist.h>
+ #include <QtCore/qplugin.h>
+ #include <QtMultimedia/qmultimedia.h>
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qcamera.h>
+ 
+ #ifdef Q_MOC_RUN
+diff --git a/src/multimedia/qmediastoragelocation_p.h b/src/multimedia/qmediastoragelocation_p.h
+index 29e6a57..13399b5 100644
+--- a/src/multimedia/qmediastoragelocation_p.h
++++ b/src/multimedia/qmediastoragelocation_p.h
+@@ -51,7 +51,7 @@
+ // We mean it.
+ //
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include <QDir>
+ #include <QMap>
+ #include <QHash>
+diff --git a/src/multimedia/qmediatimerange.h b/src/multimedia/qmediatimerange.h
+index a9eab24..0b4fe8e 100644
+--- a/src/multimedia/qmediatimerange.h
++++ b/src/multimedia/qmediatimerange.h
+@@ -40,7 +40,7 @@
+ #ifndef QMEDIATIMERANGE_H
+ #define QMEDIATIMERANGE_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ #include <QtCore/qshareddata.h>
+ 
+diff --git a/src/multimedia/qmultimedia.h b/src/multimedia/qmultimedia.h
+index b517b5a..a3dbc5e 100644
+--- a/src/multimedia/qmultimedia.h
++++ b/src/multimedia/qmultimedia.h
+@@ -44,7 +44,7 @@
+ #include <QtCore/qmetatype.h>
+ #include <QtCore/qstring.h>
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+diff --git a/src/multimedia/qtmultimediaglobal.h b/src/multimedia/qtmultimediaglobal.h
+new file mode 100644
+index 0000000..ae11ed2
+--- /dev/null
++++ b/src/multimedia/qtmultimediaglobal.h
+@@ -0,0 +1,59 @@
++/****************************************************************************
++**
++** Copyright (C) 2016 The Qt Company Ltd.
++** Contact: https://www.qt.io/licensing/
++**
++** This file is part of the QtQml module of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and The Qt Company. For licensing terms
++** and conditions see https://www.qt.io/terms-conditions. For further
++** information use the contact form at https://www.qt.io/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 3 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL3 included in the
++** packaging of this file. Please review the following information to
++** ensure the GNU Lesser General Public License version 3 requirements
++** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 2.0 or (at your option) the GNU General
++** Public license version 3 or any later version approved by the KDE Free
++** Qt Foundation. The licenses are as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
++** included in the packaging of this file. Please review the following
++** information to ensure the GNU General Public License requirements will
++** be met: https://www.gnu.org/licenses/gpl-2.0.html and
++** https://www.gnu.org/licenses/gpl-3.0.html.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#ifndef QTMULTIMEDIAGLOBAL_H
++#define QTMULTIMEDIAGLOBAL_H
++
++#include <QtGui/qtguiglobal.h>
++#include <QtMultimedia/qtmultimedia-config.h>
++
++QT_BEGIN_NAMESPACE
++
++#ifndef QT_STATIC
++#    if defined(QT_BUILD_MULTIMEDIA_LIB)
++#        define Q_MULTIMEDIA_EXPORT Q_DECL_EXPORT
++#    else
++#        define Q_MULTIMEDIA_EXPORT Q_DECL_IMPORT
++#    endif
++#else
++#    define Q_MULTIMEDIA_EXPORT
++#endif
++
++QT_END_NAMESPACE
++#endif // QTQMLGLOBAL_H
+diff --git a/src/multimedia/qtmultimediaglobal_p.h b/src/multimedia/qtmultimediaglobal_p.h
+new file mode 100644
+index 0000000..7971420
+--- /dev/null
++++ b/src/multimedia/qtmultimediaglobal_p.h
+@@ -0,0 +1,58 @@
++/****************************************************************************
++**
++** Copyright (C) 2016 The Qt Company Ltd.
++** Contact: https://www.qt.io/licensing/
++**
++** This file is part of the QtQml module of the Qt Toolkit.
++**
++** $QT_BEGIN_LICENSE:LGPL$
++** Commercial License Usage
++** Licensees holding valid commercial Qt licenses may use this file in
++** accordance with the commercial license agreement provided with the
++** Software or, alternatively, in accordance with the terms contained in
++** a written agreement between you and The Qt Company. For licensing terms
++** and conditions see https://www.qt.io/terms-conditions. For further
++** information use the contact form at https://www.qt.io/contact-us.
++**
++** GNU Lesser General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU Lesser
++** General Public License version 3 as published by the Free Software
++** Foundation and appearing in the file LICENSE.LGPL3 included in the
++** packaging of this file. Please review the following information to
++** ensure the GNU Lesser General Public License version 3 requirements
++** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
++**
++** GNU General Public License Usage
++** Alternatively, this file may be used under the terms of the GNU
++** General Public License version 2.0 or (at your option) the GNU General
++** Public license version 3 or any later version approved by the KDE Free
++** Qt Foundation. The licenses are as published by the Free Software
++** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
++** included in the packaging of this file. Please review the following
++** information to ensure the GNU General Public License requirements will
++** be met: https://www.gnu.org/licenses/gpl-2.0.html and
++** https://www.gnu.org/licenses/gpl-3.0.html.
++**
++** $QT_END_LICENSE$
++**
++****************************************************************************/
++
++#ifndef QTMULTIMEDIAGLOBAL_P_H
++#define QTMULTIMEDIAGLOBAL_P_H
++
++//
++//  W A R N I N G
++//  -------------
++//
++// This file is not part of the Qt API.  It exists purely as an
++// implementation detail.  This header file may change from version to
++// version without notice, or even be removed.
++//
++// We mean it.
++//
++
++#include <QtGui/private/qtguiglobal_p.h>
++#include <QtMultimedia/private/qtmultimedia-config_p.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
++
++#endif // QTQMLGLOBAL_P_H
+diff --git a/src/multimedia/recording/qmediaencodersettings.h b/src/multimedia/recording/qmediaencodersettings.h
+index d6f92ca..0d6a9ed 100644
+--- a/src/multimedia/recording/qmediaencodersettings.h
++++ b/src/multimedia/recording/qmediaencodersettings.h
+@@ -44,7 +44,7 @@
+ #include <QtCore/qstring.h>
+ #include <QtCore/qsize.h>
+ #include <QtCore/qvariant.h>
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ QT_BEGIN_NAMESPACE
+diff --git a/src/multimedia/video/qabstractvideobuffer.h b/src/multimedia/video/qabstractvideobuffer.h
+index 7b246a7..dcefdf7 100644
+--- a/src/multimedia/video/qabstractvideobuffer.h
++++ b/src/multimedia/video/qabstractvideobuffer.h
+@@ -40,7 +40,7 @@
+ #ifndef QABSTRACTVIDEOBUFFER_H
+ #define QABSTRACTVIDEOBUFFER_H
+ 
+-#include <QtMultimedia/qtmultimediadefs.h>
++#include <QtMultimedia/qtmultimediaglobal.h>
+ #include <QtMultimedia/qmultimedia.h>
+ 
+ 
+diff --git a/src/multimedia/video/qabstractvideobuffer_p.h b/src/multimedia/video/qabstractvideobuffer_p.h
+index cae018d..6fbd75a 100644
+--- a/src/multimedia/video/qabstractvideobuffer_p.h
++++ b/src/multimedia/video/qabstractvideobuffer_p.h
+@@ -54,7 +54,7 @@
+ #include <QtCore/qshareddata.h>
+ #include "qabstractvideobuffer.h"
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include <qmultimedia.h>
+ 
+ 
+diff --git a/src/multimedia/video/qvideooutputorientationhandler_p.h b/src/multimedia/video/qvideooutputorientationhandler_p.h
+index cf3ddbd..b5cfc08 100644
+--- a/src/multimedia/video/qvideooutputorientationhandler_p.h
++++ b/src/multimedia/video/qvideooutputorientationhandler_p.h
+@@ -51,7 +51,7 @@
+ // We mean it.
+ //
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ 
+ #include <QObject>
+ 
+diff --git a/src/plugins/avfoundation/camera/avfcameradebug.h b/src/plugins/avfoundation/camera/avfcameradebug.h
+index 79bf8eb..8838122 100644
+--- a/src/plugins/avfoundation/camera/avfcameradebug.h
++++ b/src/plugins/avfoundation/camera/avfcameradebug.h
+@@ -40,7 +40,7 @@
+ #ifndef AVFDEBUG_H
+ #define AVFDEBUG_H
+ 
+-#include "qtmultimediadefs.h"
++#include "qtmultimediaglobal.h"
+ 
+ #include <QtCore/qdebug.h>
+ 
+diff --git a/src/plugins/avfoundation/camera/avfstoragelocation.h b/src/plugins/avfoundation/camera/avfstoragelocation.h
+index e3267c1..7662198 100644
+--- a/src/plugins/avfoundation/camera/avfstoragelocation.h
++++ b/src/plugins/avfoundation/camera/avfstoragelocation.h
+@@ -40,7 +40,7 @@
+ #ifndef AVFSTORAGE_H
+ #define AVFSTORAGE_H
+ 
+-#include "qtmultimediadefs.h"
++#include "qtmultimediaglobal.h"
+ 
+ #include <QtCore/qdir.h>
+ #include <QtMultimedia/qcamera.h>
+diff --git a/sync.profile b/sync.profile
+index 0d0eb51..7d02c15 100644
+--- a/sync.profile
++++ b/sync.profile
+@@ -12,7 +12,11 @@
+     "qmediametadata.h" => "QMediaMetaData",
+     "qmultimedia.h" => "QMultimedia"
+ );
+-
++%deprecatedheaders = (
++    "QtMultimedia" =>  {
++        "qtmultimediadefs.h" => "QtMultimedia/qtmultimediaglobal.h"
++    },
++);
+ # Module dependencies.
+ # Every module that is required to build this module should have one entry.
+ # Each of the module version specifiers can take one of the following values:
+diff --git a/tests/auto/unit/qgraphicsvideoitem/tst_qgraphicsvideoitem.cpp b/tests/auto/unit/qgraphicsvideoitem/tst_qgraphicsvideoitem.cpp
+index fb689fb..f4759bb 100644
+--- a/tests/auto/unit/qgraphicsvideoitem/tst_qgraphicsvideoitem.cpp
++++ b/tests/auto/unit/qgraphicsvideoitem/tst_qgraphicsvideoitem.cpp
+@@ -28,7 +28,7 @@
+ 
+ //TESTED_COMPONENT=src/multimedia
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include "qgraphicsvideoitem.h"
+ #include <QtTest/QtTest>
+ #include "qmediaobject.h"
+diff --git a/tests/auto/unit/qvideowidget/tst_qvideowidget.cpp b/tests/auto/unit/qvideowidget/tst_qvideowidget.cpp
+index a1d16e6..3baa722 100644
+--- a/tests/auto/unit/qvideowidget/tst_qvideowidget.cpp
++++ b/tests/auto/unit/qvideowidget/tst_qvideowidget.cpp
+@@ -28,7 +28,7 @@
+ 
+ //TESTED_COMPONENT=src/multimedia
+ 
+-#include <qtmultimediadefs.h>
++#include <qtmultimediaglobal.h>
+ #include <QtTest/QtTest>
+ 
+ #include "qvideowidget.h"
+-- 
+2.9.1
+

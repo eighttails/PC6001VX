@@ -26,7 +26,7 @@
     <message>
         <location filename="../aboutdialog.ui" line="120"/>
         <source>Copyright (c) 2012-2016, Tadahito Yao (@eighttails)</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="130"/>

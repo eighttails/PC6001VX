@@ -1,283 +1,902 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="generator" content="ReText 6.0.2">
-<title>README</title>
-</head>
-<body>
-<p><link href="doc/markdown.css" rel="stylesheet"></link></p>
-<h1 id="pc6001vx">PC6001VX マニュアル</h1>
-<p>by eighttails<br>
-<a href="http://eighttails.seesaa.net">http://eighttails.seesaa.net</a></p>
-<p>目次</p>
-<div class="toc">
-<ul>
-<li><a href="#pc6001vx">PC6001VX マニュアル</a><ul>
-<li><a href="#_1">はじめに</a></li>
-<li><a href="#_2">起動方法</a><ul>
-<li><a href="#_3">必要なもの</a></li>
-<li><a href="#_4">初回起動時の設定</a></li>
-<li><a href="#_5">プラットフォーム固有情報</a><ul>
-<li><a href="#windows">Windows</a></li>
-<li><a href="#linux">Linux</a></li>
-<li><a href="#android">Android</a></li>
+  <html>
+    <head>
+      <meta charset="utf-8">
+      <title>README</title>
+      <style>
+        #wrapper {width: 960px; margin: 0 auto;}
+        /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
+/* Remove comment around @import statement below when using as a custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}
+audio,canvas,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+[hidden],template{display:none}
+script{display:none!important}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+body{margin:0}
+a{background:transparent}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}
+input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*:before,*:after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+body{-webkit-font-smoothing:antialiased}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.center{margin-left:auto;margin-right:auto}
+.spread{width:100%}
+p.lead,.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{font-size:1.21875em;line-height:1.6}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:none}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #ddddd8;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol,ul.no-bullet,ol.no-bullet{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.no-bullet{list-style:none}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite:before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media only screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7;font-weight:bold}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+body{tab-size:4}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix:before,.clearfix:after,.float-group:before,.float-group:after{content:" ";display:table}
+.clearfix:after,.float-group:after{clear:both}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menu{color:rgba(0,0,0,.8)}
+b.button:before,b.button:after{position:relative;top:-1px;font-weight:400}
+b.button:before{content:"[";padding:0 3px 0 2px}
+b.button:after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header:before,#header:after,#content:before,#content:after,#footnotes:before,#footnotes:after,#footer:before,#footer:after{content:" ";display:table}
+#header:after,#content:after,#footnotes:after,#footer:after{clear:both}
+#content{margin-top:1.25em}
+#content:before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #ddddd8}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #ddddd8;padding-bottom:8px}
+#header .details{border-bottom:1px solid #ddddd8;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span:before{content:"\00a0\2013\00a0"}
+#header .details br+span.author:before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark:before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber:after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #ddddd8;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #efefed;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media only screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background-color:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #efefed;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #efefed;left:auto;right:0}}
+@media only screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background-color:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+.sect1{padding-bottom:.625em}
+@media only screen and (min-width:768px){.sect1{padding-bottom:1.25em}}
+.sect1+.sect1{border-top:1px solid #efefed}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor:before,h2>a.anchor:before,h3>a.anchor:before,#toctitle>a.anchor:before,.sidebarblock>.content>.title>a.anchor:before,h4>a.anchor:before,h5>a.anchor:before,h6>a.anchor:before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock>caption.title{white-space:nowrap;overflow:visible;max-width:0}
+.paragraph.lead>p,#preamble>.sectionbody>.paragraph:first-of-type p{color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>.paragraph:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #ddddd8;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock pre:not(.highlight),.listingblock pre[class="highlight"],.listingblock pre[class^="highlight "],.listingblock pre.CodeRay,.listingblock pre.prettyprint{background:#f7f7f8}
+.sidebarblock .literalblock pre,.sidebarblock .listingblock pre:not(.highlight),.sidebarblock .listingblock pre[class="highlight"],.sidebarblock .listingblock pre[class^="highlight "],.sidebarblock .listingblock pre.CodeRay,.sidebarblock .listingblock pre.prettyprint{background:#f2f1f1}
+.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;padding:1em;font-size:.8125em}
+.literalblock pre.nowrap,.literalblock pre[class].nowrap,.listingblock pre.nowrap,.listingblock pre[class].nowrap{overflow-x:auto;white-space:pre;word-wrap:normal}
+@media only screen and (min-width:768px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:.90625em}}
+@media only screen and (min-width:1280px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:1em}}
+.literalblock.output pre{color:#f7f7f8;background-color:rgba(0,0,0,.9)}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]:before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:#999}
+.listingblock:hover code[data-lang]:before{display:block}
+.listingblock.terminal pre .command:before{content:attr(data-prompt);padding-right:.5em;color:#999}
+.listingblock.terminal pre .command:not([data-prompt]):before{content:"$"}
+table.pyhltable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.pyhltable td{vertical-align:top;padding-top:0;padding-bottom:0;line-height:1.45}
+table.pyhltable td.code{padding-left:.75em;padding-right:0}
+pre.pygments .lineno,table.pyhltable td:not(.code){color:#999;padding-left:0;padding-right:.5em;border-right:1px solid #ddddd8}
+pre.pygments .lineno{display:inline-block;margin-right:.25em}
+table.pyhltable .linenodiv{background:none!important;padding-right:0!important}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock blockquote p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote:before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.5em;margin-right:.5ex;text-align:right}
+.quoteblock .quoteblock{margin-left:0;margin-right:0;padding:.5em 0;border-left:3px solid rgba(0,0,0,.6)}
+.quoteblock .quoteblock blockquote{padding:0 0 0 .75em}
+.quoteblock .quoteblock blockquote:before{display:none}
+.verseblock{margin:0 1em 1.25em 1em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract{margin:0 0 1.25em 0;display:block}
+.quoteblock.abstract blockquote,.quoteblock.abstract blockquote p{text-align:left;word-spacing:0}
+.quoteblock.abstract blockquote:before,.quoteblock.abstract blockquote p:first-of-type:before{display:none}
+table.tableblock{max-width:100%;border-collapse:separate}
+table.tableblock td>.paragraph:last-child p>p:last-child,table.tableblock th>p:last-child,table.tableblock td>p:last-child{margin-bottom:0}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all th.tableblock,table.grid-all td.tableblock{border-width:0 1px 1px 0}
+table.grid-all tfoot>tr>th.tableblock,table.grid-all tfoot>tr>td.tableblock{border-width:1px 1px 0 0}
+table.grid-cols th.tableblock,table.grid-cols td.tableblock{border-width:0 1px 0 0}
+table.grid-all *>tr>.tableblock:last-child,table.grid-cols *>tr>.tableblock:last-child{border-right-width:0}
+table.grid-rows th.tableblock,table.grid-rows td.tableblock{border-width:0 0 1px 0}
+table.grid-all tbody>tr:last-child>th.tableblock,table.grid-all tbody>tr:last-child>td.tableblock,table.grid-all thead:last-child>tr>th.tableblock,table.grid-rows tbody>tr:last-child>th.tableblock,table.grid-rows tbody>tr:last-child>td.tableblock,table.grid-rows thead:last-child>tr>th.tableblock{border-bottom-width:0}
+table.grid-rows tfoot>tr>th.tableblock,table.grid-rows tfoot>tr>td.tableblock{border-width:1px 0 0 0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot{border-width:1px 0}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+td>div.verse{white-space:pre}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.unstyled,ol.unnumbered,ul.checklist,ul.none{list-style-type:none}
+ul.unstyled,ol.unnumbered,ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1em;font-size:.85em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{width:1em;position:relative;top:1px}
+ul.inline{margin:0 auto .625em auto;margin-left:-1.375em;margin-right:0;padding:0;list-style:none;overflow:hidden}
+ul.inline>li{list-style:none;float:left;margin-left:1.375em;display:block}
+ul.inline>li>*{display:block}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist>table tr>td:first-of-type{padding:0 .75em;line-height:1}
+.colist>table tr>td:last-of-type{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left,.imageblock[style*="float: left"]{margin:.25em .625em 1.25em 0}
+.imageblock.right,.imageblock[style*="float: right"]{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em 0;border-width:1px 0 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;text-indent:-1.05em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background-color:#00fafa}
+.black{color:#000}
+.black-background{background-color:#000}
+.blue{color:#0000bf}
+.blue-background{background-color:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background-color:#fa00fa}
+.gray{color:#606060}
+.gray-background{background-color:#7d7d7d}
+.green{color:#006000}
+.green-background{background-color:#007d00}
+.lime{color:#00bf00}
+.lime-background{background-color:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background-color:#7d0000}
+.navy{color:#000060}
+.navy-background{background-color:#00007d}
+.olive{color:#606000}
+.olive-background{background-color:#7d7d00}
+.purple{color:#600060}
+.purple-background{background-color:#7d007d}
+.red{color:#bf0000}
+.red-background{background-color:#fa0000}
+.silver{color:#909090}
+.silver-background{background-color:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background-color:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background-color:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background-color:#fafa00}
+span.icon>.fa{cursor:default}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note:before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip:before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning:before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution:before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important:before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background-color:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]:after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background-color:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@media print{@page{margin:1.25cm .75cm}
+*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare):after,a[href^="https:"]:not(.bare):after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]:after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #ddddd8!important;padding-bottom:0!important}
+.sect1{padding-bottom:0!important}
+.sect1+.sect1{border:0!important}
+#header>h1:first-child{margin-top:1.25rem}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em 0}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span:before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]:before{display:block}
+#footer{background:none!important;padding:0 .9375em}
+#footer-text{color:rgba(0,0,0,.6)!important;font-size:.9em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+
+      </style>
+      <link href='https://fonts.googleapis.com/css?family=Noto+Serif' rel='stylesheet' type='text/css'>
+      <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/asciidoc.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/yaml.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/dockerfile.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/makefile.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/rust.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/haskell.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/typescript.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/scss.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/less.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/handlebars.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/groovy.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/scala.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/bash.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/ini.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script>
+    </head>
+    <body>
+      <div id="wrapper">
+        <div class="article">
+          <h1>PC6001VX マニュアル</h1>
+<div id="toc" class="toc">
+<div id="toctitle">目次</div>
+<ul class="sectlevel1">
+<li><a href="#__">はじめに</a></li>
+<li><a href="#___2">起動方法</a>
+<ul class="sectlevel2">
+<li><a href="#___3">必要なもの</a></li>
+<li><a href="#___4">初回起動時の設定</a></li>
+<li><a href="#___5">プラットフォーム固有情報</a></li>
 </ul>
 </li>
+<li><a href="#___6">使い方</a>
+<ul class="sectlevel2">
+<li><a href="#___7">メニュー</a></li>
+<li><a href="#___8">キーボードショートカット</a></li>
+<li><a href="#___9">マウス操作</a></li>
+<li><a href="#___10">環境設定</a></li>
 </ul>
 </li>
-<li><a href="#_6">使い方</a><ul>
-<li><a href="#_7">メニュー</a></li>
-<li><a href="#_8">キーボードショートカット</a></li>
-<li><a href="#_9">マウス操作</a></li>
-<li><a href="#_10">環境設定</a></li>
+<li><a href="#___11">開発者情報</a>
+<ul class="sectlevel2">
+<li><a href="#___12">ライセンス</a></li>
+<li><a href="#___13">ビルド方法</a></li>
 </ul>
 </li>
-<li><a href="#_11">開発者情報</a><ul>
-<li><a href="#_12">ライセンス</a></li>
-<li><a href="#_13">ビルド方法</a><ul>
-<li><a href="#windows_1">Windows</a></li>
-<li><a href="#linux_1">Linux</a></li>
-<li><a href="#android_1">Android</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#_14">既知の不具合、制約事項</a></li>
-<li><a href="#_15">更新履歴</a></li>
-<li><a href="#_16">謝辞</a></li>
-</ul>
-</li>
+<li><a href="#___14">既知の不具合、制約事項</a></li>
+<li><a href="#___15">更新履歴</a></li>
+<li><a href="#___16">謝辞</a></li>
 </ul>
 </div>
-<h2 id="_1">はじめに</h2>
-<p><img alt="Overview" src="doc/overview.png"></p>
-<p>本プログラムは、ゆみたろ様(<a href="http://papicom.net">http://papicom.net</a>)作のPC-6001エミュレータ
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>by eighttails<br>
+<a href="http://eighttails.seesaa.net" class="bare">http://eighttails.seesaa.net</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="__">はじめに</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><span class="image"><img src="doc/overview.png" alt="overview.png"></span></p>
+</div>
+<div class="paragraph">
+<p>本プログラムは、 <a href="http://papicom.net">ゆみたろ様</a>作のPC-6001エミュレータ
 PC6001VをLinux等で動作するよう改変したものです。<br>
 PC6001VXの末尾のXはクロスプラットフォームのXです。(^^;<br>
-ターゲットはLinuxなどのUNIXライクOSおよびAndroidを想定していますが、移植性の検証として
-Windows用バイナリもリリースしています。が、こちらはほとんどおまけです。</p>
-<h2 id="_2">起動方法</h2>
-<h3 id="_3">必要なもの</h3>
+ターゲットはLinuxなどのUNIXライクOSおよびAndroidを想定していますが、移植性の検証としてWindows用バイナリもリリースしています。が、こちらはほとんどおまけです。<br></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="___2">起動方法</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="___3">必要なもの</h3>
+<div class="ulist">
 <ul>
 <li>
 <p>ROMファイル<br>
-エミュレータの動作には原則として、PC-6001シリーズの実機から吸い出したROMファイルが必要になります。<br>
-<a href="http://p6ers.net/hashi/suidashi.html">http://p6ers.net/hashi/suidashi.html</a>を参考にして実機から吸い出してください。<br>
-実機をお持ちでない場合、秋川様(<a href="http://000.la.coocan.jp/p6/basic.html">http://000.la.coocan.jp/p6/basic.html</a>)作成の互換ROMを使うという選択肢もあります。<br>
-こちらの互換ROMにはCGROMファイルが含まれていませんが、拙作のCGROMファイルを使うことができます。<a href="http://eighttails.seesaa.net/article/305067428.html">http://eighttails.seesaa.net/article/305067428.html</a>
-互換ROM使用時は初代PC-6001相当の動きになります。</p>
+エミュレータの動作には原則として、PC-6001シリーズの実機から吸い出したROMファイルが必要になります。 <a href="http://p6ers.net/hashi/suidashi.html">こちら</a>を参考にして実機から吸い出してください。
+実機をお持ちでない場合、 <a href="http://000.la.coocan.jp/p6/basic.html">秋川様</a>作成の互換ROMを使うという選択肢もあります。<br>
+<a href="http://eighttails.seesaa.net/article/305067428.html">こちら</a>の互換ROMにはCGROMファイルが含まれていませんが、拙作のCGROMファイルを使うことができます。
+互換ROM使用時は初代PC-6001相当の動きになります。<br></p>
 </li>
 <li>
 <p>WAVファイル<br>
-mk2以降の場合、音声合成の固定語はWAVファイルとして用意する必要があります。
-実機のモード5または6で「talk"f41."」を実行し、その音声をf41.wavの名前で録音して保存してください。
+mk2以降の場合、音声合成の固定語はWAVファイルとして用意する必要があります。<br>
+実機のモード5または6で「talk"f41."」を実行し、その音声をf41.wavの名前で録音して保存してください。<br>
 同様にf42~f44.wavも用意します。<br>
-WAVファイルのフォーマットですが、作者は44kHzモノラルのWAVで動作確認しています。</p>
+WAVファイルのフォーマットですが、作者は44kHzモノラルのWAVで動作確認しています。<br></p>
 </li>
 </ul>
-<h3 id="_4">初回起動時の設定</h3>
+</div>
+</div>
+<div class="sect2">
+<h3 id="___4">初回起動時の設定</h3>
+<div class="paragraph">
 <p>必要なファイルが揃ったらPC6001VXを起動してください。起動の方法はお使いのOSに合わせたプラットフォーム固有情報を参照してください。<br>
-初回起動時には以下のエラーが出ると思います。</p>
-<p><img alt="FirstBoot" src="doc/firstboot.png"></p>
-<p>ROMファイルはここで提示されたフォルダ内を探しに行くので、その場所にROMファイルをコピーするか、すでに別の場所にROMファイルを用意していれば、その場所を参照するように設定を変更することができます。設定を変更する場合は「Yes」をクリックしてROMファイルのあるフォルダを指定してください。</p>
-<p>ROMファイルのCRCが一般に知られているものと合わない場合、または互換ROM使用時は以下のメッセージが表示されます。</p>
-<p><img alt="RomCRC" src="doc/romcrc.png"></p>
+初回起動時には以下のエラーが出ると思います。<br></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="doc/firstboot.png" alt="firstboot.png"></span></p>
+</div>
+<div class="paragraph">
+<p>ROMファイルはここで提示されたフォルダ内を探しに行くので、その場所にROMファイルをコピーするか、すでに別の場所にROMファイルを用意していれば、その場所を参照するように設定を変更することができます。設定を変更する場合は「Yes」をクリックしてROMファイルのあるフォルダを指定してください。<br></p>
+</div>
+<div class="paragraph">
+<p>ROMファイルのCRCが一般に知られているものと合わない場合、または互換ROM使用時は以下のメッセージが表示されます。<br></p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="doc/romcrc.png" alt="romcrc.png"></span></p>
+</div>
+<div class="paragraph">
 <p>警告されますが「Yes」をクリックすると以降ROMのCRCチェックをせずに起動するようになります。<br>
-ただしこの後の動作は自己責任です。</p>
-<h3 id="_5">プラットフォーム固有情報</h3>
-<h4 id="windows">Windows</h4>
-<ul>
-<li>起動方法<br>
-普通にPC6001VX.exeをダブルクリックして起動してください。</li>
-<li>起動しない時は<ul>
-<li>まずは以下のページからDirectXのランタイムをインストールしてください。
-<a href="http://www.microsoft.com/ja-jp/download/details.aspx?id=35">http://www.microsoft.com/ja-jp/download/details.aspx?id=35</a></li>
-<li>それでも起動しない時は、iniファイルを削除してください。<br>
-Windows用にはsafemode.batを提供しています。
-safemode.batでは設定ファイルを削除し、セーフモード(表示のハードウェアアクセラレーションを一時的にオフ)で起動します。
-グラフィックボードが古くて画面が表示できない環境の人は、セーフモードで立ち上げて、設定画面からハードウェアアクセラレーションをオフに設定してください。</li>
-</ul>
-</li>
-<li>設定、各種ファイル生成場所<br>
-    exeファイルと同じフォルダにiniファイル、各種フォルダが生成されます。</li>
-</ul>
-<h4 id="linux">Linux</h4>
-<ul>
-<li>起動方法<br>
-ソースからビルドして実行してください。ビルドの仕方については開発者情報の章を参照してください。</li>
-<li>設定、各種ファイル生成場所<br>
-~/.pc6001vxフォルダ以下にiniファイル、各種フォルダが生成されます。</li>
-</ul>
-<h4 id="android">Android</h4>
-<ul>
-<li>起動方法<br>
-アプリケーションメニュー内に登録されたPC6001VXのアイコンをタップすると起動します。</li>
-<li>設定、各種ファイル生成場所<br>
-Androidの場合設定ファイルの生成場所は機種依存になり、一概に言えませんが、通常のファイルマネージャではアクセスできない場所に作成されることが多いようです。具体的な場所は環境設定ダイアログで確認してください。</li>
-</ul>
-<h2 id="_6">使い方</h2>
-<h3 id="_7">メニュー</h3>
-<p>エミュレータのメイン画面上でマウスを右クリックするとメニューが表示されます。<br>
-Androidではメイン画面上でロングタップするとメニューが出ます。</p>
-<p><img alt="Menu" src="doc/menu.png"></p>
+ただしこの後の動作は自己責任です。<br></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="___5">プラットフォーム固有情報</h3>
+<div class="sect3">
+<h4 id="_windows">Windows</h4>
+<div class="ulist">
 <ul>
 <li>
-<p>システム</p>
+<p>起動方法<br>
+普通にPC6001VX.exeをダブルクリックして起動してください。</p>
+</li>
+<li>
+<p>起動しない時は<br></p>
+<div class="ulist">
 <ul>
-<li>リセット<br>
-エミュレータをリセットします。</li>
-<li>再起動<br>
+<li>
+<p>まずは以下のページからDirectXのランタイムをインストールしてください。<br>
+<a href="http://www.microsoft.com/ja-jp/download/details.aspx?id=35" class="bare">http://www.microsoft.com/ja-jp/download/details.aspx?id=35</a></p>
+</li>
+<li>
+<p>それでも起動しない時は、iniファイルを削除してください。
+Windows用にはsafemode.batを提供しています。
+safemode.batでは設定ファイルを削除し、セーフモード(表示のハードウェアアクセラレーションを一時的にオフ)で起動します。
+グラフィックボードが古くて画面が表示できない環境の人は、セーフモードで立ち上げて、設定画面からハードウェアアクセラレーションをオフに設定してください。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>設定、各種ファイル生成場所
+exeファイルと同じフォルダにiniファイル、各種フォルダが生成されます。</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_linux">Linux</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>起動方法
+ソースからビルドして実行してください。ビルドの仕方については開発者情報の章を参照してください。</p>
+</li>
+<li>
+<p>設定、各種ファイル生成場所
+~/.pc6001vxフォルダ以下にiniファイル、各種フォルダが生成されます。</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_android">Android</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>起動方法
+アプリケーションメニュー内に登録されたPC6001VXのアイコンをタップすると起動します。</p>
+</li>
+<li>
+<p>設定、各種ファイル生成場所
+Androidの場合設定ファイルの生成場所は機種依存になり、一概に言えませんが、通常のファイルマネージャではアクセスできない場所に作成されることが多いようです。具体的な場所は環境設定ダイアログで確認してください。</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="___6">使い方</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="___7">メニュー</h3>
+<div class="paragraph">
+<p>エミュレータのメイン画面上でマウスを右クリックするとメニューが表示されます。
+Androidではメイン画面上でロングタップするとメニューが出ます。</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="doc/menu.png" alt="menu.png"></span></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>システム<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>リセット<br>
+エミュレータをリセットします。<br></p>
+</li>
+<li>
+<p>再起動<br>
 エミュレータを再起動します。<br>
-設定変更を反映するには再起動が必要です。</li>
-<li>どこでもLOAD  </li>
-<li>どこでもSAVE<br>
+設定変更を反映するには再起動が必要です。<br></p>
+</li>
+<li>
+<p>どこでもLOAD<br></p>
+</li>
+<li>
+<p>どこでもSAVE<br>
 現在のP6の状態をそっくりそのまま保存して，あとで再開できます。<br>
 ノートパソコンのレジュームやサスペンドと呼ばれる機能と同じようなものです。<br>
 セーブするためのファイルは任意の名前(.ddr)をつけることができる他、1〜3番のスロットを用意しています。<br>
-1番のスロットSAVEデータは(どこでもSAVEフォルダ)/1.ddrとして保存されます。2,3番も同様です。 <br>
-<strong>注意！その1</strong><br>
-この機能はまだまだ未完成です。
-TAPEやDISKに書き込んでいる最中などは全く考えていませんので
-イメージを破壊する可能性が大です。ご注意ください。<br>
-<strong>注意！その2</strong><br>
+1番のスロットSAVEデータは(どこでもSAVEフォルダ)/1.ddrとして保存されます。2,3番も同様です。<br></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+この機能はまだまだ未完成です。TAPEやDISKに書き込んでいる最中などは全く考えていませんのでイメージを破壊する可能性が大です。ご注意ください。
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
 どこでもSAVEファイルにはメモリの内容が含まれますので
-著作権者の許可なく配布しないでください。</li>
+著作権者の許可なく配布しないでください。
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
 <li>
 <p>リプレイ<br>
-リプレイのメニューはその時の状態により変化します。  </p>
+リプレイのメニューはその時の状態により変化します。<br></p>
+<div class="ulist">
 <ul>
-<li>[通常時]<ul>
-<li>再生  </li>
-<li>記録  </li>
-<li>記録再開<br>
-以前記録したリプレイの記録終了時にresumeファイルが残っていれば「記録再開」でリプレイの続きを記録停止したところから記録することができます。</li>
-</ul>
+<li>
+<p>[通常時]<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>再生<br></p>
 </li>
-<li>[再生中]<ul>
-<li>再生停止<br>
-リプレイの再生を停止します。</li>
-</ul>
+<li>
+<p>記録<br></p>
 </li>
-<li>[記録中]  <ul>
-<li>記録停止<br>
-記録を停止します。<br>
-停止時には途中保存と同じ「(リプレイファイル名).resume」ファイルを残します。</li>
-<li>途中保存<br>
-リプレイの記録中に、その途中の状態を保存することができます。<br>
-「(リプレイファイル名).resume」ファイルをリプレイファイル(.ddr)と同じフォルダに残します。  </li>
-<li>途中保存から再開<br>
-ゲームのリプレイ記録中に失敗した場合など、リプレイの記録を停止せずに「途中保存」した地点に戻ってやり直すことができます。</li>
-<li>１つ前の途中保存から再開<br>
-ゲームのリプレイ記録中に失敗した場合、「途中保存から再開」出戻っても、途中保存の時点で詰んでしまって進めなくなることが時々あります。「途中保存」は5個まで過去の履歴を保存していますので、1つ前の途中保存からやり直すことができます。<br>
-これを実行した場合、最新の途中保存は失われます。</li>
-</ul>
+<li>
+<p>記録再開<br>
+以前記録したリプレイの記録終了時にresumeファイルが残っていれば「記録再開」でリプレイの続きを記録停止したところから記録することができます。</p>
 </li>
 </ul>
+</div>
+</li>
+<li>
+<p>[再生中]<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>再生停止<br>
+リプレイの再生を停止します。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>[記録中]<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>記録停止<br>
+記録を停止します。
+停止時には途中保存と同じ「(リプレイファイル名).resume」ファイルを残します。</p>
+</li>
+<li>
+<p>途中保存<br>
+リプレイの記録中に、その途中の状態を保存することができます。
+「(リプレイファイル名).resume」ファイルをリプレイファイル(.ddr)と同じフォルダに残します。</p>
+</li>
+<li>
+<p>途中保存から再開<br>
+ゲームのリプレイ記録中に失敗した場合など、リプレイの記録を停止せずに「途中保存」した地点に戻ってやり直すことができます。</p>
+</li>
+<li>
+<p>１つ前の途中保存から再開<br>
+ゲームのリプレイ記録中に失敗した場合、「途中保存から再開」出戻っても、途中保存の時点で詰んでしまって進めなくなることが時々あります。「途中保存」は5個まで過去の履歴を保存していますので、1つ前の途中保存からやり直すことができます。
+これを実行した場合、最新の途中保存は失われます。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>ビデオキャプチャ<br>
-エミュレータの動作を動画ファイルとして記録します。 <br>
-記録を終了するにはもう一度このメニュー(「ビデオキャプチャ停止」に変わっています)を選択します。 <br>
-動画の記録方式はWebM形式です。<br>
-(MP4形式はライセンス面でリスクがあるため、対応を見送っています。)<br>
-世の中ではあまり使われていない形式ですが、YouTubeは正式に対応しています。<br>
-ニコニコ動画は正式対応をうたってはいませんが、実はアップロードには対応しています。<br>
+エミュレータの動作を動画ファイルとして記録します。
+記録を終了するにはもう一度このメニュー(「ビデオキャプチャ停止」に変わっています)を選択します。<br>
+動画の記録方式はWebM形式です。(MP4形式はライセンス面でリスクがあるため、対応を見送っています。) 世の中ではあまり使われていない形式ですが、YouTubeは正式に対応しています。ニコニコ動画は正式対応をうたってはいませんが、実はアップロードには対応しています。<br>
 動画の記録中は動作速度が極端に落ちるため(作者の環境で1/10くらい)、ゲームをプレイしながら動画にするといった使い方は現時点では無理です。<br>
 あらかじめプレイをリプレイとして記録しておき、そのリプレイを再生しながら動画にするといった使い方を想定しています。(動画の記録中にリプレイが終了した場合、その時点で動画の記録も終了します。)<br>
-マシンの処理速度にかかわらず、出来上がった動画は60FPSになります。</p>
+マシンの処理速度にかかわらず、出来上がった動画は60FPSになります。<br></p>
 </li>
 <li>
 <p>キーパネル<br>
-<img alt="KeyPanel" src="doc/keypanel.png">  <br>
-英語キーボードやモバイル機のキーボードで入力できないことが多いキーをボタンで入力できる補助キーパネルを表示します。<br>
-ボタンはシフトキーと同時押しでも機能します。シフトキーを押してF1ボタンを押すとF6キーとして機能します。  </p>
+<span class="image"><img src="doc/keypanel.png" alt="keypanel.png"></span><br>
+英語キーボードやモバイル機のキーボードで入力できないことが多いキーをボタンで入力できる補助キーパネルを表示します。
+ボタンはシフトキーと同時押しでも機能します。シフトキーを押してF1ボタンを押すとF6キーとして機能します。</p>
 </li>
-<li>打ち込み代行<br>
+<li>
+<p>打ち込み代行<br>
 テキストファイルから自動入力する機能です。<br>
-対応しているファイルはtxt2bas仕様準拠です。  </li>
-<li>終了<br>
-PC6001VXを終了します。</li>
-<li>TAPE<br>
+対応しているファイルはtxt2bas仕様準拠です。<br></p>
+</li>
+<li>
+<p>終了<br>
+PC6001VXを終了します。<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>TAPE<br>
 テープイメージの挿入、取り出しの操作をします。<br>
-対応するイメージファイルはP6T形式ですが、P6,CAS形式のファイルもマウントできます。</li>
-<li>挿入<br>
-テープイメージファイルをマウントします。  </li>
-<li>取出<br>
-テープイメージファイルを取り出します。</li>
-<li>DISK<br>
+対応するイメージファイルはP6T形式ですが、P6,CAS形式のファイルもマウントできます。<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>挿入<br>
+テープイメージファイルをマウントします。<br></p>
+</li>
+<li>
+<p>取出<br>
+テープイメージファイルを取り出します。<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>DISK<br>
 ディスクイメージの挿入、取り出しの操作をします。<br>
 対応するイメージファイルはd88形式です。<br>
-操作はTAPEと同様です。  </li>
-<li>拡張ROM<br>
-拡張ROMイメージの挿入、取り出しの操作をします。<br>
-操作はTAPEと同様です。  </li>
-<li>ジョイスティック<br>
-ジョイスティックがつながっている場合、P6のジョイスティック1,2に対する割り当てを設定します。</li>
-<li>設定  </li>
-<li>表示サイズ  <ul>
-<li>50%~300％<br>
-表示倍率を変えることができます。  </li>
-<li>倍率を指定<br>
-数値を直接入力することで任意の倍率で表示することができます。</li>
-<li>倍率を固定<br>
-通常はウィドウサイズを変更するとそれに追従して表示倍率が変わるようになっていますが、このチェックボックスをオンにすると、ウィンドウサイズにかかわらず固定のサイズで表示されるようになります。</li>
-</ul>
+操作はTAPEと同様です。<br></p>
 </li>
-<li>フルスクリーン<br>
-フルスクリーンモードに切り替えます。  </li>
-<li>ステータスバー<br>
-ステータスバーの表示を切り替えます。  </li>
-<li>4:3表示<br>
+<li>
+<p>拡張ROM<br>
+拡張ROMイメージの挿入、取り出しの操作をします。<br>
+操作はTAPEと同様です。<br></p>
+</li>
+<li>
+<p>ジョイスティック<br>
+ジョイスティックがつながっている場合、P6のジョイスティック1,2に対する割り当てを設定します。<br></p>
+</li>
+<li>
+<p>設定<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>表示サイズ<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>50%~300％<br>
+表示倍率を変えることができます。<br></p>
+</li>
+<li>
+<p>倍率を指定<br>
+数値を直接入力することで任意の倍率で表示することができます。</p>
+</li>
+<li>
+<p>倍率を固定<br>
+通常はウィドウサイズを変更するとそれに追従して表示倍率が変わるようになっていますが、このチェックボックスをオンにすると、ウィンドウサイズにかかわらず固定のサイズで表示されるようになります。<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>フルスクリーン<br>
+フルスクリーンモードに切り替えます。<br></p>
+</li>
+<li>
+<p>ステータスバー<br>
+ステータスバーの表示を切り替えます。<br></p>
+</li>
+<li>
+<p>4:3表示<br>
 一般的にPCのアスペクトレシオ(ドットの縦横比)は1:1です。<br>
 それに対してテレビの場合は 1.16:1 で ちょっと縦長なんだそうです。<br>
-そのためPC上でそのまま表示すると横長に表示されてしまいます。  <br>
-そこで縦方向を1.16倍に引伸ばして表示するのが 4:3表示 です。</li>
+そのためPC上でそのまま表示すると横長に表示されてしまいます。<br>
+そこで縦方向を1.16倍に引伸ばして表示するのが 4:3表示 です +。</p>
+</li>
 <li>
 <p>スキャンライン<br>
-P6の水平周波数はテレビと同じ15kHzです。
+P6の水平周波数はテレビと同じ15kHzです。<br>
 テレビでは走査線を偶数フィールドと奇数フィールドに分け飛び飛びに表示させる インターレース方式 を使っています。<br>
 しかしP6を含む一般的なパソコンの場合，ちらつきを抑えるため、偶数走査線と奇数走査線が同じ位置を走査する ノンインターレース方式 を使っています。<br>
-この場合，走査線数が半分になるため走査線と走査線の間に隙間が空いたような状態になります。<br>
+この場合，走査線数が半分になるため走査線と走査線の間に隙間が空いたような状態になります。
 この隙間を再現するのが スキャンラインモード です。<br>
 エミュレータでスキャンラインモードを実現するためには実機の倍の画面解像度を必要とします。（実機が 320X200 なら 640X400 以上）<br>
-当然，表示が重くなるため処理速度が落ちます。</p>
+当然，表示が重くなるため処理速度が落ちます。<br></p>
 </li>
 <li>
 <p>ハードウェアアクセラレーション<br>
 画面表示にハードウェアアクセラレーション(WindowsではDirectX,それ以外ではOpenGL)を使用する場合チェックします。<br>
-デフォルトはオンです。描画に不具合がある場合はオフにしてください。ただしその場合、画面を高倍率で拡大すると処理が重くなります。  </p>
+デフォルトはオンです。描画に不具合がある場合はオフにしてください。ただしその場合、画面を高倍率で拡大すると処理が重くなります。<br></p>
 </li>
 <li>
 <p>フィルタリング<br>
 グラフィックの拡大表示、4:3表示に際してフィルタリングを適用します。デフォルトはオンです。<br>
-非整数倍拡大を自然に見せるための措置ですが、ボケた表示は嫌だという方は下記の手順でカクカク表示にできます。</p>
-<ol>
-<li>フィルタリングをオフにします。  </li>
-<li>4:3表示をオフにします。</li>
-<li>表示サイズを整数倍にします。</li>
+非整数倍拡大を自然に見せるための措置ですが、ボケた表示は嫌だという方は下記の手順でカクカク表示にできます。<br></p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>フィルタリングをオフにします。<br></p>
+</li>
+<li>
+<p>4:3表示をオフにします。<br></p>
+</li>
+<li>
+<p>表示サイズを整数倍にします。<br></p>
+</li>
 </ol>
+</div>
 </li>
 <li>
 <p>TILTモード<br>
-<img alt="Tilt" src="doc/tilt.png"><br>
+<span class="image"><img src="doc/tilt.png" alt="tilt.png"></span>
 3DS版のスペースハリアーに触発されて作ったジョーク機能です。<br>
 ジョイスティック、カーソルキーの左右に反応して、画面が傾きます。(笑<br>
-フルスクリーン時、またはステータスバー非表示の時はディスプレイ枠が表示されます。初代機の場合はPC-6042、それ以外の場合はPC-60m43が表示されます。</p>
+フルスクリーン時、またはステータスバー非表示の時はディスプレイ枠が表示されます。初代機の場合はPC-6042、それ以外の場合はPC-60m43が表示されます。<br></p>
 </li>
-<li>モード4カラー<br>
-BASICモード1〜4時のスクリーンモード4のにじみ色を選択します。  </li>
-<li>フレームスキップ<br>
-エミュレータのフレームスキップ間隔を指定します。  </li>
-<li>サンプリングレート<br>
-サウンドのサンプリングレートを指定します。  </li>
-<li>ウェイト無効<br>
-エミュレータのウェイトを無効化し、全速力で動かします。  </li>
-<li>Turbo Tape<br>
+<li>
+<p>モード4カラー<br>
+BASICモード1〜4時のスクリーンモード4のにじみ色を選択します。<br></p>
+</li>
+<li>
+<p>フレームスキップ<br>
+エミュレータのフレームスキップ間隔を指定します。<br></p>
+</li>
+<li>
+<p>サンプリングレート<br>
+サウンドのサンプリングレートを指定します。<br></p>
+</li>
+<li>
+<p>ウェイト無効<br>
+エミュレータのウェイトを無効化し、全速力で動かします。<br></p>
+</li>
+<li>
+<p>Turbo Tape<br>
 TAPEの読込み中はノーウェイトで動作させる機能です。<br>
 リレーがONになっている間だけノーウェイトになり、リレーOFFと同時に通常動作に戻ります。<br>
-ただ高速動作させるだけなので，タイミングが変わりにくく信頼性が高い反面、遅いマシンでは十分な効果が得られない場合があります。</li>
-<li>Boost Up<br>
+ただ高速動作させるだけなので，タイミングが変わりにくく信頼性が高い反面、遅いマシンでは十分な効果が得られない場合があります。<br></p>
+</li>
+<li>
+<p>Boost Up<br>
 TAPEの転送速度は1200ボーですが，これはTAPEという媒体の信頼性の問題とサブCPUの処理能力から決まってくるようです。<br>
 メインCPU（Z80）側には余裕があるらしく，待ち時間が結構あります。<br>
 そこでBASICのワークエリアを監視し，待ちに入ったら即座に次のデータを送るようにすることで無駄な待ち時間を減らし,効率よく読込めるようになります。<br>
@@ -285,644 +904,1181 @@ TAPEの転送速度は1200ボーですが，これはTAPEという媒体の信�
 BASICモードにより限界が異なるのは 内部処理の違いと思われます。<br>
 倍率は[設定]-[環境設定]-[その他]で変更することが出来ます。<br>
 確実に高速化する反面，タイミングがシビアなソフトでは取りこぼしが発生したりROM内ルーチンを使用しない独自ローダーでは全く使えない場合があります。<br>
-万能ではありませんので適宜使い分けてください</li>
-<li>環境設定<br>
-環境設定ダイアログを表示します。詳細は環境設定の章を参照ください。  </li>
-</ul>
+万能ではありませんので適宜使い分けてください<br></p>
 </li>
 <li>
-<p>デバッグ  </p>
+<p>環境設定<br>
+環境設定ダイアログを表示します。詳細は環境設定の章を参照ください。<br></p>
+<div class="ulist">
 <ul>
-<li>モニタモード<br>
-<img alt="MonitorMode" src="doc/monitormode.png"><br>
-デバッグ用にレジスタ、メモリの状態の参照、ステップ実行をできるモードです。
-「?」を入力するとヘルプが表示されます。  </li>
+<li>
+<p>デバッグ</p>
+</li>
 </ul>
+</div>
 </li>
 <li>
-<p>ヘルプ</p>
+<p>モニタモード<br>
+<span class="image"><img src="doc/monitormode.png" alt="monitormode.png"></span><br>
+デバッグ用にレジスタ、メモリの状態の参照、ステップ実行をできるモードです。<br>
+「?」を入力するとヘルプが表示されます。<br></p>
+<div class="ulist">
 <ul>
+<li>
+<p>ヘルプ<br></p>
+</li>
+</ul>
+</div>
+</li>
 <li>
 <p>オンラインヘルプ<br>
-オンラインヘルプを表示します。
-WindowsではローカルのHTML、それ以外ではGitHub上のREADMEを表示します。</p>
+オンラインヘルプを表示します。<br>
+WindowsではローカルのHTML、それ以外ではGitHub上のREADMEを表示します。<br></p>
 </li>
 <li>
 <p>バージョン情報<br>
-<img alt="About" src="doc/about.png"><br>
-バージョン情報ダイアログを表示します。</p>
+<span class="image"><img src="doc/about.png" alt="about.png"></span><br>
+バージョン情報ダイアログを表示します。<br></p>
 </li>
 <li>
 <p>About Qt<br>
-PC6001VXに組み込んでいるQtのバージョンを表示します。</p>
+PC6001VXに組み込んでいるQtのバージョンを表示します。<br></p>
 </li>
 </ul>
-</li>
-</ul>
-<h3 id="_8">キーボードショートカット</h3>
-<ul>
-<li>PC-6001シリーズ特有のキー</li>
-</ul>
-<table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="___8">キーボードショートカット</h3>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 1. PC-6001シリーズ特有のキー</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
 <thead>
 <tr>
-<th align="left">キー</th>
-<th align="left">機能</th>
+<th class="tableblock halign-left valign-top">キー</th>
+<th class="tableblock halign-left valign-top">機能</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">[PageUp]</td>
-<td align="left">PAGE(↓↑)</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[PageUp]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PAGE(↓↑)</p></td>
 </tr>
 <tr>
-<td align="left">[End]</td>
-<td align="left">STOP</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[End]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">STOP</p></td>
 </tr>
 <tr>
-<td align="left">[ALT]</td>
-<td align="left">GRAPH</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[ALT]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GRAPH</p></td>
 </tr>
 <tr>
-<td align="left">[Pause]<br>[カタカナ/ひらがな]</td>
-<td align="left">かな</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[Pause]<br>
+[カタカナ/ひらがな]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">かな</p></td>
 </tr>
 <tr>
-<td align="left">[PageDown]</td>
-<td align="left">MODE</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[PageDown]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MODE</p></td>
 </tr>
 <tr>
-<td align="left">[ScrollLock]</td>
-<td align="left">CAPS</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[ScrollLock]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CAPS</p></td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li>各種機能キー</li>
-</ul>
-<table>
+<table class="tableblock frame-all grid-all spread">
+<caption class="title">Table 2. 各種機能キー</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
 <thead>
 <tr>
-<th align="left">キー</th>
-<th align="left">機能</th>
+<th class="tableblock halign-left valign-top">キー</th>
+<th class="tableblock halign-left valign-top">機能</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">[F6]</td>
-<td align="left">モニタモード</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[F6]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">モニタモード</p></td>
 </tr>
 <tr>
-<td align="left">[ALT]+[F6]</td>
-<td align="left">フルスクリーン切替え</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[ALT]+[F6]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">フルスクリーン切替え</p></td>
 </tr>
 <tr>
-<td align="left">[F7]</td>
-<td align="left">スキャンライン切替え</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[F7]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">スキャンライン切替え</p></td>
 </tr>
 <tr>
-<td align="left">[ALT]+[F7]</td>
-<td align="left">4:3表示切替え</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[ALT]+[F7]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4:3表示切替え</p></td>
 </tr>
 <tr>
-<td align="left">[F8]</td>
-<td align="left">モード４カラー切替え</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[F8]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">モード４カラー切替え</p></td>
 </tr>
 <tr>
-<td align="left">[ALT]+[F8]</td>
-<td align="left">ステータスバー表示切替え</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[ALT]+[F8]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ステータスバー表示切替え</p></td>
 </tr>
 <tr>
-<td align="left">[F9]</td>
-<td align="left">ポーズ （トグル）</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[F9]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ポーズ （トグル）</p></td>
 </tr>
 <tr>
-<td align="left">[F10]</td>
-<td align="left">ウェイト （トグル）</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[F10]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ウェイト （トグル）</p></td>
 </tr>
 <tr>
-<td align="left">[F11]</td>
-<td align="left">リセット</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[F11]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">リセット</p></td>
 </tr>
 <tr>
-<td align="left">[ALT]+[F11]</td>
-<td align="left">再起動</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[ALT]+[F11]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">再起動</p></td>
 </tr>
 <tr>
-<td align="left">[F12]</td>
-<td align="left">スナップショット</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[F12]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">スナップショット</p></td>
 </tr>
 <tr>
-<td align="left">[無変換]</td>
-<td align="left">どこでもSAVE(1番スロットを使用)<br>リプレイ記録中は途中保存</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[無変換]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">どこでもSAVE(1番スロットを使用)<br>
+リプレイ記録中は途中保存</p></td>
 </tr>
 <tr>
-<td align="left">[変換]</td>
-<td align="left">どこでもLOAD(1番スロットを使用)<br>リプレイ記録中は途中保存から再開</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">[変換]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">どこでもLOAD(1番スロットを使用)<br>
+リプレイ記録中は途中保存から再開</p></td>
 </tr>
 </tbody>
 </table>
-<h3 id="_9">マウス操作</h3>
+</div>
+<div class="sect2">
+<h3 id="___9">マウス操作</h3>
+<div class="paragraph">
 <p>ホイール付きマウスを使用している場合，動作速度の変更が出来ます。<br>
 ホイールUPで増速，ホイールDOWNで減速，左クリックで等速に戻ります。<br>
-動作速度の変化量は2倍速までが10%単位，2倍速を超えると100%単位です。  </p>
-<table>
+動作速度の変化量は2倍速までが10%単位，2倍速を超えると100%単位です。<br></p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
 <thead>
 <tr>
-<th align="left">操作</th>
-<th align="left">機能</th>
+<th class="tableblock halign-left valign-top">操作</th>
+<th class="tableblock halign-left valign-top">機能</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">右クリック</td>
-<td align="left">メニュー表示</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">右クリック</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">メニュー表示</p></td>
 </tr>
 <tr>
-<td align="left">左クリック</td>
-<td align="left">動作速度を等速（100%）に戻す</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">左クリック</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">動作速度を等速（100%）に戻す</p></td>
 </tr>
 <tr>
-<td align="left">ホイールUP</td>
-<td align="left">動作速度を上げる（20倍速まで）</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ホイールUP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">動作速度を上げる（20倍速まで）</p></td>
 </tr>
 <tr>
-<td align="left">ホイールDOWN</td>
-<td align="left">動作速度を下げる（0.1倍速まで）</td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ホイールDOWN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">動作速度を下げる（0.1倍速まで）</p></td>
 </tr>
 </tbody>
 </table>
-<h3 id="_10">環境設定</h3>
+</div>
+<div class="sect2">
+<h3 id="___10">環境設定</h3>
+<div class="paragraph">
 <p>メニューの[設定]-[環境設定]を選ぶと、環境設定ダイアログが表示されます。<br>
-設定変更を反映するには再起動が必要です。  </p>
+設定変更を反映するには再起動が必要です。<br></p>
+</div>
+<div class="ulist">
 <ul>
 <li>
 <p>基本<br>
 エミュレーション対象機種とその構成に関する設定です。<br>
-<img alt="Setting_Basic" src="doc/setting_basic.png">  </p>
+<span class="image"><img src="doc/setting_basic.png" alt="setting basic.png"></span></p>
+<div class="ulist">
 <ul>
-<li>機種<br>
+<li>
+<p>機種<br>
 エミュレーション対象の機種を選択します。<br>
 動作には選択した機種から吸い出したROMが必要です。<br>
-互換ROM使用時はPC-6001を選択してください。  </li>
-<li>FDD接続数<br>
-FDDの接続数を設定します。  </li>
-<li>拡張RAMを使う<br>
-初代PC-6001でPC-6006を使う際はチェックしてください。  </li>
-<li>戦士のカートリッジを使う<br>
+互換ROM使用時はPC-6001を選択してください。<br></p>
+</li>
+<li>
+<p>FDD接続数<br>
+FDDの接続数を設定します。<br></p>
+</li>
+<li>
+<p>拡張RAMを使う<br>
+初代PC-6001でPC-6006を使う際はチェックしてください。<br></p>
+</li>
+<li>
+<p>戦士のカートリッジを使う<br>
 戦士のカートリッジを使用します。<br>
-戦士のカートリッジの詳細については<a href="http://papicom.net/p6v/manual.html#soldier">こちら</a>を参照してください。  </li>
+戦士のカートリッジの詳細については <a href="http://papicom.net/p6v/manual.html#soldier">こちら</a>を参照してください。<br></p>
+</li>
 </ul>
+</div>
 </li>
 <li>
 <p>画面<br>
 画面に関する設定です。<br>
-<img alt="Setting_Screen" src="doc/setting_screen.png">  </p>
+<span class="image"><img src="doc/setting_screen.png" alt="setting screen.png"></span></p>
+<div class="ulist">
 <ul>
-<li>モード4カラー<br>
-BASICモード1〜4時のスクリーンモード4のにじみ色を選択します。  </li>
-<li>フレームスキップ<br>
-フレームスキップの間隔を指定します。  </li>
-<li>スキャンラインを表示する<br>
-走査線と走査線の間の隙間を再現します。  </li>
-<li>4:3表示有効<br>
-画面の縦方向を1.16倍に引伸ばして画面全体の縦横比が4:3になるように表示します。</li>
-<li>フルスクリーン<br>
-フルスクリーンをオンにします。  </li>
-<li>ステータスバーを表示する<br>
-ステータスバーを表示します。</li>
-<li>ハードウェアアクセラレーション<br>
+<li>
+<p>モード4カラー<br>
+BASICモード1〜4時のスクリーンモード4のにじみ色を選択します。<br></p>
+</li>
+<li>
+<p>フレームスキップ<br>
+フレームスキップの間隔を指定します。<br></p>
+</li>
+<li>
+<p>スキャンラインを表示する<br>
+走査線と走査線の間の隙間を再現します。<br></p>
+</li>
+<li>
+<p>4:3表示有効<br>
+画面の縦方向を1.16倍に引伸ばして画面全体の縦横比が4:3になるように表示します。<br></p>
+</li>
+<li>
+<p>フルスクリーン<br>
+フルスクリーンをオンにします。<br></p>
+</li>
+<li>
+<p>ステータスバーを表示する<br>
+ステータスバーを表示します。<br></p>
+</li>
+<li>
+<p>ハードウェアアクセラレーション<br>
 画面表示にハードウェアアクセラレーション(WindowsではDirectX,それ以外ではOpenGL)を使用する場合チェックします。<br>
-この設定の変更をした場合はPC6001VXを一度終了して起動しなおしてください。  </li>
-<li>フィルタリング<br>
-画面表示拡大時にフィルタリングをかけてなめらかにします。  </li>
+この設定の変更をした場合はPC6001VXを一度終了して起動しなおしてください。<br></p>
+</li>
+<li>
+<p>フィルタリング<br>
+画面表示拡大時にフィルタリングをかけてなめらかにします。<br></p>
+</li>
 </ul>
+</div>
 </li>
 <li>
 <p>サウンド<br>
 サウンドに関する設定です。<br>
-<img alt="Setting_Sound" src="doc/setting_sound.png">  </p>
+<span class="image"><img src="doc/setting_sound.png" alt="setting sound.png"></span></p>
+<div class="ulist">
 <ul>
-<li>サンプリングレート<br>
-サウンドのサンプリングレートを指定します。  </li>
-<li>バッファサイズ<br>
+<li>
+<p>サンプリングレート<br>
+サウンドのサンプリングレートを指定します。<br></p>
+</li>
+<li>
+<p>バッファサイズ<br>
 サウンドのバッファサイズを指定します。<br>
-1,2上に大きくしてもかえって音飛びが大きくなるようです。  </li>
-<li>PSGローパスフィルタ　カットオフ周波数<br>
-PSGの音にローパスフィルタをかけます。0の時はオフです。  </li>
-<li>マスター音量<br>
-サウンド全体の音量を指定します。  </li>
-<li>PSG、FM音量  </li>
-<li>音声合成音量  </li>
-<li>TAPEモニタ音量<br>
-各音源ごとの音量を指定します。  </li>
+1,2上に大きくしてもかえって音飛びが大きくなるようです。<br></p>
+</li>
+<li>
+<p>PSGローパスフィルタ　カットオフ周波数<br>
+PSGの音にローパスフィルタをかけます。0の時はオフです。<br></p>
+</li>
+<li>
+<p>マスター音量<br>
+サウンド全体の音量を指定します。<br></p>
+</li>
+<li>
+<p>PSG、FM音量<br></p>
+</li>
+<li>
+<p>音声合成音量<br></p>
+</li>
+<li>
+<p>TAPEモニタ音量<br>
+各音源ごとの音量を指定します。<br></p>
+</li>
 </ul>
+</div>
 </li>
 <li>
 <p>入力<br>
 キー入力に関する設定です。<br>
-<img alt="Setting_Input" src="doc/setting_input.png">  </p>
+<span class="image"><img src="doc/setting_input.png" alt="setting input.png"></span></p>
+<div class="ulist">
 <ul>
-<li>キーリピート間隔<br>
-キーリピート間隔を指定します。  </li>
+<li>
+<p>キーリピート間隔<br>
+キーリピート間隔を指定します。<br></p>
+</li>
 </ul>
+</div>
 </li>
 <li>
 <p>ファイル<br>
 エミュレータにマウントするファイルを指定します。<br>
 ここで指定しておくとエミュレータを再起動してもファイルはマウントされ続けます。開発作業で同じイメージを使い続ける際には設定しておくと便利です。<br>
-<img alt="Setting_File" src="doc/setting_file.png">  </p>
+<span class="image"><img src="doc/setting_file.png" alt="setting file.png"></span></p>
+<div class="ulist">
 <ul>
-<li>拡張ROM<br>
-拡張ROMを使用する場合はそのファイルを指定します。  </li>
-<li>TAPE(LOAD)<br>
+<li>
+<p>拡張ROM<br>
+拡張ROMを使用する場合はそのファイルを指定します。<br></p>
+</li>
+<li>
+<p>TAPE(LOAD)<br>
 テープイメージは破損防止のため、読み込み用と書き込み用のファイルを別々に指定するようになっています。<br>
-TAPE(LOAD)は読み込み用のテープイメージファイルを指定します。  </li>
-<li>TAPE(SAVE)<br>
-書き込み用のテープイメージファイルを指定します。  </li>
-<li>DISK1  </li>
-<li>DISK2<br>
-それぞれのドライブにマウントするディスクイメージファイルを指定します。  </li>
-<li>プリンタ<br>
-プリンタに出力した内容を書き出すファイルを指定します。  </li>
+TAPE(LOAD)は読み込み用のテープイメージファイルを指定します。<br></p>
+</li>
+<li>
+<p>TAPE(SAVE)<br>
+書き込み用のテープイメージファイルを指定します。<br></p>
+</li>
+<li>
+<p>DISK1<br></p>
+</li>
+<li>
+<p>DISK2<br>
+それぞれのドライブにマウントするディスクイメージファイルを指定します。<br></p>
+</li>
+<li>
+<p>プリンタ<br>
+プリンタに出力した内容を書き出すファイルを指定します。<br></p>
+</li>
 </ul>
+</div>
 </li>
 <li>
 <p>フォルダ<br>
-各種ファイルを探索、保存する際のフォルダを指定します。
-<img alt="Setting_Folder" src="doc/setting_folder.png">  </p>
+各種ファイルを探索、保存する際のフォルダを指定します。<br>
+<span class="image"><img src="doc/setting_folder.png" alt="setting folder.png"></span></p>
+<div class="ulist">
 <ul>
-<li>ROM<br>
-実機から吸い出したROMファイルを配置するフォルダです。</li>
-<li>TAPE<br>
-テープイメージファイルを開く際に始点となるフォルダです。</li>
-<li>DISK<br>
-ディスクイメージファイルを開く際に始点となるフォルダです。</li>
-<li>拡張ROM<br>
-拡張ROMファイルを開く際に始点となるフォルダです。</li>
-<li>SnapShot<br>
-F12キーで保存したスナップショットの画像ファイルが保存されるフォルダです。  </li>
-<li>WAVE<br>
-TALK文の固定語を録音したファイルを配置するフォルダです。</li>
-<li>どこでもSAVE<br>
-どこでもSAVEのファイルを保存するフォルダです。</li>
+<li>
+<p>ROM<br>
+実機から吸い出したROMファイルを配置するフォルダです。<br></p>
+</li>
+<li>
+<p>TAPE<br>
+テープイメージファイルを開く際に始点となるフォルダです。<br></p>
+</li>
+<li>
+<p>DISK<br>
+ディスクイメージファイルを開く際に始点となるフォルダです。<br></p>
+</li>
+<li>
+<p>拡張ROM<br>
+拡張ROMファイルを開く際に始点となるフォルダです。<br></p>
+</li>
+<li>
+<p>SnapShot<br>
+F12キーで保存したスナップショットの画像ファイルが保存されるフォルダです。<br></p>
+</li>
+<li>
+<p>WAVE<br>
+TALK文の固定語を録音したファイルを配置するフォルダです。<br></p>
+</li>
+<li>
+<p>どこでもSAVE<br>
+どこでもSAVEのファイルを保存するフォルダです。<br></p>
+</li>
 </ul>
+</div>
 </li>
 <li>
 <p>色<br>
 エミュレータ画面に表示する色をカスタマイズできます。<br>
 変更したい色をクリックすると色選択ダイアログが表示されるので、任意の色を選んでください。<br>
-<img alt="Setting_Color1" src="doc/setting_color1.png"><br>
-<img alt="Setting_Color2" src="doc/setting_color2.png">  </p>
+<span class="image"><img src="doc/setting_color1.png" alt="setting color1.png"></span>
+<span class="image"><img src="doc/setting_color2.png" alt="setting color2.png"></span></p>
 </li>
 <li>
 <p>その他<br>
 エミュレータの挙動に関する設定です。<br>
-<img alt="Setting_Other" src="doc/setting_other.png">  </p>
+<span class="image"><img src="doc/setting_other.png" alt="setting other.png"></span></p>
+<div class="ulist">
 <ul>
-<li>オーバークロック率<br>
-動作速度の倍率を指定します。  </li>
-<li>システムROMのCRCチェック有効<br>
+<li>
+<p>オーバークロック率<br>
+動作速度の倍率を指定します。<br></p>
+</li>
+<li>
+<p>システムROMのCRCチェック有効<br>
 起動時にROMのCRCチェックを行います。<br>
 CRCチェックが合わなかった場合、起動時に警告が出ます。<br>
-何らかの原因によってCRCが一致しなかった場合、または互換ROM使用時はオフにしてください。  </li>
-<li>ROMにパッチを当てる<br>
-ROMにバグフィックスのパッチを当てます。  </li>
-<li>TurboTape<br>
-TAPEの読込み中はノーウェイトで動作させる機能です。  </li>
-<li>BoostUp<br>
-テープ読み込み高速化機能の高速化倍率を指定します。  </li>
-<li>FDDアクセスウェイト有効　
-FDDアクセス時にウェイトを入れるようにします。</li>
-<li>終了時に確認する<br>
-終了時に確認ダイアログが出るようになります。  </li>
-<li>終了時にINIファイルを保存する<br>
+何らかの原因によってCRCが一致しなかった場合、または互換ROM使用時はオフにしてください。</p>
+</li>
+<li>
+<p>ROMにパッチを当てる<br>
+ROMにバグフィックスのパッチを当てます。<br></p>
+</li>
+<li>
+<p>TurboTape<br>
+TAPEの読込み中はノーウェイトで動作させる機能です。<br></p>
+</li>
+<li>
+<p>BoostUp<br>
+テープ読み込み高速化機能の高速化倍率を指定します。<br></p>
+</li>
+<li>
+<p>FDDアクセスウェイト有効<br>
+FDDアクセス時にウェイトを入れるようにします。<br></p>
+</li>
+<li>
+<p>終了時に確認する<br>
+終了時に確認ダイアログが出るようになります。<br></p>
+</li>
+<li>
+<p>終了時にINIファイルを保存する<br>
 終了時にINIファイルを保存します。<br>
-このチェックをオフにすると、メニューから行った設定変更が保存されなくなります。  </li>
-</ul>
+このチェックをオフにすると、メニューから行った設定変更が保存されなくなります。<br></p>
 </li>
 </ul>
-<h2 id="_11">開発者情報</h2>
-<h3 id="_12">ライセンス</h3>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="___11">開発者情報</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="___12">ライセンス</h3>
+<div class="paragraph">
 <p>ライセンスはオリジナルのPC6001Vのライセンスに従い、LGPLとします。<br>
-ただし、FMGEN部分に関してはCISC様(<a href="http://retropc.net/cisc/m88/">http://retropc.net/cisc/m88/</a>)の設定されたライセンスに従います。この部分はフリーウェアにのみ使用を許可されています。<br>
+ただし、FMGEN部分に関しては <a href="http://retropc.net/cisc/m88/">CISC様</a>の設定されたライセンスに従います。この部分はフリーウェアにのみ使用を許可されています。
 このプログラムを使用したことによるいかなる損害も作者のeighttailsは責任を持ちません。</p>
-<h3 id="_13">ビルド方法</h3>
-<h4 id="windows_1">Windows</h4>
-<p>MSYS2環境上でビルドします。</p>
-<ol>
-<li>DirectX SDK June 2010(<a href="https://www.microsoft.com/en-us/download/details.aspx?id=6812">https://www.microsoft.com/en-us/download/details.aspx?id=6812</a>)をインストールする。</li>
-<li>こちら(<a href="http://sourceforge.net/projects/msys2/">http://sourceforge.net/projects/msys2/</a>)からMSYS2をダウンロードしてインストールしてください。<br>
+</div>
+</div>
+<div class="sect2">
+<h3 id="___13">ビルド方法</h3>
+<div class="sect3">
+<h4 id="_windows_2">Windows</h4>
+<div class="paragraph">
+<p>MSYS2環境上でビルドします。<br></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://www.microsoft.com/en-us/download/details.aspx?id=6812">DirectX SDK June 2010</a>をインストールする。<br></p>
+</li>
+<li>
+<p><a href="http://sourceforge.net/projects/msys2/">こちら</a>からMSYS2をダウンロードしてインストールしてください。<br>
 VC++はサポートしていません。<br>
 MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(<code>pacman -Sy</code>)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用)<br>
-<a href="https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe">https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe</a>  </li>
-<li>MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。  </li>
-<li>MSYSをインストールしたフォルダのmingw32.exeを実行。  </li>
-<li>ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。  </li>
-<li><code>cd PC6001VX/win32</code>を実行し、ソースフォルダのwin32フォルダにカレントを移動。  </li>
-<li><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール。</li>
-<li><code>bash ./buildenv.sh</code>を実行。QtのライブラリとQtCreatorをビルド。<br>
-QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。</li>
-<li><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。</li>
-<li>自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。</li>
+<a href="https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe" class="bare">https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe</a></p>
+</li>
+<li>
+<p>MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。<br></p>
+</li>
+<li>
+<p>MSYSをインストールしたフォルダのmingw32.exeを実行。<br></p>
+</li>
+<li>
+<p>ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。<br></p>
+</li>
+<li>
+<p><code>cd PC6001VX/win32</code>を実行し、ソースフォルダのwin32フォルダにカレントを移動。<br></p>
+</li>
+<li>
+<p><code>bash ./toochain.sh</code>を実行。ツールチェインをインストール。<br></p>
+</li>
+<li>
+<p><code>bash ./buildenv.sh</code>を実行。QtのライブラリとQtCreatorをビルド。<br>
+QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。<br></p>
+</li>
+<li>
+<p><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。<br></p>
+</li>
+<li>
+<p>自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。<br></p>
+</li>
 </ol>
-<h4 id="linux_1">Linux</h4>
-<p>Debian系のディストリビューションについて解説します。</p>
-<ol>
-<li><code>apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev</code> を実行。  </li>
-<li>ダウンロードしたPC6001VXのソースを解凍してください。  </li>
-<li>PC6001VX.proをQtCreatorで開いてビルドしてください。<br>
-IDEが嫌な人はQtCreatorの代わりにqmakeとqtライブラリを揃えればビルドできるでしょう。</li>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_linux_2">Linux</h4>
+<div class="paragraph">
+<p>Debian系のディストリビューションについて解説します。<br></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev</code> を実行。<br></p>
+</li>
+<li>
+<p>ダウンロードしたPC6001VXのソースを解凍してください。<br></p>
+</li>
+<li>
+<p>PC6001VX.proをQtCreatorで開いてビルドしてください。<br></p>
+</li>
+<li>
+<p>IDEを使わない場合、コマンドラインでは以下の手順でビルドできます。<br></p>
+</li>
 </ol>
-<h4 id="android_1">Android</h4>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>cd PC6001VX
+qmake PC6001VX.pro
+make</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_android_2">Android</h4>
+<div class="paragraph">
 <p>こちらを参考にして環境を構築してください。<br>
-<a href="http://qt-project.org/doc/qtcreator/creator-developing-android.html">http://qt-project.org/doc/qtcreator/creator-developing-android.html</a></p>
-<h2 id="_14">既知の不具合、制約事項</h2>
+<a href="http://qt-project.org/doc/qtcreator/creator-developing-android.html" class="bare">http://qt-project.org/doc/qtcreator/creator-developing-android.html</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="___14">既知の不具合、制約事項</h2>
+<div class="sectionbody">
+<div class="ulist">
 <ul>
-<li>起動するたびにシステムの音量を変えてしまうことがあります。
-Qt5の音量制御周りはまだあまり枯れていないようです。</li>
-<li>X11では、なぜかかなキー(PAUSE)の利きが悪いです。</li>
+<li>
+<p>起動するたびにシステムの音量を変えてしまうことがあります。<br>
+Qt5の音量制御周りはまだあまり枯れていないようです。<br></p>
+</li>
+<li>
+<p>X11では、なぜかかなキー(PAUSE)の利きが悪いです。<br></p>
+</li>
 </ul>
-<h2 id="_15">更新履歴</h2>
-<p>■Git master(リリース前の最新版)</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="___15">更新履歴</h2>
+<div class="sectionbody">
+<div class="ulist">
 <ul>
-<li>ALWAYSFULLSCREENフラグを付加してビルドした場合にファイルダイアログ、設定ダイアログもフルスクリーンになるようにした。(PocketChipなどの低解像度デバイス用)</li>
-<li>(Windows)ビルド手順を更新。MSYS2のバージョンを固定する運用を推奨。</li>
-<li>(UNIX)Linux以外のUNIXでビルドできるようにproファイルを修正</li>
+<li>
+<p>Git master(リリース前の最新版)<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>ALWAYSFULLSCREENフラグを付加してビルドした場合にファイルダイアログ、設定ダイアログもフルスクリーンになるようにした。(PocketChipなどの低解像度デバイス用)<br></p>
+</li>
+<li>
+<p>(Windows)ビルド手順を更新。MSYS2のバージョンを固定する運用を推奨。<br></p>
+</li>
+<li>
+<p>(UNIX)Linux以外のUNIXでビルドできるようにproファイルを修正<br></p>
+</li>
 </ul>
-<p>■2.30.0 2016/08/27</p>
+</div>
+</li>
+<li>
+<p>2.30.0 2016/08/27</p>
+<div class="ulist">
 <ul>
-<li>P6V1.25ベースに更新</li>
-<li>動画記録中にメニューを出そうとすると固まっていたのを修正。</li>
-<li>(Windows)MSYS2に同梱のMinGWのバグが取れたので、最新版の6.1を使ってビルドすることにした。<br>
-QtおよびMSYS2がXPのサポートを落としたため、今回のバージョンからXPでは動きません。XPでどうしても動かしたいという方は2.21を使ってください。</li>
+<li>
+<p>P6V1.25ベースに更新<br></p>
+</li>
+<li>
+<p>動画記録中にメニューを出そうとすると固まっていたのを修正。<br></p>
+</li>
+<li>
+<p>(Windows)MSYS2に同梱のMinGWのバグが取れたので、最新版の6.1を使ってビルドすることにした。<br>
+QtおよびMSYS2がXPのサポートを落としたため、今回のバージョンからXPでは動きません。XPでどうしても動かしたいという方は2.21を使ってください。<br></p>
+</li>
 </ul>
-<p>■2.21.0 2016/05/04</p>
+</div>
+</li>
+<li>
+<p>2.21.0 2016/05/04<br></p>
+<div class="ulist">
 <ul>
-<li>バージョン番号のスキームを変えました。今後のバージョン番号は(メジャーバージョン).(マイナーバージョン).(バグフィックス)とします。</li>
-<li>モニタモードでブレークポイントにヒットすると固まるのを修正。</li>
-<li>(Windows)ビルドオプションを変更。もしかしたらXPで動かくかも(無保証)</li>
-<li>(Windows)MSYS2に同梱のMinGW5.3があまりに不安定なため、GCC4.9を使ってビルドすることにした。</li>
+<li>
+<p>バージョン番号のスキームを変えました。今後のバージョン番号は(メジャーバージョン).(マイナーバージョン).(バグフィックス)とします。<br></p>
+</li>
+<li>
+<p>モニタモードでブレークポイントにヒットすると固まるのを修正。<br></p>
+</li>
+<li>
+<p>(Windows)ビルドオプションを変更。もしかしたらXPで動かくかも(無保証)<br></p>
+</li>
+<li>
+<p>(Windows)MSYS2に同梱のMinGW5.3があまりに不安定なため、GCC4.9を使ってビルドすることにした。<br></p>
+</li>
 </ul>
-<p>■2.2 2016/04/24</p>
+</div>
+</li>
+<li>
+<p>2.2 2016/04/24<br></p>
+<div class="ulist">
 <ul>
-<li>P6V1.24ベースに更新</li>
-<li>ヘルプメニューにオンラインリファレンスへのリンクを入れた。</li>
-<li>(Windows)safemode.batのオプションの書式が間違っていたので修正。</li>
-<li>(Windows)環境によって起動しないことがあったので最適化オプションを修正。</li>
-<li>(Android)レジュームに失敗することがあるのを修正。</li>
-<li>(Android)UIが中華フォントで表示されていたのをMotoyaLMaruで表示するようにした。</li>
+<li>
+<p>P6V1.24ベースに更新<br></p>
+</li>
+<li>
+<p>ヘルプメニューにオンラインリファレンスへのリンクを入れた。<br></p>
+</li>
+<li>
+<p>(Windows)safemode.batのオプションの書式が間違っていたので修正。<br></p>
+</li>
+<li>
+<p>(Windows)環境によって起動しないことがあったので最適化オプションを修正。<br></p>
+</li>
+<li>
+<p>(Android)レジュームに失敗することがあるのを修正。<br></p>
+</li>
+<li>
+<p>(Android)UIが中華フォントで表示されていたのをMotoyaLMaruで表示するようにした。<br></p>
+</li>
 </ul>
-<p>■2.11 2015/11/11</p>
+</div>
+</li>
+<li>
+<p>2.11 2015/11/11<br></p>
+<div class="ulist">
 <ul>
-<li>リプレイに「1つ前の途中保存から再開」を追加</li>
-<li>(Linux)WebMのオーディオにOpusを使うディストリビューションの場合クラッシュしてしまうので、強制的にVorbisを使うようにした。</li>
-<li>(Windows)ビルド手順と環境構築スクリプトを修正。<br>
+<li>
+<p>リプレイに「1つ前の途中保存から再開」を追加<br></p>
+</li>
+<li>
+<p>(Linux)WebMのオーディオにOpusを使うディストリビューションの場合クラッシュしてしまうので、強制的にVorbisを使うようにした。<br></p>
+</li>
+<li>
+<p>(Windows)ビルド手順と環境構築スクリプトを修正。<br>
 自前ビルドライブラリは/mingw32/localに集約。<br>
-ビルド環境を作る場合は、一度MSYS2の再インストールから行ってください。</li>
+ビルド環境を作る場合は、一度MSYS2の再インストールから行ってください。<br></p>
+</li>
 </ul>
-<p>■2.1 2015/08/29</p>
+</div>
+</li>
+<li>
+<p>2.1 2015/08/29<br></p>
+<div class="ulist">
 <ul>
-<li>(Windows)(Linux)ffmpeg/libavを利用したビデオキャプチャ機能を実装</li>
+<li>
+<p>(Windows)(Linux)ffmpeg/libavを利用したビデオキャプチャ機能を実装<br></p>
+</li>
 </ul>
-<p>■2.01 2015/01/10</p>
+</div>
+</li>
+<li>
+<p>2.01 2015/01/10<br></p>
+<div class="ulist">
 <ul>
-<li>テープロード中にクラッシュすることがあるのを修正</li>
+<li>
+<p>テープロード中にクラッシュすることがあるのを修正<br></p>
+</li>
 </ul>
-<p>■2.0 2014/12/27</p>
+</div>
+</li>
+<li>
+<p>2.0 2014/12/27<br></p>
+<div class="ulist">
 <ul>
-<li>P6V1.23ベースに更新</li>
-<li>エミュレーション内のイベント処理を若干高速化。遅いマシン上でFPSが若干向上します。</li>
-<li>フレームスキップを自動化
-遅いマシン上で動かす場合、設定されているフレームスキップよりさらにフレームを間引き、エミュレーションの等速動作を優先するようにしました。あまりに非力でエミュレーション自体の等速動作をするパワーがない場合、最大で1FPSまでフレームレートが落ちます。</li>
-<li>(Android)署名を付加。「提供元不明のアプリ」の許可が不要になりました。</li>
+<li>
+<p>P6V1.23ベースに更新<br></p>
+</li>
+<li>
+<p>エミュレーション内のイベント処理を若干高速化。遅いマシン上でFPSが若干向上します。<br></p>
+</li>
+<li>
+<p>フレームスキップを自動化<br>
+遅いマシン上で動かす場合、設定されているフレームスキップよりさらにフレームを間引き、エミュレーションの等速動作を優先するようにしました。あまりに非力でエミュレーション自体の等速動作をするパワーがない場合、最大で1FPSまでフレームレートが落ちます。<br></p>
+</li>
+<li>
+<p>(Android)署名を付加。「提供元不明のアプリ」の許可が不要になりました。<br></p>
+</li>
 </ul>
-<p>■2.0RC1 2014/10/19</p>
+</div>
+</li>
+<li>
+<p>2.0RC1 2014/10/19<br></p>
+<div class="ulist">
 <ul>
-<li>P6V1.22リリース版ベースに更新</li>
-<li>補助キーパネルの実装。<br>
-メニューから「キーパネル」を選ぶと、英語キーボードなどで入力しにくいキーをボタンで入力できるツールウィンドウが開きます。</li>
-<li>キーイベントのハンドリングを一部変更<br>
+<li>
+<p>P6V1.22リリース版ベースに更新<br></p>
+</li>
+<li>
+<p>補助キーパネルの実装。<br>
+メニューから「キーパネル」を選ぶと、英語キーボードなどで入力しにくいキーをボタンで入力できるツールウィンドウが開きます。<br></p>
+</li>
+<li>
+<p>キーイベントのハンドリングを一部変更<br>
 モバイル機、小型特殊キーボードなどで、刻印と違うキーが入力されることが減ると思います。
-記号のたぐいが入力できない場合は、シフトキーと併用してみてください。
-P6実機上でシフトキーが必要な文字を入力するには、エミュレーター上でもシフトキーを押して入力する必要があります。</li>
-<li>Androidで終了時にその時の状態を保存するようにした。OSによって殺された場合の挙動は未確認。</li>
-<li>WindyさんのMAC用パッチを取り込み(文字コード関連)</li>
-<li>(Windows)(Linux)フルスクリーン時にスクリーンセーバーを抑止するようにした。</li>
-<li>ドキュメントをMarkdownで書き直した。</li>
-</ul>
-<p>■2.0Beta4 2014/08/15</p>
-<ul>
-<li>P6V1.22開発版ベースに更新  <ul>
-<li>FM音源対応(暫定版)</li>
-<li>未実装機能などの制約事項は本家に準じます。</li>
-</ul>
+記号のたぐいが入力できない場合は、シフトキーと併用してみてください。<br>
+P6実機上でシフトキーが必要な文字を入力するには、エミュレーター上でもシフトキーを押して入力する必要があります。<br></p>
 </li>
 <li>
-<p>Androidの対応開始  </p>
-<ul>
-<li>対応OSはAndroid4.0以上、現時点でハードウェアキーボード必須です。</li>
-<li>初回起動時はMinistroが立ち上がるのでそこからQtをダウンロードしてください。</li>
-<li>エミュレーションメイン画面をタップで長押しするとメニューが出ます。</li>
-<li>現時点では取り扱い注意の人柱版です。以下のような制約があります。</li>
-</ul>
+<p>Androidで終了時にその時の状態を保存するようにした。OSによって殺された場合の挙動は未確認。<br></p>
 </li>
 <li>
-<p>【Android対応の制約事項】   </p>
-<ul>
-<li>キーボードによっては入力できないキーがあります。<br>
-例えばASUSのTransformerシリーズのドックキーボードではファンクションキーがなく入力できません。</li>
-<li>アプリがバックグラウンドに回った際、OSに勝手に終了させられることがあります。
-終了時に自動的にどこでもSAVEするように対応する予定ですが、まだ未実装です。</li>
-<li>バックグラウンドに回った場合、エミュレーションは一時停止しますが、裏でCPUパワーとバッテリを消費してしまいます。<br>
-終了する際はメニューかタスクリストから終了してください。</li>
-<li>GUIが中華っぽいフォントで表示されてしまいます。</li>
-<li>音が出たり出なかったりします。Androidのシステムサウンド設定をいじっていると
-　　復活することがあるようです。</li>
-</ul>
+<p>WindyさんのMAC用パッチを取り込み(文字コード関連)<br></p>
 </li>
 <li>
-<p>iniファイルを2つに分けた</p>
-<ul>
-<li>P6VX固有の機能追加に関する設定を扱いやすくするため、
-本家P6Vと共通の設定はpc6001v.ini,P6VX固有の設定をpc6001vx.iniに分離しました。
-エラーが出る場合、iniファイルを一度削除してください。</li>
-</ul>
+<p>(Windows)(Linux)フルスクリーン時にスクリーンセーバーを抑止するようにした。<br></p>
 </li>
 <li>
-<p>ドットカクカク表示対応</p>
-<ul>
-<li>一部の方から要望のあった、ドットのカクカク表示に対応しました。</li>
-<li>以下の手順をで設定するとドットがカクカク表示になります。<ul>
-<li>メニューの設定→4:3表示をオフ</li>
-<li>メニューの設定→フィルタリングをオフ</li>
-<li>メニューの設定→表示サイズから整数倍の倍率を指定</li>
-<li>メニューの設定→表示サイズ→倍率を固定をオン</li>
-</ul>
+<p>ドキュメントをMarkdownで書き直した。<br></p>
 </li>
 </ul>
+</div>
 </li>
 <li>
-<p>ウィンドウサイズ、表示サイズを設定ファイルに記憶するようにした。</p>
+<p>2.0Beta4 2014/08/15<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>P6V1.22開発版ベースに更新<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>FM音源対応(暫定版)<br></p>
 </li>
-<li>TALK文の固定語再生を実装(今まで未実装でしたすみません)<ul>
-<li>waveフォルダにf41.wav~f44.wavを配置してください。</li>
-<li>作者は44kHzモノラルのWAVで動作確認しています。</li>
-</ul>
+<li>
+<p>未実装機能などの制約事項は本家に準じます。<br></p>
 </li>
-<li>リプレイ関係のバグをいくつか修正</li>
-<li>CRC違いのROMで起動しようとした際にクラッシュすることがあるのを修正</li>
 </ul>
-<p>■2.0Beta3 2014/04/10</p>
+</div>
+</li>
+<li>
+<p>Androidの対応開始<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>対応OSはAndroid4.0以上、現時点でハードウェアキーボード必須です。<br></p>
+</li>
+<li>
+<p>初回起動時はMinistroが立ち上がるのでそこからQtをダウンロードしてください。<br></p>
+</li>
+<li>
+<p>エミュレーションメイン画面をタップで長押しするとメニューが出ます。<br></p>
+</li>
+<li>
+<p>現時点では取り扱い注意の人柱版です。以下のような制約があります。<br></p>
+</li>
+<li>
+<p>【Android対応の制約事項】<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>キーボードによっては入力できないキーがあります。<br>
+例えばASUSのTransformerシリーズのドックキーボードではファンクションキーがなく入力できません。<br></p>
+</li>
+<li>
+<p>アプリがバックグラウンドに回った際、OSに勝手に終了させられることがあります。<br>
+終了時に自動的にどこでもSAVEするように対応する予定ですが、まだ未実装です。<br></p>
+</li>
+<li>
+<p>バックグラウンドに回った場合、エミュレーションは一時停止しますが、裏でCPUパワーとバッテリを消費してしまいます。<br>
+終了する際はメニューかタスクリストから終了してください。<br></p>
+</li>
+<li>
+<p>GUIが中華っぽいフォントで表示されてしまいます。<br></p>
+</li>
+<li>
+<p>音が出たり出なかったりします。<br>
+Androidのシステムサウンド設定をいじっていると復活することがあるようです。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>iniファイルを2つに分けた<br>
+P6VX固有の機能追加に関する設定を扱いやすくするため、<br>
+本家P6Vと共通の設定はpc6001v.ini,P6VX固有の設定をpc6001vx.iniに分離しました。<br>
+エラーが出る場合、iniファイルを一度削除してください。<br></p>
+</li>
+<li>
+<p>ドットカクカク表示対応<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>一部の方から要望のあった、ドットのカクカク表示に対応しました。<br></p>
+</li>
+<li>
+<p>以下の手順をで設定するとドットがカクカク表示になります。<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>メニューの設定→4:3表示をオフ<br></p>
+</li>
+<li>
+<p>メニューの設定→フィルタリングをオフ<br></p>
+</li>
+<li>
+<p>メニューの設定→表示サイズから整数倍の倍率を指定<br></p>
+</li>
+<li>
+<p>メニューの設定→表示サイズ→倍率を固定をオン<br></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>ウィンドウサイズ、表示サイズを設定ファイルに記憶するようにした。<br></p>
+</li>
+<li>
+<p>TALK文の固定語再生を実装(今まで未実装でしたすみません)<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>waveフォルダにf41.wav~f44.wavを配置してください。<br></p>
+</li>
+<li>
+<p>作者は44kHzモノラルのWAVで動作確認しています。<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>リプレイ関係のバグをいくつか修正<br></p>
+</li>
+<li>
+<p>CRC違いのROMで起動しようとした際にクラッシュすることがあるのを修正<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>2.0Beta3 2014/04/10<br></p>
+<div class="ulist">
 <ul>
 <li>
 <p>(Windows)グラフィクスタックにANGLE経由のDirectXを使うようにした。<br>
 IntelGPUでもハードウェアアクセラレーションが有効になり、軽くなる効果が期待できます。<br>
-XPでは正常に動作しない可能性があり、勝手ながら本バージョンからXPは非サポートとします。
+XPでは正常に動作しない可能性があり、勝手ながら本バージョンからXPは非サポートとします。<br>
 起動しない場合は、以下のページからDirectXのランタイムをインストールしてください。<br>
-http://www.microsoft.com/ja-jp/download/details.aspx?id=35</p>
+<a href="http://www.microsoft.com/ja-jp/download/details.aspx?id=35" class="bare">http://www.microsoft.com/ja-jp/download/details.aspx?id=35</a></p>
 </li>
 <li>
 <p>Merged English translation.(Thanks Anna Wu!)<br>
-When display language of OS is not Japanese, GUI of PC6001VX is displayed in English.</p>
+When display language of OS is not Japanese, GUI of PC6001VX is displayed in English.<br></p>
 </li>
-<li>リプレイ関連機能強化<ul>
-<li>リプレイ記録中に途中保存することができるようになった。<br>
+<li>
+<p>リプレイ関連機能強化<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>リプレイ記録中に途中保存することができるようになった。<br>
 リプレイメニューから「途中保存」「途中保存から再開」を選択することでリプレイを記録しながらプレイのやり直しができます。<br>
-途中保存ファイルはリプレイファイルと同一フォルダにresume.ddsというファイル名で保存されます。
+途中保存ファイルはリプレイファイルと同一フォルダにresume.ddsというファイル名で保存されます。<br>
 複数リプレイファイルを同一フォルダに置く場合は注意が必要です。<br>
-また、途中保存ファイルは記録停止時にも保存されます。
-リプレイ記録開始時に「記録再開...」を選んで既存のリプレイファイルを選択すると記録停止した時点からリプレイを追記することができます。
-リプレイファイルが完成したらresume.ddsファイルは不要ですので削除して結構です。</li>
-</ul>
-</li>
-<li>【リプレイに関する既知の問題、制約事項】  <ul>
-<li>オートスタートが設定されているテープイメージを使っていると途中保存が正しく行われません。</li>
-<li>シフトキー、ALTキー(GRPH)の入力を伴うリプレイは正しく再生されないようです。
-このへんは本家では修正済みのようなのでリリースされ次第マージします。</li>
-<li>リプレイ記録中にマウスホイールで速度変更をすると再生が正しく行われません。</li>
-<li>途中ディスク、テープに書き込むするリプレイはイメージを破損するおそれがあります。</li>
-</ul>
-</li>
-<li>どこでもSAVE/LOADにショートカットキー割り当て<br>
-無変換/変換キーでスロットの1番を使ってどこでもSAVE/LOADを行います。リプレイ記録中は途中保存/途中保存から再開になります。</li>
-<li>本家P6Vに実装済みだった、マウスホイールでスピード調整する機能を実装。</li>
-<li>リプレイ再生中にTILTの動きを再現するようになった。</li>
-<li>ウィンドウモードでもTILTするようになった。<ul>
-<li>ステータスバーを非表示にするとディスプレイ枠が表示されます。</li>
-</ul>
+また、途中保存ファイルは記録停止時にも保存されます。<br>
+リプレイ記録開始時に「記録再開&#8230;&#8203;」を選んで既存のリプレイファイルを選択すると記録停止した時点からリプレイを追記することができます。<br>
+リプレイファイルが完成したらresume.ddsファイルは不要ですので削除して結構です。<br></p>
 </li>
 </ul>
-<p>■2.0Beta2 2014/01/22</p>
-<p>バグ修正</p>
+</div>
+</li>
+<li>
+<p>【リプレイに関する既知の問題、制約事項】<br></p>
+<div class="ulist">
 <ul>
-<li>どこでもLOAD時にクラッシュするのを修正</li>
-<li>サンプリングレートを22050Hzにしていると落ちるのを修正</li>
-<li>サウンドのマスターボリュームを変えてしまう問題は解消していませんが、
-とりあえず右クリックしただけで音量がデフォルトに戻ってしまうのを修正</li>
-<li>フルスクリーン時に表示される幅1ピクセルの謎の枠を表示されないようにした。</li>
-<li>起動時のウィンドウのサイズ計算をちょっと修正</li>
+<li>
+<p>オートスタートが設定されているテープイメージを使っていると途中保存が正しく行われません。<br></p>
+</li>
+<li>
+<p>シフトキー、ALTキー(GRPH)の入力を伴うリプレイは正しく再生されないようです。<br>
+このへんは本家では修正済みのようなのでリリースされ次第マージします。<br></p>
+</li>
+<li>
+<p>リプレイ記録中にマウスホイールで速度変更をすると再生が正しく行われません。<br></p>
+</li>
+<li>
+<p>途中ディスク、テープに書き込むするリプレイはイメージを破損するおそれがあります。<br></p>
+</li>
 </ul>
-<p>■2.0Beta1 2014/01/15</p>
+</div>
+</li>
+<li>
+<p>どこでもSAVE/LOADにショートカットキー割り当て<br>
+無変換/変換キーでスロットの1番を使ってどこでもSAVE/LOADを行います。リプレイ記録中は途中保存/途中保存から再開になります。<br></p>
+</li>
+<li>
+<p>本家P6Vに実装済みだった、マウスホイールでスピード調整する機能を実装。<br></p>
+</li>
+<li>
+<p>リプレイ再生中にTILTの動きを再現するようになった。<br></p>
+</li>
+<li>
+<p>ウィンドウモードでもTILTするようになった。<br></p>
+<div class="ulist">
 <ul>
-<li>P6V1.21開発版ベースに更新<br>
-SR対応(暫定版)、PC-6001Aに対応
-SR対応の制約事項(FM音源に未対応など)は本家に準じます。</li>
-<li>TILTモードの改良<br>
-初代機、6001A選択時はモニター枠としてPC-6042Kが表示されるようにした。
-キーボードでもTILTモードが使えるようにした。</li>
+<li>
+<p>ステータスバーを非表示にするとディスプレイ枠が表示されます。<br></p>
+</li>
 </ul>
-<p>■2.0Alpha3 2013/08/18</p>
-<ul>
-<li>P6V1.19ベースに更新</li>
-<li>OpenGLの機能チェックを改善<br>
-Windows上でのIntelGPUなど、QtでOpenGLを使うための機能要件を満たさない場合、
-自動的にソフトウェアレンダリングになります。</li>
-<li>設定ダイアログを、より小さな画面に収まるようにレイアウトを修正</li>
-<li>「=」が入力できないのを修正</li>
-<li>「カタカナ/ひらがな」キーをかなキーにマップした(X11でPAUSEが効きにくい対策)</li>
-<li>ウィンドウ最大化時にモニタモードやスキャンラインなど、
-ウィンドウサイズが変わる操作をした場合に表示倍率が維持されないのを修正。</li>
-<li>TILTモード中にモニタモードに入った場合ディスプレイ枠を消すようにした。</li>
-<li>再起動時にジョイスティックが使えなくなるのを修正</li>
-<li>(Windows)ビルドにQt5.1を使用</li>
+</div>
+</li>
 </ul>
-<p>■2.0Alpha2 2013/05/25(オフ会記念リリース)</p>
-<ul>
-<li>TILTモードにディスプレイの枠が表示されるようになった(フルスクリーン時のみ)<br>
-Hashiさん、MORIANさん、THANKS!
-他、主にバグ修正</li>
-<li>遅いマシンでフリーズすることがあるのを修正(スケジューラのウェイト計算ミス)</li>
-<li>設定画面でキーボード入力が効かないのを修正</li>
-<li>4:3表示の際、画面下にゴミが出ているのを修正</li>
-<li>メニュー表示中に右クリックすると二重にメニューが表示されてしまうのを修正</li>
-<li>スナップショット保存が動いていなかったのを修正</li>
-<li>(Windows)初回起動時のROMフォルダ選択ダイアログで「いいえ」を選択すると
-GUIが暴走するのを修正</li>
-</ul>
-<p>■2.0Alpha 2013/05/07</p>
-<ul>
-<li>SDLで行われていたグラフィック描画、イベント処理、キー入力、サウンド出力をQt5に移行。<br>
-これにより、バージョン1.0系列の既知の不具合は解消。
-ただし新たな不具合も発生(汗</li>
-<li>グラフィックの描画にQtを使用<br>
-QtとOpenGLを用いた無段階の拡大縮小が可能になっています。
-また、4:3表示もQt側で引き伸ばしを行うことで自然な表示になっています。
-また、環境設定の色数設定はなくなりました。
-内部処理は256色、描画はディスプレイの色深度で固定になります。</li>
-<li>ジョイスティック入力のみSDL2を使用。<br>
-proファイルにて、DEFINES+=NOJOYSTICKと指定すると、
-ジョイスティックサポートが外れる代わりに、Qt5のみで全てビルド可能。</li>
-<li>ZLib,libPNGが不要になった。</li>
-<li>TILTモードの追加<br>
-3DS版のスペースハリアーに触発されて作ったジョーク機能です。
-ジョイスティックの左右に反応して、画面が傾きます。(笑
-キーリピートの関係でカーソルキーには対応できませんでした。すみません。
-一応スペハリを想定して作っていますが、オリオンでもなかなか良い感じに酔えます。
-その他、クエスト、バンダル、AX-9、アステロイドチューブ、プラズマラインなど、3D視点のゲームでお楽しみください。(ジョイスティックに対応してればの話ですが)
-Qtではグラフィックの拡大縮小回転が簡単に行えるので、そのデモンストレーションでもあります。</li>
-<li>フォントファイルはバイナリに埋め込んだリソースから直接読むようにした。
-　fontフォルダを作らなくなった。</li>
-<li>従来M+Outlineから生成していたフォントファイルをM+Bitmapベースに切り替えた。
-だいぶ見やすくなったと思います。</li>
-<li>スケジューラーのウェイト計算方法を変えた。
-CPU使用率も下がって、サウンドのバッファアンダーフローによるプチノイズもだいぶ減ったと思います。</li>
-</ul>
-<p>■1.01　2013/01/02</p>
-<ul>
-<li>P6V1.17ベースに更新
-本家に取り込まれた色にじみコードを再取り込み。にじみSet1に対応。</li>
-<li>右クリックメニューに「終了」がなかったのを修正(汗</li>
-</ul>
-<p>■1.0　2012/11/30</p>
-<ul>
-<li>P6V1.16ベースに更新</li>
-<li>新色にじみ方式(通称J方式)のにじみカラー出力を実装</li>
-<li>初回起動時にROMフォルダを指定できるようにした。</li>
-<li>二重起動防止にQtSingleApplicationを使用。ロックファイルを作らなくなった。</li>
-<li>スレッド処理にTLS(スレッド局所記憶)を使わないようにした。</li>
-<li>ステータスバー、モニタモード用の半角英数フォントを手作業でちまちま修正した。<br>
-多少見やすくなったと思います。</li>
-<li>(Windows)ライブラリを可能な限りスタティックリンクにした。</li>
-<li>(Windows)ゆみたろさんのパッチを当ててSDLをビルド。今までサボってましたすみません。</li>
-<li>(非Windows)TAPE,DISKなどのフォルダのデフォルト設定を空白にした。<br>
-明示的に設定しない場合、ホームフォルダから探しにいきます。</li>
-</ul>
-<p>■1.0β2　2012/03/09
+</div>
+</li>
+<li>
+<p>2.0Beta2 2014/01/22<br>
 バグ修正</p>
+<div class="ulist">
 <ul>
-<li>CRCが合わないROMを使用している場合、警告を出した上でCRCチェックを無効にできるようにした。</li>
-<li>ボリュームの設定が全てマスターに反映されてしまうのを修正。</li>
-<li>スキャンライン輝度が常に1として保存されてしまうのを修正。</li>
+<li>
+<p>どこでもLOAD時にクラッシュするのを修正<br></p>
+</li>
+<li>
+<p>サンプリングレートを22050Hzにしていると落ちるのを修正<br></p>
+</li>
+<li>
+<p>サウンドのマスターボリュームを変えてしまう問題は解消していませんが、とりあえず右クリックしただけで音量がデフォルトに戻ってしまうのを修正<br></p>
+</li>
+<li>
+<p>フルスクリーン時に表示される幅1ピクセルの謎の枠を表示されないようにした。<br></p>
+</li>
+<li>
+<p>起動時のウィンドウのサイズ計算をちょっと修正<br></p>
+</li>
 </ul>
-<p>■1.0β　2012/02/06</p>
+</div>
+</li>
+<li>
+<p>2.0Beta1 2014/01/15<br></p>
+<div class="ulist">
 <ul>
-<li>初リリース。　P6V1.13ベース</li>
+<li>
+<p>P6V1.21開発版ベースに更新<br>
+SR対応(暫定版)、PC-6001Aに対応<br>
+SR対応の制約事項(FM音源に未対応など)は本家に準じます。<br></p>
+</li>
+<li>
+<p>TILTモードの改良<br>
+初代機、6001A選択時はモニター枠としてPC-6042Kが表示されるようにした。<br>
+キーボードでもTILTモードが使えるようにした。<br></p>
+</li>
 </ul>
-<h2 id="_16">謝辞</h2>
-<p>オリジナルのPC6001Vを製作され、移植を快諾してくださったゆみたろ様、<br>
-Mac版を通じ、移植の障害を取り除いてくれていたであろうWindy様、<br>
-Qtについて勉強する機会を提供してくださった関東Qt勉強会および元NOKIAのエンジニアの皆様、<br>
+</div>
+</li>
+<li>
+<p>2.0Alpha3 2013/08/18<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>P6V1.19ベースに更新<br></p>
+</li>
+<li>
+<p>OpenGLの機能チェックを改善<br>
+Windows上でのIntelGPUなど、QtでOpenGLを使うための機能要件を満たさない場合、
+自動的にソフトウェアレンダリングになります。<br></p>
+</li>
+<li>
+<p>設定ダイアログを、より小さな画面に収まるようにレイアウトを修正<br></p>
+</li>
+<li>
+<p>「=」が入力できないのを修正<br></p>
+</li>
+<li>
+<p>「カタカナ/ひらがな」キーをかなキーにマップした(X11でPAUSEが効きにくい対策)<br></p>
+</li>
+<li>
+<p>ウィンドウ最大化時にモニタモードやスキャンラインなど、ウィンドウサイズが変わる操作をした場合に表示倍率が維持されないのを修正。</p>
+</li>
+<li>
+<p>TILTモード中にモニタモードに入った場合ディスプレイ枠を消すようにした。<br></p>
+</li>
+<li>
+<p>再起動時にジョイスティックが使えなくなるのを修正<br></p>
+</li>
+<li>
+<p>(Windows)ビルドにQt5.1を使用<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>2.0Alpha2 2013/05/25(オフ会記念リリース)<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>TILTモードにディスプレイの枠が表示されるようになった(フルスクリーン時のみ)
+Hashiさん、MORIANさん、THANKS!<br>
+他、主にバグ修正</p>
+</li>
+<li>
+<p>遅いマシンでフリーズすることがあるのを修正(スケジューラのウェイト計算ミス)<br></p>
+</li>
+<li>
+<p>設定画面でキーボード入力が効かないのを修正<br></p>
+</li>
+<li>
+<p>4:3表示の際、画面下にゴミが出ているのを修正<br></p>
+</li>
+<li>
+<p>メニュー表示中に右クリックすると二重にメニューが表示されてしまうのを修正<br></p>
+</li>
+<li>
+<p>スナップショット保存が動いていなかったのを修正<br></p>
+</li>
+<li>
+<p>(Windows)初回起動時のROMフォルダ選択ダイアログで「いいえ」を選択すると<br>
+GUIが暴走するのを修正<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>2.0Alpha 2013/05/07<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>SDLで行われていたグラフィック描画、イベント処理、キー入力、サウンド出力をQt5に移行。
+これにより、バージョン1.0系列の既知の不具合は解消。<br>
+ただし新たな不具合も発生(汗<br></p>
+</li>
+<li>
+<p>グラフィックの描画にQtを使用<br>
+QtとOpenGLを用いた無段階の拡大縮小が可能になっています。<br>
+また、4:3表示もQt側で引き伸ばしを行うことで自然な表示になっています。<br>
+また、環境設定の色数設定はなくなりました。<br>
+内部処理は256色、描画はディスプレイの色深度で固定になります。<br></p>
+</li>
+<li>
+<p>ジョイスティック入力のみSDL2を使用。<br>
+proファイルにて、DEFINES+=NOJOYSTICKと指定すると、<br>
+ジョイスティックサポートが外れる代わりに、Qt5のみで全てビルド可能。<br></p>
+</li>
+<li>
+<p>ZLib,libPNGが不要になった。<br></p>
+</li>
+<li>
+<p>TILTモードの追加<br>
+3DS版のスペースハリアーに触発されて作ったジョーク機能です。<br>
+ジョイスティックの左右に反応して、画面が傾きます。(笑<br>
+キーリピートの関係でカーソルキーには対応できませんでした。すみません。<br>
+一応スペハリを想定して作っていますが、オリオンでもなかなか良い感じに酔えます。<br>
+その他、クエスト、バンダル、AX-9、アステロイドチューブ、プラズマラインなど、3D視点のゲームでお楽しみください。(ジョイスティックに対応してればの話ですが)<br>
+Qtではグラフィックの拡大縮小回転が簡単に行えるので、そのデモンストレーションでもあります。<br></p>
+</li>
+<li>
+<p>フォントファイルはバイナリに埋め込んだリソースから直接読むようにした。<br>
+fontフォルダを作らなくなった。<br></p>
+</li>
+<li>
+<p>従来M+Outlineから生成していたフォントファイルをM+Bitmapベースに切り替えた。<br>
+だいぶ見やすくなったと思います。<br></p>
+</li>
+<li>
+<p>スケジューラーのウェイト計算方法を変えた。<br>
+CPU使用率も下がって、サウンドのバッファアンダーフローによるプチノイズもだいぶ減ったと思います。<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>1.01　2013/01/02<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>P6V1.17ベースに更新<br>
+本家に取り込まれた色にじみコードを再取り込み。にじみSet1に対応。<br></p>
+</li>
+<li>
+<p>右クリックメニューに「終了」がなかったのを修正(汗<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>1.0　2012/11/30<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>P6V1.16ベースに更新<br></p>
+</li>
+<li>
+<p>新色にじみ方式(通称J方式)のにじみカラー出力を実装<br></p>
+</li>
+<li>
+<p>初回起動時にROMフォルダを指定できるようにした。<br></p>
+</li>
+<li>
+<p>二重起動防止にQtSingleApplicationを使用。ロックファイルを作らなくなった。<br></p>
+</li>
+<li>
+<p>スレッド処理にTLS(スレッド局所記憶)を使わないようにした。<br></p>
+</li>
+<li>
+<p>ステータスバー、モニタモード用の半角英数フォントを手作業でちまちま修正した。<br>
+多少見やすくなったと思います。<br></p>
+</li>
+<li>
+<p>(Windows)ライブラリを可能な限りスタティックリンクにした。<br></p>
+</li>
+<li>
+<p>(Windows)ゆみたろさんのパッチを当ててSDLをビルド。今までサボってましたすみません。<br></p>
+</li>
+<li>
+<p>(非Windows)TAPE,DISKなどのフォルダのデフォルト設定を空白にした。<br>
+明示的に設定しない場合、ホームフォルダから探しにいきます。<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>1.0β2　2012/03/09<br>
+バグ修正</p>
+<div class="ulist">
+<ul>
+<li>
+<p>CRCが合わないROMを使用している場合、警告を出した上でCRCチェックを無効にできるようにした。<br></p>
+</li>
+<li>
+<p>ボリュームの設定が全てマスターに反映されてしまうのを修正。<br></p>
+</li>
+<li>
+<p>スキャンライン輝度が常に1として保存されてしまうのを修正。<br></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>1.0β　2012/02/06<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>初リリース。　P6V1.13ベース<br></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="___16">謝辞</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>オリジナルのPC6001Vを製作され、移植を快諾してくださったゆみたろ様、
+Mac版を通じ、移植の障害を取り除いてくれていたであろうWindy様、
+Qtについて勉強する機会を提供してくださった関東Qt勉強会および元NOKIAのエンジニアの皆様、
 そしてP6コミュニティの皆様に厚く感謝申し上げます。</p>
-</body>
-</html>
+</div>
+</div>
+</div>
+        </div>
+      </div>
+    </body>
+  </html>

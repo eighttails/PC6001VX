@@ -46,8 +46,9 @@ QVector<QRgb> PaletteTable;              //パレットテーブル
 
 #ifndef NOSOUND
 //サウンド関連
+#include "audiooutputwrapper.h"
 QPointer<QIODevice> audioBuffer = NULL;
-QPointer<QAudioOutput> audioOutput = NULL;
+QPointer<AudioOutputWrapper> audioOutput = NULL;
 #endif
 
 //ジョイスティック関連
@@ -1561,7 +1562,7 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 		format = info.nearestFormat(format);
 	}
 
-	audioOutput = new QAudioOutput(info, format);
+    audioOutput = new AudioOutputWrapper(info, format);
 	//#PENDING これではグローバルボリュームを変えてしまう？
 	//audioOutput->setVolume(0.5);
 
@@ -1582,7 +1583,7 @@ void OSD_CloseAudio( void )
 {
 #ifndef NOSOUND
 	if(audioOutput){
-		audioOutput->stop();
+        QMetaObject::invokeMethod(audioOutput, "stop");
 	}
 #endif
 }
@@ -1599,9 +1600,13 @@ void OSD_StartAudio( void )
 #ifndef NOSOUND
 	if(audioOutput){
 		if(audioOutput->state() == QAudio::SuspendedState){
-			audioOutput->resume();
+            QMetaObject::invokeMethod(audioOutput, "resume");
 		} else {
-			audioBuffer = audioOutput->start();
+			//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+			Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
+						Qt::DirectConnection : Qt::BlockingQueuedConnection;
+			QMetaObject::invokeMethod(audioOutput, "start", cType,
+                                      Q_RETURN_ARG(QPointer<QIODevice>, audioBuffer));
 		}
 	}
 #endif
@@ -1618,7 +1623,7 @@ void OSD_StopAudio( void )
 {
 #ifndef NOSOUND
 	if(audioOutput){
-		audioOutput->suspend();
+        QMetaObject::invokeMethod(audioOutput, "suspend");
 	}
 #endif
 }

@@ -261,7 +261,8 @@ HEADERS  += \
     src/Qt/keypanel.h \
     src/Qt/p6vxapp.h \
     src/psgfm.h \
-    src/device/fmgen/psg.h
+    src/device/fmgen/psg.h \
+    src/Qt/audiooutputwrapper.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

@@ -190,7 +190,7 @@ P6の水平周波数はテレビと同じ15kHzです。 +
 . 表示サイズを整数倍にします。 +
 
 ** TILTモード +
-image:doc/tilt.png[]
+image:doc/tilt.png[] +
 3DS版のスペースハリアーに触発されて作ったジョーク機能です。 +
 ジョイスティック、カーソルキーの左右に反応して、画面が傾きます。(笑 +
 フルスクリーン時、またはステータスバー非表示の時はディスプレイ枠が表示されます。初代機の場合はPC-6042、それ以外の場合はPC-60m43が表示されます。 +
@@ -440,9 +440,9 @@ https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.e
 . MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。 +
 . MSYSをインストールしたフォルダのmingw32.exeを実行。 +
 . ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。 +
-. `cd PC6001VX/win32`を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
-. `bash ./toochain.sh`を実行。ツールチェインをインストール。 +
-. `bash ./buildenv.sh`を実行。QtのライブラリとQtCreatorをビルド。 +
+. `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
+. `bash ./toochain.sh` を実行。ツールチェインをインストール。 +
+. `bash ./buildenv.sh` を実行。QtのライブラリとQtCreatorをビルド。 +
 QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。 +
 . `bash ./buildrelease.sh`を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。 +
 . 自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。 +

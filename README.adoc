@@ -19,7 +19,7 @@ PC6001VXの末尾のXはクロスプラットフォームのXです。(^^; +
 * ROMファイル +
 エミュレータの動作には原則として、PC-6001シリーズの実機から吸い出したROMファイルが必要になります。 http://p6ers.net/hashi/suidashi.html[こちら]を参考にして実機から吸い出してください。
 実機をお持ちでない場合、 http://000.la.coocan.jp/p6/basic.html[秋川様]作成の互換ROMを使うという選択肢もあります。 +
-http://eighttails.seesaa.net/article/305067428.html[こちら]の互換ROMにはCGROMファイルが含まれていませんが、拙作のCGROMファイルを使うことができます。
+こちらの互換ROMにはCGROMファイルが含まれていませんが、 http://eighttails.seesaa.net/article/305067428.html[拙作のCGROM]ファイルを使うことができます。
 互換ROM使用時は初代PC-6001相当の動きになります。 +
 
 * WAVファイル +

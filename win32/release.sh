@@ -1,25 +1,37 @@
+#環境チェック
+if [ -z "$MINGW_PREFIX" ]; then
+	echo "Please run this script in MinGW 32bit or 64bit shell. (not in MSYS2 shell)"
+	exit 1
+fi
+
+if [ "$MINGW_CHOST" = "i686-w64-mingw32" ]; then
+	BIT=32bit
+else
+	BIT=64bit
+fi
+
 #このスクリプトの置き場所をカレントとして実行すること。
 #カレントディレクトリ
 export SCRIPT_DIR=$PWD
 
 #引数としてバージョンを指定すること
 if [ -z $1 ]; then
-    echo "Please specify build number."
+    echo "Please specify version number."
     exit
 fi
 
 VERSION=$1
 RELEASE_DIR=$PWD/../../PC6001VX_release
-rm -rf $RELEASE_DIR
 
 
 bash $SCRIPT_DIR/buildrelease.sh
-cd $SCRIPT_DIR/../../PC6001VX-build/release
+cd $SCRIPT_DIR/../../PC6001VX-build-$MINGW_CHOST/release
 
 #Windows版バイナリ
-WIN_BIN_NAME=PC6001VX_$VERSION\_win
+WIN_BIN_NAME=PC6001VX_$VERSION\_win_$BIT
 WIN_BIN_DIR=$RELEASE_DIR/$WIN_BIN_NAME
 
+rm -rf $WIN_BIN_DIR
 mkdir -p $WIN_BIN_DIR
 cp -f PC6001VX.exe $WIN_BIN_DIR
 cp -f $SCRIPT_DIR/../README.html $WIN_BIN_DIR

@@ -439,6 +439,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
       <div id="wrapper">
         <div class="article">
           <h1>PC6001VX マニュアル</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>by eighttails<br>
+<a href="http://eighttails.seesaa.net" class="bare">http://eighttails.seesaa.net</a></p>
+</div>
+</div>
 <div id="toc" class="toc">
 <div id="toctitle">目次</div>
 <ul class="sectlevel1">
@@ -469,13 +476,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#___16">謝辞</a></li>
 </ul>
 </div>
-<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>by eighttails<br>
-<a href="http://eighttails.seesaa.net" class="bare">http://eighttails.seesaa.net</a></p>
-</div>
-</div>
 </div>
 <div class="sect1">
 <h2 id="__">はじめに</h2>
@@ -502,7 +502,7 @@ PC6001VXの末尾のXはクロスプラットフォームのXです。(^^;<br>
 <p>ROMファイル<br>
 エミュレータの動作には原則として、PC-6001シリーズの実機から吸い出したROMファイルが必要になります。 <a href="http://p6ers.net/hashi/suidashi.html">こちら</a>を参考にして実機から吸い出してください。
 実機をお持ちでない場合、 <a href="http://000.la.coocan.jp/p6/basic.html">秋川様</a>作成の互換ROMを使うという選択肢もあります。<br>
-<a href="http://eighttails.seesaa.net/article/305067428.html">こちら</a>の互換ROMにはCGROMファイルが含まれていませんが、拙作のCGROMファイルを使うことができます。
+こちらの互換ROMにはCGROMファイルが含まれていませんが、 <a href="http://eighttails.seesaa.net/article/305067428.html">拙作のCGROM</a>ファイルを使うことができます。
 互換ROM使用時は初代PC-6001相当の動きになります。<br></p>
 </li>
 <li>
@@ -1376,10 +1376,7 @@ MSYS2はパッケージのバージョンアップが早く、またバージョ
 <a href="https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe" class="bare">https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe</a></p>
 </li>
 <li>
-<p>MSYSをインストールしたフォルダ下の/mingw32/local/bin,/mingw32/bin,/usr/binにPATHを通す。<br></p>
-</li>
-<li>
-<p>MSYSをインストールしたフォルダのmingw32.exeを実行。<br></p>
+<p>MSYSをインストールしたフォルダのmingw32.exe(32ビット版をビルドする場合)またはmingw64.exe(64ビット版をビルドする場合)を実行。<br></p>
 </li>
 <li>
 <p>ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。<br></p>
@@ -1392,13 +1389,18 @@ MSYS2はパッケージのバージョンアップが早く、またバージョ
 </li>
 <li>
 <p><code>bash ./buildenv.sh</code> を実行。QtのライブラリとQtCreatorをビルド。<br>
-QtCreatorが~/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw32/localにインストールされます。<br></p>
+QtCreatorが/mingw(32|64)/local/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw(32|64)/localにインストールされます。<br></p>
 </li>
 <li>
-<p><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-buildというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。<br></p>
+<p><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。<br></p>
 </li>
 <li>
-<p>自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。<br></p>
+<p>自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。キットの構成方法は本書の範囲外としますが、以下の設定を参考にしてください。<br>
+<span class="image"><img src="doc/qtsetting_compiler.png" alt="qtsetting compiler.png"></span><br>
+<span class="image"><img src="doc/qtsetting_debugger.png" alt="qtsetting debugger.png"></span><br>
+<span class="image"><img src="doc/qtsetting_qt.png" alt="qtsetting qt.png"></span><br>
+<span class="image"><img src="doc/qtsetting_kit1.png" alt="qtsetting kit1.png"></span><br>
+<span class="image"><img src="doc/qtsetting_kit2.png" alt="qtsetting kit2.png"></span><br></p>
 </li>
 </ol>
 </div>
@@ -1477,7 +1479,20 @@ Qt5の音量制御周りはまだあまり枯れていないようです。<br><
 <p>ドキュメントをasciidocで書き直した。</p>
 </li>
 <li>
-<p>(Windows)ビルド手順を更新。MSYS2のバージョンを固定する運用を推奨。<br></p>
+<p>(Windows)ビルド手順を更新。<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>64ビット版がビルドできるようになった。<br></p>
+</li>
+<li>
+<p>MSYS2のバージョンを固定する運用を推奨。<br></p>
+</li>
+<li>
+<p>PATHの設定を不要にした。<br></p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>(UNIX)Linux以外のUNIXでビルドできるようにproファイルを修正<br></p>

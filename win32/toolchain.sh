@@ -1,19 +1,35 @@
-#このスクリプトの置き場所をカレントとして実行すること。
-#カレントディレクトリ
-export SCRIPT_DIR=$PWD
+#!/bin/bash
+
+function patchOnce(){
+#適用済みでない場合のみパッチを充てる
+patch -p$1 -N --dry-run --silent < $2 2>/dev/null
+if [ $? -eq 0 ];
+then
+    #apply the patch
+    patch -p$1 -N < $2
+fi
+}
+
+#環境チェック
+if [ -z "$MINGW_PREFIX" ]; then
+	echo "Please run this script in MinGW 32bit or 64bit shell. (not in MSYS2 shell)"
+	exit 1
+fi
+
+#このスクリプトの置き場所
+export SCRIPT_DIR=$(cd $(dirname $(readlink $0 || echo $0));pwd)
 
 #ディレクトリが存在しない場合があるので作っておく
-mkdir /mingw32 2> /dev/null
-mkdir /mingw64 2> /dev/null
+mkdir $MINGW_PREFIX 2> /dev/null
 
 #ツール類
-pacman -S --needed --noconfirm base base-devel mingw-w64-i686-toolchain VCS unzip wget tar zip perl python ruby mingw-w64-i686-icu  mingw-w64-i686-SDL2 mingw-w64-i686-libvorbis mingw-w64-i686-libvpx mingw-w64-i686-yasm
+pacman -S --needed --noconfirm base base-devel $MINGW_PACKAGE_PREFIX-toolchain VCS unzip wget tar zip perl python ruby $MINGW_PACKAGE_PREFIX-icu  $MINGW_PACKAGE_PREFIX-SDL2 $MINGW_PACKAGE_PREFIX-libvorbis $MINGW_PACKAGE_PREFIX-libvpx $MINGW_PACKAGE_PREFIX-yasm
 
 #DirectShowのヘッダー問題対策
-pushd /mingw32/i686-w64-mingw32
+pushd $MINGW_PREFIX/$MINGW_CHOST
 #https://github.com/Alexpux/MINGW-packages/issues/1689
-patch -p2 < $SCRIPT_DIR/0001-Revert-Avoid-declaring-something-extern-AND-initiali.patch
+patchOnce 2 $SCRIPT_DIR/0001-Revert-Avoid-declaring-something-extern-AND-initiali.patch
 #https://sourceforge.net/p/mingw-w64/mailman/message/35527066/
-patch -p2 < $SCRIPT_DIR/wrl.patch
+patchOnce 2 $SCRIPT_DIR/wrl.patch
 popd
 

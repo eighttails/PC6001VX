@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function exitOnError(){
 if [ $? -ne 0 ]; then 
     echo "ERROR."
@@ -52,9 +54,12 @@ else
     #Osで最適化するためのパッチ
     sed -i -e "s|= -O2|= -Os|g" qtbase/mkspecs/win32-g++/qmake.conf
 
-    #プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
-    #sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf    
+    #64bit環境で生成されるオブジェクトファイルが巨大すぎでビルドが通らない問題へのパッチ
+    sed -i -e "s|QMAKE_CFLAGS            = |QMAKE_CFLAGS            = -Wa,-mbig-obj |g" qtbase/mkspecs/win32-g++/qmake.conf    
     
+    #プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
+    sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf    
+
     #Qt5.8.0でMultimediaのヘッダーがおかしい問題へのパッチ
     rm qtmultimedia/include/QtMultimedia/qtmultimediadefs.h
     touch qtmultimedia/include/QtMultimedia/qtmultimediadefs.h
@@ -67,20 +72,31 @@ export QT_COMMON_CONFIGURE_OPTION='-opensource -confirm-license -silent -platfor
 }
 
 function buildQtShared(){
-#shared版(QtCreator用)
-rm -rf qt5-shared
-mkdir qt5-shared
-pushd qt5-shared
+if [ -e $QTCREATOR_PREFIX/bin/qmake.exe ]; then
+	echo "Qt5 Shared Libs are already installed."
+	return 0
+fi
 
-../$QT_SOURCE_DIR/configure -prefix "`cygpath -am ~/qt-creator`" -shared -release $QT_COMMON_CONFIGURE_OPTION
+#shared版(QtCreator用)
+QT5_SHARED_BUILD=qt5-shared-$MINGW_CHOST
+rm -rf $QT5_SHARED_BUILD
+mkdir $QT5_SHARED_BUILD
+pushd $QT5_SHARED_BUILD
+
+../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $QTCREATOR_PREFIX`" -shared -release $QT_COMMON_CONFIGURE_OPTION
 
 makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
 exitOnError
 popd
-rm -rf qt5-shared
+rm -rf $QT5_SHARED_BUILD
 }
 
 function buildQtCreator(){
+if [ -e $QTCREATOR_PREFIX/bin/qtcreator.exe ]; then
+	echo "Qt Creator is already installed."
+	return 0
+fi
+
 #Qt Creator
 cd ~/extlib
 export QTC_MAJOR_VER=4.2
@@ -91,58 +107,70 @@ export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 QTC_RELEASE=official_releases
 wget -c  http://download.qt.io/$QTC_RELEASE/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
 if [ -e $QTC_SOURCE_DIR ]; then
-    # 存在する場合
-    echo "$QTC_SOURCE_DIR already exists."
+	# 存在する場合
+	echo "$QTC_SOURCE_DIR already exists."
 else
-    # 存在しない場合
-    unzip -q $QTC_SOURCE_DIR.zip
+	# 存在しない場合
+	unzip -q $QTC_SOURCE_DIR.zip
+
+	pushd $QTC_SOURCE_DIR
+	#MSYSでビルドが通らない問題へのパッチ
+	patch -p1 < $SCRIPT_DIR/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch
+	popd
 fi
 
-pushd $QTC_SOURCE_DIR
-#MSYSでビルドが通らない問題へのパッチ
-patch -p1 < $SCRIPT_DIR/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch
-popd
+QTCREATOR_BUILD=qt-creator-$MINGW_CHOST
+rm -rf $QTCREATOR_BUILD
+mkdir $QTCREATOR_BUILD
+pushd $QTCREATOR_BUILD
 
-rm -rf qt-creator
-mkdir qt-creator
-pushd qt-creator
-
-~/qt-creator/bin/qmake CONFIG-=precompile_header QTC_PREFIX="`cygpath -am ~/qt-creator`" ../$QTC_SOURCE_DIR/qtcreator.pro
+$QTCREATOR_PREFIX/bin/qmake CONFIG-=precompile_header QTC_PREFIX="`cygpath -am $QTCREATOR_PREFIX`" ../$QTC_SOURCE_DIR/qtcreator.pro
 makeParallel && makeParallel install 
 exitOnError
 popd
-rm -rf qt-creator
+rm -rf $QTCREATOR_BUILD
 }
 
 function buildQtStatic(){
-#static版(P6VX用)
-rm -rf qt5-static
-mkdir qt5-static
-pushd qt5-static
+if [ -e $PREFIX/bin/qmake.exe ]; then
+	echo "Qt5 Static Libs are already installed."
+	return 0
+fi
 
-../$QT_SOURCE_DIR/configure -prefix "`cygpath -am /mingw32/local`" -static -nomake examples $QT_COMMON_CONFIGURE_OPTION
+#static版(P6VX用)
+QT5_STATIC_BUILD=qt5-static-$MINGW_CHOST
+rm -rf $QT5_STATIC_BUILD
+mkdir $QT5_STATIC_BUILD
+pushd $QT5_STATIC_BUILD
+
+../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $PREFIX`" -static -static-runtime -nomake examples $QT_COMMON_CONFIGURE_OPTION
 
 makeParallel && makeParallel install
 exitOnError
 
 #MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
-sed -i -e "s|-ltiff|-ltiff -llzma|g" /mingw32/local/plugins/imageformats/qtiff.prl
-sed -i -e "s|-ltiff|-ltiff -llzma|g" /mingw32/local/plugins/imageformats/qtiffd.prl
+sed -i -e "s|-ltiff|-ltiff -llzma|g" $PREFIX/plugins/imageformats/qtiff.prl
+sed -i -e "s|-ltiff|-ltiff -llzma|g" $PREFIX/plugins/imageformats/qtiffd.prl
 
 popd
-rm -rf qt5-static
+rm -rf $QT5_STATIC_BUILD
 }
 
 function buildFFmpeg(){
+if [ -e $PREFIX/lib/libavcodec.a ]; then
+echo "FFMpeg is already installed."
+exit 0
+fi
+
 FFMPEG_VERSION=3.1.1
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz 
-	
+
 rm -rf $FFMPEG_SRC_DIR
 tar xf $FFMPEG_SRC_DIR.tar.xz
 pushd $FFMPEG_SRC_DIR
 
-./configure --target-os=mingw32 --prefix=/mingw32/local --enable-small --disable-programs --disable-doc --disable-everything --disable-sdl --disable-iconv --enable-libvpx --enable-encoder=libvpx_vp8 --enable-libvorbis --enable-encoder=libvorbis --enable-muxer=webm --enable-protocol=file
+./configure --target-os=mingw32 --prefix=$PREFIX --enable-small --disable-programs --disable-doc --disable-everything --disable-sdl --disable-iconv --enable-libvpx --enable-encoder=libvpx_vp8 --enable-libvorbis --enable-encoder=libvorbis --enable-muxer=webm --enable-protocol=file
 
 makeParallel && makeParallel install
 
@@ -153,13 +181,35 @@ popd
 
 
 #---------------------------------
-#MSYSルート
-export MSYS_ROOT=`cygpath -m /`
+#環境チェック
+if [ -z "$MINGW_PREFIX" ]; then
+	echo "Please run this script in MinGW 32bit or 64bit shell. (not in MSYS2 shell)"
+	exit 1
+fi
 
-#このスクリプトの置き場所をカレントとして実行すること。
-#カレントディレクトリ
-export SCRIPT_DIR=$PWD
+#このスクリプトの置き場所
+export SCRIPT_DIR=$(cd $(dirname $(readlink $0 || echo $0));pwd)
 
+#インストール先(/mingw32/localまたは/mingw64/local)
+export PREFIX=$MINGW_PREFIX/local
+mkdir -p $PREFIX/bin 2> /dev/null
+export QTCREATOR_PREFIX=$MINGW_PREFIX/local/qt-creator
+mkdir -p $QTCREATOR_PREFIX/bin 2> /dev/null
+
+#最低限必要なDLLをコピー
+pushd $MINGW_PREFIX/bin
+if [ "$MINGW_CHOST" = "i686-w64-mingw32" ]; then
+	#32bit
+	NEEDED_DLLS='libgcc_s_dw2-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
+else
+	#64bit
+	NEEDED_DLLS='libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
+fi
+cp -f $NEEDED_DLLS $PREFIX/bin
+cp -f $NEEDED_DLLS $QTCREATOR_PREFIX/bin
+popd
+
+#外部依存ライブラリのソース展開先
 cd
 mkdir extlib 2> /dev/null
 cd ~/extlib

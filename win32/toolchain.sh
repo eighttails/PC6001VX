@@ -1,4 +1,12 @@
 #!/bin/bash
+function exitOnError(){
+if [ $? -ne 0 ]; then 
+    echo "ERROR."
+    exit
+else
+    echo "SUCCESS."
+fi
+}
 
 function patchOnce(){
 #適用済みでない場合のみパッチを充てる
@@ -23,7 +31,25 @@ export SCRIPT_DIR=$(cd $(dirname $(readlink $0 || echo $0));pwd)
 mkdir $MINGW_PREFIX 2> /dev/null
 
 #ツール類
-pacman -S --needed --noconfirm base base-devel $MINGW_PACKAGE_PREFIX-toolchain VCS unzip wget tar zip perl python ruby $MINGW_PACKAGE_PREFIX-icu  $MINGW_PACKAGE_PREFIX-SDL2 $MINGW_PACKAGE_PREFIX-libvorbis $MINGW_PACKAGE_PREFIX-libvpx $MINGW_PACKAGE_PREFIX-yasm
+pacman -S --needed --noconfirm \
+base \
+base-devel \
+VCS \
+unzip \
+wget \
+tar \
+zip \
+perl \
+python \
+ruby \
+$MINGW_PACKAGE_PREFIX-toolchain \
+$MINGW_PACKAGE_PREFIX-icu \
+$MINGW_PACKAGE_PREFIX-SDL2 \
+$MINGW_PACKAGE_PREFIX-libvorbis \
+$MINGW_PACKAGE_PREFIX-libvpx \
+$MINGW_PACKAGE_PREFIX-yasm
+
+exitOnError
 
 #DirectShowのヘッダー問題対策
 pushd $MINGW_PREFIX/$MINGW_CHOST

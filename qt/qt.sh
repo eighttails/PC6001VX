@@ -109,7 +109,7 @@ rm -rf $QTCREATOR_BUILD
 mkdir $QTCREATOR_BUILD
 pushd $QTCREATOR_BUILD
 
-$QTCREATOR_PREFIX/bin/qmake CONFIG-=precompile_header QTC_PREFIX="`cygpath -am $QTCREATOR_PREFIX`" ../$QTC_SOURCE_DIR/qtcreator.pro
+$QTCREATOR_PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+=silent QTC_PREFIX="`cygpath -am $QTCREATOR_PREFIX`" ../$QTC_SOURCE_DIR/qtcreator.pro
 makeParallel && makeParallel install
 exitOnError
 popd

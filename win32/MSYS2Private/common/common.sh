@@ -70,14 +70,13 @@ exitOnError
 
 
 #このスクリプトの置き場所
-PATCH_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+local PATCH_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 #DirectShowのヘッダー問題対策
 pushd $MINGW_PREFIX/$MINGW_CHOST
 #https://github.com/Alexpux/MINGW-packages/issues/1689
 patchOnce 2 $PATCH_DIR/0001-Revert-Avoid-declaring-something-extern-AND-initiali.patch
 #https://sourceforge.net/p/mingw-w64/mailman/message/35527066/
 patchOnce 2 $PATCH_DIR/wrl.patch
-unset PATCH_DIR
 popd
 }
 

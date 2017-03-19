@@ -13,10 +13,10 @@ popd
 
 function makeQtSourceTree(){
 #Qt
-export QT_MAJOR_VERSION=5.8
-export QT_MINOR_VERSION=.0
-export QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
-export QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
+QT_MAJOR_VERSION=5.8
+QT_MINOR_VERSION=.0
+QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
+QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases
 wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
@@ -53,7 +53,7 @@ else
 fi
 
 #共通ビルドオプション
-export QT_COMMON_CONFIGURE_OPTION='-opensource -confirm-license -silent -platform win32-g++ -no-pch -no-direct2d -qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -nomake tests QMAKE_CXXFLAGS+=-Wno-deprecated-declarations'
+QT_COMMON_CONFIGURE_OPTION='-opensource -confirm-license -silent -platform win32-g++ -no-pch -no-direct2d -qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -nomake tests QMAKE_CXXFLAGS+=-Wno-deprecated-declarations'
 }
 
 function buildQtShared(){
@@ -84,10 +84,10 @@ fi
 
 #Qt Creator
 cd ~/extlib
-export QTC_MAJOR_VER=4.2
-export QTC_MINOR_VER=.1
-export QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
-export QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
+QTC_MAJOR_VER=4.2
+QTC_MINOR_VER=.1
+QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
+QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 #QTC_RELEASE=development_releases
 QTC_RELEASE=official_releases
 wget -c  http://download.qt.io/$QTC_RELEASE/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
@@ -147,9 +147,9 @@ source $SCRIPT_DIR/../common/common.sh
 commonSetup
 
 #Qt Creatorのインストール場所
-export QTCREATOR_PREFIX=$MINGW_PREFIX/local/qt-creator
+QTCREATOR_PREFIX=$MINGW_PREFIX/local/qt-creator
 #このスクリプトの置き場所
-export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 
 #必要ライブラリ
 prerequisite

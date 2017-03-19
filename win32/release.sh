@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #環境チェック
 if [ -z "$MINGW_PREFIX" ]; then
 	echo "Please run this script in MinGW 32bit or 64bit shell. (not in MSYS2 shell)"

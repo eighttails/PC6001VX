@@ -70,14 +70,13 @@ exitOnError
 
 
 #このスクリプトの置き場所
-PATCH_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+local PATCH_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 #DirectShowのヘッダー問題対策
 pushd $MINGW_PREFIX/$MINGW_CHOST
 #https://github.com/Alexpux/MINGW-packages/issues/1689
 patchOnce 2 $PATCH_DIR/0001-Revert-Avoid-declaring-something-extern-AND-initiali.patch
 #https://sourceforge.net/p/mingw-w64/mailman/message/35527066/
 patchOnce 2 $PATCH_DIR/wrl.patch
-unset PATCH_DIR
 popd
 }
 
@@ -94,10 +93,10 @@ toolchain
 
 #外部依存ライブラリのソース展開先
 mkdir ~/extlib 2> /dev/null
-export EXTLIB=~/extlib
+EXTLIB=~/extlib
 
 #インストール先(/mingw32/localまたは/mingw64/local)
-export PREFIX=$MINGW_PREFIX/local
+PREFIX=$MINGW_PREFIX/local
 mkdir -p $PREFIX/bin 2> /dev/null
 
 #最低限必要なDLLをコピー

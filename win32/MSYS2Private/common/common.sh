@@ -5,7 +5,7 @@
 function exitOnError(){
 if [ $? -ne 0 ]; then
     echo "ERROR."
-    exit
+    exit 1
 else
     echo "SUCCESS."
 fi
@@ -18,15 +18,6 @@ if [ $? -eq 0 ];
 then
     #apply the patch
     patch -p$1 -N < $2
-fi
-}
-
-function exitOnError(){
-if [ $? -ne 0 ]; then
-    echo "ERROR."
-    exit
-else
-    echo "SUCCESS."
 fi
 }
 
@@ -64,7 +55,8 @@ zip \
 perl \
 python \
 ruby \
-$MINGW_PACKAGE_PREFIX-toolchain
+$MINGW_PACKAGE_PREFIX-toolchain \
+$MINGW_PACKAGE_PREFIX-cmake 
 
 exitOnError
 
@@ -98,6 +90,8 @@ export EXTLIB=~/extlib
 #インストール先(/mingw32/localまたは/mingw64/local)
 export PREFIX=$MINGW_PREFIX/local
 mkdir -p $PREFIX/bin 2> /dev/null
+
+export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
 
 #最低限必要なDLLをコピー
 pushd $MINGW_PREFIX/bin

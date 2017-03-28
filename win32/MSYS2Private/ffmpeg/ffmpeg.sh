@@ -6,11 +6,6 @@ pacman -S --needed --noconfirm \
 $MINGW_PACKAGE_PREFIX-libvorbis \
 $MINGW_PACKAGE_PREFIX-libvpx \
 $MINGW_PACKAGE_PREFIX-yasm
-
-mkdir -p $QTCREATOR_PREFIX/bin 2> /dev/null
-pushd $MINGW_PREFIX/bin
-cp -f $NEEDED_DLLS $QTCREATOR_PREFIX/bin
-popd
 }
 
 function buildFFmpeg(){

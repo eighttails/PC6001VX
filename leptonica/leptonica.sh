@@ -20,12 +20,14 @@ fi
 
 LEPTONICA_VERSION=1.74.1
 LEPTONICA_SRC_DIR=leptonica-$LEPTONICA_VERSION
+LEPTONICA_BUILD_DIR=$LEPTONICA_SRC_DIR-$MINGW_CHOST
 
 wget -c http://www.leptonica.com/source/$LEPTONICA_SRC_DIR.tar.gz
 	
 rm -rf $LEPTONICA_SRC_DIR
 tar xf $LEPTONICA_SRC_DIR.tar.gz
-pushd $LEPTONICA_SRC_DIR
+mv $LEPTONICA_SRC_DIR $LEPTONICA_BUILD_DIR
+pushd $LEPTONICA_BUILD_DIR
 
 ./configure \
 --disable-programs \

@@ -16,11 +16,13 @@ fi
 
 FFMPEG_VERSION=3.1.1
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
+FFMPEG_BUILD_DIR=$FFMPEG_SRC_DIR-$MINGW_CHOST
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz
 
 rm -rf $FFMPEG_SRC_DIR
 tar xf $FFMPEG_SRC_DIR.tar.xz
-pushd $FFMPEG_SRC_DIR
+mv $FFMPEG_SRC_DIR $FFMPEG_BUILD_DIR
+pushd $FFMPEG_BUILD_DIR
 
 ./configure --target-os=mingw32 --prefix=$PREFIX --enable-small --disable-programs --disable-doc --disable-everything --disable-sdl --disable-iconv --enable-libvpx --enable-encoder=libvpx_vp8 --enable-libvorbis --enable-encoder=libvorbis --enable-muxer=webm --enable-protocol=file
 

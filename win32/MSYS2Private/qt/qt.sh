@@ -70,6 +70,8 @@ pushd $QT5_SHARED_BUILD
 
 ../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $QTCREATOR_PREFIX`" -shared -release $QT_COMMON_CONFIGURE_OPTION
 
+./config.status &> ../qt5-shared-$MINGW_CHOST-config.status
+
 makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
 exitOnError
 popd
@@ -130,6 +132,8 @@ pushd $QT5_STATIC_BUILD
 
 ../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $PREFIX`" -static -static-runtime -nomake examples $QT_COMMON_CONFIGURE_OPTION
 
+./config.status &> ../qt5-static-$MINGW_CHOST-config.status
+
 makeParallel && makeParallel install
 exitOnError
 
@@ -148,8 +152,6 @@ commonSetup
 
 #Qt Creatorのインストール場所
 QTCREATOR_PREFIX=$MINGW_PREFIX/local/qt-creator
-#このスクリプトの置き場所
-SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 
 #必要ライブラリ
 prerequisite

@@ -27,7 +27,7 @@ wget -c https://github.com/tesseract-ocr/tesseract/archive/$TESSERACT_VERSION.ta
 mv $TESSERACT_VERSION.tar.gz $TESSERACT_SRC_DIR.tar.gz
 fi
 
-rm -rf $TESSERACT_SRC_DIR
+rm -rf $TESSERACT_SRC_DIR $TESSERACT_BUILD_DIR 
 tar xf $TESSERACT_SRC_DIR.tar.gz
 mv $TESSERACT_SRC_DIR $TESSERACT_BUILD_DIR
 pushd $TESSERACT_BUILD_DIR

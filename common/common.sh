@@ -11,6 +11,16 @@ else
 fi
 }
 
+function checkJDK(){
+if [ "$JAVA_HOME" = "" ]; then
+    echo 'Please specify $JAVA_HOME.'
+    exit 1
+else
+    export PATH=$(cygpath -up "$JAVA_HOME/bin"):$PATH
+    export JAVA_TOOL_OPTIONS=-Duser.language=en
+fi
+}
+
 function patchOnce(){
 #適用済みでない場合のみパッチを充てる
 patch -p$1 -N --dry-run --silent < $2 2>/dev/null
@@ -55,8 +65,10 @@ zip \
 perl \
 python \
 ruby \
+autoconf-archive \
 $MINGW_PACKAGE_PREFIX-toolchain \
-$MINGW_PACKAGE_PREFIX-cmake 
+$MINGW_PACKAGE_PREFIX-cmake \
+$MINGW_PACKAGE_PREFIX-curl 
 
 exitOnError
 

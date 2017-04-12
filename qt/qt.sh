@@ -57,7 +57,7 @@ QT_COMMON_CONFIGURE_OPTION='-opensource -confirm-license -silent -platform win32
 }
 
 function buildQtShared(){
-if [ -e $QTCREATOR_PREFIX/bin/qmake.exe ]; then
+if [ -e $QTCREATOR_PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
 	echo "Qt5 Shared Libs are already installed."
 	return 0
 fi
@@ -79,7 +79,7 @@ rm -rf $QT5_SHARED_BUILD
 }
 
 function buildQtCreator(){
-if [ -e $QTCREATOR_PREFIX/bin/qtcreator.exe ]; then
+if [ -e $QTCREATOR_PREFIX/bin/qtcreator.exe -a $((FORCE_INSTALL)) == 0 ]; then
 	echo "Qt Creator is already installed."
 	return 0
 fi
@@ -119,7 +119,7 @@ rm -rf $QTCREATOR_BUILD
 }
 
 function buildQtStatic(){
-if [ -e $PREFIX/bin/qmake.exe ]; then
+if [ -e $PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
 	echo "Qt5 Static Libs are already installed."
 	return 0
 fi

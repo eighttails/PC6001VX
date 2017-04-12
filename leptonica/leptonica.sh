@@ -13,7 +13,7 @@ $MINGW_PACKAGE_PREFIX-zlib
 }
 
 function buildLeptonica(){
-if [ -e $PREFIX/lib/liblept.a ]; then
+if [ -e $PREFIX/lib/liblept.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "Leptonica is already installed."
 exit 0
 fi

@@ -9,7 +9,7 @@ $MINGW_PACKAGE_PREFIX-yasm
 }
 
 function buildFFmpeg(){
-if [ -e $PREFIX/lib/libavcodec.a ]; then
+if [ -e $PREFIX/lib/libavcodec.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "FFMpeg is already installed."
 exit 0
 fi

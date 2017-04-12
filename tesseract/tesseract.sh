@@ -13,7 +13,7 @@ $MINGW_PACKAGE_PREFIX-icu
 }
 
 function buildTesseract(){
-if [ -e $PREFIX/bin/tesseract.exe ]; then
+if [ -e $PREFIX/bin/tesseract.exe -a $((FORCE_INSTALL)) == 0 ]; then
 echo "tesseract is already installed."
 exit 0
 fi

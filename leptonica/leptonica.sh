@@ -30,11 +30,12 @@ mv $LEPTONICA_SRC_DIR $LEPTONICA_BUILD_DIR
 pushd $LEPTONICA_BUILD_DIR
 
 ./configure \
---disable-programs \
 --build=$MINGW_CHOST \
 --host=$MINGW_CHOST \
 --target=$MINGW_CHOST \
---prefix=$PREFIX 
+--prefix=$PREFIX \
+--disable-programs \
+CPPFLAGS=-DMINIMUM_SEVERITY=4
 
 makeParallel && makeParallel install
 

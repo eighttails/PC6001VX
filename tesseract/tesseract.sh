@@ -1,6 +1,12 @@
 #!/bin/bash
 
 function prerequisite(){
+#他スクリプト依存関係
+if [ $((NO_DEPENDENCY)) == 0 ]; then
+$SCRIPT_DIR/../leptonica/leptonica.sh
+exitOnError
+fi
+
 #必要ライブラリ
 pacman -S --needed --noconfirm \
 $MINGW_PACKAGE_PREFIX-libpng \
@@ -12,7 +18,7 @@ $MINGW_PACKAGE_PREFIX-pango \
 $MINGW_PACKAGE_PREFIX-icu 
 }
 
-function buildTesseract(){
+function build(){
 if [ -e $PREFIX/bin/tesseract.exe -a $((FORCE_INSTALL)) == 0 ]; then
 echo "tesseract is already installed."
 exit 0
@@ -67,4 +73,4 @@ prerequisite
 
 cd $EXTLIB
 
-buildTesseract
+build

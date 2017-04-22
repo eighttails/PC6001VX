@@ -14,7 +14,7 @@ $MINGW_PACKAGE_PREFIX-enchant
 }
 
 function build(){
-if [ -e $PREFIX/bin/gImageReader-qt5 -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $PREFIX/lib/libqtspell-qt5.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "QtScript is already installed."
 exit 0
 fi
@@ -36,7 +36,8 @@ pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
--DUSE_QT5=1
+-DUSE_QT5=1 \
+-DBUILD_STATIC_LIBS=1 
 
 makeParallel && makeParallel install
 exitOnError

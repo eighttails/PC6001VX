@@ -13,7 +13,8 @@ fi
 
 #必要ライブラリ
 pacman -S --needed --noconfirm \
-$MINGW_PACKAGE_PREFIX-podofo 
+$MINGW_PACKAGE_PREFIX-podofo \
+$MINGW_PACKAGE_PREFIX-poppler
 
 }
 
@@ -40,9 +41,10 @@ pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
--DINTERFACE_TYPE=qt5
+-DINTERFACE_TYPE=qt5 \
+-DCMAKE_EXE_LINKER_FLAGS="-static"
 
-makeParallel && makeParallel install
+makeParallel VERBOSE=1 && makeParallel install
 exitOnError
 popd
 popd

@@ -54,9 +54,9 @@ export LIBLEPT_HEADERSDIR=$PREFIX/include/leptonica
 --with-extra-libraries=$PREFIX/lib
 
 #WindowsでScrollView.jarのビルドが通らないのを修正
-sed -i -e "s|piccolo2d-core-3.0.jar:piccolo2d-extras-3.0.jar|'piccolo2d-core-3.0.jar;piccolo2d-extras-3.0.jar'|" java/Makefile
-makeParallel ScrollView.jar
-exitOnError
+#sed -i -e "s|piccolo2d-core-3.0.jar:piccolo2d-extras-3.0.jar|'piccolo2d-core-3.0.jar;piccolo2d-extras-3.0.jar'|" java/Makefile
+#makeParallel ScrollView.jar
+#exitOnError
 makeParallel training && makeParallel training-install
 exitOnError
 makeParallel && makeParallel install
@@ -68,7 +68,7 @@ popd
 SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
-checkJDK
+#checkJDK
 prerequisite
 
 cd $EXTLIB

@@ -103,7 +103,7 @@ export EXTLIB=~/extlib
 export PREFIX=$MINGW_PREFIX/local
 mkdir -p $PREFIX/bin 2> /dev/null
 
-export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
+export PKG_CONFIG_PATH=$PREFIX/qt5-static/lib/pkgconfig:$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
 
 #最低限必要なDLLをコピー
 pushd $MINGW_PREFIX/bin

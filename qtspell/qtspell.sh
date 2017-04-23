@@ -31,13 +31,14 @@ tar xf $QTSPELL_ARCHIVE
 mv $QTSPELL_SRC_DIR $QTSPELL_BUILD_DIR
 pushd $QTSPELL_BUILD_DIR
 
+patch -p0 < $SCRIPT_DIR/CMakeLists.patch
 mkdir build
 pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
--DUSE_QT5=1 \
--DBUILD_STATIC_LIBS=1 
+-DBUILD_STATIC_LIBS=1 \
+-DUSE_QT5=1 
 
 makeParallel && makeParallel install
 exitOnError

@@ -44,7 +44,7 @@ cmake .. \
 -DINTERFACE_TYPE=qt5 \
 -DCMAKE_EXE_LINKER_FLAGS="-static"
 
-makeParallel VERBOSE=1 && makeParallel install
+makeParallel && makeParallel install
 exitOnError
 popd
 popd

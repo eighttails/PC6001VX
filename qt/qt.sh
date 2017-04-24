@@ -19,13 +19,13 @@ QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases
-wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
 
 if [ -e $QT_SOURCE_DIR ]; then
     # 存在する場合
     echo "$QT_SOURCE_DIR already exists."
 else
     # 存在しない場合
+    wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
     unzip -q $QT_SOURCE_DIR.zip
     #MSYSでビルドが通らない問題への対策パッチ
     pushd $QT_SOURCE_DIR

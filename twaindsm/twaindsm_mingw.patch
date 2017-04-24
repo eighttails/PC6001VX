@@ -1,7 +1,7 @@
-diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
---- TWAIN_DSM/src/apps.cpp	2014-05-22 18:34:59.000000000 +0200
-+++ TWAIN_DSM-new/src/apps.cpp	2014-11-23 02:38:03.633725896 +0100
-@@ -398,11 +398,11 @@ TW_UINT16 CTwnDsmApps::AddApp(TW_IDENTIT
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/apps.cpp twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/apps.cpp
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/apps.cpp	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/apps.cpp	2017-04-24 20:15:04.987654000 +0900
+@@ -398,11 +398,11 @@
    }
  
    // Work out the full path to our drivers (if needed)...
@@ -15,7 +15,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
      SSTRCPY(szDsm,sizeof(szDsm),kTWAIN_DS_DIR);
    #else
      #error Sorry, we do not recognize this system...
-@@ -1121,7 +1121,7 @@ int CTwnDsmAppsImpl::scanDSDir(char
+@@ -1121,7 +1121,7 @@
    //
    // Take care of VC++...
    //
@@ -24,7 +24,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
      WIN32_FIND_DATA   FileData;             // Data structure describes the file found
      HANDLE            hSearch;              // Search handle returned by FindFirstFile
      char              szABSFilename[FILENAME_MAX];
-@@ -1216,7 +1216,7 @@ int CTwnDsmAppsImpl::scanDSDir(char
+@@ -1216,7 +1216,7 @@
    //
    // Take care of g++...
    //
@@ -33,7 +33,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
      #if (TWNDSM_OS == TWNDSM_OS_MACOSX)
  
        char szABSFilename[FILENAME_MAX];
-@@ -1359,7 +1359,7 @@ TW_INT16 CTwnDsmApps::LoadDS(TW_IDENTITY
+@@ -1359,7 +1359,7 @@
        &&  m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].pDSList
        &&  (_DsId < MAX_NUM_DS))
    {
@@ -42,7 +42,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
        // Make the DS directory the current directoy while we load the DS so that any DLLs that
        // are loaded with the DS can be found.
        char      szPrevWorkDir[FILENAME_MAX];
-@@ -1387,7 +1387,7 @@ TW_INT16 CTwnDsmApps::LoadDS(TW_IDENTITY
+@@ -1387,7 +1387,7 @@
                                       m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].pDSList->DSInfo[_DsId].szPath,
                                       _DsId,
                                       true);
@@ -51,7 +51,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
        if(0!=strlen(szPrevWorkDir))
        {
          (void)_chdir( szPrevWorkDir );
-@@ -1419,7 +1419,7 @@ TW_INT16 CTwnDsmAppsImpl::LoadDS(TW_IDEN
+@@ -1419,7 +1419,7 @@
  {
    TW_INT16  result = TWRC_SUCCESS;
    DS_INFO  *pDSInfo;
@@ -60,7 +60,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
  
    // Validate...
    if ( 0 == _pPath )
-@@ -1452,19 +1452,19 @@ TW_INT16 CTwnDsmAppsImpl::LoadDS(TW_IDEN
+@@ -1452,19 +1452,19 @@
    // Only hook this driver if we've been asked to keep the driver
    // open (meaning we're processing a MSG_OPENDS) and if we see
    // that the driver is 1.x...(by checking the absence of DF_DS2)
@@ -83,7 +83,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
      if (0 == pDSInfo->pHandle)
      {
        // This is a bit skanky, and not the sort of thing I really want
-@@ -1490,7 +1490,7 @@ TW_INT16 CTwnDsmAppsImpl::LoadDS(TW_IDEN
+@@ -1490,7 +1490,7 @@
  
    if (pDSInfo->DS_Entry == 0)
    {
@@ -92,7 +92,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
        // The WIATwain.ds does not have an entry point 
        if(0 != strstr(_pPath, "wiatwain.ds"))
        {
-@@ -1590,14 +1590,14 @@ TW_INT16 CTwnDsmAppsImpl::LoadDS(TW_IDEN
+@@ -1590,14 +1590,14 @@
    if (_boolKeepOpen == true)
    {
      pDSInfo->pHandle = (TW_HANDLE)LOADLIBRARY(_pPath,hook,_DsId);
@@ -109,7 +109,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
      if (0 == pDSInfo->pHandle)
      {
        // This is a bit skanky, and not the sort of thing I really want
-@@ -1622,7 +1622,7 @@ TW_INT16 CTwnDsmAppsImpl::LoadDS(TW_IDEN
+@@ -1622,7 +1622,7 @@
      pDSInfo->DS_Entry = (DSENTRYPROC)DSM_LoadFunction(pDSInfo->pHandle,"DS_Entry");
      if (pDSInfo->DS_Entry == 0)
      {
@@ -118,7 +118,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
          // The WIATwain.ds does not have an entry point 
          if(0 != strstr(_pPath, "wiatwain.ds"))
          {
-@@ -1672,14 +1672,14 @@ void CTwnDsmApps::UnloadDS(TW_IDENTITY
+@@ -1672,14 +1672,14 @@
        &&  m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].pDSList->DSInfo[_DsId].pHandle)
    {
      // Unload the library...
@@ -135,7 +135,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
        if(0 == retval)
        {
          kLOG((kLOGERR,"failed to unload datasource"));
-@@ -1706,7 +1706,7 @@ void CTwnDsmApps::UnloadDS(TW_IDENTITY
+@@ -1706,7 +1706,7 @@
  */
  void CTwnDsmApps::AppWakeup(TW_IDENTITY *_pAppId)
  {
@@ -144,7 +144,7 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
    BOOL boolResult;
      if (   AppValidateId(_pAppId)
          && m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].hwnd)
-@@ -1719,7 +1719,7 @@ void CTwnDsmApps::AppWakeup(TW_IDENTITY
+@@ -1719,7 +1719,7 @@
          kLOG((kLOGERR,"PostMessage failed..."));
        }
      }
@@ -153,10 +153,10 @@ diff -rupN TWAIN_DSM/src/apps.cpp TWAIN_DSM-new/src/apps.cpp
      kLOG((kLOGERR,"We shouldn't be here in AppWakeup..."));
      // We don't support this path on this platform, use
      // callbacks instead...
-diff -rupN TWAIN_DSM/src/CMakeLists.txt TWAIN_DSM-new/src/CMakeLists.txt
---- TWAIN_DSM/src/CMakeLists.txt	2014-05-23 17:55:12.000000000 +0200
-+++ TWAIN_DSM-new/src/CMakeLists.txt	2014-11-23 02:38:03.633725896 +0100
-@@ -16,14 +16,7 @@ IF(APPLE)
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/CMakeLists.txt twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/CMakeLists.txt
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/CMakeLists.txt	2014-05-23 10:34:28.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/CMakeLists.txt	2017-04-24 20:15:04.993182500 +0900
+@@ -16,14 +16,7 @@
  	SET(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
  	ADD_DEFINITIONS(-Wall -Wextra -Werror -isysroot /Developer/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6 -fexceptions -fPIC)
  ELSE()
@@ -172,7 +172,7 @@ diff -rupN TWAIN_DSM/src/CMakeLists.txt TWAIN_DSM-new/src/CMakeLists.txt
  ENDIF()
  
  #project name
-@@ -35,17 +28,19 @@ SET(${PROJECT_NAME}_MINOR_VERSION 3)
+@@ -35,17 +28,19 @@
  SET(${PROJECT_NAME}_PATCH_LEVEL 1)
  
  #build a shared library
@@ -196,10 +196,10 @@ diff -rupN TWAIN_DSM/src/CMakeLists.txt TWAIN_DSM-new/src/CMakeLists.txt
 +		LIBRARY DESTINATION lib COMPONENT libraries
 +)
  
-diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
---- TWAIN_DSM/src/dsm.cpp	2014-05-22 18:34:59.000000000 +0200
-+++ TWAIN_DSM-new/src/dsm.cpp	2014-11-23 02:38:03.635725933 +0100
-@@ -82,16 +82,16 @@ CTwnDsmLog *g_ptwndsmlog    = 0; /**< Th
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/dsm.cpp twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/dsm.cpp
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/dsm.cpp	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/dsm.cpp	2017-04-24 20:15:05.028691100 +0900
+@@ -82,16 +82,16 @@
  *
  * Many languages still need translations...
  */
@@ -224,7 +224,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
  } TwLocalize;
  
  /**
-@@ -215,7 +215,7 @@ static TwLocalize s_twlocalize[] =
+@@ -215,7 +215,7 @@
        {TWLG_VIETNAMESE,         VIETNAMESE_CHARSET, MAKELANGID(LANG_VIETNAMESE,SUBLANG_NEUTRAL),                "","","",""},
        {-1, 0, 0, 0, 0, 0, 0} // must be last...
  };
@@ -233,7 +233,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      // We don't have anything for here...
  #else
      #error Sorry, we do not recognize this system...
-@@ -1279,9 +1279,9 @@ TW_INT16 CTwnDsm::OpenDS(TW_IDENTITY *_p
+@@ -1279,9 +1279,9 @@
         && _pAppId->ProtocolMinor == 0 )
       || _pAppId->ProtocolMajor < 2 ) 
      {
@@ -245,7 +245,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
  		int iResult;
          FILE *pfile;
          char *szHome;
-@@ -1398,7 +1398,7 @@ TW_INT16 CTwnDsm::CloseDS(TW_IDENTITY *_
+@@ -1398,7 +1398,7 @@
  
  
  
@@ -254,7 +254,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
  /**
  * DllMain is only needed for Windows, and it's only needed to collect
  * our instance handle, which is also our module handle.  Don't ever
-@@ -1436,7 +1436,7 @@ BOOL WINAPI DllMain(HINSTANCE _hmodule,
+@@ -1436,7 +1436,7 @@
    }
    return(TRUE);
  }
@@ -263,7 +263,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      // Nothing for us to do...
  #else
      #error Sorry, we do not recognize this system...
-@@ -1444,7 +1444,7 @@ BOOL WINAPI DllMain(HINSTANCE _hmodule,
+@@ -1444,7 +1444,7 @@
  
  
  
@@ -272,7 +272,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
  /**
  * We support a selection dialog on Windows.  I wish we didn't, it's
  * more trouble than it's worth, but it's part of that legacy thing.
-@@ -1469,7 +1469,7 @@ BOOL CALLBACK SelectDlgProc(HWND   _hWnd
+@@ -1469,7 +1469,7 @@
      return TRUE;
    }
  }
@@ -281,7 +281,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
    // We don't have one of these...
  #else
    #error Sorry, we do not recognize this system...
-@@ -1477,7 +1477,7 @@ BOOL CALLBACK SelectDlgProc(HWND   _hWnd
+@@ -1477,7 +1477,7 @@
  
  
  
@@ -290,7 +290,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
  /**
  * We support a selection dialog on Windows.  This function is
  * part of our CTwnDsm class, so we don't have to have a lot
-@@ -1769,7 +1769,7 @@ BOOL CTwnDsm::SelectDlgProc(HWND hWnd,
+@@ -1769,7 +1769,7 @@
    }
    return FALSE;
  }
@@ -299,7 +299,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
    // We don't have anything to do on Linux...
  #else
    #error Sorry, we do not recognize this system...
-@@ -1818,7 +1818,7 @@ TW_INT16 CTwnDsm::DSM_SelectDS(TW_IDENTI
+@@ -1818,7 +1818,7 @@
    _pDsId->Id = 0;
  
    // Windows...
@@ -308,7 +308,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
  
        HKEY      hKey;
        long      status;
-@@ -1923,7 +1923,7 @@ TW_INT16 CTwnDsm::DSM_SelectDS(TW_IDENTI
+@@ -1923,7 +1923,7 @@
        return result;
  
    // We don't support the user selection box on linux...
@@ -317,7 +317,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
  
      pod.m_ptwndsmapps->AppSetConditionCode(_pAppId,TWCC_BADPROTOCOL);
      return TWRC_FAILURE;
-@@ -1988,7 +1988,7 @@ TW_INT16 CTwnDsm::DSM_SetDefaultDS(TW_ID
+@@ -1988,7 +1988,7 @@
    }
  
    // Windows... save default source to Registry  
@@ -326,7 +326,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      HKEY      hKey;
      long      status = ERROR_SUCCESS;
  
-@@ -2017,7 +2017,7 @@ TW_INT16 CTwnDsm::DSM_SetDefaultDS(TW_ID
+@@ -2017,7 +2017,7 @@
      }
  
    // Linux looks in the user's directory...
@@ -335,7 +335,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      int iResult;
      FILE *pfile;
      char *szHome;
-@@ -2220,7 +2220,7 @@ TW_INT16 CTwnDsm::GetMatchingDefault(TW_
+@@ -2220,7 +2220,7 @@
    memset(pod.m_DefaultDSPath,0,sizeof(pod.m_DefaultDSPath));
  
    // Windows uses the registry...
@@ -344,7 +344,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      HKEY hKey;
      if (RegOpenKeyEx(HKEY_CURRENT_USER,
                       TWNDSM_DS_REG_LOC,
-@@ -2238,7 +2238,7 @@ TW_INT16 CTwnDsm::GetMatchingDefault(TW_
+@@ -2238,7 +2238,7 @@
      }
  
    // Linux looks in the user's directory...
@@ -353,7 +353,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      int iResult;
      FILE *pfile;
      char *szHome;
-@@ -3736,7 +3736,7 @@ TW_HANDLE PASCAL DSM_MemAllocate (TW_UIN
+@@ -3736,7 +3736,7 @@
    }
  
    // Windows...
@@ -362,7 +362,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      handle = (TW_HANDLE)::GlobalAlloc(GPTR,_bytes);
    if (0 == handle)
    {
-@@ -3746,7 +3746,7 @@ TW_HANDLE PASCAL DSM_MemAllocate (TW_UIN
+@@ -3746,7 +3746,7 @@
    return handle;
  
    // Linux/Mac
@@ -371,7 +371,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      handle = (TW_HANDLE)calloc(_bytes,1);
    if (0 == handle)
    {
-@@ -3777,11 +3777,11 @@ void PASCAL DSM_MemFree (TW_HANDLE _hand
+@@ -3777,11 +3777,11 @@
    }
  
    // Windows...
@@ -385,7 +385,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      free(_handle);
  
    // Oops...
-@@ -3808,11 +3808,11 @@ TW_MEMREF PASCAL DSM_MemLock (TW_HANDLE
+@@ -3808,11 +3808,11 @@
    // lock, since we allocated with GPTR, but I'm nervous
    // that we might get a GHND sent to us.  And since
    // this is a no-op for a GPTR, what they hey...
@@ -399,7 +399,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
      return (TW_MEMREF)_handle;
  
    // Oops...
-@@ -3838,11 +3838,11 @@ void PASCAL DSM_MemUnlock (TW_HANDLE _ha
+@@ -3838,11 +3838,11 @@
    }
  
    // Windows...
@@ -413,7 +413,7 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
  
    // Oops...
    #else
-@@ -3858,14 +3858,14 @@ void* DSM_LoadFunction(void* _pHandle, c
+@@ -3858,14 +3858,14 @@
  {
    void* pRet = 0;
  
@@ -431,9 +431,9 @@ diff -rupN TWAIN_DSM/src/dsm.cpp TWAIN_DSM-new/src/dsm.cpp
    char* psz_error = 0;
  
    if((psz_error = dlerror()) != NULL)
-diff -rupN TWAIN_DSM/src/dsm.h TWAIN_DSM-new/src/dsm.h
---- TWAIN_DSM/src/dsm.h	2014-05-22 18:34:59.000000000 +0200
-+++ TWAIN_DSM-new/src/dsm.h	2014-11-23 02:38:03.636725951 +0100
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/dsm.h twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/dsm.h
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/dsm.h	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/dsm.h	2017-04-24 20:15:05.055701900 +0900
 @@ -97,7 +97,9 @@
    #if defined(__GNUC__)
      #define TWNDSM_CMP              TWNDSM_CMP_GNUGPP
@@ -526,7 +526,7 @@ diff -rupN TWAIN_DSM/src/dsm.h TWAIN_DSM-new/src/dsm.h
    #define kPANIC(msg) fprintf(stderr,"TWAIN Data Source Manager: %s\r\n",msg);
  #else
    #error Sorry, we do not recognize this system...
-@@ -888,7 +890,7 @@ class CTwnDsm
+@@ -888,7 +890,7 @@
                              TW_UINT16    _MSG,
                              TW_MEMREF    _pData);
  
@@ -535,7 +535,7 @@ diff -rupN TWAIN_DSM/src/dsm.h TWAIN_DSM-new/src/dsm.h
          /**
          * Selection dialog, for apps that don't want to do GetFirst
          * GetNext.  This is only public because of the way that
-@@ -903,7 +905,7 @@ class CTwnDsm
+@@ -903,7 +905,7 @@
                                          UINT _Message,
                                          WPARAM _wParam,
                                          LPARAM _lParam);
@@ -544,18 +544,18 @@ diff -rupN TWAIN_DSM/src/dsm.h TWAIN_DSM-new/src/dsm.h
              // We don't have one of these...
          #else
              #error Sorry, we do not recognize this system...
-diff -rupN TWAIN_DSM/src/hook.cpp TWAIN_DSM-new/src/hook.cpp
---- TWAIN_DSM/src/hook.cpp	2014-05-22 18:34:59.000000000 +0200
-+++ TWAIN_DSM-new/src/hook.cpp	2014-11-23 02:38:03.637725970 +0100
-@@ -81,6 +81,7 @@
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/hook.cpp twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/hook.cpp
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/hook.cpp	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/hook.cpp	2017-04-24 20:16:04.527291200 +0900
+@@ -80,6 +80,7 @@
+ *    WinME, but hopefully nobody is still using that)...
  */
  
- #include "dsm.h"
 +#include <algorithm>
+ #include "dsm.h"
  
  
- /**
-@@ -125,14 +126,14 @@ typedef struct _ANSI_STRING {
+@@ -125,14 +126,14 @@
  * typedefs of our hooked functions, so we can cast them nice when we make
  * our calls...
  */
@@ -572,7 +572,7 @@ diff -rupN TWAIN_DSM/src/hook.cpp TWAIN_DSM-new/src/hook.cpp
  (
    __in     HMODULE       ModuleHandle,
    __in_opt PANSI_STRING  FunctionName,
-@@ -574,7 +575,7 @@ bool CTwHook::Hook
+@@ -574,7 +575,7 @@
  */
  bool CTwHook::DSID_Is_Hooked(TW_UINT32 DSID)
  {
@@ -581,7 +581,7 @@ diff -rupN TWAIN_DSM/src/hook.cpp TWAIN_DSM-new/src/hook.cpp
  	for (int i=0; i<count; i++)
  	{
  		if (pod.HookedDSs[i] == DSID)
-@@ -608,7 +609,7 @@ void CTwHook::Hook_Add_DSID(TW_UINT32 DS
+@@ -608,7 +609,7 @@
  */
  bool CTwHook::Hook_Remove_DSID(TW_UINT32 DSID)
  {
@@ -590,7 +590,7 @@ diff -rupN TWAIN_DSM/src/hook.cpp TWAIN_DSM-new/src/hook.cpp
  
    for(int i=0; i<count; i++)
    {
-@@ -664,7 +665,7 @@ DWORD NTAPI LocalLdrGetProcedureAddress
+@@ -664,7 +665,7 @@
      // Get and store the original address in case we need it
      (OriginalLdrGetProcedureAddress(ModuleHandle,FunctionName,Ordinal,(PVOID*)&TWAIN32_DSMEntry));
      // Return the address to our own function
@@ -599,7 +599,7 @@ diff -rupN TWAIN_DSM/src/hook.cpp TWAIN_DSM-new/src/hook.cpp
      return (ERROR_SUCCESS);
    }
  
-@@ -710,7 +711,7 @@ DWORD NTAPI LocalLdrGetProcedureAddressF
+@@ -710,7 +711,7 @@
      // Get and store the original address in case we need it
      (OriginalLdrGetProcedureAddressForCaller(ModuleHandle,FunctionName,Ordinal,(PVOID*)&TWAIN32_DSMEntry,bValue,CallbackAddress));
      // Return the address to our own function
@@ -608,10 +608,10 @@ diff -rupN TWAIN_DSM/src/hook.cpp TWAIN_DSM-new/src/hook.cpp
      return (ERROR_SUCCESS);
    }
  
-diff -rupN TWAIN_DSM/src/log.cpp TWAIN_DSM-new/src/log.cpp
---- TWAIN_DSM/src/log.cpp	2014-05-22 18:34:59.000000000 +0200
-+++ TWAIN_DSM-new/src/log.cpp	2014-11-23 02:38:12.249883692 +0100
-@@ -189,14 +189,14 @@ void CTwnDsmLog::Log(const int         _
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/log.cpp twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/log.cpp
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/log.cpp	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/log.cpp	2017-04-24 20:15:05.102464700 +0900
+@@ -189,14 +189,14 @@
    const char *file = NULL;
  
    // Grab the system error, this can be really useful...
@@ -628,7 +628,7 @@ diff -rupN TWAIN_DSM/src/log.cpp TWAIN_DSM-new/src/log.cpp
      nError = errno;
    #else
      #error Sorry, we do not recognize this system...
-@@ -216,7 +216,7 @@ void CTwnDsmLog::Log(const int         _
+@@ -216,7 +216,7 @@
  
    // Trim the filename down to just the filename, no path...
    file = 0;
@@ -637,7 +637,7 @@ diff -rupN TWAIN_DSM/src/log.cpp TWAIN_DSM-new/src/log.cpp
      // Only look for this on Windows...
      file = strrchr(_file,'\\');
    #endif
-@@ -237,7 +237,7 @@ void CTwnDsmLog::Log(const int         _
+@@ -237,7 +237,7 @@
    }
    
    // Build the message header...
@@ -646,7 +646,7 @@ diff -rupN TWAIN_DSM/src/log.cpp TWAIN_DSM-new/src/log.cpp
      SYSTEMTIME st;
      GetLocalTime(&st);
      nChars = SNPRINTF(m_ptwndsmlogimpl->pod.m_message,
-@@ -251,7 +251,7 @@ void CTwnDsmLog::Log(const int         _
+@@ -251,7 +251,7 @@
                        nError,
                        (void*)(UINT_PTR)GETTHREADID(),
                        m_ptwndsmlogimpl->pod.m_nIndent*2, "            ");
@@ -655,7 +655,7 @@ diff -rupN TWAIN_DSM/src/log.cpp TWAIN_DSM-new/src/log.cpp
      timeval tv;
      tm tm;
      gettimeofday(&tv,NULL);
-@@ -277,11 +277,11 @@ void CTwnDsmLog::Log(const int         _
+@@ -277,11 +277,11 @@
    // Finally, tack on the user portion of the message...
    va_list valist;
    va_start(valist,_format);
@@ -670,7 +670,7 @@ diff -rupN TWAIN_DSM/src/log.cpp TWAIN_DSM-new/src/log.cpp
      vsnprintf(message,nChars,_format,valist);
    #else
      #error Sorry, we do not recognize this system...
-@@ -295,7 +295,7 @@ void CTwnDsmLog::Log(const int         _
+@@ -295,7 +295,7 @@
    // Do the assert, if asked for...
    if (_doassert)
    {

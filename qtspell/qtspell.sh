@@ -31,7 +31,7 @@ tar xf $QTSPELL_ARCHIVE
 mv $QTSPELL_SRC_DIR $QTSPELL_BUILD_DIR
 pushd $QTSPELL_BUILD_DIR
 
-patch -p0 < $SCRIPT_DIR/CMakeLists.patch
+patch -p0 --binary < $SCRIPT_DIR/CMakeLists.patch
 mkdir build
 pushd build
 cmake .. \

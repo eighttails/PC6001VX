@@ -4,7 +4,7 @@
 #}
 
 function build(){
-if [ -e $PREFIX/bin/twain.dll -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $PREFIX/bin/twaindsm.dll -a $((FORCE_INSTALL)) == 0 ]; then
 echo "TWAIN DSM is already installed."
 exit 0
 fi
@@ -17,14 +17,14 @@ TWAINDSM_SRC_DIR=twaindsm-$TWAINDSM_TAG.orig
 TWAINDSM_BUILD_DIR=$TWAINDSM_SRC_DIR-$MINGW_CHOST
 
 
-wget -c https://sourceforge.net/projects/twain-dsm/files/TWAIN%20DSM%202%20Source/$TWAINDSM_ARCHIVE
+wget https://sourceforge.net/projects/twain-dsm/files/TWAIN%20DSM%202%20Source/$TWAINDSM_ARCHIVE
 rm -rf $TWAINDSM_SRC_DIR $TWAINDSM_BUILD_DIR 
 unzip $TWAINDSM_ARCHIVE
 mv $TWAINDSM_SRC_DIR $TWAINDSM_BUILD_DIR
 pushd $TWAINDSM_BUILD_DIR
 
 
-patch -p0 < $SCRIPT_DIR/twaindsm_mingw.patch
+patch -p1 --binary < $SCRIPT_DIR/twaindsm_mingw.patch
 pushd TWAIN_DSM/src
 #sed -i -e "s/LIBRARY DESTINATION/RUNTIME DESTINATION/g" CMakeLists.txt
 mkdir build

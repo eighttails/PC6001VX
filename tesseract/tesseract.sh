@@ -42,6 +42,7 @@ rm $TESSERACT_BUILD_DIR.tar.gz
 pushd $TESSERACT_BUILD_DIR
 
 ./autogen.sh
+exitOnError
 
 export LIBLEPT_HEADERSDIR=$PREFIX/include/leptonica
 
@@ -52,6 +53,8 @@ export LIBLEPT_HEADERSDIR=$PREFIX/include/leptonica
 --prefix=$PREFIX \
 --with-extra-includes=$PREFIX/include \
 --with-extra-libraries=$PREFIX/lib
+
+exitOnError
 
 #WindowsでScrollView.jarのビルドが通らないのを修正
 #sed -i -e "s|piccolo2d-core-3.0.jar:piccolo2d-extras-3.0.jar|'piccolo2d-core-3.0.jar;piccolo2d-extras-3.0.jar'|" java/Makefile

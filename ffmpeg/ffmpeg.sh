@@ -25,6 +25,7 @@ mv $FFMPEG_SRC_DIR $FFMPEG_BUILD_DIR
 pushd $FFMPEG_BUILD_DIR
 
 ./configure --target-os=mingw32 --prefix=$PREFIX --enable-small --disable-programs --disable-doc --disable-everything --disable-sdl --disable-iconv --enable-libvpx --enable-encoder=libvpx_vp8 --enable-libvorbis --enable-encoder=libvorbis --enable-muxer=webm --enable-protocol=file
+exitOnError
 
 makeParallel && makeParallel install
 

@@ -32,6 +32,7 @@ pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX 
+exitOnError
 
 makeParallel && makeParallel install
 exitOnError

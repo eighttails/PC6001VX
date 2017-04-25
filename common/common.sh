@@ -35,7 +35,7 @@ function makeParallel(){
 #並列ビルドの場合依存関係でビルドに失敗することがあるので3回までmakeする。
 for (( i=0; i<3; i++))
 do
-    start //B //WAIT //LOW mingw32-make -j$NUMBER_OF_PROCESSORS "$@"
+    start //B //WAIT //LOW make -j$NUMBER_OF_PROCESSORS "$@"
     if [ $? -eq 0 ]; then
         return 0
     fi

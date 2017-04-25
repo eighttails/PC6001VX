@@ -39,6 +39,7 @@ cmake .. \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
 -DBUILD_STATIC_LIBS=1 \
 -DUSE_QT5=1 
+exitOnError
 
 makeParallel && makeParallel install
 exitOnError

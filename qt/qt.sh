@@ -69,6 +69,7 @@ mkdir $QT5_SHARED_BUILD
 pushd $QT5_SHARED_BUILD
 
 ../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $QTCREATOR_PREFIX`" -shared -release $QT_COMMON_CONFIGURE_OPTION
+exitOnError
 
 ./config.status &> ../qt5-shared-$MINGW_CHOST-config.status
 
@@ -112,6 +113,8 @@ mkdir $QTCREATOR_BUILD
 pushd $QTCREATOR_BUILD
 
 $QTCREATOR_PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+=silent QTC_PREFIX="`cygpath -am $QTCREATOR_PREFIX`" ../$QTC_SOURCE_DIR/qtcreator.pro
+exitOnError
+
 makeParallel && makeParallel install
 exitOnError
 popd
@@ -131,6 +134,7 @@ mkdir $QT5_STATIC_BUILD
 pushd $QT5_STATIC_BUILD
 
 ../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $PREFIX`" -static -static-runtime -nomake examples $QT_COMMON_CONFIGURE_OPTION
+exitOnError
 
 ./config.status &> ../qt5-static-$MINGW_CHOST-config.status
 

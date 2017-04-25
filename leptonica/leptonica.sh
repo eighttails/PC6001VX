@@ -36,6 +36,7 @@ pushd $LEPTONICA_BUILD_DIR
 --prefix=$PREFIX \
 --disable-programs \
 CPPFLAGS=-DMINIMUM_SEVERITY=4
+exitOnError
 
 makeParallel && makeParallel install
 

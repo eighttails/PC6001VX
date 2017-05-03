@@ -88,7 +88,7 @@ fi
 #Qt Creator
 cd ~/extlib
 QTC_MAJOR_VER=4.2
-QTC_MINOR_VER=.1
+QTC_MINOR_VER=.2
 QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 #QTC_RELEASE=development_releases
@@ -164,12 +164,17 @@ cd $EXTLIB
 
 #Qtのソースコードを展開
 makeQtSourceTree
-
-#shared版Qtをビルド(QtCreator用)
-buildQtShared
-
-#QtCreatorをビルド
-buildQtCreator
+exitOnError
 
 #static版Qtをビルド(P6VX用)
 buildQtStatic
+exitOnError
+
+#shared版Qtをビルド(QtCreator用)
+buildQtShared
+exitOnError
+
+#QtCreatorをビルド
+buildQtCreator
+exitOnError
+

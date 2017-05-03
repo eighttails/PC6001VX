@@ -43,6 +43,18 @@ done
 return 1
 }
 
+function mingw32MakeParallel(){
+#並列ビルドの場合依存関係でビルドに失敗することがあるので3回までmakeする。
+for (( i=0; i<3; i++))
+do
+    start //B //WAIT //LOW mingw32-make -j$NUMBER_OF_PROCESSORS "$@"
+    if [ $? -eq 0 ]; then
+        return 0
+    fi
+done
+return 1
+}
+
 function waitEnter(){
 echo "Hit Enter"
 read Wait

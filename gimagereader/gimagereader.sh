@@ -15,7 +15,6 @@ fi
 
 #必要ライブラリ
 pacman -S --needed --noconfirm \
-$MINGW_PACKAGE_PREFIX-podofo \
 $MINGW_PACKAGE_PREFIX-poppler
 
 }

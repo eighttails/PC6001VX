@@ -7,6 +7,8 @@ $SCRIPT_DIR/../qt/qt.sh
 exitOnError
 $SCRIPT_DIR/../qtspell/qtspell.sh
 exitOnError
+$SCRIPT_DIR/../twaindsm/twaindsm.sh
+exitOnError
 $SCRIPT_DIR/../tesseract/tesseract.sh
 exitOnError
 fi
@@ -41,6 +43,9 @@ pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
+-DCMAKE_MODULE_PATH=$PREFIX \
+-DCMAKE_CXX_FLAGS="-isystem $PREFIX/include" \
+-DCMAKE_MODULE_LINKER_FLAGS="-L$PREFIX/lib" \
 -DINTERFACE_TYPE=qt5 \
 -DCMAKE_EXE_LINKER_FLAGS="-static"
 

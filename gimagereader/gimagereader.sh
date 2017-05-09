@@ -33,20 +33,22 @@ GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
 GIMAGEREADER_SRC_DIR=gImageReader-$GIMAGEREADER_VERSION
 GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR-$MINGW_CHOST
 
+if [ ! -e $GIMAGEREADER_ARCHIVE ]; then
 wget -c https://github.com/manisandro/gImageReader/archive/$GIMAGEREADER_TAG/$GIMAGEREADER_ARCHIVE
+fi
 rm -rf $GIMAGEREADER_SRC_DIR $GIMAGEREADER_BUILD_DIR 
 tar xf $GIMAGEREADER_ARCHIVE
 mv $GIMAGEREADER_SRC_DIR $GIMAGEREADER_BUILD_DIR
 pushd $GIMAGEREADER_BUILD_DIR
 
+sed -i -e 's/SET(gimagereader_LIBS \(.*\))/SET(gimagereader_LIBS \1 -llept -lpng -ljpeg -lgif -ltiff -lwebp -lopenjp2 -lcrypto -lidn -llzma -lz)/' CMakeLists.txt
+sed -i -e 's/-lintl/-lintl -liconv/' CMakeLists.txt
 mkdir build
 pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
--DCMAKE_MODULE_PATH=$PREFIX/lib/cmake:$MINGW_PREFIX/lib/cmake \
--DCMAKE_CXX_FLAGS="-isystem $PREFIX/include" \
--DCMAKE_MODULE_LINKER_FLAGS="-L$PREFIX/lib" \
+-DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
 -DINTERFACE_TYPE=qt5 \
 -DCMAKE_EXE_LINKER_FLAGS="-static" 
 

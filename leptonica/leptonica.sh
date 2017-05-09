@@ -12,7 +12,7 @@ $MINGW_PACKAGE_PREFIX-libwebp \
 $MINGW_PACKAGE_PREFIX-zlib
 }
 
-function buildLeptonica(){
+function build(){
 if [ -e $PREFIX/lib/liblept.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "Leptonica is already installed."
 exit 0
@@ -49,7 +49,9 @@ SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
 prerequisite
+exitOnError
 
 cd $EXTLIB
 
-buildLeptonica
+build
+exitOnError

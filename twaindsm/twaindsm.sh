@@ -50,3 +50,4 @@ commonSetup
 cd $EXTLIB
 
 build
+exitOnError

@@ -7,6 +7,8 @@ $SCRIPT_DIR/../qt/qt.sh
 exitOnError
 $SCRIPT_DIR/../qtspell/qtspell.sh
 exitOnError
+$SCRIPT_DIR/../podofo/podofo.sh
+exitOnError
 $SCRIPT_DIR/../twaindsm/twaindsm.sh
 exitOnError
 $SCRIPT_DIR/../tesseract/tesseract.sh
@@ -42,11 +44,11 @@ pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
--DCMAKE_MODULE_PATH=$PREFIX \
+-DCMAKE_MODULE_PATH=$PREFIX/lib/cmake:$MINGW_PREFIX/lib/cmake \
 -DCMAKE_CXX_FLAGS="-isystem $PREFIX/include" \
 -DCMAKE_MODULE_LINKER_FLAGS="-L$PREFIX/lib" \
 -DINTERFACE_TYPE=qt5 \
--DCMAKE_EXE_LINKER_FLAGS="-static"
+-DCMAKE_EXE_LINKER_FLAGS="-static" 
 
 makeParallel && makeParallel install
 exitOnError
@@ -59,7 +61,9 @@ SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
 prerequisite
+exitOnError
 
 cd $EXTLIB
 
 build
+exitOnError

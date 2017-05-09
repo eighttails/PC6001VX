@@ -15,7 +15,7 @@ $MINGW_PACKAGE_PREFIX-enchant
 
 function build(){
 if [ -e $PREFIX/lib/libqtspell-qt5.a -a $((FORCE_INSTALL)) == 0 ]; then
-echo "QtScript is already installed."
+echo "QtSpell is already installed."
 exit 0
 fi
 
@@ -31,7 +31,6 @@ tar xf $QTSPELL_ARCHIVE
 mv $QTSPELL_SRC_DIR $QTSPELL_BUILD_DIR
 pushd $QTSPELL_BUILD_DIR
 
-patch -p0 --binary < $SCRIPT_DIR/CMakeLists.patch
 mkdir build
 pushd build
 cmake .. \
@@ -52,7 +51,9 @@ SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
 prerequisite
+exitOnError
 
 cd $EXTLIB
 
 build
+exitOnError

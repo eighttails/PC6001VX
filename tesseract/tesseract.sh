@@ -73,7 +73,9 @@ source $SCRIPT_DIR/../common/common.sh
 commonSetup
 #checkJDK
 prerequisite
+exitOnError
 
 cd $EXTLIB
 
 build
+exitOnError

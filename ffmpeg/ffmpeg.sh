@@ -8,7 +8,7 @@ $MINGW_PACKAGE_PREFIX-libvpx \
 $MINGW_PACKAGE_PREFIX-yasm
 }
 
-function buildFFmpeg(){
+function build(){
 if [ -e $PREFIX/lib/libavcodec.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "FFMpeg is already installed."
 exit 0
@@ -38,7 +38,9 @@ SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
 prerequisite
+exitOnError
 
 cd $EXTLIB
 
-buildFFmpeg
+build
+exitOnError

@@ -9,6 +9,8 @@ $SCRIPT_DIR/../qtspell/qtspell.sh
 exitOnError
 $SCRIPT_DIR/../podofo/podofo.sh
 exitOnError
+$SCRIPT_DIR/../poppler/poppler.sh
+exitOnError
 $SCRIPT_DIR/../twaindsm/twaindsm.sh
 exitOnError
 $SCRIPT_DIR/../tesseract/tesseract.sh

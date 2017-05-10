@@ -25,8 +25,10 @@ if [ -e $QT_SOURCE_DIR ]; then
     echo "$QT_SOURCE_DIR already exists."
 else
     # 存在しない場合
+	if [ ! -e $QT_SOURCE_DIR.zip ]; then
     wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
     unzip -q $QT_SOURCE_DIR.zip
+	fi
 
     pushd $QT_SOURCE_DIR
 

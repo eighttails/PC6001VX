@@ -17,7 +17,7 @@ fi
 
 #必要ライブラリ
 pacman -S --needed --noconfirm \
-$MINGW_PACKAGE_PREFIX-poppler
+$MINGW_PACKAGE_PREFIX-dlfcn
 
 }
 

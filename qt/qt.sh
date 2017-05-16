@@ -5,9 +5,10 @@ function prerequisite(){
 pacman -S --needed --noconfirm \
 $MINGW_PACKAGE_PREFIX-SDL2
 
-mkdir -p $QTCREATOR_PREFIX/bin 2> /dev/null
+mkdir -p $PREFIX/bin 2> /dev/null
+mkdir -p $QT5_STATIC_PREFIX/bin 2> /dev/null
 pushd $MINGW_PREFIX/bin
-cp -f $NEEDED_DLLS $QTCREATOR_PREFIX/bin
+cp -f $NEEDED_DLLS $QT5_STATIC_PREFIX/bin
 popd
 }
 
@@ -17,6 +18,7 @@ QT_MAJOR_VERSION=5.8
 QT_MINOR_VERSION=.0
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
+QT_ARCHIVE=$QT_SOURCE_DIR.zip
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases
 
@@ -26,29 +28,11 @@ if [ -e $QT_SOURCE_DIR ]; then
 else
     # 存在しない場合
 	if [ ! -e $QT_SOURCE_DIR.zip ]; then
-    wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_SOURCE_DIR.zip
-    unzip -q $QT_SOURCE_DIR.zip
+    wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_ARCHIVE
+    unzip -q $QT_ARCHIVE
 	fi
 
     pushd $QT_SOURCE_DIR
-
-	#static版がcmakeで正常にリンクできない対策のパッチ
-	patch -p1 -i $SCRIPT_DIR/0034-qt-5.3.2-Use-QMAKE_PREFIX_STATICLIB-in-create_cmake-prf.patch
-    patch -p1 -i $SCRIPT_DIR/0035-qt-5.3.2-dont-add-resource-files-to-qmake-libs.patch
-  
-    # Patches so that qt5-static can be used with cmake.
-    patch -p1 -i $SCRIPT_DIR/0036-qt-5.3.2-win32-qt5-static-cmake-link-ws2_32-and--static.patch
-    patch -p1 -i $SCRIPT_DIR/0037-qt-5.4.0-Improve-cmake-plugin-detection-as-not-all-are-suffixed-Plugin.patch
-  
-    pushd qtbase > /dev/null
-      patch -p1 -i $SCRIPT_DIR/0038-qt-5.5.0-cmake-Rearrange-STATIC-vs-INTERFACE-targets.patch
-    popd
-  
-    patch -p1 -i $SCRIPT_DIR/0039-qt-5.4.0-Make-it-possible-to-use-static-builds-of-Qt-with-CMa.patch
-    patch -p1 -i $SCRIPT_DIR/0040-qt-5.4.0-Generate-separated-libraries-in-prl-files-for-CMake.patch
-    patch -p1 -i $SCRIPT_DIR/0041-qt-5.4.0-Fix-mingw-create_cmake-prl-file-has-no-lib-prefix.patch
-    patch -p1 -i $SCRIPT_DIR/0042-qt-5.4.0-static-cmake-also-link-plugins-and-plugin-deps.patch
-    patch -p1 -i $SCRIPT_DIR/0043-qt-5.5.0-static-cmake-regex-QT_INSTALL_LIBS-in-QMAKE_PRL_LIBS_FOR_CMAKE.patch
 
     #MSYSでビルドが通らない問題への対策パッチ
     sed -i -e "s|/nologo |//nologo |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
@@ -79,18 +63,18 @@ QT_COMMON_CONFIGURE_OPTION='-opensource -confirm-license -silent -platform win32
 }
 
 function buildQtShared(){
-if [ -e $QTCREATOR_PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
 	echo "Qt5 Shared Libs are already installed."
 	return 0
 fi
 
-#shared版(QtCreator用)
+#shared版
 QT5_SHARED_BUILD=qt5-shared-$MINGW_CHOST
 rm -rf $QT5_SHARED_BUILD
 mkdir $QT5_SHARED_BUILD
 pushd $QT5_SHARED_BUILD
 
-../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $QTCREATOR_PREFIX`" -shared -release $QT_COMMON_CONFIGURE_OPTION
+../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $PREFIX`" -shared $QT_COMMON_CONFIGURE_OPTION
 exitOnError
 
 ./config.status &> ../qt5-shared-$MINGW_CHOST-config.status
@@ -101,8 +85,36 @@ popd
 rm -rf $QT5_SHARED_BUILD
 }
 
+function buildQtStatic(){
+if [ -e $QT5_STATIC_PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
+	echo "Qt5 Static Libs are already installed."
+	return 0
+fi
+
+#static版
+QT5_STATIC_BUILD=qt5-static-$MINGW_CHOST
+rm -rf $QT5_STATIC_BUILD
+mkdir $QT5_STATIC_BUILD
+pushd $QT5_STATIC_BUILD
+
+../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $QT5_STATIC_PREFIX`" -static -static-runtime -nomake examples $QT_COMMON_CONFIGURE_OPTION
+exitOnError
+
+./config.status &> ../qt5-static-$MINGW_CHOST-config.status
+
+makeParallel && makeParallel install
+exitOnError
+
+#MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
+sed -i -e "s|-ltiff|-ltiff -llzma|g" $QT5_STATIC_PREFIX/plugins/imageformats/qtiff.prl
+sed -i -e "s|-ltiff|-ltiff -llzma|g" $QT5_STATIC_PREFIX/plugins/imageformats/qtiffd.prl
+
+popd
+rm -rf $QT5_STATIC_BUILD
+}
+
 function buildQtCreator(){
-if [ -e $QTCREATOR_PREFIX/bin/qtcreator.exe -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $PREFIX/bin/qtcreator.exe -a $((FORCE_INSTALL)) == 0 ]; then
 	echo "Qt Creator is already installed."
 	return 0
 fi
@@ -113,15 +125,16 @@ QTC_MAJOR_VER=4.2
 QTC_MINOR_VER=.2
 QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
+QTC_ARCHIVE=$QTC_SOURCE_DIR.zip
 #QTC_RELEASE=development_releases
 QTC_RELEASE=official_releases
-wget -c  http://download.qt.io/$QTC_RELEASE/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_SOURCE_DIR.zip
+wget -c  http://download.qt.io/$QTC_RELEASE/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_ARCHIVE
 if [ -e $QTC_SOURCE_DIR ]; then
 	# 存在する場合
 	echo "$QTC_SOURCE_DIR already exists."
 else
 	# 存在しない場合
-	unzip -q $QTC_SOURCE_DIR.zip
+	unzip -q $QTC_ARCHIVE
 
 	pushd $QTC_SOURCE_DIR
 	#MSYSでビルドが通らない問題へのパッチ
@@ -134,42 +147,53 @@ rm -rf $QTCREATOR_BUILD
 mkdir $QTCREATOR_BUILD
 pushd $QTCREATOR_BUILD
 
-$QTCREATOR_PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+=silent QTC_PREFIX="`cygpath -am $QTCREATOR_PREFIX`" ../$QTC_SOURCE_DIR/qtcreator.pro
+$PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+=silent QTC_PREFIX="`cygpath -am $PREFIX`" ../$QTC_SOURCE_DIR/qtcreator.pro
 exitOnError
 
-makeParallel && makeParallel install
+makeParallel release && makeParallel install
 exitOnError
 popd
 rm -rf $QTCREATOR_BUILD
 }
 
-function buildQtStatic(){
-if [ -e $PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
-	echo "Qt5 Static Libs are already installed."
+function buildQtInstallerFramework(){
+if [ -e $PREFIX/bin/qtinstaller.exe -a $((FORCE_INSTALL)) == 0 ]; then
+	echo "Qt Installer Framework is already installed."
 	return 0
 fi
 
-#static版(P6VX用)
-QT5_STATIC_BUILD=qt5-static-$MINGW_CHOST
-rm -rf $QT5_STATIC_BUILD
-mkdir $QT5_STATIC_BUILD
-pushd $QT5_STATIC_BUILD
+#Qt Installer Framework
+cd ~/extlib
+QTI_MAJOR_VER=2.0
+QTI_MINOR_VER=.5-1
+QTI_VER=$QTI_MAJOR_VER$QTI_MINOR_VER
+QTI_SOURCE_DIR=qt-installer-framework-opensource-$QTI_VER-src
+QTI_ARCHIVE=$QTI_SOURCE_DIR.zip
+#QTI_RELEASE=development_releases
+QTI_RELEASE=official_releases
+wget -c https://download.qt.io/official_releases/qt-installer-framework/$QTI_VER/$QTI_ARCHIVE
+if [ -e $QTI_SOURCE_DIR ]; then
+	# 存在する場合
+	echo "$QTI_SOURCE_DIR already exists."
+else
+	# 存在しない場合
+	unzip -q $QTI_ARCHIVE
+fi
 
-../$QT_SOURCE_DIR/configure -prefix "`cygpath -am $PREFIX`" -static -static-runtime -nomake examples $QT_COMMON_CONFIGURE_OPTION
+QTINSTALLERFW_BUILD=qt-installer-fw-$MINGW_CHOST
+rm -rf $QTINSTALLERFW_BUILD
+mkdir $QTINSTALLERFW_BUILD
+pushd $QTINSTALLERFW_BUILD
+
+$QT5_STATIC_PREFIX/bin/qmake PREFIX="`cygpath -am $PREFIX`" CONFIG-=precompile_header CONFIG+=silent ../$QTI_SOURCE_DIR/installerfw.pro
 exitOnError
 
-./config.status &> ../qt5-static-$MINGW_CHOST-config.status
-
-makeParallel && makeParallel install
+makeParallel release && makeParallel install
 exitOnError
-
-#MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
-sed -i -e "s|-ltiff|-ltiff -llzma|g" $PREFIX/plugins/imageformats/qtiff.prl
-sed -i -e "s|-ltiff|-ltiff -llzma|g" $PREFIX/plugins/imageformats/qtiffd.prl
-
 popd
-rm -rf $QT5_STATIC_BUILD
+rm -rf $QTINSTALLERFW_BUILD
 }
+
 
 #----------------------------------------------------
 SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
@@ -177,7 +201,7 @@ source $SCRIPT_DIR/../common/common.sh
 commonSetup
 
 #Qt Creatorのインストール場所
-QTCREATOR_PREFIX=$MINGW_PREFIX/local/qt-creator
+QT5_STATIC_PREFIX=$PREFIX/qt5-static
 
 #必要ライブラリ
 prerequisite
@@ -188,15 +212,18 @@ cd $EXTLIB
 makeQtSourceTree
 exitOnError
 
-#static版Qtをビルド(P6VX用)
-buildQtStatic
+#shared版Qtをビルド
+buildQtShared
 exitOnError
 
-#shared版Qtをビルド(QtCreator用)
-buildQtShared
+#static版Qtをビルド
+buildQtStatic
 exitOnError
 
 #QtCreatorをビルド
 buildQtCreator
 exitOnError
 
+#Qt installer frameworkをビルド
+buildQtInstallerFramework
+exitOnError

@@ -33,18 +33,18 @@ POPPLER_TAG=$POPPLER_VERSION
 POPPLER_ARCHIVE=poppler-$POPPLER_TAG.tar.xz
 POPPLER_SRC_DIR=poppler-$POPPLER_VERSION
 POPPLER_BUILD_DIR=$POPPLER_SRC_DIR-$MINGW_CHOST
+if [ ! -e $POPPLER_ARCHIVE ]; then
 wget -c https://poppler.freedesktop.org/$POPPLER_ARCHIVE
+fi
 
 rm -rf $POPPLER_SRC_DIR $POPPLER_BUILD_DIR 
 tar xf $POPPLER_ARCHIVE
 mv $POPPLER_SRC_DIR $POPPLER_BUILD_DIR
 pushd $POPPLER_BUILD_DIR
 
-sed -i -e 's/add_subdirectory(tests)//' qt5/Makefile.am
-sed -i -e 's/tests//' qt5/Makefile.am
-
 autoreconf -fi
 exitOnError
+
 
 ./configure \
 --prefix=$PREFIX \

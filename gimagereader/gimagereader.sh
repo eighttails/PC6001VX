@@ -7,8 +7,6 @@ $SCRIPT_DIR/../qt/qt.sh
 exitOnError
 $SCRIPT_DIR/../qtspell/qtspell.sh
 exitOnError
-$SCRIPT_DIR/../podofo/podofo.sh
-exitOnError
 $SCRIPT_DIR/../poppler/poppler.sh
 exitOnError
 $SCRIPT_DIR/../twaindsm/twaindsm.sh
@@ -19,6 +17,7 @@ fi
 
 #必要ライブラリ
 pacman -S --needed --noconfirm \
+$MINGW_PACKAGE_PREFIX-podofo \
 $MINGW_PACKAGE_PREFIX-dlfcn
 
 }
@@ -43,16 +42,13 @@ tar xf $GIMAGEREADER_ARCHIVE
 mv $GIMAGEREADER_SRC_DIR $GIMAGEREADER_BUILD_DIR
 pushd $GIMAGEREADER_BUILD_DIR
 
-sed -i -e 's/SET(gimagereader_LIBS \(.*\))/SET(gimagereader_LIBS \1 -llept -lpng -ljpeg -lgif -ltiff -lwebp -lopenjp2 -lcrypto -lidn -llzma -lz)/' CMakeLists.txt
-sed -i -e 's/-lintl/-lintl -liconv/' CMakeLists.txt
 mkdir build
 pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
 -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
--DINTERFACE_TYPE=qt5 \
--DCMAKE_EXE_LINKER_FLAGS="-static" 
+-DINTERFACE_TYPE=qt5
 
 makeParallel && makeParallel install
 exitOnError

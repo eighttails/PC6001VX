@@ -185,7 +185,7 @@ rm -rf $QTINSTALLERFW_BUILD
 mkdir $QTINSTALLERFW_BUILD
 pushd $QTINSTALLERFW_BUILD
 
-$QT5_STATIC_PREFIX/bin/qmake PREFIX="`cygpath -am $PREFIX`" CONFIG-=precompile_header CONFIG+=silent ../$QTI_SOURCE_DIR/installerfw.pro
+$QT5_STATIC_PREFIX/bin/qmake PREFIX="`cygpath -am $PREFIX`" CONFIG-=debug CONFIG-=precompile_header CONFIG+=silent ../$QTI_SOURCE_DIR/installerfw.pro
 exitOnError
 
 makeParallel release && makeParallel install

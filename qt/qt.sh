@@ -157,7 +157,7 @@ rm -rf $QTCREATOR_BUILD
 }
 
 function buildQtInstallerFramework(){
-if [ -e $PREFIX/bin/qtinstaller.exe -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $QT5_STATIC_PREFIX/bin/archivegen.exe -a $((FORCE_INSTALL)) == 0 ]; then
 	echo "Qt Installer Framework is already installed."
 	return 0
 fi
@@ -185,7 +185,7 @@ rm -rf $QTINSTALLERFW_BUILD
 mkdir $QTINSTALLERFW_BUILD
 pushd $QTINSTALLERFW_BUILD
 
-$QT5_STATIC_PREFIX/bin/qmake PREFIX="`cygpath -am $PREFIX`" CONFIG-=debug CONFIG-=precompile_header CONFIG+=silent ../$QTI_SOURCE_DIR/installerfw.pro
+$QT5_STATIC_PREFIX/bin/qmake PREFIX="`cygpath -am $PREFIX`" CONFIG+=release CONFIG-=precompile_header CONFIG+=silent ../$QTI_SOURCE_DIR/installerfw.pro
 exitOnError
 
 makeParallel release && makeParallel install
@@ -200,7 +200,7 @@ SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
 
-#Qt Creatorのインストール場所
+#static版Qtのインストール場所
 QT5_STATIC_PREFIX=$PREFIX/qt5-static
 
 #必要ライブラリ

@@ -38,6 +38,7 @@ pushd build
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
+-DCMAKE_MODULE_PATH=$PREFIX/qt5-shared/lib \
 -DBUILD_STATIC_LIBS=1 \
 -DUSE_QT5=1 
 exitOnError

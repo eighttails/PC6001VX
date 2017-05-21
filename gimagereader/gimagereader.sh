@@ -44,6 +44,7 @@ pushd $GIMAGEREADER_BUILD_DIR
 
 mkdir build
 pushd build
+CMAKE_PREFIX_PATH=$PREFIX/qt5-shared:$CMAKE_PREFIX_PATH \
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \

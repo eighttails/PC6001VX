@@ -117,7 +117,7 @@ mkdir -p $PREFIX/bin 2> /dev/null
 
 export PATH=$PREFIX/bin:$PATH
 export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
-export CMAKE_PREFIX_PATH=$PREFIX/lib/cmake:$CMAKE_PREFIX_PATH
+export CMAKE_PREFIX_PATH=$PREFIX:$CMAKE_PREFIX_PATH
 
 #最低限必要なDLLをコピー
 pushd $MINGW_PREFIX/bin

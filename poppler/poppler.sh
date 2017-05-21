@@ -45,7 +45,7 @@ pushd $POPPLER_BUILD_DIR
 autoreconf -fi
 exitOnError
 
-
+PKG_CONFIG_PATH=$PREFIX/qt5-shared/lib/pkgconfig:$PKG_CONFIG_PATH \
 ./configure \
 --prefix=$PREFIX \
 --build=$MINGW_CHOST \

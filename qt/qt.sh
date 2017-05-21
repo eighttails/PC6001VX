@@ -79,7 +79,7 @@ exitOnError
 
 ./config.status &> ../qt5-shared-$MINGW_CHOST-config.status
 
-makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
+mingw32MakeParallel && mingw32MakeParallel install && mingw32MakeParallel docs && mingw32MakeParallel install_qch_docs
 exitOnError
 popd
 rm -rf $QT5_SHARED_BUILD
@@ -102,7 +102,7 @@ exitOnError
 
 ./config.status &> ../qt5-static-$MINGW_CHOST-config.status
 
-makeParallel && makeParallel install
+mingw32MakeParallel && mingw32MakeParallel install
 exitOnError
 
 #MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
@@ -150,7 +150,7 @@ pushd $QTCREATOR_BUILD
 $PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+=silent QTC_PREFIX="$(cygpath -am $PREFIX)" ../$QTC_SOURCE_DIR/qtcreator.pro
 exitOnError
 
-makeParallel release && makeParallel install
+mingw32MakeParallel release && mingw32MakeParallel install
 exitOnError
 popd
 rm -rf $QTCREATOR_BUILD
@@ -188,7 +188,7 @@ pushd $QTINSTALLERFW_BUILD
 $QT5_STATIC_PREFIX/bin/qmake CONFIG+=release CONFIG-=precompile_header CONFIG+=silent ../$QTI_SOURCE_DIR/installerfw.pro
 exitOnError
 
-makeParallel release && makeParallel install
+mingw32MakeParallel release && mingw32MakeParallel install
 exitOnError
 popd
 rm -rf $QTINSTALLERFW_BUILD

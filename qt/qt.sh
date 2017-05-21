@@ -17,8 +17,9 @@ function makeQtSourceTree(){
 QT_MAJOR_VERSION=5.8
 QT_MINOR_VERSION=.0
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
-QT_SOURCE_DIR=qt-everywhere-opensource-src-$QT_VERSION
-QT_ARCHIVE=$QT_SOURCE_DIR.zip
+QT_ARCHIVE_DIR=qt-everywhere-opensource-src-$QT_VERSION
+QT_ARCHIVE=$QT_ARCHIVE_DIR.zip
+QT_SOURCE_DIR=qt-src-$QT_VERSION-$1
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases
 
@@ -32,7 +33,28 @@ else
 	fi
 
 	unzip -q $QT_ARCHIVE
+	mv $QT_ARCHIVE_DIR $QT_SOURCE_DIR
 	pushd $QT_SOURCE_DIR
+	
+	if [ "$1" == "static" ]; then
+		#static版がcmakeで正常にリンクできない対策のパッチ
+		patch -p1 -i $SCRIPT_DIR/0034-qt-5.3.2-Use-QMAKE_PREFIX_STATICLIB-in-create_cmake-prf.patch
+		patch -p1 -i $SCRIPT_DIR/0035-qt-5.3.2-dont-add-resource-files-to-qmake-libs.patch
+		
+		# Patches so that qt5-static can be used with cmake.
+		patch -p1 -i $SCRIPT_DIR/0036-qt-5.3.2-win32-qt5-static-cmake-link-ws2_32-and--static.patch
+		patch -p1 -i $SCRIPT_DIR/0037-qt-5.4.0-Improve-cmake-plugin-detection-as-not-all-are-suffixed-Plugin.patch
+		
+		pushd qtbase > /dev/null
+		patch -p1 -i $SCRIPT_DIR/0038-qt-5.5.0-cmake-Rearrange-STATIC-vs-INTERFACE-targets.patch
+		popd
+		
+		patch -p1 -i $SCRIPT_DIR/0039-qt-5.4.0-Make-it-possible-to-use-static-builds-of-Qt-with-CMa.patch
+		patch -p1 -i $SCRIPT_DIR/0040-qt-5.4.0-Generate-separated-libraries-in-prl-files-for-CMake.patch
+		patch -p1 -i $SCRIPT_DIR/0041-qt-5.4.0-Fix-mingw-create_cmake-prl-file-has-no-lib-prefix.patch
+		patch -p1 -i $SCRIPT_DIR/0042-qt-5.4.0-static-cmake-also-link-plugins-and-plugin-deps.patch
+		patch -p1 -i $SCRIPT_DIR/0043-qt-5.5.0-static-cmake-regex-QT_INSTALL_LIBS-in-QMAKE_PRL_LIBS_FOR_CMAKE.patch
+	fi
 
 	#MSYSでビルドが通らない問題への対策パッチ
 	sed -i -e "s|/nologo |//nologo |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
@@ -68,6 +90,10 @@ if [ -e $PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
 	return 0
 fi
 
+#Qtのソースコードを展開
+makeQtSourceTree shared
+exitOnError
+
 #shared版
 QT5_SHARED_BUILD=qt5-shared-$MINGW_CHOST
 rm -rf $QT5_SHARED_BUILD
@@ -90,6 +116,10 @@ if [ -e $QT5_STATIC_PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
 	echo "Qt5 Static Libs are already installed."
 	return 0
 fi
+
+#Qtのソースコードを展開
+makeQtSourceTree static
+exitOnError
 
 #static版
 QT5_STATIC_BUILD=qt5-static-$MINGW_CHOST
@@ -208,10 +238,6 @@ QT5_STATIC_PREFIX=$PREFIX/qt5-static
 prerequisite
 
 cd $EXTLIB
-
-#Qtのソースコードを展開
-makeQtSourceTree
-exitOnError
 
 #shared版Qtをビルド
 buildQtShared

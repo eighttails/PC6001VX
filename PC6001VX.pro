@@ -74,6 +74,8 @@ LIBS += $$system(pkg-config --libs x11)
 #Configuration for Windows
 win32 {
 DEFINES += WIN32
+INCLUDEPATH += $$(MINGW_PREFIX)/local/include
+LIBS += -L$$(MINGW_PREFIX)/local/lib 
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
 RC_ICONS += src/win32/PC6001VX.ico

@@ -16,7 +16,6 @@ fi
 mkdir $P6VX_DBUILD_DIR
 
 cd $P6VX_DBUILD_DIR
-$MINGW_PREFIX/local/bin/qmake ../PC6001VX/PC6001VX.pro 
-$MINGW32MAKE debug
+$MINGW_PREFIX/local/qt5-static/bin/qmake ../PC6001VX/PC6001VX.pro 
 $MINGW32MAKE release
 

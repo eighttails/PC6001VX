@@ -11,6 +11,16 @@ else
 fi
 }
 
+function checkJDK(){
+if [ "$JAVA_HOME" = "" ]; then
+    echo 'Please specify $JAVA_HOME.'
+    exit 1
+else
+    export PATH=$(cygpath -up "$JAVA_HOME/bin"):$PATH
+    export JAVA_TOOL_OPTIONS=-Duser.language=en
+fi
+}
+
 function patchOnce(){
 #適用済みでない場合のみパッチを充てる
 patch -p$1 -N --dry-run --silent < $2 2>/dev/null
@@ -22,6 +32,18 @@ fi
 }
 
 function makeParallel(){
+#並列ビルドの場合依存関係でビルドに失敗することがあるので3回までmakeする。
+for (( i=0; i<3; i++))
+do
+    start //B //WAIT //LOW make -j$NUMBER_OF_PROCESSORS "$@"
+    if [ $? -eq 0 ]; then
+        return 0
+    fi
+done
+return 1
+}
+
+function mingw32MakeParallel(){
 #並列ビルドの場合依存関係でビルドに失敗することがあるので3回までmakeする。
 for (( i=0; i<3; i++))
 do
@@ -55,8 +77,10 @@ zip \
 perl \
 python \
 ruby \
+autoconf-archive \
 $MINGW_PACKAGE_PREFIX-toolchain \
-$MINGW_PACKAGE_PREFIX-cmake 
+$MINGW_PACKAGE_PREFIX-cmake \
+$MINGW_PACKAGE_PREFIX-curl 
 
 exitOnError
 
@@ -91,7 +115,10 @@ export EXTLIB=~/extlib
 export PREFIX=$MINGW_PREFIX/local
 mkdir -p $PREFIX/bin 2> /dev/null
 
+export PATH=$PREFIX/bin:$PATH
 export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
+export CMAKE_PREFIX_PATH=$PREFIX:$CMAKE_PREFIX_PATH
+export CMAKE_INCLUDE_PATH=$PREFIX/include
 
 #最低限必要なDLLをコピー
 pushd $MINGW_PREFIX/bin

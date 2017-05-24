@@ -12,8 +12,8 @@ $MINGW_PACKAGE_PREFIX-libwebp \
 $MINGW_PACKAGE_PREFIX-zlib
 }
 
-function buildLeptonica(){
-if [ -e $PREFIX/lib/liblept.a ]; then
+function build(){
+if [ -e $PREFIX/lib/liblept.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "Leptonica is already installed."
 exit 0
 fi
@@ -30,11 +30,13 @@ mv $LEPTONICA_SRC_DIR $LEPTONICA_BUILD_DIR
 pushd $LEPTONICA_BUILD_DIR
 
 ./configure \
---disable-programs \
 --build=$MINGW_CHOST \
 --host=$MINGW_CHOST \
 --target=$MINGW_CHOST \
---prefix=$PREFIX 
+--prefix=$PREFIX \
+--disable-programs \
+CPPFLAGS=-DMINIMUM_SEVERITY=4
+exitOnError
 
 makeParallel && makeParallel install
 
@@ -47,7 +49,9 @@ SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
 prerequisite
+exitOnError
 
 cd $EXTLIB
 
-buildLeptonica
+build
+exitOnError

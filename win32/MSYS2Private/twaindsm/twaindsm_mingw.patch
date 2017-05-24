@@ -1,0 +1,681 @@
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/apps.cpp twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/apps.cpp
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/apps.cpp	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/apps.cpp	2017-04-24 20:15:04.987654000 +0900
+@@ -398,11 +398,11 @@
+   }
+ 
+   // Work out the full path to our drivers (if needed)...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     (void)::GetWindowsDirectory(szDsm,sizeof(szDsm));
+     SSTRCAT(szDsm,sizeof(szDsm),"\\");
+     SSTRCAT(szDsm,sizeof(szDsm),kTWAIN_DS_DIR);
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     SSTRCPY(szDsm,sizeof(szDsm),kTWAIN_DS_DIR);
+   #else
+     #error Sorry, we do not recognize this system...
+@@ -1121,7 +1121,7 @@
+   //
+   // Take care of VC++...
+   //
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     WIN32_FIND_DATA   FileData;             // Data structure describes the file found
+     HANDLE            hSearch;              // Search handle returned by FindFirstFile
+     char              szABSFilename[FILENAME_MAX];
+@@ -1216,7 +1216,7 @@
+   //
+   // Take care of g++...
+   //
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     #if (TWNDSM_OS == TWNDSM_OS_MACOSX)
+ 
+       char szABSFilename[FILENAME_MAX];
+@@ -1359,7 +1359,7 @@
+       &&  m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].pDSList
+       &&  (_DsId < MAX_NUM_DS))
+   {
+-    #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++    #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+       // Make the DS directory the current directoy while we load the DS so that any DLLs that
+       // are loaded with the DS can be found.
+       char      szPrevWorkDir[FILENAME_MAX];
+@@ -1387,7 +1387,7 @@
+                                      m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].pDSList->DSInfo[_DsId].szPath,
+                                      _DsId,
+                                      true);
+-    #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++    #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+       if(0!=strlen(szPrevWorkDir))
+       {
+         (void)_chdir( szPrevWorkDir );
+@@ -1419,7 +1419,7 @@
+ {
+   TW_INT16  result = TWRC_SUCCESS;
+   DS_INFO  *pDSInfo;
+-  //bool hook;
++  bool hook;
+ 
+   // Validate...
+   if ( 0 == _pPath )
+@@ -1452,19 +1452,19 @@
+   // Only hook this driver if we've been asked to keep the driver
+   // open (meaning we're processing a MSG_OPENDS) and if we see
+   // that the driver is 1.x...(by checking the absence of DF_DS2)
+-  //hook = _boolKeepOpen && !(pDSInfo->Identity.SupportedGroups & DF_DS2);
++  hook = _boolKeepOpen && !(pDSInfo->Identity.SupportedGroups & DF_DS2);
+ 
+   // Try to load the driver...  We load the driver again if we are keeping
+   // it open.  This LoadLibrary is always closed so we dont hook this time.
+   pDSInfo->pHandle = (TW_HANDLE)LOADLIBRARY(_pPath,false,0);
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     if (0 == pDSInfo->pHandle)
+     {
+       kLOG((kLOGERR,"Could not load library: %s",_pPath));
+       AppSetConditionCode(_pAppId,TWCC_OPERATIONERROR);
+       return TWRC_FAILURE;
+     }
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     if (0 == pDSInfo->pHandle)
+     {
+       // This is a bit skanky, and not the sort of thing I really want
+@@ -1490,7 +1490,7 @@
+ 
+   if (pDSInfo->DS_Entry == 0)
+   {
+-    #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++    #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+       // The WIATwain.ds does not have an entry point 
+       if(0 != strstr(_pPath, "wiatwain.ds"))
+       {
+@@ -1590,14 +1590,14 @@
+   if (_boolKeepOpen == true)
+   {
+     pDSInfo->pHandle = (TW_HANDLE)LOADLIBRARY(_pPath,hook,_DsId);
+-    #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++    #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     if (0 == pDSInfo->pHandle)
+     {
+       kLOG((kLOGERR,"Could not load library: %s",_pPath));
+       AppSetConditionCode(_pAppId,TWCC_OPERATIONERROR);
+       return TWRC_FAILURE;
+     }
+-    #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++    #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     if (0 == pDSInfo->pHandle)
+     {
+       // This is a bit skanky, and not the sort of thing I really want
+@@ -1622,7 +1622,7 @@
+     pDSInfo->DS_Entry = (DSENTRYPROC)DSM_LoadFunction(pDSInfo->pHandle,"DS_Entry");
+     if (pDSInfo->DS_Entry == 0)
+     {
+-      #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++      #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+         // The WIATwain.ds does not have an entry point 
+         if(0 != strstr(_pPath, "wiatwain.ds"))
+         {
+@@ -1672,14 +1672,14 @@
+       &&  m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].pDSList->DSInfo[_DsId].pHandle)
+   {
+     // Unload the library...
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     BOOL retval = 
+ #else
+     int retval = 
+ #endif
+     UNLOADLIBRARY(m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].pDSList->DSInfo[_DsId].pHandle,true,_DsId);
+ 
+-    #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++    #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+       if(0 == retval)
+       {
+         kLOG((kLOGERR,"failed to unload datasource"));
+@@ -1706,7 +1706,7 @@
+ */
+ void CTwnDsmApps::AppWakeup(TW_IDENTITY *_pAppId)
+ {
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+   BOOL boolResult;
+     if (   AppValidateId(_pAppId)
+         && m_ptwndsmappsimpl->m_AppInfo[(TWID_T)_pAppId->Id].hwnd)
+@@ -1719,7 +1719,7 @@
+         kLOG((kLOGERR,"PostMessage failed..."));
+       }
+     }
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     kLOG((kLOGERR,"We shouldn't be here in AppWakeup..."));
+     // We don't support this path on this platform, use
+     // callbacks instead...
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/CMakeLists.txt twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/CMakeLists.txt
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/CMakeLists.txt	2014-05-23 10:34:28.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/CMakeLists.txt	2017-04-24 20:15:04.993182500 +0900
+@@ -16,14 +16,7 @@
+ 	SET(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
+ 	ADD_DEFINITIONS(-Wall -Wextra -Werror -isysroot /Developer/SDKs/MacOSX10.6.sdk -mmacosx-version-min=10.6 -fexceptions -fPIC)
+ ELSE()
+-	ADD_DEFINITIONS(-Wall -Wextra -Werror)
+-ENDIF()
+-
+-#let's not be sharing our symbols...
+-IF(APPLE)
+-	SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-ldl -Wl,-framework,CoreServices -Wl,-framework,Foundation")
+-ELSE()
+-	SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic -Wl,--no-undefined -Wl,-ldl")
++	ADD_DEFINITIONS(-Wall -Wextra)
+ ENDIF()
+ 
+ #project name
+@@ -35,17 +28,19 @@
+ SET(${PROJECT_NAME}_PATCH_LEVEL 1)
+ 
+ #build a shared library
+-ADD_LIBRARY(twaindsm SHARED dsm.cpp apps.cpp log.cpp)
+-target_link_libraries(twaindsm dl)
++ADD_LIBRARY(twaindsm SHARED dsm.cpp apps.cpp log.cpp hook.cpp dsm.def) 
+ 
+ #
+ SET_TARGET_PROPERTIES(twaindsm PROPERTIES
+ 					  VERSION ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_PATCH_LEVEL}
+ 					  SOVERSION ${${PROJECT_NAME}_MAJOR_VERSION})
++SET_TARGET_PROPERTIES(twaindsm PROPERTIES PREFIX "")
+ 
+ #add an install target here
+ INSTALL(FILES twain.h DESTINATION include)
+ INSTALL(TARGETS twaindsm 
+-		LIBRARY DESTINATION lib
+-		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
++		RUNTIME DESTINATION bin COMPONENT libraries
++		ARCHIVE DESTINATION lib COMPONENT libraries
++		LIBRARY DESTINATION lib COMPONENT libraries
++)
+ 
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/dsm.cpp twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/dsm.cpp
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/dsm.cpp	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/dsm.cpp	2017-04-24 20:15:05.028691100 +0900
+@@ -82,16 +82,16 @@
+ *
+ * Many languages still need translations...
+ */
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+ typedef struct
+ {
+-  TW_INT16  Language;     /**< Language */
+-  BYTE      CharSet;      /**< Character Set*/
+-  LANGID    LangId;       /**< Language Id*/
+-  char      *Title;       /**< the Title string*/
+-  char      *Sources;     /**< the Sources string */
+-  char      *Select;      /**< the Select string */
+-  char      *Cancel;      /**< the Cancel string */
++  TW_INT16  Language;           /**< Language */
++  BYTE      CharSet;            /**< Character Set*/
++  LANGID    LangId;             /**< Language Id*/
++  const char      *Title;       /**< the Title string*/
++  const char      *Sources;     /**< the Sources string */
++  const char      *Select;      /**< the Select string */
++  const char      *Cancel;      /**< the Cancel string */
+ } TwLocalize;
+ 
+ /**
+@@ -215,7 +215,7 @@
+       {TWLG_VIETNAMESE,         VIETNAMESE_CHARSET, MAKELANGID(LANG_VIETNAMESE,SUBLANG_NEUTRAL),                "","","",""},
+       {-1, 0, 0, 0, 0, 0, 0} // must be last...
+ };
+-#elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++#elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     // We don't have anything for here...
+ #else
+     #error Sorry, we do not recognize this system...
+@@ -1279,9 +1279,9 @@
+        && _pAppId->ProtocolMinor == 0 )
+      || _pAppId->ProtocolMajor < 2 ) 
+     {
+-      #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++      #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+         // skip...
+-      #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++      #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+ 		int iResult;
+         FILE *pfile;
+         char *szHome;
+@@ -1398,7 +1398,7 @@
+ 
+ 
+ 
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+ /**
+ * DllMain is only needed for Windows, and it's only needed to collect
+ * our instance handle, which is also our module handle.  Don't ever
+@@ -1436,7 +1436,7 @@
+   }
+   return(TRUE);
+ }
+-#elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++#elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     // Nothing for us to do...
+ #else
+     #error Sorry, we do not recognize this system...
+@@ -1444,7 +1444,7 @@
+ 
+ 
+ 
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+ /**
+ * We support a selection dialog on Windows.  I wish we didn't, it's
+ * more trouble than it's worth, but it's part of that legacy thing.
+@@ -1469,7 +1469,7 @@
+     return TRUE;
+   }
+ }
+-#elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++#elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+   // We don't have one of these...
+ #else
+   #error Sorry, we do not recognize this system...
+@@ -1477,7 +1477,7 @@
+ 
+ 
+ 
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+ /**
+ * We support a selection dialog on Windows.  This function is
+ * part of our CTwnDsm class, so we don't have to have a lot
+@@ -1769,7 +1769,7 @@
+   }
+   return FALSE;
+ }
+-#elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++#elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+   // We don't have anything to do on Linux...
+ #else
+   #error Sorry, we do not recognize this system...
+@@ -1818,7 +1818,7 @@
+   _pDsId->Id = 0;
+ 
+   // Windows...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+ 
+       HKEY      hKey;
+       long      status;
+@@ -1923,7 +1923,7 @@
+       return result;
+ 
+   // We don't support the user selection box on linux...
+-  #elif  (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif  (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+ 
+     pod.m_ptwndsmapps->AppSetConditionCode(_pAppId,TWCC_BADPROTOCOL);
+     return TWRC_FAILURE;
+@@ -1988,7 +1988,7 @@
+   }
+ 
+   // Windows... save default source to Registry  
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     HKEY      hKey;
+     long      status = ERROR_SUCCESS;
+ 
+@@ -2017,7 +2017,7 @@
+     }
+ 
+   // Linux looks in the user's directory...
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     int iResult;
+     FILE *pfile;
+     char *szHome;
+@@ -2220,7 +2220,7 @@
+   memset(pod.m_DefaultDSPath,0,sizeof(pod.m_DefaultDSPath));
+ 
+   // Windows uses the registry...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     HKEY hKey;
+     if (RegOpenKeyEx(HKEY_CURRENT_USER,
+                      TWNDSM_DS_REG_LOC,
+@@ -2238,7 +2238,7 @@
+     }
+ 
+   // Linux looks in the user's directory...
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     int iResult;
+     FILE *pfile;
+     char *szHome;
+@@ -3736,7 +3736,7 @@
+   }
+ 
+   // Windows...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     handle = (TW_HANDLE)::GlobalAlloc(GPTR,_bytes);
+   if (0 == handle)
+   {
+@@ -3746,7 +3746,7 @@
+   return handle;
+ 
+   // Linux/Mac
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     handle = (TW_HANDLE)calloc(_bytes,1);
+   if (0 == handle)
+   {
+@@ -3777,11 +3777,11 @@
+   }
+ 
+   // Windows...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     ::GlobalFree(_handle);
+ 
+   // Linux...
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     free(_handle);
+ 
+   // Oops...
+@@ -3808,11 +3808,11 @@
+   // lock, since we allocated with GPTR, but I'm nervous
+   // that we might get a GHND sent to us.  And since
+   // this is a no-op for a GPTR, what they hey...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     return (TW_MEMREF)::GlobalLock(_handle);
+ 
+   // Linux...
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     return (TW_MEMREF)_handle;
+ 
+   // Oops...
+@@ -3838,11 +3838,11 @@
+   }
+ 
+   // Windows...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     ::GlobalUnlock(_handle);
+ 
+   // Linux...
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+ 
+   // Oops...
+   #else
+@@ -3858,14 +3858,14 @@
+ {
+   void* pRet = 0;
+ 
+-  #if (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #if (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     dlerror();    /* Clear any existing error */
+   #endif
+ 
+   // Try to get the entry point...
+-  pRet = LOADFUNCTION(_pHandle, _pszSymbol);
++  pRet = (void*) LOADFUNCTION(_pHandle, _pszSymbol);
+ 
+-#if (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++#if (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+   char* psz_error = 0;
+ 
+   if((psz_error = dlerror()) != NULL)
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/dsm.h twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/dsm.h
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/dsm.h	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/dsm.h	2017-04-24 20:15:05.055701900 +0900
+@@ -97,7 +97,9 @@
+   #if defined(__GNUC__)
+     #define TWNDSM_CMP              TWNDSM_CMP_GNUGPP
+     #define TWNDSM_CMP_VERSION      __GNUC__
+-    #if defined(__APPLE__)
++    #if defined(_WIN32)
++      #define TWNDSM_OS             TWNDSM_OS_WINDOWS
++    #elif defined(__APPLE__)
+       #define TWNDSM_OS             TWNDSM_OS_MACOSX
+     #else
+       #define TWNDSM_OS             TWNDSM_OS_LINUX
+@@ -130,7 +132,7 @@
+ /**
+ *  Pull in the system specific headers...
+ */
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+   #ifndef WIN32_LEAN_AND_MEAN
+     #define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
+   #endif
+@@ -138,7 +140,7 @@
+   #include <direct.h>
+   #include <share.h>
+ 
+-#elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++#elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+   #include <dirent.h>
+   #include <dlfcn.h>
+   #include <unistd.h>
+@@ -251,7 +253,7 @@
+ * @def kTWAIN_DS_DIR
+ * The path to where TWAIN Data Sources are stored on the system
+ */
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+ 
+   // Define TW_IDENTITY.Id
+   #define TWID_T TW_UINT32
+@@ -306,7 +308,7 @@
+     #endif
+   #endif
+ 
+-#elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++#elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+   #define DllExport
+   #define NCHARS(s) sizeof(s)/sizeof(s[0])
+   #define PATH_SEPERATOR '/'
+@@ -391,7 +393,7 @@
+ * @param[in] n the source string
+ * 
+ */
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP) && (TWNDSM_CMP_VERSION >= 1400)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS) && (TWNDSM_CMP_VERSION >= 1400)
+   #define SSTRCPY(d,z,s) strncpy_s(d,z,s,_TRUNCATE)
+   #define SSTRCAT(d,z,s) strncat_s(d,z,s,_TRUNCATE)
+   #define SSTRNCPY(d,z,s,m) strncpy_s(d,z,s,m)
+@@ -421,9 +423,9 @@
+       int result;
+       va_list valist;
+       va_start(valist,f);
+-      #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++      #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+         result = _vsnprintf(d,c,f,valist);
+-      #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++      #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+         result = vsnprintf(d,c,f,valist);
+       #else
+         #error Sorry, we do not recognize this system...
+@@ -447,9 +449,9 @@
+       int result;
+       va_list valist;
+       va_start(valist,f);
+-      #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++      #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+         result = _vsnprintf(d,c,f,valist);
+-      #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++      #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+         result = vsnprintf(d,c,f,valist);
+       #else
+         #error Sorry, we do not recognize this system...
+@@ -498,9 +500,9 @@
+ * option, and this is the only way to track a problem!!!
+ * @see kLOG
+ */
+-#if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++#if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+   #define kPANIC(msg) ::MessageBox(NULL,msg,"TWAIN Data Source Manager",MB_OK);
+-#elif  (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++#elif  (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+   #define kPANIC(msg) fprintf(stderr,"TWAIN Data Source Manager: %s\r\n",msg);
+ #else
+   #error Sorry, we do not recognize this system...
+@@ -888,7 +890,7 @@
+                             TW_UINT16    _MSG,
+                             TW_MEMREF    _pData);
+ 
+-        #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++        #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+         /**
+         * Selection dialog, for apps that don't want to do GetFirst
+         * GetNext.  This is only public because of the way that
+@@ -903,7 +905,7 @@
+                                         UINT _Message,
+                                         WPARAM _wParam,
+                                         LPARAM _lParam);
+-        #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++        #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+             // We don't have one of these...
+         #else
+             #error Sorry, we do not recognize this system...
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/hook.cpp twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/hook.cpp
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/hook.cpp	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/hook.cpp	2017-04-24 20:16:04.527291200 +0900
+@@ -80,6 +80,7 @@
+ *    WinME, but hopefully nobody is still using that)...
+ */
+ 
++#include <algorithm>
+ #include "dsm.h"
+ 
+ 
+@@ -125,14 +126,14 @@
+ * typedefs of our hooked functions, so we can cast them nice when we make
+ * our calls...
+ */
+-typedef NTSYSAPI DWORD (NTAPI *LdrGetProcedureAddress_t)
++typedef NTAPI DWORD (NTAPI *LdrGetProcedureAddress_t)
+ (
+   __in     HMODULE       ModuleHandle,
+   __in_opt PANSI_STRING  FunctionName,
+   __in_opt WORD          Oridinal,
+   __out    PVOID        *FunctionAddress
+ );
+-typedef NTSYSAPI DWORD (NTAPI *LdrGetProcedureAddressForCaller_t)
++typedef NTAPI DWORD (NTAPI *LdrGetProcedureAddressForCaller_t)
+ (
+   __in     HMODULE       ModuleHandle,
+   __in_opt PANSI_STRING  FunctionName,
+@@ -574,7 +575,7 @@
+ */
+ bool CTwHook::DSID_Is_Hooked(TW_UINT32 DSID)
+ {
+-	int count = min(MAX_NUM_DS,s_iHookCount);
++	int count = std::min(MAX_NUM_DS,s_iHookCount);
+ 	for (int i=0; i<count; i++)
+ 	{
+ 		if (pod.HookedDSs[i] == DSID)
+@@ -608,7 +609,7 @@
+ */
+ bool CTwHook::Hook_Remove_DSID(TW_UINT32 DSID)
+ {
+-  int count = min(MAX_NUM_DS, s_iHookCount);
++  int count = std::min(MAX_NUM_DS, s_iHookCount);
+ 
+   for(int i=0; i<count; i++)
+   {
+@@ -664,7 +665,7 @@
+     // Get and store the original address in case we need it
+     (OriginalLdrGetProcedureAddress(ModuleHandle,FunctionName,Ordinal,(PVOID*)&TWAIN32_DSMEntry));
+     // Return the address to our own function
+-    *FunctionAddress = ::DSM_HookedEntry;
++    *FunctionAddress = (void*) ::DSM_HookedEntry;
+     return (ERROR_SUCCESS);
+   }
+ 
+@@ -710,7 +711,7 @@
+     // Get and store the original address in case we need it
+     (OriginalLdrGetProcedureAddressForCaller(ModuleHandle,FunctionName,Ordinal,(PVOID*)&TWAIN32_DSMEntry,bValue,CallbackAddress));
+     // Return the address to our own function
+-    *FunctionAddress = ::DSM_HookedEntry;
++    *FunctionAddress = (void*) ::DSM_HookedEntry;
+     return (ERROR_SUCCESS);
+   }
+ 
+diff -ur twaindsm-2.3.1.orig/TWAIN_DSM/src/log.cpp twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/log.cpp
+--- twaindsm-2.3.1.orig/TWAIN_DSM/src/log.cpp	2014-05-22 12:35:00.000000000 +0900
++++ twaindsm-2.3.1.orig-x86_64-w64-mingw32/TWAIN_DSM/src/log.cpp	2017-04-24 20:15:05.102464700 +0900
+@@ -189,14 +189,14 @@
+   const char *file = NULL;
+ 
+   // Grab the system error, this can be really useful...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     nError = GetLastError();
+   if (nError == 0)
+   {
+     // Yeah, yeah...this is dumb, but I like a clean prefast log...  :)
+     nError = 0;
+   }
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     nError = errno;
+   #else
+     #error Sorry, we do not recognize this system...
+@@ -216,7 +216,7 @@
+ 
+   // Trim the filename down to just the filename, no path...
+   file = 0;
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     // Only look for this on Windows...
+     file = strrchr(_file,'\\');
+   #endif
+@@ -237,7 +237,7 @@
+   }
+   
+   // Build the message header...
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     SYSTEMTIME st;
+     GetLocalTime(&st);
+     nChars = SNPRINTF(m_ptwndsmlogimpl->pod.m_message,
+@@ -251,7 +251,7 @@
+                       nError,
+                       (void*)(UINT_PTR)GETTHREADID(),
+                       m_ptwndsmlogimpl->pod.m_nIndent*2, "            ");
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     timeval tv;
+     tm tm;
+     gettimeofday(&tv,NULL);
+@@ -277,11 +277,11 @@
+   // Finally, tack on the user portion of the message...
+   va_list valist;
+   va_start(valist,_format);
+-  #if (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP) && (TWNDSM_CMP_VERSION >= 1400)
++  #if (TWNDSM_OS == TWNDSM_OS_WINDOWS) && (TWNDSM_CMP_VERSION >= 1400)
+     _vsnprintf_s(message,nChars,nChars,_format,valist);
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_VISUALCPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_WINDOWS)
+     _vsnprintf(message,nChars,_format,valist);
+-  #elif (TWNDSM_CMP == TWNDSM_CMP_GNUGPP)
++  #elif (TWNDSM_OS == TWNDSM_OS_LINUX) || (TWNDSM_OS == TWNDSM_OS_MACOSX)
+     vsnprintf(message,nChars,_format,valist);
+   #else
+     #error Sorry, we do not recognize this system...
+@@ -295,7 +295,7 @@
+   // Do the assert, if asked for...
+   if (_doassert)
+   {
+-    assert(0);
++//     assert(0);
+   }
+ }
+ 

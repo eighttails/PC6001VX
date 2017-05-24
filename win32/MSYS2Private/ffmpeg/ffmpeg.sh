@@ -8,13 +8,13 @@ $MINGW_PACKAGE_PREFIX-libvpx \
 $MINGW_PACKAGE_PREFIX-yasm
 }
 
-function buildFFmpeg(){
-if [ -e $PREFIX/lib/libavcodec.a ]; then
+function build(){
+if [ -e $PREFIX/lib/libavcodec.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "FFMpeg is already installed."
 exit 0
 fi
 
-FFMPEG_VERSION=3.1.1
+FFMPEG_VERSION=3.3.1
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 FFMPEG_BUILD_DIR=$FFMPEG_SRC_DIR-$MINGW_CHOST
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz
@@ -25,6 +25,7 @@ mv $FFMPEG_SRC_DIR $FFMPEG_BUILD_DIR
 pushd $FFMPEG_BUILD_DIR
 
 ./configure --target-os=mingw32 --prefix=$PREFIX --enable-small --disable-programs --disable-doc --disable-everything --disable-sdl --disable-iconv --enable-libvpx --enable-encoder=libvpx_vp8 --enable-libvorbis --enable-encoder=libvorbis --enable-muxer=webm --enable-protocol=file
+exitOnError
 
 makeParallel && makeParallel install
 
@@ -37,7 +38,9 @@ SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
 prerequisite
+exitOnError
 
 cd $EXTLIB
 
-buildFFmpeg
+build
+exitOnError

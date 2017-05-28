@@ -23,7 +23,7 @@ $MINGW_PACKAGE_PREFIX-zlib
 }
 
 function build(){
-if [ -e $PREFIX/lib/libpoppler.a -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $PREFIX/lib/libqtspell-qt5.dll.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "poppler is already installed."
 exit 0
 fi
@@ -45,7 +45,6 @@ pushd $POPPLER_BUILD_DIR
 autoreconf -fi
 exitOnError
 
-PKG_CONFIG_PATH=$PREFIX/qt5-shared/lib/pkgconfig:$PKG_CONFIG_PATH \
 ./configure \
 --prefix=$PREFIX \
 --build=$MINGW_CHOST \
@@ -56,7 +55,9 @@ PKG_CONFIG_PATH=$PREFIX/qt5-shared/lib/pkgconfig:$PKG_CONFIG_PATH \
 --disable-gtk-test \
 --disable-utils \
 --disable-gtk-doc-html \
---with-font-configuration=win32
+--with-font-configuration=win32 \
+CPPFLAGS=-I$PREFIX/qt5-shared/include \
+LDFLAGS=-L$PREFIX/qt5-shared/lib
     
 exitOnError
 

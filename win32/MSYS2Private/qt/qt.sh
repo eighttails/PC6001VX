@@ -14,11 +14,11 @@ popd
 
 function makeQtSourceTree(){
 #Qt
-QT_MAJOR_VERSION=5.8
+QT_MAJOR_VERSION=5.9
 QT_MINOR_VERSION=.0
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 QT_ARCHIVE_DIR=qt-everywhere-opensource-src-$QT_VERSION
-QT_ARCHIVE=$QT_ARCHIVE_DIR.zip
+QT_ARCHIVE=$QT_ARCHIVE_DIR.tar.xz
 QT_SOURCE_DIR=qt-src-$QT_VERSION-$1
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases
@@ -32,7 +32,7 @@ else
 	wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_ARCHIVE
 	fi
 
-	unzip -q $QT_ARCHIVE
+	tar xf $QT_ARCHIVE
 	mv $QT_ARCHIVE_DIR $QT_SOURCE_DIR
 	pushd $QT_SOURCE_DIR
 	
@@ -57,11 +57,13 @@ else
 	fi
 
 	#MSYSでビルドが通らない問題への対策パッチ
-	sed -i -e "s|/nologo |//nologo |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
-	sed -i -e "s|/E |//E |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
-	sed -i -e "s|/T |//T |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
-	sed -i -e "s|/Fh |//Fh |g" qtbase/src/angle/src/libGLESv2/libGLESv2.pro
-
+	for F in qtbase/src/angle/src/common/gles_common.pri qtdeclarative/features/hlsl_bytecode_header.prf
+	do
+		sed -i -e "s|/nologo |//nologo |g" $F
+		sed -i -e "s|/E |//E |g" $F
+		sed -i -e "s|/T |//T |g" $F
+		sed -i -e "s|/Fh |//Fh |g" $F
+	done
 	sed -i -e "s|#ifdef __MINGW32__|#if 0|g"  qtbase/src/3rdparty/angle/src/libANGLE/renderer/d3d/d3d11/Query11.cpp
 
 	#Osで最適化するためのパッチ
@@ -72,10 +74,6 @@ else
 
 	#プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
 	sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf
-
-	#Qt5.8.0でMultimediaのヘッダーがおかしい問題へのパッチ
-	rm qtmultimedia/include/QtMultimedia/qtmultimediadefs.h
-	touch qtmultimedia/include/QtMultimedia/qtmultimediadefs.h
 
 	popd
 fi
@@ -100,12 +98,12 @@ rm -rf $QT5_SHARED_BUILD
 mkdir $QT5_SHARED_BUILD
 pushd $QT5_SHARED_BUILD
 
-../$QT_SOURCE_DIR/configure -prefix "$(cygpath -am $QT5_SHARED_PREFIX)" -shared -bindir "$(cygpath -am $PREFIX/bin)" $QT_COMMON_CONFIGURE_OPTION
+../$QT_SOURCE_DIR/configure -prefix "$(cygpath -am $PREFIX)" -shared -headerdir "$(cygpath -am $QT5_SHARED_PREFIX/include)" -libdir "$(cygpath -am $QT5_SHARED_PREFIX/lib)" $QT_COMMON_CONFIGURE_OPTION
 exitOnError
 
 ./config.status &> ../qt5-shared-$MINGW_CHOST-config.status
 
-mingw32MakeParallel && mingw32MakeParallel install && mingw32MakeParallel docs && mingw32MakeParallel install_qch_docs
+makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
 exitOnError
 popd
 rm -rf $QT5_SHARED_BUILD
@@ -132,7 +130,7 @@ exitOnError
 
 ./config.status &> ../qt5-static-$MINGW_CHOST-config.status
 
-mingw32MakeParallel && mingw32MakeParallel install
+makeParallel && makeParallel install
 exitOnError
 
 #MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
@@ -151,11 +149,11 @@ fi
 
 #Qt Creator
 cd ~/extlib
-QTC_MAJOR_VER=4.2
-QTC_MINOR_VER=.2
+QTC_MAJOR_VER=4.3
+QTC_MINOR_VER=.0
 QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
-QTC_ARCHIVE=$QTC_SOURCE_DIR.zip
+QTC_ARCHIVE=$QTC_SOURCE_DIR.tar.xz
 #QTC_RELEASE=development_releases
 QTC_RELEASE=official_releases
 wget -c  http://download.qt.io/$QTC_RELEASE/qtcreator/$QTC_MAJOR_VER/$QTC_VER/$QTC_ARCHIVE
@@ -164,7 +162,7 @@ if [ -e $QTC_SOURCE_DIR ]; then
 	echo "$QTC_SOURCE_DIR already exists."
 else
 	# 存在しない場合
-	unzip -q $QTC_ARCHIVE
+	tar xf $QTC_ARCHIVE
 
 	pushd $QTC_SOURCE_DIR
 	#MSYSでビルドが通らない問題へのパッチ
@@ -180,7 +178,7 @@ pushd $QTCREATOR_BUILD
 $PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+=silent QTC_PREFIX="$(cygpath -am $PREFIX)" ../$QTC_SOURCE_DIR/qtcreator.pro
 exitOnError
 
-mingw32MakeParallel release && mingw32MakeParallel install
+makeParallel release && makeParallel install
 exitOnError
 popd
 rm -rf $QTCREATOR_BUILD
@@ -198,7 +196,7 @@ QTI_MAJOR_VER=2.0
 QTI_MINOR_VER=.5-1
 QTI_VER=$QTI_MAJOR_VER$QTI_MINOR_VER
 QTI_SOURCE_DIR=qt-installer-framework-opensource-$QTI_VER-src
-QTI_ARCHIVE=$QTI_SOURCE_DIR.zip
+QTI_ARCHIVE=$QTI_SOURCE_DIR.tar.gz
 #QTI_RELEASE=development_releases
 QTI_RELEASE=official_releases
 wget -c https://download.qt.io/official_releases/qt-installer-framework/$QTI_VER/$QTI_ARCHIVE
@@ -207,7 +205,7 @@ if [ -e $QTI_SOURCE_DIR ]; then
 	echo "$QTI_SOURCE_DIR already exists."
 else
 	# 存在しない場合
-	unzip -q $QTI_ARCHIVE
+	tar xf $QTI_ARCHIVE
 fi
 
 QTINSTALLERFW_BUILD=qt-installer-fw-$MINGW_CHOST
@@ -218,7 +216,7 @@ pushd $QTINSTALLERFW_BUILD
 $QT5_STATIC_PREFIX/bin/qmake CONFIG+=release CONFIG-=precompile_header CONFIG+=silent ../$QTI_SOURCE_DIR/installerfw.pro
 exitOnError
 
-mingw32MakeParallel release && mingw32MakeParallel install
+makeParallel release && makeParallel install
 exitOnError
 popd
 rm -rf $QTINSTALLERFW_BUILD

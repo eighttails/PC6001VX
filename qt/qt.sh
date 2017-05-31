@@ -14,7 +14,7 @@ popd
 
 function makeQtSourceTree(){
 #Qt
-QT_MAJOR_VERSION=5.8
+QT_MAJOR_VERSION=5.9
 QT_MINOR_VERSION=.0
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 QT_ARCHIVE_DIR=qt-everywhere-opensource-src-$QT_VERSION
@@ -72,10 +72,6 @@ else
 
 	#プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
 	sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf
-
-	#Qt5.8.0でMultimediaのヘッダーがおかしい問題へのパッチ
-	rm qtmultimedia/include/QtMultimedia/qtmultimediadefs.h
-	touch qtmultimedia/include/QtMultimedia/qtmultimediadefs.h
 
 	popd
 fi
@@ -151,8 +147,8 @@ fi
 
 #Qt Creator
 cd ~/extlib
-QTC_MAJOR_VER=4.2
-QTC_MINOR_VER=.2
+QTC_MAJOR_VER=4.3
+QTC_MINOR_VER=.0
 QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 QTC_ARCHIVE=$QTC_SOURCE_DIR.zip

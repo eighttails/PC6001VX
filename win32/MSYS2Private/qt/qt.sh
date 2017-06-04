@@ -196,7 +196,7 @@ QTI_MAJOR_VER=2.0
 QTI_MINOR_VER=.5-1
 QTI_VER=$QTI_MAJOR_VER$QTI_MINOR_VER
 QTI_SOURCE_DIR=qt-installer-framework-opensource-$QTI_VER-src
-QTI_ARCHIVE=$QTI_SOURCE_DIR.tar.gz
+QTI_ARCHIVE=$QTI_SOURCE_DIR.zip
 #QTI_RELEASE=development_releases
 QTI_RELEASE=official_releases
 wget -c https://download.qt.io/official_releases/qt-installer-framework/$QTI_VER/$QTI_ARCHIVE
@@ -205,7 +205,7 @@ if [ -e $QTI_SOURCE_DIR ]; then
 	echo "$QTI_SOURCE_DIR already exists."
 else
 	# 存在しない場合
-	tar xf $QTI_ARCHIVE
+	unzip -q $QTI_ARCHIVE
 fi
 
 QTINSTALLERFW_BUILD=qt-installer-fw-$MINGW_CHOST

@@ -175,10 +175,10 @@ rm -rf $QTCREATOR_BUILD
 mkdir $QTCREATOR_BUILD
 pushd $QTCREATOR_BUILD
 
-$PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+=silent QTC_PREFIX="$(cygpath -am $PREFIX)" ../$QTC_SOURCE_DIR/qtcreator.pro
+$PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+="release silent" QTC_PREFIX="$(cygpath -am $PREFIX)" ../$QTC_SOURCE_DIR/qtcreator.pro
 exitOnError
 
-makeParallel release && makeParallel install
+makeParallel && makeParallel install
 exitOnError
 popd
 rm -rf $QTCREATOR_BUILD
@@ -213,10 +213,10 @@ rm -rf $QTINSTALLERFW_BUILD
 mkdir $QTINSTALLERFW_BUILD
 pushd $QTINSTALLERFW_BUILD
 
-$QT5_STATIC_PREFIX/bin/qmake CONFIG+=release CONFIG-=precompile_header CONFIG+=silent ../$QTI_SOURCE_DIR/installerfw.pro
+$QT5_STATIC_PREFIX/bin/qmake CONFIG+="release silent" CONFIG-=precompile_header ../$QTI_SOURCE_DIR/installerfw.pro
 exitOnError
 
-makeParallel release && makeParallel install
+makeParallel && makeParallel install
 exitOnError
 popd
 rm -rf $QTINSTALLERFW_BUILD

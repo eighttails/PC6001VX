@@ -74,8 +74,8 @@ LIBS += $$system(pkg-config --libs x11)
 #Configuration for Windows
 win32 {
 DEFINES += WIN32
-INCLUDEPATH += $$(MINGW_PREFIX)/local/include
-LIBS += -L$$(MINGW_PREFIX)/local/lib 
+INCLUDEPATH += $$(QTDIR)/../include
+LIBS += -L$$(QTDIR)/../lib
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
 RC_ICONS += src/win32/PC6001VX.ico
@@ -303,8 +303,6 @@ OTHER_FILES += \
     win32/toolchain.sh \ 
     android/res/drawable-ldpi/icon.png \
     win32/release.sh \
-    README.html \
-    README.mkd \
     doc/about.png \
     doc/firstboot.png \
     doc/keypanel.png \
@@ -339,11 +337,13 @@ RESOURCES += \
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DISTFILES += \
-    win32/qt-creator-3.3.0-MinGW-w64-MIB_TCP_STATE-not-defined-until-Vista.patch \
-    win32/qt-creator-3.5.0-Hacky-fix-for-__GNUC_PREREQ-usage.patch \
-    win32/qt-creator-3.5.0-shellquote-declspec-dllexport-for-unix-shell.patch \
+    README.html \
     LICENSE \
+    README.adoc \
+    win32/buildenv.sh \
     win32/buildrelease.sh \
-    win32/mirrorlist.mingw32
+    win32/release.sh \
+    win32/safemode.bat
+
 
 

@@ -79,7 +79,7 @@ else
 fi
 
 #共通ビルドオプション
-QT_COMMON_CONFIGURE_OPTION='-opensource -confirm-license -silent -platform win32-g++ -no-pch -no-direct2d -no-fontconfig -qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -nomake tests QMAKE_CXXFLAGS+=-Wno-deprecated-declarations'
+QT_COMMON_CONFIGURE_OPTION='-opensource -confirm-license -silent -platform win32-g++ -optimize-size -no-pch -no-direct2d -no-fontconfig -qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -nomake tests QMAKE_CXXFLAGS+=-Wno-deprecated-declarations'
 }
 
 function buildQtShared(){
@@ -98,10 +98,8 @@ rm -rf $QT5_SHARED_BUILD
 mkdir $QT5_SHARED_BUILD
 pushd $QT5_SHARED_BUILD
 
-../$QT_SOURCE_DIR/configure -prefix "$(cygpath -am $PREFIX)" -shared -headerdir "$(cygpath -am $QT5_SHARED_PREFIX/include)" -libdir "$(cygpath -am $QT5_SHARED_PREFIX/lib)" $QT_COMMON_CONFIGURE_OPTION
+../$QT_SOURCE_DIR/configure -prefix "$(cygpath -am $PREFIX)" -shared -headerdir "$(cygpath -am $QT5_SHARED_PREFIX/include)" -libdir "$(cygpath -am $QT5_SHARED_PREFIX/lib)" $QT_COMMON_CONFIGURE_OPTION &> ../qt5-shared-$MINGW_CHOST-config.status
 exitOnError
-
-./config.status &> ../qt5-shared-$MINGW_CHOST-config.status
 
 makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
 exitOnError
@@ -125,10 +123,8 @@ rm -rf $QT5_STATIC_BUILD
 mkdir $QT5_STATIC_BUILD
 pushd $QT5_STATIC_BUILD
 
-../$QT_SOURCE_DIR/configure -prefix "$(cygpath -am $QT5_STATIC_PREFIX)" -static -static-runtime -nomake examples $QT_COMMON_CONFIGURE_OPTION
+../$QT_SOURCE_DIR/configure -prefix "$(cygpath -am $QT5_STATIC_PREFIX)" -static -static-runtime -nomake examples $QT_COMMON_CONFIGURE_OPTION &> ../qt5-static-$MINGW_CHOST-config.status
 exitOnError
-
-./config.status &> ../qt5-static-$MINGW_CHOST-config.status
 
 makeParallel && makeParallel install
 exitOnError

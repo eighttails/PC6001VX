@@ -9,15 +9,15 @@ echo "TWAIN DSM is already installed."
 exit 0
 fi
 
-#TWAINDSM_VERSION=4.00.00alpha
 TWAINDSM_VERSION=2.3.1
 TWAINDSM_TAG=$TWAINDSM_VERSION
 TWAINDSM_ARCHIVE=twaindsm-$TWAINDSM_TAG.source.zip
 TWAINDSM_SRC_DIR=twaindsm-$TWAINDSM_TAG.orig
 TWAINDSM_BUILD_DIR=$TWAINDSM_SRC_DIR-$MINGW_CHOST
 
-
+if [ ! -e $TWAINDSM_ARCHIVE ]; then
 wget https://sourceforge.net/projects/twain-dsm/files/TWAIN%20DSM%202%20Source/$TWAINDSM_ARCHIVE
+fi
 rm -rf $TWAINDSM_SRC_DIR $TWAINDSM_BUILD_DIR 
 unzip $TWAINDSM_ARCHIVE
 mv $TWAINDSM_SRC_DIR $TWAINDSM_BUILD_DIR
@@ -26,7 +26,6 @@ pushd $TWAINDSM_BUILD_DIR
 
 patch -p1 --binary < $SCRIPT_DIR/twaindsm_mingw.patch
 pushd TWAIN_DSM/src
-#sed -i -e "s/LIBRARY DESTINATION/RUNTIME DESTINATION/g" CMakeLists.txt
 mkdir build
 pushd build
 cmake .. \

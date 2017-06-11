@@ -459,7 +459,7 @@ Debian系のディストリビューションについて解説します。 +
 . ダウンロードしたPC6001VXのソースを解凍してください。 +
 . PC6001VX.proをQtCreatorで開いてビルドしてください。 +
 . IDEを使わない場合、コマンドラインでは以下の手順でビルドできます。 +
-[souce,bash]
+[source,bash]
 ----
 cd PC6001VX
 qmake PC6001VX.pro
@@ -467,8 +467,8 @@ make
 ----
 
 ==== Android
-こちらを参考にして環境を構築してください。 +
-http://qt-project.org/doc/qtcreator/creator-developing-android.html
+http://qt-project.org/doc/qtcreator/creator-developing-android.html[こちら] を参考にして環境を構築してください。+
+
 
 == 既知の不具合、制約事項
 * 起動するたびにシステムの音量を変えてしまうことがあります。 +

@@ -89,9 +89,9 @@ image:doc/menu.png[]
 ノートパソコンのレジュームやサスペンドと呼ばれる機能と同じようなものです。 +
 セーブするためのファイルは任意の名前(.ddr)をつけることができる他、1〜3番のスロットを用意しています。 +
 1番のスロットSAVEデータは(どこでもSAVEフォルダ)/1.ddrとして保存されます。2,3番も同様です。 +
-[CAUTION]
+[WARNING]
 この機能はまだまだ未完成です。TAPEやDISKに書き込んでいる最中などは全く考えていませんのでイメージを破壊する可能性が大です。ご注意ください。
-[CAUTION]
+[WARNING]
 どこでもSAVEファイルにはメモリの内容が含まれますので著作権者の許可なく配布しないでください。
 
 ** リプレイ +
@@ -443,7 +443,7 @@ https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.e
 . `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
 . `bash ./toochain.sh` を実行。ツールチェインをインストール。 +
 . `bash ./buildenv.sh` を実行。QtのライブラリとQtCreatorをビルド。 +
-QtCreatorが/mingw(32|64)/local/qt-creator/bin/qtcreator.exe,Qtスタティック版が/mingw(32|64)/localにインストールされます。 +
+QtCreatorが/mingw(32|64)/local/bin/qtcreator.exe,Qtスタティック版が/mingw(32|64)/localにインストールされます。 +
 . `bash ./buildrelease.sh`を実行すると、PC6001VX-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。 +
 . 自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。キットの構成方法は本書の範囲外としますが、以下の設定を参考にしてください。 +
 image:doc/qtsetting_compiler.png[] +
@@ -459,7 +459,7 @@ Debian系のディストリビューションについて解説します。 +
 . ダウンロードしたPC6001VXのソースを解凍してください。 +
 . PC6001VX.proをQtCreatorで開いてビルドしてください。 +
 . IDEを使わない場合、コマンドラインでは以下の手順でビルドできます。 +
-[souce,bash]
+[source,bash]
 ----
 cd PC6001VX
 qmake PC6001VX.pro
@@ -467,8 +467,8 @@ make
 ----
 
 ==== Android
-こちらを参考にして環境を構築してください。 +
-http://qt-project.org/doc/qtcreator/creator-developing-android.html
+http://qt-project.org/doc/qtcreator/creator-developing-android.html[こちら] を参考にして環境を構築してください。+
+
 
 == 既知の不具合、制約事項
 * 起動するたびにシステムの音量を変えてしまうことがあります。 +

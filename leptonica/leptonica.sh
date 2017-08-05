@@ -18,14 +18,17 @@ echo "Leptonica is already installed."
 exit 0
 fi
 
-LEPTONICA_VERSION=1.74.1
+LEPTONICA_VERSION=1.74.4
 LEPTONICA_SRC_DIR=leptonica-$LEPTONICA_VERSION
+LEPTONICA_SRC_ARCHIVE=$LEPTONICA_SRC_DIR.tar.gz
 LEPTONICA_BUILD_DIR=$LEPTONICA_SRC_DIR-$MINGW_CHOST
 
-wget -c http://www.leptonica.com/source/$LEPTONICA_SRC_DIR.tar.gz
-	
+if [ ! -e $LEPTONICA_SRC_ARCHIVE ]; then
+wget -c https://github.com/DanBloomberg/leptonica/releases/download/$LEPTONICA_VERSION/$LEPTONICA_SRC_ARCHIVE
+fi
+
 rm -rf $LEPTONICA_SRC_DIR $LEPTONICA_BUILD_DIR 
-tar xf $LEPTONICA_SRC_DIR.tar.gz
+tar xf $LEPTONICA_SRC_ARCHIVE
 mv $LEPTONICA_SRC_DIR $LEPTONICA_BUILD_DIR
 pushd $LEPTONICA_BUILD_DIR
 

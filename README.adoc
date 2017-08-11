@@ -3,6 +3,7 @@ eighttails <http://eighttails.seesaa.net>
 :toc-title: 目次
 :toc:
 :numbered:
+:data-uri:
 
 by eighttails +
 http://eighttails.seesaa.net

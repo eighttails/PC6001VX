@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#‚±‚ÌƒXƒNƒŠƒvƒg‚Ì’u‚«êŠ‚ðƒJƒŒƒ“ƒg‚Æ‚µ‚ÄŽÀs‚·‚é‚±‚ÆB
-#ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ
+#ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®ç½®ãå ´æ‰€ã‚’ã‚«ãƒ¬ãƒ³ãƒˆã¨ã—ã¦å®Ÿè¡Œã™ã‚‹ã“ã¨ã€‚
+#ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
 export SCRIPT_DIR=$PWD
-
-#•À—ñƒrƒ‹ƒh
+export QTDIR=$MINGW_PREFIX/local/qt5-static
+#ä¸¦åˆ—ãƒ“ãƒ«ãƒ‰
 MINGW32MAKE="mingw32-make -j$NUMBER_OF_PROCESSORS"
 
 P6VX_DBUILD_DIR=PC6001VX-build-$MINGW_CHOST
@@ -16,6 +16,6 @@ fi
 mkdir $P6VX_DBUILD_DIR
 
 cd $P6VX_DBUILD_DIR
-$MINGW_PREFIX/local/qt5-static/bin/qmake ../PC6001VX/PC6001VX.pro 
+$QTDIR/bin/qmake ../PC6001VX/PC6001VX.pro 
 $MINGW32MAKE release
 

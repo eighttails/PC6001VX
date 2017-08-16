@@ -46,6 +46,7 @@ int main( int argc, char *argv[] )
     // AndroidではFusion以外のスタイルでは表示が崩れるので明示的に指定する。
     app.setStyle(QStyleFactory::create("Fusion"));
     app.setCustomRomPath(CUSTOMROMPATH);
+
 #endif
 
 	QLocale locale;

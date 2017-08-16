@@ -15,6 +15,10 @@
 #include "keypanel.h"
 #include "p6vxapp.h"
 
+#ifdef ANDROID
+#include "../../android/permission/permissions.h"
+#endif
+
 const QString P6VXApp::keyGeometry			= "window/geometry";
 const QString P6VXApp::keyMaximized			= "window/maximized";
 const QString P6VXApp::keyHwAccel				= "graph/hwAccel";
@@ -136,6 +140,18 @@ void P6VXApp::startup()
 	if( isRunning() ) {
 		exit();
 		return;
+	}
+#endif
+
+#ifdef ANDROID
+	// SDカードへのアクセス許可を要求
+	QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+	if(r == QtAndroid::PermissionResult::Denied) {
+		QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
+		r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+		if(r == QtAndroid::PermissionResult::Denied) {
+			OSD_Message( QString(tr("Storage access denied.")).toUtf8().constData(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
+		}
 	}
 #endif
 
@@ -474,7 +490,13 @@ void P6VXApp::executeEmulation()
 								   "別のROMフォルダを指定しますか?")).arg(Cfg.GetRomPath()).toUtf8().constData(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING ) == OSDR_YES){
 			//ROMフォルダ再設定
 			char folder[PATH_MAX];
+#ifdef ANDROID
+			// Android(6.0以降?)では明示的に/storageフォルダを指定しないとSDカードが
+			// ファイルダイアログに表示されない問題があり、その暫定対応
+			strncpy(folder, "/storage", PATH_MAX);
+#else
 			strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
+#endif
 			OSD_AddDelimiter(folder);
 			OSD_FolderDiaog(NULL, folder);
 			OSD_DelDelimiter(folder);

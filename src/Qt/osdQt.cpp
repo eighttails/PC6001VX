@@ -1082,10 +1082,15 @@ void OSD_DelDelimiter( char *path )
 ////////////////////////////////////////////////////////////////
 void OSD_RelativePath( char *path )
 {
+#ifdef WIN32
 	if( QDir( path ).isRelative() || !strlen( path ) ) return;
 	QDir dir(OSD_GetModulePath());
 	QString relPath = dir.relativeFilePath(path);
 	strcpy(path, relPath.toUtf8().constData());
+#else
+	// Windows以外では相対パスを使った運用はしない
+	OSD_AbsolutePath(path);
+#endif
 }
 
 
@@ -1292,7 +1297,7 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 
 	QWidget* parent = static_cast<QWidget*>(hwnd);
 	QFileDialog dialog(parent);
-	dialog.setDirectory(QDir::homePath());
+	dialog.setDirectory(Result ? Result : QDir::homePath());
 	dialog.setFileMode(QFileDialog::DirectoryOnly);
 	dialog.setOptions(opt);
 #ifdef ALWAYSFULLSCREEN

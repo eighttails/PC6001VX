@@ -442,10 +442,9 @@ https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.e
 . MSYSをインストールしたフォルダのmingw32.exe(32ビット版をビルドする場合)またはmingw64.exe(64ビット版をビルドする場合)を実行。 +
 . ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。 +
 . `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
-. `bash ./toochain.sh` を実行。ツールチェインをインストール。 +
 . `bash ./buildenv.sh` を実行。QtのライブラリとQtCreatorをビルド。 +
 QtCreatorが/mingw(32|64)/local/bin/qtcreator.exe,Qtスタティック版が/mingw(32|64)/localにインストールされます。 +
-. `bash ./buildrelease.sh`を実行すると、PC6001VX-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。 +
+. `bash ./buildrelease.sh` を実行すると、PC6001VX-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。 +
 . 自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。キットの構成方法は本書の範囲外としますが、以下の設定を参考にしてください。 +
 image:doc/qtsetting_compiler.png[] +
 image:doc/qtsetting_debugger.png[] +

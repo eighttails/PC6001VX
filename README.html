@@ -1385,14 +1385,11 @@ MSYS2はパッケージのバージョンアップが早く、またバージョ
 <p><code>cd PC6001VX/win32</code> を実行し、ソースフォルダのwin32フォルダにカレントを移動。<br></p>
 </li>
 <li>
-<p><code>bash ./toochain.sh</code> を実行。ツールチェインをインストール。<br></p>
-</li>
-<li>
 <p><code>bash ./buildenv.sh</code> を実行。QtのライブラリとQtCreatorをビルド。<br>
 QtCreatorが/mingw(32|64)/local/bin/qtcreator.exe,Qtスタティック版が/mingw(32|64)/localにインストールされます。<br></p>
 </li>
 <li>
-<p><code>bash ./buildrelease.sh</code>を実行すると、PC6001VX-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。<br></p>
+<p><code>bash ./buildrelease.sh</code> を実行すると、PC6001VX-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。<br></p>
 </li>
 <li>
 <p>自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。キットの構成方法は本書の範囲外としますが、以下の設定を参考にしてください。<br>
@@ -1407,10 +1404,10 @@ QtCreatorが/mingw(32|64)/local/bin/qtcreator.exe,Qtスタティック版が/min
 </div>
 <div class="sect3">
 <h4 id="_linux_2">4.2.2. Linux</h4>
-<div id="__asciidoctor-preview-3294__" class="paragraph">
+<div id="__asciidoctor-preview-3284__" class="paragraph">
 <p>Debian系のディストリビューションについて解説します。<br></p>
 </div>
-<div id="__asciidoctor-preview-3300__" class="olist arabic">
+<div id="__asciidoctor-preview-3290__" class="olist arabic">
 <ol class="arabic">
 <li>
 <p><code>apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev</code> を実行。<br></p>
@@ -1426,7 +1423,7 @@ QtCreatorが/mingw(32|64)/local/bin/qtcreator.exe,Qtスタティック版が/min
 </li>
 </ol>
 </div>
-<div id="__asciidoctor-preview-3352__" class="listingblock">
+<div id="__asciidoctor-preview-3342__" class="listingblock">
 <div class="content">
 <pre>cd PC6001VX
 qmake PC6001VX.pro
@@ -1436,7 +1433,7 @@ make</pre>
 </div>
 <div class="sect3">
 <h4 id="_android_2">4.2.3. Android</h4>
-<div id="__asciidoctor-preview-3366__" class="paragraph">
+<div id="__asciidoctor-preview-3356__" class="paragraph">
 <p><a href="http://qt-project.org/doc/qtcreator/creator-developing-android.html">こちら</a> を参考にして環境を構築してください。+</p>
 </div>
 </div>
@@ -1446,7 +1443,7 @@ make</pre>
 <div class="sect1">
 <h2 id="___14">5. 既知の不具合、制約事項</h2>
 <div class="sectionbody">
-<div id="__asciidoctor-preview-3408__" class="ulist">
+<div id="__asciidoctor-preview-3398__" class="ulist">
 <ul>
 <li>
 <p>起動するたびにシステムの音量を変えてしまうことがあります。<br>
@@ -1462,7 +1459,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。<br><
 <div class="sect1">
 <h2 id="___15">6. 更新履歴</h2>
 <div class="sectionbody">
-<div id="__asciidoctor-preview-3456__" class="ulist">
+<div id="__asciidoctor-preview-3446__" class="ulist">
 <div class="title">2.31.0 2017/08/19</div>
 <ul>
 <li>
@@ -1476,7 +1473,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。<br><
 </li>
 <li>
 <p>(Windows)ビルド手順を更新。<br></p>
-<div id="__asciidoctor-preview-3510__" class="ulist">
+<div id="__asciidoctor-preview-3500__" class="ulist">
 <ul>
 <li>
 <p>64ビット版がビルドできるようになった。<br></p>
@@ -1501,7 +1498,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。<br><
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3574__" class="ulist">
+<div id="__asciidoctor-preview-3564__" class="ulist">
 <div class="title">2.30.0 2016/08/27</div>
 <ul>
 <li>
@@ -1516,7 +1513,7 @@ QtおよびMSYS2がXPのサポートを落としたため、今回のバージ�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3614__" class="ulist">
+<div id="__asciidoctor-preview-3604__" class="ulist">
 <div class="title">2.21.0 2016/05/04</div>
 <ul>
 <li>
@@ -1533,7 +1530,7 @@ QtおよびMSYS2がXPのサポートを落としたため、今回のバージ�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3660__" class="ulist">
+<div id="__asciidoctor-preview-3650__" class="ulist">
 <div class="title">2.2 2016/04/24</div>
 <ul>
 <li>
@@ -1556,7 +1553,7 @@ QtおよびMSYS2がXPのサポートを落としたため、今回のバージ�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3726__" class="ulist">
+<div id="__asciidoctor-preview-3716__" class="ulist">
 <div class="title">2.11 2015/11/11</div>
 <ul>
 <li>
@@ -1572,7 +1569,7 @@ QtおよびMSYS2がXPのサポートを落としたため、今回のバージ�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3766__" class="ulist">
+<div id="__asciidoctor-preview-3756__" class="ulist">
 <div class="title">2.1 2015/08/29</div>
 <ul>
 <li>
@@ -1580,7 +1577,7 @@ QtおよびMSYS2がXPのサポートを落としたため、今回のバージ�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3782__" class="ulist">
+<div id="__asciidoctor-preview-3772__" class="ulist">
 <div class="title">2.01 2015/01/10</div>
 <ul>
 <li>
@@ -1588,7 +1585,7 @@ QtおよびMSYS2がXPのサポートを落としたため、今回のバージ�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3798__" class="ulist">
+<div id="__asciidoctor-preview-3788__" class="ulist">
 <div class="title">2.0 2014/12/27</div>
 <ul>
 <li>
@@ -1606,7 +1603,7 @@ QtおよびMSYS2がXPのサポートを落としたため、今回のバージ�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3848__" class="ulist">
+<div id="__asciidoctor-preview-3838__" class="ulist">
 <div class="title">2.0RC1 2014/10/19</div>
 <ul>
 <li>
@@ -1636,12 +1633,12 @@ P6実機上でシフトキーが必要な文字を入力するには、エミュ
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-3932__" class="ulist">
+<div id="__asciidoctor-preview-3922__" class="ulist">
 <div class="title">2.0Beta4 2014/08/15</div>
 <ul>
 <li>
 <p>P6V1.22開発版ベースに更新<br></p>
-<div id="__asciidoctor-preview-3954__" class="ulist">
+<div id="__asciidoctor-preview-3944__" class="ulist">
 <ul>
 <li>
 <p>FM音源対応(暫定版)<br></p>
@@ -1654,7 +1651,7 @@ P6実機上でシフトキーが必要な文字を入力するには、エミュ
 </li>
 <li>
 <p>Androidの対応開始<br></p>
-<div id="__asciidoctor-preview-4014__" class="ulist">
+<div id="__asciidoctor-preview-4004__" class="ulist">
 <ul>
 <li>
 <p>対応OSはAndroid4.0以上、現時点でハードウェアキーボード必須です。<br></p>
@@ -1670,7 +1667,7 @@ P6実機上でシフトキーが必要な文字を入力するには、エミュ
 </li>
 <li>
 <p>【Android対応の制約事項】<br></p>
-<div id="__asciidoctor-preview-4080__" class="ulist">
+<div id="__asciidoctor-preview-4070__" class="ulist">
 <ul>
 <li>
 <p>キーボードによっては入力できないキーがあります。<br>
@@ -1705,14 +1702,14 @@ P6VX固有の機能追加に関する設定を扱いやすくするため、<br>
 </li>
 <li>
 <p>ドットカクカク表示対応<br></p>
-<div id="__asciidoctor-preview-4180__" class="ulist">
+<div id="__asciidoctor-preview-4170__" class="ulist">
 <ul>
 <li>
 <p>一部の方から要望のあった、ドットのカクカク表示に対応しました。<br></p>
 </li>
 <li>
 <p>以下の手順をで設定するとドットがカクカク表示になります。<br></p>
-<div id="__asciidoctor-preview-4206__" class="olist arabic">
+<div id="__asciidoctor-preview-4196__" class="olist arabic">
 <ol class="arabic">
 <li>
 <p>メニューの設定→4:3表示をオフ<br></p>
@@ -1737,7 +1734,7 @@ P6VX固有の機能追加に関する設定を扱いやすくするため、<br>
 </li>
 <li>
 <p>TALK文の固定語再生を実装(今まで未実装でしたすみません)<br></p>
-<div id="__asciidoctor-preview-4276__" class="ulist">
+<div id="__asciidoctor-preview-4266__" class="ulist">
 <ul>
 <li>
 <p>waveフォルダにf41.wav~f44.wavを配置してください。<br></p>
@@ -1756,7 +1753,7 @@ P6VX固有の機能追加に関する設定を扱いやすくするため、<br>
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-4320__" class="ulist">
+<div id="__asciidoctor-preview-4310__" class="ulist">
 <div class="title">2.0Beta3 2014/04/10</div>
 <ul>
 <li>
@@ -1772,7 +1769,7 @@ When display language of OS is not Japanese, GUI of PC6001VX is displayed in Eng
 </li>
 <li>
 <p>リプレイ関連機能強化<br></p>
-<div id="__asciidoctor-preview-4368__" class="ulist">
+<div id="__asciidoctor-preview-4358__" class="ulist">
 <ul>
 <li>
 <p>リプレイ記録中に途中保存することができるようになった。<br>
@@ -1788,7 +1785,7 @@ When display language of OS is not Japanese, GUI of PC6001VX is displayed in Eng
 </li>
 <li>
 <p>【リプレイに関する既知の問題、制約事項】<br></p>
-<div id="__asciidoctor-preview-4406__" class="ulist">
+<div id="__asciidoctor-preview-4396__" class="ulist">
 <ul>
 <li>
 <p>オートスタートが設定されているテープイメージを使っていると途中保存が正しく行われません。<br></p>
@@ -1818,7 +1815,7 @@ When display language of OS is not Japanese, GUI of PC6001VX is displayed in Eng
 </li>
 <li>
 <p>ウィンドウモードでもTILTするようになった。<br></p>
-<div id="__asciidoctor-preview-4500__" class="ulist">
+<div id="__asciidoctor-preview-4490__" class="ulist">
 <ul>
 <li>
 <p>ステータスバーを非表示にするとディスプレイ枠が表示されます。<br></p>
@@ -1828,11 +1825,11 @@ When display language of OS is not Japanese, GUI of PC6001VX is displayed in Eng
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-4514__" class="paragraph">
+<div id="__asciidoctor-preview-4504__" class="paragraph">
 <div class="title">2.0Beta2 2014/01/22</div>
 <p>バグ修正</p>
 </div>
-<div id="__asciidoctor-preview-4520__" class="ulist">
+<div id="__asciidoctor-preview-4510__" class="ulist">
 <ul>
 <li>
 <p>どこでもLOAD時にクラッシュするのを修正<br></p>
@@ -1851,7 +1848,7 @@ When display language of OS is not Japanese, GUI of PC6001VX is displayed in Eng
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-4576__" class="ulist">
+<div id="__asciidoctor-preview-4566__" class="ulist">
 <div class="title">2.0Beta1 2014/01/15</div>
 <ul>
 <li>
@@ -1866,7 +1863,7 @@ SR対応の制約事項(FM音源に未対応など)は本家に準じます。<b
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-4610__" class="ulist">
+<div id="__asciidoctor-preview-4600__" class="ulist">
 <div class="title">2.0Alpha3 2013/08/18</div>
 <ul>
 <li>
@@ -1900,7 +1897,7 @@ Windows上でのIntelGPUなど、QtでOpenGLを使うための機能要件を満
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-4710__" class="ulist">
+<div id="__asciidoctor-preview-4700__" class="ulist">
 <div class="title">2.0Alpha2 2013/05/25(オフ会記念リリース)</div>
 <ul>
 <li>
@@ -1929,7 +1926,7 @@ GUIが暴走するのを修正<br></p>
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-4794__" class="ulist">
+<div id="__asciidoctor-preview-4784__" class="ulist">
 <div class="title">2.0Alpha 2013/05/07</div>
 <ul>
 <li>
@@ -1975,7 +1972,7 @@ CPU使用率も下がって、サウンドのバッファアンダーフロー�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-4908__" class="ulist">
+<div id="__asciidoctor-preview-4898__" class="ulist">
 <div class="title">1.01　2013/01/02</div>
 <ul>
 <li>
@@ -1987,7 +1984,7 @@ CPU使用率も下がって、サウンドのバッファアンダーフロー�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-4938__" class="ulist">
+<div id="__asciidoctor-preview-4928__" class="ulist">
 <div class="title">1.0　2012/11/30</div>
 <ul>
 <li>
@@ -2021,11 +2018,11 @@ CPU使用率も下がって、サウンドのバッファアンダーフロー�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-5040__" class="paragraph">
+<div id="__asciidoctor-preview-5030__" class="paragraph">
 <div class="title">1.0β2　2012/03/09</div>
 <p>バグ修正</p>
 </div>
-<div id="__asciidoctor-preview-5046__" class="ulist">
+<div id="__asciidoctor-preview-5036__" class="ulist">
 <ul>
 <li>
 <p>CRCが合わないROMを使用している場合、警告を出した上でCRCチェックを無効にできるようにした。<br></p>
@@ -2038,7 +2035,7 @@ CPU使用率も下がって、サウンドのバッファアンダーフロー�
 </li>
 </ul>
 </div>
-<div id="__asciidoctor-preview-5082__" class="ulist">
+<div id="__asciidoctor-preview-5072__" class="ulist">
 <div class="title">1.0β　2012/02/06</div>
 <ul>
 <li>
@@ -2051,7 +2048,7 @@ CPU使用率も下がって、サウンドのバッファアンダーフロー�
 <div class="sect1">
 <h2 id="___16">7. 謝辞</h2>
 <div class="sectionbody">
-<div id="__asciidoctor-preview-5108__" class="paragraph">
+<div id="__asciidoctor-preview-5098__" class="paragraph">
 <p>オリジナルのPC6001Vを製作され、移植を快諾してくださったゆみたろ様、
 Mac版を通じ、移植の障害を取り除いてくれていたであろうWindy様、
 Qtについて勉強する機会を提供してくださった関東Qt勉強会および元NOKIAのエンジニアの皆様、

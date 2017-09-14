@@ -11,7 +11,7 @@ TEMPLATE = app
 
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 
-CONFIG += link_prl c++11
+CONFIG += link_prl link_pkgconfig c++11
 
 #Define for Qt dependent code
 DEFINES += QTP6VX
@@ -71,30 +71,20 @@ DEFINES += NOOPENGL NOJOYSTICK NOMONITOR NOAVI
 #Configuration for X11(XCB)
 DEFINES += USE_X11
 QT += x11extras
-QMAKE_CXXFLAGS += $$system(pkg-config --cflags x11)
-LIBS += $$system(pkg-config --libs x11)
+PKGCONFIG += x11
 }
 }
 
 #Configuration for Windows
 win32 {
 DEFINES += WIN32
-INCLUDEPATH += $$(QTDIR)/../include
-LIBS += -L$$(QTDIR)/../lib
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS += -static -lpthread
 RC_ICONS += src/win32/PC6001VX.ico
 }
 
 !contains(DEFINES, NOJOYSTICK) {
-win32 {
-LIBS += -lmingw32 -lSDL2main -lSDL2 -mwindows -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 \
--luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -static-libgcc
-}
-unix {
-QMAKE_CXXFLAGS += $$system(sdl2-config --cflags)
-LIBS += $$system(sdl2-config --libs)
-}
+PKGCONFIG += sdl2
 }
 
 !contains(DEFINES, NOOPENGL) {
@@ -110,13 +100,7 @@ SOURCES += \
 
 !contains(DEFINES, NOAVI) {
 DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
-win32 {
-LIBS += -lavformat -lavcodec -lswscale -lavutil -lswresample -lvorbisenc -lvorbis -logg -lvpx
-}
-unix {
-QMAKE_CXXFLAGS += $$system(pkg-config --cflags libavformat libavcodec libswscale libavutil libswresample)
-LIBS += $$system(pkg-config --libs libavformat libavcodec libswscale libavutil libswresample)
-}
+PKGCONFIG += libavformat libavcodec libswscale libswresample
 }
 
 SOURCES += \

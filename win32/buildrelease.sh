@@ -4,6 +4,8 @@
 #カレントディレクトリ
 export SCRIPT_DIR=$PWD
 export QTDIR=$MINGW_PREFIX/local/qt5-static
+export PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig
+
 #並列ビルド
 MINGW32MAKE="mingw32-make -j$NUMBER_OF_PROCESSORS"
 

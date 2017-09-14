@@ -446,6 +446,7 @@ https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.e
 QtCreatorが/mingw(32|64)/local/bin/qtcreator.exe,Qtスタティック版が/mingw(32|64)/localにインストールされます。 +
 . `bash ./buildrelease.sh` を実行すると、PC6001VX-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。 +
 . 自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。キットの構成方法は本書の範囲外としますが、以下の設定を参考にしてください。 +
+注意点としては、キットの環境変数の欄にPKG_CONFIG_PATHの設定が必要です。
 image:doc/qtsetting_compiler.png[] +
 image:doc/qtsetting_debugger.png[] +
 image:doc/qtsetting_qt.png[] +
@@ -476,6 +477,13 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.git master(リリース前の最新版)
+* 依存ライブラリをpkg-configを使ってリンクするようにした。 +
+Windows(MSYS2)でビルドする場合、PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfigの環境変数設定が必要になります。
+
+* Made use of pkg-config to link external libs.
+Is is necessary to set PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig environment variable to build on Windows(MSYS2).
+
 .2.31.0 2017/08/19
 * ALWAYSFULLSCREENフラグを付加してビルドした場合にファイルダイアログ、設定ダイアログもフルスクリーンになるようにした。(PocketChipなどの低解像度デバイス用) +
 * サウンド周りのメソッド呼び出しがスレッドセーフでなかったのを修正 +

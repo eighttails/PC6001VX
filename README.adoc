@@ -481,7 +481,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * 依存ライブラリをpkg-configを使ってリンクするようにした。 +
 Windows(MSYS2)でビルドする場合、PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfigの環境変数設定が必要になります。
 
-* Made use of pkg-config to link external libs.
+* Made use of pkg-config to link external libs. +
 Is is necessary to set PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig environment variable to build on Windows(MSYS2).
 
 .2.31.0 2017/08/19

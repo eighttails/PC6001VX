@@ -100,7 +100,7 @@ SOURCES += \
 
 !contains(DEFINES, NOAVI) {
 DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
-PKGCONFIG += libavformat libavcodec libswscale libswresample
+PKGCONFIG += libavformat libavcodec libswscale libswresample libavutil
 }
 
 SOURCES += \

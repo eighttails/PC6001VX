@@ -19,27 +19,24 @@ $MINGW_PACKAGE_PREFIX-icu
 }
 
 function build(){
-if [ -e $PREFIX/bin/tesseract.exe -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -d $PREFIX/bin/tesseract.exe -a $((FORCE_INSTALL)) == 0 ]; then
 echo "tesseract is already installed."
 exit 0
 fi
 
 #TESSERACT_VERSION=4.00.00alpha
-TESSERACT_SRC_DIR=tesseract
-TESSERACT_BUILD_DIR=$TESSERACT_SRC_DIR-$MINGW_CHOST
+TESSERACT_SRC_DIR=tesseract-$MINGW_CHOST
 
-if [ ! -d  $TESSERACT_SRC_DIR ]; then
-git clone https://github.com/tesseract-ocr/tesseract.git
+if [ ! -e  $TESSERACT_SRC_DIR ]; then
+git clone https://github.com/tesseract-ocr/tesseract.git $TESSERACT_SRC_DIR
 fi
 
-rm -rf $TESSERACT_BUILD_DIR 
 pushd $TESSERACT_SRC_DIR
 git pull
-git archive --format=tar --prefix=$TESSERACT_BUILD_DIR/ HEAD | gzip > ../$TESSERACT_BUILD_DIR.tar.gz
-popd
-tar xf $TESSERACT_BUILD_DIR.tar.gz
-rm $TESSERACT_BUILD_DIR.tar.gz
-pushd $TESSERACT_BUILD_DIR
+
+if [ -e Makefile ]; then
+make clean
+fi
 
 ./autogen.sh
 exitOnError

@@ -32,13 +32,12 @@ tar xf $LEPTONICA_SRC_ARCHIVE
 mv $LEPTONICA_SRC_DIR $LEPTONICA_BUILD_DIR
 pushd $LEPTONICA_BUILD_DIR
 
-./configure \
---build=$MINGW_CHOST \
---host=$MINGW_CHOST \
---target=$MINGW_CHOST \
---prefix=$PREFIX \
---disable-programs \
-CPPFLAGS=-DMINIMUM_SEVERITY=4
+mkdir build
+pushd build
+cmake .. \
+-G"MSYS Makefiles" \
+-DCMAKE_INSTALL_PREFIX=$PREFIX 
+
 exitOnError
 
 makeParallel && makeParallel install

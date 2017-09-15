@@ -28,7 +28,7 @@ echo "gImageReader is already installed."
 exit 0
 fi
 
-GIMAGEREADER_VERSION=3.2.1
+GIMAGEREADER_VERSION=3.2.3
 GIMAGEREADER_TAG=v$GIMAGEREADER_VERSION
 GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
 GIMAGEREADER_SRC_DIR=gImageReader-$GIMAGEREADER_VERSION
@@ -48,11 +48,11 @@ CMAKE_PREFIX_PATH=$PREFIX/qt5-shared:$CMAKE_PREFIX_PATH \
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
--DCMAKE_CXX_FLAGS="-I$PREFIX/include" \
+-DCMAKE_CXX_FLAGS="-DUSE_STD_NAMESPACE -I$PREFIX/include" \
 -DCMAKE_VERBOSE_MAKEFILE:BOOL=FALSE \
 -DINTERFACE_TYPE=qt5
 
-makeParallel && makeParallel install
+make && makeParallel install
 exitOnError
 popd
 popd

@@ -762,6 +762,15 @@ void OSD_ShowCursor( bool disp )
 	qApp->setOverrideCursor(disp ? Qt::ArrowCursor : Qt::BlankCursor);
 }
 
+////////////////////////////////////////////////////////////////
+// マウスカーソル状態を1つ戻す
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_RestoreCursor( void ){
+	qApp->restoreOverrideCursor();
+}
 
 ////////////////////////////////////////////////////////////////
 // キャプション設定
@@ -1305,9 +1314,11 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 #endif
 
 	QByteArray result;
+	OSD_ShowCursor(true);
 	if (dialog.exec() == QDialog::Accepted) {
 		result = dialog.selectedFiles().value(0).toUtf8();
 	}
+	OSD_RestoreCursor();
 
 	strcpy(Result, result);
 	return result.constData();
@@ -1348,11 +1359,13 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
 #endif
 
+	OSD_ShowCursor(true);
 	if(mode == FM_Save){
 		dialog.setFileMode(QFileDialog::AnyFile);
 		if (dialog.exec() == QDialog::Accepted) {
 			result = dialog.selectedFiles().value(0);
 		}
+		OSD_RestoreCursor();
 		if(result.isEmpty())    return NULL;
 		// 入力されたファイル名に拡張子がついていない場合は付与する
 		QFileInfo info(result);
@@ -1364,6 +1377,7 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 		if (dialog.exec() == QDialog::Accepted) {
 			result = dialog.selectedFiles().value(0);
 		}
+		OSD_RestoreCursor();
 		if(result.isEmpty())    return NULL;
 	}
 

@@ -427,13 +427,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 		MenuCommand id = selectedAction->property(MENUIDPROPERTY).value<MenuCommand>();
 		ExecMenu(id);
 	}
-	if(
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-			!cfg->GetMonDisp()  &&
-		#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-			cfg->GetFullScreen()){
-		OSD_ShowCursor( false );
-	}
+	OSD_RestoreCursor();
 }
 
 

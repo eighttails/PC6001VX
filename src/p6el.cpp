@@ -135,12 +135,21 @@ void EL6::OnThread( void *inst )
 				bool matchg = p6->vm->key->ScanMatrix();
 				
 				// リプレイ記録中
-				if( REPLAY::GetStatus() == REP_RECORD )
+				if( REPLAY::GetStatus() == REP_RECORD ){
 					REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
-				
+#ifdef REPLAYDEBUG
+					// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
+					char fullPath[PATH_MAX];
+					char fileName[PATH_MAX];
+					sprintf(fileName, "record/%06d.dds", REPLAY::RepFrm);
+					OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+					DokoDemoSave(fullPath);
+#endif
+				}
 				// リプレイ再生中
 				if( REPLAY::GetStatus() == REP_REPLAY ){
 #ifdef REPLAYDEBUG
+					// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
 					char fullPath[PATH_MAX];
 					char fileName[PATH_MAX];
 					sprintf(fileName, "replay/%06d.dds", REPLAY::RepFrm);

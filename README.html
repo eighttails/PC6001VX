@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
@@ -419,14 +419,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 </head>
-<body class="article">
+<body class="article toc2 toc-left">
 <div id="header">
 <h1>PC6001VX マニュアル</h1>
 <div class="details">
 <span id="author" class="author">eighttails</span><br>
 <span id="email" class="email"><a href="http://eighttails.seesaa.net" class="bare">http://eighttails.seesaa.net</a></span><br>
 </div>
-<div id="toc" class="toc">
+<div id="toc" class="toc2">
 <div id="toctitle">目次</div>
 <ul class="sectlevel1">
 <li><a href="#true-">1. はじめに</a></li>
@@ -1362,7 +1362,7 @@ FDDアクセス時にウェイトを入れるようにします。<br></p>
 <p><a href="http://sourceforge.net/projects/msys2/">こちら</a>からMSYS2をダウンロードしてインストールしてください。<br>
 VC++はサポートしていません。<br>
 MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(<code>pacman -Sy</code>)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用)<br>
-<a href="https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe" class="bare">https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20160921.exe</a></p>
+<a href="https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20170918.exe" class="bare">https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20170918.exe</a></p>
 </li>
 <li>
 <p>MSYSをインストールしたフォルダのmingw32.exe(32ビット版をビルドする場合)またはmingw64.exe(64ビット版をビルドする場合)を実行。<br></p>
@@ -1457,7 +1457,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。<br><
 Windows(MSYS2)でビルドする場合、PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfigの環境変数設定が必要になります。</p>
 </li>
 <li>
-<p>Made use of pkg-config to link external libs.
+<p>Made use of pkg-config to link external libs.<br>
 Is is necessary to set PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig environment variable to build on Windows(MSYS2).</p>
 </li>
 </ul>
@@ -2062,7 +2062,7 @@ Qtについて勉強する機会を提供してくださった関東Qt勉強会�
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2017-09-16 01:14:40
+Last updated 2018-02-14 16:29:35
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

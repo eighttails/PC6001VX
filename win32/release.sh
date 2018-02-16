@@ -18,11 +18,11 @@ export SCRIPT_DIR=$PWD
 
 #引数としてバージョンを指定すること
 if [ -z $1 ]; then
-    echo "Please specify version number."
-    exit
+    VERSION=dev
+else
+    VERSION=$1
 fi
 
-VERSION=$1
 RELEASE_DIR=$PWD/../../PC6001VX_release
 
 

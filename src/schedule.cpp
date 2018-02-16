@@ -483,8 +483,9 @@ bool EVSC::DokoSave( cIni *Ini )
 // 8888888888888888888888888888888888888
 	for( EvVec::iterator p = ev.begin(); p != ev.end(); ++p ){
 		evinfo& event = *p;
+		// 削除済みイベントは書き出さない
+		if (event.devid == 0) continue;
  		BYTE id1,id2,id3,id4;
-		DWTOB( event.devid, id4, id3, id2, id1 );
 		DWTOB( event.devid, id4, id3, id2, id1 );
  		sprintf( stren, "Event%02X", i );
 		Ini->PutEntry( "SCHEDULE", NULL, stren, "%c%c%c%c %d %d %d %d %lf", id1, id2, id3, id4, event.id, event.Active ? 1 : 0, event.Period, event.Clock, event.nps );
@@ -538,9 +539,11 @@ bool EVSC::DokoLoad( cIni *Ini )
 		if( Ini->GetString( "SCHEDULE", stren, strrs, "" ) ){
 			evinfo e;
 			BYTE id1,id2,id3,id4;
-			int yn;
+			int yn = 0;
 
-			sscanf( strrs,"%c%c%c%c %d %d %d %d %lf", &id1, &id2, &id3, &id4, &e.id, &yn, &e.Period, &e.Clock, &e.nps );
+			int c = sscanf( strrs,"%c%c%c%c %d %d %d %d %lf", &id1, &id2, &id3, &id4, &e.id, &yn, &e.Period, &e.Clock, &e.nps );
+			// 正常に読み込めた場合のみ値をセット
+			if (c != 9) continue;
 			e.devid = BTODW( id1, id2, id3, id4 );
 			e.Active = yn ? true : false;
 			if( !SetEvinfo( &e ) ) return false;

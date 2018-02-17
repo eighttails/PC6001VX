@@ -481,9 +481,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 .2.32.0 2018/02/17
 * リプレイが正常に再生されないことがあるのを修正。
 * ファイル選択ダイアログを開くとマウスカーソルが消える問題を修正
+* Android6.0以降のパーミッションモデルに対応するため、Qt5.10のAPIを利用。Androidでは5.10以上が必要になります。
 
 * Fixed replay glitch.
 * Fixed mouse cursor disappears when opening file select dialog.
+* Make use of Qt 5.10 API to adopt permission model after Android 6.0.(Qt 5.10 is needed to build for Android)
 
 .2.31.1 2017/09/16
 * 依存ライブラリをpkg-configを使ってリンクするようにした。 +

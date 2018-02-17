@@ -1460,10 +1460,16 @@ Qt5の音量制御周りはまだあまり枯れていないようです。<br><
 <p>ファイル選択ダイアログを開くとマウスカーソルが消える問題を修正</p>
 </li>
 <li>
+<p>Android6.0以降のパーミッションモデルに対応するため、Qt5.10のAPIを利用。Androidでは5.10以上が必要になります。</p>
+</li>
+<li>
 <p>Fixed replay glitch.</p>
 </li>
 <li>
 <p>Fixed mouse cursor disappears when opening file select dialog.</p>
+</li>
+<li>
+<p>Make use of Qt 5.10 API to adopt permission model after Android 6.0.(Qt 5.10 is needed to build for Android)</p>
 </li>
 </ul>
 </div>
@@ -2080,7 +2086,7 @@ Qtについて勉強する機会を提供してくださった関東Qt勉強会�
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-02-17 18:55:22
+Last updated 2018-02-17 19:04:15
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

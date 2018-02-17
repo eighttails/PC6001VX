@@ -3,7 +3,8 @@
 function prerequisite(){
 #必要ライブラリ
 pacman -S --needed --noconfirm \
-$MINGW_PACKAGE_PREFIX-SDL2
+$MINGW_PACKAGE_PREFIX-SDL2 \
+$MINGW_PACKAGE_PREFIX-openssl 
 
 mkdir -p $PREFIX/bin 2> /dev/null
 mkdir -p $QT5_STATIC_PREFIX/bin 2> /dev/null
@@ -14,10 +15,10 @@ popd
 
 function makeQtSourceTree(){
 #Qt
-QT_MAJOR_VERSION=5.9
-QT_MINOR_VERSION=.1
+QT_MAJOR_VERSION=5.10
+QT_MINOR_VERSION=.0
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
-QT_ARCHIVE_DIR=qt-everywhere-opensource-src-$QT_VERSION
+QT_ARCHIVE_DIR=qt-everywhere-src-$QT_VERSION
 QT_ARCHIVE=$QT_ARCHIVE_DIR.tar.xz
 QT_SOURCE_DIR=qt-src-$QT_VERSION-$1
 #QT_RELEASE=development_releases
@@ -35,7 +36,7 @@ else
 	tar xf $QT_ARCHIVE
 	mv $QT_ARCHIVE_DIR $QT_SOURCE_DIR
 	pushd $QT_SOURCE_DIR
-	
+
 	if [ "$1" == "static" ]; then
 		#static版がcmakeで正常にリンクできない対策のパッチ
 		patch -p1 -i $SCRIPT_DIR/0034-qt-5.3.2-Use-QMAKE_PREFIX_STATICLIB-in-create_cmake-prf.patch
@@ -76,7 +77,25 @@ else
 fi
 
 #共通ビルドオプション
-QT_COMMON_CONFIGURE_OPTION='-opensource -confirm-license -silent -platform win32-g++ -pkg-config -optimize-size -no-pch -no-direct2d -no-fontconfig -qt-zlib -qt-libjpeg -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -nomake tests QMAKE_CXXFLAGS+=-Wno-deprecated-declarations'
+QT_COMMON_CONF_OPTS=()
+QT_COMMON_CONF_OPTS+=("-opensource")
+QT_COMMON_CONF_OPTS+=("-confirm-license")
+QT_COMMON_CONF_OPTS+=("-silent")
+QT_COMMON_CONF_OPTS+=("-platform" "win32-g++")
+QT_COMMON_CONF_OPTS+=("-optimize-size")
+QT_COMMON_CONF_OPTS+=("-pkg-config")
+QT_COMMON_CONF_OPTS+=("-no-pch")
+QT_COMMON_CONF_OPTS+=("QMAKE_CXXFLAGS+=-Wno-deprecated-declarations")
+QT_COMMON_CONF_OPTS+=("-no-ssse3")
+QT_COMMON_CONF_OPTS+=("-no-direct2d")
+QT_COMMON_CONF_OPTS+=("-no-fontconfig")
+QT_COMMON_CONF_OPTS+=("-qt-zlib")
+QT_COMMON_CONF_OPTS+=("-qt-libjpeg")
+QT_COMMON_CONF_OPTS+=("-qt-libpng")
+QT_COMMON_CONF_OPTS+=("-qt-freetype")
+QT_COMMON_CONF_OPTS+=("-qt-pcre")
+QT_COMMON_CONF_OPTS+=("-qt-harfbuzz")
+QT_COMMON_CONF_OPTS+=("-nomake" "tests")
 }
 
 function buildQtShared(){
@@ -90,15 +109,22 @@ makeQtSourceTree shared
 exitOnError
 
 #shared版
-QT5_SHARED_BUILD=qt5-shared-$MINGW_CHOST
+QT5_SHARED_BUILD=qt5-shared-$BIT
 rm -rf $QT5_SHARED_BUILD
 mkdir $QT5_SHARED_BUILD
 pushd $QT5_SHARED_BUILD
 
-../$QT_SOURCE_DIR/configure -prefix "$(cygpath -am $PREFIX)" -shared -headerdir "$(cygpath -am $QT5_SHARED_PREFIX/include)" -libdir "$(cygpath -am $QT5_SHARED_PREFIX/lib)" $QT_COMMON_CONFIGURE_OPTION &> ../qt5-shared-$MINGW_CHOST-config.status
+QT_SHARED_CONF_OPTS=()
+QT_SHARED_CONF_OPTS+=("-prefix" "$(cygpath -am $PREFIX)")
+QT_SHARED_CONF_OPTS+=("-shared")
+QT_SHARED_CONF_OPTS+=("-headerdir" "$(cygpath -am $QT5_SHARED_PREFIX/include)")
+QT_SHARED_CONF_OPTS+=("-libdir" "$(cygpath -am $QT5_SHARED_PREFIX/lib)")
+
+
+../$QT_SOURCE_DIR/configure "${QT_COMMON_CONF_OPTS[@]}" "${QT_SHARED_CONF_OPTS[@]}" &> ../qt5-shared-$BIT-config.status
 exitOnError
 
-makeParallel && makeParallel install && makeParallel docs && makeParallel install_qch_docs
+makeParallel && make install && makeParallel docs && make install_qch_docs
 exitOnError
 popd
 rm -rf $QT5_SHARED_BUILD
@@ -115,15 +141,26 @@ makeQtSourceTree static
 exitOnError
 
 #static版
-QT5_STATIC_BUILD=qt5-static-$MINGW_CHOST
+QT5_STATIC_BUILD=qt5-static-$BIT
 rm -rf $QT5_STATIC_BUILD
 mkdir $QT5_STATIC_BUILD
 pushd $QT5_STATIC_BUILD
 
-../$QT_SOURCE_DIR/configure -prefix "$(cygpath -am $QT5_STATIC_PREFIX)" -static -static-runtime -nomake examples $QT_COMMON_CONFIGURE_OPTION &> ../qt5-static-$MINGW_CHOST-config.status
+QT_STATIC_CONF_OPTS=()
+QT_STATIC_CONF_OPTS+=("-prefix" "$(cygpath -am $QT5_STATIC_PREFIX)")
+QT_STATIC_CONF_OPTS+=("-static")
+QT_STATIC_CONF_OPTS+=("-static-runtime")
+QT_STATIC_CONF_OPTS+=("-nomake" "examples")
+QT_STATIC_CONF_OPTS+=("-D" "JAS_DLL=0")
+QT_STATIC_CONF_OPTS+=("-openssl-linked")
+QT_STATIC_CONF_OPTS+=("-no-dbus")
+
+export OPENSSL_LIBS="-lssl -lcrypto -lcrypt32 -lgdi32"
+
+../$QT_SOURCE_DIR/configure "${QT_COMMON_CONF_OPTS[@]}" "${QT_STATIC_CONF_OPTS[@]}" &> ../qt5-static-$BIT-config.status
 exitOnError
 
-makeParallel && makeParallel install
+makeParallel && make install
 exitOnError
 
 #MSYS2のlibtiffはliblzmaに依存しているためリンクを追加する
@@ -142,8 +179,8 @@ fi
 
 #Qt Creator
 cd ~/extlib
-QTC_MAJOR_VER=4.3
-QTC_MINOR_VER=.1
+QTC_MAJOR_VER=4.5
+QTC_MINOR_VER=.0
 QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 QTC_ARCHIVE=$QTC_SOURCE_DIR.tar.xz
@@ -163,7 +200,7 @@ else
 	popd
 fi
 
-QTCREATOR_BUILD=qt-creator-$MINGW_CHOST
+QTCREATOR_BUILD=qt-creator-$BIT
 rm -rf $QTCREATOR_BUILD
 mkdir $QTCREATOR_BUILD
 pushd $QTCREATOR_BUILD
@@ -171,49 +208,12 @@ pushd $QTCREATOR_BUILD
 $PREFIX/bin/qmake CONFIG-=precompile_header CONFIG+="release silent" QTC_PREFIX="$(cygpath -am $PREFIX)" ../$QTC_SOURCE_DIR/qtcreator.pro
 exitOnError
 
-makeParallel && makeParallel install
+makeParallel && make install
 exitOnError
 popd
 rm -rf $QTCREATOR_BUILD
 }
 
-function buildQtInstallerFramework(){
-if [ -e $QT5_STATIC_PREFIX/bin/archivegen.exe -a $((FORCE_INSTALL)) == 0 ]; then
-	echo "Qt Installer Framework is already installed."
-	return 0
-fi
-
-#Qt Installer Framework
-cd ~/extlib
-QTI_MAJOR_VER=2.0
-QTI_MINOR_VER=.5-1
-QTI_VER=$QTI_MAJOR_VER$QTI_MINOR_VER
-QTI_SOURCE_DIR=qt-installer-framework-opensource-$QTI_VER-src
-QTI_ARCHIVE=$QTI_SOURCE_DIR.zip
-#QTI_RELEASE=development_releases
-QTI_RELEASE=official_releases
-wget -c https://download.qt.io/official_releases/qt-installer-framework/$QTI_VER/$QTI_ARCHIVE
-if [ -e $QTI_SOURCE_DIR ]; then
-	# 存在する場合
-	echo "$QTI_SOURCE_DIR already exists."
-else
-	# 存在しない場合
-	unzip -q $QTI_ARCHIVE
-fi
-
-QTINSTALLERFW_BUILD=qt-installer-fw-$MINGW_CHOST
-rm -rf $QTINSTALLERFW_BUILD
-mkdir $QTINSTALLERFW_BUILD
-pushd $QTINSTALLERFW_BUILD
-
-$QT5_STATIC_PREFIX/bin/qmake CONFIG+="release silent" CONFIG-=precompile_header ../$QTI_SOURCE_DIR/installerfw.pro
-exitOnError
-
-makeParallel && makeParallel install
-exitOnError
-popd
-rm -rf $QTINSTALLERFW_BUILD
-}
 
 
 #----------------------------------------------------
@@ -244,6 +244,3 @@ exitOnError
 buildQtCreator
 exitOnError
 
-#Qt installer frameworkをビルド
-buildQtInstallerFramework
-exitOnError

@@ -67,7 +67,6 @@ mkdir $MINGW_PREFIX 2> /dev/null
 
 #ツール類
 pacman -S --needed --noconfirm \
-base \
 base-devel \
 VCS \
 unzip \
@@ -114,6 +113,8 @@ export EXTLIB=~/extlib
 #インストール先(/mingw32/localまたは/mingw64/local)
 export PREFIX=$MINGW_PREFIX/local
 mkdir -p $PREFIX/bin 2> /dev/null
+mkdir -p $PREFIX/include 2> /dev/null
+mkdir -p $PREFIX/lib 2> /dev/null
 
 export PATH=$PREFIX/bin:$PATH
 export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH
@@ -124,9 +125,11 @@ export CMAKE_INCLUDE_PATH=$PREFIX/include
 pushd $MINGW_PREFIX/bin
 if [ "$MINGW_CHOST" = "i686-w64-mingw32" ]; then
 	#32bit
+        export BIT='32bit'
 	NEEDED_DLLS='libgcc_s_dw2-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
 else
 	#64bit
+        export BIT='64bit'
 	NEEDED_DLLS='libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
 fi
 cp -f $NEEDED_DLLS $PREFIX/bin

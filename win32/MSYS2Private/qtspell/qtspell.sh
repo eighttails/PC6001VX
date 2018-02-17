@@ -19,11 +19,11 @@ echo "QtSpell is already installed."
 exit 0
 fi
 
-QTSPELL_VERSION=0.8.2
+QTSPELL_VERSION=master
 QTSPELL_TAG=$QTSPELL_VERSION
 QTSPELL_ARCHIVE=qtspell-$QTSPELL_TAG.tar.gz
 QTSPELL_SRC_DIR=qtspell-$QTSPELL_VERSION
-QTSPELL_BUILD_DIR=$QTSPELL_SRC_DIR-$MINGW_CHOST
+QTSPELL_BUILD_DIR=$QTSPELL_SRC_DIR-$BIT
 
 if [ ! -e $QTSPELL_ARCHIVE ]; then
 wget -c https://github.com/manisandro/qtspell/archive/$QTSPELL_TAG/$QTSPELL_ARCHIVE
@@ -43,7 +43,7 @@ cmake .. \
 -DUSE_QT5=1 
 exitOnError
 
-makeParallel && makeParallel install
+makeParallel && make install
 exitOnError
 popd
 popd

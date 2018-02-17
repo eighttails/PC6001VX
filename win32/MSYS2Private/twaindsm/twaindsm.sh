@@ -13,7 +13,7 @@ TWAINDSM_VERSION=2.3.1
 TWAINDSM_TAG=$TWAINDSM_VERSION
 TWAINDSM_ARCHIVE=twaindsm-$TWAINDSM_TAG.source.zip
 TWAINDSM_SRC_DIR=twaindsm-$TWAINDSM_TAG.orig
-TWAINDSM_BUILD_DIR=$TWAINDSM_SRC_DIR-$MINGW_CHOST
+TWAINDSM_BUILD_DIR=$TWAINDSM_SRC_DIR-$BIT
 
 if [ ! -e $TWAINDSM_ARCHIVE ]; then
 wget https://sourceforge.net/projects/twain-dsm/files/TWAIN%20DSM%202%20Source/$TWAINDSM_ARCHIVE
@@ -33,7 +33,7 @@ cmake .. \
 -DCMAKE_INSTALL_PREFIX=$PREFIX 
 exitOnError
 
-makeParallel && makeParallel install
+makeParallel && make install
 exitOnError
 popd
 popd

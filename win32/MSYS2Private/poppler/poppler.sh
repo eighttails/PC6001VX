@@ -32,7 +32,7 @@ POPPLER_VERSION=0.52.0
 POPPLER_TAG=$POPPLER_VERSION
 POPPLER_ARCHIVE=poppler-$POPPLER_TAG.tar.xz
 POPPLER_SRC_DIR=poppler-$POPPLER_VERSION
-POPPLER_BUILD_DIR=$POPPLER_SRC_DIR-$MINGW_CHOST
+POPPLER_BUILD_DIR=$POPPLER_SRC_DIR-$BIT
 if [ ! -e $POPPLER_ARCHIVE ]; then
 wget -c https://poppler.freedesktop.org/$POPPLER_ARCHIVE
 fi
@@ -63,7 +63,7 @@ LDFLAGS="-L$PREFIX/qt5-shared/lib"
     
 exitOnError
 
-makeParallel && makeParallel install
+makeParallel && make install
 
 exitOnError
 popd

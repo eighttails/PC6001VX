@@ -117,7 +117,7 @@
    <item>
     <widget class="QLabel" name="labelCopyright">
      <property name="text">
-      <string>Copyright (c) 2012-2016, Tadahito Yao (@eighttails)</string>
+      <string>Copyright (c) 2012-2018, Tadahito Yao (@eighttails)</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

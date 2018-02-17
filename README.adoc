@@ -477,6 +477,13 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.git master
+* リプレイが正常に再生されないことがあるのを修正。
+* ファイル選択ダイアログを開くとマウスカーソルが消える問題を修正
+
+* Fixed replay glitch.
+* Fixed mouse cursor disappears when opening file select dialog.
+
 .2.31.1 2017/09/16
 * 依存ライブラリをpkg-configを使ってリンクするようにした。 +
 Windows(MSYS2)でビルドする場合、PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfigの環境変数設定が必要になります。

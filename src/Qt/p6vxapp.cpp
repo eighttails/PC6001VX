@@ -16,7 +16,7 @@
 #include "p6vxapp.h"
 
 #ifdef ANDROID
-#include "../../android/permission/permissions.h"
+#include <QtAndroid>
 #endif
 
 const QString P6VXApp::keyGeometry			= "window/geometry";

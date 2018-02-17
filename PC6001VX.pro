@@ -45,12 +45,9 @@ android {
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
-
-QT += androidextras core_private
-SOURCES += android/permission/permissions.cpp
-HEADERS += android/permission/permissions.h
-
+QT += androidextras
 }
+
 pandora {
 #Configuration for OpenPandora
 QT += x11extras

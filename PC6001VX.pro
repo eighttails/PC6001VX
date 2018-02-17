@@ -16,7 +16,7 @@ CONFIG += link_prl link_pkgconfig c++11
 #Define for Qt dependent code
 DEFINES += QTP6VX
 
-#Use FMGEN for FM Synthesizer(For non commercial only)
+#Use FMGEN for PSG(For non commercial only)
 #DEFINES += USEFMGEN
 
 #Disable joystick support. If uncommented below, PC6001VX does not depend on SDL2.

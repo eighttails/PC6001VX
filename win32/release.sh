@@ -37,7 +37,6 @@ rm -rf $WIN_BIN_DIR
 mkdir -p $WIN_BIN_DIR
 cp -f PC6001VX.exe $WIN_BIN_DIR
 cp -f $SCRIPT_DIR/../README.html $WIN_BIN_DIR
-cp -rf $SCRIPT_DIR/../doc $WIN_BIN_DIR
 cp -f $SCRIPT_DIR/safemode.bat $WIN_BIN_DIR
 
 pushd $RELEASE_DIR

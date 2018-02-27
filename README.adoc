@@ -546,6 +546,10 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.git master
+* README.htmlに画像を埋め込むようにした。マニュアル用画像が配置されていたdocフォルダはWindows版では配布されなくなります。
+* Embedded images to README.html. So doc folder is no longer distributed with Windows binary.
+
 .2.32.0 2018/02/17
 * リプレイが正常に再生されないことがあるのを修正。
 * ファイル選択ダイアログを開くとマウスカーソルが消える問題を修正

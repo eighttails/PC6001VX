@@ -132,7 +132,7 @@ static void AddStream(OutputStream *ost, AVFormatContext *oc,
 	}
 
 	if (oc->oformat->flags & AVFMT_GLOBALHEADER)
-		c->flags |= CODEC_FLAG_GLOBAL_HEADER;
+		c->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 }
 
 /**************************************************************/
@@ -184,7 +184,7 @@ static void OpenAudio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AV
 		return;
 	}
 
-	if (c->codec->capabilities & CODEC_CAP_VARIABLE_FRAME_SIZE)
+	if (c->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE)
 		nb_samples = 10000;
 	else
 		nb_samples = c->frame_size;
@@ -392,40 +392,21 @@ static int WriteVideoFrame(AVFormatContext *oc, OutputStream *ost, BYTE* src_img
 
 	frame = GetVideoFrame(ost, src_img);
 
-	if (oc->oformat->flags & AVFMT_RAWPICTURE) {
-		/* a hack to avoid data copy with some raw video muxers */
-		AVPacket pkt;
-		av_init_packet(&pkt);
+        AVPacket pkt = { 0 };
+        av_init_packet(&pkt);
 
-		if (!frame)
-			return 1;
+        // 映像をエンコード
+        ret = avcodec_encode_video2(c, &pkt, frame, &got_packet);
+        if (ret < 0) {
+                fprintf(stderr, "Error encoding video frame: %s\n", MakeErrorString(ret));
+                return 0;
+        }
 
-		pkt.flags        |= AV_PKT_FLAG_KEY;
-		pkt.stream_index  = ost->st->index;
-		pkt.data          = (uint8_t *)frame;
-		pkt.size          = sizeof(AVPicture);
-
-		pkt.pts = pkt.dts = frame->pts;
-		av_packet_rescale_ts(&pkt, c->time_base, ost->st->time_base);
-
-		ret = av_interleaved_write_frame(oc, &pkt);
-	} else {
-		AVPacket pkt = { 0 };
-		av_init_packet(&pkt);
-
-		// 映像をエンコード
-		ret = avcodec_encode_video2(c, &pkt, frame, &got_packet);
-		if (ret < 0) {
-			fprintf(stderr, "Error encoding video frame: %s\n", MakeErrorString(ret));
-			return 0;
-		}
-
-		if (got_packet) {
-			ret = WriteFrame(oc, &c->time_base, ost->st, &pkt);
-		} else {
-			ret = 0;
-		}
-	}
+        if (got_packet) {
+                ret = WriteFrame(oc, &c->time_base, ost->st, &pkt);
+        } else {
+                ret = 0;
+        }
 
 	if (ret < 0) {
 		fprintf(stderr, "Error while writing video frame: %s\n", MakeErrorString(ret));

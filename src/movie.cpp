@@ -91,7 +91,7 @@ static void AddStream(OutputStream *ost, AVFormatContext *oc,
 	case AVMEDIA_TYPE_AUDIO:
 		c->sample_fmt  = (*codec)->sample_fmts ?
 			(*codec)->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
-		c->bit_rate    = 64000;
+		c->bit_rate    = 128000;
 		c->sample_rate = 44100;
 		if ((*codec)->supported_samplerates) {
 			c->sample_rate = (*codec)->supported_samplerates[0];
@@ -116,7 +116,7 @@ static void AddStream(OutputStream *ost, AVFormatContext *oc,
 	case AVMEDIA_TYPE_VIDEO:
 		c->codec_id = codec_id;
 
-		c->bit_rate = 1000000;
+		c->bit_rate = 4000000;
 		c->width    = source_width;
 		c->height   = source_height;
 		// 60FPSに設定
@@ -493,12 +493,12 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 
 	// 音声、ビデオストリームを作成
 	if (fmt->video_codec != AV_CODEC_ID_NONE) {
-		// ビデオコーデックにVP9を選択されると画像が崩れるため、暫定措置として強制的にVP8にする。
-		fmt->video_codec = AV_CODEC_ID_VP8;
+		// ビデオコーデックにはVP9を選択。
+		fmt->video_codec = AV_CODEC_ID_VP9;
 		AddStream(&video_st, oc, &video_codec, fmt->video_codec, sw, sh);
 	}
 	if (fmt->audio_codec != AV_CODEC_ID_NONE) {
-		// オーディオコーデックにOPUSを選択されると落ちるため、暫定措置として強制的にVORBISにする。
+		// FFmpegのOpusは48KHzしか扱えないため、強制的にVORBISにする。
 		fmt->audio_codec = AV_CODEC_ID_VORBIS;
 		AddStream(&audio_st, oc, &audio_codec, fmt->audio_codec, sw, sh);
 	}

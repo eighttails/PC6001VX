@@ -260,16 +260,32 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	Q_ASSERT(view);
 	QGraphicsScene* scene = view->scene();
 
+	static bool isPrepared = false;
+	static QWidget* panel = new QWidget();
+	static QVBoxLayout* layout = new QVBoxLayout(panel);
+	static QPushButton* button1 = new QPushButton("1");
+	static QPushButton* button2 = new QPushButton("2");
+	if (!isPrepared){
+		layout->setContentsMargins(0,0,0,0);
+		panel->setLayout(layout);
+
+		layout->addWidget(view);
+		layout->addWidget(button1);
+		layout->addWidget(button2);
+		panel->setLayout(layout);
+		isPrepared = true;
+	}
+
 #ifdef ALWAYSFULLSCREEN
-	view->showFullScreen();
+	panel->showFullScreen();
 #else
 	if(fsflag){
-		view->setWindowState(view->windowState() | Qt::WindowFullScreen);
-		view->showFullScreen();
+		panel->setWindowState(panel->windowState() | Qt::WindowFullScreen);
+		panel->showFullScreen();
 	} else {
-		view->setWindowState(view->windowState() & ~Qt::WindowFullScreen);
-		if(!view->isVisible()){
-			view->showNormal();
+		panel->setWindowState(view->windowState() & ~Qt::WindowFullScreen);
+		if(!panel->isVisible()){
+			panel->showNormal();
 		}
 #if 0
 		if(!view->isMaximized()){
@@ -718,7 +734,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		// ・エミュレータウィンドウ、キーパレット以外のウィンドウ
 		// (Aboutダイアログ、環境設定ダイアログ)が最前面にある場合
 		QString activeWindowClass = activeWindow() ? activeWindow()->metaObject()->className() : "";
-		if(activeWindowClass != "RenderView" && activeWindowClass != "KeyPanel"){
+		if(activeWindowClass != "QWidget" && activeWindowClass != "KeyPanel"){
 			processKeyEventInQt = true;
 		}
 		// メニュー表示中の場合

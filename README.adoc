@@ -536,7 +536,7 @@ make
 ----
 
 ==== Android
-http://qt-project.org/doc/qtcreator/creator-developing-android.html[こちら] を参考にして環境を構築してください。+
+http://qt-project.org/doc/qtcreator/creator-developing-android.html[こちら] を参考にして環境を構築してください。 +
 Qt 5.10.0以上が必要です。
 
 

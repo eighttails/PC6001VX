@@ -22,6 +22,7 @@ typedef QtSingleApplication ParentAppClass;
 
 class QKeyEvent;
 class RenderView;
+class MainWidget;
 class QGraphicsScene;
 class KeyPanel;
 
@@ -135,6 +136,7 @@ private:
 
 	// ウィンドウ関連
 	RenderView* View;
+	MainWidget* MWidget;
 	QGraphicsScene* Scene;
 	KeyPanel* KPanel;
 

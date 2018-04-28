@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="35.2778mm" height="45.8611mm"
+ xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  version="1.2" baseProfile="tiny">
+<title>Qt SVG Document</title>
+<desc>Generated with Qt</desc>
+<defs>
+</defs>
+<g fill="none" stroke="black" stroke-width="1" fill-rule="evenodd" stroke-linecap="square" stroke-linejoin="bevel" >
+
+<g fill="#c0c0c0" fill-opacity="1" stroke="none" transform="matrix(1,0,0,1,0,0)"
+font-family="Noto Sans" font-size="10" font-weight="400" font-style="normal" 
+>
+<path vector-effect="none" fill-rule="evenodd" d="M1,6 C1,3.23858 3.23858,1 6,1 L95,1 C97.7614,1 100,3.23858 100,6 L100,125 C100,127.761 97.7614,130 95,130 L6,130 C3.23858,130 1,127.761 1,125 L1,6"/>
+</g>
+
+<g fill="none" stroke="#000000" stroke-opacity="1" stroke-width="2" stroke-linecap="square" stroke-linejoin="bevel" transform="matrix(1,0,0,1,0,0)"
+font-family="Noto Sans" font-size="10" font-weight="400" font-style="normal" 
+>
+<path vector-effect="none" fill-rule="evenodd" d="M1,6 C1,3.23858 3.23858,1 6,1 L95,1 C97.7614,1 100,3.23858 100,6 L100,125 C100,127.761 97.7614,130 95,130 L6,130 C3.23858,130 1,127.761 1,125 L1,6"/>
+</g>
+
+<g fill="none" stroke="#000000" stroke-opacity="1" stroke-width="2" stroke-linecap="square" stroke-linejoin="bevel" transform="matrix(1,0,0,1,0,0)"
+font-family="Noto Sans CJK JP" font-size="90" font-weight="400" font-style="normal" 
+>
+<path vector-effect="none" fill-rule="evenodd" d="M72.6719,50.2031 C67.7344,45.7969 62.1406,42.0156 53.5938,41.2031 L53.5938,30 L47.6563,30 L47.6563,41.1094 C36.3125,41.9219 28.3125,48.4063 28.3125,58.2969 C28.3125,79 65.8438,75.0469 65.8438,90.6094 C65.8438,97.2656 60.5313,101.047 49.9063,101.047 C41.9844,101.047 34.5156,97.8125 29.2031,93.0469 L25.25,98.7188 C30.4688,103.844 39.4688,107.344 47.6563,107.891 L47.6563,119.094 L53.5938,119.094 L53.5938,107.797 C66.0156,106.719 73.9375,100.156 73.9375,89.8906 C73.9375,67.9375 36.3125,71.7969 36.3125,57.7656 C36.3125,51.4688 41.9844,47.8594 50.1719,47.8594 C57.9219,47.8594 63.2344,50.9219 68.2656,55.25 L72.6719,50.2031"/>
+</g>
+
+<g fill="#000000" fill-opacity="1" stroke="none" transform="matrix(1,0,0,1,0,0)"
+font-family="Noto Sans CJK JP" font-size="90" font-weight="400" font-style="normal" 
+>
+<path vector-effect="none" fill-rule="evenodd" d="M72.6719,50.2031 C67.7344,45.7969 62.1406,42.0156 53.5938,41.2031 L53.5938,30 L47.6563,30 L47.6563,41.1094 C36.3125,41.9219 28.3125,48.4063 28.3125,58.2969 C28.3125,79 65.8438,75.0469 65.8438,90.6094 C65.8438,97.2656 60.5313,101.047 49.9063,101.047 C41.9844,101.047 34.5156,97.8125 29.2031,93.0469 L25.25,98.7188 C30.4688,103.844 39.4688,107.344 47.6563,107.891 L47.6563,119.094 L53.5938,119.094 L53.5938,107.797 C66.0156,106.719 73.9375,100.156 73.9375,89.8906 C73.9375,67.9375 36.3125,71.7969 36.3125,57.7656 C36.3125,51.4688 41.9844,47.8594 50.1719,47.8594 C57.9219,47.8594 63.2344,50.9219 68.2656,55.25 L72.6719,50.2031"/>
+</g>
+</g>
+</svg>

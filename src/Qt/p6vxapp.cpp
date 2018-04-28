@@ -12,6 +12,7 @@
 #include "../common.h"
 
 #include "renderview.h"
+#include "mainwidget.h"
 #include "keypanel.h"
 #include "p6vxapp.h"
 
@@ -212,9 +213,20 @@ void P6VXApp::startup()
 		}
 	}
 
+	// ウィンドウ、ウィジェットの生成
 	Scene = new QGraphicsScene();
+	MWidget = new MainWidget();
+	QVBoxLayout* layout = new QVBoxLayout();
+	layout->setSpacing(0);
+	layout->setMargin(0);
+	layout->setContentsMargins (0, 0, 0, 0);
+	MWidget->setLayout(layout);
 	View = new RenderView(Scene);
-	KPanel = new KeyPanel(View);
+	layout->addWidget(View);
+	auto button=new QPushButton("aaa");
+	layout->addWidget(button);
+	button->setVisible(false);
+	KPanel = new KeyPanel(MWidget);
 
 	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
 	QObject::connect(this, SIGNAL(aboutToQuit()), Scene, SLOT(deleteLater()));
@@ -260,36 +272,23 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	Q_ASSERT(view);
 	QGraphicsScene* scene = view->scene();
 
-	static bool isPrepared = false;
-	static QWidget* panel = new QWidget();
-	static QVBoxLayout* layout = new QVBoxLayout(panel);
-	static QPushButton* button1 = new QPushButton("1");
-	static QPushButton* button2 = new QPushButton("2");
-	if (!isPrepared){
-		layout->setContentsMargins(0,0,0,0);
-		panel->setLayout(layout);
 
-		layout->addWidget(view);
-		layout->addWidget(button1);
-		layout->addWidget(button2);
-		panel->setLayout(layout);
-		isPrepared = true;
-	}
+
 
 #ifdef ALWAYSFULLSCREEN
-	panel->showFullScreen();
+	MWidget->showFullScreen();
 #else
 	if(fsflag){
-		panel->setWindowState(panel->windowState() | Qt::WindowFullScreen);
-		panel->showFullScreen();
+		MWidget->setWindowState(MWidget->windowState() | Qt::WindowFullScreen);
+		MWidget->showFullScreen();
 	} else {
-		panel->setWindowState(view->windowState() & ~Qt::WindowFullScreen);
-		if(!panel->isVisible()){
-			panel->showNormal();
+		MWidget->setWindowState(MWidget->windowState() & ~Qt::WindowFullScreen);
+		if(!MWidget->isVisible()){
+			MWidget->showNormal();
 		}
 #if 0
-		if(!view->isMaximized()){
-			view->setGeometry(100, 100, scene->width(), scene->height());
+		if(!MWidget->isMaximized()){
+			MWidget->setGeometry(100, 100, scene->width(), scene->height());
 		}
 #endif
 	}
@@ -734,7 +733,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		// ・エミュレータウィンドウ、キーパレット以外のウィンドウ
 		// (Aboutダイアログ、環境設定ダイアログ)が最前面にある場合
 		QString activeWindowClass = activeWindow() ? activeWindow()->metaObject()->className() : "";
-		if(activeWindowClass != "QWidget" && activeWindowClass != "KeyPanel"){
+		if(activeWindowClass != "MainWidget" && activeWindowClass != "KeyPanel"){
 			processKeyEventInQt = true;
 		}
 		// メニュー表示中の場合

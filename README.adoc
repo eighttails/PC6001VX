@@ -546,8 +546,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
-.git master
+.2.33.0 2018/04/28
+* FFmpeg4.0に対応。
+* 動画のビットレートをYouTube推奨値に変更(ビデオ:4Mbps,音声:128Kbps)。
 * README.htmlに画像を埋め込むようにした。マニュアル用画像が配置されていたdocフォルダはWindows版では配布されなくなります。
+* Support FFMpeg4.0.
+* Changed Video Capture bitrate to YouTube recommended value.(video:4Mbps,audio:128Kbps)
 * Embedded images to README.html. So doc folder is no longer distributed with Windows binary.
 
 .2.32.0 2018/02/17

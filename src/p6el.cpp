@@ -137,7 +137,7 @@ void EL6::OnThread( void *inst )
 				// リプレイ記録中
 				if( REPLAY::GetStatus() == REP_RECORD ){
 					REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
-#ifdef REPLAYDEBUG
+#ifdef REPLAYDEBUG_FRAME
 					// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
 					char fullPath[PATH_MAX];
 					char fileName[PATH_MAX];
@@ -148,7 +148,7 @@ void EL6::OnThread( void *inst )
 				}
 				// リプレイ再生中
 				if( REPLAY::GetStatus() == REP_REPLAY ){
-#ifdef REPLAYDEBUG
+#ifdef REPLAYDEBUG_FRAME
 					// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
 					char fullPath[PATH_MAX];
 					char fileName[PATH_MAX];
@@ -237,6 +237,27 @@ int EL6::EmuVSYNC( void )
 		vm->EventUpdate( st );	// イベント更新
 		sche->Update( st );
 		state += st;
+
+#ifdef REPLAYDEBUG_INST
+		// リプレイ記録中
+		if( REPLAY::GetStatus() == REP_RECORD ){
+			// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
+			char fullPath[PATH_MAX];
+			char fileName[PATH_MAX];
+			sprintf(fileName, "record/%06d_%06d.dds", REPLAY::RepFrm, state);
+			OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+			DokoDemoSave(fullPath);
+		}
+		// リプレイ再生中
+		if( REPLAY::GetStatus() == REP_REPLAY ){
+			// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
+			char fullPath[PATH_MAX];
+			char fileName[PATH_MAX];
+			sprintf(fileName, "replay/%06d_%06d.dds", REPLAY::RepFrm, state);
+			OSD_AddPath(fullPath, OSD_GetModulePath(), fileName);
+			DokoDemoSave(fullPath);
+		}
+#endif
 	}
 	
 	return state;
@@ -1438,6 +1459,7 @@ void EL6::DiskUnmount( int drv )
 ////////////////////////////////////////////////////////////////
 bool EL6::ReplayRecStart( const char *filename )
 {
+	PRINTD( VM_LOG, "[EL6][ReplayRecStart]\n" );
 	// 途中セーブファイルを探して削除
 	char strsave[PATH_MAX];
 	strncpy( strsave, filename, PATH_MAX );
@@ -1593,6 +1615,7 @@ void EL6::ReplayRecStop( void )
 ////////////////////////////////////////////////////////////////
 void EL6::ReplayPlayStart( const char *filename )
 {
+	PRINTD( VM_LOG, "[EL6][ReplayPlayStart]\n" );
 	cfg->SetModel( GetDokoModel( filename ) );
 	cfg->SetDokoFile( filename );
 	OSD_PushEvent( EV_REPLAY );

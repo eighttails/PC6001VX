@@ -40,7 +40,7 @@ debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 #Configuration for UNIX variants
-unix {
+unix:!macx {
 #Configuration for Android
 android {
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND

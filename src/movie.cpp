@@ -50,6 +50,21 @@ static void LogPacket(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
 		   pkt->stream_index);
 }
 
+// libavcodecのutil.cより抜粋,改変
+// ---------------------------------------------------
+AVHWAccel *ff_find_hwaccel(enum AVCodecID codec_id, enum AVPixelFormat pix_fmt)
+{
+	AVHWAccel *hwaccel=NULL;
+
+	while((hwaccel= av_hwaccel_next(hwaccel))){
+		if (   hwaccel->id      == codec_id
+			&& hwaccel->pix_fmt == pix_fmt)
+			return hwaccel;
+	}
+	return NULL;
+}
+// ---------------------------------------------------
+
 // FFMpegのサンプルmuxing.cより抜粋,改変
 // ---------------------------------------------------
 static int WriteFrame(AVFormatContext *fmt_ctx, const AVRational *time_base, AVStream *st, AVPacket *pkt)
@@ -125,6 +140,8 @@ static void AddStream(OutputStream *ost, AVFormatContext *oc,
 
 		c->gop_size      = 12;
 		c->pix_fmt       = AV_PIX_FMT_YUV420P;
+
+		c->hwaccel = ff_find_hwaccel(c->codec->id, c->pix_fmt);
 	break;
 
 	default:

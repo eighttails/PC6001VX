@@ -14,7 +14,7 @@ echo "FFMpeg is already installed."
 exit 0
 fi
 
-FFMPEG_VERSION=3.3.5
+FFMPEG_VERSION=4.0
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 FFMPEG_BUILD_DIR=$FFMPEG_SRC_DIR-$BIT
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz
@@ -24,7 +24,28 @@ tar xf $FFMPEG_SRC_DIR.tar.xz
 mv $FFMPEG_SRC_DIR $FFMPEG_BUILD_DIR
 pushd $FFMPEG_BUILD_DIR
 
-./configure --target-os=mingw32 --prefix=$PREFIX --enable-small --disable-programs --disable-doc --disable-everything --disable-sdl2 --disable-iconv --enable-libvpx --enable-encoder=libvpx_vp8 --enable-libvorbis --enable-encoder=libvorbis --enable-muxer=webm --enable-protocol=file
+./configure \
+--target-os=mingw32 \
+--prefix=$PREFIX \
+--disable-shared \
+--enable-static \
+--pkg-config-flags=--static \
+--extra-libs=-static \
+--extra-cflags=--static \
+--enable-small \
+--disable-programs \
+--disable-doc \
+--disable-everything \
+--disable-sdl2 \
+--disable-iconv \
+--enable-libvpx \
+--enable-encoder=libvpx_vp9 \
+--enable-libvorbis \
+--enable-encoder=libvorbis \
+--enable-bsf=vp9_superframe \
+--enable-hwaccel=vp9_d3d11va \
+--enable-muxer=webm \
+--enable-protocol=file
 exitOnError
 
 makeParallel && make install

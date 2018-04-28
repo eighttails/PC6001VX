@@ -50,6 +50,21 @@ static void LogPacket(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
 		   pkt->stream_index);
 }
 
+// libavcodecのutil.cより抜粋,改変
+// ---------------------------------------------------
+AVHWAccel *ff_find_hwaccel(enum AVCodecID codec_id, enum AVPixelFormat pix_fmt)
+{
+	AVHWAccel *hwaccel=NULL;
+
+	while((hwaccel= av_hwaccel_next(hwaccel))){
+		if (   hwaccel->id      == codec_id
+			&& hwaccel->pix_fmt == pix_fmt)
+			return hwaccel;
+	}
+	return NULL;
+}
+// ---------------------------------------------------
+
 // FFMpegのサンプルmuxing.cより抜粋,改変
 // ---------------------------------------------------
 static int WriteFrame(AVFormatContext *fmt_ctx, const AVRational *time_base, AVStream *st, AVPacket *pkt)
@@ -91,7 +106,7 @@ static void AddStream(OutputStream *ost, AVFormatContext *oc,
 	case AVMEDIA_TYPE_AUDIO:
 		c->sample_fmt  = (*codec)->sample_fmts ?
 			(*codec)->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
-		c->bit_rate    = 64000;
+		c->bit_rate    = 128000;
 		c->sample_rate = 44100;
 		if ((*codec)->supported_samplerates) {
 			c->sample_rate = (*codec)->supported_samplerates[0];
@@ -116,7 +131,7 @@ static void AddStream(OutputStream *ost, AVFormatContext *oc,
 	case AVMEDIA_TYPE_VIDEO:
 		c->codec_id = codec_id;
 
-		c->bit_rate = 1000000;
+		c->bit_rate = 4000000;
 		c->width    = source_width;
 		c->height   = source_height;
 		// 60FPSに設定
@@ -125,6 +140,8 @@ static void AddStream(OutputStream *ost, AVFormatContext *oc,
 
 		c->gop_size      = 12;
 		c->pix_fmt       = AV_PIX_FMT_YUV420P;
+
+		c->hwaccel = ff_find_hwaccel(c->codec->id, c->pix_fmt);
 	break;
 
 	default:
@@ -132,7 +149,7 @@ static void AddStream(OutputStream *ost, AVFormatContext *oc,
 	}
 
 	if (oc->oformat->flags & AVFMT_GLOBALHEADER)
-		c->flags |= CODEC_FLAG_GLOBAL_HEADER;
+		c->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 }
 
 /**************************************************************/
@@ -184,7 +201,7 @@ static void OpenAudio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AV
 		return;
 	}
 
-	if (c->codec->capabilities & CODEC_CAP_VARIABLE_FRAME_SIZE)
+	if (c->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE)
 		nb_samples = 10000;
 	else
 		nb_samples = c->frame_size;
@@ -392,40 +409,21 @@ static int WriteVideoFrame(AVFormatContext *oc, OutputStream *ost, BYTE* src_img
 
 	frame = GetVideoFrame(ost, src_img);
 
-	if (oc->oformat->flags & AVFMT_RAWPICTURE) {
-		/* a hack to avoid data copy with some raw video muxers */
-		AVPacket pkt;
-		av_init_packet(&pkt);
+        AVPacket pkt = { 0 };
+        av_init_packet(&pkt);
 
-		if (!frame)
-			return 1;
+        // 映像をエンコード
+        ret = avcodec_encode_video2(c, &pkt, frame, &got_packet);
+        if (ret < 0) {
+                fprintf(stderr, "Error encoding video frame: %s\n", MakeErrorString(ret));
+                return 0;
+        }
 
-		pkt.flags        |= AV_PKT_FLAG_KEY;
-		pkt.stream_index  = ost->st->index;
-		pkt.data          = (uint8_t *)frame;
-		pkt.size          = sizeof(AVPicture);
-
-		pkt.pts = pkt.dts = frame->pts;
-		av_packet_rescale_ts(&pkt, c->time_base, ost->st->time_base);
-
-		ret = av_interleaved_write_frame(oc, &pkt);
-	} else {
-		AVPacket pkt = { 0 };
-		av_init_packet(&pkt);
-
-		// 映像をエンコード
-		ret = avcodec_encode_video2(c, &pkt, frame, &got_packet);
-		if (ret < 0) {
-			fprintf(stderr, "Error encoding video frame: %s\n", MakeErrorString(ret));
-			return 0;
-		}
-
-		if (got_packet) {
-			ret = WriteFrame(oc, &c->time_base, ost->st, &pkt);
-		} else {
-			ret = 0;
-		}
-	}
+        if (got_packet) {
+                ret = WriteFrame(oc, &c->time_base, ost->st, &pkt);
+        } else {
+                ret = 0;
+        }
 
 	if (ret < 0) {
 		fprintf(stderr, "Error while writing video frame: %s\n", MakeErrorString(ret));
@@ -512,12 +510,12 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 
 	// 音声、ビデオストリームを作成
 	if (fmt->video_codec != AV_CODEC_ID_NONE) {
-		// ビデオコーデックにVP9を選択されると画像が崩れるため、暫定措置として強制的にVP8にする。
-		fmt->video_codec = AV_CODEC_ID_VP8;
+		// ビデオコーデックにはVP9を選択。
+		fmt->video_codec = AV_CODEC_ID_VP9;
 		AddStream(&video_st, oc, &video_codec, fmt->video_codec, sw, sh);
 	}
 	if (fmt->audio_codec != AV_CODEC_ID_NONE) {
-		// オーディオコーデックにOPUSを選択されると落ちるため、暫定措置として強制的にVORBISにする。
+		// FFmpegのOpusは48KHzしか扱えないため、強制的にVORBISにする。
 		fmt->audio_codec = AV_CODEC_ID_VORBIS;
 		AddStream(&audio_st, oc, &audio_codec, fmt->audio_codec, sw, sh);
 	}

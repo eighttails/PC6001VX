@@ -135,9 +135,7 @@ private:
     QMutex MenuMutex;           // メニュー表示中にロックされるMutex
 
 	// ウィンドウ関連
-	RenderView* View;
 	MainWidget* MWidget;
-	QGraphicsScene* Scene;
 	KeyPanel* KPanel;
 
 	// P6VX固有の設定

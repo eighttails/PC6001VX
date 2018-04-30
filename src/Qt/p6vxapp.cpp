@@ -81,8 +81,6 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, P6Core(NULL)
 	, Restart(EL6::Quit)
 	, Adaptor(new EmulationAdaptor())
-	, View(NULL)
-	, Scene(NULL)
 	, KPanel(NULL)
 	, Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat)
 	, TiltEnabled(false)
@@ -120,13 +118,13 @@ P6VXApp::~P6VXApp()
 	Adaptor->thread()->exit();
 	Adaptor->thread()->wait();
 	Adaptor->deleteLater();
-	View->deleteLater();
+	MWidget->deleteLater();
 	KPanel->deleteLater();
 }
 
 RenderView *P6VXApp::getView()
 {
-	return View;
+	return MWidget->getMainView();
 }
 
 KeyPanel *P6VXApp::getKeyPanel()
@@ -214,22 +212,8 @@ void P6VXApp::startup()
 	}
 
 	// ウィンドウ、ウィジェットの生成
-	Scene = new QGraphicsScene();
 	MWidget = new MainWidget();
-	QVBoxLayout* layout = new QVBoxLayout();
-	layout->setSpacing(0);
-	layout->setMargin(0);
-	layout->setContentsMargins (0, 0, 0, 0);
-	MWidget->setLayout(layout);
-	View = new RenderView(Scene);
-	layout->addWidget(View);
-	auto button=new QPushButton("aaa");
-	layout->addWidget(button);
-	button->setVisible(false);
 	KPanel = new KeyPanel(MWidget);
-
-	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
-	QObject::connect(this, SIGNAL(aboutToQuit()), Scene, SLOT(deleteLater()));
 
 	emit initialized();
 }
@@ -272,9 +256,6 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	Q_ASSERT(view);
 	QGraphicsScene* scene = view->scene();
 
-
-
-
 #ifdef ALWAYSFULLSCREEN
 	MWidget->showFullScreen();
 #else
@@ -286,11 +267,6 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 		if(!MWidget->isVisible()){
 			MWidget->showNormal();
 		}
-#if 0
-		if(!MWidget->isMaximized()){
-			MWidget->setGeometry(100, 100, scene->width(), scene->height());
-		}
-#endif
 	}
 #endif
 	view->fitContent();
@@ -858,11 +834,11 @@ void P6VXApp::setDefaultSetting(const QString &key, const QVariant &value)
 void P6VXApp::inhibitScreenSaver()
 {
 #if defined USE_X11
-	if(View && View->isFullScreen()){
+	if(MWidget && MWidget->isFullScreen()){
 		XResetScreenSaver(QX11Info::display());
 	}
 #elif defined WIN32
-	if(View && View->isFullScreen()){
+	if(MWidget && MWidget->isFullScreen()){
 		SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);
 	} else {
 		SetThreadExecutionState(ES_CONTINUOUS);

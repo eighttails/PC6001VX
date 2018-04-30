@@ -46,12 +46,6 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     ImmAssociateContext( (HWND)winId(), NULL );
 #endif
 
-    // ウィンドウ位置とサイズを復元
-	restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
-	if(app->getSetting(P6VXApp::keyMaximized).toBool()){
-        showMaximized();
-    }
-
 }
 
 RenderView::~RenderView()
@@ -126,13 +120,10 @@ void RenderView::paintEvent(QPaintEvent *event)
     QGraphicsView::paintEvent(event);
 }
 
-void RenderView::closeEvent(QCloseEvent *event)
+void RenderView::resizeEvent(QResizeEvent *event)
 {
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	// ウィンドウ位置とサイズを保存
-	app->setSetting(P6VXApp::keyGeometry, saveGeometry());
-	app->setSetting(P6VXApp::keyMaximized, isMaximized());
-	QGraphicsView::closeEvent(event);
+	if (event->size() != event->oldSize()){
+		emit resized(event->size());
+	}
+	QGraphicsView::resizeEvent(event);
 }
-
-

@@ -1,9 +1,10 @@
 #include "mainwidget.h"
-#include "p6vxapp.h"
-#include "renderview.h"
+
 #include <QVBoxLayout>
 
-#include <QPushButton>
+#include "p6vxapp.h"
+#include "renderview.h"
+#include "virtualkeytabwidget.h"
 
 MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
@@ -14,16 +15,22 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	layout->setMargin(0);
 	setLayout(layout);
 
+	//シーングラフ生成
 	QGraphicsScene* Scene = new QGraphicsScene();
-
-	MainView = new RenderView(Scene);
 	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
 	QObject::connect(qApp, SIGNAL(aboutToQuit()), Scene, SLOT(deleteLater()));
 
+	//メインウィジェット(エミュレータのメイン画面)
+	MainView = new RenderView(Scene);
 	layout->addWidget(MainView);
-	QPushButton* button = new QPushButton("aaa");
-	layout->addWidget(button);
 	connect(MainView, SIGNAL(resized(QSize)), this, SLOT(adjustSizeToChild(QSize)));
+
+	//仮想キーウィジェット
+	VirtualKeyTabWidget* VKeyWidget = new VirtualKeyTabWidget();
+	layout->addWidget(VKeyWidget);
+
+	//TODO 設定に応じて表示、非表示を切り替え
+
 
 	// ウィンドウ位置とサイズを復元
 	restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());

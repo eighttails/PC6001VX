@@ -168,7 +168,8 @@ SOURCES += \
     src/Qt/p6vxapp.cpp \
     src/psgfm.cpp \
     src/device/fmgen/psg.cpp \
-    src/Qt/mainwidget.cpp
+    src/Qt/mainwidget.cpp \
+    src/Qt/virtualkeytabwidget.cpp
 
 HEADERS  += \
     openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
@@ -255,11 +256,13 @@ HEADERS  += \
     src/psgfm.h \
     src/device/fmgen/psg.h \
     src/Qt/audiooutputwrapper.h \
-    src/Qt/mainwidget.h
+    src/Qt/mainwidget.h \
+    src/Qt/virtualkeytabwidget.h
 
 FORMS    += \
     src/Qt/configdialog.ui \
-    src/Qt/aboutdialog.ui
+    src/Qt/aboutdialog.ui \
+    src/Qt/virtualkeytabwidget.ui
 
 OTHER_FILES += \
     android/AndroidManifest.xml \

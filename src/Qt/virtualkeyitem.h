@@ -3,9 +3,10 @@
 #include <QObject>
 #include <QGraphicsPixmapItem>
 #include "../keydef.h"
+#include "../event.h"
 
 //仮想キーボード用の各キー表示、入力を行うアイテム
-class VirtualKeyItem : public QObject, QGraphicsPixmapItem
+class VirtualKeyItem : public QObject, public QGraphicsPixmapItem
 {
 	Q_OBJECT
 public:
@@ -29,6 +30,10 @@ public slots:
 	// QGraphicsItem interface
 protected:
 	virtual bool sceneEvent(QEvent *event) override;
+	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+
+	void sendKeyEvent(EventType type, bool state);
 
 	const PCKEYsym Code;		//キーコード
 	const QPixmap PixNormal;	//通常時の画像
@@ -38,6 +43,7 @@ protected:
 	const QPixmap PixKKana;		//カナモード時の画像
 
 
+	void sendKeyEvent();
 };
 
 #endif // VIRTUALKEYITEM_H

@@ -12,12 +12,15 @@ VirtualKeyItem::VirtualKeyItem(
 		QString pixKana,
 		QString pixKKana)
 	: Code(code)
-	, PixNormal(pixNormal)
-	, PixShift(pixShift)
-	, PixGrph(pixGrph)
-	, PixKana(pixKana)
-	, PixKKana(pixKKana)
+	, PixNormal(QString(":/res/vkey/key_%1.png").arg(pixNormal))
+	, PixShift(QString(":/res/vkey/key_%1.png").arg(pixShift))
+	, PixGrph(QString(":/res/vkey/key_%1.png").arg(pixGrph))
+	, PixKana(QString(":/res/vkey/key_%1.png").arg(pixKana))
+	, PixKKana(QString(":/res/vkey/key_%1.png").arg(pixKKana))
 {
+	setPixmap(PixNormal);
+	setAcceptedMouseButtons(Qt::LeftButton);
+	setAcceptTouchEvents(true);
 }
 
 void VirtualKeyItem::changeStatus(
@@ -43,36 +46,56 @@ void VirtualKeyItem::changeStatus(
 bool VirtualKeyItem::sceneEvent(QEvent *event)
 {
 	qDebug() << "event accepted:" << event->type();
-	//QMessageBox::warning(nullptr,"event accepted:","event accepted:");
-	switch (event->type()){
+	auto type = event->type();
+	switch (type){
 	case QEvent::TouchBegin:
 	case QEvent::TouchEnd:
 	{
-		QTouchEvent* event = dynamic_cast<QTouchEvent*>(event);
-		qDebug() << "event TouchBegin:";
-		Event ev;
-		ev.type			= event->type() == QEvent::TouchBegin ? EV_KEYDOWN : EV_KEYUP;
-		ev.key.state	= event->type() == QEvent::TouchBegin ? true : false;
-		ev.key.sym		= Code;
-		ev.key.mod		= KVM_NONE; //#TODO SHIFTキーが効かなかったら直す
-		ev.key.unicode	= 0;
-		/*
-		ev.key.mod	   = (PCKEYmod)(
-					( ke->modifiers() & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
-					| ( ke->modifiers() & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )
-					| ( ke->modifiers() & Qt::AltModifier ? KVM_ALT : KVM_NONE )
-					| ( ke->modifiers() & Qt::MetaModifier ? KVM_META : KVM_NONE )
-					| ( ke->modifiers() & Qt::KeypadModifier ? KVM_NUM : KVM_NONE )
-					// CAPSLOCKは検出できない？
-					//| ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
-					);
-		*/
-		//ev.key.unicode = ke->text().utf16()[0];
-		OSD_PushEvent(ev);
+		sendKeyEvent(type == QEvent::TouchBegin ? EV_KEYDOWN : EV_KEYUP,
+					 type == QEvent::TouchBegin ? true : false);
 		break;
 	}
 	default:;
 	}
 	return QGraphicsPixmapItem::sceneEvent(event);
+}
+
+void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	sendKeyEvent(EV_KEYDOWN, true);
+	QGraphicsPixmapItem::mousePressEvent(event);
+}
+
+void VirtualKeyItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	sendKeyEvent(EV_KEYUP, false);
+	QGraphicsPixmapItem::mouseReleaseEvent(event);
+}
+
+void VirtualKeyItem::sendKeyEvent(EventType type, bool state)
+{
+	Event ev;
+	ev.type			= type;
+	ev.key.state	= state;
+	ev.key.sym		= Code;
+	ev.key.mod		= KVM_NONE; //#TODO SHIFTキーが効かなかったら直す
+	ev.key.unicode	= 0;
+
+	/*
+	ev.key.mod	   = (PCKEYmod)(
+				( ke->modifiers() & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
+				| ( ke->modifiers() & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )
+				| ( ke->modifiers() & Qt::AltModifier ? KVM_ALT : KVM_NONE )
+				| ( ke->modifiers() & Qt::MetaModifier ? KVM_META : KVM_NONE )
+				| ( ke->modifiers() & Qt::KeypadModifier ? KVM_NUM : KVM_NONE )
+				// CAPSLOCKは検出できない？
+				//| ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
+				);
+	*/
+	//ev.key.unicode = ke->text().utf16()[0];
+
+	//#TODO 押されたら色を変える
+
+	OSD_PushEvent(ev);
 }
 

@@ -17,6 +17,12 @@ public:
 
 private:
 	Ui::VirtualKeyTabWidget *ui;
+
+
+	// QWidget interface
+protected:
+	virtual void showEvent(QShowEvent *event) override;
+	virtual void resizeEvent(QResizeEvent *event) override;
 };
 
 #endif // VIRTUALKEYTABWIDGET_H

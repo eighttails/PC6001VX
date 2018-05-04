@@ -44,6 +44,15 @@
         <height>100</height>
        </size>
       </property>
+      <property name="styleSheet">
+       <string notr="true">QGraphicsView { border-style: none; }</string>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
      </widget>
     </item>
    </layout>
@@ -69,7 +78,17 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="QGraphicsView" name="graphicsView"/>
+     <widget class="QGraphicsView" name="graphicsViewSimpleKeyboard">
+      <property name="styleSheet">
+       <string notr="true">QGraphicsView { border-style: none; }</string>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

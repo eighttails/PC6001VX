@@ -10,14 +10,14 @@ class VirtualKeyItem : public QObject, public QGraphicsPixmapItem
 {
 	Q_OBJECT
 public:
-	VirtualKeyItem(
-			PCKEYsym code,
+	VirtualKeyItem(PCKEYsym code,
 			QString pixNormal,
 			QString pixShift,
 			QString pixGrph,
 			QString pixKana,
-			QString pixKKana
-			);
+			QString pixKanaShift,
+			QString pixKKana,
+			QString pixKKanaShift);
 public slots:
 	void changeStatus(
 			bool ON_SHIFT,	// SHIFT
@@ -35,12 +35,14 @@ protected:
 
 	void sendKeyEvent(EventType type, bool state);
 
-	const PCKEYsym Code;		//キーコード
-	const QPixmap PixNormal;	//通常時の画像
-	const QPixmap PixShift;		//SHIFT押下時の画像
-	const QPixmap PixGrph;		//GRPH押下時の画像
-	const QPixmap PixKana;		//かなモード時の画像
-	const QPixmap PixKKana;		//カナモード時の画像
+	const PCKEYsym Code;			//キーコード
+	const QPixmap PixNormal;		//通常時の画像
+	const QPixmap PixShift;			//SHIFT押下時の画像
+	const QPixmap PixGrph;			//GRPH押下時の画像
+	const QPixmap PixKana;			//かなモード時の画像
+	const QPixmap PixKanaShift;		//かな+SHIFTモード時の画像
+	const QPixmap PixKKana;			//カナモード時の画像
+	const QPixmap PixKKanaShift;	//カナ+SHIFTモード時の画像
 
 
 	void sendKeyEvent();

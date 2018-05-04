@@ -4,19 +4,22 @@
 
 #include "../osd.h"
 
-VirtualKeyItem::VirtualKeyItem(
-		PCKEYsym code,
-		QString pixNormal,
-		QString pixShift,
-		QString pixGrph,
-		QString pixKana,
-		QString pixKKana)
+VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
+							   QString pixNormal,
+							   QString pixShift,
+							   QString pixGrph,
+							   QString pixKana,
+							   QString pixKanaShift,
+							   QString pixKKana,
+							   QString pixKKanaShift)
 	: Code(code)
 	, PixNormal(QString(":/res/vkey/key_%1.png").arg(pixNormal))
 	, PixShift(QString(":/res/vkey/key_%1.png").arg(pixShift))
 	, PixGrph(QString(":/res/vkey/key_%1.png").arg(pixGrph))
 	, PixKana(QString(":/res/vkey/key_%1.png").arg(pixKana))
+	, PixKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKanaShift))
 	, PixKKana(QString(":/res/vkey/key_%1.png").arg(pixKKana))
+	, PixKKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKKanaShift))
 {
 	setPixmap(PixNormal);
 	setAcceptedMouseButtons(Qt::LeftButton);
@@ -31,9 +34,11 @@ void VirtualKeyItem::changeStatus(
 		bool ON_CAPS)
 {
 	if (ON_KKANA){
-		setPixmap(PixKKana);
+		if(ON_SHIFT)setPixmap(PixKKanaShift);
+		else		setPixmap(PixKKana);
 	} else if (ON_KANA) {
-		setPixmap(PixKana);
+		if(ON_SHIFT)setPixmap(PixKanaShift);
+		else		setPixmap(PixKKana);
 	} else if (ON_GRAPH) {
 		setPixmap(PixGrph);
 	} else if (ON_SHIFT ^ ON_CAPS) {

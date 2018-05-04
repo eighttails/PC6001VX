@@ -16,14 +16,14 @@ public:
 	explicit VirtualKeyboardScene(KeyStateWatcher* watcher, QObject* parent = nullptr);
 
 protected:
-	VirtualKeyItem* createVirtualKeyItem(
-			PCKEYsym code,
-			QString pixNormal,
-			QString pixShift,
-			QString pixGrph,
-			QString pixKana,
-			QString pixKKana
-			);
+	VirtualKeyItem* createVirtualKeyItem(PCKEYsym code,
+										 QString pixNormal,
+										 QString pixShift,
+										 QString pixGrph,
+										 QString pixKana,
+										 QString pixKanaShift,
+										 QString pixKKana,
+										 QString pixKKanaShift);
 
 	void alignVirtualKeyItems(std::vector<VirtualKeyItem*> list, QPointF coord);
 

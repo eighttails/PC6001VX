@@ -169,7 +169,8 @@ SOURCES += \
     src/psgfm.cpp \
     src/device/fmgen/psg.cpp \
     src/Qt/mainwidget.cpp \
-    src/Qt/virtualkeytabwidget.cpp
+    src/Qt/virtualkeytabwidget.cpp \
+    src/Qt/virtualkeyitem.cpp
 
 HEADERS  += \
     openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
@@ -257,7 +258,8 @@ HEADERS  += \
     src/device/fmgen/psg.h \
     src/Qt/audiooutputwrapper.h \
     src/Qt/mainwidget.h \
-    src/Qt/virtualkeytabwidget.h
+    src/Qt/virtualkeytabwidget.h \
+    src/Qt/virtualkeyitem.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

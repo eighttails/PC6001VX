@@ -173,7 +173,8 @@ SOURCES += \
     src/Qt/virtualkeyitem.cpp \
     src/Qt/simplevirtualkeyboardscene.cpp \
     src/Qt/virtualkeyboardscene.cpp \
-    src/Qt/keystatewatcher.cpp
+    src/Qt/keystatewatcher.cpp \
+    src/Qt/normalvirtualkeyboardscene.cpp
 
 HEADERS  += \
     openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
@@ -265,7 +266,8 @@ HEADERS  += \
     src/Qt/virtualkeyitem.h \
     src/Qt/simplevirtualkeyboardscene.h \
     src/Qt/virtualkeyboardscene.h \
-    src/Qt/keystatewatcher.h
+    src/Qt/keystatewatcher.h \
+    src/Qt/normalvirtualkeyboardscene.h
 
 FORMS    += \
     src/Qt/configdialog.ui \

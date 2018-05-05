@@ -3,16 +3,13 @@
 
 #include "virtualkeyboardscene.h"
 
+//簡易版仮想キーボード用シーングラフ
 class SimpleVirtualKeyboardScene : public VirtualKeyboardScene
 
 {
 	Q_OBJECT
 public:
 	explicit SimpleVirtualKeyboardScene(QObject* parent = nullptr);
-
-signals:
-
-public slots:
 
 protected:
 	void construct();

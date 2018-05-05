@@ -54,7 +54,7 @@ void VirtualKeyItem::changeStatus(
 		else		setPixmap(PixKKana);
 	} else if (ON_KANA) {
 		if(ON_SHIFT)setPixmap(PixKanaShift);
-		else		setPixmap(PixKKana);
+		else		setPixmap(PixKana);
 	} else if (ON_GRAPH) {
 		setPixmap(PixGrph);
 	} else if (ON_SHIFT ^ ON_CAPS) {

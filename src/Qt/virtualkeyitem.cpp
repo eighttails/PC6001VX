@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 #include <QTouchEvent>
+#include <QMessageBox>
 
 #include "../osd.h"
 
@@ -26,6 +27,9 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	, ToggleStatus(false)
 {
 	setPixmap(PixNormal);
+	setTransformationMode(Qt::SmoothTransformation);
+	setFlags(QGraphicsItem::ItemClipsToShape);
+
 	setAcceptedMouseButtons(Qt::LeftButton);
 	setAcceptTouchEvents(true);
 }
@@ -62,7 +66,7 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 	{
 		sendKeyEvent(type == QEvent::TouchBegin ? EV_KEYDOWN : EV_KEYUP,
 					 type == QEvent::TouchBegin ? true : false);
-		break;
+		return true;
 	}
 	default:;
 	}

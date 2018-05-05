@@ -1,5 +1,6 @@
 #include "virtualkeytabwidget.h"
 #include "ui_virtualkeytabwidget.h"
+#include "keystatewatcher.h"
 #include "simplevirtualkeyboardscene.h"
 
 VirtualKeyTabWidget::VirtualKeyTabWidget(QWidget *parent) :
@@ -7,12 +8,18 @@ VirtualKeyTabWidget::VirtualKeyTabWidget(QWidget *parent) :
 	ui(new Ui::VirtualKeyTabWidget)
 {
 	ui->setupUi(this);
-	ui->graphicsViewSimpleKeyboard->setScene(new SimpleVirtualKeyboardScene(nullptr, this));
+	ui->graphicsViewSimpleKeyboard->setScene(new SimpleVirtualKeyboardScene(this));
 }
 
 VirtualKeyTabWidget::~VirtualKeyTabWidget()
 {
 	delete ui;
+}
+
+void VirtualKeyTabWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
+{
+	//dynamic_cast<VirtualKeyboardScene*>(ui->graphicsViewNormalKeyboard->scene())->setKeyStateWatcher(watcher);
+	dynamic_cast<VirtualKeyboardScene*>(ui->graphicsViewSimpleKeyboard->scene())->setKeyStateWatcher(watcher);
 }
 
 

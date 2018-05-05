@@ -3,6 +3,8 @@
 
 #include <QWidget>
 class RenderView;
+class VirtualKeyTabWidget;
+class KeyStateWatcher;
 
 class MainWidget : public QWidget
 {
@@ -11,6 +13,7 @@ public:
 	explicit MainWidget(QWidget *parent = nullptr);
 
 	RenderView* getMainView();
+	void setKeyStateWatcher(KeyStateWatcher *watcher);
 signals:
 
 public slots:
@@ -20,7 +23,7 @@ protected:
 	virtual void closeEvent(QCloseEvent* event);
 
 	RenderView* MainView;
-
+	VirtualKeyTabWidget* VKeyWidget;
 };
 
 #endif // MAINWIDGET_H

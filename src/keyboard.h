@@ -18,6 +18,8 @@
 // クラス定義
 ////////////////////////////////////////////////////////////////
 class KEY6 : public Device, public IDoko {
+	friend class KeyStateWatcher;
+
 protected:
 	P6KEYsym K6Table[KVC_LAST];		// 仮想キーコード -> P6キーコード 変換テーブル
 	BYTE MatTable[KP6_LAST];		// P6キーコード -> マトリクス 変換テーブル

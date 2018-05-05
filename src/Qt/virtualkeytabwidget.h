@@ -6,6 +6,7 @@
 namespace Ui {
 class VirtualKeyTabWidget;
 }
+class KeyStateWatcher;
 
 class VirtualKeyTabWidget : public QTabWidget
 {
@@ -14,6 +15,8 @@ class VirtualKeyTabWidget : public QTabWidget
 public:
 	explicit VirtualKeyTabWidget(QWidget *parent = 0);
 	~VirtualKeyTabWidget();
+
+	void setKeyStateWatcher(KeyStateWatcher *watcher);
 
 private:
 	Ui::VirtualKeyTabWidget *ui;

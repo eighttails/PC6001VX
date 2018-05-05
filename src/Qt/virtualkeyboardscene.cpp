@@ -1,10 +1,23 @@
 #include "virtualkeyboardscene.h"
 #include "virtualkeyitem.h"
+#include "keystatewatcher.h"
 
-VirtualKeyboardScene::VirtualKeyboardScene(KeyStateWatcher *watcher, QObject *parent)
+VirtualKeyboardScene::VirtualKeyboardScene(QObject *parent)
 	: QGraphicsScene(parent)
-	, Watcher(watcher)
+	, Watcher(nullptr)
 {
+}
+
+void VirtualKeyboardScene::setKeyStateWatcher(KeyStateWatcher *watcher)
+{
+	Watcher = watcher;
+	foreach (auto item, this->items()) {
+		auto obj = dynamic_cast<VirtualKeyItem*>(item);
+		if(!obj) continue;
+		//KeyStateWatcherから状態変更通知が来たら仮想キーアイテムに通知する
+		connect(Watcher, SIGNAL(stateChanged(bool,bool,bool,bool,bool)), obj,
+				SLOT(changeStatus(bool,bool,bool,bool,bool)));
+	}
 }
 
 VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
@@ -28,7 +41,6 @@ VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
 				pixKKana,
 				pixKKanaShift,
 				mouseToggle);
-	//#TODO watcherとitem間の通知をconnect
 
 	addItem(item);
 	return item;

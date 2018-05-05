@@ -2,7 +2,7 @@
 #include "virtualkeyitem.h"
 
 
-SimpleVirtualKeyboardScene::SimpleVirtualKeyboardScene(KeyStateWatcher *watcher, QObject *parent) : VirtualKeyboardScene(watcher, parent)
+SimpleVirtualKeyboardScene::SimpleVirtualKeyboardScene(QObject *parent) : VirtualKeyboardScene(parent)
 {
 	construct();
 }

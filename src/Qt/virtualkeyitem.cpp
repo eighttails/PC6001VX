@@ -129,8 +129,6 @@ void VirtualKeyItem::sendKeyEvent(EventType type, bool state)
 	*/
 	//ev.key.unicode = ke->text().utf16()[0];
 
-	//#TODO 押されたら色を変える
-
 	OSD_PushEvent(ev);
 }
 

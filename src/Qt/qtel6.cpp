@@ -432,7 +432,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 
 
-void QtEL6::updateFPS()
+void QtEL6::UpdateFPS()
 {
 	Event ev;
 	ev.type = EV_FPSUPDATE;
@@ -487,5 +487,10 @@ void QtEL6::SetPauseEnable(bool en)
 	if(sche){
 		sche->SetPauseEnable(en);
 	}
+}
+
+KEY6 *QtEL6::GetKeyboard()
+{
+	return vm->key;
 }
 

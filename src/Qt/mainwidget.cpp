@@ -26,7 +26,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(MainView, SIGNAL(resized(QSize)), this, SLOT(adjustSizeToChild(QSize)));
 
 	//仮想キーウィジェット
-	VirtualKeyTabWidget* VKeyWidget = new VirtualKeyTabWidget();
+	VKeyWidget = new VirtualKeyTabWidget();
 	layout->addWidget(VKeyWidget);
 
 	//TODO 設定に応じて表示、非表示を切り替え
@@ -42,6 +42,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 RenderView *MainWidget::getMainView()
 {
 	return MainView;
+}
+
+void MainWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
+{
+	VKeyWidget->setKeyStateWatcher(watcher);
 }
 
 void MainWidget::adjustSizeToChild(QSize size)

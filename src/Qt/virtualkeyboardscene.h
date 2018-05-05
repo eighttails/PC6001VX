@@ -13,8 +13,8 @@ class VirtualKeyboardScene : public QGraphicsScene
 {
 	Q_OBJECT
 public:
-	explicit VirtualKeyboardScene(KeyStateWatcher* watcher, QObject* parent = nullptr);
-
+	explicit VirtualKeyboardScene(QObject* parent = nullptr);
+	void setKeyStateWatcher(KeyStateWatcher* watcher);
 protected:
 	VirtualKeyItem* createVirtualKeyItem(PCKEYsym code,
 										 QString pixNormal,

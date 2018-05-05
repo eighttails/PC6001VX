@@ -14,6 +14,7 @@
 #include "renderview.h"
 #include "mainwidget.h"
 #include "keypanel.h"
+#include "keystatewatcher.h"
 #include "p6vxapp.h"
 
 #ifdef ANDROID
@@ -131,6 +132,7 @@ KeyPanel *P6VXApp::getKeyPanel()
 {
 	return KPanel;
 }
+
 
 void P6VXApp::startup()
 {
@@ -566,6 +568,10 @@ void P6VXApp::executeEmulation()
 	}
 
 	P6Core = P6CoreObj;
+
+	// キーボード状態監視
+	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), this);
+	MWidget->setKeyStateWatcher(KeyWatcher);
 
 	// 以降、ウィンドウが閉じたらアプリを終了する
 	connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()));

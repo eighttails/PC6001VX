@@ -8,7 +8,7 @@ class SimpleVirtualKeyboardScene : public VirtualKeyboardScene
 {
 	Q_OBJECT
 public:
-	explicit SimpleVirtualKeyboardScene(KeyStateWatcher* watcher, QObject* parent = nullptr);
+	explicit SimpleVirtualKeyboardScene(QObject* parent = nullptr);
 
 signals:
 

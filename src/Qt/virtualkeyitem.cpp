@@ -3,6 +3,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QTouchEvent>
 #include <QMessageBox>
+#include <QGraphicsColorizeEffect>
 
 #include "../osd.h"
 
@@ -25,6 +26,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	, PixKKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKKanaShift))
 	, MouseToggle(mouseToggle)
 	, ToggleStatus(false)
+	, pressEffect(new QGraphicsColorizeEffect(this))
 {
 	setPixmap(PixNormal);
 	setTransformationMode(Qt::SmoothTransformation);
@@ -32,6 +34,12 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 
 	setAcceptedMouseButtons(Qt::LeftButton);
 	setAcceptTouchEvents(true);
+
+	//ボタンを押すと色が変わるエフェクト
+	pressEffect->setColor(Qt::blue);
+	pressEffect->setEnabled(false);
+	setGraphicsEffect(pressEffect);
+
 }
 
 void VirtualKeyItem::changeStatus(
@@ -66,6 +74,11 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 	{
 		sendKeyEvent(type == QEvent::TouchBegin ? EV_KEYDOWN : EV_KEYUP,
 					 type == QEvent::TouchBegin ? true : false);
+		if(type == QEvent::TouchBegin){
+			pressEffect->setEnabled(true);
+		} else {
+			pressEffect->setEnabled(false);
+		}
 		return true;
 	}
 	default:;
@@ -80,6 +93,11 @@ void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	auto toggle = MouseToggle && ToggleStatus;
 	if (MouseToggle) ToggleStatus = !ToggleStatus;
 	sendKeyEvent(toggle ? EV_KEYUP : EV_KEYDOWN, MouseToggle ? ToggleStatus : true);
+	if (MouseToggle && ToggleStatus){
+		pressEffect->setEnabled(true);
+	} else {
+		pressEffect->setEnabled(false);
+	}
 	QGraphicsPixmapItem::mousePressEvent(event);
 }
 

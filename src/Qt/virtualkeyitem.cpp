@@ -1,5 +1,6 @@
 #include "virtualkeyitem.h"
 #include <QDebug>
+#include <QGraphicsSceneMouseEvent>
 #include <QTouchEvent>
 
 #include "../osd.h"
@@ -11,7 +12,8 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 							   QString pixKana,
 							   QString pixKanaShift,
 							   QString pixKKana,
-							   QString pixKKanaShift)
+							   QString pixKKanaShift,
+							   bool mouseToggle)
 	: Code(code)
 	, PixNormal(QString(":/res/vkey/key_%1.png").arg(pixNormal))
 	, PixShift(QString(":/res/vkey/key_%1.png").arg(pixShift))
@@ -20,6 +22,8 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	, PixKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKanaShift))
 	, PixKKana(QString(":/res/vkey/key_%1.png").arg(pixKKana))
 	, PixKKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKKanaShift))
+	, MouseToggle(mouseToggle)
+	, ToggleStatus(false)
 {
 	setPixmap(PixNormal);
 	setAcceptedMouseButtons(Qt::LeftButton);
@@ -50,7 +54,7 @@ void VirtualKeyItem::changeStatus(
 
 bool VirtualKeyItem::sceneEvent(QEvent *event)
 {
-	qDebug() << "event accepted:" << event->type();
+	qDebug() << "sceneEvent accepted:" << event->type();
 	auto type = event->type();
 	switch (type){
 	case QEvent::TouchBegin:
@@ -67,7 +71,11 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 
 void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	sendKeyEvent(EV_KEYDOWN, true);
+	qDebug() << "mousePressEvent accepted:" << event->type();
+	// トグルキーの場合はUP，DOWNを交互に送る
+	auto toggle = MouseToggle && ToggleStatus;
+	if (MouseToggle) ToggleStatus = !ToggleStatus;
+	sendKeyEvent(toggle ? EV_KEYUP : EV_KEYDOWN, MouseToggle ? ToggleStatus : true);
 	QGraphicsPixmapItem::mousePressEvent(event);
 }
 
@@ -83,7 +91,7 @@ void VirtualKeyItem::sendKeyEvent(EventType type, bool state)
 	ev.type			= type;
 	ev.key.state	= state;
 	ev.key.sym		= Code;
-	ev.key.mod		= KVM_NONE; //#TODO SHIFTキーが効かなかったら直す
+	ev.key.mod		= KVM_NONE;
 	ev.key.unicode	= 0;
 
 	/*

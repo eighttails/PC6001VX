@@ -15,7 +15,8 @@ VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
 		QString pixKana,
 		QString pixKanaShift,
 		QString pixKKana,
-		QString pixKKanaShift)
+		QString pixKKanaShift,
+		bool mouseToggle)
 {
 	auto item = new VirtualKeyItem(
 				code,
@@ -25,7 +26,8 @@ VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
 				pixKana,
 				pixKanaShift,
 				pixKKana,
-				pixKKanaShift);
+				pixKKanaShift,
+				mouseToggle);
 	//#TODO watcherとitem間の通知をconnect
 
 	addItem(item);

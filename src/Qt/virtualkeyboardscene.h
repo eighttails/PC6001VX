@@ -23,7 +23,8 @@ protected:
 										 QString pixKana,
 										 QString pixKanaShift,
 										 QString pixKKana,
-										 QString pixKKanaShift);
+										 QString pixKKanaShift,
+										 bool mouseToggle = false);
 
 	void alignVirtualKeyItems(std::vector<VirtualKeyItem*> list, QPointF coord);
 

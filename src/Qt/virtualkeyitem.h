@@ -17,7 +17,8 @@ public:
 			QString pixKana,
 			QString pixKanaShift,
 			QString pixKKana,
-			QString pixKKanaShift);
+			QString pixKKanaShift,
+			bool mouseToggle = false);
 public slots:
 	void changeStatus(
 			bool ON_SHIFT,	// SHIFT
@@ -43,9 +44,9 @@ protected:
 	const QPixmap PixKanaShift;		//かな+SHIFTモード時の画像
 	const QPixmap PixKKana;			//カナモード時の画像
 	const QPixmap PixKKanaShift;	//カナ+SHIFTモード時の画像
+	const bool MouseToggle;			//マウス入力時にトグル入力にする(SHIFT,GRPH用)
+	bool ToggleStatus;				//マウス入力時のトグル状態
 
-
-	void sendKeyEvent();
 };
 
 #endif // VIRTUALKEYITEM_H

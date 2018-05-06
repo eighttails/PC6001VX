@@ -49,12 +49,14 @@ void VirtualKeyItem::changeStatus(
 		bool ON_KKANA,
 		bool ON_CAPS)
 {
-	if (ON_KKANA){
-		if(ON_SHIFT)setPixmap(PixKKanaShift);
-		else		setPixmap(PixKKana);
-	} else if (ON_KANA) {
-		if(ON_SHIFT)setPixmap(PixKanaShift);
-		else		setPixmap(PixKana);
+	if (ON_KANA) {
+		if (ON_KKANA){
+			if(ON_SHIFT)setPixmap(PixKKanaShift);
+			else		setPixmap(PixKKana);
+		} else{
+			if(ON_SHIFT)setPixmap(PixKanaShift);
+			else		setPixmap(PixKana);
+		}
 	} else if (ON_GRAPH) {
 		setPixmap(PixGrph);
 	} else if (ON_SHIFT ^ ON_CAPS) {

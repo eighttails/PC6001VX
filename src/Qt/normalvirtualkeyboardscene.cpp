@@ -42,7 +42,24 @@ void NormalVirtualKeyboardScene::construct()
 		list.push_back(createVirtualKeyItem(KVC_INSERT, "ins", "ins", "ins", "ins", "ins", "ins", "ins"));
 		alignVirtualKeyItems(list, QPointF(0, unitHeight * i++));
 	}
-
+	{
+		std::vector<VirtualKeyItem*> list;
+		list.push_back(createVirtualKeyItem(KVC_TAB, "tab", "tab", "tab", "tab", "tab", "tab", "tab"));
+		list.push_back(createVirtualKeyItem(KVC_Q, "0x71", "0x51", "blank", "0xe0", "blank", "0xc0", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_W, "0x77", "0x57", "blank", "0xe3", "blank", "0xc3", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_E, "0x65", "0x45", "0x18", "0x92", "0x88", "0xb2", "0xa8"));
+		list.push_back(createVirtualKeyItem(KVC_R, "0x72", "0x52", "0x12", "0x9d", "blank", "0xbd", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_T, "0x74", "0x54", "0x19", "0x96", "blank", "0xb6", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_Y, "0x79", "0x59", "0x08", "0xfd", "blank", "0xdd", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_U, "0x75", "0x55", "blank", "0xe5", "blank", "0xc5", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_I, "0x69", "0x49", "0x16", "0xe6", "blank", "0xc6", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_O, "0x6f", "0x4f", "blank", "0xf7", "blank", "0xd7", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_P, "0x70", "0x50", "0x10", "0x9e", "blank", "0xbe", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_AT, "0x40", "blank", "blank", "0xde", "blank", "0xde", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_LBRACKET, "0x5b", "blank", "0x84", "0xdf", "0xa2", "0xdf", "0xa2"));
+		list.push_back(createVirtualKeyItem(KVC_RBRACKET, "0x5d", "blank", "0x85", "0xf1", "0xa3", "0xd1", "0xa3"));
+		alignVirtualKeyItems(list, QPointF(0, unitHeight * i++));
+	}
 	//	list.push_back(createVirtualKeyItem(KVC_LSHIFT, "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", true));
 	//	list.push_back(createVirtualKeyItem(KVC_ENTER, "return", "return", "return", "return", "return", "return", "return"));
 

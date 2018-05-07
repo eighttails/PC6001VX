@@ -82,16 +82,16 @@ void NormalVirtualKeyboardScene::construct()
 	{
 		std::vector<VirtualKeyItem*> list;
 		list.push_back(createVirtualKeyItem(KVC_LSHIFT, "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", true));
-		list.push_back(createVirtualKeyItem(KVC_Z, "0x7a", "0x5a", "blank", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_X, "0x78", "0x58", "0x1c", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_C, "0x63", "0x43", "0x1a", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_V, "0x76", "0x56", "0x11", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_B, "0x62", "0x42", "0x1b", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_N, "0x6e", "0x4e", "blank", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_M, "0x6d", "0x4d", "0x0b", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_COMMA, "0x2c", "0x3c", "0x1f", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_PERIOD, "0x2e", "0x3e", "0x1d", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_SLASH, "0x2f", "0x3f", "0x80", "0xe1", "blank", "0xc1", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_Z, "0x7a", "0x5a", "blank", "0xe2", "0x8f", "0xc2", "0xaf"));
+		list.push_back(createVirtualKeyItem(KVC_X, "0x78", "0x58", "0x1c", "0x9b", "blank", "0xbb", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_C, "0x63", "0x43", "0x1a", "0x9f", "blank", "0xbf", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_V, "0x76", "0x56", "0x11", "0xeb", "blank", "0xcb", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_B, "0x62", "0x42", "0x1b", "0x9a", "blank", "0xba", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_N, "0x6e", "0x4e", "blank", "0xf0", "blank", "0xd0", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_M, "0x6d", "0x4d", "0x0b", "0xf3", "blank", "0xd3", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_COMMA, "0x2c", "0x3c", "0x1f", "0xe8", "0xa4", "0xc8", "0xa4"));
+		list.push_back(createVirtualKeyItem(KVC_PERIOD, "0x2e", "0x3e", "0x1d", "0xf9", "0xa1", "0xd9", "0xa1"));
+		list.push_back(createVirtualKeyItem(KVC_SLASH, "0x2f", "0x3f", "0x80", "0xf2", "0xa5", "0xd2", "0xa5"));
 		list.push_back(createVirtualKeyItem(KVC_RSHIFT, "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", true));
 		list.push_back(createVirtualKeyItem(KVC_UP, "up", "up", "up", "up", "up", "up", "up"));
 		list.push_back(createVirtualKeyItem(KVC_HIRAGANA, "kana", "kana", "kana", "kana", "kana", "kana", "kana"));

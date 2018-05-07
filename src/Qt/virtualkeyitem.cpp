@@ -26,6 +26,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	, PixKKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKKanaShift))
 	, MouseToggle(mouseToggle)
 	, ToggleStatus(false)
+	, KeyPressStatus(false)
 	, pressEffect(new QGraphicsColorizeEffect(this))
 {
 	setPixmap(PixNormal);
@@ -74,8 +75,12 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 	case QEvent::TouchBegin:
 	case QEvent::TouchEnd:
 	{
-		sendKeyEvent(type == QEvent::TouchBegin ? EV_KEYDOWN : EV_KEYUP,
-					 type == QEvent::TouchBegin ? true : false);
+		bool state = type == QEvent::TouchBegin ? true : false;
+		//2重押下防止(環境によってはクリックとタッチを同時に拾う)
+		if (KeyPressStatus && state) return false;
+		KeyPressStatus	= state;
+
+		sendKeyEvent(type == QEvent::TouchBegin ? EV_KEYDOWN : EV_KEYUP, state);
 		if(type == QEvent::TouchBegin){
 			pressEffect->setEnabled(true);
 		} else {
@@ -94,7 +99,9 @@ void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	// トグルキーの場合はUP，DOWNを交互に送る
 	auto toggle = MouseToggle && ToggleStatus;
 	if (MouseToggle) ToggleStatus = !ToggleStatus;
-	sendKeyEvent(toggle ? EV_KEYUP : EV_KEYDOWN, MouseToggle ? ToggleStatus : true);
+	bool state = MouseToggle ? ToggleStatus : true;
+	KeyPressStatus	= state;
+	sendKeyEvent(toggle ? EV_KEYUP : EV_KEYDOWN, state);
 	if (MouseToggle && ToggleStatus){
 		pressEffect->setEnabled(true);
 	} else {
@@ -117,19 +124,6 @@ void VirtualKeyItem::sendKeyEvent(EventType type, bool state)
 	ev.key.sym		= Code;
 	ev.key.mod		= KVM_NONE;
 	ev.key.unicode	= 0;
-
-	/*
-	ev.key.mod	   = (PCKEYmod)(
-				( ke->modifiers() & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
-				| ( ke->modifiers() & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )
-				| ( ke->modifiers() & Qt::AltModifier ? KVM_ALT : KVM_NONE )
-				| ( ke->modifiers() & Qt::MetaModifier ? KVM_META : KVM_NONE )
-				| ( ke->modifiers() & Qt::KeypadModifier ? KVM_NUM : KVM_NONE )
-				// CAPSLOCKは検出できない？
-				//| ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
-				);
-	*/
-	//ev.key.unicode = ke->text().utf16()[0];
 
 	OSD_PushEvent(ev);
 }

@@ -310,7 +310,7 @@ const VKeyConv CFG6::KeyIni[] = {	// 仮想キーコード -> P6キーコード�
 									{ KVC_ESC,			KP6_ESC },			// ESC
 									{ KVC_HANZEN,		KP6_UNKNOWN },		// 半角/全角
 									{ KVC_TAB,			KP6_TAB },			// Tab
-									{ KVC_CAPSLOCK,		KP6_UNKNOWN },		// CapsLock
+									{ KVC_CAPSLOCK,		KP6_CAPS },			// CapsLock
 									{ KVC_ENTER,		KP6_RETURN },		// Enter
 									{ KVC_LCTRL,		KP6_CTRL },			// L-Ctrl
 									{ KVC_RCTRL,		KP6_CTRL },			// R-Ctrl

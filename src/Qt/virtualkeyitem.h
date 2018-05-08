@@ -48,7 +48,7 @@ protected:
 	const QPixmap PixKKanaShift;	//カナ+SHIFTモード時の画像
 	const bool MouseToggle;			//マウス入力時にトグル入力にする(SHIFT,GRPH用)
 	bool ToggleStatus;				//マウス入力時のトグル状態
-	bool KeyPressStatus;					//押下状態(押されている状態がtrue)
+	bool TouchStatus;				//タッチ押下状態(タッチで押されている状態がtrue)
 
 	QGraphicsColorizeEffect* pressEffect; //ボタンを押すと色が変わるエフェクト
 };

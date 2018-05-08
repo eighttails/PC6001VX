@@ -26,7 +26,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	, PixKKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKKanaShift))
 	, MouseToggle(mouseToggle)
 	, ToggleStatus(false)
-	, KeyPressStatus(false)
+	, TouchStatus(false)
 	, pressEffect(new QGraphicsColorizeEffect(this))
 {
 	setPixmap(PixNormal);
@@ -74,11 +74,12 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 	switch (type){
 	case QEvent::TouchBegin:
 	case QEvent::TouchEnd:
+	case QEvent::TouchCancel:
 	{
 		bool state = type == QEvent::TouchBegin ? true : false;
 		//2重押下防止(環境によってはクリックとタッチを同時に拾う)
-		if (KeyPressStatus && state) return false;
-		KeyPressStatus	= state;
+		if (TouchStatus && state) return true;
+		TouchStatus	= state;
 
 		sendKeyEvent(type == QEvent::TouchBegin ? EV_KEYDOWN : EV_KEYUP, state);
 		if(type == QEvent::TouchBegin){
@@ -88,19 +89,23 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 		}
 		return true;
 	}
+	case QEvent::TouchUpdate:
+		//タッチした指が動いている間は何もしない
+		return true;
 	default:;
+		return QGraphicsPixmapItem::sceneEvent(event);
 	}
-	return QGraphicsPixmapItem::sceneEvent(event);
 }
 
 void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+	// すでにタッチによってキーが押されている場合は何もしない
+	if(TouchStatus) return;
 	qDebug() << "mousePressEvent accepted:" << event->type();
 	// トグルキーの場合はUP，DOWNを交互に送る
 	auto toggle = MouseToggle && ToggleStatus;
 	if (MouseToggle) ToggleStatus = !ToggleStatus;
 	bool state = MouseToggle ? ToggleStatus : true;
-	KeyPressStatus	= state;
 	sendKeyEvent(toggle ? EV_KEYUP : EV_KEYDOWN, state);
 	if (MouseToggle && ToggleStatus){
 		pressEffect->setEnabled(true);
@@ -112,6 +117,7 @@ void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void VirtualKeyItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+	if(TouchStatus) return;
 	sendKeyEvent(EV_KEYUP, false);
 	QGraphicsPixmapItem::mouseReleaseEvent(event);
 }

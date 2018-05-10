@@ -74,24 +74,27 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 	switch (type){
 	case QEvent::TouchBegin:
 	case QEvent::TouchEnd:
+	case QEvent::TouchUpdate:
 	case QEvent::TouchCancel:
 	{
-		bool state = type == QEvent::TouchBegin ? true : false;
-		//2重押下防止(環境によってはクリックとタッチを同時に拾う)
-		if (TouchStatus && state) return true;
-		TouchStatus	= state;
+		auto touchEvent = dynamic_cast<QTouchEvent*>(event);
+		auto touchState = touchEvent->touchPointStates();
 
-		sendKeyEvent(type == QEvent::TouchBegin ? EV_KEYDOWN : EV_KEYUP, state);
-		if(type == QEvent::TouchBegin){
+		// タッチ中に発生するイベントに対しては何もしない
+		if(touchState & (Qt::TouchPointMoved | Qt::TouchPointStationary)) return true;
+
+		if(touchState & Qt::TouchPointPressed){
 			pressEffect->setEnabled(true);
-		} else {
+			sendKeyEvent(EV_KEYDOWN, true);
+			TouchStatus	= true;
+		}
+		if(touchState & Qt::TouchPointReleased){
 			pressEffect->setEnabled(false);
+			sendKeyEvent(EV_KEYUP, false);
+			TouchStatus	= false;
 		}
 		return true;
 	}
-	case QEvent::TouchUpdate:
-		//タッチした指が動いている間は何もしない
-		return true;
 	default:;
 		return QGraphicsPixmapItem::sceneEvent(event);
 	}
@@ -106,7 +109,7 @@ void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	auto toggle = MouseToggle && ToggleStatus;
 	if (MouseToggle) ToggleStatus = !ToggleStatus;
 	bool state = MouseToggle ? ToggleStatus : true;
-	sendKeyEvent(toggle ? EV_KEYUP : EV_KEYDOWN, state);
+	sendKeyEvent(state ? EV_KEYDOWN : EV_KEYUP, state);
 	if (MouseToggle && ToggleStatus){
 		pressEffect->setEnabled(true);
 	} else {
@@ -117,6 +120,7 @@ void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void VirtualKeyItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+	// すでにタッチによってキーが押されている場合は何もしない
 	if(TouchStatus) return;
 	sendKeyEvent(EV_KEYUP, false);
 	QGraphicsPixmapItem::mouseReleaseEvent(event);

@@ -15,6 +15,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 							   QString pixKanaShift,
 							   QString pixKKana,
 							   QString pixKKanaShift,
+							   bool isAlpha,
 							   bool mouseToggle)
 	: Code(code)
 	, PixNormal(QString(":/res/vkey/key_%1.png").arg(pixNormal))
@@ -24,6 +25,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	, PixKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKanaShift))
 	, PixKKana(QString(":/res/vkey/key_%1.png").arg(pixKKana))
 	, PixKKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKKanaShift))
+	, IsAlpha(isAlpha)
 	, MouseToggle(mouseToggle)
 	, ToggleStatus(false)
 	, TouchStatus(false)
@@ -60,10 +62,14 @@ void VirtualKeyItem::changeStatus(
 		}
 	} else if (ON_GRAPH) {
 		setPixmap(PixGrph);
-	} else if (ON_SHIFT ^ ON_CAPS) {
-		setPixmap(PixShift);
 	} else {
-		setPixmap(PixNormal);
+		if (IsAlpha) {
+			if (ON_SHIFT ^ ON_CAPS)	setPixmap(PixShift);
+			else					setPixmap(PixNormal);
+		} else {
+			if (ON_SHIFT)	setPixmap(PixShift);
+			else			setPixmap(PixNormal);
+		}
 	}
 }
 

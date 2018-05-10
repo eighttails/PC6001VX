@@ -29,6 +29,7 @@ VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
 		QString pixKanaShift,
 		QString pixKKana,
 		QString pixKKanaShift,
+		bool isAlpha,
 		bool mouseToggle)
 {
 	auto item = new VirtualKeyItem(
@@ -40,6 +41,7 @@ VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
 				pixKanaShift,
 				pixKKana,
 				pixKKanaShift,
+				isAlpha,
 				mouseToggle);
 
 	addItem(item);

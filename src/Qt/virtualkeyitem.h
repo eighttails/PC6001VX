@@ -13,14 +13,15 @@ class VirtualKeyItem : public QObject, public QGraphicsPixmapItem
 	Q_OBJECT
 public:
 	VirtualKeyItem(PCKEYsym code,
-			QString pixNormal,
-			QString pixShift,
-			QString pixGrph,
-			QString pixKana,
-			QString pixKanaShift,
-			QString pixKKana,
-			QString pixKKanaShift,
-			bool mouseToggle = false);
+				   QString pixNormal,
+				   QString pixShift,
+				   QString pixGrph,
+				   QString pixKana,
+				   QString pixKanaShift,
+				   QString pixKKana,
+				   QString pixKKanaShift,
+				   bool isAlpha = false,
+				   bool mouseToggle = false);
 public slots:
 	void changeStatus(
 			bool ON_SHIFT,	// SHIFT
@@ -46,6 +47,7 @@ protected:
 	const QPixmap PixKanaShift;		//かな+SHIFTモード時の画像
 	const QPixmap PixKKana;			//カナモード時の画像
 	const QPixmap PixKKanaShift;	//カナ+SHIFTモード時の画像
+	const bool IsAlpha;				//アルファベットフラグ(CAPS時に大文字小文字が反転)
 	const bool MouseToggle;			//マウス入力時にトグル入力にする(SHIFT,GRPH用)
 	bool ToggleStatus;				//マウス入力時のトグル状態
 	bool TouchStatus;				//タッチ押下状態(タッチで押されている状態がtrue)

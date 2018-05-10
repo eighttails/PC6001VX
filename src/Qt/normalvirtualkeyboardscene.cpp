@@ -47,16 +47,16 @@ void NormalVirtualKeyboardScene::construct()
 	{
 		std::vector<VirtualKeyItem*> list;
 		list.push_back(createVirtualKeyItem(KVC_TAB, "tab", "tab", "tab", "tab", "tab", "tab", "tab"));
-		list.push_back(createVirtualKeyItem(KVC_Q, "0x71", "0x51", "blank", "0xe0", "blank", "0xc0", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_W, "0x77", "0x57", "blank", "0xe3", "blank", "0xc3", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_E, "0x65", "0x45", "0x18", "0x92", "0x88", "0xb2", "0xa8"));
-		list.push_back(createVirtualKeyItem(KVC_R, "0x72", "0x52", "0x12", "0x9d", "blank", "0xbd", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_T, "0x74", "0x54", "0x19", "0x96", "blank", "0xb6", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_Y, "0x79", "0x59", "0x08", "0xfd", "blank", "0xdd", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_U, "0x75", "0x55", "blank", "0xe5", "blank", "0xc5", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_I, "0x69", "0x49", "0x16", "0xe6", "blank", "0xc6", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_O, "0x6f", "0x4f", "blank", "0xf7", "blank", "0xd7", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_P, "0x70", "0x50", "0x10", "0x9e", "blank", "0xbe", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_Q, "0x71", "0x51", "blank", "0xe0", "blank", "0xc0", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_W, "0x77", "0x57", "blank", "0xe3", "blank", "0xc3", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_E, "0x65", "0x45", "0x18", "0x92", "0x88", "0xb2", "0xa8", true));
+		list.push_back(createVirtualKeyItem(KVC_R, "0x72", "0x52", "0x12", "0x9d", "blank", "0xbd", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_T, "0x74", "0x54", "0x19", "0x96", "blank", "0xb6", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_Y, "0x79", "0x59", "0x08", "0xfd", "blank", "0xdd", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_U, "0x75", "0x55", "blank", "0xe5", "blank", "0xc5", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_I, "0x69", "0x49", "0x16", "0xe6", "blank", "0xc6", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_O, "0x6f", "0x4f", "blank", "0xf7", "blank", "0xd7", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_P, "0x70", "0x50", "0x10", "0x9e", "blank", "0xbe", "blank", true));
 		list.push_back(createVirtualKeyItem(KVC_AT, "0x40", "blank", "blank", "0xde", "blank", "0xde", "blank"));
 		list.push_back(createVirtualKeyItem(KVC_LBRACKET, "0x5b", "blank", "0x84", "0xdf", "0xa2", "0xdf", "0xa2"));
 		list.push_back(createVirtualKeyItem(KVC_RBRACKET, "0x5d", "blank", "0x85", "0xf1", "0xa3", "0xd1", "0xa3"));
@@ -64,16 +64,16 @@ void NormalVirtualKeyboardScene::construct()
 	}
 	{
 		std::vector<VirtualKeyItem*> list;
-		list.push_back(createVirtualKeyItem(KVC_LCTRL, "ctrl", "ctrl", "ctrl", "ctrl", "ctrl", "ctrl", "ctrl", true));
-		list.push_back(createVirtualKeyItem(KVC_A, "0x61", "0x41", "blank", "0xe1", "blank", "0xc1", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_S, "0x73", "0x53", "0x0c", "0xe4", "blank", "0xc4", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_D, "0x64", "0x44", "0x14", "0x9c", "blank", "0xbc", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_F, "0x66", "0x46", "0x15", "0xea", "blank", "0xca", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_G, "0x67", "0x47", "0x13", "0x97", "blank", "0xb7", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_H, "0x68", "0x48", "0x0a", "0x98", "blank", "0xb8", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_J, "0x6a", "0x4a", "blank", "0xef", "blank", "0xcf", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_K, "0x6b", "0x4b", "blank", "0xe9", "blank", "0xc9", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_L, "0x6c", "0x4c", "0x1e", "0xf8", "blank", "0xd8", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_LCTRL, "ctrl", "ctrl", "ctrl", "ctrl", "ctrl", "ctrl", "ctrl", false, true));
+		list.push_back(createVirtualKeyItem(KVC_A, "0x61", "0x41", "blank", "0xe1", "blank", "0xc1", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_S, "0x73", "0x53", "0x0c", "0xe4", "blank", "0xc4", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_D, "0x64", "0x44", "0x14", "0x9c", "blank", "0xbc", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_F, "0x66", "0x46", "0x15", "0xea", "blank", "0xca", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_G, "0x67", "0x47", "0x13", "0x97", "blank", "0xb7", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_H, "0x68", "0x48", "0x0a", "0x98", "blank", "0xb8", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_J, "0x6a", "0x4a", "blank", "0xef", "blank", "0xcf", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_K, "0x6b", "0x4b", "blank", "0xe9", "blank", "0xc9", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_L, "0x6c", "0x4c", "0x1e", "0xf8", "blank", "0xd8", "blank", true));
 		list.push_back(createVirtualKeyItem(KVC_SEMICOLON, "0x3b", "0x2b", "0x82", "0xfa", "blank", "0xda", "blank"));
 		list.push_back(createVirtualKeyItem(KVC_COLON, "0x3a", "0x2a", "0x81", "0x99", "blank", "0xb9", "blank"));
 		list.push_back(createVirtualKeyItem(KVC_UNDERSCORE, "blank", "0x5f", "0x83", "0xfb", "blank", "0xdb", "blank"));
@@ -81,18 +81,18 @@ void NormalVirtualKeyboardScene::construct()
 	}
 	{
 		std::vector<VirtualKeyItem*> list;
-		list.push_back(createVirtualKeyItem(KVC_LSHIFT, "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", true));
-		list.push_back(createVirtualKeyItem(KVC_Z, "0x7a", "0x5a", "blank", "0xe2", "0x8f", "0xc2", "0xaf"));
-		list.push_back(createVirtualKeyItem(KVC_X, "0x78", "0x58", "0x1c", "0x9b", "blank", "0xbb", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_C, "0x63", "0x43", "0x1a", "0x9f", "blank", "0xbf", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_V, "0x76", "0x56", "0x11", "0xeb", "blank", "0xcb", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_B, "0x62", "0x42", "0x1b", "0x9a", "blank", "0xba", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_N, "0x6e", "0x4e", "blank", "0xf0", "blank", "0xd0", "blank"));
-		list.push_back(createVirtualKeyItem(KVC_M, "0x6d", "0x4d", "0x0b", "0xf3", "blank", "0xd3", "blank"));
+		list.push_back(createVirtualKeyItem(KVC_LSHIFT, "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", false, true));
+		list.push_back(createVirtualKeyItem(KVC_Z, "0x7a", "0x5a", "blank", "0xe2", "0x8f", "0xc2", "0xaf", true));
+		list.push_back(createVirtualKeyItem(KVC_X, "0x78", "0x58", "0x1c", "0x9b", "blank", "0xbb", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_C, "0x63", "0x43", "0x1a", "0x9f", "blank", "0xbf", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_V, "0x76", "0x56", "0x11", "0xeb", "blank", "0xcb", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_B, "0x62", "0x42", "0x1b", "0x9a", "blank", "0xba", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_N, "0x6e", "0x4e", "blank", "0xf0", "blank", "0xd0", "blank", true));
+		list.push_back(createVirtualKeyItem(KVC_M, "0x6d", "0x4d", "0x0b", "0xf3", "blank", "0xd3", "blank", true));
 		list.push_back(createVirtualKeyItem(KVC_COMMA, "0x2c", "0x3c", "0x1f", "0xe8", "0xa4", "0xc8", "0xa4"));
 		list.push_back(createVirtualKeyItem(KVC_PERIOD, "0x2e", "0x3e", "0x1d", "0xf9", "0xa1", "0xd9", "0xa1"));
 		list.push_back(createVirtualKeyItem(KVC_SLASH, "0x2f", "0x3f", "0x80", "0xf2", "0xa5", "0xd2", "0xa5"));
-		list.push_back(createVirtualKeyItem(KVC_RSHIFT, "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", true));
+		list.push_back(createVirtualKeyItem(KVC_RSHIFT, "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", "shift_r", false, true));
 		list.push_back(createVirtualKeyItem(KVC_UP, "up", "up", "up", "up", "up", "up", "up"));
 		list.push_back(createVirtualKeyItem(KVC_HIRAGANA, "kana", "kana", "kana", "kana", "kana", "kana", "kana"));
 		alignVirtualKeyItems(list, QPointF(0, unitHeight * i++));
@@ -100,7 +100,7 @@ void NormalVirtualKeyboardScene::construct()
 	{
 		std::vector<VirtualKeyItem*> list;
 		list.push_back(createVirtualKeyItem(KVC_CAPSLOCK, "caps", "caps", "caps", "caps", "caps", "caps", "caps"));
-		list.push_back(createVirtualKeyItem(KVC_LALT, "grph", "grph", "grph", "grph", "grph", "grph", "grph", true));
+		list.push_back(createVirtualKeyItem(KVC_LALT, "grph", "grph", "grph", "grph", "grph", "grph", "grph", false, true));
 		list.push_back(createVirtualKeyItem(KVC_SPACE, "space", "space", "space", "space", "space", "space", "space"));
 		list.push_back(createVirtualKeyItem(KVC_LEFT, "left", "left", "left", "left", "left", "left", "left"));
 		list.push_back(createVirtualKeyItem(KVC_DOWN, "down", "down", "down", "down", "down", "down", "down"));

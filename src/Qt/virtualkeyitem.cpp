@@ -88,7 +88,7 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 			sendKeyEvent(EV_KEYDOWN, true);
 			TouchStatus	= true;
 		}
-		if(touchState & Qt::TouchPointReleased){
+		else if(touchState & Qt::TouchPointReleased){
 			pressEffect->setEnabled(false);
 			sendKeyEvent(EV_KEYUP, false);
 			TouchStatus	= false;
@@ -102,6 +102,7 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 
 void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+#ifdef EMULATE_TOUCH
 	// すでにタッチによってキーが押されている場合は何もしない
 	if(TouchStatus) return;
 	qDebug() << "mousePressEvent accepted:" << event->type();
@@ -115,14 +116,17 @@ void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	} else {
 		pressEffect->setEnabled(false);
 	}
+#endif
 	QGraphicsPixmapItem::mousePressEvent(event);
 }
 
 void VirtualKeyItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+#ifdef EMULATE_TOUCH
 	// すでにタッチによってキーが押されている場合は何もしない
 	if(TouchStatus) return;
 	sendKeyEvent(EV_KEYUP, false);
+#endif
 	QGraphicsPixmapItem::mouseReleaseEvent(event);
 }
 

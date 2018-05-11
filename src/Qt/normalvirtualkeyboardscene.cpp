@@ -99,7 +99,7 @@ void NormalVirtualKeyboardScene::construct()
 	}
 	{
 		std::vector<VirtualKeyItem*> list;
-		list.push_back(createVirtualKeyItem(KVC_CAPSLOCK, "caps", "caps", "caps", "caps", "caps", "caps", "caps"));
+		list.push_back(createVirtualKeyItem(KVC_SCROLLLOCK, "caps", "caps", "caps", "caps", "caps", "caps", "caps"));
 		list.push_back(createVirtualKeyItem(KVC_LALT, "grph", "grph", "grph", "grph", "grph", "grph", "grph", false, true));
 		list.push_back(createVirtualKeyItem(KVC_SPACE, "space", "space", "space", "space", "space", "space", "space"));
 		list.push_back(createVirtualKeyItem(KVC_LEFT, "left", "left", "left", "left", "left", "left", "left"));

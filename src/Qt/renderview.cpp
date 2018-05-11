@@ -85,6 +85,8 @@ void RenderView::resizeWindowByRatio(int ratio)
 		app->setSetting(P6VXApp::keyFixMagnification, false);
     }
     setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
+
+	emit resized(size());
 }
 
 bool RenderView::event(QEvent *event)
@@ -120,10 +122,7 @@ void RenderView::paintEvent(QPaintEvent *event)
     QGraphicsView::paintEvent(event);
 }
 
-void RenderView::resizeEvent(QResizeEvent *event)
+void RenderView::showEvent(QShowEvent *event)
 {
-	if (event->size() != event->oldSize()){
-		emit resized(event->size());
-	}
-	QGraphicsView::resizeEvent(event);
+	emit resized(size());
 }

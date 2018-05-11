@@ -1,32 +1,42 @@
 #include "virtualkeyboardview.h"
 
+#include <QEvent>
+
 VirtualKeyboardView::VirtualKeyboardView(QWidget *parent)
 	: QGraphicsView(parent)
 {
-	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 }
 
 
-QSize VirtualKeyboardView::sizeHint() const
+bool VirtualKeyboardView::hasHeightForWidth() const
+{
+	return true;
+}
+
+int VirtualKeyboardView::heightForWidth(int width) const
 {
 	if(scene()){
-		auto ratio = scene()->width() / width();
-		return (scene()->sceneRect().size() / ratio).toSize();
+		auto sceneAspectRatio = scene()->height() / scene()->width();
+		return int(sceneAspectRatio * width);
 	} else {
-		return size();
+		return width;
 	}
 }
 
-void VirtualKeyboardView::showEvent(QShowEvent *event)
+
+bool VirtualKeyboardView::event(QEvent *event)
 {
-	if(scene()){
-		fitInView(scene()->sceneRect(), Qt::KeepAspectRatio);
+	switch (event->type()) {
+	case QEvent::Show:
+	case QEvent::Expose:
+	case QEvent::Resize:
+		if(scene()){
+			fitInView(scene()->sceneRect(), Qt::KeepAspectRatio);
+		}
+		break;
+	default:;
 	}
+	return QGraphicsView::event(event);
 }
 
-void VirtualKeyboardView::resizeEvent(QResizeEvent *event)
-{
-	if(scene()){
-		fitInView(scene()->sceneRect(), Qt::KeepAspectRatio);
-	}
-}
+

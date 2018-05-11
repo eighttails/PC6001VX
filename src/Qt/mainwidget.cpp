@@ -51,7 +51,7 @@ void MainWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
 
 void MainWidget::adjustSizeToChild(QSize size)
 {
-	setGeometry(x(), y(), size.width(), height());
+	setGeometry(x(), y(), size.width(), size.height() + VKeyWidget->sizeHint().height());
 }
 
 void MainWidget::closeEvent(QCloseEvent *event)

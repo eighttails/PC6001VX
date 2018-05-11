@@ -11,12 +11,13 @@ public slots:
 
 	// QWidget interface
 public:
-	virtual QSize sizeHint() const override;
+	virtual bool hasHeightForWidth() const override;
+	virtual int heightForWidth(int width) const override;
 
 	// QWidget interface
 protected:
-	virtual void showEvent(QShowEvent *event) override;
-	virtual void resizeEvent(QResizeEvent *event) override;
+	virtual bool event(QEvent *event) override;
+
 };
 
 #endif // VIRTUALKEYBOARDVIEW_H

@@ -111,6 +111,7 @@ void NormalVirtualKeyboardScene::construct()
 	auto returnKey = createVirtualKeyItem(KVC_ENTER, "return", "return", "return", "return", "return", "return", "return");
 	returnKey->setPos(unitWidth * 13.75, unitHeight * 2);
 
-	setSceneRect(itemsBoundingRect());
-
+	auto sceneRect = itemsBoundingRect();
+	sceneRect.setHeight(sceneRect.height());
+	setSceneRect(sceneRect);
 }

@@ -201,7 +201,7 @@ QtEL6::QtEL6()
 	// FPS更新タイマ
 	QTimer* fpsTimer = new QTimer(this);
 	fpsTimer->start(1000);
-	connect(fpsTimer, SIGNAL(timeout()), this, SLOT(updateFPS()));
+	connect(fpsTimer, SIGNAL(timeout()), this, SLOT(UpdateFPS()));
 }
 
 void QtEL6::ShowPopupImpl(int x, int y)

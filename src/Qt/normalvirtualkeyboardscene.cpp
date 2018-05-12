@@ -12,6 +12,11 @@ void NormalVirtualKeyboardScene::construct()
 	const int unitHeight = 130;
 	int i = 0;
 	{
+//		createVirtualKeyItem(KVC_HENKAN, "load", "load", "load", "load", "load", "load", "load")->setPos(unitWidth * 13.25, unitHeight * i);
+//		createVirtualKeyItem(KVC_MUHENKAN, "save", "save", "save", "save", "save", "save", "save")->setPos(unitWidth * 0, unitHeight * i);
+//		i += 2;
+	}
+	{
 		std::vector<VirtualKeyItem*> list;
 		list.push_back(createVirtualKeyItem(KVC_END, "stop", "stop", "stop", "stop", "stop", "stop", "stop"));
 		list.push_back(createVirtualKeyItem(KVC_PAGEDOWN, "mode", "mode", "mode", "mode", "mode", "mode", "mode"));
@@ -44,6 +49,8 @@ void NormalVirtualKeyboardScene::construct()
 		list.push_back(createVirtualKeyItem(KVC_INSERT, "ins", "ins", "ins", "ins", "ins", "ins", "ins"));
 		alignVirtualKeyItems(list, QPointF(0, unitHeight * i++));
 	}
+	auto returnKey = createVirtualKeyItem(KVC_ENTER, "return", "return", "return", "return", "return", "return", "return");
+	returnKey->setPos(unitWidth * 13.75, unitHeight * i);
 	{
 		std::vector<VirtualKeyItem*> list;
 		list.push_back(createVirtualKeyItem(KVC_TAB, "tab", "tab", "tab", "tab", "tab", "tab", "tab"));
@@ -107,11 +114,5 @@ void NormalVirtualKeyboardScene::construct()
 		list.push_back(createVirtualKeyItem(KVC_RIGHT, "right", "right", "right", "right", "right", "right", "right"));
 		alignVirtualKeyItems(list, QPointF(0, unitHeight * i++));
 	}
-
-	auto returnKey = createVirtualKeyItem(KVC_ENTER, "return", "return", "return", "return", "return", "return", "return");
-	returnKey->setPos(unitWidth * 13.75, unitHeight * 2);
-
-	auto sceneRect = itemsBoundingRect();
-	sceneRect.setHeight(sceneRect.height());
-	setSceneRect(sceneRect);
+	setSceneRect(itemsBoundingRect());
 }

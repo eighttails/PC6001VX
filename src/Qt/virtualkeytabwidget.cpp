@@ -30,19 +30,19 @@ void VirtualKeyTabWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
 
 void VirtualKeyTabWidget::showEvent(QShowEvent *event)
 {
+	QTabWidget::showEvent(event);
 	for (auto view : Views){
 		view->fitInView(view->scene()->sceneRect(), Qt::KeepAspectRatio);
 	}
-	QTabWidget::showEvent(event);
 }
 
 
 void VirtualKeyTabWidget::resizeEvent(QResizeEvent *event)
 {
+	QTabWidget::resizeEvent(event);
 	for (auto view : Views){
 		view->fitInView(view->scene()->sceneRect(), Qt::KeepAspectRatio);
 	}
-	QTabWidget::resizeEvent(event);
 }
 
 

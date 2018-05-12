@@ -290,5 +290,8 @@
         <file>res/vkey/key_tab.png</file>
         <file>res/vkey/key_up.png</file>
         <file>res/vkey/key_ret_flat.png</file>
+        <file>res/vkey/key_load.png</file>
+        <file>res/vkey/key_save.png</file>
+        <file>res/vkey/key_space_small.png</file>
     </qresource>
 </RCC>

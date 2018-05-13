@@ -19,11 +19,14 @@ signals:
 public slots:
 	void adjustSizeToChild(QSize size);
 
+	// QWidget interface
 protected:
 	virtual void closeEvent(QCloseEvent* event);
+	virtual void resizeEvent(QResizeEvent *event) override;
 
 	RenderView* MainView;
 	VirtualKeyTabWidget* VKeyWidget;
+
 };
 
 #endif // MAINWIDGET_H

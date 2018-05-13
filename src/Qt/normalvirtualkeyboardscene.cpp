@@ -11,11 +11,13 @@ void NormalVirtualKeyboardScene::construct()
 	const int unitWidth = 100;
 	const int unitHeight = 130;
 	int i = 0;
+#if 0
 	{
-//		createVirtualKeyItem(KVC_HENKAN, "load", "load", "load", "load", "load", "load", "load")->setPos(unitWidth * 13.25, unitHeight * i);
-//		createVirtualKeyItem(KVC_MUHENKAN, "save", "save", "save", "save", "save", "save", "save")->setPos(unitWidth * 0, unitHeight * i);
-//		i += 2;
+		createVirtualKeyItem(KVC_HENKAN, "load", "load", "load", "load", "load", "load", "load")->setPos(unitWidth * 13.25, unitHeight * i);
+		createVirtualKeyItem(KVC_MUHENKAN, "save", "save", "save", "save", "save", "save", "save")->setPos(unitWidth * 0, unitHeight * i);
+		i++;
 	}
+#endif
 	{
 		std::vector<VirtualKeyItem*> list;
 		list.push_back(createVirtualKeyItem(KVC_END, "stop", "stop", "stop", "stop", "stop", "stop", "stop"));

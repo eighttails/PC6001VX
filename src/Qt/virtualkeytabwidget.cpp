@@ -13,7 +13,7 @@ VirtualKeyTabWidget::VirtualKeyTabWidget(QWidget *parent) :
 	Views.push_back(ui->graphicsViewSimpleKeyboard);
 	ui->graphicsViewNormalKeyboard->setScene(new NormalVirtualKeyboardScene(this));
 	ui->graphicsViewSimpleKeyboard->setScene(new SimpleVirtualKeyboardScene(this));
-	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+	setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 }
 
 VirtualKeyTabWidget::~VirtualKeyTabWidget()

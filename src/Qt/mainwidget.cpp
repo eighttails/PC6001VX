@@ -1,6 +1,7 @@
 #include "mainwidget.h"
 
 #include <QVBoxLayout>
+#include <QResizeEvent>
 
 #include "p6vxapp.h"
 #include "renderview.h"
@@ -51,7 +52,7 @@ void MainWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
 
 void MainWidget::adjustSizeToChild(QSize size)
 {
-	setGeometry(x(), y(), size.width(), size.height() + VKeyWidget->sizeHint().height());
+	setGeometry(x(), y(), size.width(), size.height() * 2);
 }
 
 void MainWidget::closeEvent(QCloseEvent *event)
@@ -61,4 +62,11 @@ void MainWidget::closeEvent(QCloseEvent *event)
 	app->setSetting(P6VXApp::keyGeometry, saveGeometry());
 	app->setSetting(P6VXApp::keyMaximized, isMaximized());
 	QWidget::closeEvent(event);
+}
+
+
+void MainWidget::resizeEvent(QResizeEvent *event)
+{
+	VKeyWidget->setMaximumHeight(event->size().height() / 2);
+	ensurePolished();
 }

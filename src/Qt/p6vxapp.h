@@ -25,6 +25,7 @@ class RenderView;
 class MainWidget;
 class QGraphicsScene;
 class KeyPanel;
+class VirtualKeyTabWidget;
 class KeyStateWatcher;
 
 class P6VXApp : public ParentAppClass
@@ -40,6 +41,7 @@ public:
 	static const QString keyMagnification;		// 表示倍率
 	static const QString keyKeyPanelVisible;		// キーパレット表示有効化
 	static const QString keyKeyPanelPosition;		// キーパレット表示位置
+	static const QString keyVirtualKeyVisible;		// 仮想キーボード表示有効化
 
 	explicit P6VXApp(int &argc, char **argv);
 	virtual ~P6VXApp();
@@ -47,6 +49,7 @@ public:
 	// ウィンドウ関連
 	RenderView* getView();
 	KeyPanel* getKeyPanel();
+	VirtualKeyTabWidget *getVirtualKeyboard();
 
 	// P6VX固有の設定
 	const QVariant getSetting(const QString& key);
@@ -98,6 +101,9 @@ public slots:
 
 	// キーパネルを表示
 	void toggleKeyPanel();
+
+	// 仮想キーボードを表示
+	void toggleVirtualKeyboard();
 
 signals:
 	//初期化終了シグナル

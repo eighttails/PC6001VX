@@ -13,11 +13,13 @@ public:
 	explicit MainWidget(QWidget *parent = nullptr);
 
 	RenderView* getMainView();
+	VirtualKeyTabWidget* getVirtualKeyboard();
 	void setKeyStateWatcher(KeyStateWatcher *watcher);
 signals:
 
 public slots:
 	void adjustSizeToChild(QSize size);
+	void toggleVirtualKeyboard();
 
 	// QWidget interface
 protected:

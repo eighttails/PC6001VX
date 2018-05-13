@@ -20,6 +20,7 @@
 
 #include "renderview.h"
 #include "keypanel.h"
+#include "virtualkeytabwidget.h"
 #include "qtel6.h"
 #include "p6vxapp.h"
 
@@ -95,7 +96,8 @@ void EL6::ExecMenu( int id )
 	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
 	case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
 	case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
-	case ID_KEYPANEL:		app->toggleKeyPanel();				break;// キーパネル
+	case ID_KEYPANEL:		app->toggleKeyPanel();					break;	// キーパネル
+	case ID_VIRTURLKEY:		app->toggleVirtualKeyboard();			break;	// 仮想キーボード
 	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
 	case ID_QUIT:			UI_Quit();								break;	// 終了
 	case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
@@ -271,6 +273,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	QAction* keyPanel = addCommand(systemMenu, tr("キーパネル"), ID_KEYPANEL, true);
 	keyPanel->setChecked(app->getKeyPanel()->isVisible());
+	QAction* virtualKey = addCommand(systemMenu, tr("仮想キーボード"), ID_VIRTURLKEY, true);
+	virtualKey->setChecked(app->getVirtualKeyboard()->isVisible());
 	systemMenu->addSeparator();
 
 	addCommand(systemMenu, tr("打込み代行..."), ID_AUTOTYPE);

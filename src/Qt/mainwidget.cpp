@@ -29,9 +29,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	//仮想キーウィジェット
 	VKeyWidget = new VirtualKeyTabWidget();
 	layout->addWidget(VKeyWidget);
-
-	//TODO 設定に応じて表示、非表示を切り替え
-
+	VKeyWidget->setVisible(app->getSetting(P6VXApp::keyVirtualKeyVisible).toBool());
 
 	// ウィンドウ位置とサイズを復元
 	restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
@@ -45,6 +43,11 @@ RenderView *MainWidget::getMainView()
 	return MainView;
 }
 
+VirtualKeyTabWidget *MainWidget::getVirtualKeyboard()
+{
+	return VKeyWidget;
+}
+
 void MainWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
 {
 	VKeyWidget->setKeyStateWatcher(watcher);
@@ -52,7 +55,16 @@ void MainWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
 
 void MainWidget::adjustSizeToChild(QSize size)
 {
-	setGeometry(x(), y(), size.width(), size.height() * 2);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	setGeometry(x(), y(), size.width(), size.height() * (VKeyWidget->isVisible() ? 2 : 1));
+}
+
+void MainWidget::toggleVirtualKeyboard()
+{
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	auto size = MainView->size();
+	VKeyWidget->setVisible(!VKeyWidget->isVisible());
+	adjustSizeToChild(size);
 }
 
 void MainWidget::closeEvent(QCloseEvent *event)
@@ -61,6 +73,7 @@ void MainWidget::closeEvent(QCloseEvent *event)
 	// ウィンドウ位置とサイズを保存
 	app->setSetting(P6VXApp::keyGeometry, saveGeometry());
 	app->setSetting(P6VXApp::keyMaximized, isMaximized());
+	app->setSetting(P6VXApp::keyVirtualKeyVisible, VKeyWidget->isVisible());
 	QWidget::closeEvent(event);
 }
 

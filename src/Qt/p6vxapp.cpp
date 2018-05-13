@@ -29,6 +29,7 @@ const QString P6VXApp::keyFixMagnification	= "graph/fixMagnification";
 const QString P6VXApp::keyMagnification		= "graph/magnification";
 const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
 const QString P6VXApp::keyKeyPanelPosition		= "keypalette/position";
+const QString P6VXApp::keyVirtualKeyVisible		= "virtualkey/visible";
 
 
 ///////////////////////////////////////////////////////////
@@ -131,6 +132,11 @@ RenderView *P6VXApp::getView()
 KeyPanel *P6VXApp::getKeyPanel()
 {
 	return KPanel;
+}
+
+VirtualKeyTabWidget* P6VXApp::getVirtualKeyboard()
+{
+	return MWidget->getVirtualKeyboard();
 }
 
 
@@ -400,6 +406,11 @@ void P6VXApp::toggleKeyPanel()
 	} else {
 		KPanel->show();
 	}
+}
+
+void P6VXApp::toggleVirtualKeyboard()
+{
+	MWidget->toggleVirtualKeyboard();
 }
 
 bool P6VXApp::isTiltEnabled()

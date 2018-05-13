@@ -121,8 +121,3 @@ void RenderView::paintEvent(QPaintEvent *event)
     }
     QGraphicsView::paintEvent(event);
 }
-
-void RenderView::showEvent(QShowEvent *event)
-{
-	emit resized(size());
-}

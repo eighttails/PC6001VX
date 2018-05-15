@@ -2865,6 +2865,11 @@ Save time and PC6001V version </translation>
         <translation>Key panel</translation>
     </message>
     <message>
+        <location filename="../qtel6.cpp" line="274"/>
+        <source>仮想キーボード</source>
+        <translation>Virtual keyboard</translation>
+    </message>
+    <message>
         <location filename="../qtel6.cpp" line="334"/>
         <source>50%</source>
         <translation></translation>

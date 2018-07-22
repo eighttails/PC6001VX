@@ -13,8 +13,10 @@ void SimpleVirtualKeyboardScene::construct()
 	const int unitHeight = 130;
 	int i = 0;
 	{
-		createVirtualKeyItem(KVC_HENKAN, "load", "load", "load", "load", "load", "load", "load")->setPos(unitWidth * 7.75, unitHeight * i);
 		createVirtualKeyItem(KVC_MUHENKAN, "save", "save", "save", "save", "save", "save", "save")->setPos(unitWidth * 0, unitHeight * i);
+		createVirtualKeyItem(KVC_F9, "pause", "pause", "pause", "pause", "pause", "pause", "pause")->setPos(unitWidth * 2.75, unitHeight * i);
+		createVirtualKeyItem(KVC_F12, "snapshot", "snapshot", "snapshot", "snapshot", "snapshot", "snapshot", "snapshot")->setPos(unitWidth * 5, unitHeight * i);
+		createVirtualKeyItem(KVC_HENKAN, "load", "load", "load", "load", "load", "load", "load")->setPos(unitWidth * 7.75, unitHeight * i);
 		i++;
 	}
 	{

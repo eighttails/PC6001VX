@@ -293,5 +293,7 @@
         <file>res/vkey/key_load.png</file>
         <file>res/vkey/key_save.png</file>
         <file>res/vkey/key_space_small.png</file>
+        <file>res/vkey/key_pause.png</file>
+        <file>res/vkey/key_snapshot.png</file>
     </qresource>
 </RCC>

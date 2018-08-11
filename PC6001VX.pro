@@ -10,6 +10,7 @@ TARGET = PC6001VX
 TEMPLATE = app
 
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
+TR_EXCLUDE += /usr/include/*
 
 CONFIG += link_prl link_pkgconfig c++11
 
@@ -351,6 +352,5 @@ DISTFILES += \
     win32/buildrelease.sh \
     win32/release.sh \
     win32/safemode.bat
-
 
 

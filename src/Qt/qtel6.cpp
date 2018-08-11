@@ -71,6 +71,10 @@ void EL6::ExecMenu( int id )
 	case ID_CONFIG:			UI_Config();							break;	// 環境設定
 	case ID_RESET:			UI_Reset();								break;	// リセット
 	case ID_RESTART:		UI_Restart();							break;	// 再起動
+	case ID_PAUSE:															// 一時停止
+		sche->SetPauseEnable(!sche->GetPauseEnable());
+		break;
+	case ID_SNAPSHOT:		graph->SnapShot( cfg->GetImgPath() );	break;	// スナップショット取得
 	case ID_DOKOSAVE:		UI_DokoSave();							break;	// どこでもSAVE
 	case ID_DOKOSAVE1:                                                      // どこでもSAVE1
 	case ID_DOKOSAVE2:                                                      // どこでもSAVE2
@@ -219,6 +223,11 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	menu.addSeparator();
 	addCommand(systemMenu, tr("リセット"), ID_RESET);
 	addCommand(systemMenu, tr("再起動"), ID_RESTART);
+	systemMenu->addSeparator();
+
+	QAction* pause = addCommand(systemMenu, tr("一時停止"), ID_PAUSE, true);
+	pause->setChecked(GetPauseEnable());
+	addCommand(systemMenu, tr("スナップショットを取得"), ID_SNAPSHOT);
 	systemMenu->addSeparator();
 
 	// どこでもLOAD,SAVEメニュー

@@ -1042,13 +1042,11 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
 bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
 {
 	if( !wh || !pixels ) return false;
-
-	// Sceneのレンダリングはメインスレッドでないとできないため、
-	// スロットを呼び出してメインスレッドでSceneの画像を取得する
-	// (直接呼び出すと呼び出し側スレッドで実行されてしまう)
-	// 呼び出し元に結果を返す必要があるため、Qt::BlockingQueuedConnectionで実行する。
+	//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
+				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "getWindowImage",
-							  Qt::BlockingQueuedConnection,
+							  cType,
 							  Q_ARG(HWINDOW, wh),
 							  Q_ARG(QRect, QRect(pos->x, pos->y, pos->w, pos->h)),
 							  Q_ARG(void**, pixels));

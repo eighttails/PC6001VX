@@ -756,6 +756,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		OSD_PushEvent(ev);
 		break;
 	}
+#if 0
 	case QEvent::ContextMenu:
 	case QEvent::GraphicsSceneContextMenu:
 	{
@@ -766,6 +767,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		OSD_PushEvent(ev);
 		break;
 	}
+
 	case QEvent::GraphicsSceneWheel:
 	{
 		QGraphicsSceneWheelEvent* we = dynamic_cast<QGraphicsSceneWheelEvent*>(event);
@@ -797,6 +799,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 #endif
 		break;
 	}
+#endif
 #ifdef ALWAYSFULLSCREEN
 	case QEvent::ApplicationStateChange:
 		if(P6Core){

@@ -121,3 +121,33 @@ void RenderView::paintEvent(QPaintEvent *event)
     }
     QGraphicsView::paintEvent(event);
 }
+
+void RenderView::contextMenuEvent(QContextMenuEvent *event)
+{
+	Event ev;
+	ev.type = EV_CONTEXTMENU;
+	QPoint p = QCursor::pos();
+	ev.mousebt.x = p.x();
+	ev.mousebt.y = p.y();
+	OSD_PushEvent(ev);
+}
+
+void RenderView::wheelEvent(QWheelEvent *event)
+{
+	Event ev;
+	ev.type = EV_MOUSEBUTTONUP;
+	ev.mousebt.button = event->delta() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
+	ev.mousebt.state = false;
+	OSD_PushEvent(ev);
+}
+
+void RenderView::mouseReleaseEvent(QMouseEvent *event)
+{
+	if(event->button() == Qt::LeftButton){
+		Event ev;
+		ev.type = EV_MOUSEBUTTONUP;
+		ev.mousebt.button = MBT_LEFT;
+		ev.mousebt.state = false;
+		OSD_PushEvent(ev);
+	}
+}

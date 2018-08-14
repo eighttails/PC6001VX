@@ -23,8 +23,11 @@ public slots:
 
 protected:
 	// QWidget interface
-	virtual bool event(QEvent *);
-	virtual void paintEvent(QPaintEvent* event);
+	virtual bool event(QEvent *) override;
+	virtual void paintEvent(QPaintEvent* event) override;
+	virtual void contextMenuEvent(QContextMenuEvent *event) override;
+	virtual void wheelEvent(QWheelEvent *event) override;
+	virtual void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
 #endif // RENDERVIEW_H

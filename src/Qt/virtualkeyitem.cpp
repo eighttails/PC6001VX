@@ -16,8 +16,10 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 							   QString pixKKana,
 							   QString pixKKanaShift,
 							   bool isAlpha,
-							   bool mouseToggle)
-	: Code(code)
+							   bool mouseToggle,
+							   QObject *parent)
+	: QObject(parent)
+	, Code(code)
 	, PixNormal(QString(":/res/vkey/key_%1.png").arg(pixNormal))
 	, PixShift(QString(":/res/vkey/key_%1.png").arg(pixShift))
 	, PixGrph(QString(":/res/vkey/key_%1.png").arg(pixGrph))
@@ -28,7 +30,6 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	, IsAlpha(isAlpha)
 	, MouseToggle(mouseToggle)
 	, ToggleStatus(false)
-	, TouchStatus(false)
 	, pressEffect(new QGraphicsColorizeEffect(this))
 {
 	setPixmap(PixNormal);
@@ -92,48 +93,16 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 		if(touchState & Qt::TouchPointPressed){
 			pressEffect->setEnabled(true);
 			sendKeyEvent(EV_KEYDOWN, true);
-			TouchStatus	= true;
 		}
 		else if(touchState & Qt::TouchPointReleased){
 			pressEffect->setEnabled(false);
 			sendKeyEvent(EV_KEYUP, false);
-			TouchStatus	= false;
 		}
 		return true;
 	}
 	default:;
 		return QGraphicsPixmapItem::sceneEvent(event);
 	}
-}
-
-void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-#ifdef EMULATE_TOUCH
-	// すでにタッチによってキーが押されている場合は何もしない
-	if(TouchStatus) return;
-	qDebug() << "mousePressEvent accepted:" << event->type();
-	// トグルキーの場合はUP，DOWNを交互に送る
-	auto toggle = MouseToggle && ToggleStatus;
-	if (MouseToggle) ToggleStatus = !ToggleStatus;
-	bool state = MouseToggle ? ToggleStatus : true;
-	sendKeyEvent(state ? EV_KEYDOWN : EV_KEYUP, state);
-	if (MouseToggle && ToggleStatus){
-		pressEffect->setEnabled(true);
-	} else {
-		pressEffect->setEnabled(false);
-	}
-#endif
-	QGraphicsPixmapItem::mousePressEvent(event);
-}
-
-void VirtualKeyItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-#ifdef EMULATE_TOUCH
-	// すでにタッチによってキーが押されている場合は何もしない
-	if(TouchStatus) return;
-	sendKeyEvent(EV_KEYUP, false);
-#endif
-	QGraphicsPixmapItem::mouseReleaseEvent(event);
 }
 
 void VirtualKeyItem::sendKeyEvent(EventType type, bool state)

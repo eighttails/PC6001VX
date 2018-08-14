@@ -21,7 +21,8 @@ public:
 				   QString pixKKana,
 				   QString pixKKanaShift,
 				   bool isAlpha = false,
-				   bool mouseToggle = false);
+				   bool mouseToggle = false,
+				   QObject *parent = nullptr);
 public slots:
 	void changeStatus(
 			bool ON_SHIFT,	// SHIFT
@@ -34,9 +35,6 @@ public slots:
 	// QGraphicsItem interface
 protected:
 	virtual bool sceneEvent(QEvent *event) override;
-	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
-
 	void sendKeyEvent(EventType type, bool state);
 
 	const PCKEYsym Code;			//キーコード
@@ -50,7 +48,6 @@ protected:
 	const bool IsAlpha;				//アルファベットフラグ(CAPS時に大文字小文字が反転)
 	const bool MouseToggle;			//マウス入力時にトグル入力にする(SHIFT,GRPH用)
 	bool ToggleStatus;				//マウス入力時のトグル状態
-	bool TouchStatus;				//タッチ押下状態(タッチで押されている状態がtrue)
 
 	QGraphicsColorizeEffect* pressEffect; //ボタンを押すと色が変わるエフェクト
 };

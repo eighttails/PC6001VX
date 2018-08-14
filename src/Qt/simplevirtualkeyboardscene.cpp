@@ -1,6 +1,6 @@
 #include "simplevirtualkeyboardscene.h"
 #include "virtualkeyitem.h"
-
+#include "virtualstickitem.h"
 
 SimpleVirtualKeyboardScene::SimpleVirtualKeyboardScene(QObject *parent) : VirtualKeyboardScene(parent)
 {
@@ -35,13 +35,15 @@ void SimpleVirtualKeyboardScene::construct()
 		i++;
 	}
 	{
-		createVirtualKeyItem(KVC_UP, "up", "up", "up", "up", "up", "up", "up")->setPos(unitWidth * 1, unitHeight * i);
+		// 方向キー
+		auto stick = new VirtualStickItem();
+		stick->setPos(unitWidth * 0, unitHeight * i);
+		addItem(stick);
+
 		createVirtualKeyItem(KVC_LSHIFT, "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", "shift_l", false, true)->setPos(unitWidth * 7.75, unitHeight * i);
 		i++;
 	}
 	{
-		createVirtualKeyItem(KVC_LEFT, "left", "left", "left", "left", "left", "left", "left")->setPos(unitWidth * 0, unitHeight * i);
-		createVirtualKeyItem(KVC_RIGHT, "right", "right", "right", "right", "right", "right", "right")->setPos(unitWidth * 2, unitHeight * i);
 		std::vector<VirtualKeyItem*> list;
 		list.push_back(createVirtualKeyItem(KVC_Y, "0x79", "0x59", "0x08", "0xfd", "blank", "0xdd", "blank", true));
 		list.push_back(createVirtualKeyItem(KVC_N, "0x6e", "0x4e", "blank", "0xf0", "blank", "0xd0", "blank", true));
@@ -49,7 +51,6 @@ void SimpleVirtualKeyboardScene::construct()
 		alignVirtualKeyItems(list, QPointF(unitWidth * 3.5, unitHeight * i++));
 	}
 	{
-		createVirtualKeyItem(KVC_DOWN, "down", "down", "down", "down", "down", "down", "down")->setPos(unitWidth * 1, unitHeight * i);
 		createVirtualKeyItem(KVC_SPACE, "space_small", "space_small", "space_small", "space_small", "space_small", "space_small", "space_small")->setPos(unitWidth * 7.75, unitHeight * i);
 	}
 	setSceneRect(itemsBoundingRect());

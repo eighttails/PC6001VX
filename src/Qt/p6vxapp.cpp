@@ -30,6 +30,7 @@ const QString P6VXApp::keyMagnification		= "graph/magnification";
 const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
 const QString P6VXApp::keyKeyPanelPosition		= "keypalette/position";
 const QString P6VXApp::keyVirtualKeyVisible		= "virtualkey/visible";
+const QString P6VXApp::keyVirtualKeyTabIndex	= "virtualkey/tabindex";
 
 
 ///////////////////////////////////////////////////////////

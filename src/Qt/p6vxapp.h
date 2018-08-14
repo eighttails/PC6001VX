@@ -42,6 +42,7 @@ public:
 	static const QString keyKeyPanelVisible;		// キーパレット表示有効化
 	static const QString keyKeyPanelPosition;		// キーパレット表示位置
 	static const QString keyVirtualKeyVisible;		// 仮想キーボード表示有効化
+	static const QString keyVirtualKeyTabIndex;		// 仮想キーボードタブインデックス
 
 	explicit P6VXApp(int &argc, char **argv);
 	virtual ~P6VXApp();

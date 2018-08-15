@@ -10,6 +10,7 @@ TARGET = PC6001VX
 TEMPLATE = app
 
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
+TR_EXCLUDE += /usr/include/*
 
 CONFIG += link_prl link_pkgconfig c++11
 
@@ -35,6 +36,7 @@ DEFINES += QTP6VX
 #DEFINES += AUTOSUSPEND
 #DEFINES += REPLAYDEBUG_FRAME
 #DEFINES += REPLAYDEBUG_INST
+#DEFINES += EMULATE_TOUCH
 
 debug:DEFINES += DEBUG
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
@@ -167,7 +169,16 @@ SOURCES += \
     src/Qt/keypanel.cpp \
     src/Qt/p6vxapp.cpp \
     src/psgfm.cpp \
-    src/device/fmgen/psg.cpp
+    src/device/fmgen/psg.cpp \
+    src/Qt/mainwidget.cpp \
+    src/Qt/virtualkeytabwidget.cpp \
+    src/Qt/virtualkeyitem.cpp \
+    src/Qt/simplevirtualkeyboardscene.cpp \
+    src/Qt/virtualkeyboardscene.cpp \
+    src/Qt/keystatewatcher.cpp \
+    src/Qt/normalvirtualkeyboardscene.cpp \
+    src/Qt/virtualkeyboardview.cpp \
+    src/Qt/virtualstickitem.cpp
 
 HEADERS  += \
     openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
@@ -253,11 +264,21 @@ HEADERS  += \
     src/Qt/p6vxapp.h \
     src/psgfm.h \
     src/device/fmgen/psg.h \
-    src/Qt/audiooutputwrapper.h
+    src/Qt/audiooutputwrapper.h \
+    src/Qt/mainwidget.h \
+    src/Qt/virtualkeytabwidget.h \
+    src/Qt/virtualkeyitem.h \
+    src/Qt/simplevirtualkeyboardscene.h \
+    src/Qt/virtualkeyboardscene.h \
+    src/Qt/keystatewatcher.h \
+    src/Qt/normalvirtualkeyboardscene.h \
+    src/Qt/virtualkeyboardview.h \
+    src/Qt/virtualstickitem.h
 
 FORMS    += \
     src/Qt/configdialog.ui \
-    src/Qt/aboutdialog.ui
+    src/Qt/aboutdialog.ui \
+    src/Qt/virtualkeytabwidget.ui
 
 OTHER_FILES += \
     android/AndroidManifest.xml \
@@ -333,6 +354,5 @@ DISTFILES += \
     win32/buildrelease.sh \
     win32/release.sh \
     win32/safemode.bat
-
 
 

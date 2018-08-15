@@ -12,7 +12,9 @@
 #include "../common.h"
 
 #include "renderview.h"
+#include "mainwidget.h"
 #include "keypanel.h"
+#include "keystatewatcher.h"
 #include "p6vxapp.h"
 
 #ifdef ANDROID
@@ -27,6 +29,8 @@ const QString P6VXApp::keyFixMagnification	= "graph/fixMagnification";
 const QString P6VXApp::keyMagnification		= "graph/magnification";
 const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
 const QString P6VXApp::keyKeyPanelPosition		= "keypalette/position";
+const QString P6VXApp::keyVirtualKeyVisible		= "virtualkey/visible";
+const QString P6VXApp::keyVirtualKeyTabIndex	= "virtualkey/tabindex";
 
 
 ///////////////////////////////////////////////////////////
@@ -80,8 +84,6 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, P6Core(NULL)
 	, Restart(EL6::Quit)
 	, Adaptor(new EmulationAdaptor())
-	, View(NULL)
-	, Scene(NULL)
 	, KPanel(NULL)
 	, Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat)
 	, TiltEnabled(false)
@@ -119,19 +121,25 @@ P6VXApp::~P6VXApp()
 	Adaptor->thread()->exit();
 	Adaptor->thread()->wait();
 	Adaptor->deleteLater();
-	View->deleteLater();
+	MWidget->deleteLater();
 	KPanel->deleteLater();
 }
 
 RenderView *P6VXApp::getView()
 {
-	return View;
+	return MWidget->getMainView();
 }
 
 KeyPanel *P6VXApp::getKeyPanel()
 {
 	return KPanel;
 }
+
+VirtualKeyTabWidget* P6VXApp::getVirtualKeyboard()
+{
+	return MWidget->getVirtualKeyboard();
+}
+
 
 void P6VXApp::startup()
 {
@@ -212,12 +220,9 @@ void P6VXApp::startup()
 		}
 	}
 
-	Scene = new QGraphicsScene();
-	View = new RenderView(Scene);
-	KPanel = new KeyPanel(View);
-
-	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
-	QObject::connect(this, SIGNAL(aboutToQuit()), Scene, SLOT(deleteLater()));
+	// ウィンドウ、ウィジェットの生成
+	MWidget = new MainWidget();
+	KPanel = new KeyPanel(MWidget);
 
 	emit initialized();
 }
@@ -261,21 +266,16 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	QGraphicsScene* scene = view->scene();
 
 #ifdef ALWAYSFULLSCREEN
-	view->showFullScreen();
+	MWidget->showFullScreen();
 #else
 	if(fsflag){
-		view->setWindowState(view->windowState() | Qt::WindowFullScreen);
-		view->showFullScreen();
+		MWidget->setWindowState(MWidget->windowState() | Qt::WindowFullScreen);
+		MWidget->showFullScreen();
 	} else {
-		view->setWindowState(view->windowState() & ~Qt::WindowFullScreen);
-		if(!view->isVisible()){
-			view->showNormal();
+		MWidget->setWindowState(MWidget->windowState() & ~Qt::WindowFullScreen);
+		if(!MWidget->isVisible()){
+			MWidget->showNormal();
 		}
-#if 0
-		if(!view->isMaximized()){
-			view->setGeometry(100, 100, scene->width(), scene->height());
-		}
-#endif
 	}
 #endif
 	view->fitContent();
@@ -407,6 +407,11 @@ void P6VXApp::toggleKeyPanel()
 	} else {
 		KPanel->show();
 	}
+}
+
+void P6VXApp::toggleVirtualKeyboard()
+{
+	MWidget->toggleVirtualKeyboard();
 }
 
 bool P6VXApp::isTiltEnabled()
@@ -576,6 +581,10 @@ void P6VXApp::executeEmulation()
 
 	P6Core = P6CoreObj;
 
+	// キーボード状態監視
+	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), this);
+	MWidget->setKeyStateWatcher(KeyWatcher);
+
 	// 以降、ウィンドウが閉じたらアプリを終了する
 	connect(this, SIGNAL(lastWindowClosed()), this, SLOT(terminateEmulation()));
 
@@ -718,7 +727,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		// ・エミュレータウィンドウ、キーパレット以外のウィンドウ
 		// (Aboutダイアログ、環境設定ダイアログ)が最前面にある場合
 		QString activeWindowClass = activeWindow() ? activeWindow()->metaObject()->className() : "";
-		if(activeWindowClass != "RenderView" && activeWindowClass != "KeyPanel"){
+		if(activeWindowClass != "MainWidget" && activeWindowClass != "KeyPanel"){
 			processKeyEventInQt = true;
 		}
 		// メニュー表示中の場合
@@ -748,6 +757,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		OSD_PushEvent(ev);
 		break;
 	}
+#if 0
 	case QEvent::ContextMenu:
 	case QEvent::GraphicsSceneContextMenu:
 	{
@@ -758,6 +768,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		OSD_PushEvent(ev);
 		break;
 	}
+
 	case QEvent::GraphicsSceneWheel:
 	{
 		QGraphicsSceneWheelEvent* we = dynamic_cast<QGraphicsSceneWheelEvent*>(event);
@@ -789,6 +800,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 #endif
 		break;
 	}
+#endif
 #ifdef ALWAYSFULLSCREEN
 	case QEvent::ApplicationStateChange:
 		if(P6Core){
@@ -843,11 +855,11 @@ void P6VXApp::setDefaultSetting(const QString &key, const QVariant &value)
 void P6VXApp::inhibitScreenSaver()
 {
 #if defined USE_X11
-	if(View && View->isFullScreen()){
+	if(MWidget && MWidget->isFullScreen()){
 		XResetScreenSaver(QX11Info::display());
 	}
 #elif defined WIN32
-	if(View && View->isFullScreen()){
+	if(MWidget && MWidget->isFullScreen()){
 		SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);
 	} else {
 		SetThreadExecutionState(ES_CONTINUOUS);

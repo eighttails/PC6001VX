@@ -22,12 +22,15 @@ typedef QtSingleApplication ParentAppClass;
 
 class QKeyEvent;
 class RenderView;
+class MainWidget;
 class QGraphicsScene;
 class KeyPanel;
+class VirtualKeyTabWidget;
+class KeyStateWatcher;
 
 class P6VXApp : public ParentAppClass
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
 	//設定用キー
 	static const QString keyGeometry;			// ウィンドウ表示位置
@@ -38,6 +41,8 @@ public:
 	static const QString keyMagnification;		// 表示倍率
 	static const QString keyKeyPanelVisible;		// キーパレット表示有効化
 	static const QString keyKeyPanelPosition;		// キーパレット表示位置
+	static const QString keyVirtualKeyVisible;		// 仮想キーボード表示有効化
+	static const QString keyVirtualKeyTabIndex;		// 仮想キーボードタブインデックス
 
 	explicit P6VXApp(int &argc, char **argv);
 	virtual ~P6VXApp();
@@ -45,17 +50,18 @@ public:
 	// ウィンドウ関連
 	RenderView* getView();
 	KeyPanel* getKeyPanel();
+	VirtualKeyTabWidget *getVirtualKeyboard();
 
 	// P6VX固有の設定
 	const QVariant getSetting(const QString& key);
 	void setSetting(const QString& key, const QVariant& value);
 	void setDefaultSetting(const QString &key, const QVariant &value);
 
-    // TILT関連
-    bool isTiltEnabled();
-    void enableTilt(bool enable);
-    TiltDirection getTiltDirection();
-    void setTiltDirection(TiltDirection dir);
+	// TILT関連
+	bool isTiltEnabled();
+	void enableTilt(bool enable);
+	TiltDirection getTiltDirection();
+	void setTiltDirection(TiltDirection dir);
 	int getTiltStep();
 	void setTiltStep(int step);
 
@@ -68,53 +74,56 @@ public:
 	void setCustomRomPath(QString path);
 
 public slots:
-    //仮想マシンの起動→終了→再起動のループ
-    //直接呼び出さずに、Qtのイベントループの中で実行する
-    void startup();
+	//仮想マシンの起動→終了→再起動のループ
+	//直接呼び出さずに、Qtのイベントループの中で実行する
+	void startup();
 
 	//メッセージボックスの表示
 	int showMessageBox(const char *mes, const char *cap, int type);
 
-    //ウィンドウを生成
-    void createWindow(HWINDOW Wh, bool fsflag );
+	//ウィンドウを生成
+	void createWindow(HWINDOW Wh, bool fsflag );
 
-    //グラフィックをシーンに配置
-    //QGraphicsSceneの操作はメインスレッドでしかできないため、
-    //ここで実装する
-    void layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image);
+	//グラフィックをシーンに配置
+	//QGraphicsSceneの操作はメインスレッドでしかできないため、
+	//ここで実装する
+	void layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image);
 
-    //ウィンドウイメージバイト列でを取得
-    //QGraphicsSceneの操作はメインスレッドでしかできないため、
-    //ここで実装する
-    void getWindowImage(HWINDOW Wh, QRect pos, void** pixels);
+	//ウィンドウイメージバイト列でを取得
+	//QGraphicsSceneの操作はメインスレッドでしかできないため、
+	//ここで実装する
+	void getWindowImage(HWINDOW Wh, QRect pos, void** pixels);
 
-    //グラフィックシーンをクリア
-    void clearLayout(HWINDOW Wh);
+	//グラフィックシーンをクリア
+	void clearLayout(HWINDOW Wh);
 
-    //コンテキストメニューを表示
-    void showPopupMenu(int x, int y);
+	//コンテキストメニューを表示
+	void showPopupMenu(int x, int y);
 
 	// キーパネルを表示
 	void toggleKeyPanel();
 
+	// 仮想キーボードを表示
+	void toggleVirtualKeyboard();
+
 signals:
-    //初期化終了シグナル
-    void initialized();
+	//初期化終了シグナル
+	void initialized();
 
-    //仮想マシン実行前準備終了シグナル
-    void vmPrepared();
+	//仮想マシン実行前準備終了シグナル
+	void vmPrepared();
 
-    // 仮想マシンの実行終了シグナル
-    void vmRestart();
-    
+	// 仮想マシンの実行終了シグナル
+	void vmRestart();
+
 private slots:
-    //仮想マシン開始させる
-    void executeEmulation();
-    //仮想マシン終了後の処理
-    void postExecuteEmulation();
+	//仮想マシン開始させる
+	void executeEmulation();
+	//仮想マシン終了後の処理
+	void postExecuteEmulation();
 
-    //仮想マシンを終了させる
-    void terminateEmulation();
+	//仮想マシンを終了させる
+	void terminateEmulation();
 
 	// スクリーンセーバー無効化
 	void inhibitScreenSaver();
@@ -126,23 +135,23 @@ protected:
 	void handleSpecialKeys(QKeyEvent* ke, int &keyCode);
 
 private:
-    QPointer<QtEL6> P6Core;		// オブジェクトポインタ
-    EL6::ReturnCode Restart;	// 再起動フラグ
-    CFG6 Cfg;					// 環境設定オブジェクト
-    EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ
+	QPointer<QtEL6> P6Core;		// オブジェクトポインタ
+	QPointer<KeyStateWatcher> KeyWatcher;	// オブジェクトポインタ
+	EL6::ReturnCode Restart;	// 再起動フラグ
+	CFG6 Cfg;					// 環境設定オブジェクト
+	EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ
 	QMutex PropretyMutex;       // 属性値保護のためのMutex
-    QMutex MenuMutex;           // メニュー表示中にロックされるMutex
+	QMutex MenuMutex;           // メニュー表示中にロックされるMutex
 
 	// ウィンドウ関連
-	RenderView* View;
-	QGraphicsScene* Scene;
+	MainWidget* MWidget;
 	KeyPanel* KPanel;
 
 	// P6VX固有の設定
 	QSettings Setting;
 	QMutex SettingMutex; // 設定読み書き用Mutex
 	bool TiltEnabled;
-    TiltDirection TiltDir;
+	TiltDirection TiltDir;
 	int TiltStep;
 
 	bool SafeMode;

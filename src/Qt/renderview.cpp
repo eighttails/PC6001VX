@@ -46,12 +46,6 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     ImmAssociateContext( (HWND)winId(), NULL );
 #endif
 
-    // ウィンドウ位置とサイズを復元
-	restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
-	if(app->getSetting(P6VXApp::keyMaximized).toBool()){
-        showMaximized();
-    }
-
 }
 
 RenderView::~RenderView()
@@ -91,6 +85,8 @@ void RenderView::resizeWindowByRatio(int ratio)
 		app->setSetting(P6VXApp::keyFixMagnification, false);
     }
     setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
+
+	emit resized(size());
 }
 
 bool RenderView::event(QEvent *event)
@@ -126,13 +122,32 @@ void RenderView::paintEvent(QPaintEvent *event)
     QGraphicsView::paintEvent(event);
 }
 
-void RenderView::closeEvent(QCloseEvent *event)
+void RenderView::contextMenuEvent(QContextMenuEvent *event)
 {
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	// ウィンドウ位置とサイズを保存
-	app->setSetting(P6VXApp::keyGeometry, saveGeometry());
-	app->setSetting(P6VXApp::keyMaximized, isMaximized());
-	QGraphicsView::closeEvent(event);
+	Event ev;
+	ev.type = EV_CONTEXTMENU;
+	QPoint p = QCursor::pos();
+	ev.mousebt.x = p.x();
+	ev.mousebt.y = p.y();
+	OSD_PushEvent(ev);
 }
 
+void RenderView::wheelEvent(QWheelEvent *event)
+{
+	Event ev;
+	ev.type = EV_MOUSEBUTTONUP;
+	ev.mousebt.button = event->delta() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
+	ev.mousebt.state = false;
+	OSD_PushEvent(ev);
+}
 
+void RenderView::mouseReleaseEvent(QMouseEvent *event)
+{
+	if(event->button() == Qt::LeftButton){
+		Event ev;
+		ev.type = EV_MOUSEBUTTONUP;
+		ev.mousebt.button = MBT_LEFT;
+		ev.mousebt.state = false;
+		OSD_PushEvent(ev);
+	}
+}

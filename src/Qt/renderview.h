@@ -9,7 +9,9 @@ class RenderView : public QGraphicsView
 public:
 	explicit RenderView(QGraphicsScene *scene, QWidget *parent = 0);
 	~RenderView();
+
 signals:
+	void resized(QSize);
 
 public slots:
 	// シーングラフ全体がウィジェットに収まるように表示倍率を調整
@@ -18,12 +20,14 @@ public slots:
 
 	// 指定した倍率(%)で表示されるようにウィンドウをリサイズ
 	void resizeWindowByRatio(int ratio);
-protected:
-	virtual bool event(QEvent *);
-	virtual void paintEvent(QPaintEvent* event);
-	virtual void closeEvent(QCloseEvent* event);
 
-public:
+protected:
+	// QWidget interface
+	virtual bool event(QEvent *) override;
+	virtual void paintEvent(QPaintEvent* event) override;
+	virtual void contextMenuEvent(QContextMenuEvent *event) override;
+	virtual void wheelEvent(QWheelEvent *event) override;
+	virtual void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
 #endif // RENDERVIEW_H

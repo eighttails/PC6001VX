@@ -35,7 +35,6 @@ VirtualStickItem::VirtualStickItem(QObject *parent)
 
 bool VirtualStickItem::sceneEvent(QEvent *event)
 {
-	qDebug() << "sceneEvent accepted:" << event->type();
 	auto type = event->type();
 	switch (type){
 	case QEvent::TouchBegin:

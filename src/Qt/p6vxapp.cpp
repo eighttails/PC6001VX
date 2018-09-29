@@ -444,6 +444,11 @@ void P6VXApp::setTiltStep(int step)
 	TiltStep = step;
 }
 
+bool P6VXApp::isAVI()
+{
+	return P6Core->IsAVI();
+}
+
 int P6VXApp::getTiltStep()
 {
 	QMutexLocker lock(&PropretyMutex);

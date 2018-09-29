@@ -65,6 +65,9 @@ public:
 	int getTiltStep();
 	void setTiltStep(int step);
 
+	// ステータス関係
+	bool isAVI();
+
 	// セーフモード(一時的にハードウェアアクセラレーションを無効化する)
 	bool isSafeMode();
 	void enableSafeMode(bool enable);

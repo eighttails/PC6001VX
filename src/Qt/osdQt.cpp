@@ -1656,8 +1656,11 @@ void OSD_StopAudio( void )
 void OSD_WriteAudioStream(BYTE *stream, int samples)
 {
 #ifndef NOSOUND
-	if(audioBuffer){
-		audioBuffer->write((const char*)stream, samples);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	if(!app->isAVI()){
+		if(audioBuffer){
+			audioBuffer->write((const char*)stream, samples);
+		}
 	}
 #endif
 }

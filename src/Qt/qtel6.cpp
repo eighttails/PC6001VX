@@ -99,6 +99,10 @@ void EL6::ExecMenu( int id )
 	case ID_REPLAYROLLBACK:	UI_ReplayRollback();					break;	// リプレイ中どこでもLOADを巻き戻し
 	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
 	case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
+	case ID_REPLAYMOVIE:													// リプレイを動画に変換
+		UI_ReplayLoad();
+		OSD_PushEvent(EV_REPLAYMOVIE);
+		break;
 	case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
 	case ID_KEYPANEL:		app->toggleKeyPanel();					break;	// キーパネル
 	case ID_VIRTURLKEY:		app->toggleVirtualKeyboard();			break;	// 仮想キーボード
@@ -266,6 +270,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	}
 	if (REPLAY::GetStatus() == REP_IDLE){
 		addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
+		addCommand(replayMenu, tr("リプレイを動画に変換..."), ID_REPLAYMOVIE);
 	}
 	if (REPLAY::GetStatus() == REP_RECORD){
 		addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);

@@ -486,6 +486,7 @@ bool cIni::DeleteBefore( const char *section, const char *entry )
 			delete tnode;
 		}
 	}
+	return true;
 }
 
 
@@ -494,7 +495,7 @@ bool cIni::DeleteBefore( const char *section, const char *entry )
 ////////////////////////////////////////////////////////////////
 bool cIni::DeleteAfter( const char *section, const char *entry )
 {
-	cNode *node, *tnode;
+	cNode *node = NULL, *tnode = NULL;
 	bool Found = false;
 	
 	if( !Ready ) return false;
@@ -538,6 +539,7 @@ bool cIni::DeleteAfter( const char *section, const char *entry )
 			delete node;
 		}
 	}
+	return true;
 }
 
 

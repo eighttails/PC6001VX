@@ -563,7 +563,7 @@ EL6::ReturnCode EL6::EventLoop( void )
 				// スピードダウン
 				sche->SetSpeedRatio( -1 );
 			
-			if( event.mousebt.button == MBT_LEFT )
+			if( event.mousebt.button == MBT_MIDDLE )
 				// 等速
 				sche->SetSpeedRatio( 0 );
 			

@@ -143,10 +143,11 @@ void RenderView::wheelEvent(QWheelEvent *event)
 
 void RenderView::mouseReleaseEvent(QMouseEvent *event)
 {
-	if(event->button() == Qt::LeftButton){
+	auto button = event->button();
+	if( button == Qt::LeftButton || button == Qt::MiddleButton){
 		Event ev;
 		ev.type = EV_MOUSEBUTTONUP;
-		ev.mousebt.button = MBT_LEFT;
+		ev.mousebt.button = button == Qt::LeftButton ? MBT_LEFT : MBT_MIDDLE;
 		ev.mousebt.state = false;
 		OSD_PushEvent(ev);
 	}

@@ -94,6 +94,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	//アプリで定義した型名をシグナルの引数として使えるようにする
 	qRegisterMetaType<HWINDOW>("HWINDOW");
 	qRegisterMetaType<TiltDirection>("TiltDirection");
+	qRegisterMetaType<FileMode>("FileMode");
 
 	// エミュレーションコア部分用スレッドを生成
 	QThread* emulationThread = new QThread(this);
@@ -257,6 +258,59 @@ int P6VXApp::showMessageBox(const char *mes, const char *cap, int type)
 	case QMessageBox::No:	return OSDR_NO;
 	default:	return OSDR_CANCEL;
 	}
+}
+
+const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, const char *filter, char *fullpath, char *path, const char *ext)
+{
+	QString result;
+	//検索パスが指定されていない場合はホームフォルダとする
+	QString pathStr = strlen(path) ? path : QDir::homePath();
+
+	QWidget* parent = static_cast<QWidget*>(hwnd);
+	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
+	QFileDialog::Options opt = 0;
+	if (QGuiApplication::platformName() == QLatin1String("xcb")){
+		opt |= QFileDialog::DontUseNativeDialog;
+	}
+
+	QFileDialog dialog(parent);
+	dialog.setWindowTitle(title);
+	dialog.setDirectory(pathStr);
+	dialog.setNameFilter(filter);
+	dialog.setOptions(opt);
+#ifdef ALWAYSFULLSCREEN
+	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
+#endif
+
+	OSD_ShowCursor(true);
+	if(mode == FM_Save){
+		dialog.setFileMode(QFileDialog::AnyFile);
+		if (dialog.exec() == QDialog::Accepted) {
+			result = dialog.selectedFiles().value(0);
+		}
+		OSD_RestoreCursor();
+		if(result.isEmpty())    return NULL;
+		// 入力されたファイル名に拡張子がついていない場合は付与する
+		QFileInfo info(result);
+		if(info.suffix() != ext){
+			result += QString(".") + ext;
+		}
+	} else {
+		dialog.setFileMode(QFileDialog::ExistingFile);
+		if (dialog.exec() == QDialog::Accepted) {
+			result = dialog.selectedFiles().value(0);
+		}
+		OSD_RestoreCursor();
+		if(result.isEmpty())    return NULL;
+	}
+
+	QDir dir(result);
+
+	if( path ) strcpy( path, dir.path().toUtf8().constData() );
+	if( fullpath ) strcpy( fullpath, result.toUtf8().constData() );
+
+	QFile file(result);
+	return file.fileName().toUtf8().constData();
 }
 
 void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)

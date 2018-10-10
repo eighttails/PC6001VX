@@ -798,12 +798,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>P6VXApp</name>
     <message>
-        <location filename="../p6vxapp.cpp" line="160"/>
+        <location filename="../p6vxapp.cpp" line="162"/>
         <source>Storage access denied.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="491"/>
+        <location filename="../p6vxapp.cpp" line="551"/>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
@@ -812,7 +812,7 @@ Please copy ROM files to ROM folder(%1) or specify another folder.
 Do you want to specify another folder?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="535"/>
+        <location filename="../p6vxapp.cpp" line="595"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>
@@ -2154,107 +2154,107 @@ Save time and PC6001V version </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1412"/>
+        <location filename="../osdQt.cpp" line="1378"/>
         <source>TAPEイメージ選択(LOAD)</source>
         <translation>Tape image selection (Load)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1413"/>
-        <location filename="../osdQt.cpp" line="1423"/>
+        <location filename="../osdQt.cpp" line="1379"/>
+        <location filename="../osdQt.cpp" line="1389"/>
         <source>TAPEイメージ (*.p6t *.cas *.p6);;P6T形式 (*.p6t);;ベタ形式 (*.cas *.p6);;全てのファイル (*.*)</source>
         <translation>Tape image (*.p6t *.cas *.p6);;P6T format (*.p6t);;Standard format (*.cas *.p6);;All files(*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1422"/>
+        <location filename="../osdQt.cpp" line="1388"/>
         <source>TAPEイメージ選択(SAVE)</source>
         <translation>Tape image selection (Save)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1432"/>
+        <location filename="../osdQt.cpp" line="1398"/>
         <source>DISKイメージ選択</source>
         <translation>Disk image selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1433"/>
+        <location filename="../osdQt.cpp" line="1399"/>
         <source>DISKイメージ(*.d88);;D88形式 (*.d88);;全てのファイル (*.*)</source>
         <translation>Disk image (*.d88);;D88 format (*.d88);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1441"/>
+        <location filename="../osdQt.cpp" line="1407"/>
         <source>拡張ROMイメージ選択</source>
         <translation>Expansion ROM image selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1442"/>
-        <location filename="../osdQt.cpp" line="1448"/>
-        <location filename="../osdQt.cpp" line="1514"/>
+        <location filename="../osdQt.cpp" line="1408"/>
+        <location filename="../osdQt.cpp" line="1414"/>
+        <location filename="../osdQt.cpp" line="1480"/>
         <source>全てのファイル (*.*)</source>
         <translation>All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1447"/>
+        <location filename="../osdQt.cpp" line="1413"/>
         <source>プリンター出力ファイル選択</source>
         <translation>Printer output file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1454"/>
+        <location filename="../osdQt.cpp" line="1420"/>
         <source>全角フォントファイル選択</source>
         <translation>Full-width font selection file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1455"/>
-        <location filename="../osdQt.cpp" line="1463"/>
+        <location filename="../osdQt.cpp" line="1421"/>
+        <location filename="../osdQt.cpp" line="1429"/>
         <source>PNGファイル (*.png);;全てのファイル (*.*)</source>
         <translation>PNG file (*.png);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1462"/>
+        <location filename="../osdQt.cpp" line="1428"/>
         <source>半角フォントファイル選択</source>
         <translation>Half-width font selection file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1470"/>
+        <location filename="../osdQt.cpp" line="1436"/>
         <source>どこでもLOADファイル選択</source>
         <translation>State load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1471"/>
+        <location filename="../osdQt.cpp" line="1437"/>
         <source>どこでもSAVEファイル (*.dds *.ddr);;どこでもSAVE形式 (*.dds);;リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>State save files (*.dds *.ddr);;State save format (*.dds);;Replay file (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1480"/>
+        <location filename="../osdQt.cpp" line="1446"/>
         <source>どこでもSAVEファイル選択</source>
         <translation>State save file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1481"/>
+        <location filename="../osdQt.cpp" line="1447"/>
         <source>どこでもSAVE形式 (*.dds);;全てのファイル (*.*)</source>
         <translation>State save format (*.dds);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1488"/>
+        <location filename="../osdQt.cpp" line="1454"/>
         <source>リプレイ再生ファイル選択</source>
         <translation>Replay load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1489"/>
-        <location filename="../osdQt.cpp" line="1497"/>
+        <location filename="../osdQt.cpp" line="1455"/>
+        <location filename="../osdQt.cpp" line="1463"/>
         <source>リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>Replay file (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1496"/>
+        <location filename="../osdQt.cpp" line="1462"/>
         <source>リプレイ保存ファイル選択</source>
         <translation>Replay save file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1504"/>
+        <location filename="../osdQt.cpp" line="1470"/>
         <source>ビデオキャプチャ出力ファイル選択</source>
         <translation>Video capture output file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1505"/>
+        <location filename="../osdQt.cpp" line="1471"/>
         <source>WebMファイル (*.webm);;全てのファイル (*.*)</source>
         <translation>WebM file (*.webm);;All files (*.*)</translation>
     </message>
@@ -2263,7 +2263,7 @@ Save time and PC6001V version </translation>
         <translation type="vanished">AVI file (*.avi);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1513"/>
+        <location filename="../osdQt.cpp" line="1479"/>
         <source>ファイル選択</source>
         <translation>File selection</translation>
     </message>
@@ -2734,308 +2734,313 @@ Save time and PC6001V version </translation>
 <context>
     <name>QtEL6</name>
     <message>
-        <location filename="../qtel6.cpp" line="222"/>
+        <location filename="../qtel6.cpp" line="226"/>
         <source>システム</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="224"/>
+        <location filename="../qtel6.cpp" line="228"/>
         <source>リセット</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="225"/>
+        <location filename="../qtel6.cpp" line="229"/>
         <source>再起動</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="234"/>
+        <location filename="../qtel6.cpp" line="238"/>
         <source>どこでもLOAD</source>
         <translation>State load</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="235"/>
+        <location filename="../qtel6.cpp" line="239"/>
         <source>どこでもSAVE</source>
         <translation>State save</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="237"/>
+        <location filename="../qtel6.cpp" line="241"/>
         <source>LOAD...</source>
         <translation>Load...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="241"/>
+        <location filename="../qtel6.cpp" line="245"/>
         <source>SAVE...</source>
         <translation>Save...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="247"/>
+        <location filename="../qtel6.cpp" line="251"/>
         <source>リプレイ</source>
         <translation>Replay</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="268"/>
+        <location filename="../qtel6.cpp" line="272"/>
         <source>記録再開...</source>
         <translation>Resume recording...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="271"/>
+        <location filename="../qtel6.cpp" line="276"/>
         <source>途中保存</source>
         <translation>Checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="272"/>
+        <location filename="../qtel6.cpp" line="277"/>
         <source>途中保存から再開</source>
         <translation>Back to checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="289"/>
+        <location filename="../qtel6.cpp" line="294"/>
         <source>打込み代行...</source>
         <translation>Auto typing...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="291"/>
+        <location filename="../qtel6.cpp" line="296"/>
         <source>終了</source>
         <translation>Exit</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="294"/>
+        <location filename="../qtel6.cpp" line="299"/>
         <source>TAPE</source>
         <translation>Tape</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="295"/>
-        <location filename="../qtel6.cpp" line="305"/>
-        <location filename="../qtel6.cpp" line="313"/>
+        <location filename="../qtel6.cpp" line="300"/>
+        <location filename="../qtel6.cpp" line="310"/>
+        <location filename="../qtel6.cpp" line="318"/>
         <source>挿入...</source>
         <translation>Insert...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="296"/>
-        <location filename="../qtel6.cpp" line="306"/>
-        <location filename="../qtel6.cpp" line="314"/>
+        <location filename="../qtel6.cpp" line="301"/>
+        <location filename="../qtel6.cpp" line="311"/>
+        <location filename="../qtel6.cpp" line="319"/>
         <source>取出</source>
         <translation>Eject</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="301"/>
+        <location filename="../qtel6.cpp" line="306"/>
         <source>DISK</source>
         <translation>Disk</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="312"/>
+        <location filename="../qtel6.cpp" line="317"/>
         <source>拡張ROM</source>
         <translation>Extended ROM</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="319"/>
+        <location filename="../qtel6.cpp" line="324"/>
         <source>ジョイスティック</source>
         <translation>Joystick</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="335"/>
-        <location filename="../qtel6.cpp" line="336"/>
+        <location filename="../qtel6.cpp" line="340"/>
+        <location filename="../qtel6.cpp" line="341"/>
         <source>なし</source>
         <translation>None</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="344"/>
+        <location filename="../qtel6.cpp" line="349"/>
         <source>設定</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="165"/>
-        <location filename="../qtel6.cpp" line="346"/>
+        <location filename="../qtel6.cpp" line="169"/>
+        <location filename="../qtel6.cpp" line="351"/>
         <source>表示サイズ</source>
         <translation>Display size</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="165"/>
+        <location filename="../qtel6.cpp" line="169"/>
         <source>表示サイズ(%)を入力してください。(50-1000)</source>
         <translation>Enter magnification(%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="174"/>
+        <location filename="../qtel6.cpp" line="178"/>
         <source>設定を反映するには一度終了しますがよろしいですか?</source>
         <translation>You need to exit program to apply settings.\nDo you want to continue?</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="228"/>
+        <location filename="../qtel6.cpp" line="232"/>
         <source>一時停止</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="230"/>
+        <location filename="../qtel6.cpp" line="234"/>
         <source>スナップショットを取得</source>
         <translation>Take snapshot</translation>
     </message>
     <message>
         <location filename="../qtel6.cpp" line="273"/>
+        <source>リプレイを動画に変換...</source>
+        <translation>Convert replay to movie...</translation>
+    </message>
+    <message>
+        <location filename="../qtel6.cpp" line="278"/>
         <source>1つ前の途中保存から再開</source>
         <translation>Back to previous checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="283"/>
+        <location filename="../qtel6.cpp" line="288"/>
         <source>キーパネル</source>
         <translation>Key panel</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="285"/>
+        <location filename="../qtel6.cpp" line="290"/>
         <source>仮想キーボード</source>
         <translation>Virtual keyboard</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="347"/>
+        <location filename="../qtel6.cpp" line="352"/>
         <source>50%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="348"/>
+        <location filename="../qtel6.cpp" line="353"/>
         <source>100%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="349"/>
+        <location filename="../qtel6.cpp" line="354"/>
         <source>200%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="350"/>
+        <location filename="../qtel6.cpp" line="355"/>
         <source>300%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="351"/>
+        <location filename="../qtel6.cpp" line="356"/>
         <source>倍率を指定...</source>
         <translation>Specify magnification...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="352"/>
+        <location filename="../qtel6.cpp" line="357"/>
         <source>倍率を固定</source>
         <translation>Fix magnification</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="355"/>
+        <location filename="../qtel6.cpp" line="360"/>
         <source>フルスクリーン</source>
         <translation>Full screen</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="358"/>
+        <location filename="../qtel6.cpp" line="363"/>
         <source>ステータスバー</source>
         <translation>Status bar</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="360"/>
+        <location filename="../qtel6.cpp" line="365"/>
         <source>4:3表示</source>
         <translation>4:3 TV display</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="362"/>
+        <location filename="../qtel6.cpp" line="367"/>
         <source>スキャンライン</source>
         <translation>Scanline</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="365"/>
+        <location filename="../qtel6.cpp" line="370"/>
         <source>ハードウェアアクセラレーション</source>
         <translation>Hardware acceleration</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="368"/>
+        <location filename="../qtel6.cpp" line="373"/>
         <source>フィルタリング</source>
         <translation>Filtering</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="371"/>
+        <location filename="../qtel6.cpp" line="376"/>
         <source>TILTモード</source>
         <translation>Tilt mode</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="374"/>
+        <location filename="../qtel6.cpp" line="379"/>
         <source>MODE4 カラー</source>
         <translation>Mode4 color</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="377"/>
+        <location filename="../qtel6.cpp" line="382"/>
         <source>モノクロ</source>
         <translation>Monochrome</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="378"/>
+        <location filename="../qtel6.cpp" line="383"/>
         <source>赤/青</source>
         <translation>Red/Blue</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="379"/>
+        <location filename="../qtel6.cpp" line="384"/>
         <source>青/赤</source>
         <translation>Blue/Red</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="380"/>
+        <location filename="../qtel6.cpp" line="385"/>
         <source>桃/緑</source>
         <translation>Green/Peach</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="381"/>
+        <location filename="../qtel6.cpp" line="386"/>
         <source>緑/桃</source>
         <translation>Peach/Green</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="387"/>
+        <location filename="../qtel6.cpp" line="392"/>
         <source>フレームスキップ</source>
         <translation>Frameskip</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="402"/>
+        <location filename="../qtel6.cpp" line="407"/>
         <source>サンプリングレート</source>
         <translation>Sampling rate</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="414"/>
+        <location filename="../qtel6.cpp" line="419"/>
         <source>ウェイト無効</source>
         <translation>Disable wait</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="416"/>
+        <location filename="../qtel6.cpp" line="421"/>
         <source>Turbo TAPE</source>
         <translation>Turbo tape</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="418"/>
+        <location filename="../qtel6.cpp" line="423"/>
         <source>Boost Up</source>
         <translation>Boost up</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="420"/>
+        <location filename="../qtel6.cpp" line="425"/>
         <source>環境設定...</source>
         <translation>Preferences...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="424"/>
+        <location filename="../qtel6.cpp" line="429"/>
         <source>デバッグ</source>
         <translation>Debug</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="426"/>
+        <location filename="../qtel6.cpp" line="431"/>
         <source>モニタモード</source>
         <translation>Monitor mode</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="431"/>
+        <location filename="../qtel6.cpp" line="436"/>
         <source>ヘルプ</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="432"/>
+        <location filename="../qtel6.cpp" line="437"/>
         <source>オンラインヘルプ</source>
         <translation>Online help</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="433"/>
+        <location filename="../qtel6.cpp" line="438"/>
         <source>バージョン情報...</source>
         <translation>About...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="434"/>
+        <location filename="../qtel6.cpp" line="439"/>
         <source>About Qt...</source>
         <translation></translation>
     </message>

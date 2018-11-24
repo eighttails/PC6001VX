@@ -27,7 +27,8 @@ typedef enum {
 	EV_FPSUPDATE,
 	EV_DEBUGMODEBP,
 	EV_DROPFILE,
-    EV_CONTEXTMENU,
+	EV_CONTEXTMENU,
+	EV_REPLAYMOVIE,
 	EndofEvent
 } EventType;
 

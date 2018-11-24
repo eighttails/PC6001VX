@@ -8,6 +8,7 @@
 #include <QSettings>
 
 #include "../typedef.h"
+#include "../osd.h"
 #include "../p6vm.h"
 #include "../config.h"
 #include "../common.h"
@@ -65,6 +66,9 @@ public:
 	int getTiltStep();
 	void setTiltStep(int step);
 
+	// ステータス関係
+	bool isAVI();
+
 	// セーフモード(一時的にハードウェアアクセラレーションを無効化する)
 	bool isSafeMode();
 	void enableSafeMode(bool enable);
@@ -80,6 +84,10 @@ public slots:
 
 	//メッセージボックスの表示
 	int showMessageBox(const char *mes, const char *cap, int type);
+
+	// ファイルダイアログの表示
+	const char* fileDialog( void *hwnd, FileMode mode, const char *title,
+							const char *filter, char *fullpath, char *path, const char *ext );
 
 	//ウィンドウを生成
 	void createWindow(HWINDOW Wh, bool fsflag );

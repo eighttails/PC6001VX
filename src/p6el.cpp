@@ -563,7 +563,7 @@ EL6::ReturnCode EL6::EventLoop( void )
 				// スピードダウン
 				sche->SetSpeedRatio( -1 );
 			
-			if( event.mousebt.button == MBT_LEFT )
+			if( event.mousebt.button == MBT_MIDDLE )
 				// 等速
 				sche->SetSpeedRatio( 0 );
 			
@@ -591,7 +591,13 @@ EL6::ReturnCode EL6::EventLoop( void )
 			
 		case EV_REPLAY:			// リプレイ再生
 			return Replay;
-			
+
+		case EV_REPLAYMOVIE:	// リプレイを動画に変換
+			Stop();
+			UI_AVISave();
+			Start();
+			break;
+
 		case EV_DROPFILE:		// Drag & Drop
 			if( !stricmp( "p6",  OSD_GetFileNameExt( event.drop.file ) ) ||
 				!stricmp( "cas", OSD_GetFileNameExt( event.drop.file ) ) ||

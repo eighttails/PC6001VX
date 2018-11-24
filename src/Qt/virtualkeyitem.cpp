@@ -76,7 +76,6 @@ void VirtualKeyItem::changeStatus(
 
 bool VirtualKeyItem::sceneEvent(QEvent *event)
 {
-	qDebug() << "sceneEvent accepted:" << event->type();
 	auto type = event->type();
 	switch (type){
 	case QEvent::TouchBegin:

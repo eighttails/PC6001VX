@@ -17,6 +17,7 @@ void NormalVirtualKeyboardScene::construct()
 		createVirtualKeyItem(KVC_F12, "snapshot", "snapshot", "snapshot", "snapshot", "snapshot", "snapshot", "snapshot")->setPos(unitWidth * 11, unitHeight * i);
 		createVirtualKeyItem(KVC_HENKAN, "load", "load", "load", "load", "load", "load", "load")->setPos(unitWidth * 13.25, unitHeight * i);
 		i++;
+		i++;
 	}
 	{
 		std::vector<VirtualKeyItem*> list;

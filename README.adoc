@@ -573,9 +573,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 
 == 更新履歴
 .git master
+* 仮想キーボードの表示サイズを改善
 * エミュレート速度を等速に戻すボタンをマウス中ボタンに変更
 * 「リプレイを動画に変換」メニューを追加
 * 動画エンコード中は音が鳴らないようにした。
+* Better virtual keyboard display size.
 * Assigned "reset emulation speed" to middle mouse button.
 * Added "Convert replay to movie" menu.
 * Now audio is muted during encoding movie.

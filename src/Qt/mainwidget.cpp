@@ -32,6 +32,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	VKeyWidget->setVisible(app->getSetting(P6VXApp::keyVirtualKeyVisible).toBool());
 	VKeyWidget->setCurrentIndex(app->getSetting(P6VXApp::keyVirtualKeyTabIndex).toInt());
 
+	adjustSize();
+
 	// ウィンドウ位置とサイズを復元
 	restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
 	if(app->getSetting(P6VXApp::keyMaximized).toBool()){

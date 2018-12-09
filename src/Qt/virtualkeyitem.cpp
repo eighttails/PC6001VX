@@ -119,7 +119,6 @@ void VirtualKeyItem::sendKeyEvent(EventType type, bool state)
 
 void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-#ifdef EMULATE_TOUCH
 	// すでにタッチによってキーが押されている場合は何もしない
 	if(TouchStatus) return;
 	qDebug() << "mousePressEvent accepted:" << event->type();
@@ -134,17 +133,16 @@ void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		pressEffect->setEnabled(false);
 	}
 	event->accept();
-#endif
-	QGraphicsPixmapItem::mousePressEvent(event);
+
+    QGraphicsPixmapItem::mousePressEvent(event);
 }
 
 void VirtualKeyItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-#ifdef EMULATE_TOUCH
 	// すでにタッチによってキーが押されている場合は何もしない
 	if(TouchStatus) return;
 	sendKeyEvent(EV_KEYUP, false);
 	event->accept();
-#endif
-	QGraphicsPixmapItem::mouseReleaseEvent(event);
+
+    QGraphicsPixmapItem::mouseReleaseEvent(event);
 }

@@ -30,6 +30,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	, IsAlpha(isAlpha)
 	, MouseToggle(mouseToggle)
 	, ToggleStatus(false)
+	, TouchStatus(false)
 	, pressEffect(new QGraphicsColorizeEffect(this))
 {
 	setPixmap(PixNormal);
@@ -116,3 +117,34 @@ void VirtualKeyItem::sendKeyEvent(EventType type, bool state)
 	OSD_PushEvent(ev);
 }
 
+void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+#ifdef EMULATE_TOUCH
+	// すでにタッチによってキーが押されている場合は何もしない
+	if(TouchStatus) return;
+	qDebug() << "mousePressEvent accepted:" << event->type();
+	// トグルキーの場合はUP，DOWNを交互に送る
+	auto toggle = MouseToggle && ToggleStatus;
+	if (MouseToggle) ToggleStatus = !ToggleStatus;
+	bool state = MouseToggle ? ToggleStatus : true;
+	sendKeyEvent(state ? EV_KEYDOWN : EV_KEYUP, state);
+	if (MouseToggle && ToggleStatus){
+		pressEffect->setEnabled(true);
+	} else {
+		pressEffect->setEnabled(false);
+	}
+	event->accept();
+#endif
+	QGraphicsPixmapItem::mousePressEvent(event);
+}
+
+void VirtualKeyItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+#ifdef EMULATE_TOUCH
+	// すでにタッチによってキーが押されている場合は何もしない
+	if(TouchStatus) return;
+	sendKeyEvent(EV_KEYUP, false);
+	event->accept();
+#endif
+	QGraphicsPixmapItem::mouseReleaseEvent(event);
+}

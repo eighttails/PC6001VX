@@ -38,6 +38,7 @@ DEFINES += QTP6VX
 #DEFINES += REPLAYDEBUG_INST
 
 debug:DEFINES += DEBUG
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 #Configuration for UNIX variants
@@ -45,6 +46,7 @@ unix:!macx {
 #Configuration for Android
 android {
 DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
+DEFINES -= QT_NO_DEBUG_OUTPUT
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 QT += androidextras

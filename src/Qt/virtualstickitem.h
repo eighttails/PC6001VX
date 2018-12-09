@@ -23,11 +23,15 @@ public slots:
 protected:
 	// QGraphicsItem interface
 	virtual bool sceneEvent(QEvent *event) override;
+	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+	virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 	void sendKeyEvent(EventType type, PCKEYsym code, bool state);
 	std::array<bool, 4> estimateStickInput(QPointF coord);
 
 	std::array<bool, 4> currentKeyStatus;
 	QGraphicsColorizeEffect* pressEffect; //ボタンを押すと色が変わるエフェクト
+
 };
 
 #endif // VIRTUALSTICKITEM_H

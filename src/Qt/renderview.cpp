@@ -93,7 +93,7 @@ bool RenderView::event(QEvent *event)
 {
     if(QGestureEvent* gEvent = dynamic_cast<QGestureEvent*>(event)){
         if(QTapAndHoldGesture* tGesture = dynamic_cast<QTapAndHoldGesture*>(gEvent->gesture(Qt::TapAndHoldGesture))){
-            QGraphicsItem* item = scene()->itemAt(mapToScene(tGesture->position().toPoint()), transform());
+			QGraphicsItem* item = scene()->itemAt(mapToScene(tGesture->position().toPoint()), transform());
             // タップしたアイテムが原点にある場合、メイン画面とみなして長押しメニューを出す
             if(tGesture->state() == Qt::GestureFinished && item && item->pos() == QPoint(0, 0)){
                 Event e;
@@ -105,7 +105,7 @@ bool RenderView::event(QEvent *event)
             }
         }
     }
-    return QGraphicsView::event(event);
+	return QGraphicsView::event(event);
 }
 
 void RenderView::paintEvent(QPaintEvent *event)

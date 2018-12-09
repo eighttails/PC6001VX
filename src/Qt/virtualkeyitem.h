@@ -35,9 +35,9 @@ public slots:
 	// QGraphicsItem interface
 protected:
 	virtual bool sceneEvent(QEvent *event) override;
-	void sendKeyEvent(EventType type, bool state);
 	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+	void sendKeyEvent(EventType type, bool state);
 
 	const PCKEYsym Code;			//キーコード
 	const QPixmap PixNormal;		//通常時の画像
@@ -50,7 +50,6 @@ protected:
 	const bool IsAlpha;				//アルファベットフラグ(CAPS時に大文字小文字が反転)
 	const bool MouseToggle;			//マウス入力時にトグル入力にする(SHIFT,GRPH用)
 	bool ToggleStatus;				//マウス入力時のトグル状態
-	bool TouchStatus;				//タッチ押下状態(タッチで押されている状態がtrue)
 
 	QGraphicsColorizeEffect* pressEffect; //ボタンを押すと色が変わるエフェクト
 };

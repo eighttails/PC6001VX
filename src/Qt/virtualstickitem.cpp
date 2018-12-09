@@ -98,6 +98,50 @@ bool VirtualStickItem::sceneEvent(QEvent *event)
 	}
 }
 
+void VirtualStickItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	pressEffect->setEnabled(true);
+	// タッチした座標に対応するキーを押下する(同時押しによる斜め入力あり)
+	auto keyStatus = estimateStickInput(event->pos());
+	for(size_t i = 0; i < keyStatus.size(); i++){
+		if(keyStatus[i]){
+			sendKeyEvent(EV_KEYDOWN, keySims[i], true);
+		}
+	}
+	currentKeyStatus = keyStatus;
+	event->accept();
+}
+
+void VirtualStickItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+	auto keyStatus = estimateStickInput(event->pos());
+	for(size_t i = 0; i < keyStatus.size(); i++){
+		// 前回と状態が変わったキーのイベントを送信
+		if (keyStatus[i] && !currentKeyStatus[i]){
+			sendKeyEvent(EV_KEYDOWN, keySims[i], true);
+		}
+		else if (!keyStatus[i] && currentKeyStatus[i]){
+			sendKeyEvent(EV_KEYUP, keySims[i], false);
+		}
+	}
+	currentKeyStatus = keyStatus;
+	event->accept();
+}
+
+void VirtualStickItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	pressEffect->setEnabled(false);
+	// それまで押されていたキーをリリースする
+	for(size_t i = 0; i < currentKeyStatus.size(); i++){
+		if(currentKeyStatus[i]){
+			sendKeyEvent(EV_KEYUP, keySims[i], false);
+		}
+	}
+	// キー押下状態をクリアする
+	currentKeyStatus = {false,false,false,false};
+	event->accept();
+}
+
 void VirtualStickItem::sendKeyEvent(EventType type, PCKEYsym code, bool state)
 {
 	Event ev;

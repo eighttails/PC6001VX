@@ -683,6 +683,12 @@ Androidではメイン画面上でロングタップするとメニューが出�
 <p>記録再開<br>
 以前記録したリプレイの記録終了時にresumeファイルが残っていれば「記録再開」でリプレイの続きを記録停止したところから記録することができます。</p>
 </li>
+<li>
+<p>リプレイを動画に変換<br>
+保存済みのリプレイファイルを動画に変換します。<br>
+最初に変換対象のリプレイファイルを選択し、次に動画の保存先を指定します。<br>
+するとリプレイを再生しながら動画のエンコードを開始します。リプレイが終了したら自動的に動画のエンコードも終了します。</p>
+</li>
 </ul>
 </div>
 </li>
@@ -771,13 +777,13 @@ NORMALタブでは実機のキーボードを模したレイアウト、SIMPLE�
 <p>AndroidおよびWindows10で動作確認しています。</p>
 </li>
 <li>
+<p>現時点ではキーリピートに対応していません。</p>
+</li>
+<li>
 <p>NORMALモードでまともに操作するには最低5インチの画面サイズが必要でしょう。</p>
 </li>
 <li>
-<p>現時点で仮想キーボードはマウスクリックによる入力には対応していません。</p>
-</li>
-<li>
-<p>現時点ではキーリピートに対応していません。</p>
+<p>Windows10ではエミュレーターのフルスクリーンをオフにしてタブレットモードに切り替えると自然な表示になります。</p>
 </li>
 </ul>
 </div>
@@ -1119,7 +1125,7 @@ PC6001VXに組み込んでいるQtのバージョンを表示します。<br></p
 <h3 id="true--9"><a class="anchor" href="#true--9"></a>3.3. マウス操作</h3>
 <div class="paragraph">
 <p>ホイール付きマウスを使用している場合，動作速度の変更が出来ます。<br>
-ホイールUPで増速，ホイールDOWNで減速，左クリックで等速に戻ります。<br>
+ホイールUPで増速，ホイールDOWNで減速，中ボタンクリックで等速に戻ります。<br>
 動作速度の変化量は2倍速までが10%単位，2倍速を超えると100%単位です。<br></p>
 </div>
 <table class="tableblock frame-all grid-all spread">
@@ -1584,6 +1590,41 @@ Qt5の音量制御周りはまだあまり枯れていないようです。<br><
 <div class="sect1">
 <h2 id="true--15"><a class="anchor" href="#true--15"></a>6. 更新履歴</h2>
 <div class="sectionbody">
+<div class="ulist">
+<div class="title">3.1.0 2018/12/15</div>
+<ul>
+<li>
+<p>仮想キーボードの表示サイズを改善。</p>
+</li>
+<li>
+<p>仮想キーボードがマウスで操作できるようになった。</p>
+</li>
+<li>
+<p>エミュレート速度を等速に戻すボタンをマウス中ボタンに変更。</p>
+</li>
+<li>
+<p>「リプレイを動画に変換」メニューを追加。</p>
+</li>
+<li>
+<p>動画エンコード中は音が鳴らないようにした。</p>
+</li>
+<li>
+<p>Better virtual keyboard display size.</p>
+</li>
+<li>
+<p>Virtual Keyboard is now mouse operable.</p>
+</li>
+<li>
+<p>Assigned "reset emulation speed" to middle mouse button.</p>
+</li>
+<li>
+<p>Added "Convert replay to movie" menu.</p>
+</li>
+<li>
+<p>Now audio is muted during encoding movie.</p>
+</li>
+</ul>
+</div>
 <div class="ulist">
 <div class="title">3.0.0 2018/08/15</div>
 <ul>
@@ -2260,7 +2301,7 @@ Qtについて勉強する機会を提供してくださった関東Qt勉強会�
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-08-15 11:26:55
+Last updated 2018-12-15 18:05:52
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">

@@ -156,9 +156,9 @@ NORMALタブでは実機のキーボードを模したレイアウト、SIMPLE�
 [WARNING]
 ====
 * AndroidおよびWindows10で動作確認しています。
-* NORMALモードでまともに操作するには最低5インチの画面サイズが必要でしょう。
-* 現時点で仮想キーボードはマウスクリックによる入力には対応していません。
 * 現時点ではキーリピートに対応していません。
+* NORMALモードでまともに操作するには最低5インチの画面サイズが必要でしょう。
+* Windows10ではエミュレーターのフルスクリーンをオフにしてタブレットモードに切り替えると自然な表示になります。
 ====
 
 
@@ -572,12 +572,14 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
-.git master
-* 仮想キーボードの表示サイズを改善
-* エミュレート速度を等速に戻すボタンをマウス中ボタンに変更
-* 「リプレイを動画に変換」メニューを追加
+.3.1.0 2018/12/15
+* 仮想キーボードの表示サイズを改善。
+* 仮想キーボードがマウスで操作できるようになった。
+* エミュレート速度を等速に戻すボタンをマウス中ボタンに変更。
+* 「リプレイを動画に変換」メニューを追加。
 * 動画エンコード中は音が鳴らないようにした。
 * Better virtual keyboard display size.
+* Virtual Keyboard is now mouse operable.
 * Assigned "reset emulation speed" to middle mouse button.
 * Added "Convert replay to movie" menu.
 * Now audio is muted during encoding movie.

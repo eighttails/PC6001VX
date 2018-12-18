@@ -143,7 +143,7 @@ void EL6::ExecMenu( int id )
 		QDesktopServices::openUrl(QUrl::fromLocalFile(QString("file://") + OSD_GetModulePath() + "/README.html"));
 		break;
 #else
-		QDesktopServices::openUrl(QUrl("https://github.com/eighttails/PC6001VX/blob/master/README.mkd"));
+		QDesktopServices::openUrl(QUrl("https://github.com/eighttails/PC6001VX/blob/master/README.adoc"));
 		break;
 #endif
 	case ID_VERSION:		OSD_VersionDialog( graph->GetWindowHandle(), cfg->GetModel() );	break;	// バージョン情報

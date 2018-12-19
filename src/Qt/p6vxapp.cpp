@@ -687,6 +687,10 @@ void P6VXApp::postExecuteEmulation()
 
 	if( Restart == EL6::Quit ){
 		// 終了処理
+		if(MWidget && MWidget->isVisible()){
+			// ウィンドウを閉じてサイズを保存
+			MWidget->close();
+		}
 		OSD_Quit();
 		exit();
 		return;

@@ -18,7 +18,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setBackgroundBrush(Qt::black);
-    setStyleSheet( "QGraphicsView { border-style: none; }" );
+	setStyleSheet( "QGraphicsView { border-style: none; }" );
 
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 #ifndef NOOPENGL
@@ -153,17 +153,4 @@ void RenderView::mouseReleaseEvent(QMouseEvent *event)
 	}
 }
 
-bool RenderView::hasHeightForWidth() const
-{
-	return true;
-}
 
-int RenderView::heightForWidth(int width) const
-{
-	if(scene()){
-		auto sceneAspectRatio = scene()->height() / scene()->width();
-		return int(sceneAspectRatio * width);
-	} else {
-		return width;
-	}
-}

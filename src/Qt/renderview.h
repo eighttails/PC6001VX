@@ -28,9 +28,6 @@ protected:
 	virtual void contextMenuEvent(QContextMenuEvent *event) override;
 	virtual void wheelEvent(QWheelEvent *event) override;
 	virtual void mouseReleaseEvent(QMouseEvent *event) override;
-	virtual bool hasHeightForWidth() const override;
-	virtual int heightForWidth(int width) const override;
-
 };
 
 #endif // RENDERVIEW_H

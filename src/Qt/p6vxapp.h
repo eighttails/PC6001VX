@@ -152,8 +152,8 @@ private:
 	QMutex MenuMutex;           // メニュー表示中にロックされるMutex
 
 	// ウィンドウ関連
-	MainWidget* MWidget;
-	KeyPanel* KPanel;
+	QPointer<MainWidget> MWidget;
+	QPointer<KeyPanel> KPanel;
 
 	// P6VX固有の設定
 	QSettings Setting;

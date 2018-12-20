@@ -198,12 +198,16 @@ void P6VXApp::startup()
 
 	// P6VXデフォルト設定
 #ifndef NOOPENGL
-	const bool defHwAccel = true;
 	setDefaultSetting(keyHwAccel, true);
 #endif
 	setDefaultSetting(keyFiltering, true);
 	setDefaultSetting(keyFixMagnification, false);
 	setDefaultSetting(keyKeyPanelVisible, false);
+#ifdef ANDROID
+	setDefaultSetting(keyVirtualKeyVisible, true);
+#else
+	setDefaultSetting(keyVirtualKeyVisible, false);
+#endif
 
 	// INIファイル読込み
 	if( !Cfg.Init() ){

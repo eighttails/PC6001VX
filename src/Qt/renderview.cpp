@@ -3,8 +3,7 @@
 #endif
 #include <QtWidgets>
 #include <QSettings>
-#include <QGestureEvent>
-#include <QTapAndHoldGesture>
+#include <QTapGesture>
 
 #include "../osd.h"
 #include "renderview.h"
@@ -39,7 +38,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
         }
     }
 #endif
-    grabGesture(Qt::TapAndHoldGesture);
+	grabGesture(Qt::TapGesture);
 
 #ifdef WIN32
     //IMEを無効化
@@ -91,20 +90,22 @@ void RenderView::resizeWindowByRatio(int ratio)
 
 bool RenderView::event(QEvent *event)
 {
-    if(QGestureEvent* gEvent = dynamic_cast<QGestureEvent*>(event)){
-        if(QTapAndHoldGesture* tGesture = dynamic_cast<QTapAndHoldGesture*>(gEvent->gesture(Qt::TapAndHoldGesture))){
-			QGraphicsItem* item = scene()->itemAt(mapToScene(tGesture->position().toPoint()), transform());
-            // タップしたアイテムが原点にある場合、メイン画面とみなして長押しメニューを出す
-            if(tGesture->state() == Qt::GestureFinished && item && item->pos() == QPoint(0, 0)){
-                Event e;
-                e.type = EV_CONTEXTMENU;
-                e.mousebt.x = tGesture->position().x();
-                e.mousebt.y = tGesture->position().y();
-                OSD_PushEvent(e);
-                return true;
-            }
-        }
-    }
+	if(QTouchEvent* tEvent = dynamic_cast<QTouchEvent*>(event)){
+		auto state = tEvent->touchPoints()[0].state();
+		if (state == Qt::TouchPointPressed){
+			auto point = tEvent->touchPoints()[0].pos().toPoint();
+			QGraphicsItem* item = scene()->itemAt(mapToScene(point), transform());
+			// タップしたアイテムが原点にある場合、メイン画面とみなして長押しメニューを出す
+			if(item && item->pos() == QPoint(0, 0)){
+				Event e;
+				e.type = EV_CONTEXTMENU;
+				e.mousebt.x = point.x();
+				e.mousebt.y = point.y();
+				OSD_PushEvent(e);
+				return true;
+			}
+		}
+	}
 	return QGraphicsView::event(event);
 }
 

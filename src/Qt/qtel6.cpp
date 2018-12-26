@@ -112,6 +112,7 @@ void EL6::ExecMenu( int id )
 	case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
 	case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
 	case ID_FULLSCREEN:
+		OSD_ShowCursor(cfg->GetFullScreen() ? true : false);
 		cfg->SetFullScreen( cfg->GetFullScreen() ? false : true );
 		graph->ResizeScreen();	// スクリーンサイズ変更
 		break;

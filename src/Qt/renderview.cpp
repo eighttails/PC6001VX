@@ -90,22 +90,36 @@ void RenderView::resizeWindowByRatio(int ratio)
 
 bool RenderView::event(QEvent *event)
 {
-	if(QTouchEvent* tEvent = dynamic_cast<QTouchEvent*>(event)){
-		auto state = tEvent->touchPoints()[0].state();
-		if (state == Qt::TouchPointPressed){
-			auto point = tEvent->touchPoints()[0].pos().toPoint();
-			QGraphicsItem* item = scene()->itemAt(mapToScene(point), transform());
-			// タップしたアイテムが原点にある場合、メイン画面とみなして長押しメニューを出す
-			if(item && item->pos() == QPoint(0, 0)){
-				Event e;
-				e.type = EV_CONTEXTMENU;
-				e.mousebt.x = point.x();
-				e.mousebt.y = point.y();
-				OSD_PushEvent(e);
-				return true;
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+
+	switch (event->type()) {
+	case QEvent::TouchBegin:
+		if(QTouchEvent* tEvent = dynamic_cast<QTouchEvent*>(event)){
+			auto state = tEvent->touchPoints()[0].state();
+			if (state == Qt::TouchPointPressed){
+				auto point = tEvent->touchPoints()[0].pos().toPoint();
+				QGraphicsItem* item = scene()->itemAt(mapToScene(point), transform());
+				// タップしたアイテムが原点にある場合、メイン画面とみなして長押しメニューを出す
+				if(item && item->pos() == QPoint(0, 0)){
+					Event e;
+					e.type = EV_CONTEXTMENU;
+					e.mousebt.x = point.x();
+					e.mousebt.y = point.y();
+					OSD_PushEvent(e);
+					return true;
+				}
 			}
 		}
+		break;
+	case QEvent::HoverEnter:
+		OSD_ShowCursor(app->getSetting(P6VXApp::keyVirtualKeyVisible).toBool());
+		break;
+	case QEvent::HoverLeave:
+		OSD_RestoreCursor();
+		break;
+	default:;
 	}
+
 	return QGraphicsView::event(event);
 }
 

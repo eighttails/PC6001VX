@@ -143,6 +143,7 @@ VirtualKeyTabWidget* P6VXApp::getVirtualKeyboard()
 }
 
 
+
 void P6VXApp::startup()
 {
 #ifndef NOSINGLEAPP
@@ -892,6 +893,12 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 	} else {
 		return true;
 	}
+}
+
+bool P6VXApp::hasSetting(const QString &key)
+{
+	QMutexLocker lock(&SettingMutex);
+	return Setting.contains(key);
 }
 
 const QVariant P6VXApp::getSetting(const QString &key)

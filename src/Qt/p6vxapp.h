@@ -54,6 +54,7 @@ public:
 	VirtualKeyTabWidget *getVirtualKeyboard();
 
 	// P6VX固有の設定
+	bool hasSetting(const QString& key);
 	const QVariant getSetting(const QString& key);
 	void setSetting(const QString& key, const QVariant& value);
 	void setDefaultSetting(const QString &key, const QVariant &value);

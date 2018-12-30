@@ -331,12 +331,14 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	if(fsflag){
 		MWidget->setWindowState(MWidget->windowState() | Qt::WindowFullScreen);
 		MWidget->showFullScreen();
+		MWidget->updateLayout();
 	} else {
 		MWidget->setWindowState(MWidget->windowState() & ~Qt::WindowFullScreen);
 		if(!MWidget->isVisible()){
 			MWidget->showNormal();
 		}
 	}
+
 #endif
 	view->fitContent();
 	OSD_ClearWindow(Wh);

@@ -18,6 +18,7 @@ public:
 signals:
 
 public slots:
+	void updateLayout();
 	void adjustSizeToChild(QSize size);
 	void toggleVirtualKeyboard();
 

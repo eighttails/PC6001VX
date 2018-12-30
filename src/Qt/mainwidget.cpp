@@ -62,6 +62,12 @@ void MainWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
 	VKeyWidget->setKeyStateWatcher(watcher);
 }
 
+void MainWidget::updateLayout()
+{
+	layout()->update();
+	ensurePolished();
+}
+
 void MainWidget::adjustSizeToChild(QSize size)
 {
 #ifndef ALWAYSFULLSCREEN

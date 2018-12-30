@@ -85,8 +85,8 @@ template<> class PowerOfTwo<0>
 class NullDebug
 {
 public:
-    template <typename T>
-    NullDebug& operator<<(const T&) { return *this; }
+	template <typename T>
+	NullDebug& operator<<(const T&) { return *this; }
 };
 
 inline NullDebug nullDebug() { return NullDebug(); }

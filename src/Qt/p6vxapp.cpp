@@ -22,12 +22,12 @@
 #include <QtAndroid>
 #endif
 
-const QString P6VXApp::keyGeometry			= "window/geometry";
-const QString P6VXApp::keyMaximized			= "window/maximized";
+const QString P6VXApp::keyGeometry				= "window/geometry";
+const QString P6VXApp::keyMaximized				= "window/maximized";
 const QString P6VXApp::keyHwAccel				= "graph/hwAccel";
-const QString P6VXApp::keyFiltering			= "graph/filtering";
-const QString P6VXApp::keyFixMagnification	= "graph/fixMagnification";
-const QString P6VXApp::keyMagnification		= "graph/magnification";
+const QString P6VXApp::keyFiltering				= "graph/filtering";
+const QString P6VXApp::keyFixMagnification		= "graph/fixMagnification";
+const QString P6VXApp::keyMagnification			= "graph/magnification";
 const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
 const QString P6VXApp::keyKeyPanelPosition		= "keypalette/position";
 const QString P6VXApp::keyVirtualKeyVisible		= "virtualkey/visible";
@@ -716,9 +716,9 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 {
 	quint32 nativeKey = ke->nativeScanCode();
 #if 0
-    qDebug("keytext %s\n", ke->text().toStdString().c_str());
-    qDebug("keycode 0x%x\n", keyCode);
-    qDebug("nativekeycode %d\n", nativeKey);
+	qDebug("keytext %s\n", ke->text().toStdString().c_str());
+	qDebug("keycode 0x%x\n", keyCode);
+	qDebug("nativekeycode %d\n", nativeKey);
 #endif
 
 	//X11の場合
@@ -767,17 +767,17 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		QKeyEvent* ke = dynamic_cast<QKeyEvent*>(event);
 		Q_ASSERT(ke);
 
-        // キーコードを特定
-        // 生のキーコードは環境によってアンマッチがあるので
-        // 表示可能文字についてはtextを参照したほうが信頼できる
-        int keyCode = Qt::Key_unknown;
-        if(!ke->text().isEmpty() && ke->text().at(0).isPrint()){
-            keyCode = ke->text().at(0).toUpper().unicode();
-        } else {
-            keyCode = ke->key();
-        }
-        // 特殊キー対策
-        handleSpecialKeys(ke, keyCode);
+		// キーコードを特定
+		// 生のキーコードは環境によってアンマッチがあるので
+		// 表示可能文字についてはtextを参照したほうが信頼できる
+		int keyCode = Qt::Key_unknown;
+		if(!ke->text().isEmpty() && ke->text().at(0).isPrint()){
+			keyCode = ke->text().at(0).toUpper().unicode();
+		} else {
+			keyCode = ke->key();
+		}
+		// 特殊キー対策
+		handleSpecialKeys(ke, keyCode);
 
 		// 以下の場合は入力イベントをエミュレータ側に渡さず、Qtに渡す
 		// (メニューやダイアログでキーボードを使えるようにするため)
@@ -811,9 +811,9 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 
 
 		ev.type        = event->type() == QEvent::KeyPress ? EV_KEYDOWN : EV_KEYUP;
-        ev.key.state   = event->type() == QEvent::KeyPress ? true : false;
-        ev.key.sym     = OSD_ConvertKeyCode( keyCode );
-        ev.key.mod	   = (PCKEYmod)(
+		ev.key.state   = event->type() == QEvent::KeyPress ? true : false;
+		ev.key.sym     = OSD_ConvertKeyCode( keyCode );
+		ev.key.mod	   = (PCKEYmod)(
 					( ke->modifiers() & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
 					| ( ke->modifiers() & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )
 					| ( ke->modifiers() & Qt::AltModifier ? KVM_ALT : KVM_NONE )

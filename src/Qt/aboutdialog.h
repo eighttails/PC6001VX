@@ -6,20 +6,20 @@
 class CFG6;
 
 namespace Ui {
-    class AboutDialog;
+class AboutDialog;
 }
 
 class AboutDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit AboutDialog(int mdl, QWidget *parent = 0);
-    ~AboutDialog();
+	explicit AboutDialog(int mdl, QWidget *parent = 0);
+	~AboutDialog();
 
 private:
-    Ui::AboutDialog *ui;
-    CFG6* config;
+	Ui::AboutDialog *ui;
+	CFG6* config;
 };
 
 #endif // ABOUTDIALOG_H

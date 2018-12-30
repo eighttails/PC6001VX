@@ -7,11 +7,11 @@ class KEY6;
 
 class QtEL6 : public QObject, public EL6
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    QtEL6();
-    void ShowPopupImpl(int x, int y);
-    bool GetPauseEnable();
+	QtEL6();
+	void ShowPopupImpl(int x, int y);
+	bool GetPauseEnable();
 	void SetPauseEnable(bool en);
 	KEY6* GetKeyboard();
 

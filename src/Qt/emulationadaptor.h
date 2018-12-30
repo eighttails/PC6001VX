@@ -8,29 +8,29 @@
 //付加するためのアダプタクラス
 class EmulationAdaptor : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit EmulationAdaptor(QObject *parent = 0);
-    
-    EL6* getEmulationObj(){return P6Core;}
-    void setEmulationObj(EL6* el){
-        P6Core = el;
-    }
+	explicit EmulationAdaptor(QObject *parent = 0);
 
-    EL6::ReturnCode getReturnCode(){return RetCode;}
+	EL6* getEmulationObj(){return P6Core;}
+	void setEmulationObj(EL6* el){
+		P6Core = el;
+	}
+
+	EL6::ReturnCode getReturnCode(){return RetCode;}
 
 signals:
-    //エミュレーションイベントループの終了
-    void finished();
+	//エミュレーションイベントループの終了
+	void finished();
 public slots:
-    //エミュレーションイベントループを開始
-    void doEventLoop();
+	//エミュレーションイベントループを開始
+	void doEventLoop();
 
 protected:
 
 private:
-    EL6* P6Core;
-    EL6::ReturnCode RetCode;
+	EL6* P6Core;
+	EL6::ReturnCode RetCode;
 };
 
 #endif // EMULATIONADAPTOR_H

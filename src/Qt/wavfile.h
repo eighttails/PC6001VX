@@ -48,18 +48,18 @@
 class WavFile : public QFile
 {
 public:
-    WavFile(QObject *parent = 0);
+	WavFile(QObject *parent = 0);
 
-    using QFile::open;
-    bool open(const QString &fileName);
-    const QAudioFormat &fileFormat() const;
-    qint64 headerLength() const;
-
-private:
-    bool readHeader();
+	using QFile::open;
+	bool open(const QString &fileName);
+	const QAudioFormat &fileFormat() const;
+	qint64 headerLength() const;
 
 private:
-    QAudioFormat m_fileFormat;
-    qint64 m_headerLength;
+	bool readHeader();
+
+private:
+	QAudioFormat m_fileFormat;
+	qint64 m_headerLength;
 };
 #endif // WAVFILE_H

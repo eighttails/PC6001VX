@@ -11,25 +11,25 @@
 // サウンド制御の諸APIをinvokeMethod経由で呼べるようSLOTにする。
 class AudioOutputWrapper : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit AudioOutputWrapper(const QAudioDeviceInfo& info,
-                                const QAudioFormat& format, QObject* parent = NULL)
-        : QObject(parent)
-        , AudioOutput(new QAudioOutput(info, format, this)) {}
+	explicit AudioOutputWrapper(const QAudioDeviceInfo& info,
+								const QAudioFormat& format, QObject* parent = NULL)
+		: QObject(parent)
+		, AudioOutput(new QAudioOutput(info, format, this)) {}
 
 public slots:
-    // 下記のメソッドはinvokeMethodから呼ぶこと。
-    QPointer<QIODevice> start() { return AudioOutput->start(); }
-    void suspend() { AudioOutput->suspend(); }
-    void resume() { AudioOutput->resume(); }
-    void stop() { AudioOutput->stop(); }
+	// 下記のメソッドはinvokeMethodから呼ぶこと。
+	QPointer<QIODevice> start() { return AudioOutput->start(); }
+	void suspend() { AudioOutput->suspend(); }
+	void resume() { AudioOutput->resume(); }
+	void stop() { AudioOutput->stop(); }
 
 public:
-    QAudio::State state() const { return AudioOutput->state(); }
+	QAudio::State state() const { return AudioOutput->state(); }
 
 private:
-    QAudioOutput* AudioOutput;
+	QAudioOutput* AudioOutput;
 };
 #endif // NOSOUND
 #endif // AUDIOOUTPUTWRAPPER_H

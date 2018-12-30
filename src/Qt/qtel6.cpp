@@ -79,14 +79,14 @@ void EL6::ExecMenu( int id )
 	case ID_DOKOSAVE1:                                                      // どこでもSAVE1
 	case ID_DOKOSAVE2:                                                      // どこでもSAVE2
 	case ID_DOKOSAVE3:                                                      // どこでもSAVE3
-        OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOSAVE).toUtf8().constData());
+		OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOSAVE).toUtf8().constData());
 		DokoDemoSave( str );
 		break;
 	case ID_DOKOLOAD:		UI_DokoLoad();							break;	// どこでもLOAD
 	case ID_DOKOLOAD1:                                                      // どこでもLOAD1
 	case ID_DOKOLOAD2:                                                      // どこでもLOAD2
 	case ID_DOKOLOAD3:                                                      // どこでもLOAD3
-        OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOLOAD).toUtf8().constData());
+		OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOLOAD).toUtf8().constData());
 		if( OSD_FileExist( str ) ){
 			cfg->SetModel( GetDokoModel( str ) );
 			cfg->SetDokoFile( str );
@@ -173,18 +173,18 @@ void EL6::ExecMenu( int id )
 	}
 	case ID_FIXMAGNIFICATION:
 		app->setSetting(P6VXApp::keyFixMagnification,
-									  !app->getSetting(P6VXApp::keyFixMagnification).toBool());
+						!app->getSetting(P6VXApp::keyFixMagnification).toBool());
 		break;
 	case ID_HWACCEL:
-        if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
+		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
 			app->setSetting(P6VXApp::keyHwAccel,
-										  !app->getSetting(P6VXApp::keyHwAccel).toBool());
+							!app->getSetting(P6VXApp::keyHwAccel).toBool());
 			UI_Quit();
 		}
 		break;
 	case ID_FILTERING:
 		app->setSetting(P6VXApp::keyFiltering,
-									  !app->getSetting(P6VXApp::keyFiltering).toBool());
+						!app->getSetting(P6VXApp::keyFiltering).toBool());
 		graph->ResizeScreen();
 		break;
 	default:
@@ -254,19 +254,19 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	// モニタモード or ブレークポインタが設定されている
 	// またはリプレイ記録中だったらリプレイ再生無効
 	if(!(
-		#ifndef NOMONITOR
-			cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
-		#endif
-			( REPLAY::GetStatus() == REP_RECORD ) )){
+			#ifndef NOMONITOR
+				cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+			#endif
+				( REPLAY::GetStatus() == REP_RECORD ) )){
 		addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
 	}
 	// モニタモード or ブレークポインタが設定されている
 	// またはリプレイ再生中だったらリプレイ記録無効
 	if(!(
-		#ifndef NOMONITOR
-			cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
-		#endif
-			( REPLAY::GetStatus() == REP_REPLAY ) )){
+			#ifndef NOMONITOR
+				cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+			#endif
+				( REPLAY::GetStatus() == REP_REPLAY ) )){
 		addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
 	}
 	if (REPLAY::GetStatus() == REP_IDLE){

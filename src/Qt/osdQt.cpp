@@ -41,8 +41,8 @@ QWaitCondition eventEmitted;
 //経過時間タイマ
 QElapsedTimer elapsedTimer;
 
-std::map<int, PCKEYsym> VKTable;			// Qtキーコード  -> 仮想キーコード 変換テーブル
-QVector<QRgb> PaletteTable;              //パレットテーブル
+std::map<int, PCKEYsym> VKTable;		// Qtキーコード  -> 仮想キーコード 変換テーブル
+QVector<QRgb> PaletteTable;				//パレットテーブル
 
 #ifndef NOSOUND
 //サウンド関連
@@ -145,7 +145,7 @@ static const struct {	// Qtキーコード -> 仮想キーコード定義
 { Qt::Key_Escape,			KVC_ESC },			// ESC
 { Qt::Key_Zenkaku_Hankaku,	KVC_HANZEN },		// 半角/全角
 { Qt::Key_Tab,				KVC_TAB },			// Tab
-{ Qt::Key_CapsLock,		KVC_CAPSLOCK },		// CapsLock
+{ Qt::Key_CapsLock,			KVC_CAPSLOCK },		// CapsLock
 { Qt::Key_Return,			KVC_ENTER },		// Enter
 { Qt::Key_Control,			KVC_LCTRL },		// L-Ctrl
 //Qtでは右コントロールキーコードは定義されていない
@@ -567,7 +567,7 @@ const char *OSD_KeyName( PCKEYsym sym )
 // 小文字による文字列比較
 //
 // 引数:	s1			比較する文字列へのポインタ1
-//			s2			比較する文字列へのポインタ2
+//		s2			比較する文字列へのポインタ2
 // 返値:	int			0:等しい 正数:s1>s2 負数:s1<s2
 ////////////////////////////////////////////////////////////////
 int stricmp ( const char *s1, const char *s2 )
@@ -728,7 +728,7 @@ bool OSD_PushEvent(const Event& ev)
 // イベントをキューにプッシュする
 //
 // 引数:	ev			イベントタイプ
-//			...			イベントタイプに応じた引数
+//		...			イベントタイプに応じた引数
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
 bool OSD_PushEvent( EventType ev, ... )
@@ -776,7 +776,7 @@ void OSD_RestoreCursor( void ){
 // キャプション設定
 //
 // 引数:	Wh			ウィンドウハンドル
-//			str			キャプション文字列へのポインタ
+//		str			キャプション文字列へのポインタ
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
 void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
@@ -793,10 +793,10 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 // ウィンドウ作成
 //
 // 引数:	pwh			ウィンドウハンドルへのポインタ
-//			w			幅
-//			h			高さ
-//			bpp			色深度
-//			fsflag		true:フルスクリーン false:ウィンドウ
+//		w			幅
+//		h			高さ
+//		bpp			色深度
+//		fsflag		true:フルスクリーン false:ウィンドウ
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
@@ -864,7 +864,7 @@ int OSD_GetWindowHeight( HWINDOW Wh )
 // パレット設定
 //
 // 引数:	Wh			ウィンドウハンドル
-//			pal			パレットへのポインタ
+//		pal			パレットへのポインタ
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
 bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
@@ -908,9 +908,9 @@ void OSD_ClearWindow( HWINDOW Wh )
 // ウィンドウに転送
 //
 // 引数:	Wh			ウィンドウハンドル
-//			src			転送元サーフェス
-//			pal			パレットへのポインタ
-//			x,y			転送先座標
+//		src			転送元サーフェス
+//		pal			パレットへのポインタ
+//		x,y			転送先座標
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
 void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
@@ -957,13 +957,13 @@ void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
 // ウィンドウに転送(拡大等)
 //
 // 引数:	wh			ウィンドウハンドル
-//			src			転送元サーフェス
-//			dx			転送先x座標
-//			dy			転送先y座標
-//			dh			転送先高さ
-//			ntsc		4:3表示フラグ
-//			scan		スキャンラインフラグ
-//			brscan		スキャンライン輝度
+//		src			転送元サーフェス
+//		dx			転送先x座標
+//		dy			転送先y座標
+//		dh			転送先高さ
+//		ntsc		4:3表示フラグ
+//		scan		スキャンラインフラグ
+//		brscan		スキャンライン輝度
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
 #define	RESO		256		/* 中間色計算用分解能(1ラインをRESO分割する) */
@@ -1035,8 +1035,8 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
 // ウィンドウのイメージデータ取得
 //
 // 引数:	wh			ウィンドウハンドル
-//			pixels		転送先配列ポインタへのポインタ
-//			pos			保存する領域情報へのポインタ
+//		pixels		転送先配列ポインタへのポインタ
+//		pos			保存する領域情報へのポインタ
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
 bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
@@ -1120,8 +1120,8 @@ void OSD_AbsolutePath( char *path )
 // パス結合
 //
 // 引数:	pdst		結合後パス格納バッファポインタ
-//			psrc1		パス1格納バッファポインタ
-//			psrc2		パス2格納バッファポインタ
+//		psrc1		パス1格納バッファポインタ
+//		psrc2		パス2格納バッファポインタ
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
 void OSD_AddPath( char *pdst, const char *psrc1, const char *psrc2 )
@@ -1292,7 +1292,7 @@ bool OSD_FileReadOnly( const char *fullpath )
 // フォルダの参照
 //
 // 引数:	hwnd		親のウィンドウハンドル
-//			Result		フォルダへのパス格納バッファポインタ
+//		Result		フォルダへのパス格納バッファポインタ
 // 返値:	char *		取得した文字列へのポインタ
 ///////////////////////////////////////////////////////////
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
@@ -1328,12 +1328,12 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 // ファイルの参照
 //
 // 引数:	hwnd		親のウィンドウハンドル
-//			mode		モード FM_Load:ファイルを開く FM_Save:名前を付けて保存
-//			title		ウィンドウキャプション文字列へのポインタ
-//			filter		ファイルフィルタ文字列へのポインタ
-//			fullpath	フルパス格納バッファポインタ
-//			path		ファイル検索パス格納バッファポインタ
-//			ext			拡張子文字列へのポインタ
+//		mode		モード FM_Load:ファイルを開く FM_Save:名前を付けて保存
+//		title		ウィンドウキャプション文字列へのポインタ
+//		filter		ファイルフィルタ文字列へのポインタ
+//		fullpath	フルパス格納バッファポインタ
+//		path		ファイル検索パス格納バッファポインタ
+//		ext			拡張子文字列へのポインタ
 // 返値:	char *		取得したファイル名へのポインタ(フルパスではない)
 ///////////////////////////////////////////////////////////
 const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const char *filter, char *fullpath, char *path, const char *ext )
@@ -1360,9 +1360,9 @@ const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const c
 // 各種ファイル選択
 //
 // 引数:	hwnd		親のウィンドウハンドル(NULLの場合はスクリーンサーフェスのハンドル取得を試みる)
-//			type		ダイアログの種類(FileDlg参照)
-//			fullpath	フルパス格納バッファポインタ
-//			path		ファイル検索パス格納バッファポインタ
+//		type		ダイアログの種類(FileDlg参照)
+//		fullpath	フルパス格納バッファポインタ
+//		path		ファイル検索パス格納バッファポインタ
 // 返値:	char *		取得したファイル名へのポインタ(フルパスではない)
 ////////////////////////////////////////////////////////////////
 const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path )
@@ -1377,9 +1377,9 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Load;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "TAPEイメージ選択(LOAD)");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "TAPEイメージ (*.p6t *.cas *.p6);;"
-								   "P6T形式 (*.p6t);;"
-								   "ベタ形式 (*.cas *.p6);;"
-								   "全てのファイル (*.*)");
+											   "P6T形式 (*.p6t);;"
+											   "ベタ形式 (*.cas *.p6);;"
+											   "全てのファイル (*.*)");
 		ext    = "p6t";
 		break;
 
@@ -1387,9 +1387,9 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Save;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "TAPEイメージ選択(SAVE)");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "TAPEイメージ (*.p6t *.cas *.p6);;"
-								   "P6T形式 (*.p6t);;"
-								   "ベタ形式 (*.cas *.p6);;"
-								   "全てのファイル (*.*)");
+											   "P6T形式 (*.p6t);;"
+											   "ベタ形式 (*.cas *.p6);;"
+											   "全てのファイル (*.*)");
 		ext    = "p6t";
 		break;
 
@@ -1397,8 +1397,8 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Load;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "DISKイメージ選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "DISKイメージ(*.d88);;"
-								   "D88形式 (*.d88);;"
-								   "全てのファイル (*.*)");
+											   "D88形式 (*.d88);;"
+											   "全てのファイル (*.*)");
 		ext    = "d88";
 		break;
 
@@ -1419,7 +1419,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Load;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "全角フォントファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "PNGファイル (*.png);;"
-								   "全てのファイル (*.*)");
+											   "全てのファイル (*.*)");
 		ext    = "png";
 		break;
 
@@ -1427,7 +1427,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Load;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "半角フォントファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "PNGファイル (*.png);;"
-								   "全てのファイル (*.*)");
+											   "全てのファイル (*.*)");
 		ext    = "png";
 		break;
 
@@ -1435,9 +1435,9 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Load;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "どこでもLOADファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "どこでもSAVEファイル (*.dds *.ddr);;"
-								   "どこでもSAVE形式 (*.dds);;"
-								   "リプレイファイル (*.ddr);;"
-								   "全てのファイル (*.*)");
+											   "どこでもSAVE形式 (*.dds);;"
+											   "リプレイファイル (*.ddr);;"
+											   "全てのファイル (*.*)");
 		ext    = "dds";
 		break;
 
@@ -1445,7 +1445,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Save;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "どこでもSAVEファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "どこでもSAVE形式 (*.dds);;"
-								   "全てのファイル (*.*)");
+											   "全てのファイル (*.*)");
 		ext    = "dds";
 		break;
 
@@ -1453,7 +1453,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Load;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "リプレイ再生ファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "リプレイファイル (*.ddr);;"
-								   "全てのファイル (*.*)");
+											   "全てのファイル (*.*)");
 		ext    = "ddr";
 		break;
 
@@ -1461,7 +1461,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Save;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "リプレイ保存ファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "リプレイファイル (*.ddr);;"
-								   "全てのファイル (*.*)");
+											   "全てのファイル (*.*)");
 		ext    = "ddr";
 		break;
 
@@ -1469,7 +1469,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		mode   = FM_Save;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "ビデオキャプチャ出力ファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "WebMファイル (*.webm);;"
-								   "全てのファイル (*.*)");
+											   "全てのファイル (*.*)");
 		ext    = "webm";
 		break;
 
@@ -1489,13 +1489,13 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 // メッセージ表示
 //
 // 引数:	mes			メッセージ文字列へのポインタ
-//			cap			ウィンドウキャプション文字列へのポインタ
-//			type		表示形式指示のフラグ
+//		cap			ウィンドウキャプション文字列へのポインタ
+//		type		表示形式指示のフラグ
 // 返値:	int			押されたボタンの種類
-//							OSDR_OK:     OKボタン
-//							OSDR_CANCEL: CANCELボタン
-//							OSDR_YES:    YESボタン
-//							OSDR_NO:     NOボタン
+//					OSDR_OK:     OKボタン
+//					OSDR_CANCEL: CANCELボタン
+//					OSDR_YES:    YESボタン
+//					OSDR_NO:     NOボタン
 ////////////////////////////////////////////////////////////////
 int OSD_Message( const char *mes, const char *cap, int type )
 {
@@ -1517,9 +1517,9 @@ int OSD_Message( const char *mes, const char *cap, int type )
 // オーディオデバイスオープン
 //
 // 引数:	obj			自分自身へのオブジェクトポインタ
-//			callback	コールバック関数へのポインタ
-//			rate		サンプリングレート
-//			sample		バッファサイズ(サンプル数)
+//		callback	コールバック関数へのポインタ
+//		rate		サンプリングレート
+//		sample		バッファサイズ(サンプル数)
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
 bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
@@ -1546,7 +1546,7 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 		format = info.nearestFormat(format);
 	}
 
-    audioOutput = new AudioOutputWrapper(info, format);
+	audioOutput = new AudioOutputWrapper(info, format);
 	//#PENDING これではグローバルボリュームを変えてしまう？
 	//audioOutput->setVolume(0.5);
 
@@ -1567,7 +1567,7 @@ void OSD_CloseAudio( void )
 {
 #ifndef NOSOUND
 	if(audioOutput){
-        QMetaObject::invokeMethod(audioOutput, "stop");
+		QMetaObject::invokeMethod(audioOutput, "stop");
 	}
 #endif
 }
@@ -1584,13 +1584,13 @@ void OSD_StartAudio( void )
 #ifndef NOSOUND
 	if(audioOutput){
 		if(audioOutput->state() == QAudio::SuspendedState){
-            QMetaObject::invokeMethod(audioOutput, "resume");
+			QMetaObject::invokeMethod(audioOutput, "resume");
 		} else {
 			//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 			Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 						Qt::DirectConnection : Qt::BlockingQueuedConnection;
 			QMetaObject::invokeMethod(audioOutput, "start", cType,
-                                      Q_RETURN_ARG(QPointer<QIODevice>, audioBuffer));
+									  Q_RETURN_ARG(QPointer<QIODevice>, audioBuffer));
 		}
 	}
 #endif
@@ -1607,7 +1607,7 @@ void OSD_StopAudio( void )
 {
 #ifndef NOSOUND
 	if(audioOutput){
-        QMetaObject::invokeMethod(audioOutput, "suspend");
+		QMetaObject::invokeMethod(audioOutput, "suspend");
 	}
 #endif
 }
@@ -1657,9 +1657,9 @@ bool OSD_AudioPlaying( void )
 // 　対応形式は 22050Hz以上,符号付き16bit,1ch
 //
 // 引数:	filepath	ファイルパス
-//			buf			バッファポインタ格納ポインタ
-//			len			ファイル長さ格納ポインタ
-//			freq		サンプリングレート格納ポインタ
+//		buf			バッファポインタ格納ポインタ
+//		len			ファイル長さ格納ポインタ
+//		freq		サンプリングレート格納ポインタ
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
 bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
@@ -1723,8 +1723,8 @@ void OSD_UnlockAudio( void )
 // フォントファイル作成
 //
 // 引数:	hfile		半角フォントファイルパス
-//			zfile		全角フォントファイルパス
-//			size		文字サイズ(半角文字幅ピクセル数)
+//		zfile		全角フォントファイルパス
+//		size		文字サイズ(半角文字幅ピクセル数)
 // 返値:	bool		true:作成成功 false:作成失敗
 ////////////////////////////////////////////////////////////////
 bool OSD_CreateFont( const char *hfile, const char *zfile, int size )
@@ -1740,7 +1740,7 @@ bool OSD_CreateFont( const char *hfile, const char *zfile, int size )
 // アイコン設定
 //
 // 引数:	Wh			ウィンドウハンドル
-//			model		機種 60,62,66
+//		model		機種 60,62,66
 // 返値:	なし
 ///////////////////////////////////////////////////////////
 void OSD_SetIcon( HWINDOW Wh, int model )
@@ -1904,7 +1904,7 @@ void OSD_UpdateJoy()
 // ジョイスティックの軸の状態取得
 //
 // 引数:	HJOYINFO	ジョイスティック情報へのポインタ
-//			int			軸の番号
+//		int			軸の番号
 // 返値:	int			軸の状態(-32768〜32767)
 ////////////////////////////////////////////////////////////////
 int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
@@ -1922,7 +1922,7 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 // ジョイスティックのボタンの状態取得
 //
 // 引数:	HJOYINFO	ジョイスティック情報へのポインタ
-//			int			ボタンの番号
+//		int			ボタンの番号
 // 返値:	bool		ボタンの状態 true:ON false:OFF
 ////////////////////////////////////////////////////////////////
 bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
@@ -1978,7 +1978,7 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 // バージョン情報表示
 //
 // 引数:	hwnd		ウィンドウハンドル
-//			mdl			機種
+//		mdl			機種
 // 返値:	なし
 ///////////////////////////////////////////////////////////
 void OSD_VersionDialog( HWINDOW hwnd, int mdl )

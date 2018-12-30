@@ -12,56 +12,56 @@
 
 cCritical::cCritical( void )
 {
-    mcs = (HCRSECT)new QMutex();
+	mcs = (HCRSECT)new QMutex();
 }
 
 
 cCritical::~cCritical( void )
 {
-    delete ((QMutex *)mcs);
+	delete ((QMutex *)mcs);
 }
 
 
 void cCritical::Lock( void )
 {
-    if( mcs ) ((QMutex *)mcs)->lock();
+	if( mcs ) ((QMutex *)mcs)->lock();
 }
 
 
 void cCritical::UnLock( void )
 {
-    if( mcs ) ((QMutex *)mcs)->unlock();
+	if( mcs ) ((QMutex *)mcs)->unlock();
 }
 
 cSemaphore::cSemaphore( void )
 {
-    sem = (HSEMAPHORE)new QSemaphore( 0 );
-    count = 0;
+	sem = (HSEMAPHORE)new QSemaphore( 0 );
+	count = 0;
 }
 
 
 cSemaphore::~cSemaphore( void )
 {
-    if( sem ) delete((QSemaphore *)sem);
+	if( sem ) delete((QSemaphore *)sem);
 }
 
 
 DWORD cSemaphore::Value( void )
 {
-    return ((QSemaphore *)sem)->available();
+	return ((QSemaphore *)sem)->available();
 }
 
 
 int cSemaphore::Post( void )
 {
-    ((QSemaphore *)sem)->release();
-    return ((QSemaphore *)sem)->available();
+	((QSemaphore *)sem)->release();
+	return ((QSemaphore *)sem)->available();
 }
 
 
 int cSemaphore::Wait( void )
 {
-    ((QSemaphore *)sem)->acquire();
-    return ((QSemaphore *)sem)->available();
+	((QSemaphore *)sem)->acquire();
+	return ((QSemaphore *)sem)->available();
 }
 

@@ -35,7 +35,13 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	adjustSize();
 
 	// ウィンドウ位置とサイズを復元
-	restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
+	if(app->hasSetting(P6VXApp::keyGeometry)){
+		restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
+	} else {
+		MainView->resizeWindowByRatio(100);
+		layout->update();
+	}
+
 	if(app->getSetting(P6VXApp::keyMaximized).toBool()){
 		showMaximized();
 	}

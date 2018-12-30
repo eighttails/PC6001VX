@@ -38,7 +38,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	if(app->hasSetting(P6VXApp::keyGeometry)){
 		restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
 	} else {
-		MainView->resizeWindowByRatio(100);
+		adjustSizeToChild(MainView->size());
 		layout->update();
 	}
 

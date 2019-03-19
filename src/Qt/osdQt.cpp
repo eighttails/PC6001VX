@@ -783,7 +783,6 @@ void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 {
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
 	if(view == NULL) return;
-	//qDebug() << str;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
 							  Q_ARG(QString, str));
@@ -1551,7 +1550,6 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 	//audioOutput->setVolume(0.5);
 
 	audioOutput->moveToThread(qApp->thread());
-	audioOutput->setParent(qApp);
 #endif
 	return true;
 }
@@ -1745,17 +1743,20 @@ bool OSD_CreateFont( const char *hfile, const char *zfile, int size )
 ///////////////////////////////////////////////////////////
 void OSD_SetIcon( HWINDOW Wh, int model )
 {
-	// 機種別P6オブジェクト確保
+  // 機種別P6オブジェクト確保
 	const char* iconRes = NULL;
 	switch( model ){
-	case 62: iconRes = ":/res/PC-6001mk2.ico"; break;
-	case 66: iconRes = ":/res/PC-6601.ico"; break;
-	default: iconRes = ":/res/PC-6001.ico";
+    case 68: iconRes = ":/res/PC-6601SR.ico"; break;
+    case 66: iconRes = ":/res/PC-6601.ico"; break;
+    case 64: iconRes = ":/res/PC-6001mk2SR.ico"; break;
+    case 62: iconRes = ":/res/PC-6001mk2.ico"; break;
+    default: iconRes = ":/res/PC-6001.ico";
 	}
 
 	// アイコン設定
-	QImage icon = QImage(iconRes).convertToFormat(QImage::Format_RGB16);
-	QApplication::setWindowIcon(QIcon(iconRes));
+    P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+    QMetaObject::invokeMethod(app, "setWindowIcon",
+                              Q_ARG(QIcon, QIcon(iconRes)));
 }
 
 

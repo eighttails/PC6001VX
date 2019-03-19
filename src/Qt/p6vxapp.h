@@ -93,6 +93,9 @@ public slots:
 	//ウィンドウを生成
 	void createWindow(HWINDOW Wh, bool fsflag );
 
+    //アイコンを設定
+    void setWindowIcon(const QIcon &icon);
+
 	//グラフィックをシーンに配置
 	//QGraphicsSceneの操作はメインスレッドでしかできないため、
 	//ここで実装する

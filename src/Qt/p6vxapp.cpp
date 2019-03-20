@@ -350,12 +350,12 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 		KPanel = new KeyPanel(view);
 		KPanel->show();
 	}
-    processEvents();
+	processEvents();
 }
 
 void P6VXApp::setWindowIcon(const QIcon &icon)
 {
-    MWidget->setWindowIcon(icon);
+	MWidget->setWindowIcon(icon);
 }
 
 void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image)

@@ -1743,20 +1743,20 @@ bool OSD_CreateFont( const char *hfile, const char *zfile, int size )
 ///////////////////////////////////////////////////////////
 void OSD_SetIcon( HWINDOW Wh, int model )
 {
-  // 機種別P6オブジェクト確保
+	// 機種別P6オブジェクト確保
 	const char* iconRes = NULL;
 	switch( model ){
-    case 68: iconRes = ":/res/PC-6601SR.ico"; break;
-    case 66: iconRes = ":/res/PC-6601.ico"; break;
-    case 64: iconRes = ":/res/PC-6001mk2SR.ico"; break;
-    case 62: iconRes = ":/res/PC-6001mk2.ico"; break;
-    default: iconRes = ":/res/PC-6001.ico";
+	case 68: iconRes = ":/res/PC-6601SR.ico"; break;
+	case 66: iconRes = ":/res/PC-6601.ico"; break;
+	case 64: iconRes = ":/res/PC-6001mk2SR.ico"; break;
+	case 62: iconRes = ":/res/PC-6001mk2.ico"; break;
+	default: iconRes = ":/res/PC-6001.ico";
 	}
 
 	// アイコン設定
-    P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-    QMetaObject::invokeMethod(app, "setWindowIcon",
-                              Q_ARG(QIcon, QIcon(iconRes)));
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	QMetaObject::invokeMethod(app, "setWindowIcon",
+							  Q_ARG(QIcon, QIcon(iconRes)));
 }
 
 

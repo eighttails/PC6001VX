@@ -354,6 +354,7 @@ DISTFILES += \
     win32/buildenv.sh \
     win32/buildrelease.sh \
     win32/release.sh \
-    win32/safemode.bat
+    win32/safemode.bat \
+    codestyle.xml
 
 

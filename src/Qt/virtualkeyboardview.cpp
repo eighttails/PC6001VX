@@ -38,12 +38,12 @@ bool VirtualKeyboardView::event(QEvent *event)
 			fitInView(scene()->sceneRect(), Qt::KeepAspectRatio);
 		}
 		break;
-	case QEvent::HoverEnter:
+	case QEvent::Enter:
 	case QEvent::HoverMove:
 		OSD_ShowCursor(true);
 		app->activateMouseCursorTimer();
 		break;
-	case QEvent::HoverLeave:
+	case QEvent::Leave:
 		OSD_ShowCursor(true);
 		break;
 	default:;

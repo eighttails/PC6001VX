@@ -19,6 +19,7 @@ AboutDialog::AboutDialog(int mdl, QWidget *parent)
 	}
 	ui->labelAppName->setText(QString::fromUtf8(APPNAME));
 	ui->labelVersion->setText(QString::fromUtf8(VERSION));
+	adjustSize();
 }
 
 AboutDialog::~AboutDialog()

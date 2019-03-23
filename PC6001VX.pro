@@ -83,6 +83,7 @@ PKGCONFIG += x11
 win32 {
 DEFINES += WIN32
 #On Windows, links libraries statically as long as possible.
+QMAKE_LFLAGS_WINDOWS += -Wl,--stack,10000000
 QMAKE_LFLAGS += -static -lpthread
 RC_ICONS += src/win32/PC6001VX.ico
 }

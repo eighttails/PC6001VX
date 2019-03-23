@@ -343,14 +343,12 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	view->fitContent();
 	OSD_ClearWindow(Wh);
 
-	processEvents();
 	if(getSetting(keyKeyPanelVisible).toBool()){
 		// プラットフォームによっては子ウィンドウをここで作りなおさないと表示されない場合がある
 		if(KPanel) KPanel->deleteLater();
 		KPanel = new KeyPanel(view);
 		KPanel->show();
 	}
-	processEvents();
 }
 
 void P6VXApp::setWindowIcon(const QIcon &icon)

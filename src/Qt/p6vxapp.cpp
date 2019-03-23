@@ -86,6 +86,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, Restart(EL6::Quit)
 	, Adaptor(new EmulationAdaptor())
 	, KPanel(NULL)
+	, MouseCursorTimer(new QTimer(this))
 	, Setting(QString(OSD_GetModulePath()) + "/pc6001vx.ini", QSettings::IniFormat)
 	, TiltEnabled(false)
 	, TiltDir(NEWTRAL)
@@ -116,6 +117,10 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	timer->setInterval(30000);
 	connect(timer, SIGNAL(timeout()), this, SLOT(inhibitScreenSaver()));
 	timer->start();
+
+	//マウスカーソル表示制御用タイマー
+	connect(MouseCursorTimer, &QTimer::timeout, this, &P6VXApp::hideMouseCursor);
+
 }
 
 P6VXApp::~P6VXApp()
@@ -294,7 +299,6 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if (dialog.exec() == QDialog::Accepted) {
 			result = dialog.selectedFiles().value(0);
 		}
-		OSD_RestoreCursor();
 		if(result.isEmpty())    return NULL;
 		// 入力されたファイル名に拡張子がついていない場合は付与する
 		QFileInfo info(result);
@@ -306,7 +310,6 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if (dialog.exec() == QDialog::Accepted) {
 			result = dialog.selectedFiles().value(0);
 		}
-		OSD_RestoreCursor();
 		if(result.isEmpty())    return NULL;
 	}
 
@@ -477,6 +480,17 @@ void P6VXApp::toggleKeyPanel()
 void P6VXApp::toggleVirtualKeyboard()
 {
 	MWidget->toggleVirtualKeyboard();
+}
+
+void P6VXApp::activateMouseCursorTimer()
+{
+	MouseCursorTimer->start(5000);
+
+}
+
+void P6VXApp::deactivateMouseCursorTimer()
+{
+	MouseCursorTimer->stop();
 }
 
 bool P6VXApp::isTiltEnabled()
@@ -947,5 +961,10 @@ void P6VXApp::inhibitScreenSaver()
 #else
 	//何もしない
 #endif
+}
+
+void P6VXApp::hideMouseCursor()
+{
+	setOverrideCursor(Qt::BlankCursor);
 }
 

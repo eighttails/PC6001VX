@@ -133,8 +133,6 @@ bool OSD_DelTimer( HTIMERID );
 void OSD_SetWindowCaption( HWINDOW, const char * );
 // マウスカーソル表示/非表示
 void OSD_ShowCursor( bool );
-// マウスカーソル表示状態を1つ戻す
-void OSD_RestoreCursor( void );
 // ウィンドウ作成
 bool OSD_CreateWindow( HWINDOW *, int, int, bool );
 // ウィンドウ破棄

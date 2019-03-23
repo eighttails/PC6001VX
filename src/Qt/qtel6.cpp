@@ -446,7 +446,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
 		MenuCommand id = selectedAction->property(MENUIDPROPERTY).value<MenuCommand>();
 		ExecMenu(id);
 	}
-	OSD_RestoreCursor();
 }
 
 

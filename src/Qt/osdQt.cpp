@@ -759,17 +759,9 @@ bool OSD_PushEvent( EventType ev, ... )
 ////////////////////////////////////////////////////////////////
 void OSD_ShowCursor( bool disp )
 {
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	app->deactivateMouseCursorTimer();
 	qApp->setOverrideCursor(disp ? Qt::ArrowCursor : Qt::BlankCursor);
-}
-
-////////////////////////////////////////////////////////////////
-// マウスカーソル状態を1つ戻す
-//
-// 引数:	なし
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_RestoreCursor( void ){
-	qApp->restoreOverrideCursor();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1316,7 +1308,6 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 	if (dialog.exec() == QDialog::Accepted) {
 		result = dialog.selectedFiles().value(0).toUtf8();
 	}
-	OSD_RestoreCursor();
 
 	strcpy(Result, result);
 	return result.constData();

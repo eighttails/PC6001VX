@@ -118,6 +118,10 @@ public slots:
 	// 仮想キーボードを表示
 	void toggleVirtualKeyboard();
 
+	// マウスカーソル表示関連
+	void activateMouseCursorTimer();
+	void deactivateMouseCursorTimer();
+
 signals:
 	//初期化終了シグナル
 	void initialized();
@@ -140,6 +144,9 @@ private slots:
 	// スクリーンセーバー無効化
 	void inhibitScreenSaver();
 
+	// マウスカーソル関連
+	void hideMouseCursor();
+
 protected:
 	virtual bool notify(QObject *receiver, QEvent *event);
 
@@ -158,6 +165,7 @@ private:
 	// ウィンドウ関連
 	QPointer<MainWidget> MWidget;
 	QPointer<KeyPanel> KPanel;
+	QTimer* MouseCursorTimer;
 
 	// P6VX固有の設定
 	QSettings Setting;

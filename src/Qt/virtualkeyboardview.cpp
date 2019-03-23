@@ -39,10 +39,12 @@ bool VirtualKeyboardView::event(QEvent *event)
 		}
 		break;
 	case QEvent::HoverEnter:
-		OSD_ShowCursor(app->getSetting(P6VXApp::keyVirtualKeyVisible).toBool());
+	case QEvent::HoverMove:
+		OSD_ShowCursor(true);
+		app->activateMouseCursorTimer();
 		break;
 	case QEvent::HoverLeave:
-		OSD_RestoreCursor();
+		OSD_ShowCursor(true);
 		break;
 	default:;
 	}

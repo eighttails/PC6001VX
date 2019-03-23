@@ -572,6 +572,14 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.3.1.2 2019/3/23
+* Windows上でリプレイが正常に記録されない問題への対応。
+* SRモデルを選択時にアプリアイコンが正常に表示されなかったのを修正。
+* 細かいバグ修正
+* Fixed issue related to replay recording on Windows.
+* Fixed issue that wrong icon is shown when SR models are chosen.
+* Some minor bug fixes.
+
 .3.1.1 2018/12/31
 * タッチスクリーンでメニューを出すジェスチャをロングタップからシングルタップに変更。
 * 細かいバグ修正

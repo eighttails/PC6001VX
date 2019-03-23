@@ -39,6 +39,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	}
 #endif
 	grabGesture(Qt::TapGesture);
+	setAttribute(Qt::WA_Hover);
 
 #ifdef WIN32
 	//IMEを無効化

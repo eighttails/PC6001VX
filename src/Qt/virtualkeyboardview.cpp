@@ -7,6 +7,7 @@
 VirtualKeyboardView::VirtualKeyboardView(QWidget *parent)
 	: QGraphicsView(parent)
 {
+	setAttribute(Qt::WA_Hover);
 }
 
 

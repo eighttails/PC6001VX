@@ -64,9 +64,7 @@ bool VirtualStickItem::sceneEvent(QEvent *event)
 				pressEffect->setEnabled(false);
 				// それまで押されていたキーをリリースする
 				for(size_t i = 0; i < currentKeyStatus.size(); i++){
-					if(currentKeyStatus[i]){
-						sendKeyEvent(EV_KEYUP, keySims[i], false);
-					}
+					sendKeyEvent(EV_KEYUP, keySims[i], false);
 				}
 				// キー押下状態をクリアする
 				currentKeyStatus = {false,false,false,false};
@@ -133,9 +131,7 @@ void VirtualStickItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	pressEffect->setEnabled(false);
 	// それまで押されていたキーをリリースする
 	for(size_t i = 0; i < currentKeyStatus.size(); i++){
-		if(currentKeyStatus[i]){
-			sendKeyEvent(EV_KEYUP, keySims[i], false);
-		}
+		sendKeyEvent(EV_KEYUP, keySims[i], false);
 	}
 	// キー押下状態をクリアする
 	currentKeyStatus = {false,false,false,false};

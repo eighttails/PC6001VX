@@ -2,6 +2,8 @@
 #include "virtualkeyitem.h"
 #include "virtualstickitem.h"
 
+#include <QRect>
+
 SimpleVirtualKeyboardScene::SimpleVirtualKeyboardScene(QObject *parent) : VirtualKeyboardScene(parent)
 {
 	construct();
@@ -48,12 +50,15 @@ void SimpleVirtualKeyboardScene::construct()
 		list.push_back(createVirtualKeyItem(KVC_Y, "0x79", "0x59", "0x08", "0xfd", "blank", "0xdd", "blank", true));
 		list.push_back(createVirtualKeyItem(KVC_N, "0x6e", "0x4e", "blank", "0xf0", "blank", "0xd0", "blank", true));
 		list.push_back(createVirtualKeyItem(KVC_ENTER, "ret_flat", "ret_flat", "ret_flat", "ret_flat", "ret_flat", "ret_flat", "ret_flat"));
-		alignVirtualKeyItems(list, QPointF(unitWidth * 3.5, unitHeight * i++));
+		alignVirtualKeyItems(list, QPointF(unitWidth * 4, unitHeight * i++));
 	}
 	{
 		createVirtualKeyItem(KVC_SPACE, "space_small", "space_small", "space_small", "space_small", "space_small", "space_small", "space_small")->setPos(unitWidth * 7.75, unitHeight * i);
 	}
-	setSceneRect(itemsBoundingRect());
+	// 下側に少し隙間を開ける
+	auto rect = itemsBoundingRect();
+	rect.setHeight(rect.height() + unitHeight * 0.5);
+	setSceneRect(rect);
 }
 
 

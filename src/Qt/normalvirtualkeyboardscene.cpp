@@ -117,5 +117,8 @@ void NormalVirtualKeyboardScene::construct()
 		list.push_back(createVirtualKeyItem(KVC_RIGHT, "right", "right", "right", "right", "right", "right", "right"));
 		alignVirtualKeyItems(list, QPointF(0, unitHeight * i++));
 	}
-	setSceneRect(itemsBoundingRect());
+	// 下側に少し隙間を開ける
+	auto rect = itemsBoundingRect();
+	rect.setHeight(rect.height() + unitHeight * 0.5);
+	setSceneRect(rect);
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.eighttails.pc6001vx" android:versionName="3.1.2" android:versionCode="14" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.eighttails.pc6001vx" android:versionName="3.1.3" android:versionCode="16" android:installLocation="auto">
     <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="@string/app_name" android:icon="@drawable/icon">
         <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="@string/app_name" android:screenOrientation="unspecified" android:launchMode="singleTop">
             <intent-filter>
@@ -34,7 +34,7 @@
             <!-- Splash screen -->
         </activity>
     </application>
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="26"/>
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="28"/>
     <supports-screens android:largeScreens="true" android:normalScreens="true" android:anyDensity="true" android:smallScreens="true"/>
 
     <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.

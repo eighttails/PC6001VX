@@ -13,7 +13,7 @@ void SimpleVirtualKeyboardScene::construct()
 {
 	const int unitWidth = 100;
 	const int unitHeight = 130;
-	int i = 0;
+	float i = 0;
 	{
 		createVirtualKeyItem(KVC_MUHENKAN, "save", "save", "save", "save", "save", "save", "save")->setPos(unitWidth * 0, unitHeight * i);
 		createVirtualKeyItem(KVC_F9, "pause", "pause", "pause", "pause", "pause", "pause", "pause")->setPos(unitWidth * 2.75, unitHeight * i);
@@ -34,7 +34,7 @@ void SimpleVirtualKeyboardScene::construct()
 		list.push_back(createVirtualKeyItem(KVC_9, "0x39", "0x29", "0x0e", "0xf6", "0x8e", "0xd6", "0xae"));
 		list.push_back(createVirtualKeyItem(KVC_0, "0x30", "blank", "0x0f", "0xfc", "0x86", "0xdc", "0xa6"));
 		alignVirtualKeyItems(list, QPointF(0, unitHeight * i++));
-		i++;
+		i+=0.5;
 	}
 	{
 		// 方向キー
@@ -50,7 +50,7 @@ void SimpleVirtualKeyboardScene::construct()
 		list.push_back(createVirtualKeyItem(KVC_Y, "0x79", "0x59", "0x08", "0xfd", "blank", "0xdd", "blank", true));
 		list.push_back(createVirtualKeyItem(KVC_N, "0x6e", "0x4e", "blank", "0xf0", "blank", "0xd0", "blank", true));
 		list.push_back(createVirtualKeyItem(KVC_ENTER, "ret_flat", "ret_flat", "ret_flat", "ret_flat", "ret_flat", "ret_flat", "ret_flat"));
-		alignVirtualKeyItems(list, QPointF(unitWidth * 4, unitHeight * i++));
+		alignVirtualKeyItems(list, QPointF(unitWidth * 4.25, unitHeight * i++));
 	}
 	{
 		createVirtualKeyItem(KVC_SPACE, "space_small", "space_small", "space_small", "space_small", "space_small", "space_small", "space_small")->setPos(unitWidth * 7.75, unitHeight * i);

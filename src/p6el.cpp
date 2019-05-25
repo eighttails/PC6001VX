@@ -688,15 +688,21 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT, bool OnMETA )
 		}
 		break;
 		
-	case KVC_F9:			// ポーズ有効無効変更
+	case KVC_F9:			// ポーズ有効無効変更 or どこでもSAVE
 		if( OnALT ){
+			Stop();
+			DokoDemoSave(1);
+			Start();
 		}else{
 			sche->SetPauseEnable( sche->GetPauseEnable() ? false : true );
 		}
 		break;
 		
-	case KVC_F10:			// Wait有効無効変更
+	case KVC_F10:			// Wait有効無効変更 or どこでもLOAD
 		if( OnALT ){
+			Stop();
+			DokoDemoLoad(1);
+			Start();
 		}else{
 			sche->SetWaitEnable( sche->GetWaitEnable() ? false : true );
 		}

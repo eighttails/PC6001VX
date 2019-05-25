@@ -85,6 +85,7 @@ DEFINES += WIN32
 #On Windows, links libraries statically as long as possible.
 QMAKE_LFLAGS_WINDOWS += -Wl,--stack,10000000
 QMAKE_LFLAGS += -static -lpthread
+PKG_CONFIG = 'pkg-config --static'
 RC_ICONS += src/win32/PC6001VX.ico
 }
 

@@ -6,6 +6,8 @@ pacman -S --needed --noconfirm \
 $MINGW_PACKAGE_PREFIX-libvorbis \
 $MINGW_PACKAGE_PREFIX-libvpx \
 $MINGW_PACKAGE_PREFIX-yasm
+
+exitOnError
 }
 
 function build(){
@@ -14,7 +16,7 @@ echo "FFMpeg is already installed."
 exit 0
 fi
 
-FFMPEG_VERSION=4.0
+FFMPEG_VERSION=4.1.3
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 FFMPEG_BUILD_DIR=$FFMPEG_SRC_DIR-$BIT
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz

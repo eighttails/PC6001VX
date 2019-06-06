@@ -14,9 +14,13 @@ $MINGW_PACKAGE_PREFIX-libpng \
 $MINGW_PACKAGE_PREFIX-libjpeg \
 $MINGW_PACKAGE_PREFIX-libtiff \
 $MINGW_PACKAGE_PREFIX-zlib \
+$MINGW_PACKAGE_PREFIX-libarchive \
 $MINGW_PACKAGE_PREFIX-cairo \
 $MINGW_PACKAGE_PREFIX-pango \
-$MINGW_PACKAGE_PREFIX-icu 
+$MINGW_PACKAGE_PREFIX-icu \
+$MINGW_PACKAGE_PREFIX-docbook-xsl
+
+exitOnError
 }
 
 function build(){
@@ -25,15 +29,19 @@ echo "tesseract is already installed."
 exit 0
 fi
 
-#TESSERACT_VERSION=4.00.00alpha
-TESSERACT_SRC_DIR=tesseract-$BIT
+TESSERACT_VERSION=master
+TESSERACT_TAG=$TESSERACT_VERSION
+TESSERACT_ARCHIVE=tesseract-$TESSERACT_TAG.tar.gz
+TESSERACT_SRC_DIR=tesseract-$TESSERACT_VERSION
+TESSERACT_BUILD_DIR=$TESSERACT_SRC_DIR-$BIT
 
-if [ ! -e  $TESSERACT_SRC_DIR ]; then
-git clone https://github.com/tesseract-ocr/tesseract.git $TESSERACT_SRC_DIR
+if [ ! -e $TESSERACT_ARCHIVE ]; then
+wget -c https://github.com/tesseract-ocr/tesseract/archive/$TESSERACT_TAG/$TESSERACT_ARCHIVE
 fi
-
-pushd $TESSERACT_SRC_DIR
-git pull
+rm -rf $TESSERACT_SRC_DIR $TESSERACT_BUILD_DIR 
+tar xf $TESSERACT_ARCHIVE
+mv $TESSERACT_SRC_DIR $TESSERACT_BUILD_DIR
+pushd $TESSERACT_BUILD_DIR
 
 if [ -e Makefile ]; then
 make clean
@@ -50,7 +58,8 @@ export LIBLEPT_HEADERSDIR=$PREFIX/include/leptonica
 --target=$MINGW_CHOST \
 --prefix=$PREFIX \
 --with-extra-includes=$PREFIX/include \
---with-extra-libraries=$PREFIX/lib
+--with-extra-libraries=$PREFIX/lib 
+
 
 exitOnError
 

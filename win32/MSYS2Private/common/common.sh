@@ -124,13 +124,13 @@ export CMAKE_INCLUDE_PATH=$PREFIX/include
 #最低限必要なDLLをコピー
 pushd $MINGW_PREFIX/bin
 if [ "$MINGW_CHOST" = "i686-w64-mingw32" ]; then
-	#32bit
+    #32bit
         export BIT='32bit'
-	NEEDED_DLLS='libgcc_s_dw2-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
+    NEEDED_DLLS='libgcc_s_dw2-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
 else
-	#64bit
+    #64bit
         export BIT='64bit'
-	NEEDED_DLLS='libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
+    NEEDED_DLLS='libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
 fi
 cp -f $NEEDED_DLLS $PREFIX/bin
 popd

@@ -11,6 +11,7 @@ fi
 pacman -S --needed --noconfirm \
 $MINGW_PACKAGE_PREFIX-enchant
 
+exitOnError
 }
 
 function build(){
@@ -19,7 +20,7 @@ echo "QtSpell is already installed."
 exit 0
 fi
 
-QTSPELL_VERSION=0.8.4
+QTSPELL_VERSION=0.8.5
 QTSPELL_TAG=$QTSPELL_VERSION
 QTSPELL_ARCHIVE=qtspell-$QTSPELL_TAG.tar.gz
 QTSPELL_SRC_DIR=qtspell-$QTSPELL_VERSION

@@ -9,7 +9,7 @@ fi
 }
 
 function build(){
-if [ -e $PREFIX/bin/lhasa.exe -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $PREFIX/bin/lha.exe -a $((FORCE_INSTALL)) == 0 ]; then
 echo "lhasa is already installed."
 exit 0
 fi

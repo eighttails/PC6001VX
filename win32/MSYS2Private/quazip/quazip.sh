@@ -14,14 +14,14 @@ echo "QuaZip is already installed."
 exit 0
 fi
 
-QUAZIP_VERSION=0.7.3
-QUAZIP_TAG=$QUAZIP_VERSION
+QUAZIP_VERSION=0.8
+QUAZIP_TAG=v$QUAZIP_VERSION
 QUAZIP_ARCHIVE=quazip-$QUAZIP_TAG.tar.gz
 QUAZIP_SRC_DIR=quazip-$QUAZIP_VERSION
 QUAZIP_BUILD_DIR=$QUAZIP_SRC_DIR-$BIT
 
 if [ ! -e $QUAZIP_ARCHIVE ]; then
-wget -c https://sourceforge.net/projects/quazip/files/quazip/$QUAZIP_TAG/$QUAZIP_ARCHIVE
+wget -c https://github.com/stachenov/quazip/archive/$QUAZIP_TAG/$QUAZIP_ARCHIVE
 fi
 rm -rf $QUAZIP_SRC_DIR $QUAZIP_BUILD_DIR 
 tar xf $QUAZIP_ARCHIVE

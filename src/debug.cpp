@@ -11,6 +11,8 @@
 #include "p6el.h"
 #include "p6vm.h"
 
+#include "p6vxcommon.h"
+
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 #define	SCRWINW		(380)

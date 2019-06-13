@@ -129,28 +129,6 @@ T max( T v1, S v2 ){ T v2_(v2); return v1 > v2_ ? v1 : v2_; }
 template <class T, class S>
 T min( T v1, S v2 ){ T v2_(v2); return v1 < v2_ ? v1 : v2_; }
 
-#ifdef QTP6VX
-#include <QCoreApplication>
-#include <QString>
-#include <QDebug>
-//翻訳された文字列を返す
-#define TRANS(a) (QCoreApplication::translate("PC6001VX", a).toUtf8().data())
-#else
-#define TRANS(a) a
-#endif
 
-#if (defined PANDORA) || (defined ANDROID)
-#include <string>
-#include <sstream>
-namespace std{
-template <typename T>
-std::string to_string(T value)
-{
-	std::ostringstream os ;
-	os << value ;
-	return os.str() ;
-}
-}
-#endif
 
 #endif	// TYPEDEF_H_INCLUDED

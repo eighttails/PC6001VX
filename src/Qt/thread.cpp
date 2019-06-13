@@ -7,6 +7,8 @@
 #include "../thread.h"
 
 #include <QThread>
+#include <QApplication>
+
 //QThreadをcTheradのインターフェースで使えるようにするためのラッパ
 class InternalTherad : public QThread
 {

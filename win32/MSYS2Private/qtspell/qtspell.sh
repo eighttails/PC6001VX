@@ -8,7 +8,7 @@ exitOnError
 fi
 
 #必要ライブラリ
-pacman -S --needed --noconfirm \
+pacman "${PACMAN_INSTALL_OPTS[@]}" \
 $MINGW_PACKAGE_PREFIX-enchant
 
 exitOnError

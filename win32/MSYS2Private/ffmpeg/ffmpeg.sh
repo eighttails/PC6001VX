@@ -2,7 +2,7 @@
 
 function prerequisite(){
 #必要ライブラリ
-pacman -S --needed --noconfirm \
+pacman "${PACMAN_INSTALL_OPTS[@]}" \
 $MINGW_PACKAGE_PREFIX-libvorbis \
 $MINGW_PACKAGE_PREFIX-libvpx \
 $MINGW_PACKAGE_PREFIX-yasm

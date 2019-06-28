@@ -66,7 +66,7 @@ function toolchain(){
 mkdir $MINGW_PREFIX 2> /dev/null
 
 #ツール類
-pacman -S --needed --noconfirm \
+pacman "${PACMAN_INSTALL_OPTS[@]}" \
 base-devel \
 VCS \
 unzip \
@@ -102,6 +102,14 @@ if [ -z "$MINGW_PREFIX" ]; then
   echo "Please run this script in MinGW 32bit or 64bit shell. (not in MSYS2 shell)"
   exit 1
 fi
+
+#pacmanのパッケージ取得オプション
+PACMAN_INSTALL_OPTS=()
+PACMAN_INSTALL_OPTS+=('-S')
+PACMAN_INSTALL_OPTS+=('--needed')
+PACMAN_INSTALL_OPTS+=('--noconfirm')
+PACMAN_INSTALL_OPTS+=('--disable-download-timeout')
+export PACMAN_INSTALL_OPTS
 
 #基本ツールチェーンのセットアップ
 toolchain

@@ -2,11 +2,12 @@
 
 function prerequisite(){
 #必要ライブラリ
-pacman -S --needed --noconfirm \
+pacman "${PACMAN_INSTALL_OPTS[@]}" \
 $MINGW_PACKAGE_PREFIX-ntldd \
 $MINGW_PACKAGE_PREFIX-clang \
 $MINGW_PACKAGE_PREFIX-clang-tools-extra \
 $MINGW_PACKAGE_PREFIX-SDL2 \
+$MINGW_PACKAGE_PREFIX-dbus \
 $MINGW_PACKAGE_PREFIX-openssl 
 
 exitOnError
@@ -21,7 +22,7 @@ popd
 function makeQtSourceTree(){
 #Qt
 QT_MAJOR_VERSION=5.12
-QT_MINOR_VERSION=.3
+QT_MINOR_VERSION=.4
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 QT_ARCHIVE_DIR=qt-everywhere-src-$QT_VERSION
 QT_ARCHIVE=$QT_ARCHIVE_DIR.tar.xz
@@ -42,6 +43,11 @@ else
     mv $QT_ARCHIVE_DIR $QT_SOURCE_DIR
     pushd $QT_SOURCE_DIR
 
+    #共通パッチ
+    patch -p1 -i $SCRIPT_DIR/0301-link-evr.patch
+    patch -p1 -i $SCRIPT_DIR/0052-qt-5.11-mingw-fix-link-qdoc-with-clang.patch
+    patch -p1 -i $SCRIPT_DIR/0059-different-libs-search-order-for-static-and-shared.patch
+
     if [ "$1" == "static" ]; then
         #static版がcmakeで正常にリンクできない対策のパッチ
         patch -p1 -i $SCRIPT_DIR/0034-qt-5.3.2-Use-QMAKE_PREFIX_STATICLIB-in-create_cmake-prf.patch
@@ -58,10 +64,6 @@ else
         patch -p1 -i $SCRIPT_DIR/0043-qt-5.5.0-static-cmake-regex-QT_INSTALL_LIBS-in-QMAKE_PRL_LIBS_FOR_CMAKE.patch
     fi
 
-    #共通パッチ
-    patch -p1 -i $SCRIPT_DIR/0301-link-evr.patch
-    patch -p1 -i $SCRIPT_DIR/0052-qt-5.11-mingw-fix-link-qdoc-with-clang.patch
-
     #MSYSでビルドが通らない問題への対策パッチ
     for F in qtbase/src/angle/src/common/gles_common.pri qtdeclarative/features/hlsl_bytecode_header.prf
     do
@@ -71,12 +73,6 @@ else
         sed -i -e "s|/Fh |//Fh |g" $F
     done
     sed -i -e "s|#ifdef __MINGW32__|#if 0|g"  qtbase/src/3rdparty/angle/src/libANGLE/renderer/d3d/d3d11/Query11.cpp
-
-    #32ビット版のdefファイルが間違っているのを修正
-    #Qt5.11から該当ファイルをコピー
-    #https://bugreports.qt.io/browse/QTBUG-76087
-    cp $SCRIPT_DIR/libEGL* qtbase/src/3rdparty/angle/src/libEGL/
-    cp $SCRIPT_DIR/libGLESv2* qtbase/src/3rdparty/angle/src/libGLESv2/
 
     #64bit環境で生成されるオブジェクトファイルが巨大すぎでビルドが通らない問題へのパッチ
     sed -i -e "s|QMAKE_CFLAGS           = |QMAKE_CFLAGS         = -Wa,-mbig-obj |g" qtbase/mkspecs/win32-g++/qmake.conf
@@ -102,6 +98,8 @@ QT_COMMON_CONF_OPTS+=("-no-fontconfig")
 QT_COMMON_CONF_OPTS+=("-qt-zlib")
 QT_COMMON_CONF_OPTS+=("-qt-libjpeg")
 QT_COMMON_CONF_OPTS+=("-qt-libpng")
+QT_COMMON_CONF_OPTS+=("-qt-tiff")
+QT_COMMON_CONF_OPTS+=("-qt-webp")
 QT_COMMON_CONF_OPTS+=("-qt-freetype")
 QT_COMMON_CONF_OPTS+=("-qt-pcre")
 QT_COMMON_CONF_OPTS+=("-qt-harfbuzz")
@@ -170,8 +168,7 @@ if [ "$BIT" == "32bit" ]; then
 QT_STATIC_CONF_OPTS+=("-skip" "qttools")
 fi
 
-export OPENSSL_LIBS="-lssl -lcrypto -lcrypt32 -lgdi32"
-
+OPENSSL_LIBS="$(pkg-config --static --libs openssl)" \
 ../$QT_SOURCE_DIR/configure "${QT_COMMON_CONF_OPTS[@]}" "${QT_STATIC_CONF_OPTS[@]}" &> ../qt5-static-$BIT-config.status
 exitOnError
 

@@ -7,6 +7,7 @@
 #include "keyboard.h"
 #include "osd.h"
 #include "common.h"
+#include "p6vxcommon.h"
 
 #include "p6vm.h"
 

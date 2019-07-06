@@ -54,17 +54,4 @@ VSurface *LoadImg( const char * );					// Img LOAD
 ////////////////////////////////////////////////////////////////
 void RectAdd( VRect *, VRect *, VRect * );			// 矩形領域合成
 
-enum TiltDirection{
-    NEWTRAL,
-    LEFT,
-    RIGHT,
-};
-#ifdef QTP6VX
-Q_DECLARE_METATYPE(TiltDirection)
-#endif
-
-// TILTモード用に画面を傾ける
-void TiltScreen(TiltDirection dir);
-void UpdateTilt();
-
 #endif	// COMMON_H_INCLUDED

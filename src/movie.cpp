@@ -1,5 +1,7 @@
 #ifndef NOAVI
 
+#include <string>
+
 extern "C"{
 #include <libavcodec/avcodec.h>
 #include <libavutil/avassert.h>

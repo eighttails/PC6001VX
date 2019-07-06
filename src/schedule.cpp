@@ -4,6 +4,7 @@
 #include "osd.h"
 #include "schedule.h"
 #include "common.h"
+#include "p6vxcommon.h"
 
 #define WRUPDATE	(1000/SPDCNT)	/* 処理速度更新間隔(ms) */
 

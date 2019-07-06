@@ -1,6 +1,7 @@
 #ifndef MOVIE_H_INCLUDED
 #define MOVIE_H_INCLUDED
 
+#include <vector>
 
 #include "sound.h"
 #include "vsurface.h"

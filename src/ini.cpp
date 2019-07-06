@@ -3,6 +3,7 @@
 
 #include "ini.h"
 #include "common.h"
+#include "p6vxcommon.h"
 #include "osd.h"
 
 #define MAX_LINE	256

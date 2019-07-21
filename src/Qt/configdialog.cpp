@@ -503,7 +503,7 @@ void ConfigDialog::writeConfig()
 	}
 
 	// DISK2ファイル名
-	qStr = ui->lineEditDisk1->text();
+	qStr = ui->lineEditDisk2->text();
 	if(qStr == "" || QFile(qStr).exists()){
 		config->SetDiskFile(2, qStr.toUtf8().constData());
 	}

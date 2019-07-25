@@ -9,7 +9,7 @@
 #define TRANS(a) (QCoreApplication::translate("PC6001VX", a).toUtf8().data())
 #else
 #define TRANS(a) a
-#define QT_TRANSLATE_NOOP(a) a
+#define QT_TRANSLATE_NOOP(a,b) b
 #endif
 
 #if (defined PANDORA) || (defined ANDROID)

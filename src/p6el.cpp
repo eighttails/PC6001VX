@@ -1,5 +1,6 @@
 #include <new>
 #include <cstdio>
+#include <string>
 
 #include "pc6001v.h"
 #include "id_menu.h"

@@ -279,8 +279,12 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 
 	QWidget* parent = static_cast<QWidget*>(hwnd);
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
+	// Androidのネイティブファイルダイアログが動かないための暫定措置
+	// https://bugreports.qt.io/browse/QTBUG-77214
 	QFileDialog::Options opt = 0;
-	if (QGuiApplication::platformName() == QLatin1String("xcb")){
+	auto platformName = QGuiApplication::platformName();
+	if (platformName == QLatin1String("xcb")
+			|| platformName == QLatin1String("android")){
 		opt |= QFileDialog::DontUseNativeDialog;
 	}
 
@@ -317,7 +321,6 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 
 	if( path ) strcpy( path, dir.path().toUtf8().constData() );
 	if( fullpath ) strcpy( fullpath, result.toUtf8().constData() );
-
 	QFile file(result);
 	return file.fileName().toUtf8().constData();
 }

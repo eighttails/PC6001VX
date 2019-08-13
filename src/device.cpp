@@ -46,7 +46,7 @@ DeviceList::Node *DeviceList::FindNode( const ID id )
 //			return n;
 //	}
 // 8888888888888888888888888888888888888
-	std::map<int, Node>::iterator p = nodeMap.find( id );
+	auto p = nodeMap.find( id );
 	if( p != nodeMap.end() ){
 		return &p->second;	// 要素の値を返す (first:キー second:値)
 	}

@@ -1834,10 +1834,12 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	SDL_JoystickClose( (SDL_Joystick *)jinfo );
-	for (std::map<int, HJOYINFO>::iterator p = joyMap.begin(); p != joyMap.end(); ++p){
-		if((*p).second == jinfo){
-			joyMap.erase(p);
+	SDL_JoystickClose( static_cast<SDL_Joystick*>(jinfo) );
+	for (auto p = joyMap.begin(); p != joyMap.end();){
+		if(p->second == jinfo){
+			p = joyMap.erase(p);
+		} else {
+			++p;
 		}
 	}
 #else

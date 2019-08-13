@@ -34,7 +34,7 @@ const EVSC::evinfo *EVSC::Find( Device::ID devid, int id ) const
 //	for( int i=0; i<MAXEVENT; i++ )
 //		if( ev[i].devid == devid && ev[i].id == id ) return &ev[i];
 // 8888888888888888888888888888888888888
-	for( EvVec::const_iterator p = ev.begin(); p != ev.end(); ++p ){
+	for( auto p = ev.begin(); p != ev.end(); ++p ){
 		const evinfo& event = *p;
 		if( event.devid == devid && event.id == id ) return &event;
 	}
@@ -159,7 +159,7 @@ bool EVSC::Add( Device *dev, int id, double hz, int flag )
 	if( NextEvent < 0 ) NextEvent = event.Clock;
 	else                NextEvent = min( NextEvent, event.Clock );
 	
-	for( EvVec::iterator p = ev.begin(); p != ev.end(); ++p ){
+	for( auto p = ev.begin(); p != ev.end(); ++p ){
 		if( !(*p).devid ){
 			// 無効化しているイベントがあったらその領域を再利用
 			*p = event;
@@ -400,7 +400,7 @@ void EVSC::SetMasterClock( int clock )
 //			if( ev[i].Period < 1 ) ev[i].Period = 1;
 //		}
 // 8888888888888888888888888888888888888
-	for( EvVec::iterator p = ev.begin(); p != ev.end(); ++p ){
+	for( auto p = ev.begin(); p != ev.end(); ++p ){
 		evinfo& event = *p;
 		if( event.devid && event.nps > 0 && event.Period > 0 ){
 			event.Period = (int)((double)clock / event.nps);
@@ -482,7 +482,7 @@ bool EVSC::DokoSave( cIni *Ini )
 //		i++;
 //	}
 // 8888888888888888888888888888888888888
-	for( EvVec::iterator p = ev.begin(); p != ev.end(); ++p ){
+	for( auto p = ev.begin(); p != ev.end(); ++p ){
 		evinfo& event = *p;
 		// 削除済みイベントは書き出さない
 		if (event.devid == 0) continue;

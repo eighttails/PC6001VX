@@ -159,15 +159,7 @@ bool EVSC::Add( Device *dev, int id, double hz, int flag )
 	if( NextEvent < 0 ) NextEvent = event.Clock;
 	else                NextEvent = min( NextEvent, event.Clock );
 	
-	for( auto p = ev.begin(); p != ev.end(); ++p ){
-		if( !(*p).devid ){
-			// 無効化しているイベントがあったらその領域を再利用
-			*p = event;
- 			return true;
- 		}
-	}
-	
-	// 再利用できる領域が無かったら新規に要素を追加
+	// 新規に要素を追加
 	ev.push_back( event );
 	return true;
 // 8888888888888888888888888888888888888
@@ -185,16 +177,17 @@ bool EVSC::Del( Device *dev, int id )
 {
 	PRINTD( TIC_LOG, "[SCHE][Del] DevID:%c%c%c%c ID:%d\n", dev->GetID()&0xff, (dev->GetID()>>8)&0xff, (dev->GetID()>>16)&0xff, dev->GetID()>>24, id );
 	
-	evinfo *e = (evinfo *)Find( dev->GetID(), id );
-	if( e ){
-		devlist.Del( dev );
-
-		e->devid  = 0;
-		e->id     = 0;
-		e->Active = false;
-		return true;
-	}else
-		return false;
+	bool found = false;
+	for( auto p = ev.begin(); p != ev.end(); ) {
+		auto devId = dev->GetID();
+		if (p->devid == devId && p->id == id){
+			p = ev.erase(p);
+			found = true;
+		} else {
+			++p;
+		}
+	}
+	return found;
 }
 
 

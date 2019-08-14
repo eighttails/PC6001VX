@@ -134,6 +134,9 @@ bool DeviceList::Del( const ID id )
 // 8888888888888888888888888888888888888
 	if( Node *n = FindNode(id) ){
 		n->count--;
+		if (n->count == 0){
+			nodeMap.erase(id);
+		}
 		return true;
 	}
 // 8888888888888888888888888888888888888

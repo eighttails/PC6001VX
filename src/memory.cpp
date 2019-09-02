@@ -1029,8 +1029,9 @@ void MEM6::Patch( void )
 	// 60,61,62,66 共通
 	
 	// ジョイスティック入力ルーチン バグ修正(やや不完全)
-	MainRom[0x1cb4] = 0xe6;	// AND A,x
-	MainRom[0x1cb5] = 0xbf;
+	// ジョイスティック2が使えなくなる不具合が判明したため、何もしない
+	//MainRom[0x1cb4] = 0xe6;	// AND A,x
+	//MainRom[0x1cb5] = 0xbf;
 }
 
 void MEM64::Patch( void )

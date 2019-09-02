@@ -33,7 +33,7 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>8</number>
      </property>
      <widget class="QWidget" name="tabBasic">
       <attribute name="title">
@@ -49,21 +49,21 @@
           <item>
            <widget class="QRadioButton" name="radioButtonModel6001">
             <property name="text">
-             <string>PC-6001</string>
+             <string>&amp;PC-6001</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QRadioButton" name="radioButtonModel6001A">
             <property name="text">
-             <string>PC-6001A</string>
+             <string>PC-&amp;6001A</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QRadioButton" name="radioButtonModel6001mk2">
             <property name="text">
-             <string>PC-6001mk2</string>
+             <string>PC-6&amp;001mk2</string>
             </property>
            </widget>
           </item>
@@ -80,7 +80,7 @@
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>PC-6001mk2SR</string>
+             <string>PC-6001&amp;mk2SR</string>
             </property>
            </widget>
           </item>
@@ -307,21 +307,21 @@
           <item>
            <widget class="QRadioButton" name="radioButtonVCap16bit">
             <property name="text">
-             <string>16bit</string>
+             <string>1&amp;6bit</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QRadioButton" name="radioButtonVCap24bit">
             <property name="text">
-             <string>24bit</string>
+             <string>2&amp;4bit</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QRadioButton" name="radioButtonVCap32bit">
             <property name="text">
-             <string>32bit</string>
+             <string>&amp;32bit</string>
             </property>
            </widget>
           </item>
@@ -445,21 +445,21 @@
             <item>
              <widget class="QRadioButton" name="radioButtonSample441">
               <property name="text">
-               <string>44100 Hz</string>
+               <string>&amp;44100 Hz</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QRadioButton" name="radioButtonSample220">
               <property name="text">
-               <string>22050 Hz</string>
+               <string>22&amp;050 Hz</string>
               </property>
              </widget>
             </item>
             <item>
              <widget class="QRadioButton" name="radioButtonSample110">
               <property name="text">
-               <string>11025 Hz</string>
+               <string>1102&amp;5 Hz</string>
               </property>
              </widget>
             </item>
@@ -872,7 +872,7 @@
        <item row="0" column="1" colspan="2">
         <widget class="QLabel" name="label_17">
          <property name="text">
-          <string>拡張ROM(&amp;R):</string>
+          <string>拡張RO&amp;M(R):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditExtRom</cstring>
@@ -1125,7 +1125,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_51">
          <property name="text">
-          <string>TAPE(&amp;T):</string>
+          <string>TA&amp;PE(T):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditFolderTape</cstring>
@@ -1165,7 +1165,7 @@
        <item row="6" column="0">
         <widget class="QLabel" name="label_52">
          <property name="text">
-          <string>SnapShot(&amp;H):</string>
+          <string>S&amp;napShot(H):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditFolderImg</cstring>
@@ -3421,13 +3421,6 @@ border-radius: 1;</string>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBoxRomPatch">
-         <property name="text">
-          <string>ROMにパッチを当てる(バグ修正)(&amp;P)</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="checkBoxTurboTape">
          <property name="text">
           <string>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</string>
@@ -3612,7 +3605,6 @@ border-radius: 1;</string>
   <tabstop>pushButtonRefFolderWave</tabstop>
   <tabstop>lineEditClockRatio</tabstop>
   <tabstop>checkBoxRomCRC</tabstop>
-  <tabstop>checkBoxRomPatch</tabstop>
   <tabstop>checkBoxTurboTape</tabstop>
   <tabstop>lineEditBoost60</tabstop>
   <tabstop>lineEditBoost66</tabstop>

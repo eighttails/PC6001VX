@@ -501,9 +501,6 @@ image::doc/setting_other.png[]
 CRCチェックが合わなかった場合、起動時に警告が出ます。 +
 何らかの原因によってCRCが一致しなかった場合、または互換ROM使用時はオフにしてください。 +
 
-** ROMにパッチを当てる +
-ROMにバグフィックスのパッチを当てます。 +
-
 ** TurboTape +
 TAPEの読込み中はノーウェイトで動作させる機能です。 +
 
@@ -577,8 +574,10 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 
 == 更新履歴
 .git master
-* Alt+F9/F10にどこでもSAVE/LOADを割り当て
+* Alt+F9/F10にどこでもSAVE/LOADを割り当て。
+* 「ROMファイルにパッチを当てる」設定を廃止。(ジョイスティック2が使えなくなる不具合があるため)
 * Assined Alt+F9/F10 hotkey to state save/load.
+* Dropped "Patch the ROM" setting.(Because it made JOYSTICK2 unusable.)
 
 .3.1.3 2019/5/5
 * シンプル仮想キーボードの操作性を改善。

@@ -4,32 +4,32 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../aboutdialog.ui" line="14"/>
+        <location filename="../aboutdialog.ui" line="20"/>
         <source>About</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.ui" line="84"/>
+        <location filename="../aboutdialog.ui" line="90"/>
         <source>APPNAME</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.ui" line="91"/>
+        <location filename="../aboutdialog.ui" line="97"/>
         <source>Ver.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.ui" line="98"/>
+        <location filename="../aboutdialog.ui" line="104"/>
         <source>VERSION</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.ui" line="120"/>
-        <source>Copyright (c) 2012-2018, Tadahito Yao (@eighttails)</source>
+        <location filename="../aboutdialog.ui" line="126"/>
+        <source>Copyright (c) 2012-2019, Tadahito Yao (@eighttails)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.ui" line="130"/>
+        <location filename="../aboutdialog.ui" line="136"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -38,7 +38,7 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location filename="../aboutdialog.ui" line="144"/>
+        <location filename="../aboutdialog.ui" line="150"/>
         <source>Based on PC6001V by Yumitaro.</source>
         <translation></translation>
     </message>
@@ -61,28 +61,8 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Models</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="52"/>
-        <source>PC-6001</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="59"/>
-        <source>PC-6001A</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="66"/>
-        <source>PC-6001mk2</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../configdialog.ui" line="73"/>
         <source>PC-6601</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="83"/>
-        <source>PC-6001mk2SR</source>
         <translation></translation>
     </message>
     <message>
@@ -208,21 +188,6 @@ p, li { white-space: pre-wrap; }
         <translation>Video capture</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="310"/>
-        <source>16bit</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="317"/>
-        <source>24bit</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="324"/>
-        <source>32bit</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>ハードウェアアクセラレーション(次回起動時に反映)</source>
         <translation type="vanished">Hardware acceleration(Applied in next startup)</translation>
     </message>
@@ -239,21 +204,6 @@ p, li { white-space: pre-wrap; }
         <location filename="../configdialog.ui" line="442"/>
         <source>サンプリングレート(&amp;R)</source>
         <translation>Sampling &amp;rate</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="448"/>
-        <source>44100 Hz</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="455"/>
-        <source>22050 Hz</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="462"/>
-        <source>11025 Hz</source>
-        <translation></translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="472"/>
@@ -345,9 +295,8 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="875"/>
         <source>拡張ROM(&amp;R):</source>
-        <translation>Extended &amp;Rom:</translation>
+        <translation type="vanished">Extended &amp;Rom:</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="885"/>
@@ -424,9 +373,8 @@ p, li { white-space: pre-wrap; }
         <translation>State sa&amp;ve</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1128"/>
         <source>TAPE(&amp;T):</source>
-        <translation>&amp;Tape:</translation>
+        <translation type="vanished">&amp;Tape:</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="1151"/>
@@ -434,9 +382,8 @@ p, li { white-space: pre-wrap; }
         <translation>Dis&amp;k:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1168"/>
         <source>SnapShot(&amp;H):</source>
-        <translation>Snaps&amp;hot:</translation>
+        <translation type="vanished">Snaps&amp;hot:</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="1188"/>
@@ -584,6 +531,41 @@ p, li { white-space: pre-wrap; }
         <translation>Peach</translation>
     </message>
     <message>
+        <location filename="../configdialog.ui" line="52"/>
+        <source>&amp;PC-6001</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="59"/>
+        <source>PC-&amp;6001A</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="66"/>
+        <source>PC-6&amp;001mk2</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="83"/>
+        <source>PC-6001&amp;mk2SR</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="310"/>
+        <source>1&amp;6bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="317"/>
+        <source>2&amp;4bit</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="324"/>
+        <source>&amp;32bit</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../configdialog.ui" line="417"/>
         <source>ハードウェアアクセラレーション(次回起動時に反映)(&amp;H)</source>
         <translation>&amp;Hardware acceleration(Applied in next startup)</translation>
@@ -594,9 +576,39 @@ p, li { white-space: pre-wrap; }
         <translation>&amp;Filtering</translation>
     </message>
     <message>
+        <location filename="../configdialog.ui" line="448"/>
+        <source>&amp;44100 Hz</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="455"/>
+        <source>22&amp;050 Hz</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="462"/>
+        <source>1102&amp;5 Hz</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../configdialog.ui" line="563"/>
         <source>PSG、FM音量(&amp;P)</source>
         <translation>&amp;PSG and FM volume</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="875"/>
+        <source>拡張RO&amp;M(R):</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="1128"/>
+        <source>TA&amp;PE(T):</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="1168"/>
+        <source>S&amp;napShot(H):</source>
+        <translation></translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="2675"/>
@@ -681,53 +693,52 @@ p, li { white-space: pre-wrap; }
         <translation>Enable &amp;CRC check for the System ROM</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3426"/>
         <source>ROMにパッチを当てる(バグ修正)(&amp;P)</source>
-        <translation>&amp;Patch the ROM (bug fix)</translation>
+        <translation type="vanished">&amp;Patch the ROM (bug fix)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3433"/>
+        <location filename="../configdialog.ui" line="3426"/>
         <source>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</source>
         <translation>&amp;Turbo Tape (no wait when reading)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3440"/>
+        <location filename="../configdialog.ui" line="3433"/>
         <source>Boost Up (TAPE最速化)(&amp;U)</source>
         <translation>Boost &amp;Up (fastest Tape)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3449"/>
+        <location filename="../configdialog.ui" line="3442"/>
         <source>最大倍率</source>
         <translation>Maximum magnification</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3472"/>
+        <location filename="../configdialog.ui" line="3465"/>
         <source>N60</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3488"/>
-        <location filename="../configdialog.ui" line="3530"/>
+        <location filename="../configdialog.ui" line="3481"/>
+        <location filename="../configdialog.ui" line="3523"/>
         <source>9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3514"/>
+        <location filename="../configdialog.ui" line="3507"/>
         <source>N60m/N66</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3556"/>
+        <location filename="../configdialog.ui" line="3549"/>
         <source>FDDアクセスウェイト有効(&amp;W)</source>
         <translation>Enable FDD access &amp;wait</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3563"/>
+        <location filename="../configdialog.ui" line="3556"/>
         <source>終了時に確認する(&amp;F)</source>
         <translation>Con&amp;firm at exit</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3570"/>
+        <location filename="../configdialog.ui" line="3563"/>
         <source>終了時にINIファイルを保存する(&amp;Q)</source>
         <translation>Save the INI file when &amp;Quit</translation>
     </message>
@@ -798,12 +809,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>P6VXApp</name>
     <message>
-        <location filename="../p6vxapp.cpp" line="162"/>
+        <location filename="../p6vxapp.cpp" line="169"/>
         <source>Storage access denied.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="551"/>
+        <location filename="../p6vxapp.cpp" line="579"/>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
@@ -812,7 +823,7 @@ Please copy ROM files to ROM folder(%1) or specify another folder.
 Do you want to specify another folder?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="595"/>
+        <location filename="../p6vxapp.cpp" line="623"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>
@@ -2154,107 +2165,107 @@ Save time and PC6001V version </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1378"/>
+        <location filename="../osdQt.cpp" line="1368"/>
         <source>TAPEイメージ選択(LOAD)</source>
         <translation>Tape image selection (Load)</translation>
     </message>
     <message>
+        <location filename="../osdQt.cpp" line="1369"/>
         <location filename="../osdQt.cpp" line="1379"/>
-        <location filename="../osdQt.cpp" line="1389"/>
         <source>TAPEイメージ (*.p6t *.cas *.p6);;P6T形式 (*.p6t);;ベタ形式 (*.cas *.p6);;全てのファイル (*.*)</source>
         <translation>Tape image (*.p6t *.cas *.p6);;P6T format (*.p6t);;Standard format (*.cas *.p6);;All files(*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1388"/>
+        <location filename="../osdQt.cpp" line="1378"/>
         <source>TAPEイメージ選択(SAVE)</source>
         <translation>Tape image selection (Save)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1398"/>
+        <location filename="../osdQt.cpp" line="1388"/>
         <source>DISKイメージ選択</source>
         <translation>Disk image selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1399"/>
+        <location filename="../osdQt.cpp" line="1389"/>
         <source>DISKイメージ(*.d88);;D88形式 (*.d88);;全てのファイル (*.*)</source>
         <translation>Disk image (*.d88);;D88 format (*.d88);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1407"/>
+        <location filename="../osdQt.cpp" line="1397"/>
         <source>拡張ROMイメージ選択</source>
         <translation>Expansion ROM image selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1408"/>
-        <location filename="../osdQt.cpp" line="1414"/>
-        <location filename="../osdQt.cpp" line="1480"/>
+        <location filename="../osdQt.cpp" line="1398"/>
+        <location filename="../osdQt.cpp" line="1404"/>
+        <location filename="../osdQt.cpp" line="1470"/>
         <source>全てのファイル (*.*)</source>
         <translation>All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1413"/>
+        <location filename="../osdQt.cpp" line="1403"/>
         <source>プリンター出力ファイル選択</source>
         <translation>Printer output file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1420"/>
+        <location filename="../osdQt.cpp" line="1410"/>
         <source>全角フォントファイル選択</source>
         <translation>Full-width font selection file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1421"/>
-        <location filename="../osdQt.cpp" line="1429"/>
+        <location filename="../osdQt.cpp" line="1411"/>
+        <location filename="../osdQt.cpp" line="1419"/>
         <source>PNGファイル (*.png);;全てのファイル (*.*)</source>
         <translation>PNG file (*.png);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1428"/>
+        <location filename="../osdQt.cpp" line="1418"/>
         <source>半角フォントファイル選択</source>
         <translation>Half-width font selection file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1436"/>
+        <location filename="../osdQt.cpp" line="1426"/>
         <source>どこでもLOADファイル選択</source>
         <translation>State load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1437"/>
+        <location filename="../osdQt.cpp" line="1427"/>
         <source>どこでもSAVEファイル (*.dds *.ddr);;どこでもSAVE形式 (*.dds);;リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>State save files (*.dds *.ddr);;State save format (*.dds);;Replay file (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1446"/>
+        <location filename="../osdQt.cpp" line="1436"/>
         <source>どこでもSAVEファイル選択</source>
         <translation>State save file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1447"/>
+        <location filename="../osdQt.cpp" line="1437"/>
         <source>どこでもSAVE形式 (*.dds);;全てのファイル (*.*)</source>
         <translation>State save format (*.dds);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1454"/>
+        <location filename="../osdQt.cpp" line="1444"/>
         <source>リプレイ再生ファイル選択</source>
         <translation>Replay load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1455"/>
-        <location filename="../osdQt.cpp" line="1463"/>
+        <location filename="../osdQt.cpp" line="1445"/>
+        <location filename="../osdQt.cpp" line="1453"/>
         <source>リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>Replay file (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1462"/>
+        <location filename="../osdQt.cpp" line="1452"/>
         <source>リプレイ保存ファイル選択</source>
         <translation>Replay save file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1470"/>
+        <location filename="../osdQt.cpp" line="1460"/>
         <source>ビデオキャプチャ出力ファイル選択</source>
         <translation>Video capture output file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1471"/>
+        <location filename="../osdQt.cpp" line="1461"/>
         <source>WebMファイル (*.webm);;全てのファイル (*.*)</source>
         <translation>WebM file (*.webm);;All files (*.*)</translation>
     </message>
@@ -2263,168 +2274,168 @@ Save time and PC6001V version </translation>
         <translation type="vanished">AVI file (*.avi);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1479"/>
+        <location filename="../osdQt.cpp" line="1469"/>
         <source>ファイル選択</source>
         <translation>File selection</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="310"/>
+        <location filename="../../debug.cpp" line="312"/>
         <source>ヘルプを表示</source>
         <translation>Show the help</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="311"/>
         <location filename="../../debug.cpp" line="313"/>
         <location filename="../../debug.cpp" line="315"/>
         <location filename="../../debug.cpp" line="317"/>
-        <location filename="../../debug.cpp" line="318"/>
+        <location filename="../../debug.cpp" line="319"/>
         <location filename="../../debug.cpp" line="320"/>
+        <location filename="../../debug.cpp" line="322"/>
         <source>    〃</source>
         <translation>Show the help</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="312"/>
+        <location filename="../../debug.cpp" line="314"/>
         <source>実行</source>
         <translation>Run</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="314"/>
+        <location filename="../../debug.cpp" line="316"/>
         <source>トレース実行</source>
         <translation>Trace execution</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="316"/>
+        <location filename="../../debug.cpp" line="318"/>
         <source>ステップ実行</source>
         <translation>Step</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="319"/>
+        <location filename="../../debug.cpp" line="321"/>
         <source>ブレークポイント設定</source>
         <translation>Set breakpoints</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="321"/>
+        <location filename="../../debug.cpp" line="323"/>
         <source>メモリを読込む</source>
         <translation>Read the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="322"/>
+        <location filename="../../debug.cpp" line="324"/>
         <source>メモリに書込む</source>
         <translation>Write into the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="323"/>
+        <location filename="../../debug.cpp" line="325"/>
         <source>メモリを埋める</source>
         <translation>Fill the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="324"/>
+        <location filename="../../debug.cpp" line="326"/>
         <source>メモリを移動</source>
         <translation>Move the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="325"/>
+        <location filename="../../debug.cpp" line="327"/>
         <source>メモリを検索</source>
         <translation>Search the memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="326"/>
+        <location filename="../../debug.cpp" line="328"/>
         <source>ポート出力</source>
         <translation>Output port</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="327"/>
+        <location filename="../../debug.cpp" line="329"/>
         <source>ファイルからメモリに読込む</source>
         <translation>Read from a file into memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="328"/>
+        <location filename="../../debug.cpp" line="330"/>
         <source>メモリからファイルに書込む</source>
         <translation>Write into the file from memory</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="329"/>
+        <location filename="../../debug.cpp" line="331"/>
         <source>PC6001Vをリセット</source>
         <translation>Reset the PC6001V</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="330"/>
+        <location filename="../../debug.cpp" line="332"/>
         <source>CPUレジスタを参照/設定</source>
         <translation>Reference/Setting for the CPU register</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="331"/>
+        <location filename="../../debug.cpp" line="333"/>
         <source>逆アセンブル</source>
         <translation>Disassemle</translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="445"/>
+        <location filename="../../debug.cpp" line="447"/>
         <source>***********************************************
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="446"/>
+        <location filename="../../debug.cpp" line="448"/>
         <source>* PC6001V  - monitor mode -                   *
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="447"/>
+        <location filename="../../debug.cpp" line="449"/>
         <source>*  help 又は ? と入力するとヘルプを表示します *
 </source>
         <translation>*  Type help or ? to show the help            *
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="448"/>
+        <location filename="../../debug.cpp" line="450"/>
         <source>***********************************************
 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="603"/>
+        <location filename="../../debug.cpp" line="605"/>
         <source>無効なコマンドです : %s
 </source>
         <translation>Invalid command : %s
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="677"/>
+        <location filename="../../debug.cpp" line="679"/>
         <source>引数が無効です (arg %d)
 </source>
         <translation>Invalid argument (arg %d)
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="711"/>
+        <location filename="../../debug.cpp" line="713"/>
         <source>     注: &quot;help &lt;コマンド名&gt;&quot; と入力すると 更に詳細なヘルプを表示します。
 </source>
         <translation>     Note: &quot;help &lt;Command name&gt;&quot; Displays help for more details.
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="934"/>
+        <location filename="../../debug.cpp" line="936"/>
         <source>-- なし --
 </source>
         <translation>-- None --
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="958"/>
+        <location filename="../../debug.cpp" line="960"/>
         <source>ブレークポイント #%02d を消去します。
 </source>
         <translation>Breakpoint #%02d will be cleared.
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="985"/>
+        <location filename="../../debug.cpp" line="987"/>
         <source>ブレークポイント #%02d を設定します。[ </source>
         <translation>Breakpoint #%02d will be set.[ </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1346"/>
+        <location filename="../../debug.cpp" line="1348"/>
         <source>  help [&lt;cmd&gt;]
     ヘルプを表示します
     &lt;cmd&gt; ... ヘルプを表示したいコマンド
@@ -2437,7 +2448,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1357"/>
+        <location filename="../../debug.cpp" line="1359"/>
         <source>  go
     プログラムを実行します
 </source>
@@ -2446,7 +2457,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1366"/>
+        <location filename="../../debug.cpp" line="1368"/>
         <source>  trace [#&lt;steps&gt;|&lt;steps&gt;]
     execute program specityes times
     [all omit]        ... trace some steps (previous steps)
@@ -2455,7 +2466,7 @@ Save time and PC6001V version </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1377"/>
+        <location filename="../../debug.cpp" line="1379"/>
         <source>  step [call][jp][rep]
     execute program 1 time
     [all omit] ... execute 1 step
@@ -2468,7 +2479,7 @@ Save time and PC6001V version </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1392"/>
+        <location filename="../../debug.cpp" line="1394"/>
         <source>  S
     &apos;step all&apos; と同じ   (stepを参照)
 </source>
@@ -2477,7 +2488,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1401"/>
+        <location filename="../../debug.cpp" line="1403"/>
         <source>  break [&lt;action&gt;] &lt;addr|port&gt; [#&lt;No&gt;]
   break CLEAR [#&lt;No&gt;]
   break
@@ -2518,7 +2529,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1426"/>
+        <location filename="../../debug.cpp" line="1428"/>
         <source>  read &lt;addr&gt;
     メモリを読込みます
     &lt;addr&gt; ... 指定アドレス
@@ -2529,7 +2540,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1435"/>
+        <location filename="../../debug.cpp" line="1437"/>
         <source>  write &lt;addr&gt; &lt;data&gt;
     メモリに書込みます
     &lt;addr&gt; ... 指定アドレス
@@ -2542,7 +2553,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1446"/>
+        <location filename="../../debug.cpp" line="1448"/>
         <source>  fill &lt;start-addr&gt; &lt;end-addr&gt; &lt;value&gt;
   fill &lt;start-addr&gt; #&lt;size&gt;    &lt;value&gt;
     メモリを指定値で埋めます
@@ -2561,7 +2572,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1460"/>
+        <location filename="../../debug.cpp" line="1462"/>
         <source>  move &lt;src-addr&gt; &lt;end-addr&gt; &lt;dist-addr&gt;
   move &lt;src-addr&gt; #&lt;size&gt;    &lt;dist-addr&gt;
     メモリを転送します
@@ -2580,7 +2591,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1474"/>
+        <location filename="../../debug.cpp" line="1476"/>
         <source>  search [&lt;value&gt; [&lt;start-addr&gt; &lt;end-addr&gt;]]
   search [&lt;value&gt; [&lt;start-addr&gt; #&lt;size&gt;]]
     メモリを検索します
@@ -2601,7 +2612,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1489"/>
+        <location filename="../../debug.cpp" line="1491"/>
         <source>  out &lt;port&gt; &lt;data&gt;
     I/Oポートに出力します
     &lt;port&gt; ... I/Oポートアドレス
@@ -2614,7 +2625,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1500"/>
+        <location filename="../../debug.cpp" line="1502"/>
         <source>  loadmem &lt;filename&gt; &lt;start-addr&gt; &lt;end-addr&gt;
   loadmem &lt;filename&gt; &lt;start-addr&gt; #&lt;size&gt;
     ファイルからメモリにロードします
@@ -2633,7 +2644,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1514"/>
+        <location filename="../../debug.cpp" line="1516"/>
         <source>  savemem &lt;filename&gt; &lt;start-addr&gt; &lt;end-addr&gt;
   savemem &lt;filename&gt; &lt;start-addr&gt; #&lt;size&gt;
     メモリイメージをファイルにセーブします
@@ -2652,7 +2663,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1528"/>
+        <location filename="../../debug.cpp" line="1530"/>
         <source>  reset
     PC6001Vをリセットし，アドレス 0000H から実行します
 </source>
@@ -2661,7 +2672,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1537"/>
+        <location filename="../../debug.cpp" line="1539"/>
         <source>  reg &lt;name&gt; &lt;value&gt;
     レジスタの値を参照，設定します
     &lt;name&gt;     ... specity register name.
@@ -2676,7 +2687,7 @@ Save time and PC6001V version </translation>
 </translation>
     </message>
     <message>
-        <location filename="../../debug.cpp" line="1549"/>
+        <location filename="../../debug.cpp" line="1551"/>
         <source>  disasm [[&lt;start-addr&gt;][#&lt;steps&gt;]]
     逆アセンブルします
     [all omit]   ... PCレジスタアドレスから16ステップ分を逆アセンブル
@@ -2734,313 +2745,313 @@ Save time and PC6001V version </translation>
 <context>
     <name>QtEL6</name>
     <message>
-        <location filename="../qtel6.cpp" line="226"/>
+        <location filename="../qtel6.cpp" line="227"/>
         <source>システム</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="228"/>
+        <location filename="../qtel6.cpp" line="229"/>
         <source>リセット</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="229"/>
+        <location filename="../qtel6.cpp" line="230"/>
         <source>再起動</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="238"/>
+        <location filename="../qtel6.cpp" line="239"/>
         <source>どこでもLOAD</source>
         <translation>State load</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="239"/>
+        <location filename="../qtel6.cpp" line="240"/>
         <source>どこでもSAVE</source>
         <translation>State save</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="241"/>
+        <location filename="../qtel6.cpp" line="242"/>
         <source>LOAD...</source>
         <translation>Load...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="245"/>
+        <location filename="../qtel6.cpp" line="246"/>
         <source>SAVE...</source>
         <translation>Save...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="251"/>
+        <location filename="../qtel6.cpp" line="252"/>
         <source>リプレイ</source>
         <translation>Replay</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="272"/>
+        <location filename="../qtel6.cpp" line="273"/>
         <source>記録再開...</source>
         <translation>Resume recording...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="276"/>
+        <location filename="../qtel6.cpp" line="277"/>
         <source>途中保存</source>
         <translation>Checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="277"/>
+        <location filename="../qtel6.cpp" line="278"/>
         <source>途中保存から再開</source>
         <translation>Back to checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="294"/>
+        <location filename="../qtel6.cpp" line="295"/>
         <source>打込み代行...</source>
         <translation>Auto typing...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="296"/>
+        <location filename="../qtel6.cpp" line="297"/>
         <source>終了</source>
         <translation>Exit</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="299"/>
+        <location filename="../qtel6.cpp" line="300"/>
         <source>TAPE</source>
         <translation>Tape</translation>
-    </message>
-    <message>
-        <location filename="../qtel6.cpp" line="300"/>
-        <location filename="../qtel6.cpp" line="310"/>
-        <location filename="../qtel6.cpp" line="318"/>
-        <source>挿入...</source>
-        <translation>Insert...</translation>
     </message>
     <message>
         <location filename="../qtel6.cpp" line="301"/>
         <location filename="../qtel6.cpp" line="311"/>
         <location filename="../qtel6.cpp" line="319"/>
+        <source>挿入...</source>
+        <translation>Insert...</translation>
+    </message>
+    <message>
+        <location filename="../qtel6.cpp" line="302"/>
+        <location filename="../qtel6.cpp" line="312"/>
+        <location filename="../qtel6.cpp" line="320"/>
         <source>取出</source>
         <translation>Eject</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="306"/>
+        <location filename="../qtel6.cpp" line="307"/>
         <source>DISK</source>
         <translation>Disk</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="317"/>
+        <location filename="../qtel6.cpp" line="318"/>
         <source>拡張ROM</source>
         <translation>Extended ROM</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="324"/>
+        <location filename="../qtel6.cpp" line="325"/>
         <source>ジョイスティック</source>
         <translation>Joystick</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="340"/>
         <location filename="../qtel6.cpp" line="341"/>
+        <location filename="../qtel6.cpp" line="342"/>
         <source>なし</source>
         <translation>None</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="349"/>
+        <location filename="../qtel6.cpp" line="350"/>
         <source>設定</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="169"/>
-        <location filename="../qtel6.cpp" line="351"/>
+        <location filename="../qtel6.cpp" line="170"/>
+        <location filename="../qtel6.cpp" line="352"/>
         <source>表示サイズ</source>
         <translation>Display size</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="169"/>
+        <location filename="../qtel6.cpp" line="170"/>
         <source>表示サイズ(%)を入力してください。(50-1000)</source>
         <translation>Enter magnification(%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="178"/>
+        <location filename="../qtel6.cpp" line="179"/>
         <source>設定を反映するには一度終了しますがよろしいですか?</source>
         <translation>You need to exit program to apply settings.\nDo you want to continue?</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="232"/>
+        <location filename="../qtel6.cpp" line="233"/>
         <source>一時停止</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="234"/>
+        <location filename="../qtel6.cpp" line="235"/>
         <source>スナップショットを取得</source>
         <translation>Take snapshot</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="273"/>
+        <location filename="../qtel6.cpp" line="274"/>
         <source>リプレイを動画に変換...</source>
         <translation>Convert replay to movie...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="278"/>
+        <location filename="../qtel6.cpp" line="279"/>
         <source>1つ前の途中保存から再開</source>
         <translation>Back to previous checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="288"/>
+        <location filename="../qtel6.cpp" line="289"/>
         <source>キーパネル</source>
         <translation>Key panel</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="290"/>
+        <location filename="../qtel6.cpp" line="291"/>
         <source>仮想キーボード</source>
         <translation>Virtual keyboard</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="352"/>
+        <location filename="../qtel6.cpp" line="353"/>
         <source>50%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="353"/>
+        <location filename="../qtel6.cpp" line="354"/>
         <source>100%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="354"/>
+        <location filename="../qtel6.cpp" line="355"/>
         <source>200%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="355"/>
+        <location filename="../qtel6.cpp" line="356"/>
         <source>300%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="356"/>
+        <location filename="../qtel6.cpp" line="357"/>
         <source>倍率を指定...</source>
         <translation>Specify magnification...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="357"/>
+        <location filename="../qtel6.cpp" line="358"/>
         <source>倍率を固定</source>
         <translation>Fix magnification</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="360"/>
+        <location filename="../qtel6.cpp" line="361"/>
         <source>フルスクリーン</source>
         <translation>Full screen</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="363"/>
+        <location filename="../qtel6.cpp" line="364"/>
         <source>ステータスバー</source>
         <translation>Status bar</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="365"/>
+        <location filename="../qtel6.cpp" line="366"/>
         <source>4:3表示</source>
         <translation>4:3 TV display</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="367"/>
+        <location filename="../qtel6.cpp" line="368"/>
         <source>スキャンライン</source>
         <translation>Scanline</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="370"/>
+        <location filename="../qtel6.cpp" line="371"/>
         <source>ハードウェアアクセラレーション</source>
         <translation>Hardware acceleration</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="373"/>
+        <location filename="../qtel6.cpp" line="374"/>
         <source>フィルタリング</source>
         <translation>Filtering</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="376"/>
+        <location filename="../qtel6.cpp" line="377"/>
         <source>TILTモード</source>
         <translation>Tilt mode</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="379"/>
+        <location filename="../qtel6.cpp" line="380"/>
         <source>MODE4 カラー</source>
         <translation>Mode4 color</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="382"/>
+        <location filename="../qtel6.cpp" line="383"/>
         <source>モノクロ</source>
         <translation>Monochrome</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="383"/>
+        <location filename="../qtel6.cpp" line="384"/>
         <source>赤/青</source>
         <translation>Red/Blue</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="384"/>
+        <location filename="../qtel6.cpp" line="385"/>
         <source>青/赤</source>
         <translation>Blue/Red</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="385"/>
+        <location filename="../qtel6.cpp" line="386"/>
         <source>桃/緑</source>
         <translation>Green/Peach</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="386"/>
+        <location filename="../qtel6.cpp" line="387"/>
         <source>緑/桃</source>
         <translation>Peach/Green</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="392"/>
+        <location filename="../qtel6.cpp" line="393"/>
         <source>フレームスキップ</source>
         <translation>Frameskip</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="407"/>
+        <location filename="../qtel6.cpp" line="408"/>
         <source>サンプリングレート</source>
         <translation>Sampling rate</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="419"/>
+        <location filename="../qtel6.cpp" line="420"/>
         <source>ウェイト無効</source>
         <translation>Disable wait</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="421"/>
+        <location filename="../qtel6.cpp" line="422"/>
         <source>Turbo TAPE</source>
         <translation>Turbo tape</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="423"/>
+        <location filename="../qtel6.cpp" line="424"/>
         <source>Boost Up</source>
         <translation>Boost up</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="425"/>
+        <location filename="../qtel6.cpp" line="426"/>
         <source>環境設定...</source>
         <translation>Preferences...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="429"/>
+        <location filename="../qtel6.cpp" line="430"/>
         <source>デバッグ</source>
         <translation>Debug</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="431"/>
+        <location filename="../qtel6.cpp" line="432"/>
         <source>モニタモード</source>
         <translation>Monitor mode</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="436"/>
+        <location filename="../qtel6.cpp" line="437"/>
         <source>ヘルプ</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="437"/>
+        <location filename="../qtel6.cpp" line="438"/>
         <source>オンラインヘルプ</source>
         <translation>Online help</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="438"/>
+        <location filename="../qtel6.cpp" line="439"/>
         <source>バージョン情報...</source>
         <translation>About...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="439"/>
+        <location filename="../qtel6.cpp" line="440"/>
         <source>About Qt...</source>
         <translation></translation>
     </message>
@@ -3058,7 +3069,7 @@ Save time and PC6001V version </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../virtualkeytabwidget.ui" line="62"/>
+        <location filename="../virtualkeytabwidget.ui" line="56"/>
         <source>SIMPLE</source>
         <translation></translation>
     </message>

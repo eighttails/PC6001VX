@@ -307,9 +307,6 @@ void ConfigDialog::readConfig()
 	// CRCチェック
 	ui->checkBoxRomCRC->setChecked(config->GetCheckCRC());
 
-	// ROMパッチ
-	ui->checkBoxRomPatch->setChecked(config->GetRomPatch());
-
 	// Turbo TAPE
 	ui->checkBoxTurboTape->setChecked(config->GetTurboTAPE());
 
@@ -530,9 +527,6 @@ void ConfigDialog::writeConfig()
 
 	// CRCチェック
 	config->SetCheckCRC(ui->checkBoxRomCRC->isChecked());
-
-	// ROMパッチ
-	config->SetRomPatch(ui->checkBoxRomPatch->isChecked());
 
 	// Turbo TAPE
 	config->SetTurboTAPE(ui->checkBoxTurboTape->isChecked());

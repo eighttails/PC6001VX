@@ -1,5 +1,16 @@
 #!/bin/bash
 
+#pacmanのパッケージ取得オプション
+PACMAN_INSTALL_OPTS=()
+PACMAN_INSTALL_OPTS+=('-S')
+PACMAN_INSTALL_OPTS+=('--needed')
+PACMAN_INSTALL_OPTS+=('--noconfirm')
+PACMAN_INSTALL_OPTS+=('--disable-download-timeout')
+export PACMAN_INSTALL_OPTS
+#ツール類のインストール
+pacman "${PACMAN_INSTALL_OPTS[@]}" \
+$MINGW_PACKAGE_PREFIX-asciidoctor
+
 #環境チェック
 if [ -z "$MINGW_PREFIX" ]; then
 	echo "Please run this script in MinGW 32bit or 64bit shell. (not in MSYS2 shell)"
@@ -34,8 +45,8 @@ $SCRIPT_DIR/buildrelease.sh "$PWD"
 
 pushd PC6001VX-build-$MINGW_CHOST/release
 cp -f PC6001VX.exe $WIN_BIN_DIR
-cp -f $SCRIPT_DIR/../README.html $WIN_BIN_DIR
 cp -f $SCRIPT_DIR/safemode.bat $WIN_BIN_DIR
+asciidoctor $SCRIPT_DIR/../README.adoc -o $WIN_BIN_DIR/README.html
 popd
 
 zip -r $WIN_BIN_NAME.zip $WIN_BIN_NAME

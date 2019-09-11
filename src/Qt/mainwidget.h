@@ -21,6 +21,7 @@ public slots:
 	void updateLayout();
 	void adjustSizeToChild(QSize size);
 	void toggleVirtualKeyboard();
+	void virtualKeyTabSelected(int index);
 
 	// QWidget interface
 protected:

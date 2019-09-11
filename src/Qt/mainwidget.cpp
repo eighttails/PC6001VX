@@ -31,7 +31,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	layout->addWidget(VKeyWidget);
 	VKeyWidget->setVisible(app->getSetting(P6VXApp::keyVirtualKeyVisible).toBool());
 	VKeyWidget->setCurrentIndex(app->getSetting(P6VXApp::keyVirtualKeyTabIndex).toInt());
-
+	connect(VKeyWidget, SIGNAL(currentChanged(int)), this, SLOT(virtualKeyTabSelected(int)));
 	adjustSize();
 
 	// ウィンドウ位置とサイズを復元
@@ -84,6 +84,12 @@ void MainWidget::toggleVirtualKeyboard()
 	app->setSetting(P6VXApp::keyVirtualKeyVisible, VKeyWidget->isVisible());
 	app->setSetting(P6VXApp::keyVirtualKeyTabIndex, VKeyWidget->currentIndex());
 	adjustSizeToChild(size);
+}
+
+void MainWidget::virtualKeyTabSelected(int index)
+{
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	app->setSetting(P6VXApp::keyVirtualKeyTabIndex, index);
 }
 
 void MainWidget::closeEvent(QCloseEvent *event)

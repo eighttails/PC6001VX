@@ -67,7 +67,7 @@ protected:
 	
 	virtual void SetIntrEnable( BYTE );		// 割込み許可フラグ設定
 	void SetTimerIntr( bool );				// タイマ割込みスイッチ設定
-	void SetTimerIntrHz( BYTE, BYTE=0 );	// タイマ割込み周波数設定
+	virtual void SetTimerIntrHz( BYTE, BYTE=0 );	// タイマ割込み周波数設定
 	
 	// I/Oアクセス関数
 	void OutB0H( int, BYTE );
@@ -153,6 +153,7 @@ public:
 class IRQ64 : public IRQ6 {
 private:
 	void SetIntrEnable( BYTE );				// 割込み許可フラグ設定
+	void SetTimerIntrHz( BYTE, BYTE=0 );	// タイマ割込み周波数設定
 	void SetIntrVectorEnable( BYTE );		// 割込みベクタアドレス出力フラグ設定
 	
 	// デバイス定義

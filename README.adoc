@@ -583,10 +583,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 == 更新履歴
 .git master
 * 秋川様による互換ROMを内蔵。ROMファイルがなくても起動可能になった。
+* SRモデルにおけるタイマー割込み間隔を修正。(暫定対応)
 * Alt+F9/F10にどこでもSAVE/LOADを割り当て。
 * 「ROMファイルにパッチを当てる」設定を廃止。(ジョイスティック2が使えなくなる不具合があるため)
-* Compatible ROM by Mr.Akikawa is now built in the emulator. Now emulator is bootable without genuine ROM.
-* Assined Alt+F9/F10 hotkey to state save/load.
+* Compatible ROM implemented by AKIKAWA Hisashi is now built in the emulator. Now the emulator is bootable without genuine ROM.
+* Fixed timer interrupt interval on SR models.(temporal fix)
+* Assigned Alt+F9/F10 hotkey to state save/load.
 * Dropped "Patch the ROM" setting.(Because it made JOYSTICK2 unusable.)
 
 .3.1.3 2019/5/5

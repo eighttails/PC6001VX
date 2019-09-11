@@ -60,7 +60,7 @@
 
 #define	CPUM_CLOCK60			(3993600)			/* メインCPUクロック(Hz) 60,62 */
 #define	CPUM_CLOCK66			(4000000)			/* メインCPUクロック(Hz) 66 */
-#define	CPUM_CLOCK64			(3580000)			/* メインCPUクロック(Hz) 64,68 */
+#define	CPUM_CLOCK64			(3579545)			/* メインCPUクロック(Hz) 64,68 */
 #define	CPUS_CLOCK60			(CPUM_CLOCK60*2)	/* サブCPUクロック(Hz) 60,62 */
 #define	CPUS_CLOCK66			(CPUM_CLOCK66*2)	/* サブCPUクロック(Hz) 66 */
 #define	CPUS_CLOCK64			(CPUM_CLOCK64*2)	/* サブCPUクロック(Hz) 64,68 */

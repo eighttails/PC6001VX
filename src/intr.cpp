@@ -339,6 +339,28 @@ void IRQ64::SetIntrEnable( BYTE data )
 	PRINTD( INTR_LOG, "\tINT8:EXT INT  %s\n", IntEnable[7] ? "Enable" : "Disable" );
 }
 
+void IRQ64::SetTimerIntrHz(BYTE data, BYTE first)
+{
+	TimerCntUp = data;
+
+	if( vm->VdgIsSRmode() )
+		vm->EventAdd( this, EID_TIMER, (double)((8*7) * (TimerCntUp+1)), EV_LOOP|EV_STATE );
+	else
+		vm->EventAdd( this, EID_TIMER, (double)((256*7) * (TimerCntUp+1)), EV_LOOP|EV_STATE );
+
+	// 初回周期の指定がある場合の処理
+	if( first ){
+		EVSC::evinfo e;
+
+		e.devid = this->Device::GetID();
+		e.id    = EID_TIMER;
+
+		vm->EventGetInfo( &e );
+		e.Clock = (e.Clock*first)/100;
+		vm->EventSetInfo( &e );
+	}
+}
+
 
 ////////////////////////////////////////////////////////////////
 // 割込みベクタアドレス出力フラグ設定

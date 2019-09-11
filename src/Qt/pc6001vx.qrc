@@ -296,5 +296,17 @@
         <file>res/vkey/key_pause.png</file>
         <file>res/vkey/key_snapshot.png</file>
         <file>res/vkey/key_stick.png</file>
+        <file>res/rom/BASICROM.60</file>
+        <file>res/rom/BASICROM.62</file>
+        <file>res/rom/CGROM60.60</file>
+        <file>res/rom/CGROM60.62</file>
+        <file>res/rom/BASICROM.66</file>
+        <file>res/rom/CGROM60.66</file>
+        <file>res/rom/CGROM66.66</file>
+        <file>res/rom/KANJIROM.66</file>
+        <file>res/rom/VOICEROM.66</file>
+        <file>res/rom/CGROM60m.62</file>
+        <file>res/rom/KANJIROM.62</file>
+        <file>res/rom/VOICEROM.62</file>
     </qresource>
 </RCC>

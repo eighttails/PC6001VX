@@ -34,12 +34,7 @@ char *UTF8toLocal( const char * );                  // Utf8 -> システム文�
 
 int Sjis2P6( char *, const char * );				// SJIS -> P6
 
-// Mac用文字コード変換 ShiftJIS -> UTF-8
-#ifdef __APPLE__
-#define FOPENEN(a,b)	fopen(a,b)
-#else
-#define FOPENEN(a,b)	fopen(UTF8toLocal(a),b)
-#endif
+FILE* FOPENEN(const char* , const char* );			// ファイルオープン
 
 ////////////////////////////////////////////////////////////////
 // 画像ファイル操作関数

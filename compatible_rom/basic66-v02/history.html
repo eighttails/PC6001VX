@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html lang="ja">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+<meta name="author" content="AKIKAWA, Hisashi">
+<title>PC-6601用互換BASIC変更履歴</title>
+<link rev="made" href="mailto:icb49250&#64;nifty.ne.jp">
+</head>
+
+<body>
+<h1>PC-6601用互換BASIC変更履歴</h1>
+<hr>
+
+<h2>2019.9.9</h2>
+<p>Ver.0.2公開。</p>
+<ul>
+<li>LGPLv2.1以降での利用を可能としました。
+<li>HEX$()、DELETE、CLOAD*、CSAVE*、GET@、PUT@、MON、CIRCLEを実装。
+<li>対応ROM内ルーチンが増えました。(0384h,038Bh,1179h,1181h,14AFh,1A1Ch,1B2Ah,3995h)
+<li>CLOAD時のアスタリスク点滅タイミングをN60-BASICと同様に変更。(Tsutsuiさん、ありがとうございます)
+<li>等号不等号3種を1種ずつ3個並べた演算子 (>=<, <=>, ><=, <>=, =><, =<>) に対応。常に真となる比較演算を行います。
+<li>EXEC命令で0以外のアドレスを指定した時にCフラグを立てるよう修正。
+<li>拡張漢字ROMイメージ変換プログラムbdf2extkanjiを同梱。
+<li>文字列演算時に?OS Errorや?ST Errorが出やすい問題を改善。
+<li>mkII/6601用のカートリッジ起動に対応。
+<li>バグを修正。
+<ul>
+<li>PLAY文の音程データが不正確だった (bookwormさん、ありがとうございます)
+<li>同じFORループを途中で抜けるのを繰り返すとやがて?OM Errorになる
+<li>?OM Errorの際にプログラムが破壊されることがある
+<li>特定の条件下でNEXTやRETURNが誤動作する
+<li>PLAY"M0"がエラーにならない
+<li>整数値を扱う命令で負数も有効になるもの (AND、PEEK、CLEARなど) の場合、小数点付きの負数を使った時の端数処理が正しくない
+<li>RND()の値がおかしい場合がある
+<li>累乗計算で指数が大きい時の結果がおかしい
+<li>VAL関数で指数部を含む文字列を指定すると、別の文字列まで読んでしまうことがある
+<li>多重ループのNEXT命令がコンマで終わった時にエラーにならない
+<li>スクリーンモード1,2でセミグラフィック文字のある箇所にPSETやLINEでグラフィックを描いた時の挙動が異なる
+<li>カーソルキーを3個以上同時に押した時のSTICK()の値が異なる
+<li>DIM命令で配列変数でなく通常変数を指定した時に、続く命令が正常に実行されない
+<li>LEFT$(),RIGHT$(),MID$()においてグラフィック文字の途中で分割した時の結果が異なる
+<li>COS()の引数が減算を含む式だった場合エラーになることがある
+<li>等号の演算順序が不等号より先になっていた (N6X-BASICでは同順位)
+<li>実機で漢字ROM/音声合成ROMへのバンク切り替えに失敗する
+<li>SCREEN()が正常に動作しない
+<li>スクリーンモードが3か4の時、カーソルが行頭以外にある状態でプログラムが終わっても改行しない
+<li>同梱のbdf2cgrom66がFONT_DESCENT 0の時に動かない
+<li>FDDオートスタートからの起動でBASICモードを自動入力できない
+<li>モード1-4のスクリーンモード3でカラー5以上の色が異なる
+<li>マイナス符号と小数点が両方ある数値に対してVAL()が正しく動作しない
+<li>マイナス符号と小数点が両方ある数値に対してREAD-DATAが正しく動作しない
+<li>INPUT命令での複数入力に失敗する
+<li>INPUT命令での入力に対しDELキーを使うと入力が欠けることがある
+<li>ページを変更した時にカラーセット(COLOR命令第3パラメータ)が変化してしまう
+<li>6B7Ah(COLOR命令第3パラメータ実行ルーチン)の入力値が間違っている
+<li>文字列演算の途中でガベージコレクションが発生すると結果が壊れることがある
+</ul>
+</ul>
+
+<hr>
+
+<h2>2017.6.6</h2>
+<p>Ver.0.1公開。</p>
+<ul>
+<li>N60-BASICにある命令＋KANJI＋TALKのみ実装済み。
+<li>FDDに関しては、最低限のアクセスルーチンとオートスタートを実装。内蔵ドライブのみ。
+</ul>
+<hr>
+
+</body>
+</html>

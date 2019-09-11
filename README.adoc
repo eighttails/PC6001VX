@@ -16,10 +16,9 @@ PC6001VXの末尾のXはクロスプラットフォームのXです。(^^; +
 == 起動方法
 === 必要なもの
 * ROMファイル +
-エミュレータの動作には原則として、PC-6001シリーズの実機から吸い出したROMファイルが必要になります。 http://p6ers.net/hashi/suidashi.html[こちら]を参考にして実機から吸い出してください。
-実機をお持ちでない場合、 http://000.la.coocan.jp/p6/basic.html[秋川様]作成の互換ROMを使うという選択肢もあります。 +
-こちらの互換ROMにはCGROMファイルが含まれていませんが、 http://eighttails.seesaa.net/article/305067428.html[拙作のCGROM]ファイルを使うことができます。
-互換ROM使用時は初代PC-6001相当の動きになります。 +
+エミュレータの動作には原則として、PC-6001シリーズの実機から吸い出したROMファイルが必要になります。 http://p6ers.net/hashi/suidashi.html[こちら]を参考にして実機から吸い出してください。 +
+実機をお持ちでない場合、 http://000.la.coocan.jp/p6/basic.html[秋川様]作成の互換ROMを使うという選択肢もあります。互換ROMはエミュレータのバイナリに内蔵されており、設定で有効化することができます。 +
+互換ROM使用時は初代PC-6001またはPC-6601相当の動きになります。 +
 
 * WAVファイル +
 mk2以降の場合、音声合成の固定語はWAVファイルとして用意する必要があります。 +
@@ -358,7 +357,17 @@ image::doc/setting_basic.png[]
 ** 機種 +
 エミュレーション対象の機種を選択します。 +
 動作には選択した機種から吸い出したROMが必要です。 +
-互換ROM使用時はPC-6001を選択してください。 +
+互換ROM使用時はPC-6001またはPC-6601を選択してください。 +
+
+** 内蔵互換ROMを使う +
+http://000.la.coocan.jp/misc.html[秋川様]による互換ROMを使用します。 +
+互換ROMはエミュレータのバイナリに埋め込まれており、別途ファイルを用意する必要はありません。 +
++
+[WARNING]
+====
+互換ROMは純正ROMのすべての機能が実装されているわけではありません。 +
+未実装の機能やCGROMの書体の違いにより、挙動や画面の見た目が純正ROM使用時と異なることがあります。
+====
 
 ** FDD接続数 +
 FDDの接続数を設定します。 +
@@ -531,7 +540,7 @@ MSYS2環境上でビルドします。 +
 . http://sourceforge.net/projects/msys2/[こちら]からMSYS2をダウンロードしてインストールしてください。 +
 VC++はサポートしていません。 +
 MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(`pacman -Sy`)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用) +
-https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20170918.exe
+https://sourceforge.net/projects/msys2/files/Base/x86_64/msys2-x86_64-20190524.exe
 . MSYSをインストールしたフォルダのmingw32.exe(32ビット版をビルドする場合)またはmingw64.exe(64ビット版をビルドする場合)を実行。 +
 . ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。 +
 . `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
@@ -573,8 +582,10 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 
 == 更新履歴
 .git master
+* 秋川様による互換ROMを内蔵。ROMファイルがなくても起動可能になった。
 * Alt+F9/F10にどこでもSAVE/LOADを割り当て。
 * 「ROMファイルにパッチを当てる」設定を廃止。(ジョイスティック2が使えなくなる不具合があるため)
+* Compatible ROM by Mr.Akikawa is now built in the emulator. Now emulator is bootable without genuine ROM.
 * Assined Alt+F9/F10 hotkey to state save/load.
 * Dropped "Patch the ROM" setting.(Because it made JOYSTICK2 unusable.)
 
@@ -877,4 +888,5 @@ CPU使用率も下がって、サウンドのバッファアンダーフロー�
 オリジナルのPC6001Vを製作され、移植を快諾してくださったゆみたろ様、
 Mac版を通じ、移植の障害を取り除いてくれていたであろうWindy様、
 Qtについて勉強する機会を提供してくださった関東Qt勉強会および元NOKIAのエンジニアの皆様、
+互換ROMのCGROMの元になった美咲フォント、k8x12フォント作者の門真なむ様、
 そしてP6コミュニティの皆様に厚く感謝申し上げます。

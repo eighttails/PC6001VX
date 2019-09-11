@@ -27,11 +27,7 @@
 #ifndef NOSOUND
 #include "wavfile.h"
 #endif
-///////////////////////////////////////////////////////////
-// 仕方なしにスタティック変数
-///////////////////////////////////////////////////////////
-static CFG6 *ccfg = NULL;				// 環境設定オブジェクトポインタ
-static CFG6 *ecfg = NULL;				// 環境設定オブジェクトポインタ(編集用)
+
 
 //エミュレータ内部用イベントキュー
 QMutex eventMutex;
@@ -1082,7 +1078,9 @@ void OSD_DelDelimiter( char *path )
 void OSD_RelativePath( char *path )
 {
 #ifdef WIN32
-	if( QDir( path ).isRelative() || !strlen( path ) ) return;
+	if( QDir( path ).isRelative()
+			|| QDir( path ).path().startsWith(":")
+			|| !strlen( path ) ) return;
 	QDir dir(OSD_GetModulePath());
 	QString relPath = dir.relativeFilePath(path);
 	strcpy(path, relPath.toUtf8().constData());
@@ -1103,7 +1101,7 @@ void OSD_AbsolutePath( char *path )
 {
 	if( !QDir( path ).isRelative()  || !strlen( path ) ) return;
 	QDir dir(OSD_GetModulePath());
-	strcpy(path, dir.absoluteFilePath(path).toUtf8().constData());
+	strcpy(path, QDir::cleanPath(dir.absoluteFilePath(path)).toUtf8().constData());
 }
 
 
@@ -1117,8 +1115,15 @@ void OSD_AbsolutePath( char *path )
 ////////////////////////////////////////////////////////////////
 void OSD_AddPath( char *pdst, const char *psrc1, const char *psrc2 )
 {
+	Q_ASSERT(pdst);
+	Q_ASSERT(psrc1);
+	Q_ASSERT(psrc2);
+
 	QDir dir(psrc1);
-	QString path = dir.path() + QDir::separator() + psrc2;
+	QString path = QDir::cleanPath(dir.filePath(psrc2));
+	if (!path.startsWith(":")) {
+		path = QDir::toNativeSeparators(path);
+	}
 	strcpy(pdst, path.toUtf8().constData());
 }
 
@@ -1177,7 +1182,7 @@ const char *OSD_GetModulePath( void )
 	//Windowsの場合はexe本体と同じ場所。
 	//それ以外(UNIX系を想定)は ~/.pc6001vx を返す
 #ifdef WIN32
-	QString confPath = qApp->applicationDirPath() + QDir::separator();
+	QString confPath = qApp->applicationDirPath();
 #else
 	QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
 #endif
@@ -1215,7 +1220,7 @@ const char *OSD_GetFolderNamePart( const char *path )
 
 	static QByteArray filePath;
 	QFileInfo info(QString::fromUtf8(path));
-	filePath = info.dir().absolutePath().toUtf8();
+	filePath = QDir::cleanPath(info.dir().absolutePath()).toUtf8();
 	return filePath.constData();
 }
 
@@ -1256,9 +1261,15 @@ bool OSD_FileExist( const char *fullpath )
 		QString wildcard = info.fileName();
 
 		QFileInfoList list = dir.entryInfoList(QStringList(wildcard), QDir::Files);
+		if (list.empty()){
+			qDebug() << pathString << " does not exist.";
+		}
 		return !list.empty();
 	} else {
 		QFile file(pathString);
+		if (!file.exists()){
+			qDebug() << pathString << " does not exist.";
+		}
 		return file.exists();
 	}
 }
@@ -1939,8 +1950,20 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 {
 	// INIファイルを開く
 	try{
-		ecfg = new CFG6();
-		if( !ecfg->Init() ) throw Error::IniReadFailed;
+		CFG6 ecfg;
+		if( !ecfg.Init() ) throw Error::IniReadFailed;
+
+		ConfigDialog dialog(&ecfg);
+#ifdef ALWAYSFULLSCREEN
+		dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
+#endif
+		dialog.exec();
+		int ret = dialog.result();
+		// OKボタンが押されたならINIファイル書込み
+		if( ret == QDialog::Accepted) {
+			ecfg.Write();
+		}
+		return ret;
 	}
 	// new に失敗した場合
 	catch( std::bad_alloc ){
@@ -1948,24 +1971,8 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 	}
 	// 例外発生
 	catch( Error::Errno i ){
-		delete ecfg;
-		ecfg = NULL;
 		return -1;
 	}
-
-	ConfigDialog dialog(ecfg);
-#ifdef ALWAYSFULLSCREEN
-	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
-#endif
-	dialog.exec();
-	int ret = dialog.result();
-	// OKボタンが押されたならINIファイル書込み
-	if( ret == QDialog::Accepted) ecfg->Write();
-
-	delete ecfg;
-	ecfg = NULL;
-
-	return ret;
 }
 
 ///////////////////////////////////////////////////////////

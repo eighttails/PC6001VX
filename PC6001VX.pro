@@ -352,7 +352,6 @@ RESOURCES += \
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DISTFILES += \
-    README.html \
     LICENSE \
     README.adoc \
     win32/buildenv.sh \

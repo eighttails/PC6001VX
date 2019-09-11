@@ -8,6 +8,8 @@ ColorButton::ColorButton(QWidget *parent) :
 	colorId(0),
 	config(NULL)
 {
+	// ボタンをクリックしたら色選択ダイアログを開く
+	connect(this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
 
 void ColorButton::updateColor()
@@ -30,9 +32,6 @@ void ColorButton::initialize(int id, CFG6 *cfg)
 	config->GetColor(colorId, &color);
 	// 自身の色に反映
 	updateColor();
-
-	// ボタンをクリックしたら色選択ダイアログを開く
-	connect(this, SIGNAL(clicked()), this, SLOT(chooseColor()));
 }
 
 void ColorButton::chooseColor()

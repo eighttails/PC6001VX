@@ -79,6 +79,10 @@ public:
 	QString getCustomRomPath();
 	void setCustomRomPath(QString path);
 
+	// 内蔵互換ROM使用モード(リソースファイル内のROMを使う)
+	bool isCompatibleRomMode();
+	void enableCompatibleRomMode(CFG6 *config, bool enable);
+
 public slots:
 	//仮想マシンの起動→終了→再起動のループ
 	//直接呼び出さずに、Qtのイベントループの中で実行する

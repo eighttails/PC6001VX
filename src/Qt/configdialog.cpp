@@ -30,6 +30,108 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
 	// クリアボタンを押したらラインエディットをクリア
 	connect(folderClearMap, SIGNAL(mapped(QWidget*)), this, SLOT(clearLineEdit(QWidget*)));
 
+	// 各種マッピング
+	// サウンド------------------------------------------------------
+	// バッファサイズ
+	connect(ui->horizontalSliderSndBufferSize, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
+	sliderLabelMap->setMapping(ui->horizontalSliderSndBufferSize, ui->labelSndBufferSize);
+
+	// マスター音量
+	connect(ui->horizontalSliderMasterVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
+	sliderLabelMap->setMapping(ui->horizontalSliderMasterVol, ui->labelMasterVol);
+
+	// PSG音量
+	connect(ui->horizontalSliderPSGVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
+	sliderLabelMap->setMapping(ui->horizontalSliderPSGVol, ui->labelPSGVol);
+
+	// 音声合成音量
+	connect(ui->horizontalSliderVoiceVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
+	sliderLabelMap->setMapping(ui->horizontalSliderVoiceVol, ui->labelVoiceVol);
+
+	// TAPEモニタ音量
+	connect(ui->horizontalSliderTapeVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
+	sliderLabelMap->setMapping(ui->horizontalSliderTapeVol, ui->labelTapeVol);
+
+	// ファイル----------------------------------------------------
+	// 拡張ROMファイル
+	connect(ui->pushButtonClearExtRom, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+	fileClearMap->setMapping(ui->pushButtonClearExtRom, ui->lineEditExtRom);
+	connect(ui->pushButtonRefExtRom, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+	fileRefMap->setMapping(ui->pushButtonRefExtRom, ui->lineEditExtRom);
+
+	// TAPE(LOAD)ファイル名
+	connect(ui->pushButtonClearLoadTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+	fileClearMap->setMapping(ui->pushButtonClearLoadTape, ui->lineEditLoadTape);
+	connect(ui->pushButtonRefLoadTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+	fileRefMap->setMapping(ui->pushButtonRefLoadTape, ui->lineEditLoadTape);
+
+	// TAPE(SAVE)ファイル名
+	connect(ui->pushButtonClearSaveTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+	fileClearMap->setMapping(ui->pushButtonClearSaveTape, ui->lineEditSaveTape);
+	connect(ui->pushButtonRefSaveTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+	fileRefMap->setMapping(ui->pushButtonRefSaveTape, ui->lineEditSaveTape);
+
+	// DISK1ファイル名
+	connect(ui->pushButtonClearDisk1, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+	fileClearMap->setMapping(ui->pushButtonClearDisk1, ui->lineEditDisk1);
+	connect(ui->pushButtonRefDisk1, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+	fileRefMap->setMapping(ui->pushButtonRefDisk1, ui->lineEditDisk1);
+
+	// DISK2ファイル名
+	connect(ui->pushButtonClearDisk2, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+	fileClearMap->setMapping(ui->pushButtonClearDisk2, ui->lineEditDisk2);
+	connect(ui->pushButtonRefDisk2, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+	fileRefMap->setMapping(ui->pushButtonRefDisk2, ui->lineEditDisk2);
+
+	// プリンタファイル名
+	connect(ui->pushButtonClearPrinter, SIGNAL(clicked()), fileClearMap, SLOT(map()));
+	fileClearMap->setMapping(ui->pushButtonClearPrinter, ui->lineEditPrinter);
+	connect(ui->pushButtonRefPrinter, SIGNAL(clicked()), fileRefMap, SLOT(map()));
+	fileRefMap->setMapping(ui->pushButtonRefPrinter, ui->lineEditPrinter);
+
+	// フォルダ--------------------------------------------------------------
+	// ROMパス
+	connect(ui->pushButtonClearFolderRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+	folderClearMap->setMapping(ui->pushButtonClearFolderRom, ui->lineEditFolderRom);
+	connect(ui->pushButtonRefFolderRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+	folderRefMap->setMapping(ui->pushButtonRefFolderRom, ui->lineEditFolderRom);
+
+	// TAPEパス
+	connect(ui->pushButtonClearFolderTape, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+	folderClearMap->setMapping(ui->pushButtonClearFolderTape, ui->lineEditFolderTape);
+	connect(ui->pushButtonRefFolderTape, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+	folderRefMap->setMapping(ui->pushButtonRefFolderTape, ui->lineEditFolderTape);
+
+	// DISKパス
+	connect(ui->pushButtonClearFolderDisk, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+	folderClearMap->setMapping(ui->pushButtonClearFolderDisk, ui->lineEditFolderDisk);
+	connect(ui->pushButtonRefFolderDisk, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+	folderRefMap->setMapping(ui->pushButtonRefFolderDisk, ui->lineEditFolderDisk);
+
+	// 拡張ROMパス
+	connect(ui->pushButtonClearFolderExtRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+	folderClearMap->setMapping(ui->pushButtonClearFolderExtRom, ui->lineEditFolderExtRom);
+	connect(ui->pushButtonRefFolderExtRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+	folderRefMap->setMapping(ui->pushButtonRefFolderExtRom, ui->lineEditFolderExtRom);
+
+	// IMGパス
+	connect(ui->pushButtonClearFolderImg, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+	folderClearMap->setMapping(ui->pushButtonClearFolderImg, ui->lineEditFolderImg);
+	connect(ui->pushButtonRefFolderImg, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+	folderRefMap->setMapping(ui->pushButtonRefFolderImg, ui->lineEditFolderImg);
+
+	// WAVEパス
+	connect(ui->pushButtonClearFolderWave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+	folderClearMap->setMapping(ui->pushButtonClearFolderWave, ui->lineEditFolderWave);
+	connect(ui->pushButtonRefFolderWave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+	folderRefMap->setMapping(ui->pushButtonRefFolderWave, ui->lineEditFolderWave);
+
+	// どこでもSAVEパス
+	connect(ui->pushButtonClearFolderDokoSave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
+	folderClearMap->setMapping(ui->pushButtonClearFolderDokoSave, ui->lineEditFolderDokoSave);
+	connect(ui->pushButtonRefFolderDokoSave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
+	folderRefMap->setMapping(ui->pushButtonRefFolderDokoSave, ui->lineEditFolderDokoSave);
+
 	// ビデオキャプチャ設定を消す
 	ui->groupBoxVideoCapture->setVisible(false);
 
@@ -68,6 +170,29 @@ void ConfigDialog::readConfig()
 	case 1: ui->radioButtonFDD1->setChecked(true);  break;
 	case 2: ui->radioButtonFDD2->setChecked(true);  break;
 	default:    Q_ASSERT(false);
+	}
+
+	// 内蔵互換ROM使用
+	const bool CompatibleRomMode = QString(config->GetRomPath()).startsWith(":");
+	ui->checkBoxCompatibleRomMode->setChecked(CompatibleRomMode);
+	if (CompatibleRomMode){
+		ui->radioButtonModel6001A->setEnabled(false);
+		ui->radioButtonModel6001mk2->setEnabled(false);
+		ui->radioButtonModel6001mk2SR->setEnabled(false);
+		ui->radioButtonModel6601->setEnabled(true);
+		ui->radioButtonModel6601SR->setEnabled(false);
+		ui->lineEditFolderRom->setEnabled(false);
+		ui->pushButtonClearFolderRom->setEnabled(false);
+		ui->pushButtonRefFolderRom->setEnabled(false);
+	} else {
+		ui->radioButtonModel6001A->setEnabled(true);
+		ui->radioButtonModel6001mk2->setEnabled(true);
+		ui->radioButtonModel6001mk2SR->setEnabled(true);
+		ui->radioButtonModel6601->setEnabled(true);
+		ui->radioButtonModel6601SR->setEnabled(true);
+		ui->lineEditFolderRom->setEnabled(true);
+		ui->pushButtonClearFolderRom->setEnabled(true);
+		ui->pushButtonRefFolderRom->setEnabled(true);
 	}
 
 	// 拡張RAM使用
@@ -138,8 +263,6 @@ void ConfigDialog::readConfig()
 	// バッファサイズ
 	ui->horizontalSliderSndBufferSize->setValue(config->GetSoundBuffer());
 	ui->labelSndBufferSize->setText(QString::number(config->GetSoundBuffer()));
-	connect(ui->horizontalSliderSndBufferSize, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderSndBufferSize, ui->labelSndBufferSize);
 
 	// PSG LPFカットオフ周波数
 	ui->lineEditPSGLPF->setText(QString::number(config->GetPsgLPF()));
@@ -147,26 +270,18 @@ void ConfigDialog::readConfig()
 	// マスター音量
 	ui->horizontalSliderMasterVol->setValue(config->GetMasterVol());
 	ui->labelMasterVol->setText(QString::number(config->GetMasterVol()));
-	connect(ui->horizontalSliderMasterVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderMasterVol, ui->labelMasterVol);
 
 	// PSG音量
 	ui->horizontalSliderPSGVol->setValue(config->GetPsgVol());
 	ui->labelPSGVol->setText(QString::number(config->GetPsgVol()));
-	connect(ui->horizontalSliderPSGVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderPSGVol, ui->labelPSGVol);
 
 	// 音声合成音量
 	ui->horizontalSliderVoiceVol->setValue(config->GetVoiceVol());
 	ui->labelVoiceVol->setText(QString::number(config->GetVoiceVol()));
-	connect(ui->horizontalSliderVoiceVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderVoiceVol, ui->labelVoiceVol);
 
 	// TAPEモニタ音量
 	ui->horizontalSliderTapeVol->setValue(config->GetCmtVol());
 	ui->labelTapeVol->setText(QString::number(config->GetCmtVol()));
-	connect(ui->horizontalSliderTapeVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderTapeVol, ui->labelTapeVol);
 
 	// 入力関係----------------------------------------------------
 	// キーリピート間隔
@@ -177,119 +292,71 @@ void ConfigDialog::readConfig()
 	strncpy( str, config->GetExtRomFile(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditExtRom->setText(str);
-	connect(ui->pushButtonClearExtRom, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearExtRom, ui->lineEditExtRom);
-	connect(ui->pushButtonRefExtRom, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefExtRom, ui->lineEditExtRom);
 
 	// TAPE(LOAD)ファイル名
 	strncpy( str, config->GetTapeFile(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditLoadTape->setText(str);
-	connect(ui->pushButtonClearLoadTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearLoadTape, ui->lineEditLoadTape);
-	connect(ui->pushButtonRefLoadTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefLoadTape, ui->lineEditLoadTape);
 
 	// TAPE(SAVE)ファイル名
 	strncpy( str, config->GetSaveFile(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditSaveTape->setText(str);
-	connect(ui->pushButtonClearSaveTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearSaveTape, ui->lineEditSaveTape);
-	connect(ui->pushButtonRefSaveTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefSaveTape, ui->lineEditSaveTape);
 
 	// DISK1ファイル名
 	strncpy( str, config->GetDiskFile(1), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditDisk1->setText(str);
-	connect(ui->pushButtonClearDisk1, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearDisk1, ui->lineEditDisk1);
-	connect(ui->pushButtonRefDisk1, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefDisk1, ui->lineEditDisk1);
 
 	// DISK2ファイル名
 	strncpy( str, config->GetDiskFile(2), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditDisk2->setText(str);
-	connect(ui->pushButtonClearDisk2, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearDisk2, ui->lineEditDisk2);
-	connect(ui->pushButtonRefDisk2, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefDisk2, ui->lineEditDisk2);
 
 	// プリンタファイル名
 	strncpy( str, config->GetPrinterFile(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditPrinter->setText(str);
-	connect(ui->pushButtonClearPrinter, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearPrinter, ui->lineEditPrinter);
-	connect(ui->pushButtonRefPrinter, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefPrinter, ui->lineEditPrinter);
 
 	// フォルダ--------------------------------------------------------------
 	// ROMパス
 	strncpy( str, config->GetRomPath(), PATH_MAX );
 	OSD_DelDelimiter( str );
-	ui->lineEditFolderRom->setText(str);
-	connect(ui->pushButtonClearFolderRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderRom, ui->lineEditFolderRom);
-	connect(ui->pushButtonRefFolderRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderRom, ui->lineEditFolderRom);
+	if (CompatibleRomMode){
+		ui->lineEditFolderRom->setText(tr("互換ROM使用中"));
+	} else {
+		ui->lineEditFolderRom->setText(str);
+	}
 
 	// TAPEパス
 	strncpy( str, config->GetTapePath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderTape->setText(str);
-	connect(ui->pushButtonClearFolderTape, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderTape, ui->lineEditFolderTape);
-	connect(ui->pushButtonRefFolderTape, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderTape, ui->lineEditFolderTape);
 
 	// DISKパス
 	strncpy( str, config->GetDiskPath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderDisk->setText(str);
-	connect(ui->pushButtonClearFolderDisk, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderDisk, ui->lineEditFolderDisk);
-	connect(ui->pushButtonRefFolderDisk, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderDisk, ui->lineEditFolderDisk);
 
 	// 拡張ROMパス
 	strncpy( str, config->GetExtRomPath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderExtRom->setText(str);
-	connect(ui->pushButtonClearFolderExtRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderExtRom, ui->lineEditFolderExtRom);
-	connect(ui->pushButtonRefFolderExtRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderExtRom, ui->lineEditFolderExtRom);
 
 	// IMGパス
 	strncpy( str, config->GetImgPath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderImg->setText(str);
-	connect(ui->pushButtonClearFolderImg, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderImg, ui->lineEditFolderImg);
-	connect(ui->pushButtonRefFolderImg, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderImg, ui->lineEditFolderImg);
 
 	// WAVEパス
 	strncpy( str, config->GetWavePath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderWave->setText(str);
-	connect(ui->pushButtonClearFolderWave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderWave, ui->lineEditFolderWave);
-	connect(ui->pushButtonRefFolderWave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderWave, ui->lineEditFolderWave);
 
 	// どこでもSAVEパス
 	strncpy( str, config->GetDokoSavePath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderDokoSave->setText(str);
-	connect(ui->pushButtonClearFolderDokoSave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderDokoSave, ui->lineEditFolderDokoSave);
-	connect(ui->pushButtonRefFolderDokoSave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderDokoSave, ui->lineEditFolderDokoSave);
 
 	// 色--------------------------------------------------------------------------
 	// 16〜72の色IDに対応させる。
@@ -436,10 +503,11 @@ void ConfigDialog::writeConfig()
 	// フォルダ-------------------------------------------------------------
 	// ROMパス
 	qStr = ui->lineEditFolderRom->text();
-	if(qStr == "" || QDir(qStr).exists()){
-		config->SetRomPath(qStr.toUtf8().constData());
+	if (!ui->checkBoxCompatibleRomMode->isChecked()){
+		if(qStr == "" || QDir(qStr).exists()){
+			config->SetRomPath(qStr.toUtf8().constData());
+		}
 	}
-
 	// TAPEパス
 	qStr = ui->lineEditFolderTape->text();
 	if(qStr == "" || QDir(qStr).exists()){
@@ -636,3 +704,9 @@ void ConfigDialog::clearLineEdit(QWidget *widget)
 	}
 }
 
+void ConfigDialog::on_checkBoxCompatibleRomMode_clicked(bool checked)
+{
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	app->enableCompatibleRomMode(config, checked);
+	readConfig();
+}

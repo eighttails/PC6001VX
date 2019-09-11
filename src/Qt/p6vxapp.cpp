@@ -561,6 +561,25 @@ void P6VXApp::setCustomRomPath(QString path)
 	CustomRomPath = path;
 }
 
+void P6VXApp::enableCompatibleRomMode(CFG6* config, bool enable)
+{
+	QMutexLocker lock(&PropretyMutex);
+	// P6V本体の設定ファイルに対して互換ROMに必要な設定を行う。
+	// この時点では設定ファイルに反映しない点に注意。
+	if(enable){
+		// 互換ROM使用時の設定
+		auto model = config->GetModel();
+		if (model != 60 && model != 66){
+			config->SetModel(60);
+		}
+		config->SetCheckCRC(false);
+		config->SetRomPath(":/res/rom");
+	} else {
+		config->SetCheckCRC(true);
+		config->SetRomPath("");
+	}
+}
+
 //仮想マシンを開始させる
 void P6VXApp::executeEmulation()
 {
@@ -576,6 +595,7 @@ void P6VXApp::executeEmulation()
 			Error::SetError( Error::NoError );
 		}
 	}else{
+		bool romFolderSpecified = false;
 		if(OSD_Message( QString(tr("ROMファイルが見つかりません。\n"
 								   "ROMフォルダ(%1)にROMファイルをコピーするか、"
 								   "別のROMフォルダを指定してください。\n"
@@ -597,13 +617,22 @@ void P6VXApp::executeEmulation()
 				Cfg.SetRomPath(folder);
 				Cfg.Write();
 				Restart = EL6::Restart;
+				romFolderSpecified = true;
+			}
+		}
+		if (!romFolderSpecified){
+			// 互換ROMを使用するか問い合わせる
+			int ret = OSD_Message( tr("エミュレーター内蔵の互換ROMを使用しますか?").toUtf8().constData(),
+								   MSERR_ERROR, OSDM_YESNO | OSDM_ICONQUESTION );
+			if(ret == OSDR_YES) {
+				enableCompatibleRomMode(&Cfg, true);
+				Cfg.Write();
+				Restart = EL6::Restart;
 			} else {
+				terminateEmulation();
 				exit();
 				return;
 			}
-		} else {
-			exit();
-			return;
 		}
 		emit vmRestart();
 		return;
@@ -686,23 +715,26 @@ void P6VXApp::postExecuteEmulation()
 {
 	Restart = Adaptor->getReturnCode();
 	Adaptor->setEmulationObj(NULL);
-	P6Core->Stop();
+
+	if(P6Core){
+		P6Core->Stop();
 
 #ifdef AUTOSUSPEND
-	// 自動サスペンド有効時はここでSAVE
-	if( Restart == EL6::Quit ){
-		P6Core->DokoDemoSave(0);
-	}
+		// 自動サスペンド有効時はここでSAVE
+		if( Restart == EL6::Quit ){
+			P6Core->DokoDemoSave(0);
+		}
 #endif
 
-	// P6オブジェクトを解放
-	// 本来QtオブジェクトはdeleteLater()を使うべきであるが、再起動の場合、
-	// オブジェクト解放の遅延により、次のP6Coreインスタンスが生成されてから
-	// デストラクタが呼ばれるため、次のP6Coreインスタンスが初期化時に確保したリソース
-	// (ジョイスティックなど)を解放してしまう。のでやむなくdeleteを使う。
-	// disconnectは解放後に飛んできたシグナルを処理させないため。
-	P6Core->disconnect();
-	delete P6Core;
+		// P6オブジェクトを解放
+		// 本来QtオブジェクトはdeleteLater()を使うべきであるが、再起動の場合、
+		// オブジェクト解放の遅延により、次のP6Coreインスタンスが生成されてから
+		// デストラクタが呼ばれるため、次のP6Coreインスタンスが初期化時に確保したリソース
+		// (ジョイスティックなど)を解放してしまう。のでやむなくdeleteを使う。
+		// disconnectは解放後に飛んできたシグナルを処理させないため。
+		P6Core->disconnect();
+		delete P6Core;
+	}
 
 	// 再起動ならばINIファイル再読込み
 	if( Restart == EL6::Restart ){

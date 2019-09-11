@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QImage>
 #include <QRgb>
+#include <QFile>
 
 extern QVector<QRgb> PaletteTable;              //パレットテーブル
 
@@ -127,6 +128,7 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 #include <QString>
 #include <QByteArray>
 #include <QMutex>
+#include <QTemporaryFile>
 
 ////////////////////////////////////////////////////////////////
 // UTF8->Local(Windowsの場合SJIS,Linuxの場合UTF8)
@@ -144,6 +146,30 @@ char *UTF8toLocal( const char *str )
 	QString qStr = QString::fromUtf8(str);
 	array = qStr.toLocal8Bit();
 	return array.data();
+}
+
+////////////////////////////////////////////////////////////////
+// ファイルをオープンする。
+// Qtのリソースに埋め込まれたファイルも開けるようにする
+//
+// 引数:	fileName		ファイル名
+// 引数:	mode			ファイルオープンモード
+// 返値:	FILE *			ファイルポインタ
+////////////////////////////////////////////////////////////////
+FILE *FOPENEN(const char *fileName, const char *mode)
+{
+	QString strFileName = fileName;
+
+	if (strFileName.startsWith(":")){
+		// リソース内のファイルはテンポラリファイルとして作成
+		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(strFileName);
+		tempFile->setAutoRemove(true);
+		// アプリ終了時に削除されるように設定
+		tempFile->setParent(qApp);
+		return fopen(tempFile->fileName().toLocal8Bit(), mode);
+	} else {
+		return fopen(UTF8toLocal(fileName), mode);
+	}
 }
 
 void TiltScreen(TiltDirection dir)

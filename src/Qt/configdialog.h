@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QSignalMapper>
+#include "p6vxapp.h"
 
 class CFG6;
 
@@ -35,6 +36,8 @@ private slots:
 	void selectFile(QWidget* widget);
 	void selectFolder(QWidget* widget);
 	void clearLineEdit(QWidget* widget);
+
+	void on_checkBoxCompatibleRomMode_clicked(bool checked);
 };
 
 #endif // CONFIGDIALOG_H

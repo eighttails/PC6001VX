@@ -354,6 +354,7 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 DISTFILES += \
     LICENSE \
     README.adoc \
+    doc/compatiblerom.png \
     win32/buildenv.sh \
     win32/buildrelease.sh \
     win32/release.sh \

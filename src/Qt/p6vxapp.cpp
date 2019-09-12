@@ -623,7 +623,7 @@ void P6VXApp::executeEmulation()
 		if (!romFolderSpecified){
 			// 互換ROMを使用するか問い合わせる
 			int ret = OSD_Message( tr("エミュレーター内蔵の互換ROMを使用しますか?").toUtf8().constData(),
-								   MSERR_ERROR, OSDM_YESNO | OSDM_ICONQUESTION );
+								   NULL, OSDM_YESNO | OSDM_ICONQUESTION );
 			if(ret == OSDR_YES) {
 				enableCompatibleRomMode(&Cfg, true);
 				Cfg.Write();

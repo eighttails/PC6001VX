@@ -271,7 +271,9 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	}
 	if (REPLAY::GetStatus() == REP_IDLE){
 		addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
+#ifndef NOAVI
 		addCommand(replayMenu, tr("リプレイを動画に変換..."), ID_REPLAYMOVIE);
+#endif
 	}
 	if (REPLAY::GetStatus() == REP_RECORD){
 		addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);

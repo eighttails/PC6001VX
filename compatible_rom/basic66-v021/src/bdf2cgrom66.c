@@ -1,5 +1,5 @@
 /*
-  bdf2cgrom66.c  2019.8.17 version
+  bdf2cgrom66.c  2019.9.17 version
     convert .bdf font file to CGROM60.66/CGROM66.66 format for PC-6601
     by AKIKAWA, Hisashi
     This software is redistributable under the LGPLv2.1 or any later version.
@@ -270,7 +270,7 @@ int main(int argc, char *argv[])
   if (strcmp(argv[opt], "-") == 0) {
     fp1 = stdin;
   } else {
-    fp1 = fopen(argv[opt], "r");
+    fp1 = fopen(argv[opt], "rb");
     if (fp1 == NULL) {
       printf("cannot open %s\n", argv[opt]);
       exit(1);
@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
   } else if (strcmp(argv[opt + 1], "-") == 0) {
     fp2 = stdin;
   } else {
-    fp2 = fopen(argv[opt + 1], "r");
+    fp2 = fopen(argv[opt + 1], "rb");
     if (fp2 == NULL) {
       printf("cannot open %s\n", argv[opt + 1]);
       exit(1);
@@ -293,7 +293,7 @@ int main(int argc, char *argv[])
   /* CGROM60.66 */
 
   memset(bmp60, 0x00, sizeof(bmp60));
-  cnv(fp1, ascii, tbl, altsuit, NULL, NULL, SIZEX, SIZEY_66, bmp60);
+  cnv(fp1, ascii, tbl, altsuit, NULL, NULL, SIZEX, SIZEY_60, bmp60);
 
   /* block character */
   for (i = 0; i < 0x40; i++) {

@@ -1,5 +1,5 @@
 /*
-  bdf2kanjirom.c  2019.8.16 version
+  bdf2kanjirom.c  2019.9.17 version
     convert .bdf font file to KANJIROM format for PC-6001 series
     by AKIKAWA, Hisashi
     This software is redistributable under the LGPLv2.1 or any later version.
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
   if (strcmp(argv[1], "-") == 0) {
     fp = stdin;
   } else {
-    fp = fopen(argv[1], "r");
+    fp = fopen(argv[1], "rb");
     if (fp == NULL) {
       printf("cannot open %s\n", argv[1]);
       exit(1);

@@ -73,6 +73,7 @@ SOUND	equ	1bc5h
 BELL	equ	1bcdh
 JOYSTK	equ	1ca6h
 PATCH2	equ	1cb4h
+SETCNSL	equ	1d73h
 SETC3	equ	1dbbh
 CLS	equ	1dfbh
 PLAY	equ	1eb3h
@@ -112,10 +113,14 @@ C_DATA	equ	07e0h		;DATA
 C_REM	equ	07e2h		;REM
 C_LPRT	equ	087ah		;LPRINT
 C_PRT	equ	087eh		;PRINT
+C_LOCA	equ	1cd2h		;LOCATE
+C_CNSL	equ	1cf6h		;CONSOLE
 C_COLR	equ	1d9bh		;COLOR
 C_SCRN	equ	1e04h		;SCREEN
 C_CRCL	equ	4a72h		;CIRCLE
-C_LIN66	equ	70c9h		;LINE
+C_COL66	equ	6b4ah		;COLOR (mode5)
+C_SCR66	equ	6b9bh		;SCREEN (mode5)
+C_LIN66	equ	70c9h		;LINE (mode5)
 
 ;work area
 STOPFLG	equ	0fa18h		;03h=STOP,1bh=ESC
@@ -268,7 +273,7 @@ HOOK18H	equ	0ffdbh		;hook for 0018h
 HOOK38H	equ	0ffe1h		;hook for 0038h
 ASPECT	equ	0ffe6h		;aspect ratio for CIRCLE command
 
-
+;constant
 COLUMNS	equ	32
 ROWS	equ	16
 
@@ -326,6 +331,7 @@ SETC366	equ	6b7ah
 SCRN66	equ	6b9eh
 LINBF66	equ	70e7h
 LINEB66	equ	7122h
+PA66POP	equ	7161h
 PAINT66	equ	716ah
 LOADHEX	equ	7af9h
 
@@ -4272,7 +4278,7 @@ FKEYLP3:
 	call	z,PFK66
 
 PFKEND2:
-	call	CNSLEND2
+	call	SETCNSL2
 PFKEND:
 	pop	bc
 	pop	de
@@ -4399,7 +4405,7 @@ SETWID:
 
 	ldir
 
-	call	CNSLEND2
+	call	SETCNSL2
 	ld	l,01h
 	ld	a,(HEIGHT)
 	call	CLSMAIN
@@ -6367,9 +6373,7 @@ SKPPATCH2:
 	ld	d,a		;;
 
 	ld	a,07h
-	call	SOUND
-
-	ei
+	call	SOUNDEI
 
 	ld	a,d		;;
 	pop	de
@@ -6377,7 +6381,9 @@ SKPPATCH2:
 
 
 ;LOCATE command
-C_LOCA:
+_C_LOCA:ds	C_LOCA-_C_LOCA
+	org	C_LOCA
+
 	call	INT1ARG2
 	ld	h,c
 	ld	a,(WIDTH)
@@ -6395,7 +6401,9 @@ C_LOCA:
 
 
 ;CONSOLE command
-C_CNSL:
+_C_CNSL:ds	C_CNSL-_C_CNSL
+	org	C_CNSL
+
 	ld	bc,(CONSOL1)	;c=(CONSOL1),b=(CONSOL2)
 	push	bc
 
@@ -6406,9 +6414,9 @@ C_CNSL:
 	ld	a,(HEIGHT)
 	dec	a
 	cp	e
-	jr	c,CNSLC1
+	jr	c,CNSLC
 	ld	a,e
-CNSLC1:
+CNSLC:
 	inc	a
 	pop	bc
 	ld	c,a
@@ -6423,15 +6431,10 @@ CNSLPAR2:
 
 	call	INT1ARG
 
-	ld	de,(HEIGHT)
 	pop	bc
 	add	a,c
 	jp	c,FCERR
 	dec	a
-	cp	e
-	jr	c,CNSLC2
-	ld	a,e
-CNSLC2:
 	ld	b,a
 	push	bc
 
@@ -6458,45 +6461,64 @@ CNSLPAR4:
 	ld	(CONSOL4),a
 
 CNSLEND:
-	pop	hl
-	ld	a,h
-	cp	l
+	pop	de
+	ld	a,d
+	cp	e
 	jp	c,FCERR
-	ld	(CONSOL1),hl
 
-CNSLEND2:
+	call	SETCNSL
+
+	ld	a,(CONSOL1)
+	call	CUTLINE2
+
+	ld	a,(CSRY)
+	dec	a
+	ld	hl,LASTLIN
+	cp	(hl)
+	ret	c
+	ld	l,(hl)
+	jp	CTLCR
+
+
+;used by MINTMARK
+;set console parameter
+;input: d=last line+1, e=first line+1
+;destroy: af,bc,hl
+_SETCNSL:ds	SETCNSL-_SETCNSL
+	org	SETCNSL
+
+	ld	(CONSOL1),de
+
+SETCNSL2:
 	ld	a,(HEIGHT)
-	ld	hl,CONSOL3
-	sub	(hl)
-	ld	b,a		;
-
-	ld	hl,CONSOL1
+	ld	hl,CONSOL2
 	cp	(hl)
 	jr	nc,CNSLNC
 	ld	(hl),a
 CNSLNC:
-	ld	a,(hl)
-	call	CUTLINE2	;a=(CONSOL1)
+	ld	c,(hl)		;c=(CONSOL2)
 
-	ld	hl,LASTLIN
-	ld	a,(CONSOL2)
-	ld	(hl),a
-	cp	b		;
-	jr	c,CNSLC3
+	ld	hl,CONSOL3
+	sub	(hl)
+	ld	b,a		;b=(HEIGHT)-(CONSOL3)
+
+	dec	hl		;LASTLIN
+	cp	c
+	ccf
 	ld	a,(SCREEN1)
-	cp	02h
-	jr	nc,CNSLC3	;screen mode 3,4
-	ld	(hl),b
+	rra
+	or	a
+	jr	nz,CNSLNZ
+	ld	c,b		;if screen mode 1,2 and (CONSOL2)>(HEIGHT)-(CONSOL3)
+CNSLNZ:
+	ld	(hl),c
 
-CNSLC3:
-	ld	a,(CSRY)
-	dec	a
-	cp	(hl)
+	ld	hl,CONSOL1
+	ld	a,(hl)
+	cp	b
 	ret	c
-
-	ld	l,(hl)
-	jp	CTLCR
-
+	ld	(hl),b
+	ret
 
 ;COLOR command
 _C_COLR:ds	C_COLR-_C_COLR
@@ -6672,6 +6694,7 @@ C_SOUN:
 	cp	10h
 	jp	nc,FCERR
 	di
+SOUNDEI:
 	call	SOUND
 	ei
 	ret
@@ -8782,14 +8805,16 @@ INPT1INS:
 
 INPT1DEL:
 	call	CHKLINE
-	ret	nz
-	push	hl
+	push	hl		;
 	ld	hl,DELSTR
+	jr	z,INPT1DELZ
+	inc	hl
+INPT1DELZ:
 	call	PUTS
 	call	CHKIPOS2
-	pop	de
-	ld	h,d
-	ld	l,e
+	pop	hl		;
+	ld	d,h
+	ld	e,l
 	dec	de
 	call	CNVATT1
 	ld	c,a
@@ -9865,9 +9890,7 @@ C_PAIN:
 	push	bc		;X
 	push	de		;Y
 	ld	a,(COLOR1)
-	jr	nz,PASETATT
-	call	INT1INC
-PASETATT:
+	call	z,INT1INC
 	call	SETATT
 	ld	a,(hl)
 	cp	','
@@ -9880,7 +9903,7 @@ PANZ:
 ;	jp	PAINT2
 
 
-;paint called by OKHOTSK
+;paint used by OKHOTSK
 ;input: e=color code, (sp)=Y, (sp+2)=X
 _PAINT2:ds	PAINT2-_PAINT2
 	org	PAINT2
@@ -11371,34 +11394,35 @@ C_CLR:
 	jp	nz,FCERR
 	push	de		;1st parameter
 	ld	de,(STREND)
-	inc	de
 	ld	a,(hl)
 	cp	','
 	jr	nz,CLRNZ
 	inc	hl
 	call	NUMARGMO
 	call	FTOI
+	dec	de
 
 CLRNZ:
 	ld	hl,(USREND)
-	inc	hl
 	rst	CPHLDE
 	jp	c,FCERR
 	ex	de,hl
 	pop	bc		;1st parameter
-	dec	hl
 
 ;input: bc=1st parameter, hl=2nd parameter-1
 CLRMAIN:
 	push	hl		;2nd parameter-1
 	or	a
 	sbc	hl,bc
+;	jp	c,OMERR
+	jr	c,CLRC
 	ex	de,hl
 	ld	hl,(VARAD)
 	ld	bc,0038h
 	add	hl,bc
 	ex	de,hl
 	rst	CPHLDE
+CLRC:
 	jp	c,OMERR
 	ld	(STACK),hl
 	pop	hl		;2nd parameter-1
@@ -14255,7 +14279,7 @@ SETBSIZ:
 
 
 ;motor on
-;input: a=drive
+;input: a=drive (0 or 1)
 ;destroy: af
 MOTORON:
 	or	a
@@ -16356,11 +16380,11 @@ SETAD:
 	ld	hl,0fa00h-47-300
 	ld	(STACK),hl
 
-	ld	hl,C_COLR66
+	ld	hl,C_COL66
 	ld	(0fa95h),hl	;COLOR command
 	ld	hl,C_LIN66
 	ld	(0fa9bh),hl	;LINE command
-	ld	hl,C_PAIN66
+	ld	hl,C_PAI66
 	ld	(0fa9dh),hl	;PAINT command
 	ld	hl,F_PEEK66
 	ld	(0fb03h),hl	;PEEK() function
@@ -16430,7 +16454,7 @@ MENU:
 
 
 SYSNAME66:
-	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.2", 0dh, 0ah, 00h
+	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.2.1", 0dh, 0ah, 00h
 
 
 ;PEEK() function
@@ -17204,7 +17228,10 @@ _SETBO66:ds	SETBO66-_SETBO66
 
 
 ;COLOR command
-C_COLR66:
+_C_COL66:
+	ds	C_COL66-_C_COL66
+	org	C_COL66
+
 	ld	de,COLOR1
 	ld	b,02h
 COLR66LP:
@@ -17274,6 +17301,12 @@ C366END:
 
 
 ;SCREEN command
+_C_SCR66:ds	C_SCR66-_C_SCR66
+	org	C_SCR66
+	nop
+	nop
+	nop
+
 ;used by PROGRESS
 ;input: hl=parameter string address
 _SCRN66:ds	SCRN66-_SCRN66
@@ -17673,34 +17706,36 @@ _LINEB66:ds	LINEB66-_LINEB66
 	jp	LINEB
 
 
-
+;C_PAI66	equ	714ch
 ;PAINT command for mode 5
-;C_PAIN66	equ	714ch
-;_C_PAIN66:ds	C_PAIN66-_C_PAIN66
-;	org	C_PAIN66
+;_C_PAI66:ds	C_PAI66-_C_PAI66
+;	org	C_PAI66
+C_PAI66:
 
-C_PAIN66:
 	call	GETGXY
 	push	bc		;X
 	push	de		;Y
 	ld	a,(COLOR1)
-	jr	nz,PASETATT66
-	inc	hl
-	call	INT1ARG
-PASETATT66:
+	call	z,INT1INC
 	call	SETATT
 	ld	a,(hl)
 	cp	','
 	ld	a,(BORDERC)
-	jr	nz,PA66NZ
-	inc	hl
-	call	INT1ARG
+	call	z,INT1INC
 	ld	(BORDERC),a
-PA66NZ:
-	call	SETBO66
+	ld	e,a
 
+
+;input: e=color, (sp)=y, (sp+2)=x
+;used by PERDU, MINTMARK
+_PA66POP:ds	PA66POP-_PA66POP
+	org	PA66POP
+
+	ld	a,e
+	call	SETBO66
 	pop	de		;Y
 	pop	bc		;X
+	jp	PAINT66
 
 
 ;input: bc=x, de=y, (ATTDAT)=attribute1, (ATTDAT2)=attribute2
@@ -17709,7 +17744,9 @@ PA66NZ:
 _PAINT66:ds	PAINT66-_PAINT66
 	org	PAINT66
 
+	push	hl
 	call	CHKGXY66
+	pop	hl
 	ld	a,(SCREEN1)
 	dec	a
 	ret	z		;screen mode 2

@@ -1,5 +1,5 @@
 /*
-  bdf2extkanji.c  2019.8.18 version
+  bdf2extkanji.c  2019.9.17 version
     convert .bdf font file to EXTKANJI format for PC-6001 series
     by AKIKAWA, Hisashi
     This software is redistributable under the LGPLv2.1 or any later version.
@@ -1118,7 +1118,7 @@ int main(int argc, char *argv[])
   if (strcmp(argv[opt], "-") == 0) {
     fp = stdin;
   } else {
-    fp = fopen(argv[opt], "r");
+    fp = fopen(argv[opt], "rb");
     if (fp == NULL) {
       printf("cannot open %s\n", argv[opt]);
       exit(1);
@@ -1237,7 +1237,7 @@ int main(int argc, char *argv[])
 
   /* PC-8001 character set */
   if (strlen(pc8001file)) {
-    fp = fopen(pc8001file, "r");
+    fp = fopen(pc8001file, "rb");
     if (fp == NULL) {
       printf("cannot open %s\n", pc8001file);
       exit(1);

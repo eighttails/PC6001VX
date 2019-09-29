@@ -51,6 +51,9 @@ DEFINES -= QT_NO_DEBUG_OUTPUT
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 QT += androidextras
 }
+ios {
+DEFINES += NOJOYSTICK NOAVI ALWAYSFULLSCREEN IPHONE_IPAD
+}
 
 pandora {
 #Configuration for OpenPandora
@@ -71,7 +74,7 @@ INSTALLS += target sharedlibs
 DEFINES += NOOPENGL NOJOYSTICK NOMONITOR NOAVI
 #QTPLUGIN += qxcb qeglfs
 }
-!android:!pandora {
+!android:!pandora:!ios {
 #Configuration for X11(XCB)
 DEFINES += USE_X11
 QT += x11extras

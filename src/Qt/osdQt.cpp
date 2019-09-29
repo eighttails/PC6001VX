@@ -1181,8 +1181,10 @@ const char *OSD_GetModulePath( void )
 
 	//Windowsの場合はexe本体と同じ場所。
 	//それ以外(UNIX系を想定)は ~/.pc6001vx を返す
-#ifdef WIN32
+#if defined WIN32
 	QString confPath = qApp->applicationDirPath();
+#elif defined IPHONE_IPAD
+	QString confPath = QDir::homePath() + QDir::separator() + QString("Documents");
 #else
 	QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
 #endif

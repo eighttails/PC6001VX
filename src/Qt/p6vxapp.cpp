@@ -210,7 +210,7 @@ void P6VXApp::startup()
 	setDefaultSetting(keyFiltering, true);
 	setDefaultSetting(keyFixMagnification, false);
 	setDefaultSetting(keyKeyPanelVisible, false);
-#ifdef ANDROID
+#if defined(ANDROID) || defined(IPHONE_IPAD)
 	setDefaultSetting(keyVirtualKeyVisible, true);
 #else
 	setDefaultSetting(keyVirtualKeyVisible, false);

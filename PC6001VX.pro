@@ -8,6 +8,12 @@ QT += core gui widgets network
 
 TARGET = PC6001VX
 TEMPLATE = app
+VERSION = 3.2.0
+
+QMAKE_TARGET_COMPANY = eighttails
+QMAKE_TARGET_DESCRIPTION = "PC-6001 Emulator"
+QMAKE_TARGET_COPYRIGHT = eighttails
+QMAKE_TARGET_PRODUCT = PC6001VX
 
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 TR_EXCLUDE += /usr/include/*

@@ -27,7 +27,7 @@ export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 
 #引数としてバージョンを指定すること
 if [ -z $1 ]; then
-    VERSION=dev
+    VERSION=$(cat $SCRIPT_DIR/../VERSION)
 else
     VERSION=$1
 fi

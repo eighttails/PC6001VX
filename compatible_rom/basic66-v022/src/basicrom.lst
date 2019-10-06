@@ -14340,50 +14340,49 @@
   4523  CDB10C        		call	FTOI
                       	
   4526  2172FF        		ld	hl,FAC3
-  4529  222FFF        		ld	(STRDSC1+2),hl
-  452C  0E00          		ld	c,0		;length
-  452E  7A            		ld	a,d
-  452F  CD4545        		call	CNVHEX2
-  4532  7B            		ld	a,e
-  4533  CD4545        		call	CNVHEX2
-  4536  2003          		jr	nz,HEXNZ	;if c<>0
-  4538  3630          		ld	(hl),'0'
-  453A  0C            		inc	c
-  453B                	HEXNZ:
-  453B  79            		ld	a,c
-  453C  322DFF        		ld	(STRDSC1),a
-  453F  CD2226        		call	MAKESTR
-  4542  C3C227        		jp	INKYEND
+  4529  0E00          		ld	c,00h		;length
+  452B  7A            		ld	a,d
+  452C  CD4245        		call	CNVHEX2
+  452F  7B            		ld	a,e
+  4530  CD4245        		call	CNVHEX2
+  4533  2003          		jr	nz,HEXNZ	;if c<>0
+  4535  3630          		ld	(hl),'0'
+  4537  0C            		inc	c
+  4538                	HEXNZ:
+  4538  79            		ld	a,c
+  4539  2172FF        		ld	hl,FAC3
+  453C  CD2226        		call	MAKESTR
+  453F  C3C227        		jp	INKYEND
                       	
                       	
                       	;input: a=data, c=length, hl=address
                       	;output: c=length, z-flag(1:c=0)
                       	;destroy: af
-  4545                	CNVHEX2:
-  4545  47            		ld	b,a
+  4542                	CNVHEX2:
+  4542  47            		ld	b,a
+  4543  0F            		rrca
+  4544  0F            		rrca
+  4545  0F            		rrca
   4546  0F            		rrca
-  4547  0F            		rrca
-  4548  0F            		rrca
-  4549  0F            		rrca
-  454A  CD4E45        		call	CNVHEX1
-  454D  78            		ld	a,b
+  4547  CD4B45        		call	CNVHEX1
+  454A  78            		ld	a,b
                       	;	call	CNVHEX1
                       	;	ret
                       	
-  454E                	CNVHEX1:
-  454E  E60F          		and	0fh
-  4550  2003          		jr	nz,CNVHEXNZ
-  4552  0C            		inc	c
-  4553  0D            		dec	c
-  4554  C8            		ret	z
-  4555                	CNVHEXNZ:
-  4555  FE0A          		cp	0ah
-  4557  DE69          		sbc	a,69h
-  4559  27            		daa
-  455A  77            		ld	(hl),a
-  455B  23            		inc	hl
-  455C  0C            		inc	c
-  455D  C9            		ret
+  454B                	CNVHEX1:
+  454B  E60F          		and	0fh
+  454D  2003          		jr	nz,CNVHEXNZ
+  454F  0C            		inc	c
+  4550  0D            		dec	c
+  4551  C8            		ret	z
+  4552                	CNVHEXNZ:
+  4552  FE0A          		cp	0ah
+  4554  DE69          		sbc	a,69h
+  4556  27            		daa
+  4557  77            		ld	(hl),a
+  4558  23            		inc	hl
+  4559  0C            		inc	c
+  455A  C9            		ret
                       	
                       	
                       	;CIRCLE command work area
@@ -14400,790 +14399,790 @@
   FF81                	CRCLFLG	equ	0ff81h
                       	
                       	
-  455E                	CRCLFDATA:
-  455E  77FFFFFF      		db	77h, 0ffh, 0ffh, 0ffh	;end quad.-start quad.=4
-  4562  6677EEFF      		db	66h, 77h, 0eeh, 0ffh	;end quad.-start quad.=3
-  4566  4466CCEE      		db	44h, 66h, 0cch, 0eeh	;end quad.-start quad.=2
-  456A  004488CC      		db	00h, 44h, 88h, 0cch	;end quad.-start quad.=1
-  456E  00000088      		db	00h, 00h, 00h, 88h	;end quad.-start quad.=0
+  455B                	CRCLFDATA:
+  455B  77FFFFFF      		db	77h, 0ffh, 0ffh, 0ffh	;end quad.-start quad.=4
+  455F  6677EEFF      		db	66h, 77h, 0eeh, 0ffh	;end quad.-start quad.=3
+  4563  4466CCEE      		db	44h, 66h, 0cch, 0eeh	;end quad.-start quad.=2
+  4567  004488CC      		db	00h, 44h, 88h, 0cch	;end quad.-start quad.=1
+  456B  00000088      		db	00h, 00h, 00h, 88h	;end quad.-start quad.=0
                       	
-  4572                	CRCLMAIN:
-  4572  2AADFE        		ld	hl,(XRAD)
-  4575  ED5BE6FF      		ld	de,(ASPECT)
-  4579  CD6F24        		call	MULINT2
-  457C  CD8C4C        		call	ROUNDI2
-  457F  22AFFE        		ld	(YRAD),hl	;yrad=r*a
+  456F                	CRCLMAIN:
+  456F  2AADFE        		ld	hl,(XRAD)
+  4572  ED5BE6FF      		ld	de,(ASPECT)
+  4576  CD6F24        		call	MULINT2
+  4579  CD8C4C        		call	ROUNDI2
+  457C  22AFFE        		ld	(YRAD),hl	;yrad=r*a
                       	
-  4582                	CRCLMAIN2:
-  4582  CD3D39        		call	POPF1		;end angle
-  4585  CD4C39        		call	POPF2		;start angle
-                      	
-                      	
-  4588  2169FF        		ld	hl,FAC1+3
-  458B  7E            		ld	a,(hl)
-  458C  F5            		push	af		;sign of end angle
-  458D  CBBE          		res	7,(hl)
-  458F  2170FF        		ld	hl,FAC2+3
-  4592  7E            		ld	a,(hl)
-  4593  F5            		push	af		;sign of start angle
-  4594  CBBE          		res	7,(hl)
-                      	
-  4596  CD2E39        		call	PUSHF2		;end angle
-  4599  CD1D3F        		call	CMPF
-                      	
-  459C  9F            		sbc	a,a
-  459D  3C            		inc	a		;start<=end?
-  459E  F5            		push	af
-                      	
-  459F  CD6A4B        		call	ANGL2XY
-  45A2  227CFF        		ld	(ENDX),hl
-  45A5  ED537EFF      		ld	(ENDY),de
-                      	
-  45A9  F1            		pop	af
-  45AA  07            		rlca
-  45AB  07            		rlca
-  45AC  B0            		or	b
-  45AD  57            		ld	d,a		;bit2=start<=end?, bit10=end quad.
-                      	
-  45AE  CD3D39        		call	POPF1		;start angle
-  45B1  D5            		push	de
-                      	
-  45B2  CD6A4B        		call	ANGL2XY
-  45B5  2278FF        		ld	(STARTX),hl
-  45B8  ED537AFF      		ld	(STARTY),de
-                      	
-  45BC  F1            		pop	af
-  45BD  07            		rlca
-  45BE  07            		rlca
-  45BF  B0            		or	b
-  45C0  3281FF        		ld	(CRCLFLG),a	;bit4=start<=end?, bit32=end quad., bit10=start quad.
+  457F                	CRCLMAIN2:
+  457F  CD3D39        		call	POPF1		;end angle
+  4582  CD4C39        		call	POPF2		;start angle
                       	
                       	
-  45C3  2AADFE        		ld	hl,(XRAD)
-  45C6  54            		ld	d,h
-  45C7  5D            		ld	e,l
-  45C8  CD6F24        		call	MULINT2		;a*a=aa
-  45CB  E5            		push	hl		;aa
-  45CC  D5            		push	de
-  45CD  29            		add	hl,hl
-  45CE  CB13          		rl	e
-  45D0  CB12          		rl	d
-  45D2  29            		add	hl,hl
-  45D3  CB13          		rl	e
-  45D5  CB12          		rl	d
-  45D7  42            		ld	b,d
-  45D8  4B            		ld	c,e
-  45D9  EB            		ex	de,hl
-  45DA  D9            		exx			;bcde'=4aa
+  4585  2169FF        		ld	hl,FAC1+3
+  4588  7E            		ld	a,(hl)
+  4589  F5            		push	af		;sign of end angle
+  458A  CBBE          		res	7,(hl)
+  458C  2170FF        		ld	hl,FAC2+3
+  458F  7E            		ld	a,(hl)
+  4590  F5            		push	af		;sign of start angle
+  4591  CBBE          		res	7,(hl)
                       	
-  45DB  2AAFFE        		ld	hl,(YRAD)
-  45DE  54            		ld	d,h
-  45DF  5D            		ld	e,l
-  45E0  CD6F24        		call	MULINT2		;b*b=bb
-  45E3  E5            		push	hl		;bb
-  45E4  D5            		push	de
-  45E5  29            		add	hl,hl
-  45E6  CB13          		rl	e
-  45E8  CB12          		rl	d
-  45EA  29            		add	hl,hl
-  45EB  CB13          		rl	e
-  45ED  CB12          		rl	d
-  45EF  29            		add	hl,hl
-  45F0  CB13          		rl	e
-  45F2  CB12          		rl	d
-  45F4  E5            		push	hl		;8bb
-  45F5  D5            		push	de
+  4593  CD2E39        		call	PUSHF2		;end angle
+  4596  CD1D3F        		call	CMPF
+                      	
+  4599  9F            		sbc	a,a
+  459A  3C            		inc	a		;start<=end?
+  459B  F5            		push	af
+                      	
+  459C  CD6A4B        		call	ANGL2XY
+  459F  227CFF        		ld	(ENDX),hl
+  45A2  ED537EFF      		ld	(ENDY),de
+                      	
+  45A6  F1            		pop	af
+  45A7  07            		rlca
+  45A8  07            		rlca
+  45A9  B0            		or	b
+  45AA  57            		ld	d,a		;bit2=start<=end?, bit10=end quad.
+                      	
+  45AB  CD3D39        		call	POPF1		;start angle
+  45AE  D5            		push	de
+                      	
+  45AF  CD6A4B        		call	ANGL2XY
+  45B2  2278FF        		ld	(STARTX),hl
+  45B5  ED537AFF      		ld	(STARTY),de
+                      	
+  45B9  F1            		pop	af
+  45BA  07            		rlca
+  45BB  07            		rlca
+  45BC  B0            		or	b
+  45BD  3281FF        		ld	(CRCLFLG),a	;bit4=start<=end?, bit32=end quad., bit10=start quad.
+                      	
+                      	
+  45C0  2AADFE        		ld	hl,(XRAD)
+  45C3  54            		ld	d,h
+  45C4  5D            		ld	e,l
+  45C5  CD6F24        		call	MULINT2		;a*a=aa
+  45C8  E5            		push	hl		;aa
+  45C9  D5            		push	de
+  45CA  29            		add	hl,hl
+  45CB  CB13          		rl	e
+  45CD  CB12          		rl	d
+  45CF  29            		add	hl,hl
+  45D0  CB13          		rl	e
+  45D2  CB12          		rl	d
+  45D4  42            		ld	b,d
+  45D5  4B            		ld	c,e
+  45D6  EB            		ex	de,hl
+  45D7  D9            		exx			;bcde'=4aa
+                      	
+  45D8  2AAFFE        		ld	hl,(YRAD)
+  45DB  54            		ld	d,h
+  45DC  5D            		ld	e,l
+  45DD  CD6F24        		call	MULINT2		;b*b=bb
+  45E0  E5            		push	hl		;bb
+  45E1  D5            		push	de
+  45E2  29            		add	hl,hl
+  45E3  CB13          		rl	e
+  45E5  CB12          		rl	d
+  45E7  29            		add	hl,hl
+  45E8  CB13          		rl	e
+  45EA  CB12          		rl	d
+  45EC  29            		add	hl,hl
+  45ED  CB13          		rl	e
+  45EF  CB12          		rl	d
+  45F1  E5            		push	hl		;8bb
+  45F2  D5            		push	de
                       	
                       	;de/dx_ini=8abb
-  45F6  EB            		ex	de,hl
-  45F7  2AADFE        		ld	hl,(XRAD)
-  45FA  CD6F24        		call	MULINT2		;a*8bb=8abb (low)
-  45FD  2265FF        		ld	(DEDX),hl
-  4600  ED5367FF      		ld	(DEDX+2),de
-  4604  2AADFE        		ld	hl,(XRAD)
-  4607  D1            		pop	de		;8bb (high)
-  4608  D5            		push	de
-  4609  CD6F24        		call	MULINT2		;a*8bb=8abb (high)
-  460C  ED4B67FF      		ld	bc,(DEDX+2)
-  4610  09            		add	hl,bc
-  4611  2267FF        		ld	(DEDX+2),hl
-  4614  3001          		jr	nc,CRCLNC1
-  4616  13            		inc	de
-  4617                	CRCLNC1:
-  4617  ED5369FF      		ld	(DEDX+4),de
+  45F3  EB            		ex	de,hl
+  45F4  2AADFE        		ld	hl,(XRAD)
+  45F7  CD6F24        		call	MULINT2		;a*8bb=8abb (low)
+  45FA  2265FF        		ld	(DEDX),hl
+  45FD  ED5367FF      		ld	(DEDX+2),de
+  4601  2AADFE        		ld	hl,(XRAD)
+  4604  D1            		pop	de		;8bb (high)
+  4605  D5            		push	de
+  4606  CD6F24        		call	MULINT2		;a*8bb=8abb (high)
+  4609  ED4B67FF      		ld	bc,(DEDX+2)
+  460D  09            		add	hl,bc
+  460E  2267FF        		ld	(DEDX+2),hl
+  4611  3001          		jr	nc,CRCLNC1
+  4613  13            		inc	de
+  4614                	CRCLNC1:
+  4614  ED5369FF      		ld	(DEDX+4),de
                       	
                       	;err_ini=bb(1-4a)
-  461B  CB3A          		srl	d
-  461D  CB1B          		rr	e
-  461F  ED5376FF      		ld	(ERR+4),de	;4abb
-  4623  2A67FF        		ld	hl,(DEDX+2)
-  4626  CB1C          		rr	h
-  4628  CB1D          		rr	l
-  462A  2274FF        		ld	(ERR+2),hl
-  462D  2A65FF        		ld	hl,(DEDX)
-  4630  CB1C          		rr	h
-  4632  CB1D          		rr	l
-  4634  2272FF        		ld	(ERR),hl
+  4618  CB3A          		srl	d
+  461A  CB1B          		rr	e
+  461C  ED5376FF      		ld	(ERR+4),de	;4abb
+  4620  2A67FF        		ld	hl,(DEDX+2)
+  4623  CB1C          		rr	h
+  4625  CB1D          		rr	l
+  4627  2274FF        		ld	(ERR+2),hl
+  462A  2A65FF        		ld	hl,(DEDX)
+  462D  CB1C          		rr	h
+  462F  CB1D          		rr	l
+  4631  2272FF        		ld	(ERR),hl
                       	
-  4637  C1            		pop	bc		;8bb
-  4638  E1            		pop	hl
-  4639  D1            		pop	de		;bb(high)
-  463A  E3            		ex	(sp),hl		;bb(low)
-  463B  C5            		push	bc
+  4634  C1            		pop	bc		;8bb
+  4635  E1            		pop	hl
+  4636  D1            		pop	de		;bb(high)
+  4637  E3            		ex	(sp),hl		;bb(low)
+  4638  C5            		push	bc
                       	
-  463C  D5            		push	de
-  463D  ED5B72FF      		ld	de,(ERR)
+  4639  D5            		push	de
+  463A  ED5B72FF      		ld	de,(ERR)
                       	;	or	a
-  4641  ED52          		sbc	hl,de
-  4643  2272FF        		ld	(ERR),hl
-  4646  E1            		pop	hl
-  4647  ED5B74FF      		ld	de,(ERR+2)
-  464B  ED52          		sbc	hl,de
-  464D  2274FF        		ld	(ERR+2),hl
-  4650  210000        		ld	hl,0000h
-  4653  ED5B76FF      		ld	de,(ERR+4)
-  4657  ED52          		sbc	hl,de
-  4659  2276FF        		ld	(ERR+4),hl
+  463E  ED52          		sbc	hl,de
+  4640  2272FF        		ld	(ERR),hl
+  4643  E1            		pop	hl
+  4644  ED5B74FF      		ld	de,(ERR+2)
+  4648  ED52          		sbc	hl,de
+  464A  2274FF        		ld	(ERR+2),hl
+  464D  210000        		ld	hl,0000h
+  4650  ED5B76FF      		ld	de,(ERR+4)
+  4654  ED52          		sbc	hl,de
+  4656  2276FF        		ld	(ERR+4),hl
                       	
                       	;de/dy_ini=-4aa
-  465C  D9            		exx
-  465D  D5            		push	de		;4aa
-  465E  C5            		push	bc
-  465F  AF            		xor	a
-  4660  67            		ld	h,a
-  4661  6F            		ld	l,a
-  4662  ED52          		sbc	hl,de
-  4664  226CFF        		ld	(DEDY),hl
-  4667  67            		ld	h,a
-  4668  6F            		ld	l,a
-  4669  ED42          		sbc	hl,bc
-  466B  226EFF        		ld	(DEDY+2),hl
-  466E  DE00          		sbc	a,00h
-  4670  67            		ld	h,a
-  4671  6F            		ld	l,a
-  4672  2270FF        		ld	(DEDY+4),hl
-  4675  C1            		pop	bc
-  4676  E1            		pop	hl
-  4677  29            		add	hl,hl
-  4678  EB            		ex	de,hl
-  4679  CB11          		rl	c
-  467B  CB10          		rl	b		;8aa
-  467D  D9            		exx
+  4659  D9            		exx
+  465A  D5            		push	de		;4aa
+  465B  C5            		push	bc
+  465C  AF            		xor	a
+  465D  67            		ld	h,a
+  465E  6F            		ld	l,a
+  465F  ED52          		sbc	hl,de
+  4661  226CFF        		ld	(DEDY),hl
+  4664  67            		ld	h,a
+  4665  6F            		ld	l,a
+  4666  ED42          		sbc	hl,bc
+  4668  226EFF        		ld	(DEDY+2),hl
+  466B  DE00          		sbc	a,00h
+  466D  67            		ld	h,a
+  466E  6F            		ld	l,a
+  466F  2270FF        		ld	(DEDY+4),hl
+  4672  C1            		pop	bc
+  4673  E1            		pop	hl
+  4674  29            		add	hl,hl
+  4675  EB            		ex	de,hl
+  4676  CB11          		rl	c
+  4678  CB10          		rl	b		;8aa
+  467A  D9            		exx
                       	
-  467E  2AADFE        		ld	hl,(XRAD)	;x=x-radius
-  4681  22B1FE        		ld	(GRPX3),hl
-  4684  210000        		ld	hl,0000h	;y=0
-  4687  22B3FE        		ld	(GRPY3),hl
+  467B  2AADFE        		ld	hl,(XRAD)	;x=x-radius
+  467E  22B1FE        		ld	(GRPX3),hl
+  4681  210000        		ld	hl,0000h	;y=0
+  4684  22B3FE        		ld	(GRPY3),hl
                       	
-  468A                	CRCLLP1:
-  468A  0601          		ld	b,01h
-  468C  CD2249        		call	CRCLPSET
-  468F  2AB3FE        		ld	hl,(GRPY3)
-  4692  23            		inc	hl
-  4693  22B3FE        		ld	(GRPY3),hl
+  4687                	CRCLLP1:
+  4687  0601          		ld	b,01h
+  4689  CD1F49        		call	CRCLPSET
+  468C  2AB3FE        		ld	hl,(GRPY3)
+  468F  23            		inc	hl
+  4690  22B3FE        		ld	(GRPY3),hl
                       	
                       	;de/dy+=8aa
-  4696  D9            		exx
-  4697  2A6CFF        		ld	hl,(DEDY)
-  469A  19            		add	hl,de
-  469B  226CFF        		ld	(DEDY),hl
-  469E  2A6EFF        		ld	hl,(DEDY+2)
-  46A1  ED4A          		adc	hl,bc
-  46A3  226EFF        		ld	(DEDY+2),hl
-  46A6  3007          		jr	nc,CRCLNC2
-  46A8  2A70FF        		ld	hl,(DEDY+4)
-  46AB  23            		inc	hl
-  46AC  2270FF        		ld	(DEDY+4),hl
-  46AF                	CRCLNC2:
-  46AF  D9            		exx
+  4693  D9            		exx
+  4694  2A6CFF        		ld	hl,(DEDY)
+  4697  19            		add	hl,de
+  4698  226CFF        		ld	(DEDY),hl
+  469B  2A6EFF        		ld	hl,(DEDY+2)
+  469E  ED4A          		adc	hl,bc
+  46A0  226EFF        		ld	(DEDY+2),hl
+  46A3  3007          		jr	nc,CRCLNC2
+  46A5  2A70FF        		ld	hl,(DEDY+4)
+  46A8  23            		inc	hl
+  46A9  2270FF        		ld	(DEDY+4),hl
+  46AC                	CRCLNC2:
+  46AC  D9            		exx
                       	
                       	;err+=de/dy
-  46B0  2A72FF        		ld	hl,(ERR)
-  46B3  ED5B6CFF      		ld	de,(DEDY)
-  46B7  19            		add	hl,de
-  46B8  2272FF        		ld	(ERR),hl
-  46BB  2A74FF        		ld	hl,(ERR+2)
-  46BE  ED5B6EFF      		ld	de,(DEDY+2)
-  46C2  ED5A          		adc	hl,de
-  46C4  2274FF        		ld	(ERR+2),hl
-  46C7  2A76FF        		ld	hl,(ERR+4)
-  46CA  ED5B70FF      		ld	de,(DEDY+4)
-  46CE  ED5A          		adc	hl,de
-  46D0  2276FF        		ld	(ERR+4),hl
+  46AD  2A72FF        		ld	hl,(ERR)
+  46B0  ED5B6CFF      		ld	de,(DEDY)
+  46B4  19            		add	hl,de
+  46B5  2272FF        		ld	(ERR),hl
+  46B8  2A74FF        		ld	hl,(ERR+2)
+  46BB  ED5B6EFF      		ld	de,(DEDY+2)
+  46BF  ED5A          		adc	hl,de
+  46C1  2274FF        		ld	(ERR+2),hl
+  46C4  2A76FF        		ld	hl,(ERR+4)
+  46C7  ED5B70FF      		ld	de,(DEDY+4)
+  46CB  ED5A          		adc	hl,de
+  46CD  2276FF        		ld	(ERR+4),hl
                       	
                       	;if err>=0 and x>0 then x=x-1:de/dx-=8bb:err-=de/dx
-  46D3  7C            		ld	a,h
-  46D4  07            		rlca
-  46D5  384E          		jr	c,CRCLC1
-  46D7  2AB1FE        		ld	hl,(GRPX3)
-  46DA  7C            		ld	a,h
-  46DB  B5            		or	l
-  46DC  2847          		jr	z,CRCLC1
-  46DE  2B            		dec	hl
-  46DF  22B1FE        		ld	(GRPX3),hl
+  46D0  7C            		ld	a,h
+  46D1  07            		rlca
+  46D2  384E          		jr	c,CRCLC1
+  46D4  2AB1FE        		ld	hl,(GRPX3)
+  46D7  7C            		ld	a,h
+  46D8  B5            		or	l
+  46D9  2847          		jr	z,CRCLC1
+  46DB  2B            		dec	hl
+  46DC  22B1FE        		ld	(GRPX3),hl
                       	
-  46E2  C1            		pop	bc		;8bb
-  46E3  D1            		pop	de
+  46DF  C1            		pop	bc		;8bb
+  46E0  D1            		pop	de
                       	
-  46E4  2A65FF        		ld	hl,(DEDX)
-  46E7  B7            		or	a
-  46E8  ED52          		sbc	hl,de
-  46EA  2265FF        		ld	(DEDX),hl
-  46ED  2A67FF        		ld	hl,(DEDX+2)
-  46F0  ED42          		sbc	hl,bc
-  46F2  2267FF        		ld	(DEDX+2),hl
-  46F5  3007          		jr	nc,CRCLNC3
-  46F7  2A69FF        		ld	hl,(DEDX+4),hl
-  46FA  2B            		dec	hl
-  46FB  2269FF        		ld	(DEDX+4),hl
-  46FE                	CRCLNC3:
-  46FE  D5            		push	de		;8bb
-  46FF  C5            		push	bc
+  46E1  2A65FF        		ld	hl,(DEDX)
+  46E4  B7            		or	a
+  46E5  ED52          		sbc	hl,de
+  46E7  2265FF        		ld	(DEDX),hl
+  46EA  2A67FF        		ld	hl,(DEDX+2)
+  46ED  ED42          		sbc	hl,bc
+  46EF  2267FF        		ld	(DEDX+2),hl
+  46F2  3007          		jr	nc,CRCLNC3
+  46F4  2A69FF        		ld	hl,(DEDX+4),hl
+  46F7  2B            		dec	hl
+  46F8  2269FF        		ld	(DEDX+4),hl
+  46FB                	CRCLNC3:
+  46FB  D5            		push	de		;8bb
+  46FC  C5            		push	bc
                       	
-  4700  2A72FF        		ld	hl,(ERR)
-  4703  ED5B65FF      		ld	de,(DEDX)
-  4707  B7            		or	a
-  4708  ED52          		sbc	hl,de
-  470A  2272FF        		ld	(ERR),hl
-  470D  2A74FF        		ld	hl,(ERR+2)
-  4710  ED5B67FF      		ld	de,(DEDX+2)
-  4714  ED52          		sbc	hl,de
-  4716  2274FF        		ld	(ERR+2),hl
-  4719  2A76FF        		ld	hl,(ERR+4)
-  471C  ED5B69FF      		ld	de,(DEDX+4)
-  4720  ED52          		sbc	hl,de
-  4722  2276FF        		ld	(ERR+4),hl
+  46FD  2A72FF        		ld	hl,(ERR)
+  4700  ED5B65FF      		ld	de,(DEDX)
+  4704  B7            		or	a
+  4705  ED52          		sbc	hl,de
+  4707  2272FF        		ld	(ERR),hl
+  470A  2A74FF        		ld	hl,(ERR+2)
+  470D  ED5B67FF      		ld	de,(DEDX+2)
+  4711  ED52          		sbc	hl,de
+  4713  2274FF        		ld	(ERR+2),hl
+  4716  2A76FF        		ld	hl,(ERR+4)
+  4719  ED5B69FF      		ld	de,(DEDX+4)
+  471D  ED52          		sbc	hl,de
+  471F  2276FF        		ld	(ERR+4),hl
                       	
-  4725                	CRCLC1:
+  4722                	CRCLC1:
                       	;if de/dx<de/dy or (de/dx=0 and y<b) then loop
-  4725  2A6CFF        		ld	hl,(DEDY)
-  4728  ED5B65FF      		ld	de,(DEDX)
-  472C  B7            		or	a
-  472D  ED52          		sbc	hl,de
-  472F  2A6EFF        		ld	hl,(DEDY+2)
-  4732  ED5B67FF      		ld	de,(DEDX+2)
-  4736  ED52          		sbc	hl,de
-  4738  2A70FF        		ld	hl,(DEDY+4)
-  473B  ED5B69FF      		ld	de,(DEDX+4)
-  473F  ED52          		sbc	hl,de
-  4741  CB7C          		bit	7,h
-  4743  C28A46        		jp	nz,CRCLLP1
+  4722  2A6CFF        		ld	hl,(DEDY)
+  4725  ED5B65FF      		ld	de,(DEDX)
+  4729  B7            		or	a
+  472A  ED52          		sbc	hl,de
+  472C  2A6EFF        		ld	hl,(DEDY+2)
+  472F  ED5B67FF      		ld	de,(DEDX+2)
+  4733  ED52          		sbc	hl,de
+  4735  2A70FF        		ld	hl,(DEDY+4)
+  4738  ED5B69FF      		ld	de,(DEDX+4)
+  473C  ED52          		sbc	hl,de
+  473E  CB7C          		bit	7,h
+  4740  C28746        		jp	nz,CRCLLP1
                       	
-  4746  7A            		ld	a,d
-  4747  B3            		or	e
-  4748  2A65FF        		ld	hl,(DEDX)
-  474B  B4            		or	h
-  474C  B5            		or	l
-  474D  2A67FF        		ld	hl,(DEDX+2)
-  4750  B4            		or	h
-  4751  B5            		or	l
-  4752  200C          		jr	nz,CRCLNZ1
-  4754  2AB3FE        		ld	hl,(GRPY3)
-  4757  ED5BAFFE      		ld	de,(YRAD)
+  4743  7A            		ld	a,d
+  4744  B3            		or	e
+  4745  2A65FF        		ld	hl,(DEDX)
+  4748  B4            		or	h
+  4749  B5            		or	l
+  474A  2A67FF        		ld	hl,(DEDX+2)
+  474D  B4            		or	h
+  474E  B5            		or	l
+  474F  200C          		jr	nz,CRCLNZ1
+  4751  2AB3FE        		ld	hl,(GRPY3)
+  4754  ED5BAFFE      		ld	de,(YRAD)
                       	;	or	a
-  475B  ED52          		sbc	hl,de
-  475D  DA8A46        		jp	c,CRCLLP1
+  4758  ED52          		sbc	hl,de
+  475A  DA8746        		jp	c,CRCLLP1
                       	
-  4760                	CRCLNZ1:
+  475D                	CRCLNZ1:
                       	;de/dx_ini=-4bb
-  4760  C1            		pop	bc		;8bb
-  4761  D1            		pop	de
-  4762  D5            		push	de
-  4763  C5            		push	bc
-  4764  CB38          		srl	b		;4bb
-  4766  CB19          		rr	c
-  4768  CB1A          		rr	d
-  476A  CB1B          		rr	e
-  476C  AF            		xor	a
-  476D  67            		ld	h,a
-  476E  6F            		ld	l,a
-  476F  ED52          		sbc	hl,de
-  4771  2265FF        		ld	(DEDX),hl
-  4774  67            		ld	h,a
-  4775  6F            		ld	l,a
-  4776  ED42          		sbc	hl,bc
-  4778  2267FF        		ld	(DEDX+2),hl
-  477B  DE00          		sbc	a,00h
-  477D  67            		ld	h,a
-  477E  6F            		ld	l,a
-  477F  2269FF        		ld	(DEDX+4),hl
-  4782  C1            		pop	bc		;8bb
-  4783  D1            		pop	de
-  4784  D9            		exx
+  475D  C1            		pop	bc		;8bb
+  475E  D1            		pop	de
+  475F  D5            		push	de
+  4760  C5            		push	bc
+  4761  CB38          		srl	b		;4bb
+  4763  CB19          		rr	c
+  4765  CB1A          		rr	d
+  4767  CB1B          		rr	e
+  4769  AF            		xor	a
+  476A  67            		ld	h,a
+  476B  6F            		ld	l,a
+  476C  ED52          		sbc	hl,de
+  476E  2265FF        		ld	(DEDX),hl
+  4771  67            		ld	h,a
+  4772  6F            		ld	l,a
+  4773  ED42          		sbc	hl,bc
+  4775  2267FF        		ld	(DEDX+2),hl
+  4778  DE00          		sbc	a,00h
+  477A  67            		ld	h,a
+  477B  6F            		ld	l,a
+  477C  2269FF        		ld	(DEDX+4),hl
+  477F  C1            		pop	bc		;8bb
+  4780  D1            		pop	de
+  4781  D9            		exx
                       	
-  4785  D5            		push	de		;8aa
-  4786  C5            		push	bc
+  4782  D5            		push	de		;8aa
+  4783  C5            		push	bc
                       	
                       	
                       	;de/dy_ini=8aab
-  4787  2AAFFE        		ld	hl,(YRAD)
-  478A  CD6F24        		call	MULINT2		;8aa*b=8aab (low)
-  478D  226CFF        		ld	(DEDY),hl
-  4790  ED536EFF      		ld	(DEDY+2),de
-  4794  2AAFFE        		ld	hl,(YRAD)
-  4797  D1            		pop	de		;8aa (high)
-  4798  D5            		push	de
-  4799  CD6F24        		call	MULINT2		;8aa*b=8aab (high)
-  479C  ED4B6EFF      		ld	bc,(DEDY+2)
-  47A0  09            		add	hl,bc
-  47A1  226EFF        		ld	(DEDY+2),hl
-  47A4  3001          		jr	nc,CRCLNC4
-  47A6  13            		inc	de
-  47A7                	CRCLNC4:
-  47A7  ED5370FF      		ld	(DEDY+4),de
+  4784  2AAFFE        		ld	hl,(YRAD)
+  4787  CD6F24        		call	MULINT2		;8aa*b=8aab (low)
+  478A  226CFF        		ld	(DEDY),hl
+  478D  ED536EFF      		ld	(DEDY+2),de
+  4791  2AAFFE        		ld	hl,(YRAD)
+  4794  D1            		pop	de		;8aa (high)
+  4795  D5            		push	de
+  4796  CD6F24        		call	MULINT2		;8aa*b=8aab (high)
+  4799  ED4B6EFF      		ld	bc,(DEDY+2)
+  479D  09            		add	hl,bc
+  479E  226EFF        		ld	(DEDY+2),hl
+  47A1  3001          		jr	nc,CRCLNC4
+  47A3  13            		inc	de
+  47A4                	CRCLNC4:
+  47A4  ED5370FF      		ld	(DEDY+4),de
                       	
                       	;err_ini=aa(1-4b)
-  47AB  CB3A          		srl	d
-  47AD  CB1B          		rr	e
-  47AF  ED5376FF      		ld	(ERR+4),de	;4aab
-  47B3  2A6EFF        		ld	hl,(DEDY+2)
-  47B6  CB1C          		rr	h
-  47B8  CB1D          		rr	l
-  47BA  2274FF        		ld	(ERR+2),hl
-  47BD  2A6CFF        		ld	hl,(DEDY)
-  47C0  CB1C          		rr	h
-  47C2  CB1D          		rr	l
-  47C4  2272FF        		ld	(ERR),hl
+  47A8  CB3A          		srl	d
+  47AA  CB1B          		rr	e
+  47AC  ED5376FF      		ld	(ERR+4),de	;4aab
+  47B0  2A6EFF        		ld	hl,(DEDY+2)
+  47B3  CB1C          		rr	h
+  47B5  CB1D          		rr	l
+  47B7  2274FF        		ld	(ERR+2),hl
+  47BA  2A6CFF        		ld	hl,(DEDY)
+  47BD  CB1C          		rr	h
+  47BF  CB1D          		rr	l
+  47C1  2272FF        		ld	(ERR),hl
                       	
-  47C7  C1            		pop	bc		;8aa
-  47C8  E1            		pop	hl
-  47C9  D1            		pop	de		;aa(high)
-  47CA  E3            		ex	(sp),hl		;aa(low)
-  47CB  C5            		push	bc
+  47C4  C1            		pop	bc		;8aa
+  47C5  E1            		pop	hl
+  47C6  D1            		pop	de		;aa(high)
+  47C7  E3            		ex	(sp),hl		;aa(low)
+  47C8  C5            		push	bc
                       	
-  47CC  D5            		push	de
-  47CD  ED5B72FF      		ld	de,(ERR)
+  47C9  D5            		push	de
+  47CA  ED5B72FF      		ld	de,(ERR)
                       	;	or	a
-  47D1  ED52          		sbc	hl,de
-  47D3  2272FF        		ld	(ERR),hl
-  47D6  E1            		pop	hl
-  47D7  ED5B74FF      		ld	de,(ERR+2)
-  47DB  ED52          		sbc	hl,de
-  47DD  2274FF        		ld	(ERR+2),hl
-  47E0  210000        		ld	hl,0000h
-  47E3  ED5B76FF      		ld	de,(ERR+4)
-  47E7  ED52          		sbc	hl,de
-  47E9  2276FF        		ld	(ERR+4),hl
+  47CE  ED52          		sbc	hl,de
+  47D0  2272FF        		ld	(ERR),hl
+  47D3  E1            		pop	hl
+  47D4  ED5B74FF      		ld	de,(ERR+2)
+  47D8  ED52          		sbc	hl,de
+  47DA  2274FF        		ld	(ERR+2),hl
+  47DD  210000        		ld	hl,0000h
+  47E0  ED5B76FF      		ld	de,(ERR+4)
+  47E4  ED52          		sbc	hl,de
+  47E6  2276FF        		ld	(ERR+4),hl
                       	
-  47EC  210000        		ld	hl,0000h	;x=0
-  47EF  22B1FE        		ld	(GRPX3),hl
-  47F2  2AAFFE        		ld	hl,(YRAD)	;y=y-radius
-  47F5  22B3FE        		ld	(GRPY3),hl
+  47E9  210000        		ld	hl,0000h	;x=0
+  47EC  22B1FE        		ld	(GRPX3),hl
+  47EF  2AAFFE        		ld	hl,(YRAD)	;y=y-radius
+  47F2  22B3FE        		ld	(GRPY3),hl
                       	
-  47F8                	CRCLLP2:
-  47F8  0602          		ld	b,02h
-  47FA  CD2249        		call	CRCLPSET
-  47FD  2AB1FE        		ld	hl,(GRPX3)
-  4800  23            		inc	hl
-  4801  22B1FE        		ld	(GRPX3),hl
+  47F5                	CRCLLP2:
+  47F5  0602          		ld	b,02h
+  47F7  CD1F49        		call	CRCLPSET
+  47FA  2AB1FE        		ld	hl,(GRPX3)
+  47FD  23            		inc	hl
+  47FE  22B1FE        		ld	(GRPX3),hl
                       	
                       	;de/dx+=8bb
-  4804  D9            		exx
-  4805  2A65FF        		ld	hl,(DEDX)
-  4808  19            		add	hl,de
-  4809  2265FF        		ld	(DEDX),hl
-  480C  2A67FF        		ld	hl,(DEDX+2)
-  480F  ED4A          		adc	hl,bc
-  4811  2267FF        		ld	(DEDX+2),hl
-  4814  3007          		jr	nc,CRCLNC5
-  4816  2A69FF        		ld	hl,(DEDX+4)
-  4819  23            		inc	hl
-  481A  2269FF        		ld	(DEDX+4),hl
-  481D                	CRCLNC5:
-  481D  D9            		exx
+  4801  D9            		exx
+  4802  2A65FF        		ld	hl,(DEDX)
+  4805  19            		add	hl,de
+  4806  2265FF        		ld	(DEDX),hl
+  4809  2A67FF        		ld	hl,(DEDX+2)
+  480C  ED4A          		adc	hl,bc
+  480E  2267FF        		ld	(DEDX+2),hl
+  4811  3007          		jr	nc,CRCLNC5
+  4813  2A69FF        		ld	hl,(DEDX+4)
+  4816  23            		inc	hl
+  4817  2269FF        		ld	(DEDX+4),hl
+  481A                	CRCLNC5:
+  481A  D9            		exx
                       	
                       	;err+=de/dx
-  481E  2A72FF        		ld	hl,(ERR)
-  4821  ED5B65FF      		ld	de,(DEDX)
-  4825  19            		add	hl,de
-  4826  2272FF        		ld	(ERR),hl
-  4829  2A74FF        		ld	hl,(ERR+2)
-  482C  ED5B67FF      		ld	de,(DEDX+2)
-  4830  ED5A          		adc	hl,de
-  4832  2274FF        		ld	(ERR+2),hl
-  4835  2A76FF        		ld	hl,(ERR+4)
-  4838  ED5B69FF      		ld	de,(DEDX+4)
-  483C  ED5A          		adc	hl,de
-  483E  2276FF        		ld	(ERR+4),hl
+  481B  2A72FF        		ld	hl,(ERR)
+  481E  ED5B65FF      		ld	de,(DEDX)
+  4822  19            		add	hl,de
+  4823  2272FF        		ld	(ERR),hl
+  4826  2A74FF        		ld	hl,(ERR+2)
+  4829  ED5B67FF      		ld	de,(DEDX+2)
+  482D  ED5A          		adc	hl,de
+  482F  2274FF        		ld	(ERR+2),hl
+  4832  2A76FF        		ld	hl,(ERR+4)
+  4835  ED5B69FF      		ld	de,(DEDX+4)
+  4839  ED5A          		adc	hl,de
+  483B  2276FF        		ld	(ERR+4),hl
                       	
                       	;if err>=0 and y>0 then y=y-1:de/dy-=8aa:err-=de/dy
-  4841  7C            		ld	a,h
-  4842  07            		rlca
-  4843  384E          		jr	c,CRCLC2
-  4845  2AB3FE        		ld	hl,(GRPY3)
-  4848  2B            		dec	hl
-  4849  7C            		ld	a,h
-  484A  07            		rlca
-  484B  3846          		jr	c,CRCLC2
-  484D  22B3FE        		ld	(GRPY3),hl	;y=y-1
+  483E  7C            		ld	a,h
+  483F  07            		rlca
+  4840  384E          		jr	c,CRCLC2
+  4842  2AB3FE        		ld	hl,(GRPY3)
+  4845  2B            		dec	hl
+  4846  7C            		ld	a,h
+  4847  07            		rlca
+  4848  3846          		jr	c,CRCLC2
+  484A  22B3FE        		ld	(GRPY3),hl	;y=y-1
                       	
-  4850  C1            		pop	bc		;8aa
-  4851  D1            		pop	de
+  484D  C1            		pop	bc		;8aa
+  484E  D1            		pop	de
                       	
-  4852  2A6CFF        		ld	hl,(DEDY)
-  4855  B7            		or	a
-  4856  ED52          		sbc	hl,de
-  4858  226CFF        		ld	(DEDY),hl
-  485B  2A6EFF        		ld	hl,(DEDY+2)
-  485E  ED42          		sbc	hl,bc
-  4860  226EFF        		ld	(DEDY+2),hl
-  4863  3007          		jr	nc,CRCLNC6
-  4865  2A70FF        		ld	hl,(DEDY+4),hl
-  4868  2B            		dec	hl
-  4869  2270FF        		ld	(DEDY+4),hl
-  486C                	CRCLNC6:
-  486C  D5            		push	de		;8aa
-  486D  C5            		push	bc
+  484F  2A6CFF        		ld	hl,(DEDY)
+  4852  B7            		or	a
+  4853  ED52          		sbc	hl,de
+  4855  226CFF        		ld	(DEDY),hl
+  4858  2A6EFF        		ld	hl,(DEDY+2)
+  485B  ED42          		sbc	hl,bc
+  485D  226EFF        		ld	(DEDY+2),hl
+  4860  3007          		jr	nc,CRCLNC6
+  4862  2A70FF        		ld	hl,(DEDY+4),hl
+  4865  2B            		dec	hl
+  4866  2270FF        		ld	(DEDY+4),hl
+  4869                	CRCLNC6:
+  4869  D5            		push	de		;8aa
+  486A  C5            		push	bc
                       	
-  486E  2A72FF        		ld	hl,(ERR)
-  4871  ED5B6CFF      		ld	de,(DEDY)
-  4875  B7            		or	a
-  4876  ED52          		sbc	hl,de
-  4878  2272FF        		ld	(ERR),hl
-  487B  2A74FF        		ld	hl,(ERR+2)
-  487E  ED5B6EFF      		ld	de,(DEDY+2)
-  4882  ED52          		sbc	hl,de
-  4884  2274FF        		ld	(ERR+2),hl
-  4887  2A76FF        		ld	hl,(ERR+4)
-  488A  ED5B70FF      		ld	de,(DEDY+4)
-  488E  ED52          		sbc	hl,de
-  4890  2276FF        		ld	(ERR+4),hl
+  486B  2A72FF        		ld	hl,(ERR)
+  486E  ED5B6CFF      		ld	de,(DEDY)
+  4872  B7            		or	a
+  4873  ED52          		sbc	hl,de
+  4875  2272FF        		ld	(ERR),hl
+  4878  2A74FF        		ld	hl,(ERR+2)
+  487B  ED5B6EFF      		ld	de,(DEDY+2)
+  487F  ED52          		sbc	hl,de
+  4881  2274FF        		ld	(ERR+2),hl
+  4884  2A76FF        		ld	hl,(ERR+4)
+  4887  ED5B70FF      		ld	de,(DEDY+4)
+  488B  ED52          		sbc	hl,de
+  488D  2276FF        		ld	(ERR+4),hl
                       	
-  4893                	CRCLC2:
+  4890                	CRCLC2:
                       	;if de/dx<de/dy or (de/dy=0 and x<a) then loop
-  4893  2A65FF        		ld	hl,(DEDX)
-  4896  ED5B6CFF      		ld	de,(DEDY)
-  489A  B7            		or	a
-  489B  ED52          		sbc	hl,de
-  489D  2A67FF        		ld	hl,(DEDX+2)
-  48A0  ED5B6EFF      		ld	de,(DEDY+2)
-  48A4  ED52          		sbc	hl,de
-  48A6  2A69FF        		ld	hl,(DEDX+4)
-  48A9  ED5B70FF      		ld	de,(DEDY+4)
-  48AD  ED52          		sbc	hl,de
-  48AF  CB7C          		bit	7,h
-  48B1  C2F847        		jp	nz,CRCLLP2
+  4890  2A65FF        		ld	hl,(DEDX)
+  4893  ED5B6CFF      		ld	de,(DEDY)
+  4897  B7            		or	a
+  4898  ED52          		sbc	hl,de
+  489A  2A67FF        		ld	hl,(DEDX+2)
+  489D  ED5B6EFF      		ld	de,(DEDY+2)
+  48A1  ED52          		sbc	hl,de
+  48A3  2A69FF        		ld	hl,(DEDX+4)
+  48A6  ED5B70FF      		ld	de,(DEDY+4)
+  48AA  ED52          		sbc	hl,de
+  48AC  CB7C          		bit	7,h
+  48AE  C2F547        		jp	nz,CRCLLP2
                       	
-  48B4  7A            		ld	a,d
-  48B5  B3            		or	e
-  48B6  2A6CFF        		ld	hl,(DEDY)
-  48B9  B4            		or	h
-  48BA  B5            		or	l
-  48BB  2A6EFF        		ld	hl,(DEDY+2)
-  48BE  B4            		or	h
-  48BF  B5            		or	l
-  48C0  200C          		jr	nz,CRCLNZ2
-  48C2  2AB1FE        		ld	hl,(GRPX3)
-  48C5  ED5BADFE      		ld	de,(XRAD)
+  48B1  7A            		ld	a,d
+  48B2  B3            		or	e
+  48B3  2A6CFF        		ld	hl,(DEDY)
+  48B6  B4            		or	h
+  48B7  B5            		or	l
+  48B8  2A6EFF        		ld	hl,(DEDY+2)
+  48BB  B4            		or	h
+  48BC  B5            		or	l
+  48BD  200C          		jr	nz,CRCLNZ2
+  48BF  2AB1FE        		ld	hl,(GRPX3)
+  48C2  ED5BADFE      		ld	de,(XRAD)
                       	;	or	a
-  48C9  ED52          		sbc	hl,de
-  48CB  DAF847        		jp	c,CRCLLP2
+  48C6  ED52          		sbc	hl,de
+  48C8  DAF547        		jp	c,CRCLLP2
                       	
                       	
-  48CE                	CRCLNZ2:
-  48CE  C1            		pop	bc		;8aa
-  48CF  D1            		pop	de
+  48CB                	CRCLNZ2:
+  48CB  C1            		pop	bc		;8aa
+  48CC  D1            		pop	de
                       	
                       	
-  48D0  2A78FF        		ld	hl,(STARTX)
-  48D3  ED4BAEFD      		ld	bc,(GRPX1)	;xcenter
-  48D7  09            		add	hl,bc
-  48D8  22ADFE        		ld	(GRPX2),hl
-  48DB  2AB0FD        		ld	hl,(GRPY1)	;ycenter
-  48DE  ED5B7AFF      		ld	de,(STARTY)
-  48E2  B7            		or	a
-  48E3  ED52          		sbc	hl,de
-  48E5  22AFFE        		ld	(GRPY2),hl
-  48E8  19            		add	hl,de
-  48E9  EB            		ex	de,hl
+  48CD  2A78FF        		ld	hl,(STARTX)
+  48D0  ED4BAEFD      		ld	bc,(GRPX1)	;xcenter
+  48D4  09            		add	hl,bc
+  48D5  22ADFE        		ld	(GRPX2),hl
+  48D8  2AB0FD        		ld	hl,(GRPY1)	;ycenter
+  48DB  ED5B7AFF      		ld	de,(STARTY)
+  48DF  B7            		or	a
+  48E0  ED52          		sbc	hl,de
+  48E2  22AFFE        		ld	(GRPY2),hl
+  48E5  19            		add	hl,de
+  48E6  EB            		ex	de,hl
                       	
-  48EA  F1            		pop	af		;sign of start angle
-  48EB  07            		rlca
-  48EC  3808          		jr	c,CRCLC3
-  48EE  ED4BADFE      		ld	bc,(GRPX2)
-  48F2  ED5BAFFE      		ld	de,(GRPY2)
-  48F6                	CRCLC3:
-  48F6  CD1F2E        		call	LINE
+  48E7  F1            		pop	af		;sign of start angle
+  48E8  07            		rlca
+  48E9  3808          		jr	c,CRCLC3
+  48EB  ED4BADFE      		ld	bc,(GRPX2)
+  48EF  ED5BAFFE      		ld	de,(GRPY2)
+  48F3                	CRCLC3:
+  48F3  CD1F2E        		call	LINE
                       	
-  48F9  2A7CFF        		ld	hl,(ENDX)
-  48FC  ED4BAEFD      		ld	bc,(GRPX1)	;xcenter
-  4900  09            		add	hl,bc
-  4901  22ADFE        		ld	(GRPX2),hl
-  4904  2AB0FD        		ld	hl,(GRPY1)	;ycenter
-  4907  ED5B7EFF      		ld	de,(ENDY)
-  490B  B7            		or	a
-  490C  ED52          		sbc	hl,de
-  490E  22AFFE        		ld	(GRPY2),hl
-  4911  19            		add	hl,de
-  4912  EB            		ex	de,hl
+  48F6  2A7CFF        		ld	hl,(ENDX)
+  48F9  ED4BAEFD      		ld	bc,(GRPX1)	;xcenter
+  48FD  09            		add	hl,bc
+  48FE  22ADFE        		ld	(GRPX2),hl
+  4901  2AB0FD        		ld	hl,(GRPY1)	;ycenter
+  4904  ED5B7EFF      		ld	de,(ENDY)
+  4908  B7            		or	a
+  4909  ED52          		sbc	hl,de
+  490B  22AFFE        		ld	(GRPY2),hl
+  490E  19            		add	hl,de
+  490F  EB            		ex	de,hl
                       	
-  4913  F1            		pop	af		;sign of end angle
-  4914  07            		rlca
-  4915  3808          		jr	c,CRCLC4
-  4917  ED4BADFE      		ld	bc,(GRPX2)
-  491B  ED5BAFFE      		ld	de,(GRPY2)
+  4910  F1            		pop	af		;sign of end angle
+  4911  07            		rlca
+  4912  3808          		jr	c,CRCLC4
+  4914  ED4BADFE      		ld	bc,(GRPX2)
+  4918  ED5BAFFE      		ld	de,(GRPY2)
                       	
-  491F                	CRCLC4:
-  491F  C31F2E        		jp	LINE
+  491C                	CRCLC4:
+  491C  C31F2E        		jp	LINE
                       	
                       	
                       	;input: b(1:condition=y, 2:condition=x)
                       	;destroy: af,bc,de,hl,af'
-  4922                	CRCLPSET:
-  4922  CD4D27        		call	STOPESC
+  491F                	CRCLPSET:
+  491F  CD4D27        		call	STOPESC
                       	
-  4925  2A7AFF        		ld	hl,(STARTY)
-  4928  ED5BB3FE      		ld	de,(GRPY3)
-  492C  E5            		push	hl
-  492D  D5            		push	de
-  492E  2A78FF        		ld	hl,(STARTX)
-  4931  ED5BB1FE      		ld	de,(GRPX3)
+  4922  2A7AFF        		ld	hl,(STARTY)
+  4925  ED5BB3FE      		ld	de,(GRPY3)
+  4929  E5            		push	hl
+  492A  D5            		push	de
+  492B  2A78FF        		ld	hl,(STARTX)
+  492E  ED5BB1FE      		ld	de,(GRPX3)
                       	
-  4935  3A81FF        		ld	a,(CRCLFLG)
-  4938  E603          		and	03h		;bit10=start quad.(3,2,1.0)
-  493A  2828          		jr	z,STARTQ4
-  493C  EA7549        		jp	pe,STARTQ1
-  493F  0F            		rrca
-  4940  3812          		jr	c,STARTQ3
+  4932  3A81FF        		ld	a,(CRCLFLG)
+  4935  E603          		and	03h		;bit10=start quad.(3,2,1.0)
+  4937  2828          		jr	z,STARTQ4
+  4939  EA7249        		jp	pe,STARTQ1
+  493C  0F            		rrca
+  493D  3812          		jr	c,STARTQ3
                       	
-  4942                	STARTQ2:
-  4942  100A          		djnz	STARTQ2X
-  4944  D1            		pop	de
-  4945  E1            		pop	hl
-  4946  B7            		or	a
-  4947  ED52          		sbc	hl,de
-  4949  CB04          		rlc	h
-  494B  3F            		ccf			;y<=STARTY?
-  494C  1839          		jr	STARTQEND
-  494E                	STARTQ2X:
-  494E  19            		add	hl,de
-  494F  CB04          		rlc	h
-  4951  3F            		ccf			;-x<=STARTX?
-  4952  1831          		jr	STARTQ1XEND
+  493F                	STARTQ2:
+  493F  100A          		djnz	STARTQ2X
+  4941  D1            		pop	de
+  4942  E1            		pop	hl
+  4943  B7            		or	a
+  4944  ED52          		sbc	hl,de
+  4946  CB04          		rlc	h
+  4948  3F            		ccf			;y<=STARTY?
+  4949  1839          		jr	STARTQEND
+  494B                	STARTQ2X:
+  494B  19            		add	hl,de
+  494C  CB04          		rlc	h
+  494E  3F            		ccf			;-x<=STARTX?
+  494F  1831          		jr	STARTQ1XEND
                       	
-  4954                	STARTQ3:
-  4954  1008          		djnz	STARTQ3X
-  4956  D1            		pop	de
-  4957  E1            		pop	hl
-  4958  19            		add	hl,de
-  4959  CB04          		rlc	h
-  495B  3F            		ccf			;-y<=STARTY?
-  495C  1829          		jr	STARTQEND
-  495E                	STARTQ3X:
-  495E  2B            		dec	hl
-  495F  19            		add	hl,de
-  4960  CB04          		rlc	h		;-x>=STARTX?
-  4962  1821          		jr	STARTQ1XEND
+  4951                	STARTQ3:
+  4951  1008          		djnz	STARTQ3X
+  4953  D1            		pop	de
+  4954  E1            		pop	hl
+  4955  19            		add	hl,de
+  4956  CB04          		rlc	h
+  4958  3F            		ccf			;-y<=STARTY?
+  4959  1829          		jr	STARTQEND
+  495B                	STARTQ3X:
+  495B  2B            		dec	hl
+  495C  19            		add	hl,de
+  495D  CB04          		rlc	h		;-x>=STARTX?
+  495F  1821          		jr	STARTQ1XEND
                       	
-  4964                	STARTQ4:
-  4964  1008          		djnz	STARTQ4X
-  4966  D1            		pop	de
-  4967  E1            		pop	hl
-  4968  2B            		dec	hl
-  4969  19            		add	hl,de
-  496A  CB04          		rlc	h		;-y>=STARTY?
-  496C  1819          		jr	STARTQEND
-  496E                	STARTQ4X:
-  496E  37            		scf
-  496F  ED52          		sbc	hl,de
-  4971  CB04          		rlc	h		;x>=STARTX?
-  4973  1810          		jr	STARTQ1XEND
+  4961                	STARTQ4:
+  4961  1008          		djnz	STARTQ4X
+  4963  D1            		pop	de
+  4964  E1            		pop	hl
+  4965  2B            		dec	hl
+  4966  19            		add	hl,de
+  4967  CB04          		rlc	h		;-y>=STARTY?
+  4969  1819          		jr	STARTQEND
+  496B                	STARTQ4X:
+  496B  37            		scf
+  496C  ED52          		sbc	hl,de
+  496E  CB04          		rlc	h		;x>=STARTX?
+  4970  1810          		jr	STARTQ1XEND
                       	
                       	;1st quad.
-  4975                	STARTQ1:
-  4975  1009          		djnz	STARTQ1X
-  4977  D1            		pop	de
-  4978  E1            		pop	hl
-  4979  37            		scf
-  497A  ED52          		sbc	hl,de
-  497C  CB04          		rlc	h		;y>=STARTY?
-  497E  1807          		jr	STARTQEND
-  4980                	STARTQ1X:
+  4972                	STARTQ1:
+  4972  1009          		djnz	STARTQ1X
+  4974  D1            		pop	de
+  4975  E1            		pop	hl
+  4976  37            		scf
+  4977  ED52          		sbc	hl,de
+  4979  CB04          		rlc	h		;y>=STARTY?
+  497B  1807          		jr	STARTQEND
+  497D                	STARTQ1X:
                       	;	or	a
-  4980  ED52          		sbc	hl,de
-  4982  CB04          		rlc	h
-  4984  3F            		ccf			;x<=STARTX?
+  497D  ED52          		sbc	hl,de
+  497F  CB04          		rlc	h
+  4981  3F            		ccf			;x<=STARTX?
                       	
-  4985                	STARTQ1XEND:
-  4985  D1            		pop	de
-  4986  E1            		pop	hl
+  4982                	STARTQ1XEND:
+  4982  D1            		pop	de
+  4983  E1            		pop	hl
                       	
-  4987                	STARTQEND:
-  4987  CB11          		rl	c		;start ok?
+  4984                	STARTQEND:
+  4984  CB11          		rl	c		;start ok?
                       	
-  4989  2A7CFF        		ld	hl,(ENDX)
-  498C  ED5BB1FE      		ld	de,(GRPX3)
-  4990  E5            		push	hl
-  4991  D5            		push	de
-  4992  2A7EFF        		ld	hl,(ENDY)
-  4995  ED5BB3FE      		ld	de,(GRPY3)
+  4986  2A7CFF        		ld	hl,(ENDX)
+  4989  ED5BB1FE      		ld	de,(GRPX3)
+  498D  E5            		push	hl
+  498E  D5            		push	de
+  498F  2A7EFF        		ld	hl,(ENDY)
+  4992  ED5BB3FE      		ld	de,(GRPY3)
                       	
-  4999  3A81FF        		ld	a,(CRCLFLG)
-  499C  E60C          		and	0ch		;bit32=start quad.(3,2,1.0)
-  499E  2828          		jr	z,ENDQ4
-  49A0  EAD949        		jp	pe,ENDQ1
-  49A3  E604          		and	04h
-  49A5  2011          		jr	nz,ENDQ3
+  4996  3A81FF        		ld	a,(CRCLFLG)
+  4999  E60C          		and	0ch		;bit32=start quad.(3,2,1.0)
+  499B  2828          		jr	z,ENDQ4
+  499D  EAD649        		jp	pe,ENDQ1
+  49A0  E604          		and	04h
+  49A2  2011          		jr	nz,ENDQ3
                       	
-  49A7                	ENDQ2:
-  49A7  1008          		djnz	ENDQ2Y
-  49A9  D1            		pop	de
-  49AA  E1            		pop	hl
-  49AB  2B            		dec	hl
-  49AC  19            		add	hl,de
-  49AD  CB04          		rlc	h		;-x>=ENDX?
-  49AF  183B          		jr	ENDQEND
-  49B1                	ENDQ2Y:
-  49B1  37            		scf
-  49B2  ED52          		sbc	hl,de
-  49B4  CB04          		rlc	h		;y>=ENDY?
-  49B6  1832          		jr	ENDQ1YEND
+  49A4                	ENDQ2:
+  49A4  1008          		djnz	ENDQ2Y
+  49A6  D1            		pop	de
+  49A7  E1            		pop	hl
+  49A8  2B            		dec	hl
+  49A9  19            		add	hl,de
+  49AA  CB04          		rlc	h		;-x>=ENDX?
+  49AC  183B          		jr	ENDQEND
+  49AE                	ENDQ2Y:
+  49AE  37            		scf
+  49AF  ED52          		sbc	hl,de
+  49B1  CB04          		rlc	h		;y>=ENDY?
+  49B3  1832          		jr	ENDQ1YEND
                       	
-  49B8                	ENDQ3:
-  49B8  1008          		djnz	ENDQ3Y
-  49BA  D1            		pop	de
-  49BB  E1            		pop	hl
-  49BC  19            		add	hl,de
-  49BD  CB04          		rlc	h
-  49BF  3F            		ccf			;-x<=ENDX?
-  49C0  182A          		jr	ENDQEND
-  49C2                	ENDQ3Y:
-  49C2  2B            		dec	hl
-  49C3  19            		add	hl,de
-  49C4  CB04          		rlc	h		;-y>=ENDY?
-  49C6  1822          		jr	ENDQ1YEND
+  49B5                	ENDQ3:
+  49B5  1008          		djnz	ENDQ3Y
+  49B7  D1            		pop	de
+  49B8  E1            		pop	hl
+  49B9  19            		add	hl,de
+  49BA  CB04          		rlc	h
+  49BC  3F            		ccf			;-x<=ENDX?
+  49BD  182A          		jr	ENDQEND
+  49BF                	ENDQ3Y:
+  49BF  2B            		dec	hl
+  49C0  19            		add	hl,de
+  49C1  CB04          		rlc	h		;-y>=ENDY?
+  49C3  1822          		jr	ENDQ1YEND
                       	
-  49C8                	ENDQ4:
-  49C8  1009          		djnz	ENDQ4Y
-  49CA  D1            		pop	de
-  49CB  E1            		pop	hl
+  49C5                	ENDQ4:
+  49C5  1009          		djnz	ENDQ4Y
+  49C7  D1            		pop	de
+  49C8  E1            		pop	hl
                       	;	or	a
-  49CC  ED52          		sbc	hl,de
-  49CE  CB14          		rl	h
-  49D0  3F            		ccf			;x<=ENDX?
-  49D1  1819          		jr	ENDQEND
-  49D3                	ENDQ4Y:
-  49D3  19            		add	hl,de
-  49D4  CB04          		rlc	h
-  49D6  3F            		ccf			;-y<=ENDY?
-  49D7  1811          		jr	ENDQ1YEND
+  49C9  ED52          		sbc	hl,de
+  49CB  CB14          		rl	h
+  49CD  3F            		ccf			;x<=ENDX?
+  49CE  1819          		jr	ENDQEND
+  49D0                	ENDQ4Y:
+  49D0  19            		add	hl,de
+  49D1  CB04          		rlc	h
+  49D3  3F            		ccf			;-y<=ENDY?
+  49D4  1811          		jr	ENDQ1YEND
                       	
-  49D9                	ENDQ1:
-  49D9  1009          		djnz	ENDQ1Y
-  49DB  D1            		pop	de
-  49DC  E1            		pop	hl
-  49DD  37            		scf
-  49DE  ED52          		sbc	hl,de
-  49E0  CB04          		rlc	h		;x>=ENDX?
-  49E2  1808          		jr	ENDQEND
-  49E4                	ENDQ1Y:
-  49E4  B7            		or	a
-  49E5  ED52          		sbc	hl,de
-  49E7  CB04          		rlc	h
-  49E9  3F            		ccf			;y<=ENDY?
-  49EA                	ENDQ1YEND:
-  49EA  D1            		pop	de
-  49EB  E1            		pop	hl
-  49EC                	ENDQEND:
-  49EC  CB11          		rl	c		;bit1=start ok, bit0=end ok
+  49D6                	ENDQ1:
+  49D6  1009          		djnz	ENDQ1Y
+  49D8  D1            		pop	de
+  49D9  E1            		pop	hl
+  49DA  37            		scf
+  49DB  ED52          		sbc	hl,de
+  49DD  CB04          		rlc	h		;x>=ENDX?
+  49DF  1808          		jr	ENDQEND
+  49E1                	ENDQ1Y:
+  49E1  B7            		or	a
+  49E2  ED52          		sbc	hl,de
+  49E4  CB04          		rlc	h
+  49E6  3F            		ccf			;y<=ENDY?
+  49E7                	ENDQ1YEND:
+  49E7  D1            		pop	de
+  49E8  E1            		pop	hl
+  49E9                	ENDQEND:
+  49E9  CB11          		rl	c		;bit1=start ok, bit0=end ok
                       	
-  49EE  3A81FF        		ld	a,(CRCLFLG)	;bit4=start<=end?, bit32=end quad., bit10=start quad.
-  49F1  47            		ld	b,a
-  49F2  0F            		rrca
-  49F3  0F            		rrca
-  49F4  90            		sub	b
-  49F5  E603          		and	03h		;end quadrant-start quadrant
-  49F7  87            		add	a,a
-  49F8  87            		add	a,a
-  49F9  2004          		jr	nz,CRCLPNZ
+  49EB  3A81FF        		ld	a,(CRCLFLG)	;bit4=start<=end?, bit32=end quad., bit10=start quad.
+  49EE  47            		ld	b,a
+  49EF  0F            		rrca
+  49F0  0F            		rrca
+  49F1  90            		sub	b
+  49F2  E603          		and	03h		;end quadrant-start quadrant
+  49F4  87            		add	a,a
+  49F5  87            		add	a,a
+  49F6  2004          		jr	nz,CRCLPNZ
+  49F8  A8            		xor	b
+  49F9  E6EF          		and	0efh		;copy b-bit4
   49FB  A8            		xor	b
-  49FC  E6EF          		and	0efh		;copy b-bit4
-  49FE  A8            		xor	b
-  49FF                	CRCLPNZ:
+  49FC                	CRCLPNZ:
+  49FC  A9            		xor	c
+  49FD  E6FC          		and	0fch		;copy c-bit1,0
   49FF  A9            		xor	c
-  4A00  E6FC          		and	0fch		;copy c-bit1,0
-  4A02  A9            		xor	c
-  4A03  5F            		ld	e,a
-  4A04  1600          		ld	d,00h
-  4A06  215E45        		ld	hl,CRCLFDATA
-  4A09  19            		add	hl,de
+  4A00  5F            		ld	e,a
+  4A01  1600          		ld	d,00h
+  4A03  215B45        		ld	hl,CRCLFDATA
+  4A06  19            		add	hl,de
                       	
-  4A0A  78            		ld	a,b		;(CRCLFLG)
-  4A0B  E603          		and	03h		;start quad.
-  4A0D  47            		ld	b,a
-  4A0E  7E            		ld	a,(hl)
-  4A0F  04            		inc	b
-  4A10                	CRCLPLP:
-  4A10  07            		rlca
-  4A11  10FD          		djnz	CRCLPLP
-  4A13  08            		ex	af,af'
+  4A07  78            		ld	a,b		;(CRCLFLG)
+  4A08  E603          		and	03h		;start quad.
+  4A0A  47            		ld	b,a
+  4A0B  7E            		ld	a,(hl)
+  4A0C  04            		inc	b
+  4A0D                	CRCLPLP:
+  4A0D  07            		rlca
+  4A0E  10FD          		djnz	CRCLPLP
+  4A10  08            		ex	af,af'
                       	
-  4A14  2AAEFD        		ld	hl,(GRPX1)	;xcenter
-  4A17  ED5BB1FE      		ld	de,(GRPX3)	;x
-  4A1B  B7            		or	a
-  4A1C  ED52          		sbc	hl,de
-  4A1E  E5            		push	hl		;xcenter-x
-  4A1F  19            		add	hl,de
-  4A20  19            		add	hl,de
-  4A21  44            		ld	b,h
-  4A22  4D            		ld	c,l
+  4A11  2AAEFD        		ld	hl,(GRPX1)	;xcenter
+  4A14  ED5BB1FE      		ld	de,(GRPX3)	;x
+  4A18  B7            		or	a
+  4A19  ED52          		sbc	hl,de
+  4A1B  E5            		push	hl		;xcenter-x
+  4A1C  19            		add	hl,de
+  4A1D  19            		add	hl,de
+  4A1E  44            		ld	b,h
+  4A1F  4D            		ld	c,l
                       	
-  4A23  2AB0FD        		ld	hl,(GRPY1)	;ycenter
-  4A26  ED5BB3FE      		ld	de,(GRPY3)	;y
-  4A2A  B7            		or	a
-  4A2B  ED52          		sbc	hl,de
-  4A2D  E5            		push	hl		;ycenter-y
-  4A2E  19            		add	hl,de
-  4A2F  19            		add	hl,de
-  4A30  EB            		ex	de,hl
+  4A20  2AB0FD        		ld	hl,(GRPY1)	;ycenter
+  4A23  ED5BB3FE      		ld	de,(GRPY3)	;y
+  4A27  B7            		or	a
+  4A28  ED52          		sbc	hl,de
+  4A2A  E5            		push	hl		;ycenter-y
+  4A2B  19            		add	hl,de
+  4A2C  19            		add	hl,de
+  4A2D  EB            		ex	de,hl
                       	
-  4A31  D5            		push	de		;ycenter+y
-  4A32  C5            		push	bc		;xcenter+x
+  4A2E  D5            		push	de		;ycenter+y
+  4A2F  C5            		push	bc		;xcenter+x
                       	
-  4A33  08            		ex	af,af'
-  4A34  67            		ld	h,a
-  4A35  08            		ex	af,af'
-  4A36  CB64          		bit	4,h
+  4A30  08            		ex	af,af'
+  4A31  67            		ld	h,a
+  4A32  08            		ex	af,af'
+  4A33  CB64          		bit	4,h
                       	
-  4A38  C4472D        		call	nz,PSET		;4th quadrant (xcenter+x,ycenter+y)
+  4A35  C4472D        		call	nz,PSET		;4th quadrant (xcenter+x,ycenter+y)
                       	
-  4A3B  C1            		pop	bc
-  4A3C  E1            		pop	hl
-  4A3D  D1            		pop	de
-  4A3E  E5            		push	hl
-  4A3F  D5            		push	de
+  4A38  C1            		pop	bc
+  4A39  E1            		pop	hl
+  4A3A  D1            		pop	de
+  4A3B  E5            		push	hl
+  4A3C  D5            		push	de
                       	
-  4A40  08            		ex	af,af'
-  4A41  67            		ld	h,a
-  4A42  08            		ex	af,af'
-  4A43  CB7C          		bit	7,h
+  4A3D  08            		ex	af,af'
+  4A3E  67            		ld	h,a
+  4A3F  08            		ex	af,af'
+  4A40  CB7C          		bit	7,h
                       	
-  4A45  C4472D        		call	nz,PSET		;1st quadrant (xcenter+x,ycenter-y)
-  4A48  D1            		pop	de
-  4A49  E1            		pop	hl
-  4A4A  C1            		pop	bc
-  4A4B  E5            		push	hl
-  4A4C  C5            		push	bc
+  4A42  C4472D        		call	nz,PSET		;1st quadrant (xcenter+x,ycenter-y)
+  4A45  D1            		pop	de
+  4A46  E1            		pop	hl
+  4A47  C1            		pop	bc
+  4A48  E5            		push	hl
+  4A49  C5            		push	bc
                       	
-  4A4D  08            		ex	af,af'
-  4A4E  67            		ld	h,a
-  4A4F  08            		ex	af,af'
-  4A50  CB74          		bit	6,h
+  4A4A  08            		ex	af,af'
+  4A4B  67            		ld	h,a
+  4A4C  08            		ex	af,af'
+  4A4D  CB74          		bit	6,h
                       	
-  4A52  C4472D        		call	nz,PSET		;2nd quadrant (xcenter-x,ycenter-y)
-  4A55  C1            		pop	bc
-  4A56  D1            		pop	de
+  4A4F  C4472D        		call	nz,PSET		;2nd quadrant (xcenter-x,ycenter-y)
+  4A52  C1            		pop	bc
+  4A53  D1            		pop	de
                       	
-  4A57  08            		ex	af,af'
-  4A58  67            		ld	h,a
-  4A59  08            		ex	af,af'
-  4A5A  CB6C          		bit	5,h
+  4A54  08            		ex	af,af'
+  4A55  67            		ld	h,a
+  4A56  08            		ex	af,af'
+  4A57  CB6C          		bit	5,h
                       	
-  4A5C  C8            		ret	z
-  4A5D  C3472D        		jp	PSET		;3rd quadrant (xcenter-x,ycenter+y)
+  4A59  C8            		ret	z
+  4A5A  C3472D        		jp	PSET		;3rd quadrant (xcenter-x,ycenter+y)
                       	
                       	
-  4A60                	_C_CRCL:ds	C_CRCL-_C_CRCL
+  4A5D                	_C_CRCL:ds	C_CRCL-_C_CRCL
   4A72                		org	C_CRCL
                       	
   4A72  3A93FD        		ld	a,(COLOR1)
@@ -15207,14 +15206,14 @@
                       	
   4AA0  2A4EFF        		ld	hl,(PROGAD)
   4AA3  CD7C3F        		call	CHKCLCM
-  4AA6  CA7245        		jp	z,CRCLMAIN
+  4AA6  CA6F45        		jp	z,CRCLMAIN
   4AA9  CD6C3F        		call	CHKCMM
   4AAC  280C          		jr	z,CRCLPAR3
   4AAE  CDE40D        		call	INT1ARG		;color
   4AB1  CDC015        		call	SETATT
                       	
   4AB4  CD7C3F        		call	CHKCLCM
-  4AB7  CA7245        		jp	z,CRCLMAIN
+  4AB7  CA6F45        		jp	z,CRCLMAIN
                       	
   4ABA                	CRCLPAR3:
   4ABA  CD6C3F        		call	CHKCMM
@@ -15236,7 +15235,7 @@
                       	
   4ADC  2A4EFF        		ld	hl,(PROGAD)
   4ADF  CD7C3F        		call	CHKCLCM
-  4AE2  CA7245        		jp	z,CRCLMAIN
+  4AE2  CA6F45        		jp	z,CRCLMAIN
                       	
   4AE5                	CRCLPAR4:
   4AE5  CD6C3F        		call	CHKCMM
@@ -15250,7 +15249,7 @@
                       	
   4AF8  2A4EFF        		ld	hl,(PROGAD)
   4AFB  CD7C3F        		call	CHKCLCM
-  4AFE  CA7245        		jp	z,CRCLMAIN
+  4AFE  CA6F45        		jp	z,CRCLMAIN
                       	
   4B01                	CRCLPAR5:
   4B01  CD750B        		call	NUMARG		;aspect ratio
@@ -15291,7 +15290,7 @@
   4B42  CD4C39        		call	POPF2		;y-radius
   4B45  CD5E38        		call	DIVF		;1/asp
   4B48  CD4E4B        		call	SETASP		;replace aspect ratio by 256/asp
-  4B4B  C38245        		jp	CRCLMAIN2
+  4B4B  C37F45        		jp	CRCLMAIN2
                       	
                       	;set aspect ratio
                       	;input: FAC1=aspect ratio
@@ -15314,7 +15313,7 @@
                       	;0 <= aspect ratio < 1
   4B64                	ASPSMALL:
   4B64  CD4E4B        		call	SETASP
-  4B67  C37245        		jp	CRCLMAIN
+  4B67  C36F45        		jp	CRCLMAIN
                       	
                       	
                       	;input: FAC1=angle
@@ -15944,7 +15943,7 @@
                       	
   4E43                	PUTATLP1:
   4E43  D9            		exx
-  4E44  0E00          		ld	c,0		;shift count
+  4E44  0E00          		ld	c,00h		;shift count
   4E46  D9            		exx
                       	
   4E47  D5            		push	de		;y-end
@@ -16455,7 +16454,7 @@
                       	
                       	
   6297                	SYSNAME66:
-  6297  36369ADE96FD42		db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.2.1", 0dh, 0ah, 00h
+  6297  36369ADE96FD42		db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.2.2", 0dh, 0ah, 00h
                       	
                       	
                       	;PEEK() function

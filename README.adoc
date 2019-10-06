@@ -591,8 +591,8 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 
 == 更新履歴
 .git master
-* PC-6601用互換ROMをv0.2.1に更新
-* Updated compatible ROM for PC-6601 to v0.2.1.
+* PC-6601用互換ROMをv0.2.2に更新
+* Updated compatible ROM for PC-6601 to v0.2.2.
 
 .3.2.0 2019/09/14
 * 秋川様による互換ROMを内蔵。ROMファイルがなくても起動可能になった。

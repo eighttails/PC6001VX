@@ -14339,8 +14339,7 @@ F_HEX:
 	call	FTOI
 
 	ld	hl,FAC3
-	ld	(STRDSC1+2),hl
-	ld	c,0		;length
+	ld	c,00h		;length
 	ld	a,d
 	call	CNVHEX2
 	ld	a,e
@@ -14350,7 +14349,7 @@ F_HEX:
 	inc	c
 HEXNZ:
 	ld	a,c
-	ld	(STRDSC1),a
+	ld	hl,FAC3
 	call	MAKESTR
 	jp	INKYEND
 
@@ -15943,7 +15942,7 @@ PUTATNZ3:
 
 PUTATLP1:
 	exx
-	ld	c,0		;shift count
+	ld	c,00h		;shift count
 	exx
 
 	push	de		;y-end
@@ -16454,7 +16453,7 @@ MENU:
 
 
 SYSNAME66:
-	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.2.1", 0dh, 0ah, 00h
+	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.2.2", 0dh, 0ah, 00h
 
 
 ;PEEK() function

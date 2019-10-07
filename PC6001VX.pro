@@ -314,58 +314,6 @@ OTHER_FILES += \
     openpandora/pandora_develop_environment/qtmultimedia.patch \
     openpandora/pandora_develop_environment/qtmultimedia53.patch \
     openpandora/pandora_develop_environment/sdk_installer_openpandora_toolchain.sh \
-    src/Qt/res/PC-6001.ico \
-    src/Qt/res/PC-6001mk2.ico \
-    src/Qt/res/PC-6001mk2SR.ico \
-    src/Qt/res/PC-6601.ico \
-    src/Qt/res/PC-6601SR.ico \
-    src/Qt/res/background.png \
-    src/Qt/res/font/fonth12.png \
-    src/Qt/res/font/fontz12.png \
-    src/Qt/res/fontz12.png \
-    src/Qt/translation/PC6001VX_en.qm \
-    src/Qt/translation/PC6001VX_en.ts \
-    src/device/fmgen/readme.txt \
-    src/win32/PC6001VX.ico \
-    win32/angle.patch \
-    win32/angle52.patch \
-    win32/buildenv.sh \
-    win32/optimize.patch \
-    win32/safemode.bat \
-    win32/toolchain.sh \ 
-    android/res/drawable-ldpi/icon.png \
-    win32/release.sh \
-    doc/about.png \
-    doc/firstboot.png \
-    doc/keypanel.png \
-    doc/menu.png \
-    doc/monitormode.png \
-    doc/overview.png \
-    doc/romcrc.png \
-    doc/setting_basic.png \
-    doc/setting_color1.png \
-    doc/setting_color2.png \
-    doc/setting_file.png \
-    doc/setting_folder.png \
-    doc/setting_input.png \
-    doc/setting_other.png \
-    doc/setting_screen.png \
-    doc/setting_sound.png \
-    doc/tilt.png \
-    doc/markdown.css \
-    doc/qtsetting_compiler.png \
-    doc/qtsetting_debugger.png \
-    doc/qtsetting_kit1.png \
-    doc/qtsetting_kit2.png \
-    doc/qtsetting_qt.png \
-    doc/virtualkey.png \
-    data/PC-6001_16.png \
-    data/PC-6001_32.png \
-    data/PC-6001_48.png \
-    data/PC-6001_64.png \
-    data/PC-6001_256.png \
-    data/PC-6001.svg \
-    data/PC-6001_128.png \
     openpandora/pandora_develop_environment/eglfs.patch \
     openpandora/pandora_develop_environment/eglplatform.patch
 

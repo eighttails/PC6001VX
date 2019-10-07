@@ -12,7 +12,7 @@
 #define QT_TRANSLATE_NOOP(a,b) b
 #endif
 
-#if (defined PANDORA) || (defined ANDROID)
+#if (defined ANDROID)
 #include <string>
 #include <sstream>
 namespace std{

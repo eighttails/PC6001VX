@@ -69,26 +69,7 @@ ios {
 DEFINES += NOJOYSTICK NOAVI ALWAYSFULLSCREEN IPHONE_IPAD
 }
 
-pandora {
-#Configuration for OpenPandora
-QT += x11extras
-
-DEPLOY_PATH = /media/sddev/pc6001vx
-target.path = $${DEPLOY_PATH}
-sharedlibs.path = $${DEPLOY_PATH}
-sharedlibs.files += $${PANDORA_SDK}/usr/lib/libX11.so.6 \
-                    $${PANDORA_SDK}/usr/lib/libX11.so.6.3.0 \
-                    $${PANDORA_SDK}/usr/lib/libX11-xcb.so.1 \
-                    $${PANDORA_SDK}/usr/lib/libX11-xcb.so.1.0.0 \
-                    $${PANDORA_SDK}/usr/lib/libxcb.so.1 \
-                    $${PANDORA_SDK}/usr/lib/libxcb.so.1.1.0
-
-QMAKE_LFLAGS += $${QMAKE_LFLAGS_RPATH}$${DEPLOY_PATH}
-INSTALLS += target sharedlibs
-DEFINES += NOOPENGL NOJOYSTICK NOMONITOR NOAVI
-#QTPLUGIN += qxcb qeglfs
-}
-!android:!pandora:!ios {
+!android:!ios {
 #Configuration for X11(XCB)
 DEFINES += USE_X11
 QT += x11extras
@@ -202,7 +183,6 @@ SOURCES += \
     src/Qt/p6vxcommon.cpp
 
 HEADERS  += \
-    openpandora/pandora_develop_environment/linux-pandora-g++/qplatformdefs.h \
     src/Qt/aboutdialog.h \
     src/Qt/colorbutton.h \
     src/Qt/configdialog.h \
@@ -303,19 +283,7 @@ FORMS    += \
     src/Qt/virtualkeytabwidget.ui
 
 OTHER_FILES += \
-    android/AndroidManifest.xml \
-    openpandora/PC-6001.png \
-    openpandora/PC6001VX.sh \
-    openpandora/PXML.xml \
-    openpandora/create_pnd.sh \
-    openpandora/pandora_develop_environment/environment_build.log \
-    openpandora/pandora_develop_environment/linux-pandora-g++/qmake.conf \
-    openpandora/pandora_develop_environment/pandora_develop_environment.sh \
-    openpandora/pandora_develop_environment/qtmultimedia.patch \
-    openpandora/pandora_develop_environment/qtmultimedia53.patch \
-    openpandora/pandora_develop_environment/sdk_installer_openpandora_toolchain.sh \
-    openpandora/pandora_develop_environment/eglfs.patch \
-    openpandora/pandora_develop_environment/eglplatform.patch
+    android/AndroidManifest.xml
 
 RESOURCES += \
     src/Qt/pc6001vx.qrc

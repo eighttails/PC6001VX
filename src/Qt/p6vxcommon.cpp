@@ -6,7 +6,11 @@
 #include <QVector>
 #include <QImage>
 #include <QRgb>
+#include <QDir>
 #include <QFile>
+#ifdef ANDROID
+#include "ekkesShare/shareutils.hpp"
+#endif
 
 extern QVector<QRgb> PaletteTable;              //パレットテーブル
 
@@ -52,7 +56,16 @@ bool SaveImgData( const char *filename, BYTE *pixels, const int bpp, const int w
 		doff += pitch;
 	}
 
-	image.save(filename);
+	auto saveFilePath = QDir::cleanPath(filename);
+	image.save(saveFilePath);
+
+#ifdef ANDROID
+	// Androidの場合はインテントで他のアプリに送る
+	ShareUtils util;
+	int req = 0;
+	bool altImpl = false;
+	util.sendFile(saveFilePath, "Snapshot", "image/png", req, altImpl);
+#endif
 
 	return true;
 }
@@ -129,6 +142,7 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 #include <QByteArray>
 #include <QMutex>
 #include <QTemporaryFile>
+#include <QFileInfo>
 
 ////////////////////////////////////////////////////////////////
 // UTF8->Local(Windowsの場合SJIS,Linuxの場合UTF8)

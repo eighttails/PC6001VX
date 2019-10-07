@@ -231,6 +231,7 @@ void P6VXApp::startup()
 			return;
 		}
 	}
+	overrideSettings(Cfg);
 
 	// ウィンドウ、ウィジェットの生成
 	MWidget = new MainWidget();
@@ -807,6 +808,20 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 			keyCode = Qt::Key_Muhenkan;
 		}
 	}
+}
+
+void P6VXApp::overrideSettings(CFG6 &cfg)
+{
+#ifdef ANDROID
+	char str[PATH_MAX];
+	// AndroidではSDカードにファイルを書き出せないため、
+	// SnapshotおよびどこでもSAVEはアプリ内のサンドボックス領域に固定する。
+	OSD_AddPath( str, OSD_GetModulePath(), IMAGE_DIR );
+	cfg.SetImgPath( str );
+	OSD_AddPath( str, OSD_GetModulePath(), DOKOSAVE_DIR );
+	cfg.SetDokoSavePath( str );
+	cfg.Write();
+#endif
 }
 
 bool P6VXApp::notify ( QObject * receiver, QEvent * event )

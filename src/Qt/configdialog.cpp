@@ -358,6 +358,18 @@ void ConfigDialog::readConfig()
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderDokoSave->setText(str);
 
+#ifdef ANDROID
+	// AndroidではIMGパスとどこでもSAVEパスを編集不可にする。
+	ui->labelFolderImg->setVisible(false);
+	ui->lineEditFolderImg->setVisible(false);
+	ui->pushButtonClearFolderImg->setVisible(false);
+	ui->pushButtonRefFolderImg->setVisible(false);
+
+	ui->labelFolderDokoSave->setVisible(false);
+	ui->lineEditFolderDokoSave->setVisible(false);
+	ui->pushButtonClearFolderDokoSave->setVisible(false);
+	ui->pushButtonRefFolderDokoSave->setVisible(false);
+#endif
 	// 色--------------------------------------------------------------------------
 	// 16〜72の色IDに対応させる。
 	for (int id = 16; id <= 80; id++){

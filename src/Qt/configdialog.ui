@@ -867,7 +867,7 @@
         </widget>
        </item>
        <item row="6" column="1">
-        <widget class="QLabel" name="label_22">
+        <widget class="QLabel" name="labelDisk2">
          <property name="text">
           <string>DISK2(&amp;J):</string>
          </property>
@@ -877,7 +877,7 @@
         </widget>
        </item>
        <item row="0" column="1" colspan="2">
-        <widget class="QLabel" name="label_17">
+        <widget class="QLabel" name="labelExtRom">
          <property name="text">
           <string>拡張RO&amp;M(R):</string>
          </property>
@@ -887,7 +887,7 @@
         </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QLabel" name="label_18">
+        <widget class="QLabel" name="labelPrinter">
          <property name="text">
           <string>プリンタ(&amp;P):</string>
          </property>
@@ -897,7 +897,7 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLabel" name="label_21">
+        <widget class="QLabel" name="labelSaveTape">
          <property name="text">
           <string>TAPE(SAVE)(&amp;V):</string>
          </property>
@@ -907,7 +907,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLabel" name="label_19">
+        <widget class="QLabel" name="labelLoadTape">
          <property name="text">
           <string>TAPE(LOAD)(&amp;A):</string>
          </property>
@@ -980,7 +980,7 @@
         </widget>
        </item>
        <item row="5" column="1">
-        <widget class="QLabel" name="label_20">
+        <widget class="QLabel" name="labelDisk1">
          <property name="text">
           <string>DISK1(&amp;K):</string>
          </property>
@@ -1055,7 +1055,7 @@
         </spacer>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="label_53">
+        <widget class="QLabel" name="labelFolderExtRom">
          <property name="text">
           <string>拡張ROM(&amp;X):</string>
          </property>
@@ -1110,9 +1110,9 @@
         </widget>
        </item>
        <item row="8" column="0">
-        <widget class="QLabel" name="label_100">
+        <widget class="QLabel" name="labelFolderDokoSave">
          <property name="text">
-          <string>どこでもSAVE(&amp;V)</string>
+          <string>どこでもSAVE(&amp;V):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditFolderDokoSave</cstring>
@@ -1130,7 +1130,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_51">
+        <widget class="QLabel" name="labelFolderTape">
          <property name="text">
           <string>TA&amp;PE(T):</string>
          </property>
@@ -1153,7 +1153,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_48">
+        <widget class="QLabel" name="labelFolderDisk">
          <property name="text">
           <string>DISK(&amp;K):</string>
          </property>
@@ -1170,7 +1170,7 @@
         </widget>
        </item>
        <item row="6" column="0">
-        <widget class="QLabel" name="label_52">
+        <widget class="QLabel" name="labelFolderImg">
          <property name="text">
           <string>S&amp;napShot(H):</string>
          </property>
@@ -1190,9 +1190,9 @@
         </widget>
        </item>
        <item row="7" column="0">
-        <widget class="QLabel" name="label_49">
+        <widget class="QLabel" name="labelFolderWave">
          <property name="text">
-          <string>WAVE(&amp;W)</string>
+          <string>WAVE(&amp;W):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditFolderWave</cstring>
@@ -1217,7 +1217,7 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QLabel" name="label_50">
+        <widget class="QLabel" name="labelFolderRom">
          <property name="text">
           <string>ROM(&amp;R):</string>
          </property>

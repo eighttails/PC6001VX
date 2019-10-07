@@ -56,7 +56,15 @@ DEFINES -= QT_NO_DEBUG_OUTPUT
 #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 QT += androidextras
+
+HEADERS += \
+    src/Qt/ekkesShare/shareutils.hpp \
+    src/Qt/ekkesShare/android/androidshareutils.hpp
+SOURCES += \
+    src/Qt/ekkesShare/shareutils.cpp \
+    src/Qt/ekkesShare/android/androidshareutils.cpp
 }
+
 ios {
 DEFINES += NOJOYSTICK NOAVI ALWAYSFULLSCREEN IPHONE_IPAD
 }
@@ -345,6 +353,12 @@ OTHER_FILES += \
     doc/setting_sound.png \
     doc/tilt.png \
     doc/markdown.css \
+    doc/qtsetting_compiler.png \
+    doc/qtsetting_debugger.png \
+    doc/qtsetting_kit1.png \
+    doc/qtsetting_kit2.png \
+    doc/qtsetting_qt.png \
+    doc/virtualkey.png \
     data/PC-6001_16.png \
     data/PC-6001_32.png \
     data/PC-6001_48.png \
@@ -362,12 +376,8 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DISTFILES += \
     LICENSE \
-    README.adoc \
-    doc/compatiblerom.png \
-    win32/buildenv.sh \
-    win32/buildrelease.sh \
-    win32/release.sh \
-    win32/safemode.bat \
-    codestyle.xml
+    android/PrivacyPolicy.html
+
+
 
 

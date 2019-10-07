@@ -160,6 +160,17 @@ image::doc/keypanel.png[]
 image::doc/virtualkey.png[]
 タッチスクリーンで利用できる仮想キーボードを表示します。 +
 NORMALタブでは実機のキーボードを模したレイアウト、SIMPLEタブではゲーム用に簡略化したレイアウトを表示します。 +
+仮想キーボード上部のボタンはよく使う機能のショートカットになっています。 +
+*** SAVE 
+どこでもSAVE(1番スロットを使用) +
+*** PAUSE 
+エミュレーターの一時停止 +
+*** SNP 
+スナップショットの保存 +
+Androidの場合は他のアプリへの画像の共有になります。 https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=ja[X-plore File Manager]などの一部のファイルマネージャーアプリに送るとSDカードに画像を保存できます。 +
+*** LOAD
+どこでもLOAD(1番スロットを使用) +
+
 +
 [WARNING]
 ====
@@ -592,7 +603,9 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 == 更新履歴
 .git master
 * PC-6601用互換ROMをv0.2.2に更新
+* (Android)SNPボタンでスナップショットをシェアできるようになった。
 * Updated compatible ROM for PC-6601 to v0.2.2.
+* (Android)SNP button now works. You can share screenshot to SNS.
 
 .3.2.0 2019/09/14
 * 秋川様による互換ROMを内蔵。ROMファイルがなくても起動可能になった。

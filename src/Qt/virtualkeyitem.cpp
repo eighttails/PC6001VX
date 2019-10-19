@@ -48,6 +48,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 
 void VirtualKeyItem::changeStatus(
 		bool ON_SHIFT,
+		bool ON_CTRL,
 		bool ON_GRAPH,
 		bool ON_KANA,
 		bool ON_KKANA,

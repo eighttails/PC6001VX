@@ -2,6 +2,7 @@
 #define KEYSTATEWATCHER_H
 
 #include <QObject>
+#include <QMutex>
 
 class KEY6;
 
@@ -15,13 +16,24 @@ public:
 signals:
 	void stateChanged(
 			bool ON_SHIFT,	// SHIFT
+			bool ON_CTRL,	// CTRL
 			bool ON_GRAPH,	// GRAPH
 			bool ON_KANA,	// かな
 			bool ON_KKANA,	// カタカナ
 			bool ON_CAPS	// CAPS
 			);
 
-public slots:
+public:
+	enum Modifiers {
+		SHIFT	= 0x01,
+		CTRL	= 0x02,
+		GRAPH	= 0x04,
+		KANA	= 0x08,
+		KKANA	= 0x16,
+		CAPS	= 0x32
+	};
+	int GetModifierStatus();
+
 
 protected slots:
 	// キーボードの状態をポーリング
@@ -31,10 +43,13 @@ protected:
 	KEY6* Key;	//監視対象のキーボード
 
 	bool ON_SHIFT;	// SHIFT
+	bool ON_CTRL;	// CTRL
 	bool ON_GRAPH;	// GRAPH
 	bool ON_KANA;	// かな
 	bool ON_KKANA;	// カタカナ
 	bool ON_CAPS;	// CAPS
+
+	QMutex mutex;
 };
 
 #endif // KEYSTATEWATCHER_H

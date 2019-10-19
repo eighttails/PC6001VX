@@ -1,6 +1,7 @@
 #include <QtWidgets>
 #include <QTimer>
 
+#include <map>
 
 #include "../event.h"
 #include "../osd.h"
@@ -11,6 +12,7 @@
 #include "../error.h"
 #include "../osd.h"
 #include "../common.h"
+#include "../keyboard.h"
 
 #include "renderview.h"
 #include "mainwidget.h"
@@ -800,6 +802,82 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 	}
 }
 
+void P6VXApp::fixKeyModifiers(Event &ev)
+{
+	// qDebug() << ev.key.sym << QChar(ev.key.unicode);
+
+	// かな、グラフィックキー有効時は何もしない
+	auto mod = KeyWatcher->GetModifierStatus();
+	if (
+			mod & KeyStateWatcher::KANA ||
+			mod & KeyStateWatcher::KKANA ||
+			mod & KeyStateWatcher::GRAPH ||
+			mod & KeyStateWatcher::CAPS ||
+			mod & KeyStateWatcher::KANA) return;
+
+	struct FixInfo
+	{
+		PCKEYsym sym;
+		bool shift;
+	};
+#define QUNI(a) QChar(a).unicode()
+	static const std::map<uint16_t, FixInfo> fixMap = {
+		{	QUNI('-'),	{ KVC_MINUS,		false}	},
+		{	QUNI('^'),	{ KVC_CARET,		false}	},
+		{	QUNI('@'),	{ KVC_AT,			false}	},
+		{	QUNI('['),	{ KVC_LBRACKET,		false}	},
+		{	QUNI(']'),	{ KVC_RBRACKET,		false}	},
+		{	QUNI(';'),	{ KVC_SEMICOLON,	false}	},
+		{	QUNI(':'),	{ KVC_COLON,		false}	},
+		{	QUNI(','),	{ KVC_COMMA,		false}	},
+		{	QUNI('.'),	{ KVC_PERIOD,		false}	},
+		{	QUNI('/'),	{ KVC_SLASH,		false}	},
+		{	QUNI('!'),	{ KVC_1,			true}	},
+		{	QUNI('\"'),	{ KVC_2,			true}	},
+		{	QUNI('#'),	{ KVC_3,			true}	},
+		{	QUNI('$'),	{ KVC_4,			true}	},
+		{	QUNI('%'),	{ KVC_5,			true}	},
+		{	QUNI('&'),	{ KVC_6,			true}	},
+		{	QUNI('\''),	{ KVC_7,			true}	},
+		{	QUNI('('),	{ KVC_8,			true}	},
+		{	QUNI(')'),	{ KVC_9,			true}	},
+		{	QUNI('='),	{ KVC_MINUS,		true}	},
+		{	QUNI('+'),	{ KVC_SEMICOLON,	true}	},
+		{	QUNI('*'),	{ KVC_COLON,		true}	},
+		{	QUNI('_'),	{ KVC_UNDERSCORE,	true}	},
+		{	QUNI('<'),	{ KVC_COMMA,		true}	},
+		{	QUNI('>'),	{ KVC_PERIOD,		true}	},
+		{	QUNI('?'),	{ KVC_SLASH,		true}	},
+	};
+#undef QUNI
+	static const Event shiftDownEvent =
+	{
+		.key = { EV_KEYDOWN, true, KVC_LSHIFT, KVM_LSHIFT, 0 }
+	};
+	static const Event shiftUpEvent =
+	{
+		.key = { EV_KEYUP, false, KVC_LSHIFT, KVM_LSHIFT, 0 }
+	};
+
+	// 英語キーボードの場合、@の入力にSHIFTキーが必要なため、
+	// この場合P6エミュ側にSHIFT+@のキーコードを送っても何も入力されない。
+	// 本来意図した文字が入力されるよう、
+	// キーシンボルとモディファイヤキーを修正する。
+	if (fixMap.count(ev.key.unicode)){
+		auto i = fixMap.at(ev.key.unicode);
+		ev.key.sym = i.sym;
+		if (i.shift){
+			// P6でSHIFTが必要な記号はSHIFTモディファイヤーを付与する
+			OSD_PushEvent(shiftDownEvent);	//SHIFTキーを押すイベントを挿入する
+			ev.key.mod = (PCKEYmod)(ev.key.mod|KVM_SHIFT);
+		} else {
+			// P6でSHIFTなしで入力できる記号はSHIFTモディファイヤーを外す
+			OSD_PushEvent(shiftUpEvent);	//SHIFTキーを離すイベントを挿入する
+			ev.key.mod = (PCKEYmod)(ev.key.mod&~KVM_SHIFT);
+		}
+	}
+}
+
 void P6VXApp::overrideSettings(CFG6 &cfg)
 {
 #ifdef ANDROID
@@ -827,14 +905,19 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		Q_ASSERT(ke);
 
 		// キーコードを特定
-		// 生のキーコードは環境によってアンマッチがあるので
-		// 表示可能文字についてはtextを参照したほうが信頼できる
 		int keyCode = Qt::Key_unknown;
+#ifdef IRREGULAR_KEYBOARD
+		// UMPC内蔵小型キーボードなど、特殊なキーボードの場合
+		// 一般的なキーボードとコードのアンマッチがあるので
+		// 表示可能文字についてはtextを参照したほうが信頼できる
 		if(!ke->text().isEmpty() && ke->text().at(0).isPrint()){
 			keyCode = ke->text().at(0).toUpper().unicode();
 		} else {
 			keyCode = ke->key();
 		}
+#else
+		keyCode = ke->key();
+#endif
 		// 特殊キー対策
 		handleSpecialKeys(ke, keyCode);
 
@@ -879,6 +962,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 					//| ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
 					);
 		ev.key.unicode = ke->text().utf16()[0];
+		fixKeyModifiers(ev);
 		OSD_PushEvent(ev);
 		break;
 	}

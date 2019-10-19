@@ -26,6 +26,7 @@ public:
 public slots:
 	void changeStatus(
 			bool ON_SHIFT,	// SHIFT
+			bool ON_CTRL,	// CTRL
 			bool ON_GRAPH,	// GRAPH
 			bool ON_KANA,	// かな
 			bool ON_KKANA,	// カタカナ

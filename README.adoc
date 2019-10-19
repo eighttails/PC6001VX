@@ -613,7 +613,9 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 == 更新履歴
 .git master
 * 英語キーボードの対応を改善
+* PC-6601用の互換CGROMを更新。トランプマークが正しく表示されるようになった。
 * Works better with English keyboard.
+* Updated compatible CGROM for PC-6601. Now characters for playng card suit are properly displayed.
 
 .3.3.0 2019/10/9
 * PC-6601用互換ROMをv0.2.2に更新

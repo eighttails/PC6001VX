@@ -22,7 +22,7 @@ popd
 function makeQtSourceTree(){
 #Qt
 QT_MAJOR_VERSION=5.12
-QT_MINOR_VERSION=.4
+QT_MINOR_VERSION=.5
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 QT_ARCHIVE_DIR=qt-everywhere-src-$QT_VERSION
 QT_ARCHIVE=$QT_ARCHIVE_DIR.tar.xz
@@ -99,11 +99,14 @@ QT_COMMON_CONF_OPTS+=("-qt-zlib")
 QT_COMMON_CONF_OPTS+=("-qt-libjpeg")
 QT_COMMON_CONF_OPTS+=("-qt-libpng")
 QT_COMMON_CONF_OPTS+=("-qt-tiff")
+QT_COMMON_CONF_OPTS+=("-no-mng")
+QT_COMMON_CONF_OPTS+=("-no-jasper")
 QT_COMMON_CONF_OPTS+=("-qt-webp")
 QT_COMMON_CONF_OPTS+=("-qt-freetype")
 QT_COMMON_CONF_OPTS+=("-qt-pcre")
 QT_COMMON_CONF_OPTS+=("-qt-harfbuzz")
 QT_COMMON_CONF_OPTS+=("-nomake" "tests")
+QT_COMMON_CONF_OPTS+=("-no-feature-openal")
 }
 
 function buildQtShared(){
@@ -191,8 +194,8 @@ fi
 
 #Qt Creator
 cd ~/extlib
-QTC_MAJOR_VER=4.9
-QTC_MINOR_VER=.2
+QTC_MAJOR_VER=4.10
+QTC_MINOR_VER=.0
 QTC_VER=$QTC_MAJOR_VER$QTC_MINOR_VER
 QTC_SOURCE_DIR=qt-creator-opensource-src-$QTC_VER
 QTC_ARCHIVE=$QTC_SOURCE_DIR.tar.xz

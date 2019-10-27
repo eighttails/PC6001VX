@@ -160,8 +160,14 @@ void EL6::ExecMenu( int id )
 	case ID_SIZE100:
 		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(100);
 		break;
+	case ID_SIZE150:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(150);
+		break;
 	case ID_SIZE200:
 		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(200);
+		break;
+	case ID_SIZE250:
+		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(250);
 		break;
 	case ID_SIZE300:
 		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(300);
@@ -355,7 +361,9 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QMenu* dispSizeMenu = settingsMenu->addMenu(tr("表示サイズ"));
 	addCommand(dispSizeMenu, tr("50%"), ID_SIZE50);
 	addCommand(dispSizeMenu, tr("100%"), ID_SIZE100);
+	addCommand(dispSizeMenu, tr("150%"), ID_SIZE150);
 	addCommand(dispSizeMenu, tr("200%"), ID_SIZE200);
+	addCommand(dispSizeMenu, tr("250%"), ID_SIZE250);
 	addCommand(dispSizeMenu, tr("300%"), ID_SIZE300);
 	addCommand(dispSizeMenu, tr("倍率を指定..."), ID_SIZEMANUAL);
 	QAction* fixMagnification = addCommand(dispSizeMenu, tr("倍率を固定"), ID_FIXMAGNIFICATION, true);

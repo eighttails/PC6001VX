@@ -364,6 +364,13 @@ PC6001VXに組み込んでいるQtのバージョンを表示します。 +
 |ホイールDOWN|動作速度を下げる（0.1倍速まで）
 |=================================
 
+なお、Androidでは左クリックしかアプリケーションで拾えないため、マウス操作が異なります。
+[options="header"]
+|=================================
+| 操作 | 機能
+|左クリック|メニュー表示
+|=================================
+
 === 環境設定
 
 メニューの[設定]-[環境設定]を選ぶと、環境設定ダイアログが表示されます。 +
@@ -613,8 +620,10 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 == 更新履歴
 .3.3.1 2019/10/20
 * 英語キーボードの対応を改善
+* Androidでのマウス操作を変更。左クリックでメニュー表示。
 * PC-6601用の互換CGROMを更新。トランプマークが正しく表示されるようになった。
 * Works better with English keyboard.
+* Modified mouse operation on Android. LMB is assigned to popup menu.
 * Updated compatible CGROM for PC-6601. Now characters for playng card suit are properly displayed.
 
 .3.3.0 2019/10/9

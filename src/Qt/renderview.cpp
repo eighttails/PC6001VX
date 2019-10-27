@@ -100,7 +100,7 @@ bool RenderView::event(QEvent *event)
 			if (state == Qt::TouchPointPressed){
 				auto point = tEvent->touchPoints()[0].pos().toPoint();
 				QGraphicsItem* item = scene()->itemAt(mapToScene(point), transform());
-				// タップしたアイテムが原点にある場合、メイン画面とみなして長押しメニューを出す
+				// タップしたアイテムが原点にある場合、メイン画面とみなしてメニューを出す
 				if(item && item->pos() == QPoint(0, 0)){
 					Event e;
 					e.type = EV_CONTEXTMENU;
@@ -144,9 +144,10 @@ void RenderView::contextMenuEvent(QContextMenuEvent *event)
 {
 	Event ev;
 	ev.type = EV_CONTEXTMENU;
-	QPoint p = QCursor::pos();
+	auto p = event->globalPos();
 	ev.mousebt.x = p.x();
 	ev.mousebt.y = p.y();
+	event->accept();
 	OSD_PushEvent(ev);
 }
 
@@ -156,19 +157,35 @@ void RenderView::wheelEvent(QWheelEvent *event)
 	ev.type = EV_MOUSEBUTTONUP;
 	ev.mousebt.button = event->delta() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
 	ev.mousebt.state = false;
+	event->accept();
 	OSD_PushEvent(ev);
 }
 
 void RenderView::mouseReleaseEvent(QMouseEvent *event)
 {
+	Event ev;
+#ifdef ANDROID
+	ev.type = EV_CONTEXTMENU;
+#else
+	ev.type = EV_MOUSEBUTTONUP;
 	auto button = event->button();
-	if( button == Qt::LeftButton || button == Qt::MiddleButton){
-		Event ev;
-		ev.type = EV_MOUSEBUTTONUP;
-		ev.mousebt.button = button == Qt::LeftButton ? MBT_LEFT : MBT_MIDDLE;
-		ev.mousebt.state = false;
-		OSD_PushEvent(ev);
+	switch (button) {
+	case Qt::LeftButton:
+		ev.mousebt.button = MBT_LEFT;	break;
+	case Qt::RightButton:
+		ev.mousebt.button = MBT_RIGHT;	break;
+	case Qt::MiddleButton:
+		ev.mousebt.button = MBT_MIDDLE;	break;
+	default:
+		return;
 	}
+#endif
+	auto p = event->globalPos();
+	ev.mousebt.x = p.x();
+	ev.mousebt.y = p.y();
+	ev.mousebt.state = false;
+	event->accept();
+	OSD_PushEvent(ev);
 }
 
 

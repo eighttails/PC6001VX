@@ -17,9 +17,11 @@ int main( int argc, char *argv[] )
 	//X11の場合用
 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
 #if QT_VERSION >= 0x050700
+#ifndef ANDROID
+	// AndroidではAA_EnableHighDpiScalingを設定するとメニューの座標がおかしくなる
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-
+#endif
 	P6VXApp app(argc, argv);
 
 	QCommandLineParser parser;
@@ -33,7 +35,6 @@ int main( int argc, char *argv[] )
 	// AndroidではFusion以外のスタイルでは表示が崩れるので明示的に指定する。
 	app.setStyle(QStyleFactory::create("Fusion"));
 	app.setCustomRomPath(CUSTOMROMPATH);
-
 #endif
 
 	QLocale locale;

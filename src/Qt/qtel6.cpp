@@ -18,6 +18,7 @@
 #include "../joystick.h"
 #include "../id_menu.h"
 
+#include "mainwidget.h"
 #include "renderview.h"
 #include "keypanel.h"
 #include "virtualkeytabwidget.h"
@@ -441,7 +442,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(helpMenu, tr("バージョン情報..."), ID_VERSION);
 	addCommand(helpMenu, tr("About Qt..."), ID_ABOUTQT);
 
-	selectedAction = menu.exec(QPoint(x, y));
+	selectedAction = menu.exec(QPoint(x,y));
 
 	if (selectedAction != NULL) {
 		// 項目ごとの処理

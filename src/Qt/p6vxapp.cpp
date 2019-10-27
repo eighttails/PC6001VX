@@ -1,5 +1,7 @@
 #include <QtWidgets>
 #include <QTimer>
+#include <QFileInfo>
+#include <QDir>
 
 #include <map>
 
@@ -278,7 +280,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 {
 	QString result;
 	//検索パスが指定されていない場合はホームフォルダとする
-	QString pathStr = strlen(path) ? path : QDir::homePath();
+	QString pathStr = strlen(path) ? QFileInfo(path).dir().path() : QDir::homePath();
 
 	QWidget* parent = static_cast<QWidget*>(hwnd);
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策

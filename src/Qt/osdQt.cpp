@@ -1300,7 +1300,7 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 
 	QWidget* parent = static_cast<QWidget*>(hwnd);
 	QFileDialog dialog(parent);
-	dialog.setDirectory(Result ? Result : QDir::homePath());
+	dialog.setDirectory(strcmp(Result, "/") ? Result : QDir::homePath());
 	dialog.setFileMode(QFileDialog::DirectoryOnly);
 	dialog.setOptions(opt);
 #ifdef ALWAYSFULLSCREEN

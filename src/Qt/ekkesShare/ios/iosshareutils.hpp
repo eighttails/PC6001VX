@@ -5,7 +5,7 @@
 #ifndef __IOSSHAREUTILS_H__
 #define __IOSSHAREUTILS_H__
 
-#include "../shareutils.hpp"
+#include "shareutils.hpp"
 
 class IosShareUtils : public PlatformShareUtils
 {

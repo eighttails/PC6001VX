@@ -292,7 +292,14 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DISTFILES += \
     LICENSE \
-    android/PrivacyPolicy.html
+    android/AndroidManifest.xml \
+    android/PrivacyPolicy.html \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew \
+    android/gradlew.bat \
+    android/res/values/libs.xml
 
 
 

@@ -2,7 +2,6 @@
 #define CONFIGDIALOG_H
 
 #include <QDialog>
-#include <QSignalMapper>
 #include "p6vxapp.h"
 
 class CFG6;
@@ -22,20 +21,13 @@ public:
 private:
 	Ui::ConfigDialog *ui;
 	CFG6* config;
-	QSignalMapper* sliderLabelMap;
-	QSignalMapper* fileRefMap;
-	QSignalMapper* fileClearMap;
-	QSignalMapper* folderRefMap;
-	QSignalMapper* folderClearMap;
 
 private slots:
 	void readConfig();
 	void writeConfig();
 	void dispFPS(int fps);
-	void dispValue(QWidget* widget);
 	void selectFile(QWidget* widget);
 	void selectFolder(QWidget* widget);
-	void clearLineEdit(QWidget* widget);
 
 	void on_checkBoxCompatibleRomMode_clicked(bool checked);
 };

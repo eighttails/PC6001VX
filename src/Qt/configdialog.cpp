@@ -10,127 +10,86 @@
 ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
 	: QDialog(parent)
 	, config(cfg)
-	, sliderLabelMap(new QSignalMapper(this))
-	, fileRefMap(new QSignalMapper(this))
-	, fileClearMap(new QSignalMapper(this))
-	, folderRefMap(new QSignalMapper(this))
-	, folderClearMap(new QSignalMapper(this))
 	, ui(new Ui::ConfigDialog)
 {
 	ui->setupUi(this);
 	connect(ui->horizontalSliderFPS, SIGNAL(valueChanged(int)), this, SLOT(dispFPS(int)));
-	// スライダーを動かしたらラベルに値を反映
-	connect(sliderLabelMap, SIGNAL(mapped(QWidget*)), this, SLOT(dispValue(QWidget*)));
-	// 参照ボタンを押したらファイル、ファイル選択ダイアログを出し、ラインエディットに反映
-	connect(fileRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFile(QWidget*)));
-	// クリアボタンを押したらラインエディットをクリア
-	connect(fileClearMap, SIGNAL(mapped(QWidget*)), this, SLOT(clearLineEdit(QWidget*)));
-	// 参照ボタンを押したらファイル、フォルダ選択ダイアログを出し、ラインエディットに反映
-	connect(folderRefMap, SIGNAL(mapped(QWidget*)), this, SLOT(selectFolder(QWidget*)));
-	// クリアボタンを押したらラインエディットをクリア
-	connect(folderClearMap, SIGNAL(mapped(QWidget*)), this, SLOT(clearLineEdit(QWidget*)));
 
 	// 各種マッピング
 	// サウンド------------------------------------------------------
 	// バッファサイズ
-	connect(ui->horizontalSliderSndBufferSize, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderSndBufferSize, ui->labelSndBufferSize);
+	connect(ui->horizontalSliderSndBufferSize, &QSlider::valueChanged,
+			[this](int value){ui->labelSndBufferSize->setNum(value);});
 
 	// マスター音量
-	connect(ui->horizontalSliderMasterVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderMasterVol, ui->labelMasterVol);
+	connect(ui->horizontalSliderMasterVol, &QSlider::valueChanged,
+			[this](int value){ui->labelMasterVol->setNum(value);});
 
 	// PSG音量
-	connect(ui->horizontalSliderPSGVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderPSGVol, ui->labelPSGVol);
+	connect(ui->horizontalSliderPSGVol, &QSlider::valueChanged,
+			[this](int value){ui->labelPSGVol->setNum(value);});
 
 	// 音声合成音量
-	connect(ui->horizontalSliderVoiceVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderVoiceVol, ui->labelVoiceVol);
+	connect(ui->horizontalSliderVoiceVol, &QSlider::valueChanged,
+			[this](int value){ui->labelVoiceVol->setNum(value);});
 
 	// TAPEモニタ音量
-	connect(ui->horizontalSliderTapeVol, SIGNAL(valueChanged(int)), sliderLabelMap, SLOT(map()));
-	sliderLabelMap->setMapping(ui->horizontalSliderTapeVol, ui->labelTapeVol);
+	connect(ui->horizontalSliderTapeVol, &QSlider::valueChanged,
+			[this](int value){ui->labelTapeVol->setNum(value);});
 
 	// ファイル----------------------------------------------------
 	// 拡張ROMファイル
-	connect(ui->pushButtonClearExtRom, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearExtRom, ui->lineEditExtRom);
-	connect(ui->pushButtonRefExtRom, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefExtRom, ui->lineEditExtRom);
+	connect(ui->pushButtonClearExtRom, &QPushButton::clicked, ui->lineEditExtRom, &QLineEdit::clear);
+	connect(ui->pushButtonRefExtRom, &QPushButton::clicked, this, [&]{ConfigDialog::selectFile(ui->lineEditExtRom);});
 
 	// TAPE(LOAD)ファイル名
-	connect(ui->pushButtonClearLoadTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearLoadTape, ui->lineEditLoadTape);
-	connect(ui->pushButtonRefLoadTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefLoadTape, ui->lineEditLoadTape);
+	connect(ui->pushButtonClearLoadTape, &QPushButton::clicked, ui->lineEditLoadTape, &QLineEdit::clear);
+	connect(ui->pushButtonRefLoadTape, &QPushButton::clicked, this, [&]{ConfigDialog::selectFile(ui->lineEditLoadTape);});
 
 	// TAPE(SAVE)ファイル名
-	connect(ui->pushButtonClearSaveTape, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearSaveTape, ui->lineEditSaveTape);
-	connect(ui->pushButtonRefSaveTape, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefSaveTape, ui->lineEditSaveTape);
+	connect(ui->pushButtonClearSaveTape, &QPushButton::clicked, ui->lineEditSaveTape, &QLineEdit::clear);
+	connect(ui->pushButtonRefSaveTape, &QPushButton::clicked, this, [&]{ConfigDialog::selectFile(ui->lineEditSaveTape);});
 
 	// DISK1ファイル名
-	connect(ui->pushButtonClearDisk1, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearDisk1, ui->lineEditDisk1);
-	connect(ui->pushButtonRefDisk1, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefDisk1, ui->lineEditDisk1);
+	connect(ui->pushButtonClearDisk1, &QPushButton::clicked, ui->lineEditDisk1, &QLineEdit::clear);
+	connect(ui->pushButtonRefDisk1, &QPushButton::clicked, this, [&]{ConfigDialog::selectFile(ui->lineEditDisk1);});
 
 	// DISK2ファイル名
-	connect(ui->pushButtonClearDisk2, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearDisk2, ui->lineEditDisk2);
-	connect(ui->pushButtonRefDisk2, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefDisk2, ui->lineEditDisk2);
+	connect(ui->pushButtonClearDisk2, &QPushButton::clicked, ui->lineEditDisk2, &QLineEdit::clear);
+	connect(ui->pushButtonRefDisk2, &QPushButton::clicked, this, [&]{ConfigDialog::selectFile(ui->lineEditDisk2);});
 
 	// プリンタファイル名
-	connect(ui->pushButtonClearPrinter, SIGNAL(clicked()), fileClearMap, SLOT(map()));
-	fileClearMap->setMapping(ui->pushButtonClearPrinter, ui->lineEditPrinter);
-	connect(ui->pushButtonRefPrinter, SIGNAL(clicked()), fileRefMap, SLOT(map()));
-	fileRefMap->setMapping(ui->pushButtonRefPrinter, ui->lineEditPrinter);
+	connect(ui->pushButtonClearPrinter, &QPushButton::clicked, ui->lineEditPrinter, &QLineEdit::clear);
+	connect(ui->pushButtonRefPrinter, &QPushButton::clicked, this, [&]{ConfigDialog::selectFile(ui->lineEditPrinter);});
 
 	// フォルダ--------------------------------------------------------------
 	// ROMパス
-	connect(ui->pushButtonClearFolderRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderRom, ui->lineEditFolderRom);
-	connect(ui->pushButtonRefFolderRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderRom, ui->lineEditFolderRom);
+	connect(ui->pushButtonClearFolderRom, &QPushButton::clicked, ui->lineEditFolderRom, &QLineEdit::clear);
+	connect(ui->pushButtonRefFolderRom, &QPushButton::clicked, this, [&]{ConfigDialog::selectFolder(ui->lineEditFolderRom);});
 
 	// TAPEパス
-	connect(ui->pushButtonClearFolderTape, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderTape, ui->lineEditFolderTape);
-	connect(ui->pushButtonRefFolderTape, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderTape, ui->lineEditFolderTape);
+	connect(ui->pushButtonClearFolderTape, &QPushButton::clicked, ui->lineEditFolderTape, &QLineEdit::clear);
+	connect(ui->pushButtonRefFolderTape, &QPushButton::clicked, this, [&]{ConfigDialog::selectFolder(ui->lineEditFolderTape);});
 
 	// DISKパス
-	connect(ui->pushButtonClearFolderDisk, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderDisk, ui->lineEditFolderDisk);
-	connect(ui->pushButtonRefFolderDisk, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderDisk, ui->lineEditFolderDisk);
+	connect(ui->pushButtonClearFolderDisk, &QPushButton::clicked, ui->lineEditFolderDisk, &QLineEdit::clear);
+	connect(ui->pushButtonRefFolderDisk, &QPushButton::clicked, this, [&]{ConfigDialog::selectFolder(ui->lineEditFolderDisk);});
 
 	// 拡張ROMパス
-	connect(ui->pushButtonClearFolderExtRom, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderExtRom, ui->lineEditFolderExtRom);
-	connect(ui->pushButtonRefFolderExtRom, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderExtRom, ui->lineEditFolderExtRom);
+	connect(ui->pushButtonClearFolderExtRom, &QPushButton::clicked, ui->lineEditFolderExtRom, &QLineEdit::clear);
+	connect(ui->pushButtonRefFolderExtRom, &QPushButton::clicked, this, [&]{ConfigDialog::selectFolder(ui->lineEditFolderExtRom);});
 
 	// IMGパス
-	connect(ui->pushButtonClearFolderImg, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderImg, ui->lineEditFolderImg);
-	connect(ui->pushButtonRefFolderImg, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderImg, ui->lineEditFolderImg);
+	connect(ui->pushButtonClearFolderImg, &QPushButton::clicked, ui->lineEditFolderImg, &QLineEdit::clear);
+	connect(ui->pushButtonRefFolderImg, &QPushButton::clicked, this, [&]{ConfigDialog::selectFolder(ui->lineEditFolderImg);});
 
 	// WAVEパス
-	connect(ui->pushButtonClearFolderWave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderWave, ui->lineEditFolderWave);
-	connect(ui->pushButtonRefFolderWave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderWave, ui->lineEditFolderWave);
+	connect(ui->pushButtonClearFolderWave, &QPushButton::clicked, ui->lineEditFolderWave, &QLineEdit::clear);
+	connect(ui->pushButtonRefFolderWave, &QPushButton::clicked, this, [&]{ConfigDialog::selectFolder(ui->lineEditFolderWave);});
 
 	// どこでもSAVEパス
-	connect(ui->pushButtonClearFolderDokoSave, SIGNAL(clicked()), folderClearMap, SLOT(map()));
-	folderClearMap->setMapping(ui->pushButtonClearFolderDokoSave, ui->lineEditFolderDokoSave);
-	connect(ui->pushButtonRefFolderDokoSave, SIGNAL(clicked()), folderRefMap, SLOT(map()));
-	folderRefMap->setMapping(ui->pushButtonRefFolderDokoSave, ui->lineEditFolderDokoSave);
+	connect(ui->pushButtonClearFolderDokoSave, &QPushButton::clicked, ui->lineEditFolderDokoSave, &QLineEdit::clear);
+	connect(ui->pushButtonRefFolderDokoSave, &QPushButton::clicked, this, [&]{ConfigDialog::selectFolder(ui->lineEditFolderDokoSave);});
 
 	// ビデオキャプチャ設定を消す
 	ui->groupBoxVideoCapture->setVisible(false);
@@ -649,37 +608,26 @@ void ConfigDialog::dispFPS(int fps)
 	ui->labelFps->setText(list[fps]);
 }
 
-void ConfigDialog::dispValue(QWidget *widget)
-{
-	QSlider* slider = qobject_cast<QSlider*>(this->sliderLabelMap->mapping(widget));
-	if(slider){
-		QLabel* label = qobject_cast<QLabel*>(widget);
-		if(label){
-			label->setText(QString::number(slider->value()));
-		}
-	}
-}
-
 void ConfigDialog::selectFile(QWidget *widget)
 {
 	char folder[PATH_MAX];
+	char path[PATH_MAX];
 	QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
 	if(edit){
-		char* path = NULL;
 		FileDlg dlg = EndofFileDlg;
 
 		if(edit == ui->lineEditExtRom){
-			dlg = FD_ExtRom; path = config->GetExtRomPath();
+			dlg = FD_ExtRom; strcpy(path, config->GetExtRomPath());
 		} else if(edit == ui->lineEditLoadTape){
-			dlg = FD_TapeLoad; path = config->GetTapePath();
+			dlg = FD_TapeLoad; strcpy(path, config->GetTapePath());
 		} else if(edit == ui->lineEditSaveTape){
-			dlg = FD_TapeSave; path = config->GetTapePath();
+			dlg = FD_TapeSave; strcpy(path, config->GetTapePath());
 		} else if(edit == ui->lineEditDisk1){
-			dlg = FD_Disk; path = config->GetDiskPath();
+			dlg = FD_Disk; strcpy(path, config->GetDiskPath());
 		} else if(edit == ui->lineEditDisk2){
-			dlg = FD_Disk; path = config->GetDiskPath();
+			dlg = FD_Disk; strcpy(path, config->GetDiskPath());
 		} else if(edit == ui->lineEditPrinter){
-			dlg = FD_Printer; path = NULL;
+			dlg = FD_Printer; strcpy(path, OSD_GetModulePath());
 		}
 
 		strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
@@ -705,14 +653,6 @@ void ConfigDialog::selectFolder(QWidget *widget)
 		if(strlen(folder) > 0){
 			edit->setText(QString::fromUtf8(folder));
 		}
-	}
-}
-
-void ConfigDialog::clearLineEdit(QWidget *widget)
-{
-	QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
-	if(edit){
-		edit->setText(QString());
 	}
 }
 

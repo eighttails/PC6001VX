@@ -12,7 +12,6 @@
 #include "../p6vm.h"
 #include "../config.h"
 #include "../common.h"
-#include "../p6vxcommon.h"
 #include "qtel6.h"
 #include "emulationadaptor.h"
 

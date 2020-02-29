@@ -4,7 +4,6 @@
 #include "log.h"
 #include "console.h"
 #include "common.h"
-#include "p6vxcommon.h"
 
 
 #define	BLNKW	(2)	/* 横方向の余白 */

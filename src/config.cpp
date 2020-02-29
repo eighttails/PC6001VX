@@ -4,7 +4,6 @@
 #include "pc6001v.h"
 #include "config.h"
 #include "common.h"
-#include "p6vxcommon.h"
 #include "error.h"
 #include "osd.h"
 

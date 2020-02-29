@@ -6,12 +6,12 @@
 #include "breakpoint.h"
 #include "debug.h"
 #include "osd.h"
+#include "common.h"
 #include "schedule.h"
 
 #include "p6el.h"
 #include "p6vm.h"
 
-#include "p6vxcommon.h"
 
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 

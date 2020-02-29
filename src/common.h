@@ -5,6 +5,7 @@
 #include "typedef.h"
 #include "vsurface.h"
 
+#include "p6vxcommon.h"
 
 ////////////////////////////////////////////////////////////////
 // 汎用計算関数

@@ -4,6 +4,7 @@ eighttails <http://eighttails.seesaa.net>
 :toc: left
 :numbered:
 :data-uri:
+:icons: font
 
 == はじめに
 image::doc/overview.png[]
@@ -197,6 +198,10 @@ PC6001VXを終了します。 +
 
 ** 取出 +
 テープイメージファイルを取り出します。 +
+
+** TAPE(SAVE)をエクスポート +
+SAVE用のテープイメージはLOAD用途は別のファイルとして保存されますが、そのファイルに任意の名前を付けて任意のフォルダに保存できます。 +
+Androidの場合は他のアプリへのファイルの共有になります。 https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=ja[X-plore File Manager]などの一部のファイルマネージャーアプリに送るとSDカードにTAPEイメージを保存できます。 +
 
 * DISK +
 ディスクイメージの挿入、取り出しの操作をします。 +
@@ -490,6 +495,12 @@ TAPE(LOAD)は読み込み用のテープイメージファイルを指定しま�
 ** プリンタ +
 プリンタに出力した内容を書き出すファイルを指定します。 +
 
++
+[NOTE]
+====
+AndroidではTAPE(SAVE)ファイル、プリンタの設定はできません。
+====
+
 * フォルダ +
 各種ファイルを探索、保存する際のフォルダを指定します。 +
 +
@@ -618,6 +629,10 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.git master
+* TAPE(SAVE)をエクスポートする機能を追加。
+* Added "Export saved tape" menu function.
+
 .3.3.2 2019/11/4
 * (Android)画面回転時に表示が乱れるのを修正。
 * (Android)Fixed display glitches when screen is rotated.

@@ -24,6 +24,7 @@
 
 #ifdef ANDROID
 #include <QtAndroid>
+#include "ekkesShare/shareutils.hpp"
 #endif
 
 const QString P6VXApp::keyGeometry				= "window/geometry";
@@ -583,6 +584,32 @@ void P6VXApp::enableCompatibleRomMode(CFG6* config, bool enable)
 		config->SetCheckCRC(true);
 		config->SetRomPath("");
 	}
+}
+
+void P6VXApp::exportSavedTape()
+{
+	// TAPE(SAVE)ファイル名を取得
+	auto src = Cfg.GetSaveFile();
+	if (!OSD_FileExist(src)){
+		OSD_Message(QString(tr("TAPE(SAVE)ファイルが存在しません。")).toUtf8().constData(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR);
+		return;
+	}
+#ifdef ANDROID
+	// Androidの場合はインテントで他のアプリに送る
+	ShareUtils util;
+	int req = 0;
+	bool altImpl = false;
+	util.sendFile(QDir::cleanPath(src), "TAPE(TAPE)", "application/octet-stream", req, altImpl);
+#else
+	// エクスポート先を指定
+	char dest[PATH_MAX];
+	strcpy(dest, QDir::homePath().toLocal8Bit());
+	QFile savedTape(src);
+	if(OSD_FileSelect( nullptr, FD_TapeSave, dest, src )){
+		savedTape.rename(dest);
+	}
+#endif
+
 }
 
 //仮想マシンを開始させる

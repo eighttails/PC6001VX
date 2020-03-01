@@ -51,6 +51,7 @@ void EL6::ExecMenu( int id )
 	switch( id ){
 	case ID_TAPEINSERT:		UI_TapeInsert();						break;	// TAPE 挿入
 	case ID_TAPEEJECT:		TapeUnmount();							break;	// TAPE 排出
+	case ID_TAPEEXPORT:		app->exportSavedTape();					break;	// TAPE エクスポート
 	case ID_DISKINSERT1:													// DISK 挿入
 	case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );	break;
 	case ID_DISKEJECT1:														// DISK 排出
@@ -310,6 +311,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(tapeMenu, tr("挿入..."), ID_TAPEINSERT);
 	QAction* tapeEject = addCommand(tapeMenu, tr("取出"), ID_TAPEEJECT);
 	if(!*vm->cmtl->GetFile()) tapeEject->setEnabled(false);
+	QAction* tapeExport = addCommand(tapeMenu, tr("TAPE(SAVE)をエクスポート..."), ID_TAPEEXPORT);
 
 	// DISKメニュー
 	if (vm->disk->GetDrives()){

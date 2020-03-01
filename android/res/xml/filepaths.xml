@@ -1,3 +1,4 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <files-path name="my_shared_files" path=".pc6001vx/img/" />
+    <files-path name="snapshots" path=".pc6001vx/img/" />
+    <files-path name="saved_tapes" path=".pc6001vx/tape/" />
 </paths>

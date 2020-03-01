@@ -318,7 +318,17 @@ void ConfigDialog::readConfig()
 	ui->lineEditFolderDokoSave->setText(str);
 
 #ifdef ANDROID
-	// AndroidではIMGパスとどこでもSAVEパスを編集不可にする。
+	// AndroidではTAPE(SAVE)とプリンタファイル、IMGパスとどこでもSAVEパスを編集不可にする。
+	ui->labelSaveTape->setVisible(false);
+	ui->lineEditSaveTape->setVisible(false);
+	ui->pushButtonClearSaveTape->setVisible(false);
+	ui->pushButtonRefSaveTape->setVisible(false);
+
+	ui->labelPrinter->setVisible(false);
+	ui->lineEditPrinter->setVisible(false);
+	ui->pushButtonClearPrinter->setVisible(false);
+	ui->pushButtonRefPrinter->setVisible(false);
+
 	ui->labelFolderImg->setVisible(false);
 	ui->lineEditFolderImg->setVisible(false);
 	ui->pushButtonClearFolderImg->setVisible(false);
@@ -329,6 +339,7 @@ void ConfigDialog::readConfig()
 	ui->pushButtonClearFolderDokoSave->setVisible(false);
 	ui->pushButtonRefFolderDokoSave->setVisible(false);
 #endif
+
 	// 色--------------------------------------------------------------------------
 	// 16〜72の色IDに対応させる。
 	for (int id = 16; id <= 80; id++){

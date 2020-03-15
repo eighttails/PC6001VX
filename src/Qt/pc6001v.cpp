@@ -48,9 +48,14 @@ int main( int argc, char *argv[] )
 		app.installTranslator(&myappTranslator);
 	} else {
 #ifdef ANDROID
-		QFont font = QFont("MotoyaLMaru");
-		if(font.exactMatch()){
+		QFontDatabase database;
+		auto list = database.families(QFontDatabase::Japanese);
+		for (auto& f : list){
+			// 日本語で検索して最初に見つかったフォントを使う
+			auto font = QFont(f);
+			qDebug() << "using " << f;
 			app.setFont(font);
+			break;
 		}
 #endif
 	}

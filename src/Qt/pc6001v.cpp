@@ -52,8 +52,9 @@ int main( int argc, char *argv[] )
 		auto list = database.families(QFontDatabase::Japanese);
 		for (auto& f : list){
 			// 日本語で検索して最初に見つかったフォントを使う
-			auto font = QFont(f);
+			auto font = QApplication::font();
 			qDebug() << "using " << f;
+			font.setFamily(f);
 			app.setFont(font);
 			break;
 		}

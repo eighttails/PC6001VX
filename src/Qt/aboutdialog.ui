@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>206</width>
-    <height>119</height>
+    <width>320</width>
+    <height>172</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -123,7 +123,7 @@
    <item>
     <widget class="QLabel" name="labelCopyright">
      <property name="text">
-      <string>Copyright (c) 2012-2019, Tadahito Yao (@eighttails)</string>
+      <string>© 2012-2020, Tadahito Yao (@eighttails)</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

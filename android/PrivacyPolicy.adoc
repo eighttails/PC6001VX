@@ -3,20 +3,39 @@
 
 2019/9/25 eighttails
 
-== 個人情報は収集しません。
+== English
+=== We do not collect your personal information.
+PC6001VX does not show ads. +
+PC6001VX does not neither collect your personal information nor track your behavior.
+
+=== App permissions
+==== Storage
+Permission for storage access is required to read your TAPE and ROM image files in the storage. +
+PC6001VX does not access any folder other than the folder specified by "File" and "Folder" on the config dialog by the user. +
+
+==== Camera
+Camera permission is listed because QtMultimedia library which is used to play sound contains camera input functions. +
+PC6001VX does not use camera and you do not need to grant camera access. +
+
+==== Microphone
+Microphone permission is listed because QtMultimedia library which is used to play sound contains microphone input functions. +
+PC6001VX does not use camera and you do not need to grant microphone access. +
+
+== 日本語
+=== 個人情報は収集しません。
 PC6001VXは広告の表示を行いません。 +
 また、ユーザーのいかなる個人情報の収集及び行動追跡も行いません。 +
 
 
-== アプリが要求する権限について
-=== ストレージ
+=== アプリが要求する権限について
+==== ストレージ
 PC6001VXが、ユーザー自身でSDカードにコピーした各種イメージファイルにアクセスするために使用します。 +
 ユーザーが設定画面の「ファイル」「フォルダ」で指定したフォルダ以外にアクセスすることはありません。 +
 
-=== カメラ
+==== カメラ
 PC6001VXがサウンド出力を行うために利用しているQtMultimediaにカメラ撮影機能が含まれているために表示されます。 +
 PC6001VXはカメラを使用しないので、アプリに権限を付与する必要はありません。
 
-=== マイク
+==== マイク
 PC6001VXがサウンド出力を行うために利用しているQtMultimediaにマイク入力機能が含まれているために表示されます。 +
 PC6001VXはマイクを使用しないので、アプリに権限を付与する必要はありません。

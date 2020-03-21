@@ -25,7 +25,7 @@
     </message>
     <message>
         <location filename="../aboutdialog.ui" line="126"/>
-        <source>Copyright (c) 2012-2019, Tadahito Yao (@eighttails)</source>
+        <source>© 2012-2020, Tadahito Yao (@eighttails)</source>
         <translation></translation>
     </message>
     <message>
@@ -365,8 +365,9 @@ WorkingDir not valid</source>
         <translation>&amp;File</translation>
     </message>
     <message>
+        <location filename="../configdialog.ui" line="882"/>
         <source>拡張ROM(&amp;R):</source>
-        <translation type="vanished">Extended &amp;Rom:</translation>
+        <translation>Extended &amp;Rom:</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="892"/>
@@ -442,8 +443,9 @@ WorkingDir not valid</source>
         <translation type="vanished">State sa&amp;ve</translation>
     </message>
     <message>
+        <location filename="../configdialog.ui" line="1135"/>
         <source>TAPE(&amp;T):</source>
-        <translation type="vanished">&amp;Tape:</translation>
+        <translation>&amp;Tape:</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="1158"/>
@@ -669,19 +671,9 @@ WorkingDir not valid</source>
         <translation>&amp;PSG and FM volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="882"/>
-        <source>拡張RO&amp;M(R):</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../configdialog.ui" line="1115"/>
         <source>どこでもSAVE(&amp;V):</source>
         <translation>State sa&amp;ve:</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="1135"/>
-        <source>TA&amp;PE(T):</source>
-        <translation></translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="1175"/>
@@ -774,10 +766,6 @@ WorkingDir not valid</source>
         <location filename="../configdialog.ui" line="3426"/>
         <source>システムROMのCRCチェック有効(&amp;C)</source>
         <translation>Enable &amp;CRC check for the System ROM</translation>
-    </message>
-    <message>
-        <source>ROMにパッチを当てる(バグ修正)(&amp;P)</source>
-        <translation type="vanished">&amp;Patch the ROM (bug fix)</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="3433"/>
@@ -2371,10 +2359,6 @@ Save time and PC6001V version </translation>
         <location filename="../osdQt.cpp" line="1465"/>
         <source>WebMファイル (*.webm);;全てのファイル (*.*)</source>
         <translation>WebM file (*.webm);;All files (*.*)</translation>
-    </message>
-    <message>
-        <source>AVIファイル (*.avi);;全てのファイル (*.*)</source>
-        <translation type="vanished">AVI file (*.avi);;All files (*.*)</translation>
     </message>
     <message>
         <location filename="../osdQt.cpp" line="1473"/>

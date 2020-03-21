@@ -879,7 +879,7 @@
        <item row="0" column="1" colspan="2">
         <widget class="QLabel" name="labelExtRom">
          <property name="text">
-          <string>拡張RO&amp;M(R):</string>
+          <string>拡張ROM(&amp;R):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditExtRom</cstring>
@@ -1132,7 +1132,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="labelFolderTape">
          <property name="text">
-          <string>TA&amp;PE(T):</string>
+          <string>TAPE(&amp;T):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditFolderTape</cstring>
@@ -1172,7 +1172,7 @@
        <item row="6" column="0">
         <widget class="QLabel" name="labelFolderImg">
          <property name="text">
-          <string>S&amp;napShot(H):</string>
+          <string>SnapShot(&amp;H):</string>
          </property>
          <property name="buddy">
           <cstring>lineEditFolderImg</cstring>

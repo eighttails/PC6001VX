@@ -1,4 +1,4 @@
-= PC6001VXのプライバシーポリシー
+= Privacy policy
 :numbered:
 
 2019/9/25 eighttails
@@ -25,7 +25,6 @@ PC6001VX does not use camera and you do not need to grant microphone access. +
 === 個人情報は収集しません。
 PC6001VXは広告の表示を行いません。 +
 また、ユーザーのいかなる個人情報の収集及び行動追跡も行いません。 +
-
 
 === アプリが要求する権限について
 ==== ストレージ

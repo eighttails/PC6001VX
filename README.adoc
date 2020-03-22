@@ -629,7 +629,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
-.git master
+.3.4.0 2020/03/25
 * TAPE(SAVE)をエクスポートする機能を追加。
 * Added "Export saved tape" menu function.
 

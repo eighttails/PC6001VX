@@ -447,7 +447,7 @@ bool EL6::Start( void )
 {
 	// 実行速度を復元
 	while( sche->GetSpeedRatio() != Speed ){
-		sche->SetSpeedRatio( Speed > 100 ? 1 : -1 );
+		sche->SetSpeedRatio( Speed > sche->GetSpeedRatio() ? 1 : -1 );
 	}
 	
 	FSkipCount = 0;

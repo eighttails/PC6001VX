@@ -76,6 +76,21 @@ void EL6::ExecMenu( int id )
 	case ID_PAUSE:															// 一時停止
 		sche->SetPauseEnable(!sche->GetPauseEnable());
 		break;
+	case ID_SPEEDRESET:		Speed = 100;							break;	// 速度調整(リセット)
+	case ID_SPEED50:		Speed = 50;								break;	// 速度調整(50%)
+	case ID_SPEED70:		Speed = 70;								break;	// 速度調整(70%)
+	case ID_SPEED150:		Speed = 150;							break;	// 速度調整(150%)
+	case ID_SPEED200:		Speed = 200;							break;	// 速度調整(200%)
+	case ID_SPEED300:		Speed = 300;							break;	// 速度調整(300%)
+	case ID_SPEEDMANUAL:
+	{
+		int speed = QInputDialog::getInt(NULL, QtEL6::tr("動作速度"), QtEL6::tr("動作速度(%)を入力してください。(10-2000)"), 100, 10, 2000);
+		// 200%以下は10%刻み、それ以上は100%刻み
+		if (speed <= 200) speed -= speed % 10;
+		if (speed > 200) speed -= speed % 100;
+		Speed = speed;
+		break;
+	}
 	case ID_SNAPSHOT:		graph->SnapShot( cfg->GetImgPath() );	break;	// スナップショット取得
 	case ID_DOKOSAVE:		UI_DokoSave();							break;	// どこでもSAVE
 	case ID_DOKOSAVE1:                                                      // どこでもSAVE1
@@ -240,6 +255,15 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	QAction* pause = addCommand(systemMenu, tr("一時停止"), ID_PAUSE, true);
 	pause->setChecked(GetPauseEnable());
+	QMenu* speedMenu = systemMenu->addMenu(tr("速度調節"));
+	addCommand(speedMenu, tr("リセット"), ID_SPEEDRESET);
+	addCommand(speedMenu, tr("50%"), ID_SPEED50);
+	addCommand(speedMenu, tr("70%"), ID_SPEED70);
+	addCommand(speedMenu, tr("150%"), ID_SPEED150);
+	addCommand(speedMenu, tr("200%"), ID_SPEED200);
+	addCommand(speedMenu, tr("300%"), ID_SPEED300);
+	addCommand(speedMenu, tr("速度を指定..."), ID_SPEEDMANUAL);
+	systemMenu->addSeparator();
 	addCommand(systemMenu, tr("スナップショットを取得"), ID_SNAPSHOT);
 	systemMenu->addSeparator();
 

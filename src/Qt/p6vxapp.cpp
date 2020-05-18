@@ -315,6 +315,13 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if(info.suffix() != ext){
 			result += QString(".") + ext;
 		}
+		if (OSD_FileExist(result.toUtf8().constData())){
+			if (OSD_Message(QString(tr("ファイルはすでに存在しています。上書きしますか?")).toUtf8().constData(),
+							NULL, OSDM_OKCANCEL | OSDM_ICONQUESTION)
+					== OSDM_OKCANCEL){
+				return NULL;
+			}
+		}
 	} else {
 		dialog.setFileMode(QFileDialog::ExistingFile);
 		if (dialog.exec() == QDialog::Accepted) {
@@ -606,6 +613,13 @@ void P6VXApp::exportSavedTape()
 	strcpy(dest, QDir::homePath().toLocal8Bit());
 	QFile savedTape(src);
 	if(OSD_FileSelect( nullptr, FD_TapeSave, dest, src )){
+		if (OSD_FileExist(dest)){
+			if (OSD_Message(QString(tr("ファイルはすでに存在しています。上書きしますか?")).toUtf8().constData(),
+							NULL, OSDM_OKCANCEL | OSDM_ICONQUESTION)
+					== OSDM_OK){
+				QFile::remove(dest);
+			}
+		}
 		savedTape.rename(dest);
 	}
 #endif

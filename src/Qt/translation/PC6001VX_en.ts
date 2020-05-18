@@ -891,12 +891,18 @@ WorkingDir not valid</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="594"/>
+        <location filename="../p6vxapp.cpp" line="601"/>
         <source>TAPE(SAVE)ファイルが存在しません。</source>
         <translation>Saved tape image file does not exist.</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="631"/>
+        <location filename="../p6vxapp.cpp" line="319"/>
+        <location filename="../p6vxapp.cpp" line="617"/>
+        <source>ファイルはすでに存在しています。上書きしますか?</source>
+        <translation>The file already exists. Overwrite it?</translation>
+    </message>
+    <message>
+        <location filename="../p6vxapp.cpp" line="645"/>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
@@ -905,12 +911,12 @@ Please copy ROM files to ROM folder(%1) or specify another folder.
 Do you want to specify another folder?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="657"/>
+        <location filename="../p6vxapp.cpp" line="671"/>
         <source>エミュレーター内蔵の互換ROMを使用しますか?</source>
         <translation>Do you want to use builtin compatible ROM?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="684"/>
+        <location filename="../p6vxapp.cpp" line="698"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>

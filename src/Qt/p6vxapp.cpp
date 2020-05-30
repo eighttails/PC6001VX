@@ -1009,50 +1009,6 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		OSD_PushEvent(ev);
 		break;
 	}
-#if 0
-	case QEvent::ContextMenu:
-	case QEvent::GraphicsSceneContextMenu:
-	{
-		ev.type = EV_CONTEXTMENU;
-		QPoint p = QCursor::pos();
-		ev.mousebt.x = p.x();
-		ev.mousebt.y = p.y();
-		OSD_PushEvent(ev);
-		break;
-	}
-
-	case QEvent::GraphicsSceneWheel:
-	{
-		QGraphicsSceneWheelEvent* we = dynamic_cast<QGraphicsSceneWheelEvent*>(event);
-		Q_ASSERT(we);
-		ev.type = EV_MOUSEBUTTONUP;
-		ev.mousebt.button = we->delta() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
-		ev.mousebt.state = false;
-		OSD_PushEvent(ev);
-		break;
-	}
-	case QEvent::GraphicsSceneMouseRelease:
-	{
-		QGraphicsSceneMouseEvent* me = dynamic_cast<QGraphicsSceneMouseEvent*>(event);
-		Q_ASSERT(me);
-		if(me->button() == Qt::LeftButton){
-			ev.type = EV_MOUSEBUTTONUP;
-			ev.mousebt.button = MBT_LEFT;
-			ev.mousebt.state = false;
-			OSD_PushEvent(ev);
-		}
-#if 0
-		// 右クリックはコンテキストメニューイベントとして拾われるので当面実装しない。
-		if(me->button() == Qt::RightButton){
-			ev.type = EV_MOUSEBUTTONUP;
-			ev.mousebt.button = MBT_RIGHT;
-			ev.mousebt.state = false;
-			OSD_PushEvent(ev);
-		}
-#endif
-		break;
-	}
-#endif
 #ifdef ALWAYSFULLSCREEN
 	case QEvent::ApplicationStateChange:
 		if(P6Core){

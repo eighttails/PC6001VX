@@ -568,14 +568,14 @@ EL6::ReturnCode EL6::EventLoop( void )
 				// 等速
 				sche->SetSpeedRatio( 0 );
 			
-//			if( event.mousebt.button == MBT_MIDDLE ){}
-			
+#if 0 //P6VXではEV_CONTEXTMENUに一本化し、右クリックイベントは無視する
 			if( event.mousebt.button == MBT_RIGHT ){
 				// ポップアップメニュー表示
 				Stop();
 				ShowPopupMenu( event.mousebt.x, event.mousebt.y );
 				Start();
 			}
+#endif
 			break;
 			
 		case EV_QUIT:			// 終了

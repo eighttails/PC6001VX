@@ -635,7 +635,9 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 == 更新履歴
 .git master
 * 「速度調整」メニューを追加。
+* (Windows) メニューを出してもエミュレータが動き続けてしまうのを修正
 * Added "Speed control" menu.
+* (Windows) Fixed issue that emulator continues to work during menu popup.
 
 .3.4.0 2020/03/25
 * TAPE(SAVE)をエクスポートする機能を追加。

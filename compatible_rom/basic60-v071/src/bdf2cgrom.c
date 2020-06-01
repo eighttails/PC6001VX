@@ -1,5 +1,5 @@
 /*
-  bdf2cgrom.c  2019.8.16 version
+  bdf2cgrom.c  2019.9.17 version
     convert .bdf font file to CGROM format for PC-6001
     by AKIKAWA, Hisashi
     This software is redistributable under the LGPLv2.1 or any later version.
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
   if (strcmp(argv[opt], "-") == 0) {
     fp = stdin;
   } else {
-    fp = fopen(argv[opt], "r");
+    fp = fopen(argv[opt], "rb");
     if (fp == NULL) {
       printf("cannot open %s\n", argv[opt]);
       exit(1);

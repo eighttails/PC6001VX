@@ -35,7 +35,7 @@ function makeParallel(){
 #並列ビルドの場合依存関係でビルドに失敗することがあるので3回までmakeする。
 for (( i=0; i<3; i++))
 do
-    make -j$NUMBER_OF_PROCESSORS "$@"
+    make -j$(($(nproc)*2)) "$@"
     if [ $? -eq 0 ]; then
         return 0
     fi
@@ -47,7 +47,7 @@ function mingw32MakeParallel(){
 #並列ビルドの場合依存関係でビルドに失敗することがあるので3回までmakeする。
 for (( i=0; i<3; i++))
 do
-    mingw32-make -j$NUMBER_OF_PROCESSORS "$@"
+    mingw32-make -j$(($(nproc)*2)) "$@"
     if [ $? -eq 0 ]; then
         return 0
     fi
@@ -79,20 +79,10 @@ ruby \
 autoconf-archive \
 $MINGW_PACKAGE_PREFIX-toolchain \
 $MINGW_PACKAGE_PREFIX-cmake \
-$MINGW_PACKAGE_PREFIX-curl 
+$MINGW_PACKAGE_PREFIX-curl \
+2>/dev/null
 
 exitOnError
-
-
-#このスクリプトの置き場所
-local PATCH_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
-#DirectShowのヘッダー問題対策
-pushd $MINGW_PREFIX/$MINGW_CHOST
-#https://github.com/Alexpux/MINGW-packages/issues/1689
-patchOnce 2 $PATCH_DIR/0001-Revert-Avoid-declaring-something-extern-AND-initiali.patch
-#https://sourceforge.net/p/mingw-w64/mailman/message/35527066/
-patchOnce 2 $PATCH_DIR/wrl.patch
-popd
 }
 
 function commonSetup(){

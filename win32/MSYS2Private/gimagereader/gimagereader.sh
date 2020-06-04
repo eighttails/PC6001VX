@@ -3,13 +3,7 @@
 function prerequisite(){
 #他スクリプト依存関係
 if [ $((NO_DEPENDENCY)) == 0 ]; then
-$SCRIPT_DIR/../qt/qt.sh
-exitOnError
-$SCRIPT_DIR/../quazip/quazip.sh
-exitOnError
 $SCRIPT_DIR/../qtspell/qtspell.sh
-exitOnError
-$SCRIPT_DIR/../poppler/poppler.sh
 exitOnError
 $SCRIPT_DIR/../twaindsm/twaindsm.sh
 exitOnError
@@ -19,9 +13,13 @@ fi
 
 #必要ライブラリ
 pacman "${PACMAN_INSTALL_OPTS[@]}" \
+$MINGW_PACKAGE_PREFIX-qt5 \
+$MINGW_PACKAGE_PREFIX-poppler \
+$MINGW_PACKAGE_PREFIX-quazip \
 $MINGW_PACKAGE_PREFIX-djvulibre \
 $MINGW_PACKAGE_PREFIX-podofo \
-$MINGW_PACKAGE_PREFIX-dlfcn
+$MINGW_PACKAGE_PREFIX-dlfcn \
+2>/dev/null
 
 exitOnError
 }
@@ -36,9 +34,15 @@ echo "gImageReader is already installed."
 exit 0
 fi
 
-GIMAGEREADER_VERSION=3.3.1
+GIMAGEREADER_VERSION=master
+if [ "$GIMAGEREADER_VERSION" == "master" ]; then
+GIMAGEREADER_TAG=$GIMAGEREADER_VERSION
+GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
+rm $GIMAGEREADER_ARCHIVE 2> /dev/null
+else
 GIMAGEREADER_TAG=v$GIMAGEREADER_VERSION
 GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
+fi
 GIMAGEREADER_SRC_DIR=gImageReader-$GIMAGEREADER_VERSION
 GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR-$BIT
 
@@ -49,7 +53,7 @@ rm -rf $GIMAGEREADER_SRC_DIR $GIMAGEREADER_BUILD_DIR
 tar xf $GIMAGEREADER_ARCHIVE
 mv $GIMAGEREADER_SRC_DIR $GIMAGEREADER_BUILD_DIR
 pushd $GIMAGEREADER_BUILD_DIR
-
+rm -rf build
 mkdir build
 pushd build
 CMAKE_PREFIX_PATH=$PREFIX/qt5-shared:$CMAKE_PREFIX_PATH \
@@ -60,8 +64,7 @@ cmake .. \
 -DCMAKE_VERBOSE_MAKEFILE:BOOL=FALSE \
 -DINTERFACE_TYPE=qt5
 
-#gImageReaderに限ってはmakeParallelするとうまくいかない
-make && make install
+makeParallel && make install
 exitOnError
 cp -r  ../packaging/win32/skel/share/icons $GIMAGEREADER_PREFIX/share/
 popd

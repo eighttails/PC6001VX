@@ -18,7 +18,8 @@ $MINGW_PACKAGE_PREFIX-libarchive \
 $MINGW_PACKAGE_PREFIX-cairo \
 $MINGW_PACKAGE_PREFIX-pango \
 $MINGW_PACKAGE_PREFIX-icu \
-$MINGW_PACKAGE_PREFIX-docbook-xsl
+$MINGW_PACKAGE_PREFIX-docbook-xsl \
+2>/dev/null
 
 exitOnError
 }
@@ -29,11 +30,15 @@ echo "tesseract is already installed."
 exit 0
 fi
 
-TESSERACT_VERSION=4.1.0
+TESSERACT_VERSION=master
 TESSERACT_TAG=$TESSERACT_VERSION
 TESSERACT_ARCHIVE=tesseract-$TESSERACT_TAG.tar.gz
 TESSERACT_SRC_DIR=tesseract-$TESSERACT_VERSION
 TESSERACT_BUILD_DIR=$TESSERACT_SRC_DIR-$BIT
+
+if [ "$TESSERACT_VERSION" == "master" ]; then
+rm $TESSERACT_ARCHIVE 2> /dev/null
+fi
 
 if [ ! -e $TESSERACT_ARCHIVE ]; then
 wget -c https://github.com/tesseract-ocr/tesseract/archive/$TESSERACT_TAG/$TESSERACT_ARCHIVE
@@ -42,6 +47,9 @@ rm -rf $TESSERACT_SRC_DIR $TESSERACT_BUILD_DIR
 tar xf $TESSERACT_ARCHIVE
 mv $TESSERACT_SRC_DIR $TESSERACT_BUILD_DIR
 pushd $TESSERACT_BUILD_DIR
+
+#asciidocが動かない問題への暫定対応
+sed -i -e 's/AM_CONDITIONAL(\[ASCIIDOC\], true)/AM_CONDITIONAL([ASCIIDOC], false)/' configure.ac
 
 if [ -e Makefile ]; then
 make clean
@@ -59,7 +67,6 @@ export LIBLEPT_HEADERSDIR=$PREFIX/include/leptonica
 --prefix=$PREFIX \
 --with-extra-includes=$PREFIX/include \
 --with-extra-libraries=$PREFIX/lib 
-
 
 exitOnError
 

@@ -605,6 +605,7 @@ image::doc/qtsetting_compiler.png[]
 image::doc/qtsetting_debugger.png[]
 image::doc/qtsetting_qt.png[]
 image::doc/qtsetting_kit.png[]
+image::doc/qtsetting_envvar.png[]
 
 ==== Linux
 Debian系のディストリビューションについて解説します。 +

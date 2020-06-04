@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
-export QTDIR=$MINGW_PREFIX/local/qt5-static
-export PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig:$PKG_CONFIG_PATH
+SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+. $SCRIPT_DIR/buildenv.sh
+QTDIR=$MINGW_PREFIX/qt5-static
 
 #並列ビルド
 MINGW32MAKE="mingw32-make -j$NUMBER_OF_PROCESSORS"

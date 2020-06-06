@@ -632,7 +632,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
-.git master
+.3.5.0 2020/06/07
 * PC-6001互換BASICを0.7.1に更新
 * PC-6001mkII/6601用互換BASICを0.3.0に更新
 * 互換ROM使用時にmk2を選べるようにした。
@@ -648,7 +648,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * TAPE(SAVE)をエクスポートする機能を追加。
 * Added "Export saved tape" menu function.
 
-.3.3.2 2019/11/4
+.3.3.2 2019/11/04
 * (Android)画面回転時に表示が乱れるのを修正。
 * (Android)Fixed display glitches when screen is rotated.
 
@@ -660,7 +660,7 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * Modified mouse operation on Android. LMB is assigned to popup menu.
 * Updated compatible CGROM for PC-6601. Now characters for playng card suit are properly displayed.
 
-.3.3.0 2019/10/9
+.3.3.0 2019/10/09
 * PC-6601用互換ROMをv0.2.2に更新
 * (Android)SNPボタンでスナップショットをシェアできるようになった。
 * Updated compatible ROM for PC-6601 to v0.2.2.

@@ -1,5 +1,5 @@
-;Compatible BASIC for PC-6601
-; by AKIKAWA, Hisashi  2017
+;Compatible BASIC for PC-6001mkII/6601
+; by AKIKAWA, Hisashi  2017-2020
 
 ;This software is redistributable under the LGPLv2.1 or any later version.
 
@@ -31,14 +31,17 @@ MMLPTCH	equ	0015h		;MML pitch
 MMLLEN	equ	0016h		;MML length
 MMLADR	equ	0017h		;MML address
 KEYFLG	equ	0fa5ah		;special key flags
-
-
-F1	equ	0020h		;f1,f1diff,b1,b1diff,...,b5diff
+F1	equ	0020h		;f1,f1diff,b1,b1diff,...,b5diff(0033h)
 F1DIFF	equ	0021h
+STACK	equ	0040h
+WORK	equ	0300h
 
-STACK	equ	00f0h
-
-WORK	equ	0100h
+;for subtitles in PC6001VW
+VWWK62	equ	00a6h		;work area for mkII
+VWWK66	equ	01d3h		;work area for 6601
+OUTE362	equ	4d59h		;out to port-e3h
+OUTE366	equ	52f2h		;out to port-e3h
+;
 
 FRAMES	equ	10h		;frames for 1 syllable
 FRAMES2	equ	40h		;frmaes (sing)
@@ -97,6 +100,14 @@ CHKSPD2:
 	dec	e
 	jp	z,TALKERR
 	inc	hl
+
+;for subtitles in PC6001VW
+	push	hl
+	ld	hl,0001h	;length+1
+	ld	(VWWK62),hl
+	ld	(VWWK66),hl
+	pop	hl
+;
 
 ;check internal messages(0-4)/sing(#)/talk(others)
 	ld	a,(hl)
@@ -208,7 +219,6 @@ TALKEXT:
 	jr	TALKEXT
 
 EXTOK:
-
 	xor	a
 	ld	(SYLBCNT),a
 	ld	(WORDCNT),a
@@ -245,6 +255,26 @@ EXTLP3:
 	jp	z,HAT
 	cp	'+'
 	jp	z,PLUS
+
+;for subtitles in PC6001VW
+	ld	d,a		;
+	call	CHGRAM0
+	push	hl
+	ld	hl,(VWWK62)
+	inc	l		;h=0
+	ld	a,l
+	ld	(VWWK62),a
+	ld	(VWWK66),a
+	ld	bc,VWWK62
+	add	hl,bc
+	ld	(hl),d		;
+	ld	bc,VWWK66-VWWK62
+	add	hl,bc
+	ld	(hl),d		;
+	pop	hl
+	call	CHGROM0
+	ld	a,d		;
+;
 
 	or	20h		;lowercase
 	call	CHKVOW
@@ -640,7 +670,7 @@ QMARKZ1:
 	ld	hl,(OUTADR)
 	dec	hl
 	ld	de,0-7
-	ld	b,7
+	ld	b,07h
 QMARKLP2:
 	ld	a,(hl)
 	or	05h
@@ -708,7 +738,7 @@ CONCOMMON:
 BMALE:
 	add	a,a
 	ld	c,a
-	ld	b,0
+	ld	b,00h
 	add	hl,bc
 	ld	a,(hl)
 	inc	hl
@@ -725,7 +755,7 @@ BLP:
 	call	PUT7
 	pop	de
 	ex	de,hl
-	ld	bc,10
+	ld	bc,000ah
 	add	hl,bc
 	ex	de,hl
 	pop	bc
@@ -852,7 +882,7 @@ VOWNZ:
 VOWMALE:
 	add	a,a
 	ld	c,a
-	ld	b,0
+	ld	b,00h
 	add	hl,bc
 	ld	e,(hl)
 	inc	hl
@@ -954,7 +984,7 @@ SYLLABLE:
 SYLBLP1:
 	ld	(hl),d		;bit7-3=time=1, bit2=qmag=0, bit1=S.I=0, bit0=V/UV
 	inc	hl
-	ld	b,5
+	ld	b,05h
 SYLBLP2:
 	ld	(hl),0		;fn=bn=0
 	inc	hl
@@ -1138,6 +1168,10 @@ EXTEND:
 TALKOUT:
 	ld	(COMMAND),a	;0-4,fe
 
+TALKOUTLP:
+	in	a,(0e0h)	;status register
+	rlca
+	jr	c,TALKOUTLP	;busy
 
 ;mode selection data
 ;bit2: 0=10ms/frame, 1=20ms/frame
@@ -1146,7 +1180,7 @@ TALKOUT:
 	call	CHGRAM0
 	ld	a,(SPEED)	;0-5
 	ld	hl,SPDTBL
-	ld	b,0
+	ld	b,00h
 	ld	c,a
 	add	hl,bc
 	ld	a,(hl)
@@ -1154,7 +1188,13 @@ TALKOUT:
 
 ;command data
 	ld	a,(COMMAND)
-	out	(0e3h),a
+;	out	(0e3h),a
+
+;for subtitles in PC6001VW
+	call	OUTE362
+	call	OUTE366
+;
+
 	cp	0feh
 	jr	nz,TALKEND	;internal message
 
@@ -1166,6 +1206,10 @@ EXTMESLP:
 	or	a
 	jr	nz,EXTMESLP
 
+	ld	hl,ENDDATA	;for yaPC-6201/yaPC-6601
+	ld	b,06h
+	call	OUT7LP1
+
 TALKEND:
 	call	CHGROM0
 	ld	a,(KEYFLG)
@@ -1173,6 +1217,9 @@ TALKEND:
 	ld	(KEYFLG),a
 	ld	a,20h
 	ret
+
+ENDDATA:
+	db	00h, 00h, 00h, 00h, 00h, 00h
 
 
 ;input: de=voice data address, hl=output address
@@ -1270,7 +1317,7 @@ NOQMAG3:
 	call	CHGROM0
 
 	ld	hl,F1DIFF
-	ld	b,10
+	ld	b,0ah
 
 PUT7LP3:
 	call	CHGRAM0
@@ -1348,7 +1395,7 @@ NOQMAG5:
 	inc	hl
 	call	CHGRAM0
 	ld	de,F1DIFF
-	ld	b,5
+	ld	b,05h
 PUT7LP4:
 	ld	a,(de)
 	and	1fh
@@ -1476,7 +1523,7 @@ MMLZ:
 	add	hl,de
 	ld	a,(OCTAVE)	;2~5
 	dec	a
-	ld	de,12
+	ld	de,000ch
 MMLLP2:
 	add	hl,de
 	dec	a
@@ -1688,8 +1735,8 @@ GETOUTADR:
 ;output: de
 ;destroy: af,bc
 DIVI:
-	ld	de,0
-	ld	b,8
+	ld	de,0000h
+	ld	b,08h
 DIVILP1:
 	inc	b
 	add	a,a
@@ -1759,7 +1806,7 @@ NOSOUND1:
 NSND1LP:
 	push	bc
 	ld	hl,NODATA
-	ld	bc,6
+	ld	bc,0006h
 	ldir
 	call	CHKPDIFF
 	ld	(de),a
@@ -1799,9 +1846,9 @@ NSND2LP:
 ;output: hl=hl+7
 ;destroy: af,bc
 OUT7:
-	ld	b,7
+	ld	b,07h
 OUT7LP1:
-	ld	c,0
+	ld	c,00h
 OUT7LP2:
 	inc	c
 	jp	z,OUT7ERR	;time out
@@ -1848,6 +1895,20 @@ CHGROM0:
 	ei
 	ret
 
+
+;for subtitles in PC6001VW
+;output to port e3h (for mkII)
+_OUTE362:ds	OUTE362-_OUTE362
+	org	OUTE362
+	out	(0e3h),a
+	ret
+
+;output to port e3h (for 6601)
+_OUTE366:ds	OUTE366-_OUTE366
+	org	OUTE366
+	out	(0e3h),a
+	ret
+;
 
 ;;voice table
 ;speed

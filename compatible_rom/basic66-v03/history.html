@@ -8,7 +8,28 @@
 </head>
 
 <body>
-<h1>PC-6601用互換BASIC変更履歴</h1>
+<h1>PC-6001mkII/6601用互換BASIC変更履歴</h1>
+
+<hr>
+
+<h2>2020.6.6</h2>
+<p>Ver.0.3公開。</p>
+<ul>
+<li>「PC-6601用」だとmkIIで使えないような誤解を招きそうな気がしたので名称を変更。BASICROM.62/VOICEROM.62も同梱するように。(中身はBASICROM.66/VOICEROM.66と同じもの)
+<li>LOAD、SAVE、BLOAD、BSAVE、FILES、LFILES、KILL、NAME、MERGE、DSKF()、DSKI$()、CVS()、MKS$()を実装。
+<li>外付けFDDに対応。
+<li>FAT8標準フォーマットのブランク1Dファイル (D88形式、40トラック) を同梱。
+<li>対応ROM内ルーチンが増えました。(2701h,51F2h,5CFDh)
+<li>プログラム入力時の中間言語変換が少し速くなったはず。
+<li>PC6001VWのTALK字幕機能に仮対応。
+<li>バグを修正。
+<ul>
+<li>TALK命令で固定語を連続して喋らせると後の方しか発声しない (Ackieeeさん、ありがとうございます)
+<li>DIM命令で配列でない通常変数を複数指定するとエラーになる
+<li>プログラム入力時にオーバーメモリエラーチェックをしていない
+<li>LPRINT後のINPUTでプロンプトが正常に表示されない
+</ul>
+</ul>
 
 <hr>
 

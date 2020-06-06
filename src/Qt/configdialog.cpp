@@ -136,7 +136,7 @@ void ConfigDialog::readConfig()
 	ui->checkBoxCompatibleRomMode->setChecked(CompatibleRomMode);
 	if (CompatibleRomMode){
 		ui->radioButtonModel6001A->setEnabled(false);
-		ui->radioButtonModel6001mk2->setEnabled(false);
+		ui->radioButtonModel6001mk2->setEnabled(true);
 		ui->radioButtonModel6001mk2SR->setEnabled(false);
 		ui->radioButtonModel6601->setEnabled(true);
 		ui->radioButtonModel6601SR->setEnabled(false);

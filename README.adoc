@@ -634,9 +634,13 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 == 更新履歴
 .git master
 * PC-6001互換BASICを0.7.1に更新
+* PC-6001mkII/6601用互換BASICを0.3.0に更新
+* 互換ROM使用時にmk2を選べるようにした。
 * 「速度調整」メニューを追加。
 * (Windows) メニューを出してもエミュレータが動き続けてしまうのを修正
 * Updated PC-6001 compatible basic ROMs to 0.7.1
+* Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.0
+* Enabled PC-6002mk2 model in compatible ROM mode.
 * Added "Speed control" menu.
 * (Windows) Fixed issue that emulator continues to work during menu popup.
 

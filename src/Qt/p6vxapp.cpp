@@ -582,7 +582,7 @@ void P6VXApp::enableCompatibleRomMode(CFG6* config, bool enable)
 	if(enable){
 		// 互換ROM使用時の設定
 		auto model = config->GetModel();
-		if (model != 60 && model != 66){
+		if (model != 60 && model != 62 && model != 66){
 			config->SetModel(60);
 		}
 		config->SetCheckCRC(false);

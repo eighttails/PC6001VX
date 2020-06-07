@@ -9,8 +9,8 @@
 
 ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
 	: QDialog(parent)
-	, config(cfg)
 	, ui(new Ui::ConfigDialog)
+	, config(cfg)
 {
 	ui->setupUi(this);
 	connect(ui->horizontalSliderFPS, SIGNAL(valueChanged(int)), this, SLOT(dispFPS(int)));

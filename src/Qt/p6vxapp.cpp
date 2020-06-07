@@ -287,7 +287,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
 	// Androidのネイティブファイルダイアログが動かないための暫定措置
 	// https://bugreports.qt.io/browse/QTBUG-77214
-	QFileDialog::Options opt = 0;
+	QFileDialog::Options opt;
 	auto platformName = QGuiApplication::platformName();
 	if (platformName == QLatin1String("xcb")
 			|| platformName == QLatin1String("android")){
@@ -419,7 +419,7 @@ void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void **pixels)
 
 	QPainter painter(&image);
 	scene->render(&painter, image.rect(), pos);
-	memcpy(*pixels, image.bits(), image.byteCount());
+	memcpy(*pixels, image.bits(), image.sizeInBytes());
 }
 
 void P6VXApp::clearLayout(HWINDOW Wh)

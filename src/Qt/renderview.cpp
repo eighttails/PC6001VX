@@ -155,7 +155,7 @@ void RenderView::wheelEvent(QWheelEvent *event)
 {
 	Event ev;
 	ev.type = EV_MOUSEBUTTONUP;
-	ev.mousebt.button = event->delta() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
+	ev.mousebt.button = event->angleDelta().y() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
 	ev.mousebt.state = false;
 	event->accept();
 	OSD_PushEvent(ev);

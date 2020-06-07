@@ -251,11 +251,13 @@ void ConfigDialog::readConfig()
 	strncpy( str, config->GetExtRomFile(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditExtRom->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditExtRom);
 
 	// TAPE(LOAD)ファイル名
 	strncpy( str, config->GetTapeFile(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditLoadTape->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditLoadTape);
 
 	// TAPE(SAVE)ファイル名
 	strncpy( str, config->GetSaveFile(), PATH_MAX );
@@ -266,11 +268,13 @@ void ConfigDialog::readConfig()
 	strncpy( str, config->GetDiskFile(1), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditDisk1->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditDisk1);
 
 	// DISK2ファイル名
 	strncpy( str, config->GetDiskFile(2), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditDisk2->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditDisk2);
 
 	// プリンタファイル名
 	strncpy( str, config->GetPrinterFile(), PATH_MAX );
@@ -286,36 +290,43 @@ void ConfigDialog::readConfig()
 	} else {
 		ui->lineEditFolderRom->setText(str);
 	}
+	warnFileOrFolderNotExist(ui->lineEditFolderRom);
 
 	// TAPEパス
 	strncpy( str, config->GetTapePath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderTape->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditFolderTape);
 
 	// DISKパス
 	strncpy( str, config->GetDiskPath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderDisk->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditFolderDisk);
 
 	// 拡張ROMパス
 	strncpy( str, config->GetExtRomPath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderExtRom->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditFolderExtRom);
 
 	// IMGパス
 	strncpy( str, config->GetImgPath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderImg->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditFolderImg);
 
 	// WAVEパス
 	strncpy( str, config->GetWavePath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderWave->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditFolderWave);
 
 	// どこでもSAVEパス
 	strncpy( str, config->GetDokoSavePath(), PATH_MAX );
 	OSD_DelDelimiter( str );
 	ui->lineEditFolderDokoSave->setText(str);
+	warnFileOrFolderNotExist(ui->lineEditFolderDokoSave);
 
 #ifdef ANDROID
 	// AndroidではTAPE(SAVE)とプリンタファイル、IMGパスとどこでもSAVEパスを編集不可にする。
@@ -647,6 +658,7 @@ void ConfigDialog::selectFile(QWidget *widget)
 		OSD_DelDelimiter(folder);
 		if(strlen(folder) > 0){
 			edit->setText(QString::fromUtf8(folder));
+			warnFileOrFolderNotExist(edit);
 		}
 	}
 
@@ -663,8 +675,22 @@ void ConfigDialog::selectFolder(QWidget *widget)
 		OSD_DelDelimiter(folder);
 		if(strlen(folder) > 0){
 			edit->setText(QString::fromUtf8(folder));
+			warnFileOrFolderNotExist(edit);
 		}
 	}
+}
+
+void ConfigDialog::warnFileOrFolderNotExist(QLineEdit *edit)
+{
+	// QLineEditが指しているファイルが存在しない場合文字を赤くする
+	Q_ASSERT(edit);
+	QFileInfo info(edit->text());
+		QPalette *palette = new QPalette();
+		if (!info.exists()){
+			// ファイルが存在しないときだけ赤くする(存在する場合はテーマのデフォルトに戻る)
+			palette->setColor(QPalette::Text, Qt::red);
+		}
+		edit->setPalette(*palette);
 }
 
 void ConfigDialog::on_checkBoxCompatibleRomMode_clicked(bool checked)

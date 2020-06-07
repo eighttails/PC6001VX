@@ -5,6 +5,7 @@
 #include "p6vxapp.h"
 
 class CFG6;
+class QLineEdit;
 
 namespace Ui {
 class ConfigDialog;
@@ -28,7 +29,7 @@ private slots:
 	void dispFPS(int fps);
 	void selectFile(QWidget* widget);
 	void selectFolder(QWidget* widget);
-
+	void warnFileOrFolderNotExist(QLineEdit* edit);
 	void on_checkBoxCompatibleRomMode_clicked(bool checked);
 };
 

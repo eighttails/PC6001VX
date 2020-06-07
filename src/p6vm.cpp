@@ -1086,7 +1086,7 @@ bool VM6::Init( CFG6 *cnfg  )
 	// メモリ -----
 	if( !mem->Init() ) return false;
 	mem->Reset();
-	if( *(cnfg->GetExtRomFile()) ) if( !mem->MountExtRom( cnfg->GetExtRomFile() ) ) return false;
+	if( *(cnfg->GetExtRomFile()) ) mem->MountExtRom( cnfg->GetExtRomFile() );
 	
 	// VDG -----
 	if( !vdg->Init() ) return false;

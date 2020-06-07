@@ -1294,6 +1294,7 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
 	QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
+	auto platformName = QGuiApplication::platformName();
 	if (platformName == QLatin1String("xcb")
 			|| platformName == QLatin1String("android")){
 		opt |= QFileDialog::DontUseNativeDialog;

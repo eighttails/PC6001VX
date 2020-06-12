@@ -91,9 +91,6 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
 	connect(ui->pushButtonClearFolderDokoSave, &QPushButton::clicked, ui->lineEditFolderDokoSave, &QLineEdit::clear);
 	connect(ui->pushButtonRefFolderDokoSave, &QPushButton::clicked, this, [&]{ConfigDialog::selectFolder(ui->lineEditFolderDokoSave);});
 
-	// ビデオキャプチャ設定を消す
-	ui->groupBoxVideoCapture->setVisible(false);
-
 	// OKボタンを押したら設定に書き込む
 	connect(this, SIGNAL(accepted()), this, SLOT(writeConfig()));
 
@@ -171,13 +168,6 @@ void ConfigDialog::readConfig()
 	default:    Q_ASSERT(false);
 	}
 
-	// ビデオキャプチャ
-	switch(config->GetAviBpp()){
-	case 16: ui->radioButtonVCap16bit->setChecked(true);  break;
-	case 24: ui->radioButtonVCap24bit->setChecked(true);  break;
-	case 32: ui->radioButtonVCap32bit->setChecked(true);  break;
-	default:    Q_ASSERT(false);
-	}
 	// スキャンライン
 	ui->checkBoxScanline->setChecked(config->GetScanLine());
 
@@ -424,11 +414,6 @@ void ConfigDialog::writeConfig()
 	else if (ui->radioButtonColorRB->isChecked())   config->SetMode4Color(2);   // 青/赤
 	else if (ui->radioButtonColorPG->isChecked())   config->SetMode4Color(3);   // ピンク/緑
 	else if (ui->radioButtonColorGP->isChecked())   config->SetMode4Color(4);   // 緑/ピンク
-
-	// ビデオキャプチャ
-	if      (ui->radioButtonVCap16bit->isChecked())   config->SetAviBpp(16);   // 16bit
-	else if (ui->radioButtonVCap24bit->isChecked())   config->SetAviBpp(24);   // 24bit
-	else if (ui->radioButtonVCap32bit->isChecked())   config->SetAviBpp(32);   // 32bit
 
 	// スキャンライン
 	config->SetScanLine(ui->checkBoxScanline->isChecked());

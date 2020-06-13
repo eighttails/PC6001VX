@@ -925,6 +925,16 @@ void P6VXApp::overrideSettings(CFG6 &cfg)
 {
 #ifdef ANDROID
 	char str[PATH_MAX];
+	//設定のデフォルト値でなく、プラットフォームごとのデータフォルダを探す。
+	//Androidではこの方法でないとSDカードが検出できない場合がある。
+	const auto dataPath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0].toLocal8Bit();
+	//ROM,TAPE,DISK,拡張ROM,WAVEパスの初期値にはこのデータフォルダを設定する。
+	if(QString(cfg.GetRomPath()).contains(OSD_GetModulePath())) cfg.SetRomPath(dataPath);
+	if(QString(cfg.GetTapePath()).contains(OSD_GetModulePath())) cfg.SetTapePath(dataPath);
+	if(QString(cfg.GetDiskPath()).contains(OSD_GetModulePath())) cfg.SetDiskPath(dataPath);
+	if(QString(cfg.GetExtRomPath()).contains(OSD_GetModulePath())) cfg.SetExtRomPath(dataPath);
+	if(QString(cfg.GetWavePath()).contains(OSD_GetModulePath())) cfg.SetWavePath(dataPath);
+
 	// AndroidではSDカードにファイルを書き出せないため、
 	// SnapshotおよびどこでもSAVEはアプリ内のサンドボックス領域に固定する。
 	OSD_AddPath( str, OSD_GetModulePath(), IMAGE_DIR );

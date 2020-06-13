@@ -638,9 +638,7 @@ void ConfigDialog::selectFile(QWidget *widget)
 		}
 
 		strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
-		OSD_AddDelimiter(folder);
 		OSD_FileSelect(NULL, dlg, folder, path);
-		OSD_DelDelimiter(folder);
 		if(strlen(folder) > 0){
 			edit->setText(QString::fromUtf8(folder));
 			warnFileOrFolderNotExist(edit);

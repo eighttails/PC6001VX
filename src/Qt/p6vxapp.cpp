@@ -327,7 +327,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if (dialog.exec() == QDialog::Accepted) {
 			result = dialog.selectedFiles().value(0);
 		}
-		if(result.isEmpty())    return NULL;
+		if(result.isEmpty()) return NULL;
 	}
 
 	QDir dir(result);

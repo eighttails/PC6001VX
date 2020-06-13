@@ -479,7 +479,8 @@
            <item>
             <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PSGローパスフィルタ&lt;br/&gt;カットオフ周波数(&amp;amp;Q):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>PSGローパスフィルタ
+カットオフ周波数(&amp;Q):</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>

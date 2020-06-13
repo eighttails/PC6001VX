@@ -509,6 +509,31 @@ void P6VXApp::deactivateMouseCursorTimer()
 	MouseCursorTimer->stop();
 }
 
+void P6VXApp::resetSettings()
+{
+	if (OSD_Message(QString(tr("本当に設定を初期化しますか?")).toUtf8().constData(),
+					NULL, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
+		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(),
+					   MSG_QUITC, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
+
+			char path[PATH_MAX];
+#ifdef AUTOSUSPEND
+			// 自動ステートセーブファイルを削除
+			OSD_AddPath( path, Cfg.GetDokoSavePath(), ".0.dds" );
+			QFile::remove(path);
+#endif
+			// P6V設定ファイルを削除
+			OSD_AddPath( path, OSD_GetModulePath(), CONF_FILE );
+			QFile::remove(path);
+			// P6VX設定ファイルを削除
+			OSD_AddPath( path, OSD_GetModulePath(), "pc6001vx.ini" );
+			QFile::remove(path);
+			// アプリを終了(EV_QUITイベントを送るとメモリ上の設定を保存してしまう)
+			this->quit();
+		}
+	}
+}
+
 bool P6VXApp::isTiltEnabled()
 {
 	QMutexLocker lock(&PropretyMutex);
@@ -616,8 +641,9 @@ void P6VXApp::exportSavedTape()
 		if (OSD_FileExist(dest)){
 			if (OSD_Message(QString(tr("ファイルはすでに存在しています。上書きしますか?")).toUtf8().constData(),
 							NULL, OSDM_OKCANCEL | OSDM_ICONQUESTION)
-					== OSDM_OK){
-				QFile::remove(dest);
+					== OSDR_OK){
+				CFG6 cfg;
+				cfg.Write();
 			}
 		}
 		savedTape.rename(dest);
@@ -648,13 +674,7 @@ void P6VXApp::executeEmulation()
 								   "別のROMフォルダを指定しますか?")).arg(Cfg.GetRomPath()).toUtf8().constData(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING ) == OSDR_YES){
 			//ROMフォルダ再設定
 			char folder[PATH_MAX];
-
-			//設定のデフォルト値でなく、プラットフォームごとのデータフォルダを探す。
-			//Androidではこの方法でないとSDカードが検出できない場合がある。
-			strncpy(folder,
-					QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0].toLocal8Bit(),
-					PATH_MAX);
-
+			strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
 			OSD_AddDelimiter(folder);
 			OSD_FolderDiaog(NULL, folder);
 			OSD_DelDelimiter(folder);

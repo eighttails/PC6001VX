@@ -126,136 +126,142 @@ WorkingDir not valid</source>
         <translation>&amp;Basis</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="60"/>
+        <location filename="../configdialog.ui" line="79"/>
         <source>機種(&amp;M)</source>
         <translation>&amp;Models</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="87"/>
+        <location filename="../configdialog.ui" line="106"/>
         <source>PC-6601</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="107"/>
+        <location filename="../configdialog.ui" line="126"/>
         <source>PC-6601SR</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="53"/>
+        <location filename="../configdialog.ui" line="136"/>
         <source>拡張RAMを使う(&amp;X)</source>
         <translation>Use the e&amp;xtended RAM</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="46"/>
+        <location filename="../configdialog.ui" line="150"/>
         <source>戦士のカートリッジを使う(&amp;R)</source>
         <translation>Use the cartridge of the Warrio&amp;r</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="130"/>
+        <location filename="../configdialog.ui" line="46"/>
         <source>FDD接続数(&amp;N)</source>
         <translation>FDD &amp;numbers</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="136"/>
+        <location filename="../configdialog.ui" line="52"/>
         <source>なし</source>
         <translation>None</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="143"/>
-        <location filename="../configdialog.ui" line="515"/>
+        <location filename="../configdialog.ui" line="59"/>
+        <location filename="../configdialog.ui" line="470"/>
         <source>1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="153"/>
+        <location filename="../configdialog.ui" line="69"/>
         <source>2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="197"/>
+        <location filename="../configdialog.ui" line="184"/>
         <source>画面(&amp;S)</source>
         <translation>&amp;Screen</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="264"/>
+        <location filename="../configdialog.ui" line="286"/>
+        <source>ハードウェアアクセラレーション
+(次回起動時に反映)(&amp;H)</source>
+        <translation>&amp;Hardware acceleration
+(applied after restart)</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="303"/>
         <source>モード4カラー(&amp;4)</source>
         <translation>Mode&amp;4 color</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="270"/>
+        <location filename="../configdialog.ui" line="309"/>
         <source>モノクロ</source>
         <translation>Monochrome</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="277"/>
+        <location filename="../configdialog.ui" line="316"/>
         <source>赤/青</source>
         <translation>Red/Blue</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="284"/>
+        <location filename="../configdialog.ui" line="323"/>
         <source>青/赤</source>
         <translation>Blue/Red</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="291"/>
+        <location filename="../configdialog.ui" line="330"/>
         <source>桃/緑</source>
         <translation>Peach/Green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="298"/>
+        <location filename="../configdialog.ui" line="337"/>
         <source>緑/桃</source>
         <translation>Green/Peach</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="343"/>
+        <location filename="../configdialog.ui" line="205"/>
         <source>スキャンラインを表示する(&amp;N)</source>
         <translation>Show sca&amp;nline</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="366"/>
+        <location filename="../configdialog.ui" line="228"/>
         <source>スキャンライン輝度(&amp;R):</source>
         <translation>Scanline b&amp;rightness:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="385"/>
-        <location filename="../configdialog.ui" line="813"/>
+        <location filename="../configdialog.ui" line="247"/>
+        <location filename="../configdialog.ui" line="756"/>
         <source>999</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="395"/>
+        <location filename="../configdialog.ui" line="257"/>
         <source>％</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="417"/>
+        <location filename="../configdialog.ui" line="279"/>
         <source>4:3表示有効(&amp;3)</source>
         <translation>4:&amp;3 display</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="350"/>
+        <location filename="../configdialog.ui" line="212"/>
         <source>フルスクリーン(&amp;U)</source>
         <translation>F&amp;ullscreen</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="357"/>
+        <location filename="../configdialog.ui" line="219"/>
         <source>ステータスバーを表示する(&amp;T)</source>
         <translation>Show s&amp;tatus bar</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="203"/>
+        <location filename="../configdialog.ui" line="360"/>
         <source>フレームスキップ(&amp;K)</source>
         <translation>Frames&amp;kip</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="225"/>
+        <location filename="../configdialog.ui" line="382"/>
         <source>フレームスキップ</source>
         <translation>Frameskip</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="311"/>
         <source>ビデオキャプチャ</source>
-        <translation>Video capture</translation>
+        <translation type="vanished">Video capture</translation>
     </message>
     <message>
         <source>ハードウェアアクセラレーション(次回起動時に反映)</source>
@@ -266,52 +272,59 @@ WorkingDir not valid</source>
         <translation type="vanished">Filtering</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="441"/>
+        <location filename="../configdialog.ui" line="396"/>
         <source>サウンド(&amp;D)</source>
         <translation>Soun&amp;d</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="449"/>
+        <location filename="../configdialog.ui" line="404"/>
         <source>サンプリングレート(&amp;R)</source>
         <translation>Sampling &amp;rate</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="479"/>
+        <location filename="../configdialog.ui" line="434"/>
         <source>バッファサイズ(&amp;Z)</source>
         <translation>Buffer si&amp;ze</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="485"/>
-        <location filename="../configdialog.ui" line="557"/>
-        <location filename="../configdialog.ui" line="600"/>
-        <location filename="../configdialog.ui" line="643"/>
-        <location filename="../configdialog.ui" line="686"/>
+        <location filename="../configdialog.ui" line="440"/>
+        <location filename="../configdialog.ui" line="571"/>
+        <location filename="../configdialog.ui" line="614"/>
+        <location filename="../configdialog.ui" line="657"/>
+        <location filename="../configdialog.ui" line="700"/>
         <source>TextLabel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="508"/>
+        <location filename="../configdialog.ui" line="463"/>
         <source>5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="527"/>
+        <location filename="../configdialog.ui" line="482"/>
+        <source>PSGローパスフィルタ
+カットオフ周波数(&amp;Q):</source>
+        <translation>PSG low pass filter
+cut off fre&amp;quency</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="541"/>
         <source>マスター音量(&amp;M)</source>
         <translation>&amp;Master volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="533"/>
-        <location filename="../configdialog.ui" line="576"/>
-        <location filename="../configdialog.ui" line="619"/>
-        <location filename="../configdialog.ui" line="662"/>
+        <location filename="../configdialog.ui" line="547"/>
+        <location filename="../configdialog.ui" line="597"/>
+        <location filename="../configdialog.ui" line="633"/>
+        <location filename="../configdialog.ui" line="676"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="550"/>
-        <location filename="../configdialog.ui" line="593"/>
-        <location filename="../configdialog.ui" line="636"/>
-        <location filename="../configdialog.ui" line="679"/>
+        <location filename="../configdialog.ui" line="564"/>
+        <location filename="../configdialog.ui" line="590"/>
+        <location filename="../configdialog.ui" line="650"/>
+        <location filename="../configdialog.ui" line="693"/>
         <source>100</source>
         <translation></translation>
     </message>
@@ -320,121 +333,120 @@ WorkingDir not valid</source>
         <translation type="vanished">&amp;PSG volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="613"/>
+        <location filename="../configdialog.ui" line="627"/>
         <source>音声合成音量(&amp;V)</source>
         <translation>&amp;Voice volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="656"/>
+        <location filename="../configdialog.ui" line="670"/>
         <source>TAPEモニタ音量(&amp;T)</source>
         <translation>&amp;Tape monitor volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="703"/>
         <source>PSGローパスフィルタ カットオフ周波数(&amp;Q):</source>
-        <translation>PSG fre&amp;quency low-pass filter:</translation>
+        <translation type="vanished">PSG fre&amp;quency low-pass filter:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="725"/>
+        <location filename="../configdialog.ui" line="505"/>
         <source>99999</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="735"/>
+        <location filename="../configdialog.ui" line="515"/>
         <source>Hz</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="786"/>
+        <location filename="../configdialog.ui" line="729"/>
         <source>入力(&amp;I)</source>
         <translation>&amp;Input</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="794"/>
+        <location filename="../configdialog.ui" line="737"/>
         <source>キーリピート間隔(&amp;K):</source>
         <translation>&amp;Key repeat interval:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="823"/>
+        <location filename="../configdialog.ui" line="766"/>
         <source>ms</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="859"/>
+        <location filename="../configdialog.ui" line="802"/>
         <source>ファイル(&amp;F)</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="882"/>
+        <location filename="../configdialog.ui" line="825"/>
         <source>拡張ROM(&amp;R):</source>
         <translation>Extended &amp;Rom:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="892"/>
+        <location filename="../configdialog.ui" line="835"/>
         <source>プリンタ(&amp;P):</source>
         <translation>&amp;Printer:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="902"/>
+        <location filename="../configdialog.ui" line="845"/>
         <source>TAPE(SAVE)(&amp;V):</source>
         <translation>Tape(Sa&amp;ve):</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="912"/>
+        <location filename="../configdialog.ui" line="855"/>
         <source>TAPE(LOAD)(&amp;A):</source>
         <translation>Tape(Lo&amp;ad):</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="865"/>
-        <location filename="../configdialog.ui" line="934"/>
-        <location filename="../configdialog.ui" line="941"/>
-        <location filename="../configdialog.ui" line="961"/>
-        <location filename="../configdialog.ui" line="968"/>
-        <location filename="../configdialog.ui" line="978"/>
-        <location filename="../configdialog.ui" line="1128"/>
-        <location filename="../configdialog.ui" line="1151"/>
-        <location filename="../configdialog.ui" line="1168"/>
-        <location filename="../configdialog.ui" line="1188"/>
-        <location filename="../configdialog.ui" line="1208"/>
-        <location filename="../configdialog.ui" line="1215"/>
-        <location filename="../configdialog.ui" line="1242"/>
+        <location filename="../configdialog.ui" line="808"/>
+        <location filename="../configdialog.ui" line="877"/>
+        <location filename="../configdialog.ui" line="884"/>
+        <location filename="../configdialog.ui" line="904"/>
+        <location filename="../configdialog.ui" line="911"/>
+        <location filename="../configdialog.ui" line="921"/>
+        <location filename="../configdialog.ui" line="1058"/>
+        <location filename="../configdialog.ui" line="1081"/>
+        <location filename="../configdialog.ui" line="1098"/>
+        <location filename="../configdialog.ui" line="1118"/>
+        <location filename="../configdialog.ui" line="1138"/>
+        <location filename="../configdialog.ui" line="1145"/>
+        <location filename="../configdialog.ui" line="1172"/>
         <source>参照...</source>
         <translation>Select...</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="985"/>
+        <location filename="../configdialog.ui" line="928"/>
         <source>DISK1(&amp;K):</source>
         <translation>Dis&amp;k1:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="872"/>
+        <location filename="../configdialog.ui" line="815"/>
         <source>DISK2(&amp;J):</source>
         <translation>D&amp;isk2:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1041"/>
+        <location filename="../configdialog.ui" line="984"/>
         <source>フォルダ(&amp;L)</source>
         <translation>Fo&amp;lder</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1060"/>
+        <location filename="../configdialog.ui" line="990"/>
         <source>拡張ROM(&amp;X):</source>
         <translation>E&amp;xtended ROM:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="998"/>
-        <location filename="../configdialog.ui" line="1005"/>
-        <location filename="../configdialog.ui" line="1012"/>
-        <location filename="../configdialog.ui" line="1019"/>
-        <location filename="../configdialog.ui" line="1026"/>
-        <location filename="../configdialog.ui" line="1033"/>
-        <location filename="../configdialog.ui" line="1073"/>
-        <location filename="../configdialog.ui" line="1080"/>
-        <location filename="../configdialog.ui" line="1087"/>
-        <location filename="../configdialog.ui" line="1094"/>
-        <location filename="../configdialog.ui" line="1101"/>
-        <location filename="../configdialog.ui" line="1108"/>
-        <location filename="../configdialog.ui" line="1232"/>
+        <location filename="../configdialog.ui" line="941"/>
+        <location filename="../configdialog.ui" line="948"/>
+        <location filename="../configdialog.ui" line="955"/>
+        <location filename="../configdialog.ui" line="962"/>
+        <location filename="../configdialog.ui" line="969"/>
+        <location filename="../configdialog.ui" line="976"/>
+        <location filename="../configdialog.ui" line="1003"/>
+        <location filename="../configdialog.ui" line="1010"/>
+        <location filename="../configdialog.ui" line="1017"/>
+        <location filename="../configdialog.ui" line="1024"/>
+        <location filename="../configdialog.ui" line="1031"/>
+        <location filename="../configdialog.ui" line="1038"/>
+        <location filename="../configdialog.ui" line="1162"/>
         <source>クリア</source>
         <translation>Clear</translation>
     </message>
@@ -443,17 +455,17 @@ WorkingDir not valid</source>
         <translation type="vanished">State sa&amp;ve</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1135"/>
+        <location filename="../configdialog.ui" line="1065"/>
         <source>TAPE(&amp;T):</source>
         <translation>&amp;Tape:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1158"/>
+        <location filename="../configdialog.ui" line="1088"/>
         <source>DISK(&amp;K):</source>
         <translation>Dis&amp;k:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1175"/>
+        <location filename="../configdialog.ui" line="1105"/>
         <source>SnapShot(&amp;H):</source>
         <translation>Snaps&amp;hot:</translation>
     </message>
@@ -462,355 +474,339 @@ WorkingDir not valid</source>
         <translation type="vanished">&amp;Wave</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1222"/>
+        <location filename="../configdialog.ui" line="1152"/>
         <source>ROM(&amp;R):</source>
         <translation>&amp;ROM:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1250"/>
+        <location filename="../configdialog.ui" line="1193"/>
         <source>色(&amp;1)</source>
         <translation>Color&amp;1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1272"/>
+        <location filename="../configdialog.ui" line="1215"/>
         <source>MODE1(&amp;1)</source>
         <translation>Mode&amp;1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1412"/>
-        <location filename="../configdialog.ui" line="2756"/>
-        <location filename="../configdialog.ui" line="3300"/>
+        <location filename="../configdialog.ui" line="1355"/>
+        <location filename="../configdialog.ui" line="2699"/>
+        <location filename="../configdialog.ui" line="3230"/>
         <source>黒</source>
         <translation>Black</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1405"/>
-        <location filename="../configdialog.ui" line="1826"/>
-        <location filename="../configdialog.ui" line="2187"/>
+        <location filename="../configdialog.ui" line="1348"/>
+        <location filename="../configdialog.ui" line="1769"/>
+        <location filename="../configdialog.ui" line="2130"/>
         <source>Set1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1398"/>
-        <location filename="../configdialog.ui" line="1833"/>
-        <location filename="../configdialog.ui" line="2763"/>
+        <location filename="../configdialog.ui" line="1341"/>
+        <location filename="../configdialog.ui" line="1776"/>
+        <location filename="../configdialog.ui" line="2706"/>
         <source>Set2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1368"/>
-        <location filename="../configdialog.ui" line="1648"/>
-        <location filename="../configdialog.ui" line="1932"/>
-        <location filename="../configdialog.ui" line="2044"/>
-        <location filename="../configdialog.ui" line="2422"/>
-        <location filename="../configdialog.ui" line="2770"/>
-        <location filename="../configdialog.ui" line="3314"/>
+        <location filename="../configdialog.ui" line="1311"/>
+        <location filename="../configdialog.ui" line="1591"/>
+        <location filename="../configdialog.ui" line="1875"/>
+        <location filename="../configdialog.ui" line="1987"/>
+        <location filename="../configdialog.ui" line="2365"/>
+        <location filename="../configdialog.ui" line="2713"/>
+        <location filename="../configdialog.ui" line="3244"/>
         <source>緑</source>
         <translation>Green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1361"/>
-        <location filename="../configdialog.ui" line="2777"/>
+        <location filename="../configdialog.ui" line="1304"/>
+        <location filename="../configdialog.ui" line="2720"/>
         <source>深緑</source>
         <translation>Dark green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1331"/>
-        <location filename="../configdialog.ui" line="1581"/>
-        <location filename="../configdialog.ui" line="1981"/>
-        <location filename="../configdialog.ui" line="3067"/>
+        <location filename="../configdialog.ui" line="1274"/>
+        <location filename="../configdialog.ui" line="1524"/>
+        <location filename="../configdialog.ui" line="1924"/>
+        <location filename="../configdialog.ui" line="2997"/>
         <source>橙</source>
         <translation>Orange</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1324"/>
+        <location filename="../configdialog.ui" line="1267"/>
         <source>深橙</source>
         <translation>Dark orange</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1462"/>
+        <location filename="../configdialog.ui" line="1405"/>
         <source>MODE2(&amp;2)</source>
         <translation>Mode&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1505"/>
-        <location filename="../configdialog.ui" line="1939"/>
-        <location filename="../configdialog.ui" line="3321"/>
+        <location filename="../configdialog.ui" line="1448"/>
+        <location filename="../configdialog.ui" line="1882"/>
+        <location filename="../configdialog.ui" line="3251"/>
         <source>黄</source>
         <translation>Yellow</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1498"/>
-        <location filename="../configdialog.ui" line="1946"/>
-        <location filename="../configdialog.ui" line="2014"/>
-        <location filename="../configdialog.ui" line="2270"/>
-        <location filename="../configdialog.ui" line="3328"/>
+        <location filename="../configdialog.ui" line="1441"/>
+        <location filename="../configdialog.ui" line="1889"/>
+        <location filename="../configdialog.ui" line="1957"/>
+        <location filename="../configdialog.ui" line="2213"/>
+        <location filename="../configdialog.ui" line="3258"/>
         <source>青</source>
         <translation>Blue</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1634"/>
-        <location filename="../configdialog.ui" line="1953"/>
-        <location filename="../configdialog.ui" line="2240"/>
-        <location filename="../configdialog.ui" line="2323"/>
-        <location filename="../configdialog.ui" line="3307"/>
+        <location filename="../configdialog.ui" line="1577"/>
+        <location filename="../configdialog.ui" line="1896"/>
+        <location filename="../configdialog.ui" line="2183"/>
+        <location filename="../configdialog.ui" line="2266"/>
+        <location filename="../configdialog.ui" line="3237"/>
         <source>赤</source>
         <translation>Red</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1641"/>
-        <location filename="../configdialog.ui" line="1960"/>
-        <location filename="../configdialog.ui" line="2749"/>
-        <location filename="../configdialog.ui" line="3342"/>
+        <location filename="../configdialog.ui" line="1584"/>
+        <location filename="../configdialog.ui" line="1903"/>
+        <location filename="../configdialog.ui" line="2692"/>
+        <location filename="../configdialog.ui" line="3272"/>
         <source>白</source>
         <translation>White</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1491"/>
-        <location filename="../configdialog.ui" line="1967"/>
-        <location filename="../configdialog.ui" line="3349"/>
+        <location filename="../configdialog.ui" line="1434"/>
+        <location filename="../configdialog.ui" line="1910"/>
+        <location filename="../configdialog.ui" line="3279"/>
         <source>シアン</source>
         <translation>Cyan</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1701"/>
-        <location filename="../configdialog.ui" line="1974"/>
-        <location filename="../configdialog.ui" line="3335"/>
+        <location filename="../configdialog.ui" line="1644"/>
+        <location filename="../configdialog.ui" line="1917"/>
+        <location filename="../configdialog.ui" line="3265"/>
         <source>マゼンタ</source>
         <translation>Magenta</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1728"/>
+        <location filename="../configdialog.ui" line="1671"/>
         <source>MODE3(&amp;3)</source>
         <translation>Mode&amp;3</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2008"/>
+        <location filename="../configdialog.ui" line="1951"/>
         <source>MODE4(&amp;4)</source>
         <translation>Mode&amp;4</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2150"/>
-        <location filename="../configdialog.ui" line="2742"/>
+        <location filename="../configdialog.ui" line="2093"/>
+        <location filename="../configdialog.ui" line="2685"/>
         <source>にじみ2</source>
         <translation>Fringe2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2051"/>
-        <location filename="../configdialog.ui" line="2157"/>
+        <location filename="../configdialog.ui" line="1994"/>
+        <location filename="../configdialog.ui" line="2100"/>
         <source>桃</source>
         <translation>Peach</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="66"/>
+        <location filename="../configdialog.ui" line="85"/>
         <source>&amp;PC-6001</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="73"/>
+        <location filename="../configdialog.ui" line="92"/>
         <source>PC-&amp;6001A</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="80"/>
+        <location filename="../configdialog.ui" line="99"/>
         <source>PC-6&amp;001mk2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="97"/>
+        <location filename="../configdialog.ui" line="116"/>
         <source>PC-6001&amp;mk2SR</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="189"/>
+        <location filename="../configdialog.ui" line="143"/>
         <source>内蔵互換ROMを使う(&amp;C)</source>
         <translation>Use builtin &amp;compatible ROM</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="317"/>
-        <source>1&amp;6bit</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="324"/>
-        <source>2&amp;4bit</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="331"/>
-        <source>&amp;32bit</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="424"/>
         <source>ハードウェアアクセラレーション(次回起動時に反映)(&amp;H)</source>
-        <translation>&amp;Hardware acceleration(Applied in next startup)</translation>
+        <translation type="vanished">&amp;Hardware acceleration(Applied in next startup)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="431"/>
+        <location filename="../configdialog.ui" line="294"/>
         <source>フィルタリング(&amp;F)</source>
         <translation>&amp;Filtering</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="455"/>
+        <location filename="../configdialog.ui" line="410"/>
         <source>&amp;44100 Hz</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="462"/>
+        <location filename="../configdialog.ui" line="417"/>
         <source>22&amp;050 Hz</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="469"/>
+        <location filename="../configdialog.ui" line="424"/>
         <source>1102&amp;5 Hz</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="570"/>
+        <location filename="../configdialog.ui" line="584"/>
         <source>PSG、FM音量(&amp;P)</source>
         <translation>&amp;PSG and FM volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1115"/>
+        <location filename="../configdialog.ui" line="1045"/>
         <source>どこでもSAVE(&amp;V):</source>
         <translation>State sa&amp;ve:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1195"/>
+        <location filename="../configdialog.ui" line="1125"/>
         <source>WAVE(&amp;W):</source>
         <translation>&amp;WAVE:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2682"/>
-        <location filename="../configdialog.ui" line="2712"/>
+        <location filename="../configdialog.ui" line="2625"/>
+        <location filename="../configdialog.ui" line="2655"/>
         <source>にじみ1</source>
         <translation>Fringe1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2817"/>
-        <location filename="../configdialog.ui" line="3359"/>
+        <location filename="../configdialog.ui" line="2760"/>
+        <location filename="../configdialog.ui" line="3289"/>
         <source>変更したい色をクリックしてください</source>
         <translation>Please click on the color which you want to change</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2838"/>
+        <location filename="../configdialog.ui" line="2781"/>
         <source>色(&amp;2)</source>
         <translation>Color&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2870"/>
+        <location filename="../configdialog.ui" line="2800"/>
         <source>mk2〜(&amp;M)</source>
         <translation>&amp;mk2~</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3060"/>
+        <location filename="../configdialog.ui" line="2990"/>
         <source>透明(黒)</source>
         <translation>Transparent(Black)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3074"/>
+        <location filename="../configdialog.ui" line="3004"/>
         <source>青緑</source>
         <translation>Blue-green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3081"/>
+        <location filename="../configdialog.ui" line="3011"/>
         <source>黄緑</source>
         <translation>Yellow-green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3088"/>
+        <location filename="../configdialog.ui" line="3018"/>
         <source>灰色</source>
         <translation>Gray</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3095"/>
+        <location filename="../configdialog.ui" line="3025"/>
         <source>空色</source>
         <translation>Azure</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3102"/>
+        <location filename="../configdialog.ui" line="3032"/>
         <source>赤紫</source>
         <translation>Red-violet</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3109"/>
+        <location filename="../configdialog.ui" line="3039"/>
         <source>青紫</source>
         <translation>Blue-violet</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3367"/>
+        <location filename="../configdialog.ui" line="3310"/>
         <source>その他(&amp;O)</source>
         <translation>&amp;Others</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3375"/>
+        <location filename="../configdialog.ui" line="3318"/>
         <source>オーバークロック率(&amp;V):</source>
         <translation>O&amp;verclocking rate:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3394"/>
+        <location filename="../configdialog.ui" line="3337"/>
         <source>9999</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3404"/>
+        <location filename="../configdialog.ui" line="3347"/>
         <source>% (1-1000)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3426"/>
+        <location filename="../configdialog.ui" line="3369"/>
         <source>システムROMのCRCチェック有効(&amp;C)</source>
         <translation>Enable &amp;CRC check for the System ROM</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3433"/>
+        <location filename="../configdialog.ui" line="3376"/>
         <source>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</source>
         <translation>&amp;Turbo Tape (no wait when reading)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3440"/>
+        <location filename="../configdialog.ui" line="3383"/>
         <source>Boost Up (TAPE最速化)(&amp;U)</source>
         <translation>Boost &amp;Up (fastest Tape)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3449"/>
+        <location filename="../configdialog.ui" line="3392"/>
         <source>最大倍率</source>
         <translation>Maximum magnification</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3472"/>
+        <location filename="../configdialog.ui" line="3415"/>
         <source>N60</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3488"/>
-        <location filename="../configdialog.ui" line="3530"/>
+        <location filename="../configdialog.ui" line="3431"/>
+        <location filename="../configdialog.ui" line="3473"/>
         <source>9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3514"/>
+        <location filename="../configdialog.ui" line="3457"/>
         <source>N60m/N66</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3556"/>
+        <location filename="../configdialog.ui" line="3499"/>
         <source>FDDアクセスウェイト有効(&amp;W)</source>
         <translation>Enable FDD access &amp;wait</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3563"/>
+        <location filename="../configdialog.ui" line="3506"/>
         <source>終了時に確認する(&amp;F)</source>
         <translation>Con&amp;firm at exit</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3570"/>
+        <location filename="../configdialog.ui" line="3513"/>
         <source>終了時にINIファイルを保存する(&amp;Q)</source>
         <translation>Save the INI file when &amp;Quit</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="285"/>
+        <location filename="../configdialog.cpp" line="279"/>
         <source>互換ROM使用中</source>
         <translation>Using builtin compatible ROM</translation>
     </message>
@@ -891,18 +887,23 @@ WorkingDir not valid</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="601"/>
+        <location filename="../p6vxapp.cpp" line="626"/>
         <source>TAPE(SAVE)ファイルが存在しません。</source>
         <translation>Saved tape image file does not exist.</translation>
     </message>
     <message>
         <location filename="../p6vxapp.cpp" line="319"/>
-        <location filename="../p6vxapp.cpp" line="617"/>
+        <location filename="../p6vxapp.cpp" line="642"/>
         <source>ファイルはすでに存在しています。上書きしますか?</source>
         <translation>The file already exists. Overwrite it?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="645"/>
+        <location filename="../p6vxapp.cpp" line="514"/>
+        <source>本当に設定を初期化しますか?</source>
+        <translation>Do you really want to reset settings?</translation>
+    </message>
+    <message>
+        <location filename="../p6vxapp.cpp" line="671"/>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
@@ -911,12 +912,12 @@ Please copy ROM files to ROM folder(%1) or specify another folder.
 Do you want to specify another folder?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="671"/>
+        <location filename="../p6vxapp.cpp" line="691"/>
         <source>エミュレーター内蔵の互換ROMを使用しますか?</source>
         <translation>Do you want to use builtin compatible ROM?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="698"/>
+        <location filename="../p6vxapp.cpp" line="718"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>
@@ -2258,112 +2259,112 @@ Save time and PC6001V version </translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1372"/>
+        <location filename="../osdQt.cpp" line="1373"/>
         <source>TAPEイメージ選択(LOAD)</source>
         <translation>Tape image selection (Load)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1373"/>
-        <location filename="../osdQt.cpp" line="1383"/>
+        <location filename="../osdQt.cpp" line="1374"/>
+        <location filename="../osdQt.cpp" line="1384"/>
         <source>TAPEイメージ (*.p6t *.cas *.p6);;P6T形式 (*.p6t);;ベタ形式 (*.cas *.p6);;全てのファイル (*.*)</source>
         <translation>Tape image (*.p6t *.cas *.p6);;P6T format (*.p6t);;Standard format (*.cas *.p6);;All files(*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1382"/>
+        <location filename="../osdQt.cpp" line="1383"/>
         <source>TAPEイメージ選択(SAVE)</source>
         <translation>Tape image selection (Save)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1392"/>
+        <location filename="../osdQt.cpp" line="1393"/>
         <source>DISKイメージ選択</source>
         <translation>Disk image selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1393"/>
+        <location filename="../osdQt.cpp" line="1394"/>
         <source>DISKイメージ(*.d88);;D88形式 (*.d88);;全てのファイル (*.*)</source>
         <translation>Disk image (*.d88);;D88 format (*.d88);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1401"/>
+        <location filename="../osdQt.cpp" line="1402"/>
         <source>拡張ROMイメージ選択</source>
         <translation>Expansion ROM image selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1402"/>
-        <location filename="../osdQt.cpp" line="1408"/>
-        <location filename="../osdQt.cpp" line="1474"/>
+        <location filename="../osdQt.cpp" line="1403"/>
+        <location filename="../osdQt.cpp" line="1409"/>
+        <location filename="../osdQt.cpp" line="1475"/>
         <source>全てのファイル (*.*)</source>
         <translation>All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1407"/>
+        <location filename="../osdQt.cpp" line="1408"/>
         <source>プリンター出力ファイル選択</source>
         <translation>Printer output file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1414"/>
+        <location filename="../osdQt.cpp" line="1415"/>
         <source>全角フォントファイル選択</source>
         <translation>Full-width font selection file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1415"/>
-        <location filename="../osdQt.cpp" line="1423"/>
+        <location filename="../osdQt.cpp" line="1416"/>
+        <location filename="../osdQt.cpp" line="1424"/>
         <source>PNGファイル (*.png);;全てのファイル (*.*)</source>
         <translation>PNG file (*.png);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1422"/>
+        <location filename="../osdQt.cpp" line="1423"/>
         <source>半角フォントファイル選択</source>
         <translation>Half-width font selection file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1430"/>
+        <location filename="../osdQt.cpp" line="1431"/>
         <source>どこでもLOADファイル選択</source>
         <translation>State load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1431"/>
+        <location filename="../osdQt.cpp" line="1432"/>
         <source>どこでもSAVEファイル (*.dds *.ddr);;どこでもSAVE形式 (*.dds);;リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>State save files (*.dds *.ddr);;State save format (*.dds);;Replay file (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1440"/>
+        <location filename="../osdQt.cpp" line="1441"/>
         <source>どこでもSAVEファイル選択</source>
         <translation>State save file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1441"/>
+        <location filename="../osdQt.cpp" line="1442"/>
         <source>どこでもSAVE形式 (*.dds);;全てのファイル (*.*)</source>
         <translation>State save format (*.dds);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1448"/>
+        <location filename="../osdQt.cpp" line="1449"/>
         <source>リプレイ再生ファイル選択</source>
         <translation>Replay load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1449"/>
-        <location filename="../osdQt.cpp" line="1457"/>
+        <location filename="../osdQt.cpp" line="1450"/>
+        <location filename="../osdQt.cpp" line="1458"/>
         <source>リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>Replay file (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1456"/>
+        <location filename="../osdQt.cpp" line="1457"/>
         <source>リプレイ保存ファイル選択</source>
         <translation>Replay save file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1464"/>
+        <location filename="../osdQt.cpp" line="1465"/>
         <source>ビデオキャプチャ出力ファイル選択</source>
         <translation>Video capture output file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1465"/>
+        <location filename="../osdQt.cpp" line="1466"/>
         <source>WebMファイル (*.webm);;全てのファイル (*.*)</source>
         <translation>WebM file (*.webm);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1473"/>
+        <location filename="../osdQt.cpp" line="1474"/>
         <source>ファイル選択</source>
         <translation>File selection</translation>
     </message>
@@ -2834,198 +2835,199 @@ Save time and PC6001V version </translation>
 <context>
     <name>QtEL6</name>
     <message>
-        <location filename="../qtel6.cpp" line="250"/>
+        <location filename="../qtel6.cpp" line="252"/>
         <source>システム</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="252"/>
-        <location filename="../qtel6.cpp" line="259"/>
+        <location filename="../qtel6.cpp" line="254"/>
+        <location filename="../qtel6.cpp" line="261"/>
         <source>リセット</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="253"/>
+        <location filename="../qtel6.cpp" line="255"/>
         <source>再起動</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="271"/>
+        <location filename="../qtel6.cpp" line="273"/>
         <source>どこでもLOAD</source>
         <translation>State load</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="272"/>
+        <location filename="../qtel6.cpp" line="274"/>
         <source>どこでもSAVE</source>
         <translation>State save</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="274"/>
+        <location filename="../qtel6.cpp" line="276"/>
         <source>LOAD...</source>
         <translation>Load...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="278"/>
+        <location filename="../qtel6.cpp" line="280"/>
         <source>SAVE...</source>
         <translation>Save...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="284"/>
+        <location filename="../qtel6.cpp" line="286"/>
         <source>リプレイ</source>
         <translation>Replay</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="305"/>
+        <location filename="../qtel6.cpp" line="307"/>
         <source>記録再開...</source>
         <translation>Resume recording...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="311"/>
+        <location filename="../qtel6.cpp" line="313"/>
         <source>途中保存</source>
         <translation>Checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="312"/>
+        <location filename="../qtel6.cpp" line="314"/>
         <source>途中保存から再開</source>
         <translation>Back to checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="329"/>
+        <location filename="../qtel6.cpp" line="331"/>
         <source>打込み代行...</source>
         <translation>Auto typing...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="331"/>
+        <location filename="../qtel6.cpp" line="333"/>
         <source>終了</source>
         <translation>Exit</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="334"/>
+        <location filename="../qtel6.cpp" line="336"/>
         <source>TAPE</source>
         <translation>Tape</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="335"/>
-        <location filename="../qtel6.cpp" line="346"/>
-        <location filename="../qtel6.cpp" line="354"/>
+        <location filename="../qtel6.cpp" line="337"/>
+        <location filename="../qtel6.cpp" line="348"/>
+        <location filename="../qtel6.cpp" line="356"/>
         <source>挿入...</source>
         <translation>Insert...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="336"/>
-        <location filename="../qtel6.cpp" line="347"/>
-        <location filename="../qtel6.cpp" line="355"/>
+        <location filename="../qtel6.cpp" line="338"/>
+        <location filename="../qtel6.cpp" line="349"/>
+        <location filename="../qtel6.cpp" line="357"/>
         <source>取出</source>
         <translation>Eject</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="342"/>
+        <location filename="../qtel6.cpp" line="344"/>
         <source>DISK</source>
         <translation>Disk</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="353"/>
+        <location filename="../qtel6.cpp" line="355"/>
         <source>拡張ROM</source>
         <translation>Extended ROM</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="360"/>
+        <location filename="../qtel6.cpp" line="362"/>
         <source>ジョイスティック</source>
         <translation>Joystick</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="376"/>
-        <location filename="../qtel6.cpp" line="377"/>
+        <location filename="../qtel6.cpp" line="378"/>
+        <location filename="../qtel6.cpp" line="379"/>
         <source>なし</source>
         <translation>None</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="385"/>
+        <location filename="../qtel6.cpp" line="387"/>
         <source>設定</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="193"/>
-        <location filename="../qtel6.cpp" line="387"/>
+        <location filename="../qtel6.cpp" line="194"/>
+        <location filename="../qtel6.cpp" line="389"/>
         <source>表示サイズ</source>
         <translation>Display size</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="193"/>
+        <location filename="../qtel6.cpp" line="194"/>
         <source>表示サイズ(%)を入力してください。(50-1000)</source>
         <translation>Enter magnification(%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="202"/>
+        <location filename="../p6vxapp.cpp" line="516"/>
+        <location filename="../qtel6.cpp" line="203"/>
         <source>設定を反映するには一度終了しますがよろしいですか?</source>
         <translation>You need to exit program to apply settings.\nDo you want to continue?</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="256"/>
+        <location filename="../qtel6.cpp" line="258"/>
         <source>一時停止</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="267"/>
+        <location filename="../qtel6.cpp" line="269"/>
         <source>スナップショットを取得</source>
         <translation>Take snapshot</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="307"/>
+        <location filename="../qtel6.cpp" line="309"/>
         <source>リプレイを動画に変換...</source>
         <translation>Convert replay to movie...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="313"/>
+        <location filename="../qtel6.cpp" line="315"/>
         <source>1つ前の途中保存から再開</source>
         <translation>Back to previous checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="323"/>
+        <location filename="../qtel6.cpp" line="325"/>
         <source>キーパネル</source>
         <translation>Key panel</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="325"/>
+        <location filename="../qtel6.cpp" line="327"/>
         <source>仮想キーボード</source>
         <translation>Virtual keyboard</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="338"/>
+        <location filename="../qtel6.cpp" line="340"/>
         <source>TAPE(SAVE)をエクスポート...</source>
         <translation>Export saved TAPE...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="260"/>
-        <location filename="../qtel6.cpp" line="388"/>
+        <location filename="../qtel6.cpp" line="262"/>
+        <location filename="../qtel6.cpp" line="390"/>
         <source>50%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="389"/>
+        <location filename="../qtel6.cpp" line="391"/>
         <source>100%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="262"/>
-        <location filename="../qtel6.cpp" line="390"/>
+        <location filename="../qtel6.cpp" line="264"/>
+        <location filename="../qtel6.cpp" line="392"/>
         <source>150%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="263"/>
-        <location filename="../qtel6.cpp" line="391"/>
+        <location filename="../qtel6.cpp" line="265"/>
+        <location filename="../qtel6.cpp" line="393"/>
         <source>200%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="392"/>
+        <location filename="../qtel6.cpp" line="394"/>
         <source>250%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="264"/>
-        <location filename="../qtel6.cpp" line="393"/>
+        <location filename="../qtel6.cpp" line="266"/>
+        <location filename="../qtel6.cpp" line="395"/>
         <source>300%</source>
         <translation></translation>
     </message>
@@ -3040,154 +3042,159 @@ Save time and PC6001V version </translation>
         <translation>Enter speed(%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="258"/>
+        <location filename="../qtel6.cpp" line="260"/>
         <source>速度調節</source>
         <translation>Speed control</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="261"/>
+        <location filename="../qtel6.cpp" line="263"/>
         <source>70%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="265"/>
+        <location filename="../qtel6.cpp" line="267"/>
         <source>速度を指定...</source>
         <translation>Specify speed...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="394"/>
+        <location filename="../qtel6.cpp" line="396"/>
         <source>倍率を指定...</source>
         <translation>Specify magnification...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="395"/>
+        <location filename="../qtel6.cpp" line="397"/>
         <source>倍率を固定</source>
         <translation>Fix magnification</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="398"/>
+        <location filename="../qtel6.cpp" line="400"/>
         <source>フルスクリーン</source>
         <translation>Full screen</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="401"/>
+        <location filename="../qtel6.cpp" line="403"/>
         <source>ステータスバー</source>
         <translation>Status bar</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="403"/>
+        <location filename="../qtel6.cpp" line="405"/>
         <source>4:3表示</source>
         <translation>4:3 TV display</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="405"/>
+        <location filename="../qtel6.cpp" line="407"/>
         <source>スキャンライン</source>
         <translation>Scanline</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="408"/>
+        <location filename="../qtel6.cpp" line="410"/>
         <source>ハードウェアアクセラレーション</source>
         <translation>Hardware acceleration</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="411"/>
+        <location filename="../qtel6.cpp" line="413"/>
         <source>フィルタリング</source>
         <translation>Filtering</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="414"/>
+        <location filename="../qtel6.cpp" line="416"/>
         <source>TILTモード</source>
         <translation>Tilt mode</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="417"/>
+        <location filename="../qtel6.cpp" line="419"/>
         <source>MODE4 カラー</source>
         <translation>Mode4 color</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="420"/>
+        <location filename="../qtel6.cpp" line="422"/>
         <source>モノクロ</source>
         <translation>Monochrome</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="421"/>
+        <location filename="../qtel6.cpp" line="423"/>
         <source>赤/青</source>
         <translation>Red/Blue</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="422"/>
+        <location filename="../qtel6.cpp" line="424"/>
         <source>青/赤</source>
         <translation>Blue/Red</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="423"/>
+        <location filename="../qtel6.cpp" line="425"/>
         <source>桃/緑</source>
         <translation>Green/Peach</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="424"/>
+        <location filename="../qtel6.cpp" line="426"/>
         <source>緑/桃</source>
         <translation>Peach/Green</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="430"/>
+        <location filename="../qtel6.cpp" line="432"/>
         <source>フレームスキップ</source>
         <translation>Frameskip</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="445"/>
+        <location filename="../qtel6.cpp" line="447"/>
         <source>サンプリングレート</source>
         <translation>Sampling rate</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="457"/>
+        <location filename="../qtel6.cpp" line="459"/>
         <source>ウェイト無効</source>
         <translation>Disable wait</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="459"/>
+        <location filename="../qtel6.cpp" line="461"/>
         <source>Turbo TAPE</source>
         <translation>Turbo tape</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="461"/>
+        <location filename="../qtel6.cpp" line="463"/>
         <source>Boost Up</source>
         <translation>Boost up</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="463"/>
+        <location filename="../qtel6.cpp" line="465"/>
         <source>環境設定...</source>
         <translation>Preferences...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="467"/>
+        <location filename="../qtel6.cpp" line="469"/>
         <source>デバッグ</source>
         <translation>Debug</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="469"/>
+        <location filename="../qtel6.cpp" line="471"/>
         <source>モニタモード</source>
         <translation>Monitor mode</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="474"/>
+        <location filename="../qtel6.cpp" line="476"/>
         <source>ヘルプ</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="475"/>
+        <location filename="../qtel6.cpp" line="477"/>
         <source>オンラインヘルプ</source>
         <translation>Online help</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="476"/>
+        <location filename="../qtel6.cpp" line="478"/>
         <source>バージョン情報...</source>
         <translation>About...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="477"/>
+        <location filename="../qtel6.cpp" line="479"/>
         <source>About Qt...</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="../qtel6.cpp" line="480"/>
+        <source>設定初期化...</source>
+        <translation>Reset settings...</translation>
     </message>
 </context>
 <context>

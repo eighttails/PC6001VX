@@ -320,6 +320,9 @@ image::doc/about.png[]
 ** About Qt +
 PC6001VXに組み込んでいるQtのバージョンを表示します。 +
 
+** 設定初期化 +
+設定を初期状態に戻します。 +
+初期化後は一旦終了するのでもう一度起動してください。
 
 === キーボードショートカット
 .PC-6001シリーズ特有のキー
@@ -632,6 +635,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.git master
+* 「設定初期化」メニューを追加
+* (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を修正。
+* Added "Reset settings" menu.
+* (Android)Fixed file selection dialog to show files in external storage. 
+
 .3.5.0 2020/06/07
 * PC-6001互換BASICを0.7.1に更新。
 * PC-6001mkII/6601用互換BASICを0.3.0に更新。

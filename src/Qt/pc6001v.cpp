@@ -38,25 +38,44 @@ int main( int argc, char *argv[] )
 #endif
 
 	QLocale locale;
-	QString lang = locale.uiLanguages()[0];
 	QTranslator myappTranslator;
 
 	//表示言語が日本語でない場合は英語リソースを読み込む
-	if(lang != "ja-JP" && lang != "ja"){
-		qDebug() << "LANG = " << lang;
+	if(locale.language() != QLocale::Japanese){
+		qDebug() << "LANG = " << locale;
 		myappTranslator.load(":/translation/PC6001VX_en");
 		app.installTranslator(&myappTranslator);
 	} else {
 #ifdef ANDROID
 		QFontDatabase database;
+		// 日本語に対応したフォントを検索
 		auto list = database.families(QFontDatabase::Japanese);
-		for (auto& f : list){
-			// 日本語で検索して最初に見つかったフォントを使う
+		QString family;
+		if(!list.isEmpty()){
+			for (auto& f : list){
+				qDebug() << "listing " << f;
+
+				// 一般に知られているAndroidのデフォルト日本語フォント
+				QStringList jpFontList = QStringList()
+						<< "Sony Mobile UD Gothic Regular"
+						<< "Noto Sans CJK JP"
+						<< "MotoyaLMaru";
+				for (auto& c : jpFontList){
+					if (f == c){
+						family = f;
+						break;
+					}
+				}
+			}
+			if (family.isEmpty()){
+				// 既知のフォントが見つからなかった場合は
+				// 最初に見つかったフォントを使う
+				family = list.first();
+			}
 			auto font = QApplication::font();
-			qDebug() << "using " << f;
-			font.setFamily(f);
+			qDebug() << "using " << family;
+			font.setFamily(family);
 			app.setFont(font);
-			break;
 		}
 #endif
 	}

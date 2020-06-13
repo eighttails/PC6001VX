@@ -129,6 +129,9 @@ public slots:
 	void activateMouseCursorTimer();
 	void deactivateMouseCursorTimer();
 
+	// 設定初期化
+	void resetSettings();
+
 signals:
 	//初期化終了シグナル
 	void initialized();

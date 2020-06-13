@@ -14,7 +14,6 @@ public:
 	bool GetPauseEnable();
 	void SetPauseEnable(bool en);
 	KEY6* GetKeyboard();
-
 public slots:
 	void UpdateFPS();
 };

@@ -40,18 +40,37 @@
        <string>基本(&amp;B)</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="4" column="0">
-        <widget class="QCheckBox" name="checkBoxUseSoldier">
-         <property name="text">
-          <string>戦士のカートリッジを使う(&amp;R)</string>
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="groupBoxFDD">
+         <property name="title">
+          <string>FDD接続数(&amp;N)</string>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="checkBoxExtRam">
-         <property name="text">
-          <string>拡張RAMを使う(&amp;X)</string>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QRadioButton" name="radioButtonFDD0">
+            <property name="text">
+             <string>なし</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonFDD1">
+            <property name="text">
+             <string>1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButtonFDD2">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>2</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item row="0" column="0">
@@ -59,7 +78,7 @@
          <property name="title">
           <string>機種(&amp;M)</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QRadioButton" name="radioButtonModel6001">
             <property name="text">
@@ -108,69 +127,31 @@
             </property>
            </widget>
           </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="checkBoxExtRam">
+         <property name="text">
+          <string>拡張RAMを使う(&amp;X)</string>
+         </property>
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBoxFDD">
-         <property name="title">
-          <string>FDD接続数(&amp;N)</string>
+        <widget class="QCheckBox" name="checkBoxCompatibleRomMode">
+         <property name="text">
+          <string>内蔵互換ROMを使う(&amp;C)</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QRadioButton" name="radioButtonFDD0">
-            <property name="text">
-             <string>なし</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonFDD1">
-            <property name="text">
-             <string>1</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonFDD2">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>2</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_7">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
         </widget>
        </item>
-       <item row="6" column="0">
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="checkBoxUseSoldier">
+         <property name="text">
+          <string>戦士のカートリッジを使う(&amp;R)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -183,12 +164,18 @@
          </property>
         </spacer>
        </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="checkBoxCompatibleRomMode">
-         <property name="text">
-          <string>内蔵互換ROMを使う(&amp;C)</string>
+       <item row="0" column="2">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -3587,10 +3574,7 @@ border-radius: 1;</string>
   <tabstop>pushButtonColor34</tabstop>
   <tabstop>pushButtonColor35</tabstop>
   <tabstop>pushButtonColor36</tabstop>
-  <tabstop>radioButtonModel6601SR</tabstop>
   <tabstop>radioButtonFDD2</tabstop>
-  <tabstop>checkBoxExtRam</tabstop>
-  <tabstop>checkBoxUseSoldier</tabstop>
   <tabstop>buttonBox</tabstop>
   <tabstop>radioButtonColorGP</tabstop>
   <tabstop>horizontalSliderFPS</tabstop>

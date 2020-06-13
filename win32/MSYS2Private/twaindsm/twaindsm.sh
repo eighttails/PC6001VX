@@ -1,7 +1,11 @@
 #!/bin/bash
 
-#function prerequisite(){
-#}
+function prerequisite(){
+#必要ライブラリ
+pacman "${PACMAN_INSTALL_OPTS[@]}" \
+$MINGW_PACKAGE_PREFIX-dlfcn \
+2>/dev/null
+}
 
 function build(){
 if [ -e $PREFIX/bin/twaindsm.dll -a $((FORCE_INSTALL)) == 0 ]; then

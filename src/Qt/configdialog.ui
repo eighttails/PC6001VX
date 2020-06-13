@@ -283,7 +283,8 @@
          <item row="5" column="0" colspan="2">
           <widget class="QCheckBox" name="checkBoxHwAccel">
            <property name="text">
-            <string>ハードウェアアクセラレーション(次回起動時に反映)(&amp;H)</string>
+            <string>ハードウェアアクセラレーション
+(次回起動時に反映)(&amp;H)</string>
            </property>
           </widget>
          </item>
@@ -478,7 +479,7 @@
            <item>
             <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>PSGローパスフィルタ カットオフ周波数(&amp;Q):</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PSGローパスフィルタ&lt;br/&gt;カットオフ周波数(&amp;amp;Q):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="wordWrap">
               <bool>true</bool>

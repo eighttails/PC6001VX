@@ -1301,11 +1301,24 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 	}
 	QWidget* parent = static_cast<QWidget*>(hwnd);
 	QFileDialog dialog(parent);
+
 	dialog.setDirectory(strcmp(Result, "/") ? Result : QDir::homePath());
 	dialog.setFileMode(QFileDialog::DirectoryOnly);
 	dialog.setOptions(opt);
 #ifdef ALWAYSFULLSCREEN
 	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
+#endif
+
+#ifdef ANDROID
+	//Androidではローカルストレージのトップフォルダをブックマークさせる。
+	//こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
+	const auto dataPath = QUrl::fromLocalFile(
+				QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0]);
+	auto sidebarList = dialog.sidebarUrls();
+	if (!sidebarList.contains(dataPath)){
+		sidebarList << dataPath;
+		dialog.setSidebarUrls(sidebarList);
+	}
 #endif
 
 	QByteArray result;

@@ -302,6 +302,17 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 #ifdef ALWAYSFULLSCREEN
 	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
 #endif
+#ifdef ANDROID
+	//Androidではローカルストレージのトップフォルダをブックマークさせる。
+	//こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
+	const auto dataPath = QUrl::fromLocalFile(
+				QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0]);
+	auto sidebarList = dialog.sidebarUrls();
+	if (!sidebarList.contains(dataPath)){
+		sidebarList << dataPath;
+		dialog.setSidebarUrls(sidebarList);
+	}
+#endif
 
 	OSD_ShowCursor(true);
 	if(mode == FM_Save){

@@ -687,7 +687,7 @@ void P6VXApp::executeEmulation()
 			char folder[PATH_MAX];
 			strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
 			OSD_AddDelimiter(folder);
-			OSD_FolderDiaog(NULL, folder);
+			OSD_FolderDiaog(MWidget, folder);
 			OSD_DelDelimiter(folder);
 
 			if(strlen(folder) > 0){

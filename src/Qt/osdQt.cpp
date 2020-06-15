@@ -1292,47 +1292,16 @@ bool OSD_FileReadOnly( const char *fullpath )
 ///////////////////////////////////////////////////////////
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
-	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
-	// Androidのネイティブファイルダイアログが動かないための暫定措置
-	// https://bugreports.qt.io/browse/QTBUG-77214
-	QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
-	auto platformName = QGuiApplication::platformName();
-	if (platformName == QLatin1String("xcb")
-			|| platformName == QLatin1String("android")){
-		opt |= QFileDialog::DontUseNativeDialog;
-	}
-	QWidget* parent = static_cast<QWidget*>(hwnd);
-	QFileDialog dialog(parent);
-
-	dialog.setDirectory(strcmp(Result, "/") ? Result : QDir::homePath());
-	dialog.setFileMode(QFileDialog::DirectoryOnly);
-	dialog.setOptions(opt);
-#ifdef ALWAYSFULLSCREEN
-	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
-#endif
-
-#ifdef ANDROID
-	//シングルタップで開くように設定
-	dialog.setStyleSheet(QStringLiteral("QAbstractItemView { activate-on-singleclick: 1; }"));
-	//Androidではローカルストレージのトップフォルダをブックマークさせる。
-	//こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
-	const auto dataPath = QUrl::fromLocalFile(
-				QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0]);
-	auto sidebarList = dialog.sidebarUrls();
-	if (!sidebarList.contains(dataPath)){
-		sidebarList << dataPath;
-		dialog.setSidebarUrls(sidebarList);
-	}
-#endif
-
-	QByteArray result;
-	OSD_ShowCursor(true);
-	if (dialog.exec() == QDialog::Accepted) {
-		result = dialog.selectedFiles().value(0).toUtf8();
-	}
-
-	strcpy(Result, result);
-	return result.constData();
+	const char* ret = NULL;
+	//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
+				Qt::DirectConnection : Qt::BlockingQueuedConnection;
+	QMetaObject::invokeMethod(qApp, "folderDialog",
+							  cType,
+							  Q_RETURN_ARG(const char*, ret),
+							  Q_ARG(void *, hwnd),
+							  Q_ARG(char*, Result));
+	return ret;
 }
 
 

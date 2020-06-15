@@ -1293,6 +1293,8 @@ bool OSD_FileReadOnly( const char *fullpath )
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
+	// Androidのネイティブファイルダイアログが動かないための暫定措置
+	// https://bugreports.qt.io/browse/QTBUG-77214
 	QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
 	auto platformName = QGuiApplication::platformName();
 	if (platformName == QLatin1String("xcb")
@@ -1310,6 +1312,8 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 #endif
 
 #ifdef ANDROID
+	//シングルタップで開くように設定
+	dialog.setStyleSheet(QStringLiteral("QAbstractItemView { activate-on-singleclick: 1; }"));
 	//Androidではローカルストレージのトップフォルダをブックマークさせる。
 	//こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
 	const auto dataPath = QUrl::fromLocalFile(

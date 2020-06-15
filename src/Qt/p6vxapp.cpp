@@ -303,6 +303,8 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
 #endif
 #ifdef ANDROID
+	//シングルタップで開くように設定
+	dialog.setStyleSheet(QStringLiteral("QAbstractItemView { activate-on-singleclick: 1; }"));
 	//Androidではローカルストレージのトップフォルダをブックマークさせる。
 	//こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
 	const auto dataPath = QUrl::fromLocalFile(

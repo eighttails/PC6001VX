@@ -635,6 +635,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.3.5.2 2020/06/15
+* (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を再度修正。
+* (Android)ファイル選択ダイアログでシングルタップでファイル、フォルダを開くようにした。
+* (Android)Fixed file selection dialog to show files in external storage (again). 
+* (Android)Changed file/folder open operation in file selection dialog from double tap to single tap.
+
 .3.5.1 2020/06/14
 * 「設定初期化」メニューを追加
 * (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を修正。

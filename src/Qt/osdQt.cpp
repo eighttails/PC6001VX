@@ -1292,30 +1292,16 @@ bool OSD_FileReadOnly( const char *fullpath )
 ///////////////////////////////////////////////////////////
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
-	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
-	QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
-	auto platformName = QGuiApplication::platformName();
-	if (platformName == QLatin1String("xcb")
-			|| platformName == QLatin1String("android")){
-		opt |= QFileDialog::DontUseNativeDialog;
-	}
-	QWidget* parent = static_cast<QWidget*>(hwnd);
-	QFileDialog dialog(parent);
-	dialog.setDirectory(strcmp(Result, "/") ? Result : QDir::homePath());
-	dialog.setFileMode(QFileDialog::DirectoryOnly);
-	dialog.setOptions(opt);
-#ifdef ALWAYSFULLSCREEN
-	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
-#endif
-
-	QByteArray result;
-	OSD_ShowCursor(true);
-	if (dialog.exec() == QDialog::Accepted) {
-		result = dialog.selectedFiles().value(0).toUtf8();
-	}
-
-	strcpy(Result, result);
-	return result.constData();
+	const char* ret = NULL;
+	//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
+				Qt::DirectConnection : Qt::BlockingQueuedConnection;
+	QMetaObject::invokeMethod(qApp, "folderDialog",
+							  cType,
+							  Q_RETURN_ARG(const char*, ret),
+							  Q_ARG(void *, hwnd),
+							  Q_ARG(char*, Result));
+	return ret;
 }
 
 

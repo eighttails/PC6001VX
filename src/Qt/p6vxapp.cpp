@@ -279,35 +279,20 @@ int P6VXApp::showMessageBox(const char *mes, const char *cap, int type)
 
 const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, const char *filter, char *fullpath, char *path, const char *ext)
 {
+	QSharedPointer<QFileDialog> dialog(createFileDialog(hwnd));
 	QString result;
 	//検索パスが指定されていない場合はホームフォルダとする
 	QString pathStr = strlen(path) ? QFileInfo(path).dir().path() : QDir::homePath();
 
-	QWidget* parent = static_cast<QWidget*>(hwnd);
-	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
-	// Androidのネイティブファイルダイアログが動かないための暫定措置
-	// https://bugreports.qt.io/browse/QTBUG-77214
-	QFileDialog::Options opt;
-	auto platformName = QGuiApplication::platformName();
-	if (platformName == QLatin1String("xcb")
-			|| platformName == QLatin1String("android")){
-		opt |= QFileDialog::DontUseNativeDialog;
-	}
-
-	QFileDialog dialog(parent);
-	dialog.setWindowTitle(title);
-	dialog.setDirectory(pathStr);
-	dialog.setNameFilter(filter);
-	dialog.setOptions(opt);
-#ifdef ALWAYSFULLSCREEN
-	dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
-#endif
+	dialog->setWindowTitle(title);
+	dialog->setDirectory(pathStr);
+	dialog->setNameFilter(filter);
 
 	OSD_ShowCursor(true);
 	if(mode == FM_Save){
-		dialog.setFileMode(QFileDialog::AnyFile);
-		if (dialog.exec() == QDialog::Accepted) {
-			result = dialog.selectedFiles().value(0);
+		dialog->setFileMode(QFileDialog::AnyFile);
+		if (dialog->exec() == QDialog::Accepted) {
+			result = dialog->selectedFiles().value(0);
 		}
 		if(result.isEmpty())    return NULL;
 		// 入力されたファイル名に拡張子がついていない場合は付与する
@@ -323,9 +308,9 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 			}
 		}
 	} else {
-		dialog.setFileMode(QFileDialog::ExistingFile);
-		if (dialog.exec() == QDialog::Accepted) {
-			result = dialog.selectedFiles().value(0);
+		dialog->setFileMode(QFileDialog::ExistingFile);
+		if (dialog->exec() == QDialog::Accepted) {
+			result = dialog->selectedFiles().value(0);
 		}
 		if(result.isEmpty()) return NULL;
 	}
@@ -336,6 +321,22 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 	if( fullpath ) strcpy( fullpath, result.toUtf8().constData() );
 	QFile file(result);
 	return file.fileName().toUtf8().constData();
+}
+
+const char *P6VXApp::folderDialog(void *hwnd, char *Result)
+{
+	QSharedPointer<QFileDialog> dialog(createFileDialog(hwnd));
+	dialog->setDirectory(strcmp(Result, "/") ? Result : QDir::homePath());
+	dialog->setFileMode(QFileDialog::DirectoryOnly);
+
+	QByteArray result;
+	OSD_ShowCursor(true);
+	if (dialog->exec() == QDialog::Accepted) {
+		result = dialog->selectedFiles().value(0).toUtf8();
+	}
+
+	strcpy(Result, result);
+	return result.constData();
 }
 
 void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
@@ -676,7 +677,7 @@ void P6VXApp::executeEmulation()
 			char folder[PATH_MAX];
 			strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
 			OSD_AddDelimiter(folder);
-			OSD_FolderDiaog(NULL, folder);
+			OSD_FolderDiaog(MWidget, folder);
 			OSD_DelDelimiter(folder);
 
 			if(strlen(folder) > 0){
@@ -963,6 +964,39 @@ void P6VXApp::overrideSettings(CFG6 &cfg)
 	cfg.SetDokoSavePath( str );
 	cfg.Write();
 #endif
+}
+
+QFileDialog *P6VXApp::createFileDialog(void *hwnd)
+{
+	QWidget* parent = static_cast<QWidget*>(hwnd);
+	auto dialog = new QFileDialog(parent);
+	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
+	// Androidのネイティブファイルダイアログが動かないための暫定措置
+	// https://bugreports.qt.io/browse/QTBUG-77214
+	QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
+	auto platformName = QGuiApplication::platformName();
+	if (platformName == QLatin1String("xcb")
+			|| platformName == QLatin1String("android")){
+		opt |= QFileDialog::DontUseNativeDialog;
+	}
+	dialog->setOptions(opt);
+#ifdef ALWAYSFULLSCREEN
+	dialog->setWindowState(dialog->windowState() | Qt::WindowFullScreen);
+#endif
+#ifdef ANDROID
+	//シングルタップで開くように設定
+	dialog->setStyleSheet(QStringLiteral("QAbstractItemView { activate-on-singleclick: 1; }"));
+	//Androidではローカルストレージのトップフォルダをブックマークさせる。
+	//こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
+	const auto dataPath = QUrl::fromLocalFile(
+				QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0]);
+	auto sidebarList = dialog->sidebarUrls();
+	if (!sidebarList.contains(dataPath)){
+		sidebarList << dataPath;
+		dialog->setSidebarUrls(sidebarList);
+	}
+#endif
+	return dialog;
 }
 
 bool P6VXApp::notify ( QObject * receiver, QEvent * event )

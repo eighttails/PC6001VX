@@ -28,6 +28,7 @@ class QGraphicsScene;
 class KeyPanel;
 class VirtualKeyTabWidget;
 class KeyStateWatcher;
+class QFileDialog;
 
 class P6VXApp : public ParentAppClass
 {
@@ -96,6 +97,8 @@ public slots:
 	// ファイルダイアログの表示
 	const char* fileDialog( void *hwnd, FileMode mode, const char *title,
 							const char *filter, char *fullpath, char *path, const char *ext );
+	// フォルダダイアログの表示
+	const char* folderDialog( void *hwnd, char *Result );
 
 	//ウィンドウを生成
 	void createWindow(HWINDOW Wh, bool fsflag );
@@ -167,6 +170,9 @@ protected:
 
 	// プラットフォーム固有の設定で上書き
 	void overrideSettings(CFG6& cfg);
+
+	// ファイル選択ダイアログの生成
+	QFileDialog* createFileDialog(void *hwnd);
 
 private:
 	QPointer<QtEL6> P6Core;		// オブジェクトポインタ

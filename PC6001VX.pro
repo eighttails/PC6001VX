@@ -57,6 +57,13 @@ DEFINES -= QT_NO_DEBUG_OUTPUT
 debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
 QT += androidextras
 
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/build.gradle \
+    android/res/values/libs.xml
+
 HEADERS += \
     src/Qt/ekkesShare/shareutils.hpp \
     src/Qt/ekkesShare/android/androidshareutils.hpp
@@ -303,7 +310,7 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/res/xml/filepaths.xml
 
-ANDROID_ABIS = armeabi-v7a
+ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
 
 
 

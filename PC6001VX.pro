@@ -8,7 +8,7 @@ QT += core gui widgets network
 
 TARGET = PC6001VX
 TEMPLATE = app
-VERSION = 3.5.2
+VERSION = 3.5.3
 
 QMAKE_TARGET_COMPANY = eighttails
 QMAKE_TARGET_DESCRIPTION = "PC-6001 Emulator"
@@ -302,6 +302,8 @@ DISTFILES += \
     android/gradlew.bat \
     android/res/values/libs.xml \
     android/res/xml/filepaths.xml
+
+ANDROID_ABIS = armeabi-v7a
 
 
 

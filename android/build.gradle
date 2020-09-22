@@ -37,7 +37,7 @@ android {
 
     compileSdkVersion androidCompileSdkVersion.toInteger()
 
-    buildToolsVersion '28.0.3'
+	buildToolsVersion '28.0.3'
 
     sourceSets {
         main {
@@ -65,6 +65,8 @@ android {
     defaultConfig {
         resConfig "en"
         minSdkVersion = qtMinSdkVersion
-        targetSdkVersion = qtTargetSdkVersion
-    }
+		// targetSdkVersion = qtTargetSdkVersion
+		// qtTargetSdkVersionは28なので、ストア配信要件の29で強制的に上書き
+		targetSdkVersion = 29
+	}
 }

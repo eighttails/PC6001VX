@@ -299,8 +299,6 @@ OTHER_FILES += \
 RESOURCES += \
     src/Qt/pc6001vx.qrc
 
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-
 DISTFILES += \
     LICENSE \
     android/AndroidManifest.xml \
@@ -313,9 +311,5 @@ DISTFILES += \
     android/gradlew.bat \
     android/res/values/libs.xml \
     android/res/xml/filepaths.xml
-
-ANDROID_ABIS = armeabi-v7a
-
-
 
 

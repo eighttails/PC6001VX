@@ -40,8 +40,14 @@ void SystemInfoDialog::obtainSystemInfo()
 	QString str;
 	QTextStream s(&str);
 
+	QSysInfo si;
 
-
+	s << "[System]\n";
+	s << "productName=" << si.prettyProductName() << "\n";
+	s << "productType=" << si.productType() << "\n";
+	s << "productVersion=" <<  si.productVersion() << "\n";
+	s << "currentCpuArchitecture=" <<  si.currentCpuArchitecture() << "\n";
+	s << "\n";
 
 	QMetaEnum metaEnum = QMetaEnum::fromType<QStandardPaths::StandardLocation>();
 	QStandardPaths::StandardLocation locations[] = {

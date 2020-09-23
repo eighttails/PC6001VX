@@ -310,8 +310,6 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/res/xml/filepaths.xml
 
-ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
-
 
 
 

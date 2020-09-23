@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.eighttails.pc6001vx" android:versionName="3.5.3" android:versionCode="93" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.eighttails.pc6001vx" android:versionName="3.5.3" android:versionCode="98" android:installLocation="auto">
     <!-- The following comment will be replaced upon deployment with default permissions based on the dependencies of the application.
          Remove the comment if you do not require these default permissions. -->
     <!-- %%INSERT_PERMISSIONS -->
@@ -70,7 +70,7 @@
             <!-- extract android style -->
         </activity>
         <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
-        <provider android:name="android.support.v4.content.FileProvider" android:authorities="org.eighttails.pc6001vx.fileprovider" android:grantUriPermissions="true" android:exported="false">
+        <provider android:name="androidx.core.content.FileProvider" android:authorities="org.eighttails.pc6001vx.fileprovider" android:grantUriPermissions="true" android:exported="false">
         <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/filepaths"/>
     </provider>
     </application>

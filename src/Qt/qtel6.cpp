@@ -22,6 +22,7 @@
 #include "renderview.h"
 #include "keypanel.h"
 #include "virtualkeytabwidget.h"
+#include "systeminfodialog.h"
 #include "qtel6.h"
 #include "p6vxapp.h"
 
@@ -167,7 +168,17 @@ void EL6::ExecMenu( int id )
 	case ID_VERSION:		OSD_VersionDialog( graph->GetWindowHandle(), cfg->GetModel() );	break;	// バージョン情報
 	case ID_ABOUTQT:		QMessageBox::aboutQt(static_cast<RenderView*>(graph->GetWindowHandle()));
 		break;
+	case ID_SYSINFO:														// システム情報ダイアログ
+	{
+		auto&& dialog = SystemInfoDialog(static_cast<RenderView*>(graph->GetWindowHandle()));
+#ifdef ALWAYSFULLSCREEN
+		dialog.setWindowState(Qt::WindowFullScreen);
+#endif
+		dialog.exec();
+		break;
+	}
 	case ID_RESETSETTINGS:	app->resetSettings();	break;
+		break;
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	case ID_MONITOR:		ToggleMonitor();						break;	// モニターモード
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
@@ -477,6 +488,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(helpMenu, tr("オンラインヘルプ"), ID_ONLINEHELP);
 	addCommand(helpMenu, tr("バージョン情報..."), ID_VERSION);
 	addCommand(helpMenu, tr("About Qt..."), ID_ABOUTQT);
+	addCommand(helpMenu, tr("システム情報..."), ID_SYSINFO);
 	addCommand(helpMenu, tr("設定初期化..."), ID_RESETSETTINGS);
 
 	selectedAction = menu.exec(QPoint(x,y));

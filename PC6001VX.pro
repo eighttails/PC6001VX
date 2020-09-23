@@ -131,6 +131,7 @@ SOURCES += \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
     src/Qt/renderview.cpp \
     src/Qt/semaphore.cpp \
+    src/Qt/systeminfodialog.cpp \
     src/Qt/thread.cpp \
     src/breakpoint.cpp \
     src/common.cpp \
@@ -204,6 +205,7 @@ HEADERS  += \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.h \
     src/Qt/qtutil.h \
     src/Qt/renderview.h \
+    src/Qt/systeminfodialog.h \
     src/Qt/utils.h \
     src/Qt/wavfile.h \
     src/breakpoint.h \
@@ -288,6 +290,7 @@ HEADERS  += \
 FORMS    += \
     src/Qt/configdialog.ui \
     src/Qt/aboutdialog.ui \
+    src/Qt/systeminfodialog.ui \
     src/Qt/virtualkeytabwidget.ui
 
 OTHER_FILES += \
@@ -303,12 +306,15 @@ DISTFILES += \
     android/AndroidManifest.xml \
     android/PrivacyPolicy.html \
     android/build.gradle \
+    android/gradle.properties \
     android/gradle/wrapper/gradle-wrapper.jar \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew \
     android/gradlew.bat \
     android/res/values/libs.xml \
     android/res/xml/filepaths.xml
+
+ANDROID_ABIS = armeabi-v7a
 
 
 

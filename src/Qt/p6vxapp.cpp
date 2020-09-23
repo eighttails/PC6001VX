@@ -988,13 +988,15 @@ QFileDialog *P6VXApp::createFileDialog(void *hwnd)
 	dialog->setStyleSheet(QStringLiteral("QAbstractItemView { activate-on-singleclick: 1; }"));
 	//Androidではローカルストレージのトップフォルダをブックマークさせる。
 	//こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
-	const auto dataPath = QUrl::fromLocalFile(
-				QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0]);
+	const auto dataPaths = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
 	auto sidebarList = dialog->sidebarUrls();
-	if (!sidebarList.contains(dataPath)){
-		sidebarList << dataPath;
-		dialog->setSidebarUrls(sidebarList);
+	foreach (auto path, dataPaths){
+		auto uri = QUrl::fromLocalFile(path);
+		if (!sidebarList.contains(uri) && QFile::exists(path)){
+			sidebarList << uri;
+		}
 	}
+	dialog->setSidebarUrls(sidebarList);
 #endif
 	return dialog;
 }

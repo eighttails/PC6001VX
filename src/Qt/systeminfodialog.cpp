@@ -8,6 +8,7 @@
 #include <QStandardPaths>
 #include <QDebug>
 #include <QMetaEnum>
+#include <QProcessEnvironment>
 
 
 SystemInfoDialog::SystemInfoDialog(QWidget *parent) :
@@ -47,6 +48,12 @@ void SystemInfoDialog::obtainSystemInfo()
 	s << "productType=" << si.productType() << "\n";
 	s << "productVersion=" <<  si.productVersion() << "\n";
 	s << "currentCpuArchitecture=" <<  si.currentCpuArchitecture() << "\n";
+	s << "\n";
+
+	s << "[Environment]\n";
+	foreach(auto e, QProcessEnvironment::systemEnvironment().toStringList()){
+	s << e << "\n";
+	}
 	s << "\n";
 
 	QMetaEnum metaEnum = QMetaEnum::fromType<QStandardPaths::StandardLocation>();

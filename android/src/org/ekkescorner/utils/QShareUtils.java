@@ -153,53 +153,9 @@ public class QShareUtils
             }
         });
 
-        List<Intent> targetedIntents = new ArrayList<Intent>();
-        // Filter itself and create intent with the rest of the apps.
-        for (ResolveInfo appInfo : appInfoList) {
-            // get the target PackageName
-            String targetPackageName = appInfo.activityInfo.packageName;
-            // we don't want to share with our own app
-            // in fact sharing with own app with resultCode will crash because doesn't work well with launch mode 'singleInstance'
-            if (targetPackageName.equals(context.getPackageName())) {
-                continue;
-            }
-            // if you have a blacklist of apps please exclude them here
-
-            // we create the targeted Intent based on our already configured Intent
-            Intent targetedIntent = new Intent(theIntent);
-            // now add the target packageName so this Intent will only find the one specific App
-            targetedIntent.setPackage(targetPackageName);
-            // collect all these targetedIntents
-            targetedIntents.add(targetedIntent);
-
-            // legacy support and Workaround for Android bug
-            // grantUriPermission needed for KITKAT or older
-            // see https://code.google.com/p/android/issues/detail?id=76683
-            // also: https://stackoverflow.com/questions/18249007/how-to-use-support-fileprovider-for-sharing-content-to-other-apps
-            if(isLowerOrEqualsKitKat) {
-                Log.d("ekkescorner", "legacy support grantUriPermission");
-                context.grantUriPermission(targetPackageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                // attention: you must revoke the permission later, so this only makes sense with getting back a result to know that Intent was done
-                // I always move or delete the file, so I don't revoke permission
-            }
-        }
-
-        // check if there are apps found for our Intent to avoid that there was only our own removed app before
-        if (targetedIntents.isEmpty()) {
-            Log.d("ekkescorner", title+" targetedIntents.isEmpty");
-            return false;
-        }
-
-        // now we can create our Intent with custom Chooser
-        // we need all collected targetedIntents as EXTRA_INITIAL_INTENTS
-        // we're using the last targetedIntent as initializing Intent, because
-        // chooser adds its initializing intent to the end of EXTRA_INITIAL_INTENTS :)
-        Intent chooserIntent = Intent.createChooser(targetedIntents.remove(targetedIntents.size() - 1), title);
-        if (targetedIntents.isEmpty()) {
-            Log.d("ekkescorner", title+" only one Intent left for Chooser");
-        } else {
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedIntents.toArray(new Parcelable[] {}));
-        }
+        // create chooser in android10 way.
+        Intent chooserIntent = Intent.createChooser(theIntent, title);
+        
         // Verify that the intent will resolve to an activity
         if (chooserIntent.resolveActivity(QtNative.activity().getPackageManager()) != null) {
             if(requestId > 0) {

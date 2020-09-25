@@ -389,7 +389,10 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 	QGraphicsPixmapItem* pItem = NULL;
 	foreach(item, scene->items()){
 		if(item->scenePos() == QPointF(x, y)){
+			// QPixmapItemが見つかったら一旦sceneから除去する
+			// (scene上にある状態で画像を更新すると真っ黒になる場合がある)
 			pItem = dynamic_cast<QGraphicsPixmapItem*>(item);
+			if(pItem) scene->removeItem(pItem);
 			break;
 		}
 	}
@@ -402,9 +405,12 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 			pItem->setTransformationMode(Qt::SmoothTransformation);
 		}
 	}
+	// QPixmapItemの画像を更新してsceneに追加
 	pItem->setPixmap(QPixmap::fromImage(image));
-	pItem->resetTransform();
+	scene->addItem(pItem);
+
 	// アスペクト比に従って縦サイズを調整
+	pItem->resetTransform();
 	QTransform trans;
 	trans.scale(scaleX, scaleY);
 	trans.translate(x, y);

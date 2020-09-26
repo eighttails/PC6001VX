@@ -19,7 +19,6 @@
 #include "../config.h"
 #include "../error.h"
 #include "configdialog.h"
-#include "aboutdialog.h"
 
 #include "renderview.h"
 #include "p6vxapp.h"
@@ -1964,6 +1963,10 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 ///////////////////////////////////////////////////////////
 void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 {
-	AboutDialog dialog(mdl);
-	dialog.exec();
+	QWidget* parent = static_cast<QWidget*>(hwnd);
+	QMessageBox::about(parent, "About PC6001VX",
+					   APPNAME " Version " VERSION "\n"
+					  "https://eighttails.seesaa.net\n"
+					  "©2012-2020, Tadahito Yao (@eighttails)\n"
+					  "Based on PC6001V by Yumitaro.");
 }

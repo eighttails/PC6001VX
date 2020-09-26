@@ -116,7 +116,6 @@ PKGCONFIG += libavformat libavcodec libswscale libswresample libavutil
 }
 
 SOURCES += \
-    src/Qt/aboutdialog.cpp \
     src/Qt/colorbutton.cpp \
     src/Qt/configdialog.cpp \
     src/Qt/emulationadaptor.cpp \
@@ -192,7 +191,6 @@ SOURCES += \
     src/Qt/p6vxcommon.cpp
 
 HEADERS  += \
-    src/Qt/aboutdialog.h \
     src/Qt/colorbutton.h \
     src/Qt/configdialog.h \
     src/Qt/emulationadaptor.h \
@@ -289,7 +287,6 @@ HEADERS  += \
 
 FORMS    += \
     src/Qt/configdialog.ui \
-    src/Qt/aboutdialog.ui \
     src/Qt/systeminfodialog.ui \
     src/Qt/virtualkeytabwidget.ui
 

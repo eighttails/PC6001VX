@@ -634,6 +634,7 @@ Qt 5.10.0以上が必要です。(Qt5.14.2以上推奨)
 
 
 == 既知の不具合、制約事項
+
 * 起動するたびにシステムの音量を変えてしまうことがあります。 +
 Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
@@ -642,10 +643,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 .3.5.3 2020/09/26
 * ハードウェアアクセラレーション使用時に描画がちらつくのを修正。
 * システム情報ダイアログを追加。
+* (Android)Android SDK 29に対応。
 * (Android)外部ストレージの扱いを改善。
 * Fixed screen flicker when using hardware acceleration.
 * Added System Information dialog.
-* (Android) better handling of external storage.
+* (Android)better handling of external storage.
+* (Android)Targetted at Android SDK 29.
 
 .3.5.2 2020/06/15
 * (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を再度修正。

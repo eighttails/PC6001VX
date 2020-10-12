@@ -48,7 +48,7 @@ popd
 SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
-#prerequisite
+prerequisite
 
 cd $EXTLIB
 

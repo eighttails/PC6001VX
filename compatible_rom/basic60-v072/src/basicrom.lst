@@ -541,7 +541,7 @@
   0116                	QMARK:
   0116  3F2000        		db	"? ", 00h
   0119                	SYSNAME:
-  0119  9ADE96FD424153		db	9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.7.1", 0dh, 0ah, 00h
+  0119  9ADE96FD424153		db	9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.7.2", 0dh, 0ah, 00h
                       	
   012F                	PAGEDATA:
   012F  C0            		db	0c0h		;fd91	VRAM address
@@ -812,18 +812,19 @@
                       	;change program
   046E                	CHGPRG:
   046E  CD6B07        		call	GETLN
-  0471  E5            		push	hl		;buffer address
+  0471  E5            		push	hl		;buffer address after line number
   0472  D5            		push	de		;line number
-  0473  E5            		push	hl		;buffer address
+  0473  E5            		push	hl		;buffer address after line number
   0474  CDF004        		call	SRCHLN
   0477  DCDA04        		call	c,DELPRG	;c-flag=1
-  047A  E1            		pop	hl		;buffer address
+  047A  E1            		pop	hl		;buffer address after line number
   047B  34            		inc	(hl)
   047C  35            		dec	(hl)
   047D  2005          		jr	nz,INSPRG
   047F  3836          		jr	c,CHGLKP	;
   0481  C3EE03        		jp	ULERR
                       	
+                      	;insert program
   0484                	INSPRG:
   0484  AF            		xor	a
   0485  110500        		ld	de,0005h
@@ -866,7 +867,7 @@
   04B0  72            		ld	(hl),d
   04B1  23            		inc	hl
   04B2  EB            		ex	de,hl
-  04B3  E1            		pop	hl		;buffer address
+  04B3  E1            		pop	hl		;buffer address after line number
                       	
   04B4  4F            		ld	c,a		;b=0
   04B5  EDB0          		ldir
@@ -1083,7 +1084,7 @@
                       	
                       	;DATA
   0579                	ILDAT:
-  0579  013A00        		ld	bc,003ah	;b=0,c=':'
+  0579  013A00        		ld	bc,003ah	;b=0, c=':'
   057C  18D5          		jr	ILLP2
                       	
                       	
@@ -1488,7 +1489,7 @@
                       	
                       	;get line number from string (0-65529)
                       	;input: hl=program address
-                      	;output: de=integer, hl=next address
+                      	;output: de=line number, hl=next address
                       	;destroy: af,bc
   076B                	GETLN:
   076B  CDD427        		call	ATOI2
@@ -1990,7 +1991,7 @@
   0A0A  3A1AFA        		ld	a,(INPDEV)
   0A0D  B7            		or	a
   0A0E  C21504        		jp	nz,FDERR
-  0A11  214B24        		ld	hl,REDO
+  0A11  214824        		ld	hl,REDO
   0A14  CDCF30        		call	PUTS
   0A17  E1            		pop	hl		;program address
   0A18  224EFF        		ld	(PROGAD),hl
@@ -2026,7 +2027,7 @@
   0A48  1A            		ld	a,(de)
   0A49  FE2C          		cp	','
   0A4B  C0            		ret	nz
-  0A4C  213A24        		ld	hl,EXTRA
+  0A4C  213724        		ld	hl,EXTRA
   0A4F  C3CF30        		jp	PUTS
                       	
                       	
@@ -2934,7 +2935,7 @@
   0E89  C9            		ret
                       	
                       	
-                      	;output port 90h
+                      	;output to port 90h
                       	;input: a=data
                       	;destroy: none
   0E8A                	_OUT90H:ds	OUT90H-_OUT90H
@@ -5695,7 +5696,7 @@
   1B4F  C3541B        		jp	OUTB0H
                       	
                       	
-                      	;output port b0h
+                      	;output to port b0h
                       	;input: a=new data, b=change bit
                       	;destroy: af
   1B52                	_OUTB0H:ds	OUTB0H-_OUTB0H
@@ -6785,9 +6786,9 @@
   210D                	CALCLEN:
                       	;60[s/min]/T[/min]/(L/4)/(8192/3993600[Hz])=117000/T/L
   210D  DD4611        		ld	b,(ix+TEMPO)	;T-value
-  2110  CD5E24        		call	MULINT1		;hl=T*L (<=3fc0h)
+  2110  CD5B24        		call	MULINT1		;hl=T*L (<=3fc0h)
   2113  1184E4        		ld	de,0e484h	;117000/2
-  2116  CD8924        		call	DIVINT2		;bc=(117000/2)/(T*L)*2
+  2116  CD8624        		call	DIVINT2		;bc=(117000/2)/(T*L)*2
   2119  50            		ld	d,b
   211A  59            		ld	e,c
                       	
@@ -7343,7 +7344,7 @@
   240E                	INPTEXTLP:
   240E  F1            		pop	af
   240F  F5            		push	af
-  2410  2023          		jr	nz,INPTCMT
+  2410  2020          		jr	nz,INPTCMT
                       	
   2412  E5            		push	hl
   2413                	INPT232LP:
@@ -7364,225 +7365,224 @@
   2429  F1            		pop	af
   242A  C4AA1A        		call	nz,RCLOSE
   242D  3600          		ld	(hl),00h
-  242F  21D9FE        		ld	hl,INPBUF-1
-  2432  C3DB09        		jp	INPTANA
+  242F  C3DB09        		jp	INPTANA
                       	
-  2435                	INPTCMT:
-  2435  CD8F1A        		call	GETCMTTR
-  2438  18E7          		jr	INPTCHKRET
+  2432                	INPTCMT:
+  2432  CD8F1A        		call	GETCMTTR
+  2435  18EA          		jr	INPTCHKRET
                       	
-  243A                	EXTRA:
-  243A  3F457874726120		db	"?Extra ignored", 0dh, 0ah, 00h
+  2437                	EXTRA:
+  2437  3F457874726120		db	"?Extra ignored", 0dh, 0ah, 00h
                       	
-  244B                	REDO:
-  244B  3F5265646F2066		db	"?Redo from start", 0dh, 0ah, 00h
+  2448                	REDO:
+  2448  3F5265646F2066		db	"?Redo from start", 0dh, 0ah, 00h
                       	
                       	
                       	;hl=a*b
                       	;input: a,b
                       	;output: hl
                       	;destroy: af,c
-  245E                	MULINT1:
-  245E  210000        		ld	hl,0000h
-  2461  4D            		ld	c,l		;=0
-  2462  1801          		jr	MULI1NZ
-  2464                	MULI1C:
-  2464  09            		add	hl,bc
-  2465                	MULI1NZ:
-  2465  CB38          		srl	b
-  2467  CB19          		rr	c
-  2469  87            		add	a,a
-  246A  38F8          		jr	c,MULI1C
-  246C  20F7          		jr	nz,MULI1NZ
-  246E  C9            		ret
+  245B                	MULINT1:
+  245B  210000        		ld	hl,0000h
+  245E  4D            		ld	c,l		;=0
+  245F  1801          		jr	MULI1NZ
+  2461                	MULI1C:
+  2461  09            		add	hl,bc
+  2462                	MULI1NZ:
+  2462  CB38          		srl	b
+  2464  CB19          		rr	c
+  2466  87            		add	a,a
+  2467  38F8          		jr	c,MULI1C
+  2469  20F7          		jr	nz,MULI1NZ
+  246B  C9            		ret
                       	
                       	
                       	;dehl=de*hl
                       	;input: de,hl
                       	;output: dehl
                       	;destroy: af,bc
-  246F                	MULINT2:
-  246F  7C            		ld	a,h
-  2470  4D            		ld	c,l
-  2471  210000        		ld	hl,0000h
-  2474  0610          		ld	b,10h
-  2476                	MULI2LP:
-  2476  1F            		rra
-  2477  CB19          		rr	c
-  2479  3001          		jr	nc,MULI2NC
-  247B  19            		add	hl,de
-  247C                	MULI2NC:
-  247C  CB1C          		rr	h
-  247E  CB1D          		rr	l
-  2480  10F4          		djnz	MULI2LP
-  2482  1F            		rra
-  2483  CB19          		rr	c
-  2485  59            		ld	e,c
-  2486  57            		ld	d,a
-  2487  EB            		ex	de,hl
-  2488  C9            		ret
+  246C                	MULINT2:
+  246C  7C            		ld	a,h
+  246D  4D            		ld	c,l
+  246E  210000        		ld	hl,0000h
+  2471  0610          		ld	b,10h
+  2473                	MULI2LP:
+  2473  1F            		rra
+  2474  CB19          		rr	c
+  2476  3001          		jr	nc,MULI2NC
+  2478  19            		add	hl,de
+  2479                	MULI2NC:
+  2479  CB1C          		rr	h
+  247B  CB1D          		rr	l
+  247D  10F4          		djnz	MULI2LP
+  247F  1F            		rra
+  2480  CB19          		rr	c
+  2482  59            		ld	e,c
+  2483  57            		ld	d,a
+  2484  EB            		ex	de,hl
+  2485  C9            		ret
                       	
                       	
                       	;bc=de/hl*2
                       	;input: de,hl(<8000h)
                       	;output: bc
                       	;destroy: af,de,hl
-  2489                	DIVINT2:
-  2489  AF            		xor	a
-  248A  010002        		ld	bc,0200h	;*2^(b-1)
-  248D                	DIVILP1:
-  248D  04            		inc	b
-  248E  ED6A          		adc	hl,hl		;c-flag=0
-  2490  F28D24        		jp	p,DIVILP1
-  2493  EB            		ex	de,hl
-  2494                	DIVILP2:
-  2494  B7            		or	a
-  2495  ED52          		sbc	hl,de
-  2497  3001          		jr	nc,DIVNC
-  2499  19            		add	hl,de
-  249A                	DIVNC:
-  249A  3F            		ccf
-  249B  CB11          		rl	c
-  249D  17            		rla
-  249E  CB3A          		srl	d
-  24A0  CB1B          		rr	e
-  24A2  10F0          		djnz	DIVILP2
+  2486                	DIVINT2:
+  2486  AF            		xor	a
+  2487  010002        		ld	bc,0200h	;*2^(b-1)
+  248A                	DIVILP1:
+  248A  04            		inc	b
+  248B  ED6A          		adc	hl,hl		;c-flag=0
+  248D  F28A24        		jp	p,DIVILP1
+  2490  EB            		ex	de,hl
+  2491                	DIVILP2:
+  2491  B7            		or	a
+  2492  ED52          		sbc	hl,de
+  2494  3001          		jr	nc,DIVNC
+  2496  19            		add	hl,de
+  2497                	DIVNC:
+  2497  3F            		ccf
+  2498  CB11          		rl	c
+  249A  17            		rla
+  249B  CB3A          		srl	d
+  249D  CB1B          		rr	e
+  249F  10F0          		djnz	DIVILP2
                       	
-  24A4  47            		ld	b,a
-  24A5  C9            		ret
+  24A1  47            		ld	b,a
+  24A2  C9            		ret
                       	
                       	
                       	;add 4-byte integer and 4byte integer
                       	;input: FAC1(integer),FAC2(integer)
                       	;output: FAC1(integer),f
                       	;destroy: de,hl
-  24A6                	ADDINT4:
-  24A6  2A66FF        		ld	hl,(FAC1)
-  24A9  ED5B6DFF      		ld	de,(FAC2)
-  24AD  19            		add	hl,de
-  24AE  2266FF        		ld	(FAC1),hl
-  24B1  2A68FF        		ld	hl,(FAC1+2)
-  24B4  ED5B6FFF      		ld	de,(FAC2+2)
-  24B8  ED5A          		adc	hl,de
-  24BA  2268FF        		ld	(FAC1+2),hl
-  24BD  C9            		ret
+  24A3                	ADDINT4:
+  24A3  2A66FF        		ld	hl,(FAC1)
+  24A6  ED5B6DFF      		ld	de,(FAC2)
+  24AA  19            		add	hl,de
+  24AB  2266FF        		ld	(FAC1),hl
+  24AE  2A68FF        		ld	hl,(FAC1+2)
+  24B1  ED5B6FFF      		ld	de,(FAC2+2)
+  24B5  ED5A          		adc	hl,de
+  24B7  2268FF        		ld	(FAC1+2),hl
+  24BA  C9            		ret
                       	
                       	
                       	;subtract 4-byte integer from 4byte integer
                       	;input: FAC1(integer),FAC2(integer)
                       	;output: FAC1(integer),f
                       	;destroy: de,hl
-  24BE                	SUBINT4:
-  24BE  2A66FF        		ld	hl,(FAC1)
-  24C1  ED5B6DFF      		ld	de,(FAC2)
-  24C5  B7            		or	a
-  24C6  ED52          		sbc	hl,de
-  24C8  2266FF        		ld	(FAC1),hl
-  24CB  2A68FF        		ld	hl,(FAC1+2)
-  24CE  ED5B6FFF      		ld	de,(FAC2+2)
-  24D2  ED52          		sbc	hl,de
-  24D4  2268FF        		ld	(FAC1+2),hl
-  24D7  C9            		ret
+  24BB                	SUBINT4:
+  24BB  2A66FF        		ld	hl,(FAC1)
+  24BE  ED5B6DFF      		ld	de,(FAC2)
+  24C2  B7            		or	a
+  24C3  ED52          		sbc	hl,de
+  24C5  2266FF        		ld	(FAC1),hl
+  24C8  2A68FF        		ld	hl,(FAC1+2)
+  24CB  ED5B6FFF      		ld	de,(FAC2+2)
+  24CF  ED52          		sbc	hl,de
+  24D1  2268FF        		ld	(FAC1+2),hl
+  24D4  C9            		ret
                       	
                       	
                       	;a=FAC1(int4)/(hl)<=9, FAC1%=(hl), hl+=4
                       	;input: FAC1(integer), hl=division factor (4byte int) address
                       	;output: a=FAC1/(hl4), FAC1=FAC1%(hl4), hl=hl+4, a=[0,9]
                       	;destroy: f,FAC2
-  24D8                	DIVINT4:
-  24D8  C5            		push	bc
-  24D9  D5            		push	de
-  24DA  CD1B0C        		call	SETF2
-  24DD  2B            		dec	hl
-  24DE  E5            		push	hl
-  24DF  AF            		xor	a
-  24E0                	DIVINT4LP:
-  24E0  3C            		inc	a
-  24E1  CDBE24        		call	SUBINT4
-  24E4  30FA          		jr	nc,DIVINT4LP
-  24E6  3D            		dec	a
-  24E7  CDA624        		call	ADDINT4
-  24EA  E1            		pop	hl
-  24EB  D1            		pop	de
-  24EC  C1            		pop	bc
-  24ED  C9            		ret
+  24D5                	DIVINT4:
+  24D5  C5            		push	bc
+  24D6  D5            		push	de
+  24D7  CD1B0C        		call	SETF2
+  24DA  2B            		dec	hl
+  24DB  E5            		push	hl
+  24DC  AF            		xor	a
+  24DD                	DIVINT4LP:
+  24DD  3C            		inc	a
+  24DE  CDBB24        		call	SUBINT4
+  24E1  30FA          		jr	nc,DIVINT4LP
+  24E3  3D            		dec	a
+  24E4  CDA324        		call	ADDINT4
+  24E7  E1            		pop	hl
+  24E8  D1            		pop	de
+  24E9  C1            		pop	bc
+  24EA  C9            		ret
                       	
                       	
                       	;negate 4-byte integer
                       	;input: FAC1(integer)
                       	;output: FAC1(integer), c-flag, z-flag
                       	;destroy: af,hl
-  24EE                	NEGINT4:
-  24EE  2166FF        		ld	hl,FAC1
-  24F1  AF            		xor	a
-  24F2  96            		sub	(hl)
-  24F3  77            		ld	(hl),a
-  24F4  23            		inc	hl
-  24F5  3E00          		ld	a,00h
-  24F7  9E            		sbc	a,(hl)
-  24F8  77            		ld	(hl),a
-  24F9  23            		inc	hl
-  24FA  3E00          		ld	a,00h
-  24FC  9E            		sbc	a,(hl)
-  24FD  77            		ld	(hl),a
-  24FE  23            		inc	hl
-  24FF  3E00          		ld	a,00h
-  2501  9E            		sbc	a,(hl)
-  2502  77            		ld	(hl),a
-  2503  C9            		ret
+  24EB                	NEGINT4:
+  24EB  2166FF        		ld	hl,FAC1
+  24EE  AF            		xor	a
+  24EF  96            		sub	(hl)
+  24F0  77            		ld	(hl),a
+  24F1  23            		inc	hl
+  24F2  3E00          		ld	a,00h
+  24F4  9E            		sbc	a,(hl)
+  24F5  77            		ld	(hl),a
+  24F6  23            		inc	hl
+  24F7  3E00          		ld	a,00h
+  24F9  9E            		sbc	a,(hl)
+  24FA  77            		ld	(hl),a
+  24FB  23            		inc	hl
+  24FC  3E00          		ld	a,00h
+  24FE  9E            		sbc	a,(hl)
+  24FF  77            		ld	(hl),a
+  2500  C9            		ret
                       	
                       	
                       	;compare 4-byte integer and 4-byte integer
                       	;input: FAC1(integer), FAC2(integer)
                       	;output: c-flag,z-flag
                       	;destroy: f,de,hl
-  2504                	CMPINT4:
-  2504  2A68FF        		ld	hl,(FAC1+2)
-  2507  ED5B6FFF      		ld	de,(FAC2+2)
-  250B  B7            		or	a
-  250C  ED52          		sbc	hl,de
-  250E  C0            		ret	nz
-  250F  2A66FF        		ld	hl,(FAC1)
-  2512  ED5B6DFF      		ld	de,(FAC2)
-  2516  ED52          		sbc	hl,de
-  2518  C9            		ret
+  2501                	CMPINT4:
+  2501  2A68FF        		ld	hl,(FAC1+2)
+  2504  ED5B6FFF      		ld	de,(FAC2+2)
+  2508  B7            		or	a
+  2509  ED52          		sbc	hl,de
+  250B  C0            		ret	nz
+  250C  2A66FF        		ld	hl,(FAC1)
+  250F  ED5B6DFF      		ld	de,(FAC2)
+  2513  ED52          		sbc	hl,de
+  2515  C9            		ret
                       	
                       	
                       	;decrement 4-byte integer
                       	;input: FAC1
                       	;output: FAC1
                       	;destroy: af,hl
-  2519                	DECINT4:
-  2519  2A66FF        		ld	hl,(FAC1)
-  251C  7C            		ld	a,h
-  251D  B5            		or	l		;
-  251E  2B            		dec	hl
-  251F  2266FF        		ld	(FAC1),hl
-  2522  C0            		ret	nz		;
-  2523  2A68FF        		ld	hl,(FAC1+2)
-  2526  2B            		dec	hl
-  2527  2268FF        		ld	(FAC1+2),hl
-  252A  C9            		ret
+  2516                	DECINT4:
+  2516  2A66FF        		ld	hl,(FAC1)
+  2519  7C            		ld	a,h
+  251A  B5            		or	l		;
+  251B  2B            		dec	hl
+  251C  2266FF        		ld	(FAC1),hl
+  251F  C0            		ret	nz		;
+  2520  2A68FF        		ld	hl,(FAC1+2)
+  2523  2B            		dec	hl
+  2524  2268FF        		ld	(FAC1+2),hl
+  2527  C9            		ret
                       	
                       	
                       	;4-byte integer=0?
                       	;output: a(4 bytes OR),z
                       	;destroy: af
-  252B                	CHKINT4:
-  252B  E5            		push	hl
-  252C  2A66FF        		ld	hl,(FAC1)
-  252F  7C            		ld	a,h
-  2530  B5            		or	l
-  2531  2A68FF        		ld	hl,(FAC1+2)
-  2534  B4            		or	h
-  2535  B5            		or	l
-  2536  E1            		pop	hl
-  2537  C9            		ret
+  2528                	CHKINT4:
+  2528  E5            		push	hl
+  2529  2A66FF        		ld	hl,(FAC1)
+  252C  7C            		ld	a,h
+  252D  B5            		or	l
+  252E  2A68FF        		ld	hl,(FAC1+2)
+  2531  B4            		or	h
+  2532  B5            		or	l
+  2533  E1            		pop	hl
+  2534  C9            		ret
                       	
                       	
                       	;check cload header and get file name
                       	;destroy: af,b,de (if no error)
-  2538                	_GETFN:	ds	GETFN-_GETFN
+  2535                	_GETFN:	ds	GETFN-_GETFN
   2539                		org	GETFN
                       	
                       	;check header (d3h*10)
@@ -9110,7 +9110,7 @@
   2C9C  C1            		pop	bc
   2C9D  0D            		dec	c
   2C9E  20DC          		jr	nz,BFGLP3
-  2CA0  C3C02E        		jp	LINEEND2
+  2CA0  C3C42E        		jp	LINEEND2
                       	
                       	
                       	;|dy/dx|<=1
@@ -9146,7 +9146,7 @@
   2CC6                	ERRMNS:
   2CC6  E5            		push	hl		;error
   2CC7  CD242B        		call	INCGX		;increment or decrement X
-  2CCA  DABB2E        		jp	c,LINEEND
+  2CCA  DABF2E        		jp	c,LINEEND
                       	
   2CCD  EB            		ex	de,hl		;de=X
   2CCE  2AADFE        		ld	hl,(GRPX2)
@@ -9156,7 +9156,7 @@
   2CD6                	LINEZ:
   2CD6  E7            		rst	CPHLDE
   2CD7  30D1          		jr	nc,LINELP2
-  2CD9  C3BB2E        		jp	LINEEND
+  2CD9  C3BF2E        		jp	LINEEND
                       	
                       	
                       	;get (step)(x,y) cordinate
@@ -9404,7 +9404,7 @@
   2E2C  2AAFFE        		ld	hl,(GRPY2)	;end (larger y)
   2E2F  B7            		or	a
   2E30  ED42          		sbc	hl,bc		;dy
-  2E32  1835          		jr	LINE2
+  2E32  1839          		jr	LINE2
                       	
                       	
                       	;input: bc=x1, de=y1, (GRPX2)=x2, (GRPY2)=y2, (ATTDAT)=attribute
@@ -9429,7 +9429,7 @@
   2E50  C1            		pop	bc		;smaller x
   2E51  ED43ADFE      		ld	(GRPX2),bc
   2E55  CD1F2E        		call	LINE
-  2E58  1866          		jr	LINEEND2
+  2E58  186A          		jr	LINEEND2
                       	
                       	
                       	;line bf (screen mode 1,2)
@@ -9437,121 +9437,122 @@
   2E5A  ED53AFFE      		ld	(GRPY2),de
   2E5E  CD1F2E        		call	LINE
   2E61  E7            		rst	CPHLDE
-  2E62  285C          		jr	z,LINEEND2
-  2E64  CD402B        		call	INCGY
-  2E67  18F1          		jr	BF12
+  2E62  2860          		jr	z,LINEEND2
+  2E64  ED53B3FE      		ld	(GRPY3),de
+  2E68  CD402B        		call	INCGY
+  2E6B  18ED          		jr	BF12
                       	
                       	
-  2E69                	LINE2:
-  2E69  3A92FD        		ld	a,(SCREEN1)
-  2E6C  0F            		rrca
-  2E6D  3801          		jr	c,SKIPY
+  2E6D                	LINE2:
+  2E6D  3A92FD        		ld	a,(SCREEN1)
+  2E70  0F            		rrca
+  2E71  3801          		jr	c,SKIPY
                       	;screen mode 1 or 3: dy=dy*2
-  2E6F  29            		add	hl,hl
+  2E73  29            		add	hl,hl
                       	
-  2E70                	SKIPY:
-  2E70  EB            		ex	de,hl
-  2E71  ED4BB1FE      		ld	bc,(GRPX3)	;start (x)
-  2E75  2AADFE        		ld	hl,(GRPX2)	;end (x)
-  2E78  B7            		or	a
-  2E79  ED42          		sbc	hl,bc		;dx
-  2E7B  B7            		or	a
-  2E7C  2004          		jr	nz,SKIPX
+  2E74                	SKIPY:
+  2E74  EB            		ex	de,hl
+  2E75  ED4BB1FE      		ld	bc,(GRPX3)	;start (x)
+  2E79  2AADFE        		ld	hl,(GRPX2)	;end (x)
+  2E7C  B7            		or	a
+  2E7D  ED42          		sbc	hl,bc		;dx
+  2E7F  B7            		or	a
+  2E80  2004          		jr	nz,SKIPX
                       	;screen mode 1: dx=dx*3
-  2E7E  44            		ld	b,h
-  2E7F  4D            		ld	c,l
-  2E80  29            		add	hl,hl
-  2E81  09            		add	hl,bc
+  2E82  44            		ld	b,h
+  2E83  4D            		ld	c,l
+  2E84  29            		add	hl,hl
+  2E85  09            		add	hl,bc
                       	
-  2E82                	SKIPX:
-  2E82  D5            		push	de		;dy
-  2E83  E5            		push	hl		;dx
+  2E86                	SKIPX:
+  2E86  D5            		push	de		;dy
+  2E87  E5            		push	hl		;dx
                       	
-  2E84  CB7C          		bit	7,h
-  2E86  2806          		jr	z,DXPLUS	;dx>0
+  2E88  CB7C          		bit	7,h
+  2E8A  2806          		jr	z,DXPLUS	;dx>0
                       	;if dx<0, hl=-hl
-  2E88  AF            		xor	a
-  2E89  95            		sub	l
-  2E8A  6F            		ld	l,a
-  2E8B  9C            		sbc	a,h
-  2E8C  95            		sub	l
-  2E8D  67            		ld	h,a
-  2E8E                	DXPLUS:
-  2E8E  E7            		rst	CPHLDE
-  2E8F  D2A32C        		jp	nc,SLOPEX	;if |dy/dx|<=1
+  2E8C  AF            		xor	a
+  2E8D  95            		sub	l
+  2E8E  6F            		ld	l,a
+  2E8F  9C            		sbc	a,h
+  2E90  95            		sub	l
+  2E91  67            		ld	h,a
+  2E92                	DXPLUS:
+  2E92  E7            		rst	CPHLDE
+  2E93  D2A32C        		jp	nc,SLOPEX	;if |dy/dx|<=1
                       	
                       	;|dy/dx|>1
-  2E92  D5            		push	de		;error=dy
+  2E96  D5            		push	de		;error=dy
                       	
-  2E93  ED5BB3FE      		ld	de,(GRPY3)
-  2E97                	LINELP1:
-  2E97  ED4BB1FE      		ld	bc,(GRPX3)
-  2E9B  CD472D        		call	PSET
+  2E97  ED5BB3FE      		ld	de,(GRPY3)
+  2E9B                	LINELP1:
+  2E9B  ED4BB1FE      		ld	bc,(GRPX3)
+  2E9F  CD472D        		call	PSET
                       	
-  2E9E  E1            		pop	hl		;error
-  2E9F  C1            		pop	bc		;dx
-  2EA0  D1            		pop	de		;dy
-  2EA1  D5            		push	de		;dy
-  2EA2  C5            		push	bc		;dx
+  2EA2  E1            		pop	hl		;error
+  2EA3  C1            		pop	bc		;dx
+  2EA4  D1            		pop	de		;dy
+  2EA5  D5            		push	de		;dy
+  2EA6  C5            		push	bc		;dx
                       	
-  2EA3  CD592B        		call	SUB2DX		;error-=|dx|*2
-  2EA6  E5            		push	hl
-  2EA7  CB7C          		bit	7,h
-  2EA9  2807          		jr	z,ERRPLS
+  2EA7  CD592B        		call	SUB2DX		;error-=|dx|*2
+  2EAA  E5            		push	hl
+  2EAB  CB7C          		bit	7,h
+  2EAD  2807          		jr	z,ERRPLS
                       	
                       	;if error<0
-  2EAB  E1            		pop	hl
-  2EAC  19            		add	hl,de		;error+=dy
-  2EAD  19            		add	hl,de		;error+=dy
-  2EAE  E5            		push	hl		;error
-  2EAF  CD242B        		call	INCGX		;increment or decrement X
+  2EAF  E1            		pop	hl
+  2EB0  19            		add	hl,de		;error+=dy
+  2EB1  19            		add	hl,de		;error+=dy
+  2EB2  E5            		push	hl		;error
+  2EB3  CD242B        		call	INCGX		;increment or decrement X
                       	;	jr	c,LINEEND
                       	
-  2EB2                	ERRPLS:
-  2EB2  CD402B        		call	INCGY		;increment Y
-  2EB5  2AAFFE        		ld	hl,(GRPY2)
-  2EB8  E7            		rst	CPHLDE
-  2EB9  30DC          		jr	nc,LINELP1
+  2EB6                	ERRPLS:
+  2EB6  CD402B        		call	INCGY		;increment Y
+  2EB9  2AAFFE        		ld	hl,(GRPY2)
+  2EBC  E7            		rst	CPHLDE
+  2EBD  30DC          		jr	nc,LINELP1
                       	
-  2EBB                	LINEEND:
-  2EBB  F1            		pop	af		;cancel error
-  2EBC  F1            		pop	af		;cancel dx
-  2EBD  F1            		pop	af		;cancel dy
+  2EBF                	LINEEND:
+  2EBF  F1            		pop	af		;cancel error
+  2EC0  F1            		pop	af		;cancel dx
+  2EC1  F1            		pop	af		;cancel dy
                       	
-  2EBE  C1            		pop	bc
-  2EBF  D1            		pop	de
+  2EC2  C1            		pop	bc
+  2EC3  D1            		pop	de
                       	
-  2EC0                	LINEEND2:
-  2EC0  E1            		pop	hl
-  2EC1  22AFFE        		ld	(GRPY2),hl
+  2EC4                	LINEEND2:
   2EC4  E1            		pop	hl
-  2EC5  22ADFE        		ld	(GRPX2),hl
+  2EC5  22AFFE        		ld	(GRPY2),hl
   2EC8  E1            		pop	hl
-  2EC9  C9            		ret
+  2EC9  22ADFE        		ld	(GRPX2),hl
+  2ECC  E1            		pop	hl
+  2ECD  C9            		ret
                       	
                       	
                       	;PAINT command
-  2ECA                	C_PAIN:
-  2ECA  CDDC2C        		call	GETGXY
-  2ECD  C5            		push	bc		;X
-  2ECE  D5            		push	de		;Y
-  2ECF  3A93FD        		ld	a,(COLOR1)
-  2ED2  CCE30D        		call	z,INT1INC
-  2ED5  CDC015        		call	SETATT
-  2ED8  7E            		ld	a,(hl)
-  2ED9  FE2C          		cp	','
-  2EDB  3AC5FE        		ld	a,(BORDERA)
-  2EDE  2006          		jr	nz,PANZ
-  2EE0  CDE30D        		call	INT1INC
-  2EE3  32C6FE        		ld	(BORDERC),a
-  2EE6                	PANZ:
-  2EE6  5F            		ld	e,a
-  2EE7  C3F12E        		jp	PAINT2
+  2ECE                	C_PAIN:
+  2ECE  CDDC2C        		call	GETGXY
+  2ED1  C5            		push	bc		;X
+  2ED2  D5            		push	de		;Y
+  2ED3  3A93FD        		ld	a,(COLOR1)
+  2ED6  CCE30D        		call	z,INT1INC
+  2ED9  CDC015        		call	SETATT
+  2EDC  7E            		ld	a,(hl)
+  2EDD  FE2C          		cp	','
+  2EDF  3AC5FE        		ld	a,(BORDERA)
+  2EE2  2006          		jr	nz,PANZ
+  2EE4  CDE30D        		call	INT1INC
+  2EE7  32C6FE        		ld	(BORDERC),a
+  2EEA                	PANZ:
+  2EEA  5F            		ld	e,a
+  2EEB  C3F12E        		jp	PAINT2
                       	
                       	
                       	;paint called by OKHOTSK
                       	;input: e=color code, (sp)=Y, (sp+2)=X
-  2EEA                	_PAINT2:ds	PAINT2-_PAINT2
+  2EEE                	_PAINT2:ds	PAINT2-_PAINT2
   2EF1                		org	PAINT2
                       	
   2EF1  7B            		ld	a,e
@@ -10408,7 +10409,7 @@
                       	
   32F5  D5            		push	de		;size
   32F6  ED5B50FF      		ld	de,(TMP)	;multiplied sizes
-  32FA  CD6F24        		call	MULINT2		;hl = multiplied sizes * suffix
+  32FA  CD6C24        		call	MULINT2		;hl = multiplied sizes * suffix
   32FD  C1            		pop	bc		;size
   32FE  EB            		ex	de,hl
   32FF  E1            		pop	hl		;array address
@@ -10418,7 +10419,7 @@
   3303  2A50FF        		ld	hl,(TMP)	;multiplied sizes
   3306  50            		ld	d,b		;size
   3307  59            		ld	e,c
-  3308  CD6F24        		call	MULINT2		;hl = multiplied size * size
+  3308  CD6C24        		call	MULINT2		;hl = multiplied size * size
   330B  2250FF        		ld	(TMP),hl
   330E  E1            		pop	hl		;pointer
   330F  E3            		ex	(sp),hl		;push poniter, pop array address
@@ -10739,7 +10740,7 @@
   345F  23            		inc	hl
   3460  E3            		ex	(sp),hl		;push array address, pop element bytes
   3461  C5            		push	bc		;dimensions
-  3462  CD6F24        		call	MULINT2		;element bytes *= each dimension size
+  3462  CD6C24        		call	MULINT2		;element bytes *= each dimension size
   3465  C1            		pop	bc		;dimensions
   3466  7A            		ld	a,d
   3467  B3            		or	e
@@ -11226,7 +11227,7 @@
   36C5  3009          		jr	nc,SAMESGN
                       	
   36C7  CD6E39        		call	EXFAC
-  36CA  CDEE24        		call	NEGINT4
+  36CA  CDEB24        		call	NEGINT4
   36CD  CD6E39        		call	EXFAC
                       	
   36D0                	SAMESGN:
@@ -11613,7 +11614,7 @@
   387B  E5            		push	hl
   387C  D5            		push	de
                       	
-  387D  CD0425        		call	CMPINT4
+  387D  CD0125        		call	CMPINT4
   3880  3007          		jr	nc,DIVFNC
   3882  216AFF        		ld	hl,FAC1+4
   3885  35            		dec	(hl)
@@ -11623,7 +11624,7 @@
   3889  0620          		ld	b,20h
   388B                	DIVFLP:
   388B  3805          		jr	c,DIVFC1
-  388D  CD0425        		call	CMPINT4
+  388D  CD0125        		call	CMPINT4
   3890  381A          		jr	c,DIVFC2
   3892                	DIVFC1:
   3892  2A66FF        		ld	hl,(FAC1)
@@ -11648,7 +11649,7 @@
   38B8  10D1          		djnz	DIVFLP
                       	
   38BA  17            		rla			;store c-flag
-  38BB  CD0425        		call	CMPINT4		;no change in a
+  38BB  CD0125        		call	CMPINT4		;no change in a
   38BE  D1            		pop	de
   38BF  E1            		pop	hl
   38C0  D9            		exx
@@ -12141,14 +12142,14 @@
   3AFA                	FTOALP3:
   3AFA  05            		dec	b
   3AFB  FA073B        		jp	m,FTOADOT
-  3AFE  CDD824        		call	DIVINT4
+  3AFE  CDD524        		call	DIVINT4
   3B01  C630          		add	a,'0'
   3B03  12            		ld	(de),a
   3B04  13            		inc	de
   3B05  18F3          		jr	FTOALP3
                       	
   3B07                	FTOADOT:
-  3B07  CD2B25        		call	CHKINT4
+  3B07  CD2825        		call	CHKINT4
   3B0A  2812          		jr	z,FTOAEND
                       	
   3B0C  3E2E          		ld	a,'.'
@@ -12158,11 +12159,11 @@
   3B10  79            		ld	a,c		;
   3B11  B7            		or	a
   3B12                	FTOALP4:
-  3B12  C4D824        		call	nz,DIVINT4
+  3B12  C4D524        		call	nz,DIVINT4
   3B15  C630          		add	a,'0'
   3B17  12            		ld	(de),a
   3B18  13            		inc	de
-  3B19  CD2B25        		call	CHKINT4
+  3B19  CD2825        		call	CHKINT4
   3B1C  20F4          		jr	nz,FTOALP4
                       	
   3B1E                	FTOAEND:
@@ -12279,7 +12280,7 @@
   3BAF  2151FA        		ld	hl,RSEED
   3BB2  CD0D0C        		call	SETF1
   3BB5                	RNDMNS:
-  3BB5  CD1925        		call	DECINT4
+  3BB5  CD1625        		call	DECINT4
   3BB8  21D53B        		ld	hl,RNDFCT
   3BBB  CD1B0C        		call	SETF2
   3BBE  CDD93B        		call	MULRND
@@ -12606,7 +12607,7 @@
                       	
   3DCC  78            		ld	a,b
   3DCD  04            		inc	b
-  3DCE  CD5E24        		call	MULINT1		;hl=b(b+1)
+  3DCE  CD5B24        		call	MULINT1		;hl=b(b+1)
   3DD1  CD5F0C        		call	I2TOF		;hl->FAC1
                       	
   3DD4  CD5B39        		call	CPYFAC

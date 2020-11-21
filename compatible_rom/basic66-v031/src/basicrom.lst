@@ -903,7 +903,7 @@
                       	
   03FD                	ERROR:
   03FD  ED7B5BFA      		ld	sp,(STACK)
-  0401  CD6656        		call	CLRBUFP
+  0401  CD6556        		call	CLRBUFP
                       	
                       	;	xor	a
                       	;	ld	(STRDSC2),a
@@ -928,7 +928,7 @@
   0414                	PRTERR:
   0414  219503        		ld	hl,ERRID
   0417  7B            		ld	a,e
-  0418  FE30          		cp	30h
+  0418  FE2A          		cp	2ah
   041A  3E3F          		ld	a,'?'
   041C  3806          		jr	c,PRTERRC
   041E  21DB41        		ld	hl,ERRIDEX-2ah
@@ -1631,10 +1631,10 @@
   072D  3A3BFB        		ld	a,(DRIVES)
   0730  B7            		or	a
   0731  C8            		ret	z
+  0732  F5            		push	af		;c-flag=0: not merge
                       	;	ld	a,'R'		;a<>0
-  0732  CD745F        		call	SETFNAME
-  0735  F5            		push	af		;drive-1
-  0736  C30553        		jp	LOADMAIN
+  0733  CD745F        		call	SETFNAME
+  0736  C30553        		jp	LOADMAIN2
                       	
                       	
                       	;convert float to 2-byte integer for USR() (-32768~32767)
@@ -9508,7 +9508,7 @@
   2CAC  C1            		pop	bc
   2CAD  0D            		dec	c
   2CAE  20DB          		jr	nz,BFGLP3
-  2CB0  C3C62E        		jp	LINEEND2
+  2CB0  C3CA2E        		jp	LINEEND2
                       	
                       	
                       	;|dy/dx|<=1
@@ -9544,7 +9544,7 @@
   2CD6                	ERRMNS:
   2CD6  E5            		push	hl		;error
   2CD7  CD272B        		call	INCGX		;increment or decrement X
-  2CDA  DAC12E        		jp	c,LINEEND
+  2CDA  DAC52E        		jp	c,LINEEND
                       	
   2CDD  EB            		ex	de,hl		;de=X
   2CDE  2AADFE        		ld	hl,(GRPX2)
@@ -9554,7 +9554,7 @@
   2CE6                	LINEZ:
   2CE6  E7            		rst	CPHLDE
   2CE7  30D1          		jr	nc,LINELP2
-  2CE9  C3C12E        		jp	LINEEND
+  2CE9  C3C52E        		jp	LINEEND
                       	
                       	
                       	;get (step)(x,y) cordinate
@@ -9814,7 +9814,7 @@
   2E2C  2AAFFE        		ld	hl,(GRPY2)	;end (larger y)
   2E2F  B7            		or	a
   2E30  ED42          		sbc	hl,bc		;dy
-  2E32  1835          		jr	LINE2
+  2E32  1839          		jr	LINE2
                       	
                       	
                       	;input: bc=x1, de=y1, (GRPX2)=x2, (GRPY2)=y2, (ATTDAT)=attribute
@@ -9839,7 +9839,7 @@
   2E50  C1            		pop	bc		;smaller x
   2E51  ED43ADFE      		ld	(GRPX2),bc
   2E55  CD1F2E        		call	LINE
-  2E58  186C          		jr	LINEEND2
+  2E58  1870          		jr	LINEEND2
                       	
                       	
                       	;line bf (screen mode 1,2)
@@ -9847,123 +9847,124 @@
   2E5A  ED53AFFE      		ld	(GRPY2),de
   2E5E  CD1F2E        		call	LINE
   2E61  E7            		rst	CPHLDE
-  2E62  2862          		jr	z,LINEEND2
-  2E64  CD432B        		call	INCGY
-  2E67  18F1          		jr	BF12
+  2E62  2866          		jr	z,LINEEND2
+  2E64  ED53B3FE      		ld	(GRPY3),de
+  2E68  CD432B        		call	INCGY
+  2E6B  18ED          		jr	BF12
                       	
                       	
-  2E69                	LINE2:
-  2E69  CD9539        		call	CHKMOD
-  2E6C  3A92FD        		ld	a,(SCREEN1)
-  2E6F  CA226C        		jp	z,LINE66
-  2E72  0F            		rrca
-  2E73  3801          		jr	c,SKIPY
+  2E6D                	LINE2:
+  2E6D  CD9539        		call	CHKMOD
+  2E70  3A92FD        		ld	a,(SCREEN1)
+  2E73  CA226C        		jp	z,LINE66
+  2E76  0F            		rrca
+  2E77  3801          		jr	c,SKIPY
                       	;screen mode 1 or 3: dy=dy*2
-  2E75  29            		add	hl,hl
+  2E79  29            		add	hl,hl
                       	
-  2E76                	SKIPY:
-  2E76  EB            		ex	de,hl
-  2E77  ED4BB1FE      		ld	bc,(GRPX3)	;start (x)
-  2E7B  2AADFE        		ld	hl,(GRPX2)	;end (x)
-  2E7E  B7            		or	a
-  2E7F  ED42          		sbc	hl,bc		;dx
-  2E81  B7            		or	a
-  2E82  2004          		jr	nz,SKIPX
+  2E7A                	SKIPY:
+  2E7A  EB            		ex	de,hl
+  2E7B  ED4BB1FE      		ld	bc,(GRPX3)	;start (x)
+  2E7F  2AADFE        		ld	hl,(GRPX2)	;end (x)
+  2E82  B7            		or	a
+  2E83  ED42          		sbc	hl,bc		;dx
+  2E85  B7            		or	a
+  2E86  2004          		jr	nz,SKIPX
                       	;screen mode 1: dx=dx*3
-  2E84  44            		ld	b,h
-  2E85  4D            		ld	c,l
-  2E86  29            		add	hl,hl
-  2E87  09            		add	hl,bc
+  2E88  44            		ld	b,h
+  2E89  4D            		ld	c,l
+  2E8A  29            		add	hl,hl
+  2E8B  09            		add	hl,bc
                       	
-  2E88                	SKIPX:
-  2E88  D5            		push	de		;dy
-  2E89  E5            		push	hl		;dx
+  2E8C                	SKIPX:
+  2E8C  D5            		push	de		;dy
+  2E8D  E5            		push	hl		;dx
                       	
-  2E8A  CB7C          		bit	7,h
-  2E8C  2806          		jr	z,DXPLUS	;dx>0
+  2E8E  CB7C          		bit	7,h
+  2E90  2806          		jr	z,DXPLUS	;dx>0
                       	;if dx<0, hl=-hl
-  2E8E  AF            		xor	a
-  2E8F  95            		sub	l
-  2E90  6F            		ld	l,a
-  2E91  9C            		sbc	a,h
-  2E92  95            		sub	l
-  2E93  67            		ld	h,a
-  2E94                	DXPLUS:
-  2E94  E7            		rst	CPHLDE
-  2E95  D2B32C        		jp	nc,SLOPEX	;if |dy/dx|<=1
+  2E92  AF            		xor	a
+  2E93  95            		sub	l
+  2E94  6F            		ld	l,a
+  2E95  9C            		sbc	a,h
+  2E96  95            		sub	l
+  2E97  67            		ld	h,a
+  2E98                	DXPLUS:
+  2E98  E7            		rst	CPHLDE
+  2E99  D2B32C        		jp	nc,SLOPEX	;if |dy/dx|<=1
                       	
                       	;|dy/dx|>1
-  2E98  D5            		push	de		;error=dy
+  2E9C  D5            		push	de		;error=dy
                       	
-  2E99  ED5BB3FE      		ld	de,(GRPY3)
-  2E9D                	LINELP1:
-  2E9D  ED4BB1FE      		ld	bc,(GRPX3)
-  2EA1  CD472D        		call	PSET
+  2E9D  ED5BB3FE      		ld	de,(GRPY3)
+  2EA1                	LINELP1:
+  2EA1  ED4BB1FE      		ld	bc,(GRPX3)
+  2EA5  CD472D        		call	PSET
                       	
-  2EA4  E1            		pop	hl		;error
-  2EA5  C1            		pop	bc		;dx
-  2EA6  D1            		pop	de		;dy
-  2EA7  D5            		push	de		;dy
-  2EA8  C5            		push	bc		;dx
+  2EA8  E1            		pop	hl		;error
+  2EA9  C1            		pop	bc		;dx
+  2EAA  D1            		pop	de		;dy
+  2EAB  D5            		push	de		;dy
+  2EAC  C5            		push	bc		;dx
                       	
-  2EA9  CD622B        		call	SUB2DX		;error-=|dx|*2
-  2EAC  E5            		push	hl
-  2EAD  CB7C          		bit	7,h
-  2EAF  2807          		jr	z,ERRPLS
+  2EAD  CD622B        		call	SUB2DX		;error-=|dx|*2
+  2EB0  E5            		push	hl
+  2EB1  CB7C          		bit	7,h
+  2EB3  2807          		jr	z,ERRPLS
                       	
                       	;if error<0
-  2EB1  E1            		pop	hl
-  2EB2  19            		add	hl,de		;error+=dy
-  2EB3  19            		add	hl,de		;error+=dy
-  2EB4  E5            		push	hl		;error
-  2EB5  CD272B        		call	INCGX		;increment or decrement X
+  2EB5  E1            		pop	hl
+  2EB6  19            		add	hl,de		;error+=dy
+  2EB7  19            		add	hl,de		;error+=dy
+  2EB8  E5            		push	hl		;error
+  2EB9  CD272B        		call	INCGX		;increment or decrement X
                       	;	jr	c,LINEEND
                       	
-  2EB8                	ERRPLS:
-  2EB8  CD432B        		call	INCGY		;increment Y
-  2EBB  2AAFFE        		ld	hl,(GRPY2)
-  2EBE  E7            		rst	CPHLDE
-  2EBF  30DC          		jr	nc,LINELP1
+  2EBC                	ERRPLS:
+  2EBC  CD432B        		call	INCGY		;increment Y
+  2EBF  2AAFFE        		ld	hl,(GRPY2)
+  2EC2  E7            		rst	CPHLDE
+  2EC3  30DC          		jr	nc,LINELP1
                       	
-  2EC1                	LINEEND:
-  2EC1  F1            		pop	af		;cancel error
-  2EC2  F1            		pop	af		;cancel dx
-  2EC3  F1            		pop	af		;cancel dy
+  2EC5                	LINEEND:
+  2EC5  F1            		pop	af		;cancel error
+  2EC6  F1            		pop	af		;cancel dx
+  2EC7  F1            		pop	af		;cancel dy
                       	
-  2EC4  C1            		pop	bc
-  2EC5  D1            		pop	de
+  2EC8  C1            		pop	bc
+  2EC9  D1            		pop	de
                       	
-  2EC6                	LINEEND2:
-  2EC6  E1            		pop	hl
-  2EC7  22AFFE        		ld	(GRPY2),hl
+  2ECA                	LINEEND2:
   2ECA  E1            		pop	hl
-  2ECB  22ADFE        		ld	(GRPX2),hl
+  2ECB  22AFFE        		ld	(GRPY2),hl
   2ECE  E1            		pop	hl
-  2ECF  C9            		ret
+  2ECF  22ADFE        		ld	(GRPX2),hl
+  2ED2  E1            		pop	hl
+  2ED3  C9            		ret
                       	
                       	
                       	;PAINT command
-  2ED0                	C_PAIN:
-  2ED0  CDEC2C        		call	GETGXY
-  2ED3  C5            		push	bc		;X
-  2ED4  D5            		push	de		;Y
-  2ED5  3A93FD        		ld	a,(COLOR1)
-  2ED8  CCE30D        		call	z,INT1INC
-  2EDB  CDC015        		call	SETATT
-  2EDE  7E            		ld	a,(hl)
-  2EDF  FE2C          		cp	','
-  2EE1  3AC5FE        		ld	a,(BORDERA)
-  2EE4  2006          		jr	nz,PANZ
-  2EE6  CDE30D        		call	INT1INC
-  2EE9  32C6FE        		ld	(BORDERC),a
-  2EEC                	PANZ:
-  2EEC  5F            		ld	e,a
+  2ED4                	C_PAIN:
+  2ED4  CDEC2C        		call	GETGXY
+  2ED7  C5            		push	bc		;X
+  2ED8  D5            		push	de		;Y
+  2ED9  3A93FD        		ld	a,(COLOR1)
+  2EDC  CCE30D        		call	z,INT1INC
+  2EDF  CDC015        		call	SETATT
+  2EE2  7E            		ld	a,(hl)
+  2EE3  FE2C          		cp	','
+  2EE5  3AC5FE        		ld	a,(BORDERA)
+  2EE8  2006          		jr	nz,PANZ
+  2EEA  CDE30D        		call	INT1INC
+  2EED  32C6FE        		ld	(BORDERC),a
+  2EF0                	PANZ:
+  2EF0  5F            		ld	e,a
                       	;	jp	PAINT2
                       	
                       	
                       	;paint used by OKHOTSK
                       	;input: e=color code, (sp)=Y, (sp+2)=X
-  2EED                	_PAINT2:ds	PAINT2-_PAINT2
+  2EF1                	_PAINT2:ds	PAINT2-_PAINT2
   2EF1                		org	PAINT2
                       	
   2EF1  7B            		ld	a,e
@@ -13179,7 +13180,7 @@
                       	;destroy: f,bc,de,hl
   3E6E                	POINT:
   3E6E  CD9539        		call	CHKMOD
-  3E71  CA2063        		jp	z,POINT66
+  3E71  CA2263        		jp	z,POINT66
   3E74  3A92FD        		ld	a,(SCREEN1)
   3E77  3D            		dec	a
   3E78  281A          		jr	z,POINT2
@@ -13238,13 +13239,13 @@
   3EAC  CD960B        		call	CHKLPAR
   3EAF  CD320E        		call	INT1ARG2
   3EB2  CDA50B        		call	CHKRPAR
-  3EB5  60            		ld	h,b
+  3EB5  61            		ld	h,c
   3EB6  6B            		ld	l,e
   3EB7  24            		inc	h
   3EB8  2C            		inc	l
   3EB9  CDCD11        		call	XY2AD
   3EBC  CD9539        		call	CHKMOD
-  3EBF  CA1763        		jp	z,F_SCRN66
+  3EBF  CA1963        		jp	z,F_SCRN66
   3EC2  6E            		ld	l,(hl)
   3EC3  CD5E0C        		call	I1TOF
   3EC6  C3B318        		jp	FNCRTN
@@ -13732,7 +13733,7 @@
   40BA  23            		inc	hl
   40BB  10F3          		djnz	SETTBLLP1
                       	
-  40BD  CD8A56        		call	SETIX
+  40BD  CD8956        		call	SETIX
   40C0  AF            		xor	a
   40C1  CDF251        		call	SETFATP
   40C4  36FF          		ld	(hl),0ffh	;last accessed track (ff=removed)
@@ -13745,11 +13746,11 @@
   40CC  328DFF        		ld	(HOOKERR),a
   40CF  3293FF        		ld	(HOOKEDT),a
   40D2  32CFFF        		ld	(HOOKPUT),a
-  40D5  216656        		ld	hl,CLRBUFP
+  40D5  216556        		ld	hl,CLRBUFP
   40D8  228EFF        		ld	(HOOKERR+1),hl
-  40DB  214756        		ld	hl,REMOVE
+  40DB  214656        		ld	hl,REMOVE
   40DE  2294FF        		ld	(HOOKEDT+1),hl
-  40E1  213455        		ld	hl,PUTDSK
+  40E1  213355        		ld	hl,PUTDSK
   40E4  22D0FF        		ld	(HOOKPUT+1),hl
                       	
                       	;set buffer pointer table
@@ -13809,7 +13810,7 @@
                       	;ab-af
   4142  C203724ABE4DAC		dw				C_RENM,	C_CRCL,	C_GET,	C_PUT,	C_BLD
                       	;b0-bf
-  414C  305D8A548554E7		dw	C_BSV,	C_FLS,	C_LFLS,	C_LOAD,	C_MRG,	C_NAME,	C_SAVE,	C_FLD
+  414C  305D89548454E7		dw	C_BSV,	C_FLS,	C_LFLS,	C_LOAD,	C_MRG,	C_NAME,	C_SAVE,	C_FLD
   415C  C203C203C203C2		dw	C_LSET,	C_RSET,	C_OPEN,	C_CLOS,	C_DSKO,	C_KILL,	C_TALK,	C_MON
                       	;c0-c1
   416C  D273B67E      		dw	C_KANJ,	C_DEL
@@ -13817,8 +13818,8 @@
                       	
   4170                	FNCLST66:
                       	;f2-f9
-  4170  C203E355C203C2		dw			F_PAD,	F_DSKI,	F_LOF,	F_LOC,	F_EOF,	F_DSKF
-  417C  68545A54      		dw	F_CVS,	F_MKS
+  4170  C203E255C203C2		dw			F_PAD,	F_DSKI,	F_LOF,	F_LOC,	F_EOF,	F_DSKF
+  417C  67545954      		dw	F_CVS,	F_MKS
                       	
                       	
   4180                	CMDNAME66:
@@ -16276,7 +16277,7 @@
                       	;output: ix=disk work, hl=(BUF0), (ix+0)=drive-1, (ix+ibh), (fb33)=FAT pointer
                       	;destroy: af,bc,de
   4F2A                	READFAT:
-  4F2A  CD8A56        		call	SETIX
+  4F2A  CD8956        		call	SETIX
   4F2D  CDF251        		call	SETFATP
   4F30  010E12        		ld	bc,120eh	;track 18, sector 14
                       	;	jp	READBUF0
@@ -16841,7 +16842,7 @@
   5232  C1            		pop	bc
   5233  B8            		cp	b
   5234  C25842        		jp	nz,RDERR
-  5237  CD7656        		call	COPYFAT
+  5237  CD7556        		call	COPYFAT
   523A  CD594F        		call	SRCHFILE
   523D  CA4042        		jp	z,FEERR
                       	
@@ -16870,7 +16871,7 @@
   5269  DDE1          		pop	ix
                       	
   526B  CDA752        		call	WRTFAT
-  526E  C32256        		jp	WRTDIR
+  526E  C32156        		jp	WRTDIR
                       	
                       	
                       	;open file buffer#0
@@ -16923,7 +16924,7 @@
   529F  CDC726        		call	PUTDEV
   52A2  7E            		ld	a,(hl)		;+5: position in buffer
   52A3  B7            		or	a
-  52A4  C43256        		call	nz,WRTBUF
+  52A4  C43156        		call	nz,WRTBUF
                       	
                       	;write FAT
                       	;destroy: af,bc,de,hl
@@ -16955,7 +16956,7 @@
                       	;KILL command
   52C8                	C_KILL:
   52C8  CD745F        		call	SETFNAME
-  52CB  CD7656        		call	COPYFAT
+  52CB  CD7556        		call	COPYFAT
   52CE  CD4D4F        		call	CHKID
   52D1  CD594F        		call	SRCHFILE
   52D4  C23442        		jp	nz,FFERR
@@ -16964,7 +16965,7 @@
   52DC  3600          		ld	(hl),00h	;delete mark
   52DE  CDD95D        		call	RELEASEFAT
   52E1  CDA752        		call	WRTFAT
-  52E4  C32256        		jp	WRTDIR
+  52E4  C32156        		jp	WRTDIR
                       	
                       	
                       	;LOAD command
@@ -16976,726 +16977,728 @@
   52E8  37            		scf			;37h
                       	
   52E9  C1            		pop	bc		;cancel return address
-  52EA  F5            		push	af		;c-flag: load=0, merge=1
+  52EA  F5            		push	af		;c-flag: load/run=0, merge=1
                       	
   52EB  AF            		xor	a		;default: no R option
   52EC  CD745F        		call	SETFNAME
                       	
-  52EF  F5            		push	af		;drive-1
-                      	
-  52F0  CD613F        		call	CHKCLN
-  52F3  2810          		jr	z,LOADMAIN
+  52EF  47            		ld	b,a		;drive-1
+  52F0  F1            		pop	af		;c-flag: load/run=0, merge=1
+  52F1  F5            		push	af		;c-flag: load/run=0, merge=1
+  52F2  3810          		jr	c,LOADMAIN
+  52F4  7E            		ld	a,(hl)
   52F5  FE2C          		cp	','
-  52F7  C2C203        		jp	nz,SNERR
-  52FA  CD593F        		call	SKIPSPINC
-  52FD  FE52          		cp	'R'
-  52FF  C2C203        		jp	nz,SNERR
-  5302  DD7703        		ld	(ix+03h),a	;R option
+  52F7  200B          		jr	nz,LOADMAIN
+  52F9  CD593F        		call	SKIPSPINC
+  52FC  FE52          		cp	'R'
+  52FE  C2C203        		jp	nz,SNERR
+  5301  DD7703        		ld	(ix+03h),a	;R option
                       	
-  5305                	LOADMAIN:
-  5305  F1            		pop	af		;drive-1
-  5306  CD7656        		call	COPYFAT
-  5309  CD594F        		call	SRCHFILE
-  530C  C23442        		jp	nz,FFERR
+  5304                	LOADMAIN:
+  5304  78            		ld	a,b		;drive-1
+  5305                	LOADMAIN2:
+  5305  CD7556        		call	COPYFAT
+  5308  CD594F        		call	SRCHFILE
+  530B  C23442        		jp	nz,FFERR
                       	
-  530F  4F            		ld	c,a		;cluster
-  5310  F1            		pop	af		;c-flag: load=0, merge=1
-  5311  F5            		push	af		;c-flag: load=0, merge=1
-  5312  D4DC34        		call	nc,NEW
-  5315  F1            		pop	af
-  5316  79            		ld	a,c		;cluster
-  5317  CB78          		bit	7,b		;attribute
-  5319  2848          		jr	z,LOADASC
-  531B  DA3742        		jp	c,BMERR		;merge and not ascii
+  530E  4F            		ld	c,a		;cluster
+  530F  F1            		pop	af		;c-flag: load/run=0, merge=1
+  5310  F5            		push	af		;c-flag: load/run=0, merge=1
+  5311  D4DC34        		call	nc,NEW
+  5314  F1            		pop	af		;c-flag: load/run=0, merge=1
+  5315  79            		ld	a,c		;cluster
+  5316  CB78          		bit	7,b		;attribute
+  5318  2848          		jr	z,LOADASC
+  531A  DA3742        		jp	c,BMERR		;merge and not ascii
                       	
                       	
                       	;normal format load
                       	;input: a=cluster
-  531E  2A5FFA        		ld	hl,(STARTAD)
-  5321                	LOADLP1:
-  5321  57            		ld	d,a		;cluster
-  5322  CD6D56        		call	C2TRSECT
-  5325  7A            		ld	a,d		;cluster
-  5326  EB            		ex	de,hl
-  5327  CD115F        		call	GETFAT
-  532A  EB            		ex	de,hl
-  532B  F5            		push	af		;FAT value
-  532C  FEC9          		cp	0c9h
-  532E  D24F42        		jp	nc,ATERR
-  5331  D6C0          		sub	0c0h
-  5333  2810          		jr	z,LOADEND
-  5335  3002          		jr	nc,LOADNC	;c1-c8
-  5337  3E08          		ld	a,08h		;others
-  5339                	LOADNC:
-  5339  DD361B00      		ld	(ix+1bh),00h	;error count
-  533D                	LOADLP2:
-  533D  54            		ld	d,h
-  533E  5D            		ld	e,l
-  533F  B7            		or	a		;reset z- and c-flag for reading
-  5340  CD7442        		call	DISK
-  5343  38F8          		jr	c,LOADLP2
-  5345                	LOADEND:
-  5345  84            		add	a,h
-  5346  67            		ld	h,a
+  531D  2A5FFA        		ld	hl,(STARTAD)
+  5320                	LOADLP1:
+  5320  57            		ld	d,a		;cluster
+  5321  CD6C56        		call	C2TRSECT
+  5324  7A            		ld	a,d		;cluster
+  5325  EB            		ex	de,hl
+  5326  CD115F        		call	GETFAT
+  5329  EB            		ex	de,hl
+  532A  F5            		push	af		;FAT value
+  532B  FEC9          		cp	0c9h
+  532D  D24F42        		jp	nc,ATERR
+  5330  D6C0          		sub	0c0h
+  5332  2810          		jr	z,LOADEND
+  5334  3002          		jr	nc,LOADNC	;c1-c8
+  5336  3E08          		ld	a,08h		;others
+  5338                	LOADNC:
+  5338  DD361B00      		ld	(ix+1bh),00h	;error count
+  533C                	LOADLP2:
+  533C  54            		ld	d,h
+  533D  5D            		ld	e,l
+  533E  B7            		or	a		;reset z- and c-flag for reading
+  533F  CD7442        		call	DISK
+  5342  38F8          		jr	c,LOADLP2
+  5344                	LOADEND:
+  5344  84            		add	a,h
+  5345  67            		ld	h,a
                       	
-  5347  F1            		pop	af		;FAT vaule
-  5348  FEC0          		cp	0c0h
-  534A  38D5          		jr	c,LOADLP1
-  534C                	LOADEND2:
-  534C  CDCC04        		call	CHGLKPMAIN
-  534F  23            		inc	hl
-  5350  2256FF        		ld	(VARAD),hl
-  5353  CDF934        		call	RESSTK
-  5356  CD6656        		call	CLRBUFP
-  5359  DD7E03        		ld	a,(ix+03h)	;R option?
-  535C  B7            		or	a
-  535D  C22707        		jp	nz,RUNFIRST
-  5360  C34204        		jp	EDIT
+  5346  F1            		pop	af		;FAT vaule
+  5347  FEC0          		cp	0c0h
+  5349  38D5          		jr	c,LOADLP1
+  534B                	LOADEND2:
+  534B  CDCC04        		call	CHGLKPMAIN
+  534E  23            		inc	hl
+  534F  2256FF        		ld	(VARAD),hl
+  5352  CDF934        		call	RESSTK
+  5355  CD6556        		call	CLRBUFP
+  5358  DD7E03        		ld	a,(ix+03h)	;R option?
+  535B  B7            		or	a
+  535C  C22707        		jp	nz,RUNFIRST
+  535F  C34204        		jp	EDIT
                       	
                       	
                       	;ASCII load
                       	;input: a=cluster, b=attribute
-  5363                	LOADASC:
-  5363  05            		dec	b
-  5364  CA4C42        		jp	z,DSERR
+  5362                	LOADASC:
+  5362  05            		dec	b
+  5363  CA4C42        		jp	z,DSERR
                       	
-  5367  F5            		push	af		;cluster
-  5368  CD6D56        		call	C2TRSECT
-  536B  CD334F        		call	READBUF0
-  536E  F1            		pop	af		;cluster
+  5366  F5            		push	af		;cluster
+  5367  CD6C56        		call	C2TRSECT
+  536A  CD334F        		call	READBUF0
+  536D  F1            		pop	af		;cluster
                       	
-  536F  1601          		ld	d,01h		;file mode: sequential load
-  5371  CD7152        		call	FOPEN0
-  5374                	LDASCLP1:
-  5374  21DAFE        		ld	hl,INPBUF
-  5377  0648          		ld	b,48h
-  5379                	LDASCLP2:
-  5379  C5            		push	bc
-  537A  CDA255        		call	GETDSK
-  537D  C1            		pop	bc
-  537E  380F          		jr	c,LOADCNV
-  5380                	LDASCCHK:
-  5380  B7            		or	a
-  5381  280C          		jr	z,LOADCNV
-  5383  FE0D          		cp	0dh
-  5385  2808          		jr	z,LOADCNV
-  5387  FE1A          		cp	1ah		;end mark
-  5389  2804          		jr	z,LOADCNV
-  538B  77            		ld	(hl),a
-  538C  23            		inc	hl
-  538D  10EA          		djnz	LDASCLP2
+  536E  1601          		ld	d,01h		;file mode: sequential load
+  5370  CD7152        		call	FOPEN0
+  5373                	LDASCLP1:
+  5373  21DAFE        		ld	hl,INPBUF
+  5376  0648          		ld	b,48h
+  5378                	LDASCLP2:
+  5378  C5            		push	bc
+  5379  CDA155        		call	GETDSK
+  537C  C1            		pop	bc
+  537D  380F          		jr	c,LOADCNV
+  537F                	LDASCCHK:
+  537F  B7            		or	a
+  5380  280C          		jr	z,LOADCNV
+  5382  FE0D          		cp	0dh
+  5384  2808          		jr	z,LOADCNV
+  5386  FE1A          		cp	1ah		;end mark
+  5388  2804          		jr	z,LOADCNV
+  538A  77            		ld	(hl),a
+  538B  23            		inc	hl
+  538C  10EA          		djnz	LDASCLP2
                       	
-  538F                	LOADCNV:
-  538F  F5            		push	af		;
-  5390  3600          		ld	(hl),00h
-  5392  21D9FE        		ld	hl,INPBUF-1
-  5395  D7            		rst	ANADAT
-  5396  3804          		jr	c,LDCNVC
-  5398  B7            		or	a
-  5399  C24C42        		jp	nz,DSERR
-  539C                	LDCNVC:
-  539C  21D9FE        		ld	hl,INPBUF-1
-  539F  CD6A04        		call	INPTPRG
-  53A2  F1            		pop	af		;
-  53A3  B7            		or	a
-  53A4  28A6          		jr	z,LOADEND2
-  53A6  FE1A          		cp	1ah
-  53A8  28A2          		jr	z,LOADEND2
+  538E                	LOADCNV:
+  538E  F5            		push	af		;
+  538F  3600          		ld	(hl),00h
+  5391  21D9FE        		ld	hl,INPBUF-1
+  5394  D7            		rst	ANADAT
+  5395  3804          		jr	c,LDCNVC
+  5397  B7            		or	a
+  5398  C24C42        		jp	nz,DSERR
+  539B                	LDCNVC:
+  539B  21D9FE        		ld	hl,INPBUF-1
+  539E  CD6A04        		call	INPTPRG
+  53A1  F1            		pop	af		;
+  53A2  B7            		or	a
+  53A3  28A6          		jr	z,LOADEND2
+  53A5  FE1A          		cp	1ah
+  53A7  28A2          		jr	z,LOADEND2
                       	
                       	;skip LF
-  53AA                	LDCNVLP:
-  53AA  CDA255        		call	GETDSK
-  53AD  389D          		jr	c,LOADEND2
-  53AF  FE0A          		cp	0ah
-  53B1  28F7          		jr	z,LDCNVLP
-  53B3  21DAFE        		ld	hl,INPBUF
-  53B6  0648          		ld	b,48h
-  53B8  18C6          		jr	LDASCCHK
+  53A9                	LDCNVLP:
+  53A9  CDA155        		call	GETDSK
+  53AC  389D          		jr	c,LOADEND2
+  53AE  FE0A          		cp	0ah
+  53B0  28F7          		jr	z,LDCNVLP
+  53B2  21DAFE        		ld	hl,INPBUF
+  53B5  0648          		ld	b,48h
+  53B7  18C6          		jr	LDASCCHK
                       	
                       	
                       	;SAVE command
-  53BA                	C_SAVE:
-  53BA  CD745F        		call	SETFNAME
-  53BD  F5            		push	af		;drive-1
-  53BE  DD361800      		ld	(ix+18h),00h	;0=not ASCII format
-  53C2  CD613F        		call	CHKCLN
-  53C5  2810          		jr	z,SAVEMAIN
-  53C7  FE2C          		cp	','
-  53C9  C2C203        		jp	nz,SNERR
-  53CC  CD593F        		call	SKIPSPINC
-  53CF  FE41          		cp	'A'
-  53D1  C2C203        		jp	nz,SNERR
-  53D4  DD7718        		ld	(ix+18h),a	;not0=ASCII format
+  53B9                	C_SAVE:
+  53B9  CD745F        		call	SETFNAME
+  53BC  F5            		push	af		;drive-1
+  53BD  DD361800      		ld	(ix+18h),00h	;0=not ASCII format
+  53C1  CD613F        		call	CHKCLN
+  53C4  2810          		jr	z,SAVEMAIN
+  53C6  FE2C          		cp	','
+  53C8  C2C203        		jp	nz,SNERR
+  53CB  CD593F        		call	SKIPSPINC
+  53CE  FE41          		cp	'A'
+  53D0  C2C203        		jp	nz,SNERR
+  53D3  DD7718        		ld	(ix+18h),a	;not0=ASCII format
                       	
-  53D7                	SAVEMAIN:
-  53D7  DD7E18        		ld	a,(ix+18h)	;ASCII save?
-  53DA  FE01          		cp	01h		;set c-flag if a=0
-  53DC  9F            		sbc	a,a
-  53DD  E680          		and	80h		;normal save=80h, ASCII save=00h
-  53DF  67            		ld	h,a		;attribute
-  53E0  F1            		pop	af		;drive-1
-  53E1  E5            		push	hl
-  53E2  CD4F5F        		call	SVCOMMON
-  53E5  E1            		pop	hl
-  53E6  24            		inc	h
-  53E7  25            		dec	h
-  53E8  283E          		jr	z,SAVEASC	;if attribute=0
+  53D6                	SAVEMAIN:
+  53D6  DD7E18        		ld	a,(ix+18h)	;ASCII save?
+  53D9  FE01          		cp	01h		;set c-flag if a=0
+  53DB  9F            		sbc	a,a
+  53DC  E680          		and	80h		;normal save=80h, ASCII save=00h
+  53DE  67            		ld	h,a		;attribute
+  53DF  F1            		pop	af		;drive-1
+  53E0  E5            		push	hl
+  53E1  CD4F5F        		call	SVCOMMON
+  53E4  E1            		pop	hl
+  53E5  24            		inc	h
+  53E6  25            		dec	h
+  53E7  283E          		jr	z,SAVEASC	;if attribute=0
                       	
                       	;normal save
-  53EA  2A56FF        		ld	hl,(VARAD)
-  53ED  ED5B5FFA      		ld	de,(STARTAD)
+  53E9  2A56FF        		ld	hl,(VARAD)
+  53EC  ED5B5FFA      		ld	de,(STARTAD)
                       	;	or	a
-  53F1  ED52          		sbc	hl,de
-  53F3  2B            		dec	hl
-  53F4  24            		inc	h		;h<-number of sector
+  53F0  ED52          		sbc	hl,de
+  53F2  2B            		dec	hl
+  53F3  24            		inc	h		;h<-number of sector
                       	
-  53F5                	SAVELP1:
-  53F5  D5            		push	de
-  53F6  54            		ld	d,h
-  53F7  CD115F        		call	GETFAT
-  53FA  7A            		ld	a,d
-  53FB  FE08          		cp	08h
-  53FD  3802          		jr	c,SAVEC
-  53FF  3E08          		ld	a,08h
-  5401                	SAVEC:
-  5401  C6C0          		add	a,0c0h
-  5403  77            		ld	(hl),a
-  5404  62            		ld	h,d
-  5405  D6C0          		sub	0c0h
-  5407  D1            		pop	de
+  53F4                	SAVELP1:
+  53F4  D5            		push	de
+  53F5  54            		ld	d,h
+  53F6  CD115F        		call	GETFAT
+  53F9  7A            		ld	a,d
+  53FA  FE08          		cp	08h
+  53FC  3802          		jr	c,SAVEC
+  53FE  3E08          		ld	a,08h
+  5400                	SAVEC:
+  5400  C6C0          		add	a,0c0h
+  5402  77            		ld	(hl),a
+  5403  62            		ld	h,d
+  5404  D6C0          		sub	0c0h
+  5406  D1            		pop	de
                       	
-  5408  DD361B00      		ld	(ix+1bh),00h	;error count
-  540C  37            		scf			;set c-flag for writing
-  540D                	SAVELP2:
-  540D  D5            		push	de
-  540E  CD7442        		call	DISK
-  5411  D1            		pop	de
-  5412  38F9          		jr	c,SAVELP2
+  5407  DD361B00      		ld	(ix+1bh),00h	;error count
+  540B  37            		scf			;set c-flag for writing
+  540C                	SAVELP2:
+  540C  D5            		push	de
+  540D  CD7442        		call	DISK
+  5410  D1            		pop	de
+  5411  38F9          		jr	c,SAVELP2
                       	
-  5414  94            		sub	h
-  5415  ED44          		neg			;h-a
-  5417  CAA752        		jp	z,WRTFAT
-  541A  67            		ld	h,a
+  5413  94            		sub	h
+  5414  ED44          		neg			;h-a
+  5416  CAA752        		jp	z,WRTFAT
+  5419  67            		ld	h,a
                       	
-  541B  7A            		ld	a,d
-  541C  C608          		add	a,08h
-  541E  57            		ld	d,a
+  541A  7A            		ld	a,d
+  541B  C608          		add	a,08h
+  541D  57            		ld	d,a
                       	
-  541F  79            		ld	a,c
-  5420  C607          		add	a,07h
-  5422  4F            		ld	c,a
-  5423  CDEA5D        		call	NEXTSECTW
-  5426  18CD          		jr	SAVELP1
+  541E  79            		ld	a,c
+  541F  C607          		add	a,07h
+  5421  4F            		ld	c,a
+  5422  CDEA5D        		call	NEXTSECTW
+  5425  18CD          		jr	SAVELP1
                       	
                       	
                       	;ASCII save
-  5428                	SAVEASC:
-  5428  1602          		ld	d,02h		;file mode: sequential save
-  542A  CD7152        		call	FOPEN0
+  5427                	SAVEASC:
+  5427  1602          		ld	d,02h		;file mode: sequential save
+  5429  CD7152        		call	FOPEN0
                       	
-  542D  110000        		ld	de,0000h	;start line number
-  5430  F1            		pop	af		;cancel return address
-  5431  C3EF05        		jp	LISTTOEND
+  542C  110000        		ld	de,0000h	;start line number
+  542F  F1            		pop	af		;cancel return address
+  5430  C3EF05        		jp	LISTTOEND
                       	
                       	
                       	;set file name in directory for save/bsave
                       	;input: a=drive-1(0-3), (FATP)
                       	;output: a=cluster, de=directory+9(attribute address)
                       	;destroy: f,bc,hl
-  5434                	SETDIR:
-  5434  CD7656        		call	COPYFAT
-  5437  CD4D4F        		call	CHKID
-  543A  CD594F        		call	SRCHFILE
-  543D  E5            		push	hl		;directory address
-  543E  2008          		jr	nz,SETDNZ	;not found
-  5440  CB60          		bit	4,b		;can overwrite?
-  5442  C26142        		jp	nz,FWERR
-  5445  CDD95D        		call	RELEASEFAT
-  5448                	SETDNZ:
-  5448  CDEF4F        		call	SRCHCLST
-  544B  D1            		pop	de		;directory address
-  544C  DD            		db	0ddh		;ix prefix
-  544D  44            		ld	b,h		;ld b,ixh
-  544E  DD            		db	0ddh		;ix prefix
-  544F  4D            		ld	c,l		;ld c,ixl
-  5450  210500        		ld	hl,0005h
-  5453  09            		add	hl,bc		;hl=ix+5
-  5454  010900        		ld	bc,0009h
-  5457  EDB0          		ldir
-  5459  C9            		ret
+  5433                	SETDIR:
+  5433  CD7556        		call	COPYFAT
+  5436  CD4D4F        		call	CHKID
+  5439  CD594F        		call	SRCHFILE
+  543C  E5            		push	hl		;directory address
+  543D  2008          		jr	nz,SETDNZ	;not found
+  543F  CB60          		bit	4,b		;can overwrite?
+  5441  C26142        		jp	nz,FWERR
+  5444  CDD95D        		call	RELEASEFAT
+  5447                	SETDNZ:
+  5447  CDEF4F        		call	SRCHCLST
+  544A  D1            		pop	de		;directory address
+  544B  DD            		db	0ddh		;ix prefix
+  544C  44            		ld	b,h		;ld b,ixh
+  544D  DD            		db	0ddh		;ix prefix
+  544E  4D            		ld	c,l		;ld c,ixl
+  544F  210500        		ld	hl,0005h
+  5452  09            		add	hl,bc		;hl=ix+5
+  5453  010900        		ld	bc,0009h
+  5456  EDB0          		ldir
+  5458  C9            		ret
                       	
                       	
                       	;MKS$() function
-  545A                	F_MKS:
-  545A  CD670B        		call	FNCNUM
-  545D  3E05          		ld	a,05h
-  545F  2166FF        		ld	hl,FAC1
-  5462  CD2226        		call	MAKESTR
-  5465  C3C527        		jp	INKYEND
+  5459                	F_MKS:
+  5459  CD670B        		call	FNCNUM
+  545C  3E05          		ld	a,05h
+  545E  2166FF        		ld	hl,FAC1
+  5461  CD2226        		call	MAKESTR
+  5464  C3C527        		jp	INKYEND
                       	
                       	
                       	;CVS() function
-  5468                	F_CVS:
-  5468  CD960B        		call	CHKLPAR
-  546B  CD6617        		call	ARG
-  546E  CDA50B        		call	CHKRPAR
-  5471  CD9226        		call	STRARG2
-  5474  FE05          		cp	05h
-  5476  DACB03        		jp	c,FCERR
+  5467                	F_CVS:
+  5467  CD960B        		call	CHKLPAR
+  546A  CD6617        		call	ARG
+  546D  CDA50B        		call	CHKRPAR
+  5470  CD9226        		call	STRARG2
+  5473  FE05          		cp	05h
+  5475  DACB03        		jp	c,FCERR
                       	
-  5479  EB            		ex	de,hl
-  547A  1166FF        		ld	de,FAC1
-  547D  010500        		ld	bc,0005h
-  5480  EDB0          		ldir
+  5478  EB            		ex	de,hl
+  5479  1166FF        		ld	de,FAC1
+  547C  010500        		ld	bc,0005h
+  547F  EDB0          		ldir
                       	
-  5482  C3A731        		jp	SETTYP0
+  5481  C3A731        		jp	SETTYP0
                       	
                       	
                       	;LFILES command
-  5485                	C_LFLS:
-  5485  3E01          		ld	a,01h
-  5487  3258FA        		ld	(DEVICE),a
+  5484                	C_LFLS:
+  5484  3E01          		ld	a,01h
+  5486  3258FA        		ld	(DEVICE),a
                       	;	jr	C_FLS
                       	
                       	;FILES command
-  548A                	C_FLS:
-  548A  CD613F        		call	CHKCLN
-  548D  3E01          		ld	a,01h
-  548F  C4E40D        		call	nz,INT1ARG
-  5492  3D            		dec	a
-  5493  CD7656        		call	COPYFAT
+  5489                	C_FLS:
+  5489  CD613F        		call	CHKCLN
+  548C  3E01          		ld	a,01h
+  548E  C4E40D        		call	nz,INT1ARG
+  5491  3D            		dec	a
+  5492  CD7556        		call	COPYFAT
                       	
                       	;read directory
-  5496  0E01          		ld	c,01h		;sector 1
-  5498                	FLSLP1:
-  5498  0612          		ld	b,12h		;track 18
-  549A  CD334F        		call	READBUF0
+  5495  0E01          		ld	c,01h		;sector 1
+  5497                	FLSLP1:
+  5497  0612          		ld	b,12h		;track 18
+  5499  CD334F        		call	READBUF0
                       	
-  549D  0610          		ld	b,10h
-  549F                	FLSLP2:
-  549F  7E            		ld	a,(hl)
-  54A0  3C            		inc	a
-  54A1  CA2F55        		jp	z,FLSEND	;ffh=unused
+  549C  0610          		ld	b,10h
+  549E                	FLSLP2:
+  549E  7E            		ld	a,(hl)
+  549F  3C            		inc	a
+  54A0  CA2E55        		jp	z,FLSEND	;ffh=unused
                       	
-  54A4  C5            		push	bc
-  54A5  111000        		ld	de,0010h
-  54A8  3D            		dec	a
-  54A9  2874          		jr	z,FLSZ2		;00h=deleted
+  54A3  C5            		push	bc
+  54A4  111000        		ld	de,0010h
+  54A7  3D            		dec	a
+  54A8  2874          		jr	z,FLSZ2		;00h=deleted
                       	
                       	;file name
-  54AB  0606          		ld	b,06h
-  54AD                	FLSLP3:
-  54AD  7E            		ld	a,(hl)
-  54AE  CDC726        		call	PUTDEV
-  54B1  23            		inc	hl
-  54B2  10F9          		djnz	FLSLP3
+  54AA  0606          		ld	b,06h
+  54AC                	FLSLP3:
+  54AC  7E            		ld	a,(hl)
+  54AD  CDC726        		call	PUTDEV
+  54B0  23            		inc	hl
+  54B1  10F9          		djnz	FLSLP3
                       	
-  54B4  54            		ld	d,h
-  54B5  5D            		ld	e,l
+  54B3  54            		ld	d,h
+  54B4  5D            		ld	e,l
+  54B5  13            		inc	de
   54B6  13            		inc	de
   54B7  13            		inc	de
-  54B8  13            		inc	de
-  54B9  1A            		ld	a,(de)		;attribute
-  54BA  B7            		or	a		;
-  54BB  0F            		rrca
-  54BC  3E2E          		ld	a,'.'
-  54BE  FAC754        		jp	m,FLSM		;
-  54C1  3E2A          		ld	a,'*'
-  54C3  3802          		jr	c,FLSM
-  54C5  3E20          		ld	a,' '
-  54C7                	FLSM:
-  54C7  CDC726        		call	PUTDEV
+  54B8  1A            		ld	a,(de)		;attribute
+  54B9  B7            		or	a		;
+  54BA  0F            		rrca
+  54BB  3E2E          		ld	a,'.'
+  54BD  FAC654        		jp	m,FLSM		;
+  54C0  3E2A          		ld	a,'*'
+  54C2  3802          		jr	c,FLSM
+  54C4  3E20          		ld	a,' '
+  54C6                	FLSM:
+  54C6  CDC726        		call	PUTDEV
                       	
                       	;suffix
-  54CA  0603          		ld	b,03h
-  54CC                	FLSLP4:
-  54CC  7E            		ld	a,(hl)
-  54CD  CDC726        		call	PUTDEV
-  54D0  23            		inc	hl
-  54D1  10F9          		djnz	FLSLP4
-  54D3  3E20          		ld	a,' '
-  54D5  CDC726        		call	PUTDEV
+  54C9  0603          		ld	b,03h
+  54CB                	FLSLP4:
+  54CB  7E            		ld	a,(hl)
+  54CC  CDC726        		call	PUTDEV
+  54CF  23            		inc	hl
+  54D0  10F9          		djnz	FLSLP4
+  54D2  3E20          		ld	a,' '
+  54D4  CDC726        		call	PUTDEV
                       	
                       	;clusters
-  54D8  23            		inc	hl
-  54D9  7E            		ld	a,(hl)		;first cluster
-  54DA  50            		ld	d,b		;=0
-  54DB  E5            		push	hl		;;
-  54DC                	FLSLP5:
-  54DC  CD115F        		call	GETFAT
-  54DF  FEC0          		cp	0c0h
-  54E1  3002          		jr	nc,FLSNC1
-  54E3  10F7          		djnz	FLSLP5
-  54E5                	FLSNC1:
-  54E5  3E01          		ld	a,01h
-  54E7  90            		sub	b
-  54E8  CD7A39        		call	PUTI1
-  54EB  E1            		pop	hl		;;
+  54D7  23            		inc	hl
+  54D8  7E            		ld	a,(hl)		;first cluster
+  54D9  50            		ld	d,b		;=0
+  54DA  E5            		push	hl		;;
+  54DB                	FLSLP5:
+  54DB  CD115F        		call	GETFAT
+  54DE  FEC0          		cp	0c0h
+  54E0  3002          		jr	nc,FLSNC1
+  54E2  10F7          		djnz	FLSLP5
+  54E4                	FLSNC1:
+  54E4  3E01          		ld	a,01h
+  54E6  90            		sub	b
+  54E7  CD7A39        		call	PUTI1
+  54EA  E1            		pop	hl		;;
                       	
                       	;alignment
-  54EC  3AACFD        		ld	a,(WIDTH)
-  54EF  FE20          		cp	COLUMNS
-  54F1  06EF          		ld	b,0efh		;mask
-  54F3  3002          		jr	nc,FLSLP6
-  54F5  06FF          		ld	b,0ffh		;mask
+  54EB  3AACFD        		ld	a,(WIDTH)
+  54EE  FE20          		cp	COLUMNS
+  54F0  06EF          		ld	b,0efh		;mask
+  54F2  3002          		jr	nc,FLSLP6
+  54F4  06FF          		ld	b,0ffh		;mask
                       	
-  54F7                	FLSLP6:
-  54F7  3A58FA        		ld	a,(DEVICE)
-  54FA  0F            		rrca			;
-  54FB  3AA9FD        		ld	a,(CSRX)
-  54FE  3D            		dec	a
-  54FF  3005          		jr	nc,FLSNC2	;
+  54F6                	FLSLP6:
+  54F6  3A58FA        		ld	a,(DEVICE)
+  54F9  0F            		rrca			;
+  54FA  3AA9FD        		ld	a,(CSRX)
+  54FD  3D            		dec	a
+  54FE  3005          		jr	nc,FLSNC2	;
                       	;printer
-  5501  3A57FA        		ld	a,(PRTPOS)
-  5504  060F          		ld	b,0fh		;mask
-  5506                	FLSNC2:
-  5506  A0            		and	b
-  5507  2807          		jr	z,FLSZ1
-  5509  3E20          		ld	a,' '
-  550B  CDC726        		call	PUTDEV
-  550E  18E7          		jr	FLSLP6
+  5500  3A57FA        		ld	a,(PRTPOS)
+  5503  060F          		ld	b,0fh		;mask
+  5505                	FLSNC2:
+  5505  A0            		and	b
+  5506  2807          		jr	z,FLSZ1
+  5508  3E20          		ld	a,' '
+  550A  CDC726        		call	PUTDEV
+  550D  18E7          		jr	FLSLP6
                       	
-  5510                	FLSZ1:
-  5510  CB68          		bit	5,b
-  5512  2008          		jr	nz,FLSNZ
+  550F                	FLSZ1:
+  550F  CB68          		bit	5,b
+  5511  2008          		jr	nz,FLSNZ
                       	;printer
-  5514  3A57FA        		ld	a,(PRTPOS)
-  5517  FE20          		cp	COLUMNS
-  5519  D43927        		call	nc,PUTNL
+  5513  3A57FA        		ld	a,(PRTPOS)
+  5516  FE20          		cp	COLUMNS
+  5518  D43927        		call	nc,PUTNL
                       	
-  551C                	FLSNZ:
-  551C  110600        		ld	de,0006h
-  551F                	FLSZ2:
-  551F  19            		add	hl,de
+  551B                	FLSNZ:
+  551B  110600        		ld	de,0006h
+  551E                	FLSZ2:
+  551E  19            		add	hl,de
                       	
-  5520  CD4D27        		call	STOPESC
-  5523  C1            		pop	bc
-  5524  05            		dec	b
-  5525  C29F54        		jp	nz,FLSLP2
+  551F  CD4D27        		call	STOPESC
+  5522  C1            		pop	bc
+  5523  05            		dec	b
+  5524  C29E54        		jp	nz,FLSLP2
                       	
-  5528  0C            		inc	c
-  5529  79            		ld	a,c
-  552A  FE0C          		cp	0ch
-  552C  DA9854        		jp	c,FLSLP1
-  552F                	FLSEND:
-  552F  AF            		xor	a
-  5530  3258FA        		ld	(DEVICE),a
-  5533  C9            		ret
+  5527  0C            		inc	c
+  5528  79            		ld	a,c
+  5529  FE0C          		cp	0ch
+  552B  DA9754        		jp	c,FLSLP1
+  552E                	FLSEND:
+  552E  AF            		xor	a
+  552F  3258FA        		ld	(DEVICE),a
+  5532  C9            		ret
                       	
                       	
                       	;PUTDEV with disk (from hook)
                       	;input: a=data
                       	;destroy: none
-  5534                	PUTDSK:
-  5534  E5            		push	hl
-  5535  F5            		push	af
-  5536  2A39FB        		ld	hl,(BUFP)
-  5539  7C            		ld	a,h
-  553A  B5            		or	l
-  553B  2003          		jr	nz,PUTDMAIN
-  553D  F1            		pop	af
-  553E  E1            		pop	hl
-  553F  C9            		ret
+  5533                	PUTDSK:
+  5533  E5            		push	hl
+  5534  F5            		push	af
+  5535  2A39FB        		ld	hl,(BUFP)
+  5538  7C            		ld	a,h
+  5539  B5            		or	l
+  553A  2003          		jr	nz,PUTDMAIN
+  553C  F1            		pop	af
+  553D  E1            		pop	hl
+  553E  C9            		ret
                       	
                       	;destroy: af
-  5540                	PUTDMAIN:
-  5540  F1            		pop	af
-  5541  D5            		push	de
-  5542  C5            		push	bc
-  5543  F5            		push	af		;data
+  553F                	PUTDMAIN:
+  553F  F1            		pop	af
+  5540  D5            		push	de
+  5541  C5            		push	bc
+  5542  F5            		push	af		;data
                       	
+  5543  23            		inc	hl
   5544  23            		inc	hl
-  5545  23            		inc	hl
-  5546  1600          		ld	d,00h
-  5548  5E            		ld	e,(hl)		;+2: cluster
-  5549  43            		ld	b,e
-  554A  CB38          		srl	b		;track=cluster/2
-  554C  23            		inc	hl
-  554D  4E            		ld	c,(hl)		;+3: sector
+  5545  1600          		ld	d,00h
+  5547  5E            		ld	e,(hl)		;+2: cluster
+  5548  43            		ld	b,e
+  5549  CB38          		srl	b		;track=cluster/2
+  554B  23            		inc	hl
+  554C  4E            		ld	c,(hl)		;+3: sector
+  554D  23            		inc	hl
   554E  23            		inc	hl
-  554F  23            		inc	hl
-  5550  7E            		ld	a,(hl)		;+5: position in buffer
-  5551  B7            		or	a
-  5552  202E          		jr	nz,PUTDNZ
+  554F  7E            		ld	a,(hl)		;+5: position in buffer
+  5550  B7            		or	a
+  5551  202E          		jr	nz,PUTDNZ
                       	
-  5554  E5            		push	hl		;(BUFP)+5
-  5555  2A33FB        		ld	hl,(FATP)
-  5558  7E            		ld	a,(hl)		;last accessed track
-  5559  3C            		inc	a
-  555A  281A          		jr	z,PUTDZ		;not accessed yet
+  5553  E5            		push	hl		;(BUFP)+5
+  5554  2A33FB        		ld	hl,(FATP)
+  5557  7E            		ld	a,(hl)		;last accessed track
+  5558  3C            		inc	a
+  5559  281A          		jr	z,PUTDZ		;not accessed yet
                       	
                       	;next sector
-  555C  CDEA5D        		call	NEXTSECTW
-  555F  2A39FB        		ld	hl,(BUFP)
+  555B  CDEA5D        		call	NEXTSECTW
+  555E  2A39FB        		ld	hl,(BUFP)
+  5561  23            		inc	hl
   5562  23            		inc	hl
-  5563  23            		inc	hl
-  5564  77            		ld	(hl),a		;+2: cluster
-  5565  23            		inc	hl
-  5566  71            		ld	(hl),c		;+3: sector
-  5567  2A33FB        		ld	hl,(FATP)
-  556A  BB            		cp	e		;old cluster
-  556B  2809          		jr	z,PUTDZ
+  5563  77            		ld	(hl),a		;+2: cluster
+  5564  23            		inc	hl
+  5565  71            		ld	(hl),c		;+3: sector
+  5566  2A33FB        		ld	hl,(FATP)
+  5569  BB            		cp	e		;old cluster
+  556A  2809          		jr	z,PUTDZ
+  556C  1C            		inc	e
   556D  1C            		inc	e
   556E  1C            		inc	e
-  556F  1C            		inc	e
-  5570  19            		add	hl,de		;(FATP)+3+old cluster
-  5571  77            		ld	(hl),a		;new cluster
-  5572  5F            		ld	e,a
-  5573  2A33FB        		ld	hl,(FATP)
+  556F  19            		add	hl,de		;(FATP)+3+old cluster
+  5570  77            		ld	(hl),a		;new cluster
+  5571  5F            		ld	e,a
+  5572  2A33FB        		ld	hl,(FATP)
                       	
                       	;FAT
                       	;hl=(FATP), b=track, c=sector, e=cluster
-  5576                	PUTDZ:
+  5575                	PUTDZ:
+  5575  1C            		inc	e
   5576  1C            		inc	e
   5577  1C            		inc	e
-  5578  1C            		inc	e
-  5579  19            		add	hl,de		;(FATP)+3+cluster
-  557A  79            		ld	a,c		;sector=1-16
-  557B  3D            		dec	a		;0-15
-  557C  E607          		and	07h		;0-7
-  557E  C6C1          		add	a,0c1h		;c1-c9
-  5580  77            		ld	(hl),a
-  5581  E1            		pop	hl		;(BUFP)+5
+  5578  19            		add	hl,de		;(FATP)+3+cluster
+  5579  79            		ld	a,c		;sector=1-16
+  557A  3D            		dec	a		;0-15
+  557B  E607          		and	07h		;0-7
+  557D  C6C1          		add	a,0c1h		;c1-c9
+  557F  77            		ld	(hl),a
+  5580  E1            		pop	hl		;(BUFP)+5
                       	
                       	;data
-  5582                	PUTDNZ:
-  5582  F1            		pop	af		;a=data
-  5583  F5            		push	af
-  5584  5E            		ld	e,(hl)		;+5: position in buffer
-  5585  34            		inc	(hl)		;
-  5586  19            		add	hl,de
-  5587  1E04          		ld	e,04h
-  5589  19            		add	hl,de		;+9~264: buffer
-  558A  77            		ld	(hl),a
-  558B  200E          		jr	nz,PUTDEND	;posision: ff->00?
+  5581                	PUTDNZ:
+  5581  F1            		pop	af		;a=data
+  5582  F5            		push	af
+  5583  5E            		ld	e,(hl)		;+5: position in buffer
+  5584  34            		inc	(hl)		;
+  5585  19            		add	hl,de
+  5586  1E04          		ld	e,04h
+  5588  19            		add	hl,de		;+9~264: buffer
+  5589  77            		ld	(hl),a
+  558A  200E          		jr	nz,PUTDEND	;posision: ff->00?
                       	
                       	;write
-  558D  2A33FB        		ld	hl,(FATP)
-  5590  70            		ld	(hl),b		;last accessed track
+  558C  2A33FB        		ld	hl,(FATP)
+  558F  70            		ld	(hl),b		;last accessed track
+  5590  2B            		dec	hl
   5591  2B            		dec	hl
-  5592  2B            		dec	hl
-  5593  36FF          		ld	(hl),0ffh	;need to overwrite FAT
-  5595  CD3256        		call	WRTBUF
-  5598  CDD15D        		call	SET0BUF
+  5592  36FF          		ld	(hl),0ffh	;need to overwrite FAT
+  5594  CD3156        		call	WRTBUF
+  5597  CDD15D        		call	SET0BUF
                       	
-  559B                	PUTDEND:
-  559B  F1            		pop	af
-  559C  C1            		pop	bc
-  559D  D1            		pop	de
-  559E  E1            		pop	hl
-  559F  E3            		ex	(sp),hl		;cancel return to PUTDEV
-  55A0  E1            		pop	hl
-  55A1  C9            		ret
+  559A                	PUTDEND:
+  559A  F1            		pop	af
+  559B  C1            		pop	bc
+  559C  D1            		pop	de
+  559D  E1            		pop	hl
+  559E  E3            		ex	(sp),hl		;cancel return to PUTDEV
+  559F  E1            		pop	hl
+  55A0  C9            		ret
                       	
                       	
                       	;get data from disk
                       	;output: a=data (0 if no data), c-flag(1=no data)
                       	;destroy: f,de
-  55A2                	GETDSK:
-  55A2  E5            		push	hl
-  55A3  2A39FB        		ld	hl,(BUFP)
-  55A6  110500        		ld	de,0005h
-  55A9  19            		add	hl,de
-  55AA  7E            		ld	a,(hl)		;+5:position
-  55AB  B7            		or	a
-  55AC  CCBA55        		call	z,GETDSKZ
-  55AF  3807          		jr	c,GETDSKC
-  55B1  34            		inc	(hl)
-  55B2  1E04          		ld	e,04h
-  55B4  19            		add	hl,de
-  55B5  5F            		ld	e,a
-  55B6  19            		add	hl,de		;+9~+264: buffer
-  55B7  7E            		ld	a,(hl)
+  55A1                	GETDSK:
+  55A1  E5            		push	hl
+  55A2  2A39FB        		ld	hl,(BUFP)
+  55A5  110500        		ld	de,0005h
+  55A8  19            		add	hl,de
+  55A9  7E            		ld	a,(hl)		;+5:position
+  55AA  B7            		or	a
+  55AB  CCB955        		call	z,GETDSKZ
+  55AE  3807          		jr	c,GETDSKC
+  55B0  34            		inc	(hl)
+  55B1  1E04          		ld	e,04h
+  55B3  19            		add	hl,de
+  55B4  5F            		ld	e,a
+  55B5  19            		add	hl,de		;+9~+264: buffer
+  55B6  7E            		ld	a,(hl)
                       	;	or	a		;reset c-flag
-  55B8                	GETDSKC:
-  55B8  E1            		pop	hl
-  55B9  C9            		ret
+  55B7                	GETDSKC:
+  55B7  E1            		pop	hl
+  55B8  C9            		ret
                       	
                       	
                       	;input: hl=(BUFP)+5
                       	;output: b=next track, c=next sector, a=0, c-flag(1=no next data)
                       	;destroy: f
-  55BA                	GETDSKZ:
-  55BA  E5            		push	hl
-  55BB  D5            		push	de
+  55B9                	GETDSKZ:
+  55B9  E5            		push	hl
+  55BA  D5            		push	de
+  55BB  2B            		dec	hl
   55BC  2B            		dec	hl
-  55BD  2B            		dec	hl
-  55BE  4E            		ld	c,(hl)		;+3: sector
-  55BF  2B            		dec	hl
-  55C0  46            		ld	b,(hl)		;+2: cluster
-  55C1  CB38          		srl	b		;track=cluster/2
-  55C3  2A33FB        		ld	hl,(FATP)
-  55C6  7E            		ld	a,(hl)
-  55C7  3C            		inc	a		;ff=not accessed
-  55C8  B7            		or	a		;reset c-flag
-  55C9  C41E5F        		call	nz,NEXTSECT
-  55CC  3812          		jr	c,GETDSKNC	;no next sector
-  55CE  70            		ld	(hl),b		;last accessed track
-  55CF  CD384F        		call	READBUF
-  55D2  79            		ld	a,c
-  55D3  C6F7          		add	a,0f7h
-  55D5  78            		ld	a,b
-  55D6  17            		rla			;cluster=track*2+(1 if sector>=9)
-  55D7  2A39FB        		ld	hl,(BUFP)
+  55BD  4E            		ld	c,(hl)		;+3: sector
+  55BE  2B            		dec	hl
+  55BF  46            		ld	b,(hl)		;+2: cluster
+  55C0  CB38          		srl	b		;track=cluster/2
+  55C2  2A33FB        		ld	hl,(FATP)
+  55C5  7E            		ld	a,(hl)
+  55C6  3C            		inc	a		;ff=not accessed
+  55C7  B7            		or	a		;reset c-flag
+  55C8  C41E5F        		call	nz,NEXTSECT
+  55CB  3812          		jr	c,GETDSKNC	;no next sector
+  55CD  70            		ld	(hl),b		;last accessed track
+  55CE  CD384F        		call	READBUF
+  55D1  79            		ld	a,c
+  55D2  C6F7          		add	a,0f7h
+  55D4  78            		ld	a,b
+  55D5  17            		rla			;cluster=track*2+(1 if sector>=9)
+  55D6  2A39FB        		ld	hl,(BUFP)
+  55D9  23            		inc	hl
   55DA  23            		inc	hl
-  55DB  23            		inc	hl
-  55DC  77            		ld	(hl),a		;+2: cluster
-  55DD  23            		inc	hl
-  55DE  71            		ld	(hl),c		;+3: sector
-  55DF  AF            		xor	a		;position=0
-  55E0                	GETDSKNC:
-  55E0  D1            		pop	de
-  55E1  E1            		pop	hl
-  55E2  C9            		ret
+  55DB  77            		ld	(hl),a		;+2: cluster
+  55DC  23            		inc	hl
+  55DD  71            		ld	(hl),c		;+3: sector
+  55DE  AF            		xor	a		;position=0
+  55DF                	GETDSKNC:
+  55DF  D1            		pop	de
+  55E0  E1            		pop	hl
+  55E1  C9            		ret
                       	
                       	
                       	;DSKI$() function
-  55E3                	F_DSKI:
-  55E3  CD960B        		call	CHKLPAR
-  55E6  CDE40D        		call	INT1ARG		;a,e=drive(1-4)
-  55E9  F5            		push	af
-  55EA  7E            		ld	a,(hl)
-  55EB  FE2C          		cp	','
-  55ED  C2C203        		jp	nz,SNERR
-  55F0  23            		inc	hl
-  55F1  CD320E        		call	INT1ARG2	;c=track(0-34),e=sector(1-16)
-  55F4  CDA50B        		call	CHKRPAR
-  55F7  41            		ld	b,c		;b=track
-  55F8  4B            		ld	c,e		;c=sector
-  55F9  F1            		pop	af
-  55FA  3D            		dec	a
-  55FB  2A3BFB        		ld	hl,(DRIVES)
-  55FE  BD            		cp	l
-  55FF  D25242        		jp	nc,DNERR
+  55E2                	F_DSKI:
+  55E2  CD960B        		call	CHKLPAR
+  55E5  CDE40D        		call	INT1ARG		;a,e=drive(1-4)
+  55E8  F5            		push	af
+  55E9  7E            		ld	a,(hl)
+  55EA  FE2C          		cp	','
+  55EC  C2C203        		jp	nz,SNERR
+  55EF  23            		inc	hl
+  55F0  CD320E        		call	INT1ARG2	;c=track(0-34),e=sector(1-16)
+  55F3  CDA50B        		call	CHKRPAR
+  55F6  41            		ld	b,c		;b=track
+  55F7  4B            		ld	c,e		;c=sector
+  55F8  F1            		pop	af
+  55F9  3D            		dec	a
+  55FA  2A3BFB        		ld	hl,(DRIVES)
+  55FD  BD            		cp	l
+  55FE  D25242        		jp	nc,DNERR
                       	
-  5602  F5            		push	af		;drive number-1 (0-3)
-  5603  78            		ld	a,b
-  5604  FE23          		cp	23h		;track(0-34)
-  5606  D25542        		jp	nc,TSERR
-  5609  79            		ld	a,c
-  560A  3D            		dec	a
-  560B  FE10          		cp	10h		;sector(1-16)
-  560D  D25542        		jp	nc,TSERR
-  5610  F1            		pop	af		;drive number-1 (0-3)
+  5601  F5            		push	af		;drive number-1 (0-3)
+  5602  78            		ld	a,b
+  5603  FE23          		cp	23h		;track(0-34)
+  5605  D25542        		jp	nc,TSERR
+  5608  79            		ld	a,c
+  5609  3D            		dec	a
+  560A  FE10          		cp	10h		;sector(1-16)
+  560C  D25542        		jp	nc,TSERR
+  560F  F1            		pop	af		;drive number-1 (0-3)
                       	
-  5611  CD8A56        		call	SETIX
-  5614  CDF251        		call	SETFATP
-  5617  CD334F        		call	READBUF0
-  561A  3EFF          		ld	a,0ffh
-  561C  CD2226        		call	MAKESTR
-  561F  C3C527        		jp	INKYEND
+  5610  CD8956        		call	SETIX
+  5613  CDF251        		call	SETFATP
+  5616  CD334F        		call	READBUF0
+  5619  3EFF          		ld	a,0ffh
+  561B  CD2226        		call	MAKESTR
+  561E  C3C527        		jp	INKYEND
                       	
                       	
                       	;write directory in buffer#0
                       	;output: hl=(BUF0)
                       	;destroy: af,bc,de
-  5622                	WRTDIR:
-  5622  0612          		ld	b,12h		;track
-  5624  DD4E02        		ld	c,(ix+02h)	;sector writed in SRCHFILE
-  5627  CD2D56        		call	WRTBUF0
-  562A  C3CE5D        		jp	SET0BUF0	;hl=(BUF0)
+  5621                	WRTDIR:
+  5621  0612          		ld	b,12h		;track
+  5623  DD4E02        		ld	c,(ix+02h)	;sector writed in SRCHFILE
+  5626  CD2C56        		call	WRTBUF0
+  5629  C3CE5D        		jp	SET0BUF0	;hl=(BUF0)
                       	
                       	
                       	;write 1 sector in buffer#0 into disk
                       	;input: b=track, c=sector, ix, (ix+0)=drive-1
                       	;destroy: af,de,hl
-  562D                	WRTBUF0:
-  562D  2A37FB        		ld	hl,(BUF0)
-  5630  1807          		jr	WRTBFMAIN
+  562C                	WRTBUF0:
+  562C  2A37FB        		ld	hl,(BUF0)
+  562F  1807          		jr	WRTBFMAIN
                       	
                       	;write 1 sector in buffer into disk
                       	;input: b=track, c=sector, ix, (ix+0)=drive-1, (BUFP)=buffer pointer
                       	;output: hl=buffer pointer+9
                       	;destroy: af,de,hl
-  5632                	WRTBUF:
-  5632  2A39FB        		ld	hl,(BUFP)
-  5635  110900        		ld	de,0009h
-  5638  19            		add	hl,de	
-  5639                	WRTBFMAIN:
-  5639  AF            		xor	a
-  563A  DD771B        		ld	(ix+1bh),a	;error count
-  563D  3C            		inc	a		;1 sector
-  563E  37            		scf			;set c-flag for writing
-  563F                	WRTBFLP:
-  563F  54            		ld	d,h
-  5640  5D            		ld	e,l
-  5641  CD7442        		call	DISK
-  5644  38F9          		jr	c,WRTBFLP
-  5646  C9            		ret
+  5631                	WRTBUF:
+  5631  2A39FB        		ld	hl,(BUFP)
+  5634  110900        		ld	de,0009h
+  5637  19            		add	hl,de	
+  5638                	WRTBFMAIN:
+  5638  AF            		xor	a
+  5639  DD771B        		ld	(ix+1bh),a	;error count
+  563C  3C            		inc	a		;1 sector
+  563D  37            		scf			;set c-flag for writing
+  563E                	WRTBFLP:
+  563E  54            		ld	d,h
+  563F  5D            		ld	e,l
+  5640  CD7442        		call	DISK
+  5643  38F9          		jr	c,WRTBFLP
+  5645  C9            		ret
                       	
                       	
                       	;remove disk (from edit hook)
-  5647                	REMOVE:
-  5647  2A39FB        		ld	hl,(BUFP)
-  564A  7C            		ld	a,h
-  564B  B5            		or	l
-  564C  200E          		jr	nz,RMVNZ
-  564E  2A33FB        		ld	hl,(FATP)
-  5651  7C            		ld	a,h
-  5652  B5            		or	l
-  5653  C8            		ret	z
+  5646                	REMOVE:
+  5646  2A39FB        		ld	hl,(BUFP)
+  5649  7C            		ld	a,h
+  564A  B5            		or	l
+  564B  200E          		jr	nz,RMVNZ
+  564D  2A33FB        		ld	hl,(FATP)
+  5650  7C            		ld	a,h
+  5651  B5            		or	l
+  5652  C8            		ret	z
+  5653  2B            		dec	hl
   5654  2B            		dec	hl
-  5655  2B            		dec	hl
-  5656  7E            		ld	a,(hl)
-  5657  B7            		or	a
-  5658  C8            		ret	z		;not need to overwrite FAT
-  5659  C3A752        		jp	WRTFAT
+  5655  7E            		ld	a,(hl)
+  5656  B7            		or	a
+  5657  C8            		ret	z		;not need to overwrite FAT
+  5658  C3A752        		jp	WRTFAT
                       	
-  565C                	RMVNZ:
-  565C  CB4E          		bit	1,(hl)		;file mode
-  565E  2806          		jr	z,CLRBUFP	;not sequential save
+  565B                	RMVNZ:
+  565B  CB4E          		bit	1,(hl)		;file mode
+  565D  2806          		jr	z,CLRBUFP	;not sequential save
                       	
                       	;for ASCII save
-  5660  CD3927        		call	PUTNL
-  5663  CD8B52        		call	FCLOSE
+  565F  CD3927        		call	PUTNL
+  5662  CD8B52        		call	FCLOSE
                       	
-  5666                	CLRBUFP:
-  5666  210000        		ld	hl,0000h
-  5669  2239FB        		ld	(BUFP),hl
-  566C  C9            		ret
+  5665                	CLRBUFP:
+  5665  210000        		ld	hl,0000h
+  5668  2239FB        		ld	(BUFP),hl
+  566B  C9            		ret
                       	
                       	
                       	;cluster -> track, sector
                       	;input: a=cluster
                       	;output: b=track, c=sector
                       	;destroy: af
-  566D                	C2TRSECT:
-  566D  CB3F          		srl	a
-  566F  47            		ld	b,a		;track=int(cluster/2)
-  5670  9F            		sbc	a,a
-  5671  E608          		and	08h
-  5673  3C            		inc	a
-  5674  4F            		ld	c,a		;sector=1 or 9
-  5675  C9            		ret
+  566C                	C2TRSECT:
+  566C  CB3F          		srl	a
+  566E  47            		ld	b,a		;track=int(cluster/2)
+  566F  9F            		sbc	a,a
+  5670  E608          		and	08h
+  5672  3C            		inc	a
+  5673  4F            		ld	c,a		;sector=1 or 9
+  5674  C9            		ret
                       	
                       	
                       	;read FAT to drive buffer
                       	;input: a=drive-1(0-3), (FATP)
                       	;output: ix=disk work, (ix+0), (ix+ibh), (fb33h)=FAT pointer
                       	;destroy: af,bc,de,hl
-  5676                	COPYFAT:
-  5676  CD2A4F        		call	READFAT
-  5679  EB            		ex	de,hl
-  567A  2A33FB        		ld	hl,(FATP)
+  5675                	COPYFAT:
+  5675  CD2A4F        		call	READFAT
+  5678  EB            		ex	de,hl
+  5679  2A33FB        		ld	hl,(FATP)
+  567C  2B            		dec	hl
   567D  2B            		dec	hl
-  567E  2B            		dec	hl
-  567F  010500        		ld	bc,0005h
-  5682  70            		ld	(hl),b		;0=not need to overwrite FAT
-  5683  09            		add	hl,bc
-  5684  EB            		ex	de,hl
-  5685  0E46          		ld	c,46h		;b=0
-  5687  EDB0          		ldir
-  5689  C9            		ret
+  567E  010500        		ld	bc,0005h
+  5681  70            		ld	(hl),b		;0=not need to overwrite FAT
+  5682  09            		add	hl,bc
+  5683  EB            		ex	de,hl
+  5684  0E46          		ld	c,46h		;b=0
+  5686  EDB0          		ldir
+  5688  C9            		ret
                       	
                       	
                       	;get ix for disk
                       	;output: ix=disk work
                       	;destroy: none
-  568A                	SETIX:
-  568A  DD2AFCFF      		ld	ix,(FATPTBL)
-  568E  DD            		db	0ddh		;ix prefix
-  568F  2ED2          		ld	l,0d2h		;ld ixl,0d2h
-  5691  C9            		ret
+  5689                	SETIX:
+  5689  DD2AFCFF      		ld	ix,(FATPTBL)
+  568D  DD            		db	0ddh		;ix prefix
+  568E  2ED2          		ld	l,0d2h		;ld ixl,0d2h
+  5690  C9            		ret
                       	
                       	
                       	;read/write disk
@@ -17707,7 +17710,7 @@
                       	; c-flag=1: write
                       	;output: c-flag(1=error)
                       	;destroy: f
-  5692                	_DISK2:	ds	DISK2-_DISK2
+  5691                	_DISK2:	ds	DISK2-_DISK2
   5CFD                		org	DISK2
                       	
   5CFD  F5            		push	af
@@ -17833,7 +17836,7 @@
   5D86                	BSVZ1:
   5D86  E5            		push	hl		;size
   5D87  D5            		push	de		;data address
-  5D88  CD2D56        		call	WRTBUF0
+  5D88  CD2C56        		call	WRTBUF0
                       	
                       	;FAT
   5D8B  CD0C5F        		call	GETFAT2
@@ -17974,7 +17977,7 @@
   5DF7  5F            		ld	e,a
   5DF8  CDF14F        		call	SRCHCLST2
   5DFB  57            		ld	d,a		;new cluster
-  5DFC  CD6D56        		call	C2TRSECT
+  5DFC  CD6C56        		call	C2TRSECT
   5DFF  7A            		ld	a,d		;new cluster
                       	
   5E00  2A33FB        		ld	hl,(FATP)
@@ -18033,11 +18036,11 @@
   5E53  D1            		pop	de		;start address
   5E54  F1            		pop	af		;drive-1
   5E55  D5            		push	de		;start address
-  5E56  CD7656        		call	COPYFAT
+  5E56  CD7556        		call	COPYFAT
   5E59  CD594F        		call	SRCHFILE
   5E5C  C23442        		jp	nz,FFERR
                       	
-  5E5F  CD6D56        		call	C2TRSECT
+  5E5F  CD6C56        		call	C2TRSECT
   5E62  CD0C5F        		call	GETFAT2
   5E65  FEC0          		cp	0c0h
   5E67  CAFE5E        		jp	z,BLDEND2
@@ -18253,7 +18256,7 @@
   5F3F  3F            		ccf
   5F40  D8            		ret	c		;no next cluster
                       	
-  5F41  CD6D56        		call	C2TRSECT
+  5F41  CD6C56        		call	C2TRSECT
   5F44  E5            		push	hl
   5F45  CD115F        		call	GETFAT
   5F48  E1            		pop	hl
@@ -18271,14 +18274,14 @@
                       	;destroy: f,hl
   5F4F                	SVCOMMON:
   5F4F  E5            		push	hl
-  5F50  CD3454        		call	SETDIR
+  5F50  CD3354        		call	SETDIR
   5F53  E1            		pop	hl
   5F54  EB            		ex	de,hl
   5F55  72            		ld	(hl),d		;attribute
   5F56  23            		inc	hl
   5F57  77            		ld	(hl),a		;cluster
   5F58  F5            		push	af		;cluster
-  5F59  CD2256        		call	WRTDIR		;hl=(BUF0)
+  5F59  CD2156        		call	WRTDIR		;hl=(BUF0)
   5F5C  F1            		pop	af		;cluster
   5F5D  EB            		ex	de,hl
                       	
@@ -18293,7 +18296,7 @@
   5F6B  09            		add	hl,bc
   5F6C  36C0          		ld	(hl),0c0h	;(FATP)+3+cluster
   5F6E  F5            		push	af		;cluster
-  5F6F  CD6D56        		call	C2TRSECT
+  5F6F  CD6C56        		call	C2TRSECT
   5F72  F1            		pop	af		;cluster
   5F73  C9            		ret
                       	
@@ -18303,7 +18306,7 @@
                       	;output: a=drive-1(0-3), hl=next address, ix=disk work
                       	;destroy: f,bc,de
   5F74                	SETFNAME:
-  5F74  CD8A56        		call	SETIX
+  5F74  CD8956        		call	SETIX
   5F77  DD7703        		ld	(ix+03h),a	;R option?
   5F7A  CD8926        		call	STRARG
   5F7D  B7            		or	a
@@ -18724,7 +18727,7 @@
   61E3  229BFA        		ld	(0fa9bh),hl	;LINE command
   61E6  212571        		ld	hl,C_PAI66
   61E9  229DFA        		ld	(0fa9dh),hl	;PAINT command
-  61EC  210A63        		ld	hl,F_PEEK66
+  61EC  210C63        		ld	hl,F_PEEK66
   61EF  2203FB        		ld	(0fb03h),hl	;PEEK() function
                       	
   61F2  F5            		push	af		;a=(PAGES)
@@ -18789,108 +18792,108 @@
                       	
                       	
   62F4                	SYSNAME66:
-  62F4  36369ADE96FD42		db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.3", 0dh, 0ah, 00h
+  62F4  36369ADE96FD42		db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.3.1", 0dh, 0ah, 00h
                       	
                       	
                       	;PEEK() function
-  630A                	F_PEEK66:
-  630A  CD7C0B        		call	CHKNUM
-  630D  CDB50C        		call	FTOI
-  6310  EB            		ex	de,hl
-  6311  CD8DFE        		call	READRAM
-  6314  C35D0C        		jp	I1TOFA
+  630C                	F_PEEK66:
+  630C  CD7C0B        		call	CHKNUM
+  630F  CDB50C        		call	FTOI
+  6312  EB            		ex	de,hl
+  6313  CD8DFE        		call	READRAM
+  6316  C35D0C        		jp	I1TOFA
                       	
                       	
                       	;continued from F_SCRN
-  6317                	F_SCRN66:
-  6317  CD8DFE        		call	READRAM
-  631A  CD5D0C        		call	I1TOFA
-  631D  C3B318        		jp	FNCRTN
+  6319                	F_SCRN66:
+  6319  CD8DFE        		call	READRAM
+  631C  CD5D0C        		call	I1TOFA
+  631F  C3B318        		jp	FNCRTN
                       	
                       	
                       	;input: bc=X, de=Y
                       	;output: a=color
                       	;destroy: f,bc,de,hl
-  6320                	POINT66:
-  6320  3A92FD        		ld	a,(SCREEN1)
-  6323  3D            		dec	a
-  6324  282E          		jr	z,POINT662
-  6326  F23763        		jp	p,POINT66G
+  6322                	POINT66:
+  6322  3A92FD        		ld	a,(SCREEN1)
+  6325  3D            		dec	a
+  6326  282E          		jr	z,POINT662
+  6328  F23963        		jp	p,POINT66G
                       	
                       	;screen mode 1
-  6329                	POINT661:
-  6329  CD2E66        		call	GXY2AD66
-  632C  CD8DFE        		call	READRAM
-  632F  0F            		rrca
-  6330  0F            		rrca
+  632B                	POINT661:
+  632B  CD2E66        		call	GXY2AD66
+  632E  CD8DFE        		call	READRAM
   6331  0F            		rrca
   6332  0F            		rrca
-  6333  E607          		and	07h
-  6335  3C            		inc	a
-  6336  C9            		ret
+  6333  0F            		rrca
+  6334  0F            		rrca
+  6335  E607          		and	07h
+  6337  3C            		inc	a
+  6338  C9            		ret
                       	
                       	
                       	;graphic mode (screen mode 3,4)
-  6337                	POINT66G:
-  6337  F5            		push	af		;
-  6338  CD1566        		call	GXY2GAD66
-  633B  CD8DFE        		call	READRAM
-  633E  A2            		and	d
-  633F  07            		rlca
-  6340  C1            		pop	bc		;
+  6339                	POINT66G:
+  6339  F5            		push	af		;
+  633A  CD1566        		call	GXY2GAD66
+  633D  CD8DFE        		call	READRAM
+  6340  A2            		and	d
+  6341  07            		rlca
+  6342  C1            		pop	bc		;
                       	;	dec	b
                       	;	jr	nz,POINT664
-  6341  1001          		djnz	POINT664
-  6343  07            		rlca
-  6344                	POINT664:
-  6344  5F            		ld	e,a
-  6345  CBAC          		res	5,h
-  6347  CD8DFE        		call	READRAM
-  634A  A2            		and	d
-  634B  B3            		or	e
-  634C  07            		rlca
-  634D                	POINT66LP:
-  634D  0F            		rrca
-  634E  CB0A          		rrc	d
-  6350  30FB          		jr	nc,POINT66LP
-  6352  3C            		inc	a
-  6353  C9            		ret
+  6343  1001          		djnz	POINT664
+  6345  07            		rlca
+  6346                	POINT664:
+  6346  5F            		ld	e,a
+  6347  CBAC          		res	5,h
+  6349  CD8DFE        		call	READRAM
+  634C  A2            		and	d
+  634D  B3            		or	e
+  634E  07            		rlca
+  634F                	POINT66LP:
+  634F  0F            		rrca
+  6350  CB0A          		rrc	d
+  6352  30FB          		jr	nc,POINT66LP
+  6354  3C            		inc	a
+  6355  C9            		ret
                       	
                       	;screen mode 2
-  6354                	POINT662:
-  6354  C5            		push	bc		;x
-  6355  CD2E66        		call	GXY2AD66
-  6358  C1            		pop	bc		;x
-  6359  CD0B6C        		call	MASK266
-  635C  57            		ld	d,a
-  635D  CD8DFE        		call	READRAM
-  6360  47            		ld	b,a
-  6361  07            		rlca			;
-  6362  24            		inc	h
-  6363  24            		inc	h
+  6356                	POINT662:
+  6356  C5            		push	bc		;x
+  6357  CD2E66        		call	GXY2AD66
+  635A  C1            		pop	bc		;x
+  635B  CD0B6C        		call	MASK266
+  635E  57            		ld	d,a
+  635F  CD8DFE        		call	READRAM
+  6362  47            		ld	b,a
+  6363  07            		rlca			;
   6364  24            		inc	h
   6365  24            		inc	h
-  6366  CD8DFE        		call	READRAM
-  6369  3001          		jr	nc,POINT662C	;
-  636B  A2            		and	d		;;
-  636C                	POINT662C:
-  636C  78            		ld	a,b
-  636D  2006          		jr	nz,POINT662NZ	;;
-  636F  E670          		and	70h
-  6371  0F            		rrca
-  6372  0F            		rrca
+  6366  24            		inc	h
+  6367  24            		inc	h
+  6368  CD8DFE        		call	READRAM
+  636B  3001          		jr	nc,POINT662C	;
+  636D  A2            		and	d		;;
+  636E                	POINT662C:
+  636E  78            		ld	a,b
+  636F  2006          		jr	nz,POINT662NZ	;;
+  6371  E670          		and	70h
   6373  0F            		rrca
   6374  0F            		rrca
-  6375                	POINT662NZ:
-  6375  E60F          		and	0fh
-  6377  3C            		inc	a
-  6378  C9            		ret
+  6375  0F            		rrca
+  6376  0F            		rrca
+  6377                	POINT662NZ:
+  6377  E60F          		and	0fh
+  6379  3C            		inc	a
+  637A  C9            		ret
                       	
                       	
                       	;scroll up
                       	;input: h=first line+1, l=last line+1
                       	;destroy: af
-  6379                	_SCRLU66:ds	SCRLU66-_SCRLU66
+  637B                	_SCRLU66:ds	SCRLU66-_SCRLU66
   63E2                		org	SCRLU66
                       	
   63E2  7D            		ld	a,l
@@ -19781,13 +19784,13 @@
   6C32  B7            		or	a
   6C33  ED42          		sbc	hl,bc		;dx
   6C35  FE02          		cp	02h
-  6C37  D2882E        		jp	nc,SKIPX
+  6C37  D28C2E        		jp	nc,SKIPX
   6C3A  44            		ld	b,h
   6C3B  4D            		ld	c,l
   6C3C  29            		add	hl,hl
   6C3D  29            		add	hl,hl
   6C3E  09            		add	hl,bc		;screen mode 1,2: dx=dx*5
-  6C3F  C3882E        		jp	SKIPX
+  6C3F  C38C2E        		jp	SKIPX
                       	
                       	
                       	;check and round graphic coordinates (x,y) for mode 5
@@ -19966,7 +19969,7 @@
   6D02  C1            		pop	bc
   6D03  0D            		dec	c
   6D04  20D5          		jr	nz,BFG66LP3
-  6D06  C3C62E        		jp	LINEEND2
+  6D06  C3CA2E        		jp	LINEEND2
                       	
                       	
                       	;LINE command for mode 5

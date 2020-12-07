@@ -631,9 +631,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * PC-6001互換BASICを0.7.2に更新。
 * PC-6001mkII/6601用互換BASICを0.3.1に更新。
 * サンプリングレート設定を削除。
+* 動画エンコード速度を改善。
 * Updated PC-6001 compatible basic ROMs to 0.7.2.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.1.
 * Removed sound sampling rate settings.
+* Improved video capture performance.
 
 .3.5.3 2020/09/26
 * ハードウェアアクセラレーション使用時に描画がちらつくのを修正。

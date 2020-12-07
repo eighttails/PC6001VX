@@ -154,9 +154,6 @@ void EL6::ExecMenu( int id )
 	case ID_FSKP3:															// フレームスキップ 3
 	case ID_FSKP4:															// フレームスキップ 4
 	case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );			break;	// フレームスキップ 5
-	case ID_SPR44:															// サンプリングレート 44100Hz
-	case ID_SPR22:															// サンプリングレート 22050Hz
-	case ID_SPR11:			UI_SampleRate( 44100 >> (id - ID_SPR44 ) );	break;	// サンプリングレート 11025Hz
 	case ID_ONLINEHELP:
 #ifdef WIN32
 		QDesktopServices::openUrl(QUrl::fromLocalFile(QString("file://") + OSD_GetModulePath() + "/README.html"));
@@ -453,18 +450,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	for( int i = 0; i < fpsList.size(); i++ ){
 		QAction* fps = addCommand(fpsMenu, fpsList[i], MenuCommand(ID_FSKP0 + i), true);
 		if (cfg->GetFrameSkip() == i) fps->setChecked(true);
-	}
-
-	QMenu* sprMenu = settingsMenu->addMenu(tr("サンプリングレート"));
-	settingsMenu->addSeparator();
-	QActionGroup* sprGroup = new QActionGroup(&menu);
-	QStringList sprList = (QStringList()
-						   << "44100Hz"
-						   << "22050Hz"
-						   << "11025Hz");
-	for( int i = 0; i < sprList.size(); i++ ){
-		QAction* spr = addCommand(sprMenu, sprList[i], MenuCommand(ID_SPR44 + i), true);
-		if (2 - ((cfg->GetSampleRate()/11025)>>1) == i) spr->setChecked(true);
 	}
 
 	QAction* noWait = addCommand(settingsMenu, tr("ウェイト無効"), ID_NOWAIT, true);

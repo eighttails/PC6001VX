@@ -9,6 +9,7 @@
 struct AVOutputFormat;
 struct AVFormatContext;
 struct AVCodec;
+struct AVCodecContext;
 struct AVStream;
 struct AVFrame;
 struct AVDictionary;
@@ -17,6 +18,7 @@ struct AVDictionary;
 // a wrapper around a single output AVStream
 typedef struct OutputStream {
 	AVStream *st;
+	AVCodecContext *enc;
 
 	/* pts of the next frame that will be generated */
 	int64_t next_pts;
@@ -24,8 +26,6 @@ typedef struct OutputStream {
 
 	AVFrame *frame;
 	AVFrame *tmp_frame;
-
-	//OCfloat t, tincr, tincr2;
 
 	struct SwsContext *sws_ctx;
 	struct SwrContext *swr_ctx;

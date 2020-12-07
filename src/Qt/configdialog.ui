@@ -397,143 +397,6 @@
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_9">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QGroupBox" name="groupBoxSamplingRate">
-           <property name="title">
-            <string>サンプリングレート(&amp;R)</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_8">
-            <item>
-             <widget class="QRadioButton" name="radioButtonSample441">
-              <property name="text">
-               <string>&amp;44100 Hz</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioButtonSample220">
-              <property name="text">
-               <string>22&amp;050 Hz</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioButtonSample110">
-              <property name="text">
-               <string>1102&amp;5 Hz</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupBoxSndBufferSize">
-           <property name="title">
-            <string>バッファサイズ(&amp;Z)</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_19">
-            <item row="1" column="1">
-             <widget class="QLabel" name="labelSndBufferSize">
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QSlider" name="horizontalSliderSndBufferSize">
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>5</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>5</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>1</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QLabel" name="label_13">
-             <property name="text">
-              <string>PSGローパスフィルタ
-カットオフ周波数(&amp;Q):</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-             <property name="buddy">
-              <cstring>lineEditPSGLPF</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEditPSGLPF">
-             <property name="maximumSize">
-              <size>
-               <width>80</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="inputMethodHints">
-              <set>Qt::ImhDigitsOnly|Qt::ImhHiddenText</set>
-             </property>
-             <property name="inputMask">
-              <string>99999</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_14">
-             <property name="text">
-              <string>Hz</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item>
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <item>
           <widget class="QGroupBox" name="groupBoxMasterVol">
@@ -721,6 +584,19 @@
           </spacer>
          </item>
         </layout>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_7">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -3584,10 +3460,6 @@ border-radius: 1;</string>
   <tabstop>checkBoxDispNTSC</tabstop>
   <tabstop>checkBoxFullscreen</tabstop>
   <tabstop>checkBoxStatDisp</tabstop>
-  <tabstop>radioButtonSample441</tabstop>
-  <tabstop>radioButtonSample220</tabstop>
-  <tabstop>radioButtonSample110</tabstop>
-  <tabstop>horizontalSliderSndBufferSize</tabstop>
   <tabstop>horizontalSliderMasterVol</tabstop>
   <tabstop>horizontalSliderPSGVol</tabstop>
   <tabstop>horizontalSliderVoiceVol</tabstop>

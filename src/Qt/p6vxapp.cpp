@@ -970,6 +970,8 @@ void P6VXApp::overrideSettings(CFG6 &cfg)
 	cfg.SetDokoSavePath( str );
 	cfg.Write();
 #endif
+	// サンプリングレートは44100に固定
+	cfg.SetSampleRate(44100);
 }
 
 QFileDialog *P6VXApp::createFileDialog(void *hwnd)

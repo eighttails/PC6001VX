@@ -57,9 +57,6 @@ enum MenuCommand{
 	ID_FSKP3,
 	ID_FSKP4,
 	ID_FSKP5,
-	ID_SPR44,
-	ID_SPR22,
-	ID_SPR11,
 	ID_MONITOR,
 	ID_VERSION,
 

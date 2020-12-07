@@ -17,10 +17,6 @@ ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
 
 	// 各種マッピング
 	// サウンド------------------------------------------------------
-	// バッファサイズ
-	connect(ui->horizontalSliderSndBufferSize, &QSlider::valueChanged,
-			[this](int value){ui->labelSndBufferSize->setNum(value);});
-
 	// マスター音量
 	connect(ui->horizontalSliderMasterVol, &QSlider::valueChanged,
 			[this](int value){ui->labelMasterVol->setNum(value);});
@@ -201,21 +197,6 @@ void ConfigDialog::readConfig()
 	dispFPS(config->GetFrameSkip());
 
 	// サウンド------------------------------------------------------
-	// サンプリングレート
-	switch(config->GetSampleRate()){
-	case 44100: ui->radioButtonSample441->setChecked(true); break;
-	case 22050: ui->radioButtonSample220->setChecked(true); break;
-	case 11025: ui->radioButtonSample110->setChecked(true); break;
-	default:    Q_ASSERT(false);
-	}
-
-	// バッファサイズ
-	ui->horizontalSliderSndBufferSize->setValue(config->GetSoundBuffer());
-	ui->labelSndBufferSize->setText(QString::number(config->GetSoundBuffer()));
-
-	// PSG LPFカットオフ周波数
-	ui->lineEditPSGLPF->setText(QString::number(config->GetPsgLPF()));
-
 	// マスター音量
 	ui->horizontalSliderMasterVol->setValue(config->GetMasterVol());
 	ui->labelMasterVol->setText(QString::number(config->GetMasterVol()));
@@ -445,20 +426,6 @@ void ConfigDialog::writeConfig()
 
 
 	// サウンド-------------------------------------------------------------------
-	// サンプリングレート
-	if      (ui->radioButtonSample441->isChecked())   config->SetSampleRate(44100);
-	else if (ui->radioButtonSample220->isChecked())   config->SetSampleRate(22050);
-	else if (ui->radioButtonSample110->isChecked())   config->SetSampleRate(11025);
-
-	// バッファサイズ
-	config->SetSoundBuffer(ui->horizontalSliderSndBufferSize->value());
-
-	// PSG LPFカットオフ周波数
-	iVal = ui->lineEditPSGLPF->text().toInt(&conv);
-	if(conv){
-		config->SetPsgLPF(iVal);
-	}
-
 	// マスター音量
 	config->SetMasterVol(ui->horizontalSliderMasterVol->value());
 

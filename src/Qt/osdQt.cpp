@@ -8,8 +8,12 @@
 #endif
 
 #ifndef NOJOYSTICK
+#ifdef SDLJOYSTICK
 #include <SDL2/SDL.h>
-#endif
+#else
+#include <QtGamepad>
+#endif //SDLJOYSTICK
+#endif //NOJOYSTICK
 
 #include "../log.h"
 #include "../osd.h"
@@ -49,7 +53,7 @@ QPointer<AudioOutputWrapper> audioOutput = NULL;
 //ジョイスティック関連
 #ifndef NOJOYSTICK
 QMutex joystickMutex;
-#endif
+#endif //NOJOYSTICK
 
 static const struct {	// Qtキーコード -> 仮想キーコード定義
 	int InKey;			// Qtのキーコード
@@ -593,10 +597,14 @@ int stricmp ( const char *s1, const char *s2 )
 bool OSD_Init( void )
 {
 #ifndef NOJOYSTICK
+#ifdef SDLJOYSTICK
 	if( SDL_Init( SDL_INIT_JOYSTICK ) )
 		return false;
-	SDL_JoystickEventState(SDL_DISABLE);
-#endif
+    SDL_JoystickEventState(SDL_DISABLE);
+#else
+    //何もしない
+#endif //SDLJOYSTICK
+#endif //NOJOYSTICK
 
 	//経過時間タイマーをスタート
 	elapsedTimer.start();
@@ -620,8 +628,12 @@ void OSD_Quit( void )
 	PRINTD( OSD_LOG, "[OSD][OSD_Quit]\n" );
 
 #ifndef NOJOYSTICK
+#ifdef SDLJOYSTICK
 	SDL_Quit();
-#endif
+#else
+	//何もしない
+#endif //SDLJOYSTICK
+#endif //NOJOYSTICK
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1743,7 +1755,7 @@ void OSD_SetIcon( HWINDOW Wh, int model )
 
 #ifndef NOJOYSTICK
 std::map<int, HJOYINFO> joyMap;
-#endif
+#endif //NOJOYSTICK
 
 ////////////////////////////////////////////////////////////////
 // 利用可能なジョイスティック数取得
@@ -1755,10 +1767,16 @@ int OSD_GetJoyNum( void )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
 	return SDL_NumJoysticks();
 #else
+    auto mgr = QGamepadManager::instance();
+    auto num = mgr->connectedGamepads().length();
+    return num;
+#endif //SDLJOYSTICK
+#else
 	return 0;
-#endif
+#endif //NOJOYSTICK
 }
 
 
@@ -1772,10 +1790,19 @@ const char *OSD_GetJoyName( int index )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickNameForIndex( index );
+#ifdef SDLJOYSTICK
+    return SDL_JoystickNameForIndex( index );
+#else
+	auto mgr = QGamepadManager::instance();
+	auto devIndex = mgr->connectedGamepads()[index];
+	auto name = mgr->gamepadName(devIndex);
+	return name.length() > 0
+			? name.toLocal8Bit().data()
+			: QString("Joystick%1").arg(index).toLocal8Bit().data();
+#endif //SDLJOYSTICK
 #else
 	return "";
-#endif
+#endif //NOJOYSTICK
 }
 
 
@@ -1789,10 +1816,16 @@ bool OSD_OpenedJoy( int index )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickGetAttached( (SDL_Joystick*)joyMap[index] ) ? true : false;
+#ifdef SDLJOYSTICK
+    return SDL_JoystickGetAttached( (SDL_Joystick*)joyMap[index] ) ? true : false;
+#else
+	auto mgr = QGamepadManager::instance();
+	auto devIndex = mgr->connectedGamepads()[index];
+	return joyMap.count(devIndex) > 0;
+#endif //SDLJOYSTICK
 #else
 	return false;
-#endif
+#endif //NOJOYSTICK
 }
 
 
@@ -1806,11 +1839,20 @@ HJOYINFO OSD_OpenJoy( int index )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	joyMap[index] = (HJOYINFO)SDL_JoystickOpen( index );
+#ifdef SDLJOYSTICK
+    joyMap[index] = (HJOYINFO)SDL_JoystickOpen( index );
 	return joyMap[index];
 #else
+	auto mgr = QGamepadManager::instance();
+	auto devIndex = mgr->connectedGamepads()[index];
+	if (joyMap.count(devIndex) == 0){
+		joyMap[devIndex] = new QGamepad(devIndex, qApp);
+	}
+	return (HJOYINFO)joyMap[devIndex];
+#endif //SDLJOYSTICK
+#else
 	return (HJOYINFO)NULL;
-#endif
+#endif //NOJOYSTICK
 }
 
 
@@ -1824,7 +1866,11 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	SDL_JoystickClose( static_cast<SDL_Joystick*>(jinfo) );
+#ifdef SDLJOYSTICK
+    SDL_JoystickClose( static_cast<SDL_Joystick*>(jinfo) );
+#else
+	(static_cast<QGamepad*>(jinfo))->deleteLater();
+#endif //SDLJOYSTICK
 	for (auto p = joyMap.begin(); p != joyMap.end();){
 		if(p->second == jinfo){
 			p = joyMap.erase(p);
@@ -1833,7 +1879,7 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 		}
 	}
 #else
-#endif
+#endif //NOJOYSTICK
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1846,10 +1892,15 @@ int OSD_GetJoyNumAxes( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickNumAxes( (SDL_Joystick *)jinfo );
+#ifdef SDLJOYSTICK
+    return SDL_JoystickNumAxes( static_cast<SDL_Joystick*>(jinfo) );
+#else
+	//QtGamepadでは固定(スティックがLR2本、軸がXYの2軸でトータルで4つ)
+	return 4;
+#endif //SDLJOYSTICK
 #else
 	return 1;
-#endif
+#endif //NOJOYSTICK
 }
 
 
@@ -1863,10 +1914,15 @@ int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickNumButtons( (SDL_Joystick *)jinfo );
+#ifdef SDLJOYSTICK
+    return SDL_JoystickNumButtons( static_cast<SDL_Joystick*>(jinfo) );
+#else
+	//QtGamepadでは固定(エミュレーターに渡すのはABXYの4つ)
+	return 4;
+#endif //SDLJOYSTICK
 #else
 	return 0;
-#endif
+#endif //NOJOYSTICK
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1879,9 +1935,13 @@ void OSD_UpdateJoy()
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	SDL_JoystickUpdate();
+#ifdef SDLJOYSTICK
+    SDL_JoystickUpdate();
 #else
-#endif
+	//何もしない
+#endif //SDLJOYSTICK
+#else
+#endif //NOJOYSTICK
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1895,10 +1955,28 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickGetAxis( (SDL_Joystick *)jinfo, num );
+#ifdef SDLJOYSTICK
+    return SDL_JoystickGetAxis( static_cast<SDL_Joystick*>(jinfo), num );
+#else
+	QGamepad* joy = static_cast<QGamepad*>(jinfo);
+	if (!joy) return 0;
+	int val = 0;
+	switch (num){
+	case 0:
+		val = int16_t(joy->axisLeftX() * 32767);	break;
+	case 1:
+		val = int16_t(joy->axisLeftY() * 32767);	break;
+	case 2:
+		val = int16_t(joy->axisRightX() * 32767);	break;
+	case 3:
+		val = int16_t(joy->axisRightY() * 32767);	break;
+	default:;
+	}
+	return val;
+#endif //SDLJOYSTICK
 #else
 	return 0;
-#endif
+#endif //NOJOYSTICK
 }
 
 
@@ -1913,10 +1991,28 @@ bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickGetButton( (SDL_Joystick *)jinfo, num ) ? true : false;
+#ifdef SDLJOYSTICK
+    return SDL_JoystickGetButton( static_cast<SDL_Joystick*>(jinfo), num ) ? true : false;
+#else
+	QGamepad* joy = static_cast<QGamepad*>(jinfo);
+	if (!joy) return false;
+	bool val = false;
+	switch (num) {
+	case 0:
+		val = joy->buttonA();	break;
+	case 1:
+		val = joy->buttonB();	break;
+	case 2:
+		val = joy->buttonX();	break;
+	case 3:
+		val = joy->buttonY();	break;
+	default:;
+	}
+	return val;
+#endif //SDLJOYSTICK
 #else
 	return false;
-#endif
+#endif //NOJOYSTICK
 }
 
 ///////////////////////////////////////////////////////////

@@ -614,7 +614,7 @@ void SCH6::OnThread( void *inst )
 #ifndef NOJOYSTICK
 		// ジョイスティックをポーリング
 		OSD_PushEvent(EV_JOYAXISMOTION);
-#endif
+#endif //NOJOYSTICK
 		now = int(OSD_GetTicks());
 		OSD_Delay( max( NextWait - now, 0 ));
 

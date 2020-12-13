@@ -389,7 +389,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	joyGroup2->addAction(noJoy2);
 	if (joy->GetID(0) < 0) noJoy1->setChecked(true);
 	if (joy->GetID(1) < 0) noJoy2->setChecked(true);
-#endif
+#endif //NOJOYSTICK
 
 	// 設定メニュー
 	QMenu* settingsMenu = menu.addMenu(tr("設定"));

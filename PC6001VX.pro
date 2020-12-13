@@ -8,7 +8,7 @@ QT += core gui widgets network
 
 TARGET = PC6001VX
 TEMPLATE = app
-VERSION = 3.5.3
+VERSION = 3.6.0
 
 QMAKE_TARGET_COMPANY = eighttails
 QMAKE_TARGET_DESCRIPTION = "PC-6001 Emulator"
@@ -49,70 +49,91 @@ INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
 
 #Configuration for UNIX variants
 unix:!macx {
-#Configuration for Android
-android {
-DEFINES += NOSINGLEAPP NOJOYSTICK NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
-DEFINES -= QT_NO_DEBUG_OUTPUT
-#Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
-debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
-QT += androidextras
+    #Configuration for Android
+    android {
+        DEFINES += NOSINGLEAPP NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
+        DEFINES -= QT_NO_DEBUG_OUTPUT
+        #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
+        debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
+        QT += androidextras
 
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+        ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-DISTFILES += \
-    android/AndroidManifest.xml \
-    android/build.gradle \
-    android/res/values/libs.xml
+        DISTFILES += \
+            android/AndroidManifest.xml \
+            android/build.gradle \
+            android/res/values/libs.xml
 
-HEADERS += \
-    src/Qt/ekkesShare/shareutils.hpp \
-    src/Qt/ekkesShare/android/androidshareutils.hpp
-SOURCES += \
-    src/Qt/ekkesShare/shareutils.cpp \
-    src/Qt/ekkesShare/android/androidshareutils.cpp
-}
+        HEADERS += \
+            src/Qt/ekkesShare/shareutils.hpp \
+            src/Qt/ekkesShare/android/androidshareutils.hpp
+        SOURCES += \
+            src/Qt/ekkesShare/shareutils.cpp \
+            src/Qt/ekkesShare/android/androidshareutils.cpp
+    }
 
-ios {
-DEFINES += NOJOYSTICK NOAVI ALWAYSFULLSCREEN IPHONE_IPAD
-}
+    ios {
+        DEFINES += NOJOYSTICK NOAVI ALWAYSFULLSCREEN IPHONE_IPAD
+    }
 
-!android:!ios {
-#Configuration for X11(XCB)
-DEFINES += USE_X11
-QT += x11extras
-PKGCONFIG += x11
-}
+    !android:!ios {
+        #Configuration for X11(XCB)
+        DEFINES += USE_X11
+        QT += x11extras
+        PKGCONFIG += x11
+    }
 }
 
 #Configuration for Windows
 win32 {
-DEFINES += WIN32
-#On Windows, links libraries statically as long as possible.
-QMAKE_LFLAGS_WINDOWS += -Wl,--stack,10000000
-QMAKE_LFLAGS += -static
-LIBS_PRIVATE= -lpthread -lsetupapi
-PKG_CONFIG = 'pkg-config --static'
-RC_ICONS += src/win32/PC6001VX.ico
+    DEFINES += WIN32
+    #On Windows, link libraries statically as long as possible.
+    QMAKE_LFLAGS_WINDOWS += -Wl,--stack,10000000
+    QMAKE_LFLAGS += -static
+    LIBS_PRIVATE= -lpthread -lsetupapi
+    PKG_CONFIG = 'pkg-config --static'
+    RC_ICONS += src/win32/PC6001VX.ico
+
+    #Workaround to this bug
+    #https://bugreports.qt.io/browse/QTBUG-61553
+    DEFINES += SDLJOYSTICK
+    PKGCONFIG += sdl2
 }
 
+#Find library to handle joysticks.
 !contains(DEFINES, NOJOYSTICK) {
-PKGCONFIG += sdl2
+!contains(DEFINES, SDLJOYSTICK) {
+    qtHaveModule(gamepad) {
+        QT += gamepad
+    } else {
+            packagesExist(sdl2) {
+            DEFINES += SDLJOYSTICK
+            PKGCONFIG += sdl2
+        } else {
+            DEFINES += NOJOYSTICK
+        }
+    }
+}
 }
 
 !contains(DEFINES, NOOPENGL) {
-QT += opengl
+    QT += opengl
 }
 
 !contains(DEFINES, NOSOUND) {
-QT += multimedia
-SOURCES += \
-    src/Qt/wavfile.cpp \
-    src/Qt/utils.cpp
+    QT += multimedia
+    SOURCES += \
+        src/Qt/wavfile.cpp \
+        src/Qt/utils.cpp
 }
 
 !contains(DEFINES, NOAVI) {
-DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
-PKGCONFIG += libavformat libavcodec libswscale libswresample libavutil
+    packagesExist(libavformat) {
+        DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
+        PKGCONFIG += libavformat libavcodec libswscale libswresample libavutil
+    } else {
+        DEFINES += NOAVI
+    }
 }
 
 SOURCES += \

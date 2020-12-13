@@ -604,7 +604,8 @@ image::doc/qtsetting_envvar.png[]
 ==== Linux
 Debian系のディストリビューションについて解説します。 +
 
-. `apt-get install build-essential libx11-dev mesa-common-dev libsdl2-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
+. `apt install build-essential libx11-dev mesa-common-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
+. `apt install libqt5gamepad5-dev || apt install libsdl2-dev` を実行。(libqt5gamepad5-devは比較的新しいパッケージのため、インストールできない場合はlibsdl2-devをインストール) +
 . ダウンロードしたPC6001VXのソースを解凍してください。 +
 . PC6001VX.proをQtCreatorで開いてビルドしてください。 +
 . IDEを使わない場合、コマンドラインでは以下の手順でビルドできます。 +
@@ -617,7 +618,7 @@ make
 
 ==== Android
 http://qt-project.org/doc/qtcreator/creator-developing-android.html[こちら] を参考にして環境を構築してください。 +
-Qt 5.10.0以上が必要です。(Qt5.14.2以上推奨)
+Qt 5.15.0以上が必要です。
 
 
 == 既知の不具合、制約事項
@@ -628,10 +629,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 
 == 更新履歴
 .git master
+* Androidでジョイスティックが使えるようになった。
 * PC-6001互換BASICを0.7.2に更新。
 * PC-6001mkII/6601用互換BASICを0.3.1に更新。
 * サンプリングレート設定を削除。
 * 動画エンコード速度を改善。
+* Joysticks are available on Android.
 * Updated PC-6001 compatible basic ROMs to 0.7.2.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.1.
 * Removed sound sampling rate settings.

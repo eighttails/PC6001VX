@@ -628,17 +628,21 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
-.git master
+.3.6.0 2020/12/15
 * Androidでジョイスティックが使えるようになった。
 * PC-6001互換BASICを0.7.2に更新。
 * PC-6001mkII/6601用互換BASICを0.3.1に更新。
 * サンプリングレート設定を削除。
 * 動画エンコード速度を改善。
+* スナップショットのファイル命名規則を変更。
+* (Android)セミグラフィックの表示が化けていたのを修正。
 * Joysticks are available on Android.
 * Updated PC-6001 compatible basic ROMs to 0.7.2.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.1.
 * Removed sound sampling rate settings.
 * Improved video capture performance.
+* Changed snapshot file name convention.
+* (Android)Fixed semi-graphic's glitch.
 
 .3.5.3 2020/09/26
 * ハードウェアアクセラレーション使用時に描画がちらつくのを修正。

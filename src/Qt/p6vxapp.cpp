@@ -969,7 +969,17 @@ void P6VXApp::overrideSettings(CFG6 &cfg)
 	OSD_AddPath( str, OSD_GetModulePath(), DOKOSAVE_DIR );
 	cfg.SetDokoSavePath( str );
 	cfg.Write();
+
+	// Androidでは起動時にスナップショット画像を削除する
+	auto imgDir = QDir(cfg.GetImgPath());
+	imgDir.setNameFilters(QStringList() << "*.png");
+	imgDir.setFilter(QDir::Files);
+	foreach(QString dirFile, imgDir.entryList())
+	{
+		imgDir.remove(dirFile);
+	}
 #endif
+
 	// サンプリングレートは44100に固定
 	cfg.SetSampleRate(44100);
 }

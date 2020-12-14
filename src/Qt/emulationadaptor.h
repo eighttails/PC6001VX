@@ -20,10 +20,10 @@ public:
 	EL6::ReturnCode getReturnCode(){return RetCode;}
 
 signals:
-	//エミュレーションイベントループの終了
+	// エミュレーションイベントループの終了
 	void finished();
 public slots:
-	//エミュレーションイベントループを開始
+	// エミュレーションイベントループを開始
 	void doEventLoop();
 
 protected:

@@ -13,7 +13,7 @@
 #include "ekkesShare/shareutils.hpp"
 #endif
 
-extern QVector<QRgb> PaletteTable;              //パレットテーブル
+extern QVector<QRgb> PaletteTable;              // パレットテーブル
 
 ////////////////////////////////////////////////////////////////
 // Img SAVE from Data
@@ -169,7 +169,7 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 ////////////////////////////////////////////////////////////////
 char *UTF8toLocal( const char *str )
 {
-	//文字コード変換用バッファ
+	// 文字コード変換用バッファ
 	static QByteArray array;
 	QMutex mutex;
 	QMutexLocker lock(&mutex);
@@ -217,7 +217,7 @@ void UpdateTilt()
 	const int maxStep = 30;
 	const int t = app->getTiltStep();
 	switch (app->getTiltDirection()){
-	case LEFT: //左
+	case LEFT: // 左
 		app->setTiltStep(qMax(-maxStep, t - 1));
 		break;
 	case RIGHT: // 右

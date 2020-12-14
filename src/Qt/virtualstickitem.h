@@ -30,7 +30,7 @@ protected:
 	std::array<bool, 4> estimateStickInput(QPointF coord);
 
 	std::array<bool, 4> currentKeyStatus;
-	QGraphicsColorizeEffect* pressEffect; //ボタンを押すと色が変わるエフェクト
+	QGraphicsColorizeEffect* pressEffect; // ボタンを押すと色が変わるエフェクト
 
 };
 

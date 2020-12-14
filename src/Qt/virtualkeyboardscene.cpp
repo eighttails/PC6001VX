@@ -14,7 +14,7 @@ void VirtualKeyboardScene::setKeyStateWatcher(KeyStateWatcher *watcher)
 	foreach (auto item, this->items()) {
 		auto obj = dynamic_cast<VirtualKeyItem*>(item);
 		if(!obj) continue;
-		//KeyStateWatcherから状態変更通知が来たら仮想キーアイテムに通知する
+		// KeyStateWatcherから状態変更通知が来たら仮想キーアイテムに通知する
 		connect(Watcher, SIGNAL(stateChanged(bool,bool,bool,bool,bool,bool)), obj,
 				SLOT(changeStatus(bool,bool,bool,bool,bool,bool)));
 	}
@@ -50,7 +50,7 @@ VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
 
 void VirtualKeyboardScene::alignVirtualKeyItems(std::vector<VirtualKeyItem *> list, QPointF coord)
 {
-	//アイテムを横一列に整列
+	// アイテムを横一列に整列
 	for (size_t i = 0; i < list.size(); i++){
 		auto item = list[i];
 		if (i == 0){

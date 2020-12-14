@@ -40,7 +40,7 @@ protected slots:
 	void poll();
 
 protected:
-	KEY6* Key;	//監視対象のキーボード
+	KEY6* Key;	// 監視対象のキーボード
 
 	bool ON_SHIFT;	// SHIFT
 	bool ON_CTRL;	// CTRL

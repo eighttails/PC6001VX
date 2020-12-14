@@ -39,7 +39,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	setAcceptedMouseButtons(Qt::LeftButton);
 	setAcceptTouchEvents(true);
 
-	//ボタンを押すと色が変わるエフェクト
+	// ボタンを押すと色が変わるエフェクト
 	pressEffect->setColor(Qt::blue);
 	pressEffect->setEnabled(false);
 	setGraphicsEffect(pressEffect);

@@ -98,7 +98,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, TiltStep(0)
 	, SafeMode(false)
 {
-	//アプリで定義した型名をシグナルの引数として使えるようにする
+	// アプリで定義した型名をシグナルの引数として使えるようにする
 	qRegisterMetaType<HWINDOW>("HWINDOW");
 	qRegisterMetaType<TiltDirection>("TiltDirection");
 	qRegisterMetaType<FileMode>("FileMode");
@@ -108,8 +108,8 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	emulationThread->start();
 	Adaptor->moveToThread(emulationThread);
 
-	//ウィンドウを閉じても終了しない。
-	//終了はEL6::Quitが返ってきた時に行う。
+	// ウィンドウを閉じても終了しない。
+	// 終了はEL6::Quitが返ってきた時に行う。
 	setQuitOnLastWindowClosed (false);
 
 	connect(this, SIGNAL(initialized()), this, SLOT(executeEmulation()));
@@ -117,13 +117,13 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	connect(this, SIGNAL(vmRestart()), this, SLOT(executeEmulation()));
 	connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()));
 
-	//スクリーンセーバー抑止用タイマー
+	// スクリーンセーバー抑止用タイマー
 	QTimer* timer = new QTimer(this);
 	timer->setInterval(30000);
 	connect(timer, SIGNAL(timeout()), this, SLOT(inhibitScreenSaver()));
 	timer->start();
 
-	//マウスカーソル表示制御用タイマー
+	// マウスカーソル表示制御用タイマー
 	connect(MouseCursorTimer, &QTimer::timeout, this, &P6VXApp::hideMouseCursor);
 
 }
@@ -281,7 +281,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 {
 	QSharedPointer<QFileDialog> dialog(createFileDialog(hwnd));
 	QString result;
-	//検索パスが指定されていない場合はホームフォルダとする
+	// 検索パスが指定されていない場合はホームフォルダとする
 	QString pathStr = strlen(path) ? QFileInfo(path).dir().path() : QDir::homePath();
 
 	dialog->setWindowTitle(title);
@@ -378,7 +378,7 @@ void P6VXApp::setWindowIcon(const QIcon &icon)
 
 void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image)
 {
-	//QtではSceneRectの幅を返す
+	// QtではSceneRectの幅を返す
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
 	QGraphicsScene* scene = view->scene();
@@ -444,26 +444,26 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 			!Cfg.GetMonDisp() &&
 		#endif
 			isTiltEnabled()){
-		//画面に対する、枠を含めたサイズの比率
+		// 画面に対する、枠を含めたサイズの比率
 		qreal merginRatio = 1.0;
 		QGraphicsPixmapItem* background = NULL;
 		switch(this->Cfg.GetModel()){
 		case 60:
 		case 61:
-			//初代機の場合はPC-6042Kを使う
+			// 初代機の場合はPC-6042Kを使う
 			background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background60.png")));
 			merginRatio = 1.45;
 			break;
 		default:
-			//それ以外の場合はPC-60m43を使う
+			// それ以外の場合はPC-60m43を使う
 			background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background.png")));
 			merginRatio = 1.2;
 		}
 		background->setTransformationMode(Qt::SmoothTransformation);
-		//最前面に配置(他のアイテムのZ値はデフォルトの0)
+		// 最前面に配置(他のアイテムのZ値はデフォルトの0)
 		background->setZValue(1);
 		QTransform trans;
-		//画像の拡大倍率
+		// 画像の拡大倍率
 		qreal ratio = qMax(scene->width() / background->sceneBoundingRect().width(),
 						   scene->height() / background->sceneBoundingRect().height());
 		qreal scaleRatio = ratio * merginRatio;
@@ -471,7 +471,7 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 		int scaledWidth = background->sceneBoundingRect().width() * scaleRatio;
 		int scaledHeight = background->sceneBoundingRect().height() * scaleRatio;
 
-		//画像のオフセットを計算(枠の分だけ左上に移動)
+		// 画像のオフセットを計算(枠の分だけ左上に移動)
 		trans.translate(-(scaledWidth - scene->width()) / 2, -(scaledHeight - scene->height()) / 2);
 		trans.scale(ratio * merginRatio, ratio * merginRatio);
 		background->setTransform(trans);
@@ -679,7 +679,7 @@ void P6VXApp::executeEmulation()
 								   "ROMフォルダ(%1)にROMファイルをコピーするか、"
 								   "別のROMフォルダを指定してください。\n"
 								   "別のROMフォルダを指定しますか?")).arg(Cfg.GetRomPath()).toUtf8().constData(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING ) == OSDR_YES){
-			//ROMフォルダ再設定
+			// ROMフォルダ再設定
 			char folder[PATH_MAX];
 			strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
 			OSD_AddDelimiter(folder);
@@ -848,14 +848,14 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 	qDebug("nativekeycode %d\n", nativeKey);
 #endif
 
-	//X11の場合
+	// X11の場合
 	if (QGuiApplication::platformName() == QLatin1String("xcb")){
 		// 「ろ」
 		if(keyCode == Qt::Key_Backslash){
 			keyCode = nativeKey == 97 ? Qt::Key_Underscore : Qt::Key_Backslash;
 		}
 	}
-	//Windowsの場合
+	// Windowsの場合
 	else if (QGuiApplication::platformName() == QLatin1String("windows")){
 		// 「ろ」
 		if(keyCode == Qt::Key_Backslash){
@@ -938,11 +938,11 @@ void P6VXApp::fixKeyModifiers(Event &ev)
 		ev.key.sym = i.sym;
 		if (i.shift){
 			// P6でSHIFTが必要な記号はSHIFTモディファイヤーを付与する
-			OSD_PushEvent(shiftDownEvent);	//SHIFTキーを押すイベントを挿入する
+			OSD_PushEvent(shiftDownEvent);	// SHIFTキーを押すイベントを挿入する
 			ev.key.mod = (PCKEYmod)(ev.key.mod|KVM_SHIFT);
 		} else {
 			// P6でSHIFTなしで入力できる記号はSHIFTモディファイヤーを外す
-			OSD_PushEvent(shiftUpEvent);	//SHIFTキーを離すイベントを挿入する
+			OSD_PushEvent(shiftUpEvent);	// SHIFTキーを離すイベントを挿入する
 			ev.key.mod = (PCKEYmod)(ev.key.mod&~KVM_SHIFT);
 		}
 	}
@@ -952,10 +952,10 @@ void P6VXApp::overrideSettings(CFG6 &cfg)
 {
 #ifdef ANDROID
 	char str[PATH_MAX];
-	//設定のデフォルト値でなく、プラットフォームごとのデータフォルダを探す。
-	//Androidではこの方法でないとSDカードが検出できない場合がある。
+	// 設定のデフォルト値でなく、プラットフォームごとのデータフォルダを探す。
+	// Androidではこの方法でないとSDカードが検出できない場合がある。
 	const auto dataPath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0].toLocal8Bit();
-	//ROM,TAPE,DISK,拡張ROM,WAVEパスの初期値にはこのデータフォルダを設定する。
+	// ROM,TAPE,DISK,拡張ROM,WAVEパスの初期値にはこのデータフォルダを設定する。
 	if(QString(cfg.GetRomPath()).contains(OSD_GetModulePath())) cfg.SetRomPath(dataPath);
 	if(QString(cfg.GetTapePath()).contains(OSD_GetModulePath())) cfg.SetTapePath(dataPath);
 	if(QString(cfg.GetDiskPath()).contains(OSD_GetModulePath())) cfg.SetDiskPath(dataPath);
@@ -1002,10 +1002,10 @@ QFileDialog *P6VXApp::createFileDialog(void *hwnd)
 	dialog->setWindowState(dialog->windowState() | Qt::WindowFullScreen);
 #endif
 #ifdef ANDROID
-	//シングルタップで開くように設定
+	// シングルタップで開くように設定
 	dialog->setStyleSheet(QStringLiteral("QAbstractItemView { activate-on-singleclick: 1; }"));
-	//Androidではローカルストレージのトップフォルダをブックマークさせる。
-	//こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
+	// Androidではローカルストレージのトップフォルダをブックマークさせる。
+	// こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
 	QStringList dataPaths;
 	dataPaths << "/storage";
 	dataPaths << QProcessEnvironment::systemEnvironment().value("EXTERNAL_STORAGE");
@@ -1089,7 +1089,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 					| ( ke->modifiers() & Qt::MetaModifier ? KVM_META : KVM_NONE )
 					| ( ke->modifiers() & Qt::KeypadModifier ? KVM_NUM : KVM_NONE )
 					// CAPSLOCKは検出できない？
-					//| ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
+					// | ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
 					);
 		ev.key.unicode = ke->text().utf16()[0];
 		fixKeyModifiers(ev);
@@ -1166,7 +1166,7 @@ void P6VXApp::inhibitScreenSaver()
 		SetThreadExecutionState(ES_CONTINUOUS);
 	}
 #else
-	//何もしない
+	// 何もしない
 #endif
 }
 

@@ -16,17 +16,17 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	layout->setMargin(0);
 	setLayout(layout);
 
-	//シーングラフ生成
+	// シーングラフ生成
 	QGraphicsScene* Scene = new QGraphicsScene();
-	//アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
+	// アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
 	QObject::connect(qApp, SIGNAL(aboutToQuit()), Scene, SLOT(deleteLater()));
 
-	//メインウィジェット(エミュレータのメイン画面)
+	// メインウィジェット(エミュレータのメイン画面)
 	MainView = new RenderView(Scene);
 	layout->addWidget(MainView);
 	connect(MainView, SIGNAL(resized(QSize)), this, SLOT(adjustSizeToChild(QSize)));
 
-	//仮想キーウィジェット
+	// 仮想キーウィジェット
 	VKeyWidget = new VirtualKeyTabWidget();
 	layout->addWidget(VKeyWidget);
 	VKeyWidget->setVisible(app->getSetting(P6VXApp::keyVirtualKeyVisible).toBool());

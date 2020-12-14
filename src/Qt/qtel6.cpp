@@ -368,7 +368,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 #ifndef NOJOYSTICK
 	// ジョイスティックメニュー
 	QMenu* joystickMenu = menu.addMenu(tr("ジョイスティック"));
-	//------
+	// ------
 	QMenu* joyMenu1 = joystickMenu->addMenu("1");
 	QMenu* joyMenu2 = joystickMenu->addMenu("2");
 	QActionGroup* joyGroup1 = new QActionGroup(&menu);
@@ -389,7 +389,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	joyGroup2->addAction(noJoy2);
 	if (joy->GetID(0) < 0) noJoy1->setChecked(true);
 	if (joy->GetID(1) < 0) noJoy2->setChecked(true);
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 
 	// 設定メニュー
 	QMenu* settingsMenu = menu.addMenu(tr("設定"));

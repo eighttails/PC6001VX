@@ -102,5 +102,5 @@ bool cThread::IsCancel()
 // Default thread procedure. Don't call this method in direct!
 void cThread::ThreadProc(void *lpVoid)
 {
-	//何もしない(InternalTherad::run()で代替)
+	// 何もしない(InternalTherad::run()で代替)
 }

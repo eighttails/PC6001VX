@@ -42,7 +42,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	setAttribute(Qt::WA_Hover);
 
 #ifdef WIN32
-	//IMEを無効化
+	// IMEを無効化
 	ImmAssociateContext( (HWND)winId(), NULL );
 #endif
 
@@ -56,7 +56,7 @@ void RenderView::fitContent()
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	const bool fixMag = app->getSetting(P6VXApp::keyFixMagnification).toBool();
-	//ウィンドウ全体に表示されるように表示倍率を調整
+	// ウィンドウ全体に表示されるように表示倍率を調整
 	qreal scaleRatio = fixMag
 			? app->getSetting(P6VXApp::keyMagnification).toReal()
 			: qMin(width() / scene()->width(), height() / scene()->height());
@@ -64,7 +64,7 @@ void RenderView::fitContent()
 	centerOn(sceneRect().center());
 	scale(scaleRatio, scaleRatio);
 
-	//表示倍率固定の場合は中心に配置
+	// 表示倍率固定の場合は中心に配置
 	if (fixMag){
 		translate((width() - scene()->width()) / 2, (height() - scene()->height()) / 2);
 	}else {
@@ -132,8 +132,8 @@ void RenderView::paintEvent(QPaintEvent *event)
 	if(isActiveWindow()){
 		fitContent();
 		if(app->isTiltEnabled()){
-			//TILTモードの回転
-			const qreal unit = 0.5; //0.5度単位で回転
+			// TILTモードの回転
+			const qreal unit = 0.5; // 0.5度単位で回転
 			rotate(unit * app->getTiltStep());
 		}
 	}

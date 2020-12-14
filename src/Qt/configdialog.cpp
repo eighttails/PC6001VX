@@ -104,8 +104,8 @@ void ConfigDialog::readConfig()
 	char str[PATH_MAX];		// 文字列取得用
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
-	//基本------------------------------------------------------
-	//機種
+	// 基本------------------------------------------------------
+	// 機種
 	switch(config->GetModel()){
 	case 60:    ui->radioButtonModel6001->setChecked(true);         break;
 	case 61:    ui->radioButtonModel6001A->setChecked(true);         break;

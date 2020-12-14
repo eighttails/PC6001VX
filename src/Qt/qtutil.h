@@ -27,7 +27,7 @@ private:
 	DWORD start_;
 	DWORD end_;
 	QString name_;
-	quint32 threshold_; //経過時間が一定値を超えた場合のみ出力する
+	quint32 threshold_; // 経過時間が一定値を超えた場合のみ出力する
 };
 
 #endif // QTUTIL_H

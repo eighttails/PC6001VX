@@ -40,19 +40,19 @@ protected:
 	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 	void sendKeyEvent(EventType type, bool state);
 
-	const PCKEYsym Code;			//キーコード
-	const QPixmap PixNormal;		//通常時の画像
-	const QPixmap PixShift;			//SHIFT押下時の画像
-	const QPixmap PixGrph;			//GRPH押下時の画像
-	const QPixmap PixKana;			//かなモード時の画像
-	const QPixmap PixKanaShift;		//かな+SHIFTモード時の画像
-	const QPixmap PixKKana;			//カナモード時の画像
-	const QPixmap PixKKanaShift;	//カナ+SHIFTモード時の画像
-	const bool IsAlpha;				//アルファベットフラグ(CAPS時に大文字小文字が反転)
-	const bool MouseToggle;			//マウス入力時にトグル入力にする(SHIFT,GRPH用)
-	bool ToggleStatus;				//マウス入力時のトグル状態
+	const PCKEYsym Code;			// キーコード
+	const QPixmap PixNormal;		// 通常時の画像
+	const QPixmap PixShift;			// SHIFT押下時の画像
+	const QPixmap PixGrph;			// GRPH押下時の画像
+	const QPixmap PixKana;			// かなモード時の画像
+	const QPixmap PixKanaShift;		// かな+SHIFTモード時の画像
+	const QPixmap PixKKana;			// カナモード時の画像
+	const QPixmap PixKKanaShift;	// カナ+SHIFTモード時の画像
+	const bool IsAlpha;				// アルファベットフラグ(CAPS時に大文字小文字が反転)
+	const bool MouseToggle;			// マウス入力時にトグル入力にする(SHIFT,GRPH用)
+	bool ToggleStatus;				// マウス入力時のトグル状態
 
-	QGraphicsColorizeEffect* pressEffect; //ボタンを押すと色が変わるエフェクト
+	QGraphicsColorizeEffect* pressEffect; // ボタンを押すと色が変わるエフェクト
 };
 
 #endif // VIRTUALKEYITEM_H

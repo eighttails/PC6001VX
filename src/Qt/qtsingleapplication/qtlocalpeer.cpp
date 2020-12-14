@@ -199,5 +199,5 @@ void QtLocalPeer::receiveConnection()
     socket->write(ack, qstrlen(ack));
     socket->waitForBytesWritten(1000);
     delete socket;
-    emit messageReceived(message); //### (might take a long time to return)
+	emit messageReceived(message); // ### (might take a long time to return)
 }

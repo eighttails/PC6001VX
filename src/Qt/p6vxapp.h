@@ -34,7 +34,7 @@ class P6VXApp : public ParentAppClass
 {
 	Q_OBJECT
 public:
-	//設定用キー
+	// 設定用キー
 	static const QString keyGeometry;			// ウィンドウ表示位置
 	static const QString keyMaximized;			// ウィンドウ最大化フラグ
 	static const QString keyHwAccel;			// ハードウェアアクセラレーション(OpenGL/DirectX)有効化フラグ
@@ -87,11 +87,11 @@ public:
 	void exportSavedTape();
 
 public slots:
-	//仮想マシンの起動→終了→再起動のループ
-	//直接呼び出さずに、Qtのイベントループの中で実行する
+	// 仮想マシンの起動→終了→再起動のループ
+	// 直接呼び出さずに、Qtのイベントループの中で実行する
 	void startup();
 
-	//メッセージボックスの表示
+	// メッセージボックスの表示
 	int showMessageBox(const char *mes, const char *cap, int type);
 
 	// ファイルダイアログの表示
@@ -100,26 +100,26 @@ public slots:
 	// フォルダダイアログの表示
 	const char* folderDialog( void *hwnd, char *Result );
 
-	//ウィンドウを生成
+	// ウィンドウを生成
 	void createWindow(HWINDOW Wh, bool fsflag );
 
-	//アイコンを設定
+	// アイコンを設定
 	void setWindowIcon(const QIcon &icon);
 
-	//グラフィックをシーンに配置
-	//QGraphicsSceneの操作はメインスレッドでしかできないため、
-	//ここで実装する
+	// グラフィックをシーンに配置
+	// QGraphicsSceneの操作はメインスレッドでしかできないため、
+	// ここで実装する
 	void layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image);
 
-	//ウィンドウイメージバイト列でを取得
-	//QGraphicsSceneの操作はメインスレッドでしかできないため、
-	//ここで実装する
+	// ウィンドウイメージバイト列でを取得
+	// QGraphicsSceneの操作はメインスレッドでしかできないため、
+	// ここで実装する
 	void getWindowImage(HWINDOW Wh, QRect pos, void** pixels);
 
-	//グラフィックシーンをクリア
+	// グラフィックシーンをクリア
 	void clearLayout(HWINDOW Wh);
 
-	//コンテキストメニューを表示
+	// コンテキストメニューを表示
 	void showPopupMenu(int x, int y);
 
 	// キーパネルを表示
@@ -136,22 +136,22 @@ public slots:
 	void resetSettings();
 
 signals:
-	//初期化終了シグナル
+	// 初期化終了シグナル
 	void initialized();
 
-	//仮想マシン実行前準備終了シグナル
+	// 仮想マシン実行前準備終了シグナル
 	void vmPrepared();
 
 	// 仮想マシンの実行終了シグナル
 	void vmRestart();
 
 private slots:
-	//仮想マシン開始させる
+	// 仮想マシン開始させる
 	void executeEmulation();
-	//仮想マシン終了後の処理
+	// 仮想マシン終了後の処理
 	void postExecuteEmulation();
 
-	//仮想マシンを終了させる
+	// 仮想マシンを終了させる
 	void terminateEmulation();
 
 	// スクリーンセーバー無効化

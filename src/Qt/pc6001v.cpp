@@ -9,14 +9,14 @@
 //SDL使用時にビルドを通すのに必要
 #undef main
 #endif
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 
 ///////////////////////////////////////////////////////////
 // メイン
 ///////////////////////////////////////////////////////////
 int main( int argc, char *argv[] )
 {
-	//X11の場合用
+	// X11の場合用
 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
 #if QT_VERSION >= 0x050700
 #ifndef ANDROID
@@ -42,7 +42,7 @@ int main( int argc, char *argv[] )
 	QLocale locale;
 	QTranslator myappTranslator;
 
-	//表示言語が日本語でない場合は英語リソースを読み込む
+	// 表示言語が日本語でない場合は英語リソースを読み込む
 	if(locale.language() != QLocale::Japanese){
 		qDebug() << "LANG = " << locale;
 		myappTranslator.load(":/translation/PC6001VX_en");
@@ -82,9 +82,9 @@ int main( int argc, char *argv[] )
 #endif
 	}
 
-	//イベントループが始まったらp6vxapp::startup()を実行
+	// イベントループが始まったらp6vxapp::startup()を実行
 	QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);
 
-	//イベントループを開始
+	// イベントループを開始
 	return app.exec();
 }

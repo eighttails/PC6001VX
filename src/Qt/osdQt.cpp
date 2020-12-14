@@ -12,8 +12,8 @@
 #include <SDL2/SDL.h>
 #else
 #include <QtGamepad>
-#endif //SDLJOYSTICK
-#endif //NOJOYSTICK
+#endif // SDLJOYSTICK
+#endif // NOJOYSTICK
 
 #include "../log.h"
 #include "../osd.h"
@@ -41,7 +41,7 @@ QWaitCondition eventEmitted;
 QElapsedTimer elapsedTimer;
 
 std::map<int, PCKEYsym> VKTable;		// Qtキーコード  -> 仮想キーコード 変換テーブル
-QVector<QRgb> PaletteTable;				//パレットテーブル
+QVector<QRgb> PaletteTable;				// パレットテーブル
 
 #ifndef NOSOUND
 //サウンド関連
@@ -53,7 +53,7 @@ QPointer<AudioOutputWrapper> audioOutput = NULL;
 //ジョイスティック関連
 #ifndef NOJOYSTICK
 QMutex joystickMutex;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 
 static const struct {	// Qtキーコード -> 仮想キーコード定義
 	int InKey;			// Qtのキーコード
@@ -237,7 +237,7 @@ const char *MsgIni[] = {
 	// [CONFIG]
 	QT_TRANSLATE_NOOP("PC6001VX", "; === PC6001V 初期設定ファイル ===\n\n"),
 	QT_TRANSLATE_NOOP("PC6001VX", "機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR"),
-	//QT_TRANSLATE_NOOP("PC6001VX", "機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601"),
+	// QT_TRANSLATE_NOOP("PC6001VX", "機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601"),
 	QT_TRANSLATE_NOOP("PC6001VX", "FDD接続台数 (0-2)"),
 	QT_TRANSLATE_NOOP("PC6001VX", "拡張RAM使用"),
 	QT_TRANSLATE_NOOP("PC6001VX", "Turbo TAPE Yes:有効 No:無効"),
@@ -602,11 +602,11 @@ bool OSD_Init( void )
 		return false;
     SDL_JoystickEventState(SDL_DISABLE);
 #else
-    //何もしない
-#endif //SDLJOYSTICK
-#endif //NOJOYSTICK
+	// 何もしない
+#endif // SDLJOYSTICK
+#endif // NOJOYSTICK
 
-	//経過時間タイマーをスタート
+	// 経過時間タイマーをスタート
 	elapsedTimer.start();
 
 	// Qtキーコード  -> 仮想キーコード 変換テーブル初期化
@@ -631,9 +631,9 @@ void OSD_Quit( void )
 #ifdef SDLJOYSTICK
 	SDL_Quit();
 #else
-	//何もしない
-#endif //SDLJOYSTICK
-#endif //NOJOYSTICK
+	// 何もしない
+#endif // SDLJOYSTICK
+#endif // NOJOYSTICK
 }
 
 ////////////////////////////////////////////////////////////////
@@ -695,7 +695,7 @@ DWORD OSD_GetTicks( void )
 bool OSD_GetEvent( Event *ev )
 {
 	eventMutex.lock();
-	//イベントキューが空の場合、イベントが発行されるまで待つ
+	// イベントキューが空の場合、イベントが発行されるまで待つ
 	if(eventQueue.empty()){
 		eventEmitted.wait(&eventMutex);
 	}
@@ -714,7 +714,7 @@ bool OSD_GetEvent( Event *ev )
 ////////////////////////////////////////////////////////////////
 bool OSD_PushEvent(const Event& ev)
 {
-	//イベントキューにプッシュ
+	// イベントキューにプッシュ
 	eventMutex.lock();
 	eventQueue.push_back(ev);
 	eventEmitted.wakeAll();
@@ -826,7 +826,7 @@ void OSD_DestroyWindow( HWINDOW Wh )
 ////////////////////////////////////////////////////////////////
 int OSD_GetWindowWidth( HWINDOW Wh )
 {
-	//QtではSceneRectの幅を返す
+	// QtではSceneRectの幅を返す
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
 
@@ -842,7 +842,7 @@ int OSD_GetWindowWidth( HWINDOW Wh )
 ////////////////////////////////////////////////////////////////
 int OSD_GetWindowHeight( HWINDOW Wh )
 {
-	//QtではSceneRectの高さを返す
+	// QtではSceneRectの高さを返す
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
 
@@ -875,7 +875,7 @@ bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
 ////////////////////////////////////////////////////////////////
 void OSD_RenderWindow( HWINDOW Wh )
 {
-	//何もしない
+	// 何もしない
 }
 
 
@@ -962,7 +962,7 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
 	VRect src1,drc1;
 	if( !src || !wh ) return;
 
-	const int s = (scan ? 2 : 1);   //スキャンライン時には2行ずつ処理する
+	const int s = (scan ? 2 : 1);   // スキャンライン時には2行ずつ処理する
 
 	const BYTE *spt  = (BYTE *)src->GetPixels();
 	const int pp     = src->Pitch();
@@ -999,7 +999,7 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
 			BYTE *sdoff = (BYTE *)image.scanLine(y+1);
 			memcpy( sdoff, sof, dpp );
 			for( int x=0; x<drc1.w; x++ ){
-				//スキャンライン用の暗い色は128ずらしたインデックスに登録されている
+				// スキャンライン用の暗い色は128ずらしたインデックスに登録されている
 				(*sdoff++) += 128;
 			}
 		}
@@ -1031,7 +1031,7 @@ void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, 
 bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
 {
 	if( !wh || !pixels ) return false;
-	//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "getWindowImage",
@@ -1181,8 +1181,8 @@ const char *OSD_GetModulePath( void )
 	PRINTD( OSD_LOG, "[OSD][OSD_GetModulePath]\n" );
 	static char mpath[PATH_MAX] = "";	// モジュールパス取得用
 
-	//Windowsの場合はexe本体と同じ場所。
-	//それ以外(UNIX系を想定)は ~/.pc6001vx を返す
+	// Windowsの場合はexe本体と同じ場所。
+	// それ以外(UNIX系を想定)は ~/.pc6001vx を返す
 #if defined WIN32
 	QString confPath = qApp->applicationDirPath();
 #elif defined IPHONE_IPAD
@@ -1256,7 +1256,7 @@ bool OSD_FileExist( const char *fullpath )
 
 	QString pathString = QString::fromUtf8(fullpath);
 
-	//ワイルドカードを含む場合
+	// ワイルドカードを含む場合
 	if (pathString.contains("*")){
 		QFileInfo info(pathString);
 
@@ -1304,7 +1304,7 @@ bool OSD_FileReadOnly( const char *fullpath )
 const char *OSD_FolderDiaog( void *hwnd, char *Result )
 {
 	const char* ret = NULL;
-	//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "folderDialog",
@@ -1331,7 +1331,7 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const char *filter, char *fullpath, char *path, const char *ext )
 {
 	const char* ret = NULL;
-	//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "fileDialog",
@@ -1492,7 +1492,7 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 int OSD_Message( const char *mes, const char *cap, int type )
 {
 	int ret = OSDR_OK;
-	//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "showMessageBox",
@@ -1517,7 +1517,7 @@ int OSD_Message( const char *mes, const char *cap, int type )
 bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 {
 #ifndef NOSOUND
-	//実行時に出る警告の抑止
+	// 実行時に出る警告の抑止
 	qRegisterMetaType<QAudio::State>();
 
 	QAudioFormat format;
@@ -1539,8 +1539,8 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 	}
 
 	audioOutput = new AudioOutputWrapper(info, format);
-	//#PENDING これではグローバルボリュームを変えてしまう？
-	//audioOutput->setVolume(0.5);
+	// #PENDING これではグローバルボリュームを変えてしまう？
+	// audioOutput->setVolume(0.5);
 
 	audioOutput->moveToThread(qApp->thread());
 #endif
@@ -1577,7 +1577,7 @@ void OSD_StartAudio( void )
 		if(audioOutput->state() == QAudio::SuspendedState){
 			QMetaObject::invokeMethod(audioOutput, "resume");
 		} else {
-			//呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+			// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 			Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 						Qt::DirectConnection : Qt::BlockingQueuedConnection;
 			QMetaObject::invokeMethod(audioOutput, "start", cType,
@@ -1755,7 +1755,7 @@ void OSD_SetIcon( HWINDOW Wh, int model )
 
 #ifndef NOJOYSTICK
 std::map<int, HJOYINFO> joyMap;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 
 ////////////////////////////////////////////////////////////////
 // 利用可能なジョイスティック数取得
@@ -1773,10 +1773,10 @@ int OSD_GetJoyNum( void )
     auto mgr = QGamepadManager::instance();
     auto num = mgr->connectedGamepads().length();
     return num;
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 #else
 	return 0;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 
@@ -1799,10 +1799,10 @@ const char *OSD_GetJoyName( int index )
 	return name.length() > 0
 			? name.toLocal8Bit().data()
 			: QString("Joystick%1").arg(index).toLocal8Bit().data();
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 #else
 	return "";
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 
@@ -1822,10 +1822,10 @@ bool OSD_OpenedJoy( int index )
 	auto mgr = QGamepadManager::instance();
 	auto devIndex = mgr->connectedGamepads()[index];
 	return joyMap.count(devIndex) > 0;
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 #else
 	return false;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 
@@ -1849,10 +1849,10 @@ HJOYINFO OSD_OpenJoy( int index )
 		joyMap[devIndex] = new QGamepad(devIndex, qApp);
 	}
 	return (HJOYINFO)joyMap[devIndex];
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 #else
 	return (HJOYINFO)NULL;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 
@@ -1870,7 +1870,7 @@ void OSD_CloseJoy( HJOYINFO jinfo )
     SDL_JoystickClose( static_cast<SDL_Joystick*>(jinfo) );
 #else
 	(static_cast<QGamepad*>(jinfo))->deleteLater();
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 	for (auto p = joyMap.begin(); p != joyMap.end();){
 		if(p->second == jinfo){
 			p = joyMap.erase(p);
@@ -1879,7 +1879,7 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 		}
 	}
 #else
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1895,12 +1895,12 @@ int OSD_GetJoyNumAxes( HJOYINFO jinfo )
 #ifdef SDLJOYSTICK
     return SDL_JoystickNumAxes( static_cast<SDL_Joystick*>(jinfo) );
 #else
-	//QtGamepadでは固定(スティックがLR2本、軸がXYの2軸でトータルで4つ)
+	// QtGamepadでは固定(スティックがLR2本、軸がXYの2軸でトータルで4つ)
 	return 4;
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 #else
 	return 1;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 
@@ -1917,12 +1917,12 @@ int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 #ifdef SDLJOYSTICK
     return SDL_JoystickNumButtons( static_cast<SDL_Joystick*>(jinfo) );
 #else
-	//QtGamepadでは固定(エミュレーターに渡すのはABXYの4つ)
+	// QtGamepadでは固定(エミュレーターに渡すのはABXYの4つ)
 	return 4;
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 #else
 	return 0;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1938,10 +1938,10 @@ void OSD_UpdateJoy()
 #ifdef SDLJOYSTICK
     SDL_JoystickUpdate();
 #else
-	//何もしない
-#endif //SDLJOYSTICK
+	// 何もしない
+#endif // SDLJOYSTICK
 #else
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1973,10 +1973,10 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 	default:;
 	}
 	return val;
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 #else
 	return 0;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 
@@ -2009,10 +2009,10 @@ bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
 	default:;
 	}
 	return val;
-#endif //SDLJOYSTICK
+#endif // SDLJOYSTICK
 #else
 	return false;
-#endif //NOJOYSTICK
+#endif // NOJOYSTICK
 }
 
 ///////////////////////////////////////////////////////////

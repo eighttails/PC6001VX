@@ -236,9 +236,8 @@ int MC6847core::GetH( void ) const
 ////////////////////////////////////////////////////////////////
 BYTE MC6847core::GetSemi4( BYTE data ) const
 {
-	volatile BYTE bdat = (data<<(4+(RowCntA/6)*2)&0x80) | (data<<(1+(RowCntA/6)*2)&0x08);
-	bdat |= bdat>>1;
-	bdat |= bdat>>2;
+	BYTE bdat = (data<<(4+(RowCntA/6)*2)&0x80) | (data<<(1+(RowCntA/6)*2)&0x08);
+	bdat = bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
 	return bdat;
 }
 
@@ -248,9 +247,8 @@ BYTE MC6847core::GetSemi4( BYTE data ) const
 ////////////////////////////////////////////////////////////////
 BYTE MC6847core::GetSemi6( BYTE data ) const
 {
-	volatile BYTE bdat = (data<<(2+(RowCntA/4)*2)&0x80) | (((data<<(3+(RowCntA/4)*2))>>4)&0x08);
-	bdat |= bdat>>1;
-	bdat |= bdat>>2;
+	BYTE bdat = (data<<(2+(RowCntA/4)*2)&0x80) | (((data<<(3+(RowCntA/4)*2))>>4)&0x08);
+	bdat = bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
 	return bdat;
 }
 
@@ -270,9 +268,8 @@ BYTE PCZ80_12::GetSemi6( BYTE data ) const
 ////////////////////////////////////////////////////////////////
 BYTE PCZ80_12::GetSemi8( BYTE data ) const
 {
-	volatile BYTE bdat = ((data<<(RowCntA&0xe))&0x80) | (((data<<(RowCntA&0xe))>>3)&0x08);
-	bdat |= bdat>>1;
-	bdat |= bdat>>2;
+	BYTE bdat = ((data<<(RowCntA&0xe))&0x80) | (((data<<(RowCntA&0xe))>>3)&0x08);
+	bdat = bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
 	return bdat;
 }
 

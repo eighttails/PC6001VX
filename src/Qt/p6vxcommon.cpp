@@ -8,6 +8,7 @@
 #include <QRgb>
 #include <QDir>
 #include <QFile>
+#include <QDateTime>
 #ifdef ANDROID
 #include "ekkesShare/shareutils.hpp"
 #endif
@@ -57,14 +58,28 @@ bool SaveImgData( const char *filename, BYTE *pixels, const int bpp, const int w
 	}
 
 	auto saveFilePath = QDir::cleanPath(filename);
-	image.save(saveFilePath);
+	auto saveDir = QFileInfo(saveFilePath).absoluteDir();
+	// P6VXでは独自にファイル名をつける(filenameは無視する)
+	auto dt = QDateTime::currentDateTime();
+	auto d = dt.date();
+	auto t = dt.time();
+	auto saveFileName = QString("P6VX%1%2%3%4%5%6.png")
+			.arg(d.year(), 4)
+			.arg(d.month(), 2, 10, QLatin1Char('0'))
+			.arg(d.day(), 2, 10, QLatin1Char('0'))
+			.arg(t.hour(), 2, 10, QLatin1Char('0'))
+			.arg(t.minute(), 2, 10, QLatin1Char('0'))
+			.arg(t.second(), 2, 10, QLatin1Char('0'));
+
+	auto saveFileFullPath = QDir(saveDir).filePath(saveFileName);
+	image.save(saveFileFullPath);
 
 #ifdef ANDROID
 	// Androidの場合はインテントで他のアプリに送る
 	ShareUtils util;
 	int req = 0;
 	bool altImpl = false;
-	util.sendFile(saveFilePath, "Snapshot", "image/png", req, altImpl);
+	util.sendFile(saveFileFullPath, "Snapshot", "image/png", req, altImpl);
 #endif
 
 	return true;
@@ -143,6 +158,8 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 #include <QMutex>
 #include <QTemporaryFile>
 #include <QFileInfo>
+#include <QDateTime>
+#include <QDateTime>
 
 ////////////////////////////////////////////////////////////////
 // UTF8->Local(Windowsの場合SJIS,Linuxの場合UTF8)

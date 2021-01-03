@@ -51,7 +51,7 @@ void SystemInfoDialog::obtainSystemInfo()
 
 	s << "[Environment]\n";
 	foreach(auto e, QProcessEnvironment::systemEnvironment().toStringList()){
-	s << e << "\n";
+		s << e << "\n";
 	}
 	s << "\n";
 
@@ -67,7 +67,7 @@ void SystemInfoDialog::obtainSystemInfo()
 		"AppDataLocation",
 		"GenericDataLocation",
 	};
-    int i = 0;
+	int i = 0;
 	for(auto location: locations){
 		s << "[" << locationStrs[i] << "]\n";
 		{
@@ -77,7 +77,7 @@ void SystemInfoDialog::obtainSystemInfo()
 			}
 		}
 		s << "\n";
-        i++;
+		i++;
 	}
 
 	s << "[Fonts]\n";

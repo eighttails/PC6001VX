@@ -1794,8 +1794,12 @@ const char *OSD_GetJoyName( int index )
     return SDL_JoystickNameForIndex( index );
 #else
 	auto mgr = QGamepadManager::instance();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
 	auto devIndex = mgr->connectedGamepads()[index];
 	auto name = mgr->gamepadName(devIndex);
+#else
+	QString name = "";
+#endif
 	return name.length() > 0
 			? name.toLocal8Bit().data()
 			: QString("Joystick%1").arg(index).toLocal8Bit().data();

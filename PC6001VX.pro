@@ -106,7 +106,7 @@ win32 {
     qtHaveModule(gamepad) {
         QT += gamepad
     } else {
-            packagesExist(sdl2) {
+        packagesExist(sdl2) {
             DEFINES += SDLJOYSTICK
             PKGCONFIG += sdl2
         } else {
@@ -331,5 +331,13 @@ DISTFILES += \
     android/res/xml/filepaths.xml
 
 ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
+
+contains(ANDROID_TARGET_ARCH,) {
+    ANDROID_ABIS = \
+        armeabi-v7a \
+        arm64-v8a \
+        x86 \
+        x86_64
+}
 
 

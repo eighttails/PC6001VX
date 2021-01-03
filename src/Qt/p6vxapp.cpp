@@ -426,7 +426,11 @@ void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void **pixels)
 
 	QPainter painter(&image);
 	scene->render(&painter, image.rect(), pos);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 	memcpy(*pixels, image.bits(), image.sizeInBytes());
+#else
+	memcpy(*pixels, image.bits(), image.byteCount());
+#endif
 }
 
 void P6VXApp::clearLayout(HWINDOW Wh)

@@ -18,7 +18,7 @@ int main( int argc, char *argv[] )
 {
 	// X11の場合用
 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
-#if QT_VERSION >= 0x050700
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
 #ifndef ANDROID
 	// AndroidではAA_EnableHighDpiScalingを設定するとメニューの座標がおかしくなる
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

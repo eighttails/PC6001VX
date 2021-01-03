@@ -23,7 +23,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 #ifndef NOOPENGL
 	if(!app->isSafeMode() &&
 			app->getSetting(P6VXApp::keyHwAccel).toBool()){
-#if QT_VERSION >= 0x050400 && !defined (USE_QGLWIDGET)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)) && !defined (USE_QGLWIDGET)
 		QOpenGLWidget* glw = new QOpenGLWidget(this);
 #else
 		// 描画に不具合が見られるプラットフォームでは当面QGLWidgetを使う。

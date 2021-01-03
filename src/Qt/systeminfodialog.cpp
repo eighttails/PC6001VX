@@ -7,7 +7,6 @@
 #include <QTextStream>
 #include <QStandardPaths>
 #include <QDebug>
-#include <QMetaEnum>
 #include <QProcessEnvironment>
 
 
@@ -16,7 +15,7 @@ SystemInfoDialog::SystemInfoDialog(QWidget *parent) :
 	ui(new Ui::SystemInfoDialog)
 {
 	ui->setupUi(this);
-	auto copyAction = new QAction("Copy");
+	auto copyAction = new QAction(QString("Copy"), nullptr);
 	auto copyButton = new QToolButton();
 	copyButton->setDefaultAction(copyAction);
 	connect(copyAction, &QAction::triggered, this, &SystemInfoDialog::copySystemInfo);
@@ -56,15 +55,21 @@ void SystemInfoDialog::obtainSystemInfo()
 	}
 	s << "\n";
 
-	QMetaEnum metaEnum = QMetaEnum::fromType<QStandardPaths::StandardLocation>();
 	QStandardPaths::StandardLocation locations[] = {
 		QStandardPaths::HomeLocation,
 		QStandardPaths::DocumentsLocation,
 		QStandardPaths::AppDataLocation,
 		QStandardPaths::GenericDataLocation,
 	};
+	QString locationStrs[] = {
+		"HomeLocation",
+		"DocumentsLocation",
+		"AppDataLocation",
+		"GenericDataLocation",
+	};
+    int i = 0;
 	for(auto location: locations){
-		s << "[" << metaEnum.valueToKey(location) << "]\n";
+		s << "[" << locationStrs[i] << "]\n";
 		{
 			const auto paths = QStandardPaths::standardLocations(location);
 			foreach (auto path, paths){
@@ -72,6 +77,7 @@ void SystemInfoDialog::obtainSystemInfo()
 			}
 		}
 		s << "\n";
+        i++;
 	}
 
 	s << "[Fonts]\n";

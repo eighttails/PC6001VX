@@ -20,6 +20,76 @@ PC6001VXの末尾のXはクロスプラットフォームのXです。(^^; +
 エミュレータの動作には原則として、PC-6001シリーズの実機から吸い出したROMファイルが必要になります。 http://p6ers.net/hashi/suidashi.html[こちら]を参考にして実機から吸い出してください。 +
 実機をお持ちでない場合、 http://000.la.coocan.jp/p6/basic.html[秋川様]作成の互換ROMを使うという選択肢もあります。互換ROMはエミュレータのバイナリに内蔵されており、設定で有効化することができます。 +
 互換ROM使用時は初代PC-6001、PC-6001mk2、PC-6601いずれかに相当する動作になります。 +
+必要なROMファイルは以下の通りです。 +
+[WARNING]
+Windows以外ではファイル名の大文字小文字が間違っていると起動しなくなります。ご注意ください。 
+
+** PC-6001の場合
++
+[options="header"]
+|================
+|ファイル名|サイズ|CRC32|対応ROM
+|BASICROM.60|16KB|54C03109|N60-BASICインタプリタROM
+|CGROM60.60|4KB|B0142D32|N60-BASIC用CGROM
+|================
+
+** PC-6001Aの場合
++
+[options="header"]
+|================
+|ファイル名|サイズ|CRC32|対応ROM
+|BASICROM.61|16KB|FA8E88D9|N60-BASICインタプリタROM
+|CGROM60.61|4KB|49C21D08|N60-BASIC用CGROM
+|================
+
+** PC-6001mk2の場合
++
+[options="header"]
+|================
+|ファイル名|サイズ|CRC32|対応ROM
+|BASICROM.62|32KB|950AC401 +
+D7E61957|N60m-BASICインタプリタROM(*1)
+|CGROM60.62|8KB|81EB5D95|N60-BASIC用CGROM
+|CGROM60m.62(*2)|8KB|3CE48C33|N60m-BASIC用CGROM
+|KANJIROM.62|32KB|20C8F3EB|漢字ROM
+|VOICEROM.62|16KB|49B4F917|音声合成ROM
+|================
+*1 PC-6001mk2の BASICROM.62 は2種類存在することを確認しています。 +
+バージョンはどちらも1.7ですが細かなバグ修正が行われたようです。  +
+*2 ファイル名の60mは小文字であることに注意してください。
+
+** PC-6601の場合
++
+[options="header"]
+|================
+|ファイル名|サイズ|CRC32|対応ROM
+|BASICROM.66|32KB|C0B01772|N66-BASICインタプリタROM
+|CGROM60.66|8KB|D2434F29|N60-BASIC用CGROM
+|CGROM66.66|8KB|3CE48C33|N66-BASIC用CGROM
+|KANJIROM.66|32KB|20C8F3EB|漢字ROM
+|VOICEROM.66|16KB|91D078C1|音声合成ROM
+|================
+
+** PC-6001mk2SRの場合
++
+[options="header"]
+|================
+|ファイル名|サイズ|CRC32|対応ROM
+|SYSTEMROM1.64|64KB|B6FC2DB2|N66/N66SR-BASIC ROM
+|SYSTEMROM1.64|64KB|55A62A1D|音声合成，漢字，その他ROM
+|CGROM68.64|16KB|73BC3256|BASIC用CGROM
+|================
+
+** PC-6601SRの場合
++
+[options="header"]
+|================
+ファイル名|サイズ|CRC32|対応ROM
+|SYSTEMROM1.68|64KB|B6FC2DB2|N66/N66SR-BASIC ROM
+|SYSTEMROM1.68|64KB|55A62A1D|音声合成，漢字，その他ROM
+|CGROM68.68|16KB|73BC3256|BASIC用CGROM
+|================
+
 
 * WAVファイル +
 mk2以降の場合、音声合成の固定語はWAVファイルとして用意する必要があります。 +
@@ -583,13 +653,13 @@ MSYS2環境上でビルドします。 +
 . https://github.com/msys2/msys2-installer/releases/[こちら]からMSYS2をダウンロードしてインストールしてください。 +
 VC++はサポートしていません。 +
 MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(`pacman -Sy`)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用) +
-https://github.com/msys2/msys2-installer/releases/download/2020-06-02/msys2-base-x86_64-20200602.sfx.exe
-. MSYSをインストールしたフォルダのmingw32.exe(32ビット版をビルドする場合)またはmingw64.exe(64ビット版をビルドする場合)を実行。 +
-. ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに解凍。 +
+https://github.com/msys2/msys2-installer/releases/download/2021-01-05/msys2-base-x86_64-20210105.sfx.exe
+. MSYS2をインストールしたフォルダのmingw32.exe(32ビット版をビルドする場合)またはmingw64.exe(64ビット版をビルドする場合)を実行。 +
+. ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに展開。 +
 . `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
 . `bash ./buildenv.sh` を実行。QtのライブラリとQtCreatorをビルド。 +
 QtCreatorが/mingw(32|64)/local/bin/qtcreator.exe,Qtスタティック版が/mingw(32|64)/localにインストールされます。 +
-. `bash ./buildrelease.sh` を実行すると、PC6001VX-build-(i686|x86_64)-w64-mingw32というフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。 +
+. `bash ./release.sh` を実行すると、PC6001VX_release/PC6001VX_(バージョン)_win_(32|64)bitというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。 +
 . 自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。キットの構成方法は本書の範囲外としますが、以下の設定を参考にしてください。 +
 注意点としては、キットの環境変数の欄にPKG_CONFIG_PATHの設定が必要です。 +
 +

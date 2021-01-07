@@ -699,8 +699,10 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 .git master
 * ROMの一部が見つからない場合に互換ROMに切り替えられるようにした。
 * mk2用互換BASICの配置を誤っていたのを修正。
+* 下位互換性を向上。Qt5.5以上であればビルドできるようにした。
 * Fallback to compatible rom when one or some ROM files are missing.
 * Fixed PC-6001mk2/6601 compatible basic ROM's deployment.
+* Improved backward compatibility. Now builable with Qt5.5 or above.
 
 .3.6.0 2020/12/15
 * Androidでジョイスティックが使えるようになった。

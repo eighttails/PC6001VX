@@ -97,7 +97,6 @@ win32 {
     #Workaround to this bug
     #https://bugreports.qt.io/browse/QTBUG-61553
     DEFINES += SDLJOYSTICK
-    PKGCONFIG += sdl2
 }
 
 #Find library to handle joysticks.
@@ -108,12 +107,14 @@ win32 {
     } else {
         packagesExist(sdl2) {
             DEFINES += SDLJOYSTICK
-            PKGCONFIG += sdl2
         } else {
             DEFINES += NOJOYSTICK
         }
     }
 }
+}
+contains(DEFINES, SDLJOYSTICK) {
+    PKGCONFIG += sdl2
 }
 
 !contains(DEFINES, NOOPENGL) {
@@ -140,7 +141,14 @@ SOURCES += \
     src/Qt/colorbutton.cpp \
     src/Qt/configdialog.cpp \
     src/Qt/emulationadaptor.cpp \
+    src/Qt/keypanel.cpp \
+    src/Qt/keypanelbutton.cpp \
+    src/Qt/keystatewatcher.cpp \
+    src/Qt/mainwidget.cpp \
+    src/Qt/normalvirtualkeyboardscene.cpp \
     src/Qt/osdQt.cpp \
+    src/Qt/p6vxapp.cpp \
+    src/Qt/p6vxcommon.cpp \
     src/Qt/pc6001v.cpp \
     src/Qt/qtel6.cpp \
     src/Qt/qtsingleapplication/qtlocalpeer.cpp \
@@ -151,8 +159,14 @@ SOURCES += \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
     src/Qt/renderview.cpp \
     src/Qt/semaphore.cpp \
+    src/Qt/simplevirtualkeyboardscene.cpp \
     src/Qt/systeminfodialog.cpp \
     src/Qt/thread.cpp \
+    src/Qt/virtualkeyboardscene.cpp \
+    src/Qt/virtualkeyboardview.cpp \
+    src/Qt/virtualkeyitem.cpp \
+    src/Qt/virtualkeytabwidget.cpp \
+    src/Qt/virtualstickitem.cpp \
     src/breakpoint.cpp \
     src/common.cpp \
     src/config.cpp \
@@ -167,6 +181,7 @@ SOURCES += \
     src/device/fmgen/fmtimer.cpp \
     src/device/fmgen/opm.cpp \
     src/device/fmgen/opna.cpp \
+    src/device/fmgen/psg.cpp \
     src/device/mc6847.cpp \
     src/device/pd7752.cpp \
     src/device/pd8255.cpp \
@@ -187,6 +202,7 @@ SOURCES += \
     src/p6t2.cpp \
     src/p6vm.cpp \
     src/pio.cpp \
+    src/psgfm.cpp \
     src/replay.cpp \
     src/schedule.cpp \
     src/sound.cpp \
@@ -194,27 +210,19 @@ SOURCES += \
     src/tape.cpp \
     src/vdg.cpp \
     src/voice.cpp \
-    src/vsurface.cpp \ 
-    src/Qt/keypanelbutton.cpp \
-    src/Qt/keypanel.cpp \
-    src/Qt/p6vxapp.cpp \
-    src/psgfm.cpp \
-    src/device/fmgen/psg.cpp \
-    src/Qt/mainwidget.cpp \
-    src/Qt/virtualkeytabwidget.cpp \
-    src/Qt/virtualkeyitem.cpp \
-    src/Qt/simplevirtualkeyboardscene.cpp \
-    src/Qt/virtualkeyboardscene.cpp \
-    src/Qt/keystatewatcher.cpp \
-    src/Qt/normalvirtualkeyboardscene.cpp \
-    src/Qt/virtualkeyboardview.cpp \
-    src/Qt/virtualstickitem.cpp \
-    src/Qt/p6vxcommon.cpp
+    src/vsurface.cpp
 
 HEADERS  += \
+    src/Qt/audiooutputwrapper.h \
     src/Qt/colorbutton.h \
     src/Qt/configdialog.h \
     src/Qt/emulationadaptor.h \
+    src/Qt/keypanel.h \
+    src/Qt/keypanelbutton.h \
+    src/Qt/keystatewatcher.h \
+    src/Qt/mainwidget.h \
+    src/Qt/normalvirtualkeyboardscene.h \
+    src/Qt/p6vxapp.h \
     src/Qt/qtel6.h \
     src/Qt/qtsingleapplication/QtLockedFile \
     src/Qt/qtsingleapplication/QtSingleApplication \
@@ -224,8 +232,14 @@ HEADERS  += \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.h \
     src/Qt/qtutil.h \
     src/Qt/renderview.h \
+    src/Qt/simplevirtualkeyboardscene.h \
     src/Qt/systeminfodialog.h \
     src/Qt/utils.h \
+    src/Qt/virtualkeyboardscene.h \
+    src/Qt/virtualkeyboardview.h \
+    src/Qt/virtualkeyitem.h \
+    src/Qt/virtualkeytabwidget.h \
+    src/Qt/virtualstickitem.h \
     src/Qt/wavfile.h \
     src/breakpoint.h \
     src/common.h \
@@ -245,6 +259,7 @@ HEADERS  += \
     src/device/fmgen/misc.h \
     src/device/fmgen/opm.h \
     src/device/fmgen/opna.h \
+    src/device/fmgen/psg.h \
     src/device/fmgen/types.h \
     src/device/mc6847.h \
     src/device/pd7752.h \
@@ -276,8 +291,10 @@ HEADERS  += \
     src/p6el.h \
     src/p6t2.h \
     src/p6vm.h \
+    src/p6vxcommon.h \
     src/pc6001v.h \
     src/pio.h \
+    src/psgfm.h \
     src/replay.h \
     src/schedule.h \
     src/semaphore.h \
@@ -288,23 +305,7 @@ HEADERS  += \
     src/typedef.h \
     src/vdg.h \
     src/voice.h \
-    src/vsurface.h \ 
-    src/Qt/keypanelbutton.h \
-    src/Qt/keypanel.h \
-    src/Qt/p6vxapp.h \
-    src/psgfm.h \
-    src/device/fmgen/psg.h \
-    src/Qt/audiooutputwrapper.h \
-    src/Qt/mainwidget.h \
-    src/Qt/virtualkeytabwidget.h \
-    src/Qt/virtualkeyitem.h \
-    src/Qt/simplevirtualkeyboardscene.h \
-    src/Qt/virtualkeyboardscene.h \
-    src/Qt/keystatewatcher.h \
-    src/Qt/normalvirtualkeyboardscene.h \
-    src/Qt/virtualkeyboardview.h \
-    src/Qt/virtualstickitem.h \
-    src/p6vxcommon.h
+    src/vsurface.h
 
 FORMS    += \
     src/Qt/configdialog.ui \
@@ -329,8 +330,6 @@ DISTFILES += \
     android/gradlew.bat \
     android/res/values/libs.xml \
     android/res/xml/filepaths.xml
-
-ANDROID_ABIS = armeabi-v7a arm64-v8a x86 x86_64
 
 contains(ANDROID_TARGET_ARCH,) {
     ANDROID_ABIS = \

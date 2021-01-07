@@ -737,11 +737,27 @@ void P6VXApp::executeEmulation()
 				emit vmRestart();
 				return;
 			} else {
-				P6CoreObj->deleteLater();
+				terminateEmulation();
 				exit();
 				return;
 			}
-		} else {
+		}else if(Error::GetError() == Error::NoRom){
+			// ROMの一部が見つからない場合
+			int ret = OSD_Message( tr("ROMファイルの一部が見つかりません。\n"
+									  "エミュレーター内蔵の互換ROMを使用しますか?").toUtf8().constData(),
+								   MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING );
+			if(ret == OSDR_YES) {
+				enableCompatibleRomMode(&Cfg, true);
+				Cfg.Write();
+				P6CoreObj->deleteLater();
+				emit vmRestart();
+				return;
+			} else {
+				terminateEmulation();
+				exit();
+				return;
+			}
+		}else{
 			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
 			exit();
 			return;

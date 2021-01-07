@@ -2,48 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
-    <name>AboutDialog</name>
-    <message>
-        <location filename="../aboutdialog.ui" line="20"/>
-        <source>About</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../aboutdialog.ui" line="90"/>
-        <source>APPNAME</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../aboutdialog.ui" line="97"/>
-        <source>Ver.</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../aboutdialog.ui" line="104"/>
-        <source>VERSION</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../aboutdialog.ui" line="126"/>
-        <source>© 2012-2020, Tadahito Yao (@eighttails)</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../aboutdialog.ui" line="136"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Cantarell&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;http://eighttails.seesaa.net&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://eighttails.seesaa.net&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../aboutdialog.ui" line="150"/>
-        <source>Based on PC6001V by Yumitaro.</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>AndroidShareUtils</name>
     <message>
         <location filename="../ekkesShare/android/androidshareutils.cpp" line="105"/>
@@ -162,7 +120,6 @@ WorkingDir not valid</source>
     </message>
     <message>
         <location filename="../configdialog.ui" line="59"/>
-        <location filename="../configdialog.ui" line="470"/>
         <source>1</source>
         <translation></translation>
     </message>
@@ -225,7 +182,7 @@ WorkingDir not valid</source>
     </message>
     <message>
         <location filename="../configdialog.ui" line="247"/>
-        <location filename="../configdialog.ui" line="756"/>
+        <location filename="../configdialog.ui" line="632"/>
         <source>999</source>
         <translation></translation>
     </message>
@@ -277,54 +234,45 @@ WorkingDir not valid</source>
         <translation>Soun&amp;d</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="404"/>
         <source>サンプリングレート(&amp;R)</source>
-        <translation>Sampling &amp;rate</translation>
+        <translation type="vanished">Sampling &amp;rate</translation>
+    </message>
+    <message>
+        <source>バッファサイズ(&amp;Z)</source>
+        <translation type="vanished">Buffer si&amp;ze</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="434"/>
-        <source>バッファサイズ(&amp;Z)</source>
-        <translation>Buffer si&amp;ze</translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="440"/>
-        <location filename="../configdialog.ui" line="571"/>
-        <location filename="../configdialog.ui" line="614"/>
-        <location filename="../configdialog.ui" line="657"/>
-        <location filename="../configdialog.ui" line="700"/>
+        <location filename="../configdialog.ui" line="477"/>
+        <location filename="../configdialog.ui" line="520"/>
+        <location filename="../configdialog.ui" line="563"/>
         <source>TextLabel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="463"/>
-        <source>5</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="482"/>
         <source>PSGローパスフィルタ
 カットオフ周波数(&amp;Q):</source>
-        <translation>PSG low pass filter
+        <translation type="vanished">PSG low pass filter
 cut off fre&amp;quency</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="541"/>
+        <location filename="../configdialog.ui" line="404"/>
         <source>マスター音量(&amp;M)</source>
         <translation>&amp;Master volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="547"/>
-        <location filename="../configdialog.ui" line="597"/>
-        <location filename="../configdialog.ui" line="633"/>
-        <location filename="../configdialog.ui" line="676"/>
+        <location filename="../configdialog.ui" line="410"/>
+        <location filename="../configdialog.ui" line="460"/>
+        <location filename="../configdialog.ui" line="496"/>
+        <location filename="../configdialog.ui" line="539"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="564"/>
-        <location filename="../configdialog.ui" line="590"/>
-        <location filename="../configdialog.ui" line="650"/>
-        <location filename="../configdialog.ui" line="693"/>
+        <location filename="../configdialog.ui" line="427"/>
+        <location filename="../configdialog.ui" line="453"/>
+        <location filename="../configdialog.ui" line="513"/>
+        <location filename="../configdialog.ui" line="556"/>
         <source>100</source>
         <translation></translation>
     </message>
@@ -333,12 +281,12 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;PSG volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="627"/>
+        <location filename="../configdialog.ui" line="490"/>
         <source>音声合成音量(&amp;V)</source>
         <translation>&amp;Voice volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="670"/>
+        <location filename="../configdialog.ui" line="533"/>
         <source>TAPEモニタ音量(&amp;T)</source>
         <translation>&amp;Tape monitor volume</translation>
     </message>
@@ -347,106 +295,96 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">PSG fre&amp;quency low-pass filter:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="505"/>
-        <source>99999</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="515"/>
-        <source>Hz</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="729"/>
+        <location filename="../configdialog.ui" line="605"/>
         <source>入力(&amp;I)</source>
         <translation>&amp;Input</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="737"/>
+        <location filename="../configdialog.ui" line="613"/>
         <source>キーリピート間隔(&amp;K):</source>
         <translation>&amp;Key repeat interval:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="766"/>
+        <location filename="../configdialog.ui" line="642"/>
         <source>ms</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="802"/>
+        <location filename="../configdialog.ui" line="678"/>
         <source>ファイル(&amp;F)</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="825"/>
+        <location filename="../configdialog.ui" line="701"/>
         <source>拡張ROM(&amp;R):</source>
         <translation>Extended &amp;Rom:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="835"/>
+        <location filename="../configdialog.ui" line="711"/>
         <source>プリンタ(&amp;P):</source>
         <translation>&amp;Printer:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="845"/>
+        <location filename="../configdialog.ui" line="721"/>
         <source>TAPE(SAVE)(&amp;V):</source>
         <translation>Tape(Sa&amp;ve):</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="855"/>
+        <location filename="../configdialog.ui" line="731"/>
         <source>TAPE(LOAD)(&amp;A):</source>
         <translation>Tape(Lo&amp;ad):</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="808"/>
-        <location filename="../configdialog.ui" line="877"/>
-        <location filename="../configdialog.ui" line="884"/>
-        <location filename="../configdialog.ui" line="904"/>
-        <location filename="../configdialog.ui" line="911"/>
-        <location filename="../configdialog.ui" line="921"/>
-        <location filename="../configdialog.ui" line="1058"/>
-        <location filename="../configdialog.ui" line="1081"/>
-        <location filename="../configdialog.ui" line="1098"/>
-        <location filename="../configdialog.ui" line="1118"/>
-        <location filename="../configdialog.ui" line="1138"/>
-        <location filename="../configdialog.ui" line="1145"/>
-        <location filename="../configdialog.ui" line="1172"/>
+        <location filename="../configdialog.ui" line="684"/>
+        <location filename="../configdialog.ui" line="753"/>
+        <location filename="../configdialog.ui" line="760"/>
+        <location filename="../configdialog.ui" line="780"/>
+        <location filename="../configdialog.ui" line="787"/>
+        <location filename="../configdialog.ui" line="797"/>
+        <location filename="../configdialog.ui" line="934"/>
+        <location filename="../configdialog.ui" line="957"/>
+        <location filename="../configdialog.ui" line="974"/>
+        <location filename="../configdialog.ui" line="994"/>
+        <location filename="../configdialog.ui" line="1014"/>
+        <location filename="../configdialog.ui" line="1021"/>
+        <location filename="../configdialog.ui" line="1048"/>
         <source>参照...</source>
         <translation>Select...</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="928"/>
+        <location filename="../configdialog.ui" line="804"/>
         <source>DISK1(&amp;K):</source>
         <translation>Dis&amp;k1:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="815"/>
+        <location filename="../configdialog.ui" line="691"/>
         <source>DISK2(&amp;J):</source>
         <translation>D&amp;isk2:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="984"/>
+        <location filename="../configdialog.ui" line="860"/>
         <source>フォルダ(&amp;L)</source>
         <translation>Fo&amp;lder</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="990"/>
+        <location filename="../configdialog.ui" line="866"/>
         <source>拡張ROM(&amp;X):</source>
         <translation>E&amp;xtended ROM:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="941"/>
-        <location filename="../configdialog.ui" line="948"/>
-        <location filename="../configdialog.ui" line="955"/>
-        <location filename="../configdialog.ui" line="962"/>
-        <location filename="../configdialog.ui" line="969"/>
-        <location filename="../configdialog.ui" line="976"/>
-        <location filename="../configdialog.ui" line="1003"/>
-        <location filename="../configdialog.ui" line="1010"/>
-        <location filename="../configdialog.ui" line="1017"/>
-        <location filename="../configdialog.ui" line="1024"/>
-        <location filename="../configdialog.ui" line="1031"/>
+        <location filename="../configdialog.ui" line="817"/>
+        <location filename="../configdialog.ui" line="824"/>
+        <location filename="../configdialog.ui" line="831"/>
+        <location filename="../configdialog.ui" line="838"/>
+        <location filename="../configdialog.ui" line="845"/>
+        <location filename="../configdialog.ui" line="852"/>
+        <location filename="../configdialog.ui" line="879"/>
+        <location filename="../configdialog.ui" line="886"/>
+        <location filename="../configdialog.ui" line="893"/>
+        <location filename="../configdialog.ui" line="900"/>
+        <location filename="../configdialog.ui" line="907"/>
+        <location filename="../configdialog.ui" line="914"/>
         <location filename="../configdialog.ui" line="1038"/>
-        <location filename="../configdialog.ui" line="1162"/>
         <source>クリア</source>
         <translation>Clear</translation>
     </message>
@@ -455,17 +393,17 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">State sa&amp;ve</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1065"/>
+        <location filename="../configdialog.ui" line="941"/>
         <source>TAPE(&amp;T):</source>
         <translation>&amp;Tape:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1088"/>
+        <location filename="../configdialog.ui" line="964"/>
         <source>DISK(&amp;K):</source>
         <translation>Dis&amp;k:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1105"/>
+        <location filename="../configdialog.ui" line="981"/>
         <source>SnapShot(&amp;H):</source>
         <translation>Snaps&amp;hot:</translation>
     </message>
@@ -474,142 +412,142 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Wave</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1152"/>
+        <location filename="../configdialog.ui" line="1028"/>
         <source>ROM(&amp;R):</source>
         <translation>&amp;ROM:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1193"/>
+        <location filename="../configdialog.ui" line="1069"/>
         <source>色(&amp;1)</source>
         <translation>Color&amp;1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1215"/>
+        <location filename="../configdialog.ui" line="1091"/>
         <source>MODE1(&amp;1)</source>
         <translation>Mode&amp;1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1355"/>
-        <location filename="../configdialog.ui" line="2699"/>
-        <location filename="../configdialog.ui" line="3230"/>
+        <location filename="../configdialog.ui" line="1231"/>
+        <location filename="../configdialog.ui" line="2575"/>
+        <location filename="../configdialog.ui" line="3106"/>
         <source>黒</source>
         <translation>Black</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1348"/>
-        <location filename="../configdialog.ui" line="1769"/>
-        <location filename="../configdialog.ui" line="2130"/>
+        <location filename="../configdialog.ui" line="1224"/>
+        <location filename="../configdialog.ui" line="1645"/>
+        <location filename="../configdialog.ui" line="2006"/>
         <source>Set1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1341"/>
-        <location filename="../configdialog.ui" line="1776"/>
-        <location filename="../configdialog.ui" line="2706"/>
+        <location filename="../configdialog.ui" line="1217"/>
+        <location filename="../configdialog.ui" line="1652"/>
+        <location filename="../configdialog.ui" line="2582"/>
         <source>Set2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1311"/>
-        <location filename="../configdialog.ui" line="1591"/>
-        <location filename="../configdialog.ui" line="1875"/>
-        <location filename="../configdialog.ui" line="1987"/>
-        <location filename="../configdialog.ui" line="2365"/>
-        <location filename="../configdialog.ui" line="2713"/>
-        <location filename="../configdialog.ui" line="3244"/>
+        <location filename="../configdialog.ui" line="1187"/>
+        <location filename="../configdialog.ui" line="1467"/>
+        <location filename="../configdialog.ui" line="1751"/>
+        <location filename="../configdialog.ui" line="1863"/>
+        <location filename="../configdialog.ui" line="2241"/>
+        <location filename="../configdialog.ui" line="2589"/>
+        <location filename="../configdialog.ui" line="3120"/>
         <source>緑</source>
         <translation>Green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1304"/>
-        <location filename="../configdialog.ui" line="2720"/>
+        <location filename="../configdialog.ui" line="1180"/>
+        <location filename="../configdialog.ui" line="2596"/>
         <source>深緑</source>
         <translation>Dark green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1274"/>
-        <location filename="../configdialog.ui" line="1524"/>
-        <location filename="../configdialog.ui" line="1924"/>
-        <location filename="../configdialog.ui" line="2997"/>
+        <location filename="../configdialog.ui" line="1150"/>
+        <location filename="../configdialog.ui" line="1400"/>
+        <location filename="../configdialog.ui" line="1800"/>
+        <location filename="../configdialog.ui" line="2873"/>
         <source>橙</source>
         <translation>Orange</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1267"/>
+        <location filename="../configdialog.ui" line="1143"/>
         <source>深橙</source>
         <translation>Dark orange</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1405"/>
+        <location filename="../configdialog.ui" line="1281"/>
         <source>MODE2(&amp;2)</source>
         <translation>Mode&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1448"/>
-        <location filename="../configdialog.ui" line="1882"/>
-        <location filename="../configdialog.ui" line="3251"/>
+        <location filename="../configdialog.ui" line="1324"/>
+        <location filename="../configdialog.ui" line="1758"/>
+        <location filename="../configdialog.ui" line="3127"/>
         <source>黄</source>
         <translation>Yellow</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1441"/>
-        <location filename="../configdialog.ui" line="1889"/>
-        <location filename="../configdialog.ui" line="1957"/>
-        <location filename="../configdialog.ui" line="2213"/>
-        <location filename="../configdialog.ui" line="3258"/>
+        <location filename="../configdialog.ui" line="1317"/>
+        <location filename="../configdialog.ui" line="1765"/>
+        <location filename="../configdialog.ui" line="1833"/>
+        <location filename="../configdialog.ui" line="2089"/>
+        <location filename="../configdialog.ui" line="3134"/>
         <source>青</source>
         <translation>Blue</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1577"/>
-        <location filename="../configdialog.ui" line="1896"/>
-        <location filename="../configdialog.ui" line="2183"/>
-        <location filename="../configdialog.ui" line="2266"/>
-        <location filename="../configdialog.ui" line="3237"/>
+        <location filename="../configdialog.ui" line="1453"/>
+        <location filename="../configdialog.ui" line="1772"/>
+        <location filename="../configdialog.ui" line="2059"/>
+        <location filename="../configdialog.ui" line="2142"/>
+        <location filename="../configdialog.ui" line="3113"/>
         <source>赤</source>
         <translation>Red</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1584"/>
-        <location filename="../configdialog.ui" line="1903"/>
-        <location filename="../configdialog.ui" line="2692"/>
-        <location filename="../configdialog.ui" line="3272"/>
+        <location filename="../configdialog.ui" line="1460"/>
+        <location filename="../configdialog.ui" line="1779"/>
+        <location filename="../configdialog.ui" line="2568"/>
+        <location filename="../configdialog.ui" line="3148"/>
         <source>白</source>
         <translation>White</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1434"/>
-        <location filename="../configdialog.ui" line="1910"/>
-        <location filename="../configdialog.ui" line="3279"/>
+        <location filename="../configdialog.ui" line="1310"/>
+        <location filename="../configdialog.ui" line="1786"/>
+        <location filename="../configdialog.ui" line="3155"/>
         <source>シアン</source>
         <translation>Cyan</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1644"/>
-        <location filename="../configdialog.ui" line="1917"/>
-        <location filename="../configdialog.ui" line="3265"/>
+        <location filename="../configdialog.ui" line="1520"/>
+        <location filename="../configdialog.ui" line="1793"/>
+        <location filename="../configdialog.ui" line="3141"/>
         <source>マゼンタ</source>
         <translation>Magenta</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1671"/>
+        <location filename="../configdialog.ui" line="1547"/>
         <source>MODE3(&amp;3)</source>
         <translation>Mode&amp;3</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1951"/>
+        <location filename="../configdialog.ui" line="1827"/>
         <source>MODE4(&amp;4)</source>
         <translation>Mode&amp;4</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2093"/>
-        <location filename="../configdialog.ui" line="2685"/>
+        <location filename="../configdialog.ui" line="1969"/>
+        <location filename="../configdialog.ui" line="2561"/>
         <source>にじみ2</source>
         <translation>Fringe2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1994"/>
-        <location filename="../configdialog.ui" line="2100"/>
+        <location filename="../configdialog.ui" line="1870"/>
+        <location filename="../configdialog.ui" line="1976"/>
         <source>桃</source>
         <translation>Peach</translation>
     </message>
@@ -648,165 +586,150 @@ cut off fre&amp;quency</translation>
         <translation>&amp;Filtering</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="410"/>
-        <source>&amp;44100 Hz</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="417"/>
-        <source>22&amp;050 Hz</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="424"/>
-        <source>1102&amp;5 Hz</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="584"/>
+        <location filename="../configdialog.ui" line="447"/>
         <source>PSG、FM音量(&amp;P)</source>
         <translation>&amp;PSG and FM volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1045"/>
+        <location filename="../configdialog.ui" line="921"/>
         <source>どこでもSAVE(&amp;V):</source>
         <translation>State sa&amp;ve:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1125"/>
+        <location filename="../configdialog.ui" line="1001"/>
         <source>WAVE(&amp;W):</source>
         <translation>&amp;WAVE:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2625"/>
-        <location filename="../configdialog.ui" line="2655"/>
+        <location filename="../configdialog.ui" line="2501"/>
+        <location filename="../configdialog.ui" line="2531"/>
         <source>にじみ1</source>
         <translation>Fringe1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2760"/>
-        <location filename="../configdialog.ui" line="3289"/>
+        <location filename="../configdialog.ui" line="2636"/>
+        <location filename="../configdialog.ui" line="3165"/>
         <source>変更したい色をクリックしてください</source>
         <translation>Please click on the color which you want to change</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2781"/>
+        <location filename="../configdialog.ui" line="2657"/>
         <source>色(&amp;2)</source>
         <translation>Color&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2800"/>
+        <location filename="../configdialog.ui" line="2676"/>
         <source>mk2〜(&amp;M)</source>
         <translation>&amp;mk2~</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2990"/>
+        <location filename="../configdialog.ui" line="2866"/>
         <source>透明(黒)</source>
         <translation>Transparent(Black)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3004"/>
+        <location filename="../configdialog.ui" line="2880"/>
         <source>青緑</source>
         <translation>Blue-green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3011"/>
+        <location filename="../configdialog.ui" line="2887"/>
         <source>黄緑</source>
         <translation>Yellow-green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3018"/>
+        <location filename="../configdialog.ui" line="2894"/>
         <source>灰色</source>
         <translation>Gray</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3025"/>
+        <location filename="../configdialog.ui" line="2901"/>
         <source>空色</source>
         <translation>Azure</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3032"/>
+        <location filename="../configdialog.ui" line="2908"/>
         <source>赤紫</source>
         <translation>Red-violet</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3039"/>
+        <location filename="../configdialog.ui" line="2915"/>
         <source>青紫</source>
         <translation>Blue-violet</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3310"/>
+        <location filename="../configdialog.ui" line="3186"/>
         <source>その他(&amp;O)</source>
         <translation>&amp;Others</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3318"/>
+        <location filename="../configdialog.ui" line="3194"/>
         <source>オーバークロック率(&amp;V):</source>
         <translation>O&amp;verclocking rate:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3337"/>
+        <location filename="../configdialog.ui" line="3213"/>
         <source>9999</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3347"/>
+        <location filename="../configdialog.ui" line="3223"/>
         <source>% (1-1000)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3369"/>
+        <location filename="../configdialog.ui" line="3245"/>
         <source>システムROMのCRCチェック有効(&amp;C)</source>
         <translation>Enable &amp;CRC check for the System ROM</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3376"/>
+        <location filename="../configdialog.ui" line="3252"/>
         <source>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</source>
         <translation>&amp;Turbo Tape (no wait when reading)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3383"/>
+        <location filename="../configdialog.ui" line="3259"/>
         <source>Boost Up (TAPE最速化)(&amp;U)</source>
         <translation>Boost &amp;Up (fastest Tape)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3392"/>
+        <location filename="../configdialog.ui" line="3268"/>
         <source>最大倍率</source>
         <translation>Maximum magnification</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3415"/>
+        <location filename="../configdialog.ui" line="3291"/>
         <source>N60</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3431"/>
-        <location filename="../configdialog.ui" line="3473"/>
+        <location filename="../configdialog.ui" line="3307"/>
+        <location filename="../configdialog.ui" line="3349"/>
         <source>9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3457"/>
+        <location filename="../configdialog.ui" line="3333"/>
         <source>N60m/N66</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3499"/>
+        <location filename="../configdialog.ui" line="3375"/>
         <source>FDDアクセスウェイト有効(&amp;W)</source>
         <translation>Enable FDD access &amp;wait</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3506"/>
+        <location filename="../configdialog.ui" line="3382"/>
         <source>終了時に確認する(&amp;F)</source>
         <translation>Con&amp;firm at exit</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3513"/>
+        <location filename="../configdialog.ui" line="3389"/>
         <source>終了時にINIファイルを保存する(&amp;Q)</source>
         <translation>Save the INI file when &amp;Quit</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="279"/>
+        <location filename="../configdialog.cpp" line="260"/>
         <source>互換ROM使用中</source>
         <translation>Using builtin compatible ROM</translation>
     </message>
@@ -887,23 +810,23 @@ cut off fre&amp;quency</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="633"/>
+        <location filename="../p6vxapp.cpp" line="637"/>
         <source>TAPE(SAVE)ファイルが存在しません。</source>
         <translation>Saved tape image file does not exist.</translation>
     </message>
     <message>
         <location filename="../p6vxapp.cpp" line="304"/>
-        <location filename="../p6vxapp.cpp" line="649"/>
+        <location filename="../p6vxapp.cpp" line="653"/>
         <source>ファイルはすでに存在しています。上書きしますか?</source>
         <translation>The file already exists. Overwrite it?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="521"/>
+        <location filename="../p6vxapp.cpp" line="525"/>
         <source>本当に設定を初期化しますか?</source>
         <translation>Do you really want to reset settings?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="678"/>
+        <location filename="../p6vxapp.cpp" line="682"/>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
@@ -912,12 +835,12 @@ Please copy ROM files to ROM folder(%1) or specify another folder.
 Do you want to specify another folder?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="698"/>
+        <location filename="../p6vxapp.cpp" line="702"/>
         <source>エミュレーター内蔵の互換ROMを使用しますか?</source>
         <translation>Do you want to use builtin compatible ROM?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="725"/>
+        <location filename="../p6vxapp.cpp" line="729"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>
@@ -925,83 +848,89 @@ CRCが一致しないROMを使用すると、予期せぬ不具合を引き起�
 Using invalid ROM may cause unexpected failure.
 Do you want to continue anyway?</translation>
     </message>
+    <message>
+        <location filename="../p6vxapp.cpp" line="746"/>
+        <source>ROMファイルの一部が見つかりません。
+エミュレーター内蔵の互換ROMを使用しますか?</source>
+        <translation>Some of ROM files are not found.\nDo you want to use builtin compatible ROM?</translation>
+    </message>
 </context>
 <context>
     <name>PC6001VX</name>
     <message>
-        <location filename="../osdQt.cpp" line="212"/>
+        <location filename="../osdQt.cpp" line="215"/>
         <source>終了してよろしいですか?</source>
         <translation>Are you sure you want to quit?</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="213"/>
+        <location filename="../osdQt.cpp" line="216"/>
         <source>終了確認</source>
         <translation>Exit confirmation</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="214"/>
+        <location filename="../osdQt.cpp" line="217"/>
         <source>再起動してよろしいですか?</source>
         <translation>Are you sure you want to restart?</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="215"/>
+        <location filename="../osdQt.cpp" line="218"/>
         <source>変更は再起動後に有効となります。
 今すぐ再起動しますか?</source>
         <translation>The change will take effect after restart.
 Do you want reboot now?</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="216"/>
+        <location filename="../osdQt.cpp" line="219"/>
         <source>再起動確認</source>
         <translation>Restart confirmation</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="217"/>
+        <location filename="../osdQt.cpp" line="220"/>
         <source>拡張ROMを挿入してリセットします。</source>
         <translation>Make a reset to insert a extended ROM.</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="218"/>
+        <location filename="../osdQt.cpp" line="221"/>
         <source>拡張ROMを排出してリセットします。</source>
         <translation>Make a reset to drain the extended ROM.</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="219"/>
+        <location filename="../osdQt.cpp" line="222"/>
         <source>リセット確認</source>
         <translation>Reset confirmation</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="224"/>
+        <location filename="../osdQt.cpp" line="227"/>
         <source>ビデオキャプチャ...</source>
         <translation>Video Capture...</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="225"/>
+        <location filename="../osdQt.cpp" line="228"/>
         <source>ビデオキャプチャ停止</source>
         <translation>Stop video capture</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="226"/>
+        <location filename="../osdQt.cpp" line="229"/>
         <source>記録...</source>
         <translation>Record...</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="227"/>
+        <location filename="../osdQt.cpp" line="230"/>
         <source>記録停止</source>
         <translation>Stop Recording</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="228"/>
+        <location filename="../osdQt.cpp" line="231"/>
         <source>再生...</source>
         <translation>Playback...</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="229"/>
+        <location filename="../osdQt.cpp" line="232"/>
         <source>再生停止</source>
         <translation>Stop playback</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="235"/>
+        <location filename="../osdQt.cpp" line="238"/>
         <source>; === PC6001V 初期設定ファイル ===
 
 </source>
@@ -1010,242 +939,242 @@ Do you want reboot now?</translation>
 </translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="236"/>
+        <location filename="../osdQt.cpp" line="239"/>
         <source>機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR</source>
         <translation>Models 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="238"/>
+        <location filename="../osdQt.cpp" line="241"/>
         <source>FDD接続台数 (0-2)</source>
         <translation>FDD numbers (0-2)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="239"/>
+        <location filename="../osdQt.cpp" line="242"/>
         <source>拡張RAM使用</source>
         <translation>Use extended RAM</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="240"/>
+        <location filename="../osdQt.cpp" line="243"/>
         <source>Turbo TAPE Yes:有効 No:無効</source>
         <translation>Turbo Tape Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="241"/>
+        <location filename="../osdQt.cpp" line="244"/>
         <source>BoostUp Yes:有効 No:無効</source>
         <translation>BoostUp Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="242"/>
+        <location filename="../osdQt.cpp" line="245"/>
         <source>BoostUp 最大倍率(N60モード)</source>
         <translation>BoostUp Maximum magnification (N60 Mode)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="243"/>
+        <location filename="../osdQt.cpp" line="246"/>
         <source>BoostUp 最大倍率(N60m/N66モード)</source>
         <translation>BoostUp Maximum magnification (N60m/N66 Mode)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="244"/>
+        <location filename="../osdQt.cpp" line="247"/>
         <source>オーバークロック率 (1-1000)%</source>
         <translation>Overclocking rate (1-1000)%</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="245"/>
+        <location filename="../osdQt.cpp" line="248"/>
         <source>CRCチェック Yes:有効 No:無効</source>
         <translation>CRC check Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="246"/>
+        <location filename="../osdQt.cpp" line="249"/>
         <source>ROMパッチ Yes:あてる No:あてない</source>
         <translation>ROM patch Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="247"/>
+        <location filename="../osdQt.cpp" line="250"/>
         <source>FDDアクセスウェイト Yes:有効 No:無効</source>
         <translation>FDD access wait Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="249"/>
+        <location filename="../osdQt.cpp" line="252"/>
         <source>MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク</source>
         <translation>MODE4 Color Mode 0:Monochrome 1:Red/Blue 2:Blue/Red 3:Green/Peach 4:Peach/Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="250"/>
+        <location filename="../osdQt.cpp" line="253"/>
         <source>スキャンライン Yes:あり No:なし</source>
         <translation>Scanline Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="251"/>
+        <location filename="../osdQt.cpp" line="254"/>
         <source>スキャンライン輝度 (0-100)%</source>
         <translation>Scanline brightness (0-100)%</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="252"/>
+        <location filename="../osdQt.cpp" line="255"/>
         <source>4:3表示 Yes:有効 No:無効</source>
         <translation>4:3 TV Display Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="253"/>
+        <location filename="../osdQt.cpp" line="256"/>
         <source>フルスクリーンモード Yes:有効 No:無効</source>
         <translation>Fullscreen mode Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="254"/>
+        <location filename="../osdQt.cpp" line="257"/>
         <source>ステータスバー Yes:表示 No:非表示</source>
         <translation>Statusbar Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="255"/>
+        <location filename="../osdQt.cpp" line="258"/>
         <source>フレームスキップ</source>
         <translation>Frameskip</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="257"/>
+        <location filename="../osdQt.cpp" line="260"/>
         <source>サンプリングレート (44100/22050/11025)Hz</source>
         <translation>Sampling rate (44100/22050/11025)Hz</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="258"/>
+        <location filename="../osdQt.cpp" line="261"/>
         <source>サウンドバッファサイズ</source>
         <translation>Sound buffer size</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="259"/>
+        <location filename="../osdQt.cpp" line="262"/>
         <source>マスター音量 (0-100)</source>
         <translation>Master volume (0-100)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="260"/>
+        <location filename="../osdQt.cpp" line="263"/>
         <source>PSG音量 (0-100)</source>
         <translation>PSG volume (0-100)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="261"/>
+        <location filename="../osdQt.cpp" line="264"/>
         <source>音声合成音量 (0-100)</source>
         <translation>Speech synthesis volume (0-100)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="262"/>
+        <location filename="../osdQt.cpp" line="265"/>
         <source>TAPEモニタ音量 (0-100)</source>
         <translation>Tape monitor volume (0-100)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="263"/>
+        <location filename="../osdQt.cpp" line="266"/>
         <source>PSG LPFカットオフ周波数(0で無効)</source>
         <translation>PSG LPF frequency (0 Disable)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="265"/>
+        <location filename="../osdQt.cpp" line="268"/>
         <source>ビデオキャプチャ色深度 (16,24,32)</source>
         <translation>Video capture color depth (16,24,32)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="267"/>
+        <location filename="../osdQt.cpp" line="270"/>
         <source>拡張ROMファイル名</source>
         <translation>Extended ROM file name</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="268"/>
+        <location filename="../osdQt.cpp" line="271"/>
         <source>TAPE(LODE)ファイル名(起動時に自動マウント)</source>
         <translation>Tape (Load) file (auto-mount)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="269"/>
+        <location filename="../osdQt.cpp" line="272"/>
         <source>TAPE(SAVE)ファイル名(SAVE時に自動マウント)</source>
         <translation>Tape (Save) file (auto-mount)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="270"/>
+        <location filename="../osdQt.cpp" line="273"/>
         <source>DISK1ファイル名(起動時に自動マウント)</source>
         <translation>Disk1 file name (auto-mount at boot time)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="271"/>
+        <location filename="../osdQt.cpp" line="274"/>
         <source>DISK2ファイル名(起動時に自動マウント)</source>
         <translation>Disk2 file name (auto-mount at boot time)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="272"/>
+        <location filename="../osdQt.cpp" line="275"/>
         <source>プリンタ出力ファイル名</source>
         <translation>Printer output file name</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="273"/>
+        <location filename="../osdQt.cpp" line="276"/>
         <source>全角フォントファイル名</source>
         <translation>Full-width font file name</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="274"/>
+        <location filename="../osdQt.cpp" line="277"/>
         <source>半角フォントファイル名</source>
         <translation>Half-width font file name</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="276"/>
+        <location filename="../osdQt.cpp" line="279"/>
         <source>ROMイメージ格納パス</source>
         <translation>ROM image path</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="277"/>
+        <location filename="../osdQt.cpp" line="280"/>
         <source>TAPEイメージ格納パス</source>
         <translation>Tape image storage path</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="278"/>
+        <location filename="../osdQt.cpp" line="281"/>
         <source>DISKイメージ格納パス</source>
         <translation>Disk image storage path</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="279"/>
+        <location filename="../osdQt.cpp" line="282"/>
         <source>拡張ROMイメージ格納パス</source>
         <translation>Expansion ROM image path</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="280"/>
+        <location filename="../osdQt.cpp" line="283"/>
         <source>スナップショット格納パス</source>
         <translation>Snapshot storage path</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="281"/>
+        <location filename="../osdQt.cpp" line="284"/>
         <source>WAVEファイル格納パス</source>
         <translation>Wave file storage path</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="282"/>
+        <location filename="../osdQt.cpp" line="285"/>
         <source>FONT格納パス</source>
         <translation>Font storage path</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="283"/>
+        <location filename="../osdQt.cpp" line="286"/>
         <source>どこでもSAVE格納パス</source>
         <translation>State save storage path</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="285"/>
+        <location filename="../osdQt.cpp" line="288"/>
         <source>終了時確認 Yes:する No:しない</source>
         <translation>Confirm at exit Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="286"/>
+        <location filename="../osdQt.cpp" line="289"/>
         <source>終了時INIファイルを保存 Yes:する No:しない</source>
         <translation>Save the INI file at exit Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="288"/>
+        <location filename="../osdQt.cpp" line="291"/>
         <source>キーリピートの間隔(単位:ms 0で無効)</source>
         <translation>Key repeat interval(value:ms 0 not used)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="289"/>
+        <location filename="../osdQt.cpp" line="292"/>
         <source>PS/2キーボード使う? Yes:PS/2 No:USB</source>
         <translation>PS/2 keyboard? Yes:PS/2 No:USB</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="291"/>
+        <location filename="../osdQt.cpp" line="294"/>
         <source>戦士のカートリッジ Yes:有効 No:無効</source>
         <translation>Cartridge of the Warrior Yes:Enable No:Disable</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="297"/>
+        <location filename="../osdQt.cpp" line="300"/>
         <source>; === PC6001V どこでもSAVEファイル ===
 
 </source>
@@ -1254,1117 +1183,1117 @@ Do you want reboot now?</translation>
 </translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="302"/>
+        <location filename="../osdQt.cpp" line="305"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="303"/>
+        <location filename="../osdQt.cpp" line="306"/>
         <source>エラーはありません</source>
         <translation>There is no error</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="304"/>
+        <location filename="../osdQt.cpp" line="307"/>
         <source>原因不明のエラーが発生しました</source>
         <translation>An unknown error has occurred</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="305"/>
+        <location filename="../osdQt.cpp" line="308"/>
         <source>メモリの確保に失敗しました</source>
         <translation>Failed to allocate memory.</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="306"/>
+        <location filename="../osdQt.cpp" line="309"/>
         <source>指定された機種のROMイメージが見つからないため機種を変更しました
 設定を確認してください</source>
         <translation>The ROM image of the specified models can not be found.
 Please verify the settings.</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="307"/>
+        <location filename="../osdQt.cpp" line="310"/>
         <source>ROMイメージが見つかりません
 設定を確認してください</source>
         <translation>ROM image can not be found.
 Please check the settings and file name.</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="308"/>
+        <location filename="../osdQt.cpp" line="311"/>
         <source>ROMイメージのサイズが不正です</source>
         <translation>The size of the ROM image is incorrect</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="309"/>
+        <location filename="../osdQt.cpp" line="312"/>
         <source>ROMイメージのCRCが不正です</source>
         <translation>CRC of the ROM image is incorrect</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="310"/>
+        <location filename="../osdQt.cpp" line="313"/>
         <source>ライブラリの初期化に失敗しました</source>
         <translation>Failed to initialize library</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="311"/>
+        <location filename="../osdQt.cpp" line="314"/>
         <source>初期化に失敗しました
 設定を確認してください</source>
         <translation>Please verify the settings
 Failed to initialize</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="312"/>
+        <location filename="../osdQt.cpp" line="315"/>
         <source>フォントの読込みに失敗しました</source>
         <translation>Failed to load the font</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="313"/>
+        <location filename="../osdQt.cpp" line="316"/>
         <source>フォントファイルの作成に失敗しました</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="314"/>
+        <location filename="../osdQt.cpp" line="317"/>
         <source>INIファイルの読込みに失敗しました
 デフォルト設定で起動します</source>
         <translation>Failed to load INI file
 Start with the default settings</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="315"/>
+        <location filename="../osdQt.cpp" line="318"/>
         <source>INIファイルの読込みに失敗しました</source>
         <translation>Failed to load the INI file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="316"/>
+        <location filename="../osdQt.cpp" line="319"/>
         <source>INIファイルの保存に失敗しました</source>
         <translation>Failed to save the INI file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="317"/>
+        <location filename="../osdQt.cpp" line="320"/>
         <source>TAPEイメージのマウントに失敗しました</source>
         <translation>Failed to mount Tape image</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="318"/>
+        <location filename="../osdQt.cpp" line="321"/>
         <source>DISKイメージのマウントに失敗しました</source>
         <translation>Failed to mount Disk image</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="319"/>
+        <location filename="../osdQt.cpp" line="322"/>
         <source>拡張ROMイメージのマウントに失敗しました</source>
         <translation>Failed to mount extended ROM image</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="320"/>
+        <location filename="../osdQt.cpp" line="323"/>
         <source>どこでもLOADに失敗しました</source>
         <translation>State load failed</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="321"/>
+        <location filename="../osdQt.cpp" line="324"/>
         <source>どこでもSAVEに失敗しました</source>
         <translation>State save failed</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="322"/>
+        <location filename="../osdQt.cpp" line="325"/>
         <source>どこでもLOADに失敗しました
 保存時とPC6001Vのバージョンが異なります</source>
         <translation>State load failed
 Save time and PC6001V version </translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="323"/>
+        <location filename="../osdQt.cpp" line="326"/>
         <source>リプレイ再生に失敗しました</source>
         <translation>Failed to replay playback</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="324"/>
+        <location filename="../osdQt.cpp" line="327"/>
         <source>リプレイ記録に失敗しました</source>
         <translation>Failed to record replay</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="325"/>
+        <location filename="../osdQt.cpp" line="328"/>
         <source>リプレイデータがありません</source>
         <translation>No replay data exist</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="338"/>
+        <location filename="../osdQt.cpp" line="341"/>
         <source>MODE1,2 黒(ボーダー)</source>
         <translation>MODE1,2 (Black Boarder)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="339"/>
+        <location filename="../osdQt.cpp" line="342"/>
         <source>MODE1 Set1 緑</source>
         <translation>MODE1 Set1 Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="340"/>
+        <location filename="../osdQt.cpp" line="343"/>
         <source>MODE1 Set1 深緑</source>
         <translation>MODE1 Set1 Dark green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="341"/>
+        <location filename="../osdQt.cpp" line="344"/>
         <source>MODE1 Set2 橙</source>
         <translation>MODE1 Set2 Orange</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="342"/>
+        <location filename="../osdQt.cpp" line="345"/>
         <source>MODE1 Set2 深橙</source>
         <translation>MODE1 Set2 Deep orange</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="343"/>
+        <location filename="../osdQt.cpp" line="346"/>
         <source>MODE2 緑</source>
         <translation>MODE2 Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="344"/>
+        <location filename="../osdQt.cpp" line="347"/>
         <source>MODE2 黄</source>
         <translation>MODE2 Yellow</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="345"/>
+        <location filename="../osdQt.cpp" line="348"/>
         <source>MODE2 青</source>
         <translation>MODE2 Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="346"/>
+        <location filename="../osdQt.cpp" line="349"/>
         <source>MODE2 赤</source>
         <translation>MODE2 Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="347"/>
+        <location filename="../osdQt.cpp" line="350"/>
         <source>MODE2 白</source>
         <translation>MODE2 White</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="348"/>
+        <location filename="../osdQt.cpp" line="351"/>
         <source>MODE2 シアン</source>
         <translation>MODE2 Cyan</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="349"/>
+        <location filename="../osdQt.cpp" line="352"/>
         <source>MODE2 マゼンタ</source>
         <translation>MODE2 Magenta</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="350"/>
+        <location filename="../osdQt.cpp" line="353"/>
         <source>MODE2 橙</source>
         <translation>MODE2 Orange</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="351"/>
+        <location filename="../osdQt.cpp" line="354"/>
         <source>MODE3 Set1 緑</source>
         <translation>MODE3 Set1 Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="352"/>
+        <location filename="../osdQt.cpp" line="355"/>
         <source>MODE3 Set1 黄</source>
         <translation>MODE3 Set1 Yellow</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="353"/>
+        <location filename="../osdQt.cpp" line="356"/>
         <source>MODE3 Set1 青</source>
         <translation>MODE3 Set1 Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="354"/>
+        <location filename="../osdQt.cpp" line="357"/>
         <source>MODE3 Set1 赤</source>
         <translation>MODE3 Set1 Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="355"/>
+        <location filename="../osdQt.cpp" line="358"/>
         <source>MODE3 Set2 白</source>
         <translation>MODE3 Set2 White</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="356"/>
+        <location filename="../osdQt.cpp" line="359"/>
         <source>MODE3 Set2 シアン</source>
         <translation>MODE3 Set2 Cyan</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="357"/>
+        <location filename="../osdQt.cpp" line="360"/>
         <source>MODE3 Set2 マゼンタ</source>
         <translation>MODE3 Set2 Magenta</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="358"/>
+        <location filename="../osdQt.cpp" line="361"/>
         <source>MODE3 Set2 橙</source>
         <translation>MODE3 Set2 Orange</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="359"/>
+        <location filename="../osdQt.cpp" line="362"/>
         <source>MODE4 Set1 深緑</source>
         <translation>MODE4 Set1 Dark green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="360"/>
+        <location filename="../osdQt.cpp" line="363"/>
         <source>MODE4 Set1 緑</source>
         <translation>MODE4 Set1 Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="361"/>
+        <location filename="../osdQt.cpp" line="364"/>
         <source>MODE4 Set2 黒</source>
         <translation>MODE4 Set2 Black</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="362"/>
+        <location filename="../osdQt.cpp" line="365"/>
         <source>MODE4 Set2 白</source>
         <translation>MODE4 Set2 White</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="363"/>
+        <location filename="../osdQt.cpp" line="366"/>
         <source>MODE4 Set1 にじみ 赤</source>
         <translation>MODE4 Set1 Fringed Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="364"/>
+        <location filename="../osdQt.cpp" line="367"/>
         <source>MODE4 Set1 にじみ 青</source>
         <translation>MODE4 Set1 Fringed Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="365"/>
+        <location filename="../osdQt.cpp" line="368"/>
         <source>MODE4 Set1 にじみ 桃</source>
         <translation>MODE4 Set1 Fringed Peach</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="366"/>
+        <location filename="../osdQt.cpp" line="369"/>
         <source>MODE4 Set1 にじみ 緑</source>
         <translation>MODE4 Set1 Fringed Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="367"/>
+        <location filename="../osdQt.cpp" line="370"/>
         <source>MODE4 Set1 にじみ 明赤</source>
         <translation>MODE4 Set1 Fringed Light Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="368"/>
+        <location filename="../osdQt.cpp" line="371"/>
         <source>MODE4 Set1 にじみ 暗赤</source>
         <translation>MODE4 Set1 Fringed Dark Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="369"/>
+        <location filename="../osdQt.cpp" line="372"/>
         <source>MODE4 Set1 にじみ 明青</source>
         <translation>MODE4 Set1 Fringed Light Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="370"/>
+        <location filename="../osdQt.cpp" line="373"/>
         <source>MODE4 Set1 にじみ 暗青</source>
         <translation>MODE4 Set1 Fringed Dark Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="371"/>
+        <location filename="../osdQt.cpp" line="374"/>
         <source>MODE4 Set1 にじみ 明桃</source>
         <translation>MODE4 Set1 Fringed Light Peach</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="372"/>
+        <location filename="../osdQt.cpp" line="375"/>
         <source>MODE4 Set1 にじみ 暗桃</source>
         <translation>MODE4 Set1 Fringed Dark Peach</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="373"/>
+        <location filename="../osdQt.cpp" line="376"/>
         <source>MODE4 Set1 にじみ 明緑</source>
         <translation>MODE4 Set1 Fringed Light Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="374"/>
+        <location filename="../osdQt.cpp" line="377"/>
         <source>MODE4 Set1 にじみ 暗緑</source>
         <translation>MODE4 Set1 Fringed Dark Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="375"/>
+        <location filename="../osdQt.cpp" line="378"/>
         <source>MODE4 Set2 にじみ 赤</source>
         <translation>MODE4 Set2 Fringed Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="376"/>
+        <location filename="../osdQt.cpp" line="379"/>
         <source>MODE4 Set2 にじみ 青</source>
         <translation>MODE4 Set2 Fringed Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="377"/>
+        <location filename="../osdQt.cpp" line="380"/>
         <source>MODE4 Set2 にじみ 桃</source>
         <translation>MODE4 Set2 Fringed Prach</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="378"/>
+        <location filename="../osdQt.cpp" line="381"/>
         <source>MODE4 Set2 にじみ 緑</source>
         <translation>MODE4 Set2 Fringed Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="379"/>
+        <location filename="../osdQt.cpp" line="382"/>
         <source>MODE4 Set2 にじみ 明赤</source>
         <translation>MODE4 Set2 Fringed Light Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="380"/>
+        <location filename="../osdQt.cpp" line="383"/>
         <source>MODE4 Set2 にじみ 暗赤</source>
         <translation>MODE4 Set2 Fringed Dark Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="381"/>
+        <location filename="../osdQt.cpp" line="384"/>
         <source>MODE4 Set2 にじみ 明青</source>
         <translation>MODE4 Set2 Fringed Light Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="382"/>
+        <location filename="../osdQt.cpp" line="385"/>
         <source>MODE4 Set2 にじみ 暗青</source>
         <translation>MODE4 Set2 Fringed Dark Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="383"/>
+        <location filename="../osdQt.cpp" line="386"/>
         <source>MODE4 Set2 にじみ 明桃</source>
         <translation>MODE4 Set2 Fringed Light Peach</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="384"/>
+        <location filename="../osdQt.cpp" line="387"/>
         <source>MODE4 Set2 にじみ 暗桃</source>
         <translation>MODE4 Set2 Fringed Dark Peach</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="385"/>
+        <location filename="../osdQt.cpp" line="388"/>
         <source>MODE4 Set2 にじみ 明緑</source>
         <translation>MODE4 Set2 Fringed Light Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="386"/>
+        <location filename="../osdQt.cpp" line="389"/>
         <source>MODE4 Set2 にじみ 暗緑</source>
         <translation>MODE4 Set2 Fringed Dark Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="387"/>
+        <location filename="../osdQt.cpp" line="390"/>
         <source>mk2〜 透明(黒)</source>
         <translation>mk2〜 (Black) and transparency</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="388"/>
+        <location filename="../osdQt.cpp" line="391"/>
         <source>mk2〜 橙</source>
         <translation>mk2〜 Orange</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="389"/>
+        <location filename="../osdQt.cpp" line="392"/>
         <source>mk2〜 青緑</source>
         <translation>mk2〜 Blue-green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="390"/>
+        <location filename="../osdQt.cpp" line="393"/>
         <source>mk2〜 黄緑</source>
         <translation>mk2〜 Yellow-green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="391"/>
+        <location filename="../osdQt.cpp" line="394"/>
         <source>mk2〜 青紫</source>
         <translation>mk2〜 Blue-violet</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="392"/>
+        <location filename="../osdQt.cpp" line="395"/>
         <source>mk2〜 赤紫</source>
         <translation>mk2〜 Purple-red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="393"/>
+        <location filename="../osdQt.cpp" line="396"/>
         <source>mk2〜 空色</source>
         <translation>mk2〜 Azure</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="394"/>
+        <location filename="../osdQt.cpp" line="397"/>
         <source>mk2〜 灰色</source>
         <translation>mk2〜 Gray</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="395"/>
+        <location filename="../osdQt.cpp" line="398"/>
         <source>mk2〜 黒</source>
         <translation>mk2〜 Black</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="396"/>
+        <location filename="../osdQt.cpp" line="399"/>
         <source>mk2〜 赤</source>
         <translation>mk2〜 Red</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="397"/>
+        <location filename="../osdQt.cpp" line="400"/>
         <source>mk2〜 緑</source>
         <translation>mk2〜 Green</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="398"/>
+        <location filename="../osdQt.cpp" line="401"/>
         <source>mk2〜 黄</source>
         <translation>mk2〜 Yellow</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="399"/>
+        <location filename="../osdQt.cpp" line="402"/>
         <source>mk2〜 青</source>
         <translation>mk2〜 Blue</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="400"/>
+        <location filename="../osdQt.cpp" line="403"/>
         <source>mk2〜 マゼンタ</source>
         <translation>mk2〜 Magenta</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="401"/>
+        <location filename="../osdQt.cpp" line="404"/>
         <source>mk2〜 シアン</source>
         <translation>mk2〜 Cyan</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="402"/>
+        <location filename="../osdQt.cpp" line="405"/>
         <source>mk2〜 白</source>
         <translation>mk2〜 White</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="419"/>
+        <location filename="../osdQt.cpp" line="422"/>
         <source>1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="420"/>
+        <location filename="../osdQt.cpp" line="423"/>
         <source>2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="421"/>
+        <location filename="../osdQt.cpp" line="424"/>
         <source>3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="422"/>
+        <location filename="../osdQt.cpp" line="425"/>
         <source>4</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="423"/>
+        <location filename="../osdQt.cpp" line="426"/>
         <source>5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="424"/>
+        <location filename="../osdQt.cpp" line="427"/>
         <source>6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="425"/>
+        <location filename="../osdQt.cpp" line="428"/>
         <source>7</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="426"/>
+        <location filename="../osdQt.cpp" line="429"/>
         <source>8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="427"/>
+        <location filename="../osdQt.cpp" line="430"/>
         <source>9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="428"/>
+        <location filename="../osdQt.cpp" line="431"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="430"/>
+        <location filename="../osdQt.cpp" line="433"/>
         <source>A</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="431"/>
+        <location filename="../osdQt.cpp" line="434"/>
         <source>B</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="432"/>
+        <location filename="../osdQt.cpp" line="435"/>
         <source>C</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="433"/>
+        <location filename="../osdQt.cpp" line="436"/>
         <source>D</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="434"/>
+        <location filename="../osdQt.cpp" line="437"/>
         <source>E</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="435"/>
+        <location filename="../osdQt.cpp" line="438"/>
         <source>F</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="436"/>
+        <location filename="../osdQt.cpp" line="439"/>
         <source>G</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="437"/>
+        <location filename="../osdQt.cpp" line="440"/>
         <source>H</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="438"/>
+        <location filename="../osdQt.cpp" line="441"/>
         <source>I</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="439"/>
+        <location filename="../osdQt.cpp" line="442"/>
         <source>J</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="440"/>
+        <location filename="../osdQt.cpp" line="443"/>
         <source>K</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="441"/>
+        <location filename="../osdQt.cpp" line="444"/>
         <source>L</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="442"/>
+        <location filename="../osdQt.cpp" line="445"/>
         <source>M</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="443"/>
+        <location filename="../osdQt.cpp" line="446"/>
         <source>N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="444"/>
+        <location filename="../osdQt.cpp" line="447"/>
         <source>O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="445"/>
+        <location filename="../osdQt.cpp" line="448"/>
         <source>P</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="446"/>
+        <location filename="../osdQt.cpp" line="449"/>
         <source>Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="447"/>
+        <location filename="../osdQt.cpp" line="450"/>
         <source>R</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="448"/>
+        <location filename="../osdQt.cpp" line="451"/>
         <source>S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="449"/>
+        <location filename="../osdQt.cpp" line="452"/>
         <source>T</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="450"/>
+        <location filename="../osdQt.cpp" line="453"/>
         <source>U</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="451"/>
+        <location filename="../osdQt.cpp" line="454"/>
         <source>V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="452"/>
+        <location filename="../osdQt.cpp" line="455"/>
         <source>W</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="453"/>
+        <location filename="../osdQt.cpp" line="456"/>
         <source>X</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="454"/>
+        <location filename="../osdQt.cpp" line="457"/>
         <source>Y</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="455"/>
+        <location filename="../osdQt.cpp" line="458"/>
         <source>Z</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="457"/>
+        <location filename="../osdQt.cpp" line="460"/>
         <source>F1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="458"/>
+        <location filename="../osdQt.cpp" line="461"/>
         <source>F2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="459"/>
+        <location filename="../osdQt.cpp" line="462"/>
         <source>F3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="460"/>
+        <location filename="../osdQt.cpp" line="463"/>
         <source>F4</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="461"/>
+        <location filename="../osdQt.cpp" line="464"/>
         <source>F5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="462"/>
+        <location filename="../osdQt.cpp" line="465"/>
         <source>F6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="463"/>
+        <location filename="../osdQt.cpp" line="466"/>
         <source>F7</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="464"/>
+        <location filename="../osdQt.cpp" line="467"/>
         <source>F8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="465"/>
+        <location filename="../osdQt.cpp" line="468"/>
         <source>F9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="466"/>
+        <location filename="../osdQt.cpp" line="469"/>
         <source>F10</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="467"/>
+        <location filename="../osdQt.cpp" line="470"/>
         <source>F11</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="468"/>
+        <location filename="../osdQt.cpp" line="471"/>
         <source>F12</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="470"/>
+        <location filename="../osdQt.cpp" line="473"/>
         <source>-</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="471"/>
+        <location filename="../osdQt.cpp" line="474"/>
         <source>^</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="472"/>
+        <location filename="../osdQt.cpp" line="475"/>
         <source>BackSpace</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="473"/>
+        <location filename="../osdQt.cpp" line="476"/>
         <source>@</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="474"/>
+        <location filename="../osdQt.cpp" line="477"/>
         <source>[</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="475"/>
+        <location filename="../osdQt.cpp" line="478"/>
         <source>;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="476"/>
+        <location filename="../osdQt.cpp" line="479"/>
         <source>:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="477"/>
+        <location filename="../osdQt.cpp" line="480"/>
         <source>,</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="478"/>
+        <location filename="../osdQt.cpp" line="481"/>
         <source>.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="479"/>
+        <location filename="../osdQt.cpp" line="482"/>
         <source>/</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="480"/>
+        <location filename="../osdQt.cpp" line="483"/>
         <source>Space</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="482"/>
+        <location filename="../osdQt.cpp" line="485"/>
         <source>ESC</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="483"/>
+        <location filename="../osdQt.cpp" line="486"/>
         <source>半角/全角</source>
         <translation>Hanzen full/Hanzen half</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="484"/>
+        <location filename="../osdQt.cpp" line="487"/>
         <source>Tab</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="485"/>
+        <location filename="../osdQt.cpp" line="488"/>
         <source>CapsLock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="486"/>
+        <location filename="../osdQt.cpp" line="489"/>
         <source>Enter</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="487"/>
+        <location filename="../osdQt.cpp" line="490"/>
         <source>L-Ctrl</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="488"/>
+        <location filename="../osdQt.cpp" line="491"/>
         <source>R-Ctrl</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="489"/>
+        <location filename="../osdQt.cpp" line="492"/>
         <source>L-Shift</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="490"/>
+        <location filename="../osdQt.cpp" line="493"/>
         <source>R-Shift</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="491"/>
+        <location filename="../osdQt.cpp" line="494"/>
         <source>L-Alt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="492"/>
+        <location filename="../osdQt.cpp" line="495"/>
         <source>R-Alt</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="493"/>
+        <location filename="../osdQt.cpp" line="496"/>
         <source>PrintScreen</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="494"/>
+        <location filename="../osdQt.cpp" line="497"/>
         <source>ScrollLock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="495"/>
+        <location filename="../osdQt.cpp" line="498"/>
         <source>Pause</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="496"/>
+        <location filename="../osdQt.cpp" line="499"/>
         <source>Insert</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="497"/>
+        <location filename="../osdQt.cpp" line="500"/>
         <source>Delete</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="498"/>
+        <location filename="../osdQt.cpp" line="501"/>
         <source>End</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="499"/>
+        <location filename="../osdQt.cpp" line="502"/>
         <source>Home</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="500"/>
+        <location filename="../osdQt.cpp" line="503"/>
         <source>PageUp</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="501"/>
+        <location filename="../osdQt.cpp" line="504"/>
         <source>PageDown</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="503"/>
+        <location filename="../osdQt.cpp" line="506"/>
         <source>↑</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="504"/>
+        <location filename="../osdQt.cpp" line="507"/>
         <source>↓</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="505"/>
+        <location filename="../osdQt.cpp" line="508"/>
         <source>←</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="506"/>
+        <location filename="../osdQt.cpp" line="509"/>
         <source>→</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="508"/>
+        <location filename="../osdQt.cpp" line="511"/>
         <source>0(テンキー)</source>
         <translation>0(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="509"/>
+        <location filename="../osdQt.cpp" line="512"/>
         <source>1(テンキー)</source>
         <translation>1(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="510"/>
+        <location filename="../osdQt.cpp" line="513"/>
         <source>2(テンキー)</source>
         <translation>2(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="511"/>
+        <location filename="../osdQt.cpp" line="514"/>
         <source>3(テンキー)</source>
         <translation>3(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="512"/>
+        <location filename="../osdQt.cpp" line="515"/>
         <source>4(テンキー)</source>
         <translation>4(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="513"/>
+        <location filename="../osdQt.cpp" line="516"/>
         <source>5(テンキー)</source>
         <translation>5(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="514"/>
+        <location filename="../osdQt.cpp" line="517"/>
         <source>6(テンキー)</source>
         <translation>6(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="515"/>
+        <location filename="../osdQt.cpp" line="518"/>
         <source>7(テンキー)</source>
         <translation>7(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="516"/>
+        <location filename="../osdQt.cpp" line="519"/>
         <source>8(テンキー)</source>
         <translation>8(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="517"/>
+        <location filename="../osdQt.cpp" line="520"/>
         <source>9(テンキー)</source>
         <translation>9(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="518"/>
+        <location filename="../osdQt.cpp" line="521"/>
         <source>NumLock</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="519"/>
+        <location filename="../osdQt.cpp" line="522"/>
         <source>+(テンキー)</source>
         <translation>+(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="520"/>
+        <location filename="../osdQt.cpp" line="523"/>
         <source>-(テンキー)</source>
         <translation>-(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="521"/>
+        <location filename="../osdQt.cpp" line="524"/>
         <source>*(テンキー)</source>
         <translation>*(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="522"/>
+        <location filename="../osdQt.cpp" line="525"/>
         <source>/(テンキー)</source>
         <translation>/(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="523"/>
+        <location filename="../osdQt.cpp" line="526"/>
         <source>.(テンキー)</source>
         <translation>.(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="524"/>
+        <location filename="../osdQt.cpp" line="527"/>
         <source>Enter(テンキー)</source>
         <translation>Enter(numeric keypad)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="527"/>
+        <location filename="../osdQt.cpp" line="530"/>
         <source>\</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="528"/>
+        <location filename="../osdQt.cpp" line="531"/>
         <source>]</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="529"/>
+        <location filename="../osdQt.cpp" line="532"/>
         <source>_</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="530"/>
+        <location filename="../osdQt.cpp" line="533"/>
         <source>無変換</source>
         <translation>Muhenkan</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="531"/>
+        <location filename="../osdQt.cpp" line="534"/>
         <source>変換</source>
         <translation>Henkan</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="532"/>
+        <location filename="../osdQt.cpp" line="535"/>
         <source>ひらがな</source>
         <translation>Hiragana</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="535"/>
+        <location filename="../osdQt.cpp" line="538"/>
         <source>BackSlash</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="538"/>
+        <location filename="../osdQt.cpp" line="541"/>
         <source>L-Windows</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="539"/>
+        <location filename="../osdQt.cpp" line="542"/>
         <source>R-Windows</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="540"/>
+        <location filename="../osdQt.cpp" line="543"/>
         <source>Menu</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1359"/>
+        <location filename="../osdQt.cpp" line="1370"/>
         <source>TAPEイメージ選択(LOAD)</source>
         <translation>Tape image selection (Load)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1360"/>
-        <location filename="../osdQt.cpp" line="1370"/>
+        <location filename="../osdQt.cpp" line="1371"/>
+        <location filename="../osdQt.cpp" line="1381"/>
         <source>TAPEイメージ (*.p6t *.cas *.p6);;P6T形式 (*.p6t);;ベタ形式 (*.cas *.p6);;全てのファイル (*.*)</source>
         <translation>Tape image (*.p6t *.cas *.p6);;P6T format (*.p6t);;Standard format (*.cas *.p6);;All files(*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1369"/>
+        <location filename="../osdQt.cpp" line="1380"/>
         <source>TAPEイメージ選択(SAVE)</source>
         <translation>Tape image selection (Save)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1379"/>
+        <location filename="../osdQt.cpp" line="1390"/>
         <source>DISKイメージ選択</source>
         <translation>Disk image selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1380"/>
+        <location filename="../osdQt.cpp" line="1391"/>
         <source>DISKイメージ(*.d88);;D88形式 (*.d88);;全てのファイル (*.*)</source>
         <translation>Disk image (*.d88);;D88 format (*.d88);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1388"/>
+        <location filename="../osdQt.cpp" line="1399"/>
         <source>拡張ROMイメージ選択</source>
         <translation>Expansion ROM image selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1389"/>
-        <location filename="../osdQt.cpp" line="1395"/>
-        <location filename="../osdQt.cpp" line="1461"/>
+        <location filename="../osdQt.cpp" line="1400"/>
+        <location filename="../osdQt.cpp" line="1406"/>
+        <location filename="../osdQt.cpp" line="1472"/>
         <source>全てのファイル (*.*)</source>
         <translation>All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1394"/>
+        <location filename="../osdQt.cpp" line="1405"/>
         <source>プリンター出力ファイル選択</source>
         <translation>Printer output file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1401"/>
+        <location filename="../osdQt.cpp" line="1412"/>
         <source>全角フォントファイル選択</source>
         <translation>Full-width font selection file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1402"/>
-        <location filename="../osdQt.cpp" line="1410"/>
+        <location filename="../osdQt.cpp" line="1413"/>
+        <location filename="../osdQt.cpp" line="1421"/>
         <source>PNGファイル (*.png);;全てのファイル (*.*)</source>
         <translation>PNG file (*.png);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1409"/>
+        <location filename="../osdQt.cpp" line="1420"/>
         <source>半角フォントファイル選択</source>
         <translation>Half-width font selection file</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1417"/>
+        <location filename="../osdQt.cpp" line="1428"/>
         <source>どこでもLOADファイル選択</source>
         <translation>State load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1418"/>
+        <location filename="../osdQt.cpp" line="1429"/>
         <source>どこでもSAVEファイル (*.dds *.ddr);;どこでもSAVE形式 (*.dds);;リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>State save files (*.dds *.ddr);;State save format (*.dds);;Replay file (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1427"/>
+        <location filename="../osdQt.cpp" line="1438"/>
         <source>どこでもSAVEファイル選択</source>
         <translation>State save file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1428"/>
+        <location filename="../osdQt.cpp" line="1439"/>
         <source>どこでもSAVE形式 (*.dds);;全てのファイル (*.*)</source>
         <translation>State save format (*.dds);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1435"/>
+        <location filename="../osdQt.cpp" line="1446"/>
         <source>リプレイ再生ファイル選択</source>
         <translation>Replay load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1436"/>
-        <location filename="../osdQt.cpp" line="1444"/>
+        <location filename="../osdQt.cpp" line="1447"/>
+        <location filename="../osdQt.cpp" line="1455"/>
         <source>リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>Replay file (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1443"/>
+        <location filename="../osdQt.cpp" line="1454"/>
         <source>リプレイ保存ファイル選択</source>
         <translation>Replay save file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1451"/>
+        <location filename="../osdQt.cpp" line="1462"/>
         <source>ビデオキャプチャ出力ファイル選択</source>
         <translation>Video capture output file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1452"/>
+        <location filename="../osdQt.cpp" line="1463"/>
         <source>WebMファイル (*.webm);;全てのファイル (*.*)</source>
         <translation>WebM file (*.webm);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="1460"/>
+        <location filename="../osdQt.cpp" line="1471"/>
         <source>ファイル選択</source>
         <translation>File selection</translation>
     </message>
@@ -2835,199 +2764,199 @@ Save time and PC6001V version </translation>
 <context>
     <name>QtEL6</name>
     <message>
-        <location filename="../qtel6.cpp" line="263"/>
+        <location filename="../qtel6.cpp" line="260"/>
         <source>システム</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="265"/>
-        <location filename="../qtel6.cpp" line="272"/>
+        <location filename="../qtel6.cpp" line="262"/>
+        <location filename="../qtel6.cpp" line="269"/>
         <source>リセット</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="266"/>
+        <location filename="../qtel6.cpp" line="263"/>
         <source>再起動</source>
         <translation>Restart</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="284"/>
+        <location filename="../qtel6.cpp" line="281"/>
         <source>どこでもLOAD</source>
         <translation>State load</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="285"/>
+        <location filename="../qtel6.cpp" line="282"/>
         <source>どこでもSAVE</source>
         <translation>State save</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="287"/>
+        <location filename="../qtel6.cpp" line="284"/>
         <source>LOAD...</source>
         <translation>Load...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="291"/>
+        <location filename="../qtel6.cpp" line="288"/>
         <source>SAVE...</source>
         <translation>Save...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="297"/>
+        <location filename="../qtel6.cpp" line="294"/>
         <source>リプレイ</source>
         <translation>Replay</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="318"/>
+        <location filename="../qtel6.cpp" line="315"/>
         <source>記録再開...</source>
         <translation>Resume recording...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="324"/>
+        <location filename="../qtel6.cpp" line="321"/>
         <source>途中保存</source>
         <translation>Checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="325"/>
+        <location filename="../qtel6.cpp" line="322"/>
         <source>途中保存から再開</source>
         <translation>Back to checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="342"/>
+        <location filename="../qtel6.cpp" line="339"/>
         <source>打込み代行...</source>
         <translation>Auto typing...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="344"/>
+        <location filename="../qtel6.cpp" line="341"/>
         <source>終了</source>
         <translation>Exit</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="347"/>
+        <location filename="../qtel6.cpp" line="344"/>
         <source>TAPE</source>
         <translation>Tape</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="348"/>
-        <location filename="../qtel6.cpp" line="359"/>
-        <location filename="../qtel6.cpp" line="367"/>
+        <location filename="../qtel6.cpp" line="345"/>
+        <location filename="../qtel6.cpp" line="356"/>
+        <location filename="../qtel6.cpp" line="364"/>
         <source>挿入...</source>
         <translation>Insert...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="349"/>
-        <location filename="../qtel6.cpp" line="360"/>
-        <location filename="../qtel6.cpp" line="368"/>
+        <location filename="../qtel6.cpp" line="346"/>
+        <location filename="../qtel6.cpp" line="357"/>
+        <location filename="../qtel6.cpp" line="365"/>
         <source>取出</source>
         <translation>Eject</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="355"/>
+        <location filename="../qtel6.cpp" line="352"/>
         <source>DISK</source>
         <translation>Disk</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="366"/>
+        <location filename="../qtel6.cpp" line="363"/>
         <source>拡張ROM</source>
         <translation>Extended ROM</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="373"/>
+        <location filename="../qtel6.cpp" line="370"/>
         <source>ジョイスティック</source>
         <translation>Joystick</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="389"/>
-        <location filename="../qtel6.cpp" line="390"/>
+        <location filename="../qtel6.cpp" line="386"/>
+        <location filename="../qtel6.cpp" line="387"/>
         <source>なし</source>
         <translation>None</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="398"/>
+        <location filename="../qtel6.cpp" line="395"/>
         <source>設定</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="205"/>
-        <location filename="../qtel6.cpp" line="400"/>
+        <location filename="../qtel6.cpp" line="202"/>
+        <location filename="../qtel6.cpp" line="397"/>
         <source>表示サイズ</source>
         <translation>Display size</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="205"/>
+        <location filename="../qtel6.cpp" line="202"/>
         <source>表示サイズ(%)を入力してください。(50-1000)</source>
         <translation>Enter magnification(%)</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="523"/>
-        <location filename="../qtel6.cpp" line="214"/>
+        <location filename="../p6vxapp.cpp" line="527"/>
+        <location filename="../qtel6.cpp" line="211"/>
         <source>設定を反映するには一度終了しますがよろしいですか?</source>
         <translation>You need to exit program to apply settings.\nDo you want to continue?</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="269"/>
+        <location filename="../qtel6.cpp" line="266"/>
         <source>一時停止</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="280"/>
+        <location filename="../qtel6.cpp" line="277"/>
         <source>スナップショットを取得</source>
         <translation>Take snapshot</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="320"/>
+        <location filename="../qtel6.cpp" line="317"/>
         <source>リプレイを動画に変換...</source>
         <translation>Convert replay to movie...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="326"/>
+        <location filename="../qtel6.cpp" line="323"/>
         <source>1つ前の途中保存から再開</source>
         <translation>Back to previous checkpoint</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="336"/>
+        <location filename="../qtel6.cpp" line="333"/>
         <source>キーパネル</source>
         <translation>Key panel</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="338"/>
+        <location filename="../qtel6.cpp" line="335"/>
         <source>仮想キーボード</source>
         <translation>Virtual keyboard</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="351"/>
+        <location filename="../qtel6.cpp" line="348"/>
         <source>TAPE(SAVE)をエクスポート...</source>
         <translation>Export saved TAPE...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="273"/>
-        <location filename="../qtel6.cpp" line="401"/>
+        <location filename="../qtel6.cpp" line="270"/>
+        <location filename="../qtel6.cpp" line="398"/>
         <source>50%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="402"/>
+        <location filename="../qtel6.cpp" line="399"/>
         <source>100%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="275"/>
-        <location filename="../qtel6.cpp" line="403"/>
+        <location filename="../qtel6.cpp" line="272"/>
+        <location filename="../qtel6.cpp" line="400"/>
         <source>150%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="276"/>
-        <location filename="../qtel6.cpp" line="404"/>
+        <location filename="../qtel6.cpp" line="273"/>
+        <location filename="../qtel6.cpp" line="401"/>
         <source>200%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="405"/>
+        <location filename="../qtel6.cpp" line="402"/>
         <source>250%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="277"/>
-        <location filename="../qtel6.cpp" line="406"/>
+        <location filename="../qtel6.cpp" line="274"/>
+        <location filename="../qtel6.cpp" line="403"/>
         <source>300%</source>
         <translation></translation>
     </message>
@@ -3042,162 +2971,161 @@ Save time and PC6001V version </translation>
         <translation>Enter speed(%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="271"/>
+        <location filename="../qtel6.cpp" line="268"/>
         <source>速度調節</source>
         <translation>Speed control</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="274"/>
+        <location filename="../qtel6.cpp" line="271"/>
         <source>70%</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="278"/>
+        <location filename="../qtel6.cpp" line="275"/>
         <source>速度を指定...</source>
         <translation>Specify speed...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="407"/>
+        <location filename="../qtel6.cpp" line="404"/>
         <source>倍率を指定...</source>
         <translation>Specify magnification...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="408"/>
+        <location filename="../qtel6.cpp" line="405"/>
         <source>倍率を固定</source>
         <translation>Fix magnification</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="411"/>
+        <location filename="../qtel6.cpp" line="408"/>
         <source>フルスクリーン</source>
         <translation>Full screen</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="414"/>
+        <location filename="../qtel6.cpp" line="411"/>
         <source>ステータスバー</source>
         <translation>Status bar</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="416"/>
+        <location filename="../qtel6.cpp" line="413"/>
         <source>4:3表示</source>
         <translation>4:3 TV display</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="418"/>
+        <location filename="../qtel6.cpp" line="415"/>
         <source>スキャンライン</source>
         <translation>Scanline</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="421"/>
+        <location filename="../qtel6.cpp" line="418"/>
         <source>ハードウェアアクセラレーション</source>
         <translation>Hardware acceleration</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="424"/>
+        <location filename="../qtel6.cpp" line="421"/>
         <source>フィルタリング</source>
         <translation>Filtering</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="427"/>
+        <location filename="../qtel6.cpp" line="424"/>
         <source>TILTモード</source>
         <translation>Tilt mode</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="430"/>
+        <location filename="../qtel6.cpp" line="427"/>
         <source>MODE4 カラー</source>
         <translation>Mode4 color</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="433"/>
+        <location filename="../qtel6.cpp" line="430"/>
         <source>モノクロ</source>
         <translation>Monochrome</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="434"/>
+        <location filename="../qtel6.cpp" line="431"/>
         <source>赤/青</source>
         <translation>Red/Blue</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="435"/>
+        <location filename="../qtel6.cpp" line="432"/>
         <source>青/赤</source>
         <translation>Blue/Red</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="436"/>
+        <location filename="../qtel6.cpp" line="433"/>
         <source>桃/緑</source>
         <translation>Green/Peach</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="437"/>
+        <location filename="../qtel6.cpp" line="434"/>
         <source>緑/桃</source>
         <translation>Peach/Green</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="443"/>
+        <location filename="../qtel6.cpp" line="440"/>
         <source>フレームスキップ</source>
         <translation>Frameskip</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="458"/>
         <source>サンプリングレート</source>
-        <translation>Sampling rate</translation>
+        <translation type="vanished">Sampling rate</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="470"/>
+        <location filename="../qtel6.cpp" line="455"/>
         <source>ウェイト無効</source>
         <translation>Disable wait</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="472"/>
+        <location filename="../qtel6.cpp" line="457"/>
         <source>Turbo TAPE</source>
         <translation>Turbo tape</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="474"/>
+        <location filename="../qtel6.cpp" line="459"/>
         <source>Boost Up</source>
         <translation>Boost up</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="476"/>
+        <location filename="../qtel6.cpp" line="461"/>
         <source>環境設定...</source>
         <translation>Preferences...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="480"/>
+        <location filename="../qtel6.cpp" line="465"/>
         <source>デバッグ</source>
         <translation>Debug</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="482"/>
+        <location filename="../qtel6.cpp" line="467"/>
         <source>モニタモード</source>
         <translation>Monitor mode</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="487"/>
+        <location filename="../qtel6.cpp" line="472"/>
         <source>ヘルプ</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="488"/>
+        <location filename="../qtel6.cpp" line="473"/>
         <source>オンラインヘルプ</source>
         <translation>Online help</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="489"/>
+        <location filename="../qtel6.cpp" line="474"/>
         <source>バージョン情報...</source>
         <translation>About...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="490"/>
+        <location filename="../qtel6.cpp" line="475"/>
         <source>About Qt...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="491"/>
+        <location filename="../qtel6.cpp" line="476"/>
         <source>システム情報...</source>
         <translation>System Information...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="492"/>
+        <location filename="../qtel6.cpp" line="477"/>
         <source>設定初期化...</source>
         <translation>Reset settings...</translation>
     </message>

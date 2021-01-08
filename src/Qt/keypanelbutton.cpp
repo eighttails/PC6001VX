@@ -20,7 +20,8 @@ void KeyPanelButton::emitKey()
 	Qt::KeyboardModifiers mod = QApplication::keyboardModifiers();
 	ev.key.mod = PCKEYmod((mod & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE)
 						  & (mod & Qt::AltModifier ? KVM_ALT : KVM_NONE)
-						  & (mod & Qt::ControlModifier ? KVM_CTRL : KVM_NONE));
+						  & (mod & Qt::ControlModifier ? KVM_CTRL : KVM_NONE)
+						  & (mod & Qt::MetaModifier ? KVM_CTRL : KVM_NONE));
 
 	// キー押下イベントを送信
 	OSD_PushEvent(ev);

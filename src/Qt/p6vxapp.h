@@ -68,6 +68,9 @@ public:
 	int getTiltStep();
 	void setTiltStep(int step);
 
+	// プラットフォーム判定
+	bool isPlatform(const QString platform);
+
 	// ステータス関係
 	bool isAVI();
 

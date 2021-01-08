@@ -575,6 +575,11 @@ void P6VXApp::setTiltStep(int step)
 	TiltStep = step;
 }
 
+bool P6VXApp::isPlatform(const QString platform)
+{
+	return platformName() == platform;
+}
+
 bool P6VXApp::isAVI()
 {
 	return P6Core->IsAVI();
@@ -869,14 +874,14 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 #endif
 
 	// X11の場合
-	if (QGuiApplication::platformName() == QLatin1String("xcb")){
+	if (isPlatform("xcb")){
 		// 「ろ」
 		if(keyCode == Qt::Key_Backslash){
 			keyCode = nativeKey == 97 ? Qt::Key_Underscore : Qt::Key_Backslash;
 		}
 	}
 	// Windowsの場合
-	else if (QGuiApplication::platformName() == QLatin1String("windows")){
+	else if (isPlatform("windows")){
 		// 「ろ」
 		if(keyCode == Qt::Key_Backslash){
 			keyCode = nativeKey == 115 ? Qt::Key_Underscore : Qt::Key_Backslash;
@@ -1012,9 +1017,7 @@ QFileDialog *P6VXApp::createFileDialog(void *hwnd)
 	// Androidのネイティブファイルダイアログが動かないための暫定措置
 	// https://bugreports.qt.io/browse/QTBUG-77214
 	QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
-	auto platformName = QGuiApplication::platformName();
-	if (platformName == QLatin1String("xcb")
-			|| platformName == QLatin1String("android")){
+	if (isPlatform("xcb") || isPlatform("android")){
 		opt |= QFileDialog::DontUseNativeDialog;
 	}
 	dialog->setOptions(opt);

@@ -9,7 +9,7 @@
 #include <QDir>
 #include <QFile>
 #include <QDateTime>
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 #include "ekkesShare/shareutils.hpp"
 #endif
 
@@ -74,7 +74,7 @@ bool SaveImgData( const char *filename, BYTE *pixels, const int bpp, const int w
 	auto saveFileFullPath = QDir(saveDir).filePath(saveFileName);
 	image.save(saveFileFullPath);
 
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 	// Androidの場合はインテントで他のアプリに送る
 	ShareUtils util;
 	int req = 0;

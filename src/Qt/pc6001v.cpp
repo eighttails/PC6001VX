@@ -19,7 +19,7 @@ int main( int argc, char *argv[] )
 	// X11の場合用
 	QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
-#ifndef ANDROID
+#ifndef Q_OS_ANDROID
 	// AndroidではAA_EnableHighDpiScalingを設定するとメニューの座標がおかしくなる
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
@@ -33,7 +33,7 @@ int main( int argc, char *argv[] )
 	bool safeMode = parser.isSet(safeModeOption);
 	app.enableSafeMode(safeMode);
 
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 	// AndroidではFusion以外のスタイルでは表示が崩れるので明示的に指定する。
 	app.setStyle(QStyleFactory::create("Fusion"));
 	app.setCustomRomPath(CUSTOMROMPATH);
@@ -48,7 +48,7 @@ int main( int argc, char *argv[] )
 		myappTranslator.load(":/translation/PC6001VX_en");
 		app.installTranslator(&myappTranslator);
 	} else {
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 		QFontDatabase database;
 		// 日本語に対応したフォントを検索
 		auto list = database.families(QFontDatabase::Japanese);

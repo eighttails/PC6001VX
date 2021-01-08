@@ -22,7 +22,7 @@
 #include "keystatewatcher.h"
 #include "p6vxapp.h"
 
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 #include <QtAndroid>
 #include "ekkesShare/shareutils.hpp"
 #endif
@@ -164,7 +164,7 @@ void P6VXApp::startup()
 	}
 #endif
 
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 	// SDカードへのアクセス許可を要求
 	QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
 	if(r == QtAndroid::PermissionResult::Denied) {
@@ -215,7 +215,7 @@ void P6VXApp::startup()
 	setDefaultSetting(keyFiltering, true);
 	setDefaultSetting(keyFixMagnification, false);
 	setDefaultSetting(keyKeyPanelVisible, false);
-#if defined(ANDROID) || defined(IPHONE_IPAD)
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
 	setDefaultSetting(keyVirtualKeyVisible, true);
 #else
 	setDefaultSetting(keyVirtualKeyVisible, false);
@@ -637,7 +637,7 @@ void P6VXApp::exportSavedTape()
 		OSD_Message(QString(tr("TAPE(SAVE)ファイルが存在しません。")).toUtf8().constData(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR);
 		return;
 	}
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 	// Androidの場合はインテントで他のアプリに送る
 	ShareUtils util;
 	int req = 0;
@@ -970,7 +970,7 @@ void P6VXApp::fixKeyModifiers(Event &ev)
 
 void P6VXApp::overrideSettings(CFG6 &cfg)
 {
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 	char str[PATH_MAX];
 	// 設定のデフォルト値でなく、プラットフォームごとのデータフォルダを探す。
 	// Androidではこの方法でないとSDカードが検出できない場合がある。
@@ -1021,7 +1021,7 @@ QFileDialog *P6VXApp::createFileDialog(void *hwnd)
 #ifdef ALWAYSFULLSCREEN
 	dialog->setWindowState(dialog->windowState() | Qt::WindowFullScreen);
 #endif
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 	// シングルタップで開くように設定
 	dialog->setStyleSheet(QStringLiteral("QAbstractItemView { activate-on-singleclick: 1; }"));
 	// Androidではローカルストレージのトップフォルダをブックマークさせる。
@@ -1179,7 +1179,7 @@ void P6VXApp::inhibitScreenSaver()
 	if(MWidget && MWidget->isFullScreen()){
 		XResetScreenSaver(QX11Info::display());
 	}
-#elif defined WIN32
+#elif defined Q_OS_WIN
 	if(MWidget && MWidget->isFullScreen()){
 		SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);
 	} else {

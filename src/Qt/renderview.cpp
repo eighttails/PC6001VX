@@ -41,7 +41,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	grabGesture(Qt::TapGesture);
 	setAttribute(Qt::WA_Hover);
 
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	// IMEを無効化
 	ImmAssociateContext( (HWND)winId(), NULL );
 #endif
@@ -164,7 +164,7 @@ void RenderView::wheelEvent(QWheelEvent *event)
 void RenderView::mouseReleaseEvent(QMouseEvent *event)
 {
 	Event ev;
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 	ev.type = EV_CONTEXTMENU;
 #else
 	ev.type = EV_MOUSEBUTTONUP;

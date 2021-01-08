@@ -1079,7 +1079,7 @@ void OSD_DelDelimiter( char *path )
 ////////////////////////////////////////////////////////////////
 void OSD_RelativePath( char *path )
 {
-#ifdef WIN32
+#ifdef Q_OS_WIN
 	if( QDir( path ).isRelative()
 			|| QDir( path ).path().startsWith(":")
 			|| !strlen( path ) ) return;
@@ -1183,9 +1183,9 @@ const char *OSD_GetModulePath( void )
 
 	// Windowsの場合はexe本体と同じ場所。
 	// それ以外(UNIX系を想定)は ~/.pc6001vx を返す
-#if defined WIN32
+#if defined Q_OS_WIN
 	QString confPath = qApp->applicationDirPath();
-#elif defined IPHONE_IPAD
+#elif defined Q_OS_IOS
 	QString confPath = QDir::homePath() + QDir::separator() + QString("Documents");
 #else
 	QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");

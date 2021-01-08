@@ -299,7 +299,7 @@ void ConfigDialog::readConfig()
 	ui->lineEditFolderDokoSave->setText(str);
 	warnFileOrFolderNotExist(ui->lineEditFolderDokoSave);
 
-#ifdef ANDROID
+#ifdef Q_OS_ANDROID
 	// AndroidではTAPE(SAVE)とプリンタファイル、IMGパスとどこでもSAVEパスを編集不可にする。
 	ui->labelSaveTape->setVisible(false);
 	ui->lineEditSaveTape->setVisible(false);

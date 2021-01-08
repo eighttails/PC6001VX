@@ -73,7 +73,7 @@ unix:!macx {
     }
 
     ios {
-        DEFINES += NOJOYSTICK NOAVI ALWAYSFULLSCREEN IPHONE_IPAD
+        DEFINES += NOJOYSTICK NOAVI ALWAYSFULLSCREEN
     }
 
     !android:!ios {
@@ -86,7 +86,6 @@ unix:!macx {
 
 #Configuration for Windows
 win32 {
-    DEFINES += WIN32
     #On Windows, link libraries statically as long as possible.
     QMAKE_LFLAGS_WINDOWS += -Wl,--stack,10000000
     QMAKE_LFLAGS += -static

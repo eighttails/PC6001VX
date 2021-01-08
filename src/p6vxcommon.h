@@ -12,7 +12,7 @@
 #define QT_TRANSLATE_NOOP(a,b) b
 #endif
 
-#if (defined ANDROID)
+#if (defined Q_OS_ANDROID)
 #include <string>
 #include <sstream>
 namespace std{

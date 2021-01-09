@@ -696,13 +696,15 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
-.git master
+.3.6.1 2021/01/09
 * ROMの一部が見つからない場合に互換ROMに切り替えられるようにした。
 * mk2用互換BASICの配置を誤っていたのを修正。
 * 下位互換性を向上。Qt5.5以上であればビルドできるようにした。
-* Fallback to compatible rom when one or some ROM files are missing.
+* その他軽微なバグ修正
+* Fallback to compatible rom when some of ROM files are missing.
 * Fixed PC-6001mk2/6601 compatible basic ROM's deployment.
 * Improved backward compatibility. Now builable with Qt5.5 or above.
+* Minor bugfixes.
 
 .3.6.0 2020/12/15
 * Androidでジョイスティックが使えるようになった。

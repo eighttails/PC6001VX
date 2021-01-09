@@ -13,6 +13,7 @@ else
 fi
 
 export SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+cd $SCRIPT_DIR
 
 #引数としてバージョンを指定すること
 if [ -z $1 ]; then

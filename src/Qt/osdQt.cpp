@@ -757,8 +757,7 @@ bool OSD_PushEvent( EventType ev, ... )
 ////////////////////////////////////////////////////////////////
 void OSD_ShowCursor( bool disp )
 {
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	app->deactivateMouseCursorTimer();
+	QMetaObject::invokeMethod(qApp, "deactivateMouseCursorTimer");
 	qApp->setOverrideCursor(disp ? Qt::ArrowCursor : Qt::BlankCursor);
 }
 

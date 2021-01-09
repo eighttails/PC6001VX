@@ -367,14 +367,15 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 			// QPixmapItemが見つかったら一旦sceneから除去する
 			// (scene上にある状態で画像を更新すると真っ黒になる場合がある)
 			pItem = dynamic_cast<QGraphicsPixmapItem*>(item);
-			if(pItem) scene->removeItem(pItem);
-			break;
+			if(pItem) {
+				scene->removeItem(pItem);
+				break;
+			}
 		}
 	}
 
 	if(pItem == NULL){
 		pItem = new QGraphicsPixmapItem(NULL);
-		scene->addItem(pItem);
 		// フィルタリング
 		if(getSetting(keyFiltering).toBool()){
 			pItem->setTransformationMode(Qt::SmoothTransformation);

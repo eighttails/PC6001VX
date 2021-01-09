@@ -112,10 +112,10 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	// 終了はEL6::Quitが返ってきた時に行う。
 	setQuitOnLastWindowClosed (false);
 
-	connect(this, SIGNAL(initialized()), this, SLOT(executeEmulation()));
-	connect(this, SIGNAL(vmPrepared()), Adaptor, SLOT(doEventLoop()));
-	connect(this, SIGNAL(vmRestart()), this, SLOT(executeEmulation()));
-	connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()));
+	connect(this, SIGNAL(initialized()), this, SLOT(executeEmulation()), Qt::QueuedConnection);
+	connect(this, SIGNAL(vmPrepared()), Adaptor, SLOT(doEventLoop()), Qt::QueuedConnection);
+	connect(this, SIGNAL(vmRestart()), this, SLOT(executeEmulation()), Qt::QueuedConnection);
+	connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()), Qt::QueuedConnection);
 
 	// スクリーンセーバー抑止用タイマー
 	QTimer* timer = new QTimer(this);

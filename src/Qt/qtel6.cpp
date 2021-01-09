@@ -240,7 +240,8 @@ QAction* addCommand(QMenu* menu, QString label, MenuCommand id, bool checkable =
 }
 
 
-QtEL6::QtEL6()
+QtEL6::QtEL6(QObject *parent)
+	: QObject(parent)
 {
 	// FPS更新タイマ
 	QTimer* fpsTimer = new QTimer(this);

@@ -133,8 +133,7 @@ P6VXApp::~P6VXApp()
 	Adaptor->thread()->exit();
 	Adaptor->thread()->wait();
 	Adaptor->deleteLater();
-	MWidget->deleteLater();
-	KPanel->deleteLater();
+	delete MWidget;
 }
 
 RenderView *P6VXApp::getView()
@@ -365,7 +364,7 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 
 	if(getSetting(keyKeyPanelVisible).toBool()){
 		// プラットフォームによっては子ウィンドウをここで作りなおさないと表示されない場合がある
-		if(KPanel) KPanel->deleteLater();
+		delete KPanel;
 		KPanel = new KeyPanel(view);
 		KPanel->show();
 	}
@@ -512,7 +511,6 @@ void P6VXApp::toggleVirtualKeyboard()
 void P6VXApp::activateMouseCursorTimer()
 {
 	MouseCursorTimer->start(5000);
-
 }
 
 void P6VXApp::deactivateMouseCursorTimer()
@@ -721,7 +719,7 @@ void P6VXApp::executeEmulation()
 	}
 
 	// 機種別P6オブジェクト確保
-	QPointer<QtEL6> P6CoreObj = new QtEL6;
+	QScopedPointer<QtEL6> P6CoreObj(new QtEL6(this));
 	if( !P6CoreObj ){
 		exit();
 		return;
@@ -738,7 +736,6 @@ void P6VXApp::executeEmulation()
 			if(ret == OSDR_YES) {
 				Cfg.SetCheckCRC(false);
 				Cfg.Write();
-				P6CoreObj->deleteLater();
 				emit vmRestart();
 				return;
 			} else {
@@ -754,7 +751,6 @@ void P6VXApp::executeEmulation()
 			if(ret == OSDR_YES) {
 				enableCompatibleRomMode(&Cfg, true);
 				Cfg.Write();
-				P6CoreObj->deleteLater();
 				emit vmRestart();
 				return;
 			} else {
@@ -793,7 +789,7 @@ void P6VXApp::executeEmulation()
 		break;
 	}
 
-	P6Core = P6CoreObj;
+	P6Core = P6CoreObj.take();
 
 	// キーボード状態監視
 	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), this);
@@ -823,14 +819,6 @@ void P6VXApp::postExecuteEmulation()
 			P6Core->DokoDemoSave(0);
 		}
 #endif
-
-		// P6オブジェクトを解放
-		// 本来QtオブジェクトはdeleteLater()を使うべきであるが、再起動の場合、
-		// オブジェクト解放の遅延により、次のP6Coreインスタンスが生成されてから
-		// デストラクタが呼ばれるため、次のP6Coreインスタンスが初期化時に確保したリソース
-		// (ジョイスティックなど)を解放してしまう。のでやむなくdeleteを使う。
-		// disconnectは解放後に飛んできたシグナルを処理させないため。
-		P6Core->disconnect();
 		delete P6Core;
 	}
 

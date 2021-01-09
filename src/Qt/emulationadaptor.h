@@ -11,6 +11,7 @@ class EmulationAdaptor : public QObject
 	Q_OBJECT
 public:
 	explicit EmulationAdaptor(QObject *parent = 0);
+	virtual ~EmulationAdaptor(){}
 
 	EL6* getEmulationObj(){return P6Core;}
 	void setEmulationObj(EL6* el){

@@ -4,6 +4,7 @@
 #include <QtWidgets>
 #include <QSettings>
 #include <QTapGesture>
+#include <QScopedPointer>
 
 #include "../osd.h"
 #include "renderview.h"
@@ -24,17 +25,15 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	if(!app->isSafeMode() &&
 			app->getSetting(P6VXApp::keyHwAccel).toBool()){
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)) && !defined (USE_QGLWIDGET)
-		QOpenGLWidget* glw = new QOpenGLWidget(this);
+		QScopedPointer<QOpenGLWidget> glw(new QOpenGLWidget(this));
 #else
 		// 描画に不具合が見られるプラットフォームでは当面QGLWidgetを使う。
-		QGLWidget* glw = new QGLWidget(this);
+		QScopedPointer<QGLWidget> glw(new QGLWidget(this));
 #endif
 		// QGraphicsViewに使うにはOpenGL2以上が必要
 		if(glw->format().majorVersion() >= 2){
-			setViewport(glw);
+			setViewport(glw.take());
 			setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-		} else {
-			glw->deleteLater();
 		}
 	}
 #endif
@@ -45,7 +44,6 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	// IMEを無効化
 	ImmAssociateContext( (HWND)winId(), NULL );
 #endif
-
 }
 
 RenderView::~RenderView()
@@ -129,8 +127,8 @@ bool RenderView::event(QEvent *event)
 void RenderView::paintEvent(QPaintEvent *event)
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	fitContent();
 	if(isActiveWindow()){
-		fitContent();
 		if(app->isTiltEnabled()){
 			// TILTモードの回転
 			const qreal unit = 0.5; // 0.5度単位で回転

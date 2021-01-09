@@ -17,9 +17,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	setLayout(layout);
 
 	// シーングラフ生成
-	QGraphicsScene* Scene = new QGraphicsScene();
-	// アプリケーション終了前にインスタンスを削除(単なる親子関係にすると終了時にクラッシュする)
-	QObject::connect(qApp, SIGNAL(aboutToQuit()), Scene, SLOT(deleteLater()));
+	QGraphicsScene* Scene = new QGraphicsScene(this);
 
 	// メインウィジェット(エミュレータのメイン画面)
 	MainView = new RenderView(Scene);

@@ -9,7 +9,7 @@ class QtEL6 : public QObject, public EL6
 {
 	Q_OBJECT
 public:
-	QtEL6();
+	QtEL6(QObject* parent);
 	void ShowPopupImpl(int x, int y);
 	bool GetPauseEnable();
 	void SetPauseEnable(bool en);

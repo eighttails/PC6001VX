@@ -40,23 +40,6 @@ const QString P6VXApp::keyVirtualKeyTabIndex	= "virtualkey/tabindex";
 
 
 ///////////////////////////////////////////////////////////
-// フォントファイルチェック(無ければ作成する)
-///////////////////////////////////////////////////////////
-bool CheckFont( void )
-{
-	char FontFile[PATH_MAX];
-	bool ret = true;
-
-	sprintf( FontFile, "%s%s/%s", OSD_GetModulePath(), FONT_DIR, FONTH_FILE );
-	ret |= ( !OSD_FileExist( FontFile ) && !OSD_CreateFont( FontFile, NULL, FSIZE ) );
-
-	sprintf( FontFile, "%s%s/%s", OSD_GetModulePath(), FONT_DIR, FONTZ_FILE );
-	ret |= ( !OSD_FileExist( FontFile ) && !OSD_CreateFont( NULL, FontFile, FSIZE ) );
-
-	return ret;
-}
-
-///////////////////////////////////////////////////////////
 // ROMファイル存在チェック&機種変更
 ///////////////////////////////////////////////////////////
 bool SerchRom( CFG6 *cfg )
@@ -188,13 +171,6 @@ void P6VXApp::startup()
 		OSD_Quit();	// 終了処理
 		exit();
 		return;
-	}
-
-	// フォントファイルチェック
-	if( !CheckFont() ){
-		Error::SetError( Error::FontCreateFailed );
-		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONWARNING );
-		Error::SetError( Error::NoError );
 	}
 
 	// コンソール用フォント読込み

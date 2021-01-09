@@ -1713,14 +1713,14 @@ bool CFG6::DokoLoad( cIni *Ini )
 	char strva[256];
 	
 	if( !Ini ) return false;
-	
+#ifndef Q_OS_ANDROID // Androidではステートファイルのバージョンチェックを無効化(アップデート時に必ずエラーになるため)
 	// 共通
 	Ini->GetString( "GLOBAL", "Version", strva, "" );
 	if( strcmp( strva, VERSION ) ){
 		Error::SetError( Error::DokoDiffVersion );
 		return false;
 	}
-	
+#endif
 	Ini->GetInt(   "GLOBAL", "Model",      &st, GetModel() );		SetModel( st );
 	Ini->GetInt(   "GLOBAL", "FDD",        &st, GetFddNum() );		SetFddNum( st );
 	Ini->GetTruth( "GLOBAL", "ExtRam",     &yn, GetUseExtRam() );	SetUseExtRam( yn );

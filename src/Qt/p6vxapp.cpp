@@ -514,8 +514,9 @@ void P6VXApp::resetSettings()
 			// P6VX設定ファイルを削除
 			OSD_AddPath( path, OSD_GetModulePath(), "pc6001vx.ini" );
 			QFile::remove(path);
-			// アプリを終了(EV_QUITイベントを送るとメモリ上の設定を保存してしまう)
-			this->quit();
+            // アプリを終了(終了時に設定を保存しないようにしてから)
+            this->Cfg.SetSaveQuit(false);
+            OSD_PushEvent(EV_QUIT);
 		}
 	}
 }

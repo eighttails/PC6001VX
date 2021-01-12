@@ -72,10 +72,14 @@ void RenderView::fitContent()
 
 void RenderView::resizeWindowByRatio(int ratio)
 {
+	// シーングラフが空の場合は何もしない
+	if (scene()->items().length() == 0) {
+		return;
+	}
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	qreal r = double(ratio) / 100;
 	// 最大化、フルスクリーン中は倍率固定モードにする。
-	if((windowState() & Qt::WindowMaximized) || (windowState() & Qt::WindowFullScreen)){
+	if ((windowState() & Qt::WindowMaximized) || (windowState() & Qt::WindowFullScreen)) {
 		app->setSetting(P6VXApp::keyFixMagnification, true);
 		app->setSetting(P6VXApp::keyMagnification, r);
 		return;

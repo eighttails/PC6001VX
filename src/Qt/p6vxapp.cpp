@@ -189,6 +189,7 @@ void P6VXApp::startup()
 #endif
 	setDefaultSetting(keyFiltering, true);
 	setDefaultSetting(keyFixMagnification, false);
+	setDefaultSetting(keyMagnification, 1.0);
 	setDefaultSetting(keyKeyPanelVisible, false);
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
 	setDefaultSetting(keyVirtualKeyVisible, true);
@@ -323,7 +324,7 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 #ifdef ALWAYSFULLSCREEN
 	MWidget->showFullScreen();
 #else
-	if(fsflag){
+	if (fsflag) {
 		MWidget->setWindowState(MWidget->windowState() | Qt::WindowFullScreen);
 		MWidget->showFullScreen();
 		MWidget->updateLayout();
@@ -332,9 +333,10 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 		if(!MWidget->isVisible()){
 			MWidget->showNormal();
 		}
+		view->resizeWindowByRatio(int(getSetting(keyMagnification).toReal() * 100));
 	}
-
 #endif
+
 	view->fitContent();
 	OSD_ClearWindow(Wh);
 
@@ -514,9 +516,9 @@ void P6VXApp::resetSettings()
 			// P6VX設定ファイルを削除
 			OSD_AddPath( path, OSD_GetModulePath(), "pc6001vx.ini" );
 			QFile::remove(path);
-            // アプリを終了(終了時に設定を保存しないようにしてから)
-            this->Cfg.SetSaveQuit(false);
-            OSD_PushEvent(EV_QUIT);
+			// アプリを終了(終了時に設定を保存しないようにしてから)
+			this->Cfg.SetSaveQuit(false);
+			OSD_PushEvent(EV_QUIT);
 		}
 	}
 }

@@ -10,6 +10,7 @@ class QtEL6 : public QObject, public EL6
 	Q_OBJECT
 public:
 	QtEL6(QObject* parent);
+	virtual ~QtEL6();
 	void ShowPopupImpl(int x, int y);
 	bool GetPauseEnable();
 	void SetPauseEnable(bool en);

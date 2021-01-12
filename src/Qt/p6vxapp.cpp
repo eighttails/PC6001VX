@@ -116,7 +116,7 @@ P6VXApp::~P6VXApp()
 	Adaptor->thread()->exit();
 	Adaptor->thread()->wait();
 	Adaptor->deleteLater();
-	delete MWidget;
+	MWidget->deleteLater();
 }
 
 RenderView *P6VXApp::getView()
@@ -342,7 +342,7 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 
 	if(getSetting(keyKeyPanelVisible).toBool()){
 		// プラットフォームによっては子ウィンドウをここで作りなおさないと表示されない場合がある
-		delete KPanel;
+		KPanel->deleteLater();
 		KPanel = new KeyPanel(view);
 		KPanel->show();
 	}
@@ -799,7 +799,7 @@ void P6VXApp::postExecuteEmulation()
 			P6Core->DokoDemoSave(0);
 		}
 #endif
-		delete P6Core;
+		P6Core->deleteLater();
 	}
 
 	// 再起動ならばINIファイル再読込み

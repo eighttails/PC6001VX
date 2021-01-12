@@ -156,7 +156,7 @@ void EL6::ExecMenu( int id )
 	case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );			break;	// フレームスキップ 5
 	case ID_ONLINEHELP:
 #ifdef Q_OS_WIN
-        QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromLocal8Bit(OSD_GetModulePath()) + "/README.html"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromLocal8Bit(OSD_GetModulePath()) + "/README.html"));
 		break;
 #else
 		QDesktopServices::openUrl(QUrl("https://github.com/eighttails/PC6001VX/blob/master/README.adoc"));
@@ -247,6 +247,10 @@ QtEL6::QtEL6(QObject *parent)
 	QTimer* fpsTimer = new QTimer(this);
 	fpsTimer->start(1000);
 	connect(fpsTimer, SIGNAL(timeout()), this, SLOT(UpdateFPS()));
+}
+
+QtEL6::~QtEL6()
+{
 }
 
 void QtEL6::ShowPopupImpl(int x, int y)

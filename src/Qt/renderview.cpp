@@ -44,6 +44,8 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	// IMEを無効化
 	ImmAssociateContext( (HWND)winId(), NULL );
 #endif
+	// 初回起動時にシーングラフが構築されたらウィンドウサイズを初期化
+	connect(scene, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(initializeSize()));
 }
 
 RenderView::~RenderView()
@@ -65,17 +67,11 @@ void RenderView::fitContent()
 	// 表示倍率固定の場合は中心に配置
 	if (fixMag){
 		translate((width() - scene()->width()) / 2, (height() - scene()->height()) / 2);
-	}else {
-		app->setSetting(P6VXApp::keyMagnification, scaleRatio);
 	}
 }
 
 void RenderView::resizeWindowByRatio(int ratio)
 {
-	// シーングラフが空の場合は何もしない
-	if (scene()->items().length() == 0) {
-		return;
-	}
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	qreal r = double(ratio) / 100;
 	// 最大化、フルスクリーン中は倍率固定モードにする。
@@ -89,6 +85,15 @@ void RenderView::resizeWindowByRatio(int ratio)
 	setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
 
 	emit resized(size());
+}
+
+void RenderView::initializeSize()
+{
+	// Geometry設定がなかったらSceneRectサイズに合わせてリサイズ
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	if (!app->hasSetting(P6VXApp::keyGeometry))	{
+		resizeWindowByRatio(int(app->getSetting(P6VXApp::keyMagnification).toReal() * 100));
+	}
 }
 
 bool RenderView::event(QEvent *event)

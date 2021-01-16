@@ -333,7 +333,6 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 		if(!MWidget->isVisible()){
 			MWidget->showNormal();
 		}
-		view->resizeWindowByRatio(int(getSetting(keyMagnification).toReal() * 100));
 	}
 #endif
 

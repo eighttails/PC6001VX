@@ -21,6 +21,8 @@ public slots:
 	// 指定した倍率(%)で表示されるようにウィンドウをリサイズ
 	void resizeWindowByRatio(int ratio);
 
+protected slots:
+	void initializeSize();
 protected:
 	// QWidget interface
 	virtual bool event(QEvent *) override;

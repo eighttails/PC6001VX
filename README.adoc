@@ -696,6 +696,14 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.git master
+* ウィンドウの表示倍率が不正確だったのを修正。
+* 設定初期化でフリーズするのを修正。
+* コンソールフォントを改善。モニタモードでひらがな、グラフィックキャラクタが表示可能に。
+* Fixed inaccurate screen magnification ratio.
+* Fixed freeze when initialized settings.
+* Improved debug console font. Now you can see Hiragana and graphic characters in memory dump.
+
 .3.6.1 2021/01/09
 * ROMの一部が見つからない場合に互換ROMに切り替えられるようにした。
 * mk2用互換BASICの配置を誤っていたのを修正。

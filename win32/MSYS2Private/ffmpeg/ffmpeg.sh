@@ -12,7 +12,7 @@ exitOnError
 }
 
 function build(){
-if [ -e $PREFIX/lib/libavcodec.a -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $PREFIX/lib/libavcodec-private.a -a $((FORCE_INSTALL)) == 0 ]; then
 echo "FFMpeg is already installed."
 exit 0
 fi
@@ -30,6 +30,7 @@ pushd $FFMPEG_BUILD_DIR
 ./configure \
 --target-os=mingw32 \
 --prefix=$PREFIX \
+--build-suffix=-private \
 --disable-shared \
 --enable-static \
 --pkg-config-flags=--static \

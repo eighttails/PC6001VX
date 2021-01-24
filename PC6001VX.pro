@@ -128,7 +128,11 @@ contains(DEFINES, SDLJOYSTICK) {
 }
 
 !contains(DEFINES, NOAVI) {
-    packagesExist(libavformat) {
+    packagesExist(libavformat-private) {
+        DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
+        PKGCONFIG += libavformat-private libavcodec-private libswscale-private \
+                    libswresample-private libavutil-private
+    } else:packagesExist(libavformat) {
         DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
         PKGCONFIG += libavformat libavcodec libswscale libswresample libavutil
     } else {

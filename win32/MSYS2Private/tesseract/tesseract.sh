@@ -58,8 +58,6 @@ fi
 ./autogen.sh
 exitOnError
 
-export LIBLEPT_HEADERSDIR=$PREFIX/include/leptonica
-
 ./configure \
 --build=$MINGW_CHOST \
 --host=$MINGW_CHOST \

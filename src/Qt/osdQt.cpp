@@ -1959,7 +1959,26 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
 #ifdef SDLJOYSTICK
-    return SDL_JoystickGetAxis( static_cast<SDL_Joystick*>(jinfo), num );
+	// HAT(デジタルスティック)から値を取得
+	auto hat = SDL_JoystickGetHat( static_cast<SDL_Joystick*>(jinfo), 0 );
+	int hatVal = 0;
+	switch (num){
+	case 0:
+		if (hat & SDL_HAT_RIGHT)	hatVal = 32767;
+		if (hat & SDL_HAT_LEFT)		hatVal = -32767;
+		break;
+	case 1:;
+		if (hat & SDL_HAT_UP)		hatVal = -32767;
+		if (hat & SDL_HAT_DOWN)		hatVal = 32767;
+		break;
+	default:;
+	}
+
+	// アナログスティックから値を取得
+	int axisVal = SDL_JoystickGetAxis( static_cast<SDL_Joystick*>(jinfo), num );
+
+	// 出力値はHAT優先
+	return hatVal ? hatVal : axisVal;
 #else
 	QGamepad* joy = static_cast<QGamepad*>(jinfo);
 	if (!joy) return 0;

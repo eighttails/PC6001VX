@@ -1983,11 +1983,17 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 	QGamepad* joy = static_cast<QGamepad*>(jinfo);
 	if (!joy) return 0;
 	int val = 0;
+	// 出力値はHAT優先
 	switch (num){
 	case 0:
-		val = int16_t(joy->axisLeftX() * 32767);	break;
+		if (joy->buttonRight()) val = 32767;
+		else if (joy->buttonLeft()) val = -32767;
+		else val = int16_t(joy->axisLeftX() * 32767);
+		break;
 	case 1:
-		val = int16_t(joy->axisLeftY() * 32767);	break;
+		if (joy->buttonUp()) val = -32767;
+		else if (joy->buttonDown()) val = 32767;
+		else val = int16_t(joy->axisLeftY() * 32767);	break;
 	case 2:
 		val = int16_t(joy->axisRightX() * 32767);	break;
 	case 3:

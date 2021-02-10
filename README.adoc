@@ -697,9 +697,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 
 == 更新履歴
 .git master
+* ジョイスティックのHATスイッチに対応。Nintendo Switch用のデジタルコントローラーが使用可能になった。
 * ウィンドウの表示倍率が不正確だったのを修正。
 * 設定初期化でフリーズするのを修正。
 * コンソールフォントを改善。モニタモードでひらがな、グラフィックキャラクタが表示可能に。
+* HAT switches on gamepad is now available. You can use digital gamepad or joystick for Nintendo Switch.  
 * Fixed inaccurate screen magnification ratio.
 * Fixed freeze when initialized settings.
 * Improved debug console font. Now you can see Hiragana and graphic characters in memory dump.

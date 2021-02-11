@@ -1993,7 +1993,8 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 	case 1:
 		if (joy->buttonUp()) val = -32767;
 		else if (joy->buttonDown()) val = 32767;
-		else val = int16_t(joy->axisLeftY() * 32767);	break;
+		else val = int16_t(joy->axisLeftY() * 32767);
+		break;
 	case 2:
 		val = int16_t(joy->axisRightX() * 32767);	break;
 	case 3:

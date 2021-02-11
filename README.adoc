@@ -439,6 +439,7 @@ PC6001VXが現在動作している環境に関する情報を表示します。
 [options="header"]
 |=================================
 | 操作 | 機能
+|左ダブルクリック|フルスクリーン表示切り替え
 |右クリック|メニュー表示
 |中クリック|動作速度を等速（100%）に戻す
 |ホイールUP|動作速度を上げる（20倍速まで）
@@ -710,11 +711,13 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 == 更新履歴
 .git master
 * テープやディスクイメージなどをドラッグ&ドロップでマウントできるようにした。
+* ウィンドウのダブルクリックをフルスクリーン表示切り替えに割り当て。
 * ジョイスティックのHATスイッチに対応。Nintendo Switch用のデジタルコントローラーが使用可能になった。
 * ウィンドウの表示倍率が不正確だったのを修正。
 * 設定初期化でフリーズするのを修正。
 * コンソールフォントを改善。モニタモードでひらがな、グラフィックキャラクタが表示可能に。
 * Opening files by drag & drop is now available.
+* Assigned double clicking window to toggle fullscreen.
 * HAT switches on gamepad is now available. You can use digital gamepad or joystick for Nintendo Switch.  
 * Fixed inaccurate screen magnification ratio.
 * Fixed freeze when initialized settings.

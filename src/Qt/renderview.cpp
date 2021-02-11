@@ -196,6 +196,19 @@ void RenderView::mouseReleaseEvent(QMouseEvent *event)
 	OSD_PushEvent(ev);
 }
 
+void RenderView::mouseDoubleClickEvent(QMouseEvent *event)
+{
+	if (event->button() == Qt::LeftButton){
+		// ALT+F6(フルスクリーン切り替え)を送信
+		Event ev;
+		ev.type = EV_KEYDOWN;
+		ev.key.sym = KVC_F6;
+		ev.key.mod = KVM_LALT;
+		event->accept();
+		OSD_PushEvent(ev);
+	}
+}
+
 void RenderView::dragEnterEvent(QDragEnterEvent *event)
 {
 	if(event->mimeData()->hasUrls()){

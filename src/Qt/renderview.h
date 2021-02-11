@@ -30,6 +30,9 @@ protected:
 	virtual void contextMenuEvent(QContextMenuEvent *event) override;
 	virtual void wheelEvent(QWheelEvent *event) override;
 	virtual void mouseReleaseEvent(QMouseEvent *event) override;
+	virtual void dragEnterEvent(QDragEnterEvent *event) override;
+	virtual void dragMoveEvent(QDragMoveEvent *event) override;
+	virtual void dropEvent(QDropEvent *event) override;
 };
 
 #endif // RENDERVIEW_H

@@ -452,6 +452,18 @@ PC6001VXが現在動作している環境に関する情報を表示します。
 |左クリック|メニュー表示
 |=================================
 
+また、ファイルをメイン画面にドラッグ&ドロップすることにより以下のように機能します。
+[options="header"]
+|=================================
+|拡張子|説明
+|p6t，p6，cas|TAPEイメージをマウント（LOAD用のみ）
+|d88|DISKイメージをドライブ1にマウント
+|rom，bin|拡張ROMイメージをマウント
+|dds|どこでもSAVEファイルを読込み
+|ddr|リプレイデータファイルを読込み
+|bas，txt|打込み代行ファイルを読込み
+|=================================
+
 === 環境設定
 
 メニューの[設定]-[環境設定]を選ぶと、環境設定ダイアログが表示されます。 +
@@ -697,10 +709,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 
 == 更新履歴
 .git master
+* テープやディスクイメージなどをドラッグ&ドロップでマウントできるようにした。
 * ジョイスティックのHATスイッチに対応。Nintendo Switch用のデジタルコントローラーが使用可能になった。
 * ウィンドウの表示倍率が不正確だったのを修正。
 * 設定初期化でフリーズするのを修正。
 * コンソールフォントを改善。モニタモードでひらがな、グラフィックキャラクタが表示可能に。
+* Opening files by drag & drop is now available.
 * HAT switches on gamepad is now available. You can use digital gamepad or joystick for Nintendo Switch.  
 * Fixed inaccurate screen magnification ratio.
 * Fixed freeze when initialized settings.

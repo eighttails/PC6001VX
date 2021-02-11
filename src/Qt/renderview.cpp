@@ -39,6 +39,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 #endif
 	grabGesture(Qt::TapGesture);
 	setAttribute(Qt::WA_Hover);
+	setAcceptDrops(true);
 
 #ifdef Q_OS_WIN
 	// IMEを無効化
@@ -193,6 +194,34 @@ void RenderView::mouseReleaseEvent(QMouseEvent *event)
 	ev.mousebt.state = false;
 	event->accept();
 	OSD_PushEvent(ev);
+}
+
+void RenderView::dragEnterEvent(QDragEnterEvent *event)
+{
+	if(event->mimeData()->hasUrls()){
+		event->acceptProposedAction();
+	}
+}
+
+void RenderView::dragMoveEvent(QDragMoveEvent *event)
+{
+	event->acceptProposedAction();
+}
+
+void RenderView::dropEvent(QDropEvent *event)
+{
+	auto mime = event->mimeData();
+	if(mime->hasUrls()){
+		foreach(QUrl url, mime->urls()){
+			Event ev;
+			ev.type = EV_DROPFILE;
+			auto filename = url.toLocalFile().toLocal8Bit();
+			char *data = new char[filename.size()];
+			strcpy(data, filename.data());
+			ev.drop.file = data;
+			OSD_PushEvent(ev);
+		}
+	}
 }
 
 

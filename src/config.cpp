@@ -1713,7 +1713,7 @@ bool CFG6::DokoLoad( cIni *Ini )
 	char strva[256];
 	
 	if( !Ini ) return false;
-#ifdef AUTOSUSPEND // 自動サスペンド環境ではステートファイルのバージョンチェックを無効化(アップデート時に必ずエラーになるため)
+#ifndef AUTOSUSPEND // 自動サスペンド環境ではステートファイルのバージョンチェックを無効化(アップデート時に必ずエラーになるため)
 	// 共通
 	Ini->GetString( "GLOBAL", "Version", strva, "" );
 	if( strcmp( strva, VERSION ) ){

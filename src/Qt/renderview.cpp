@@ -228,7 +228,7 @@ void RenderView::dropEvent(QDropEvent *event)
 		foreach(QUrl url, mime->urls()){
 			Event ev;
 			ev.type = EV_DROPFILE;
-			auto filename = url.toLocalFile().toLocal8Bit();
+			auto filename = url.toLocalFile().toStdString();
 			char *data = new char[filename.size()];
 			strcpy(data, filename.data());
 			ev.drop.file = data;

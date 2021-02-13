@@ -1,5 +1,12 @@
 #!/bin/bash
 
+export LOCKFILE='/tmp/pc6001vx.lck'
+
+(
+# 排他制御(32ビット版と64ビット版のビルドが同時に走らないように)
+# 200という番号は慣例
+flock -x 200
+
 #環境チェック
 if [ -z "$MINGW_PREFIX" ]; then
 	echo "Please run this script in MinGW 32bit or 64bit shell. (not in MSYS2 shell)"
@@ -47,3 +54,6 @@ pushd $SCRIPT_DIR/..
 SOURCENAME=PC6001VX_$VERSION\_src
 git archive --format=tar --prefix=$SOURCENAME/ HEAD | gzip > $RELEASE_DIR/$SOURCENAME.tar.gz
 popd
+
+) 200>$LOCKFILE
+

@@ -5,6 +5,7 @@ export LOCKFILE='/tmp/pc6001vx.lck'
 (
 # 排他制御(32ビット版と64ビット版のビルドが同時に走らないように)
 # 200という番号は慣例
+echo "Waiting for other builds to finish..."
 flock -x 200
 
 #環境チェック

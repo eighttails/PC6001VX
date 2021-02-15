@@ -146,6 +146,7 @@ static const struct {	// Qtキーコード -> 仮想キーコード定義
 { Qt::Key_Tab,				KVC_TAB },			// Tab
 { Qt::Key_CapsLock,			KVC_CAPSLOCK },		// CapsLock
 { Qt::Key_Return,			KVC_ENTER },		// Enter
+{ Qt::Key_Enter,			KVC_ENTER },		// Enter(テンキー側)
 { Qt::Key_Control,			KVC_LCTRL },		// L-Ctrl
 //Qtでは右コントロールキーコードは定義されていない
 //{ SDLK_RCTRL,			KVC_RCTRL },		// R-Ctrl

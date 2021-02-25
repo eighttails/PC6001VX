@@ -85,6 +85,11 @@ int main( int argc, char *argv[] )
 	// イベントループが始まったらp6vxapp::startup()を実行
 	QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);
 
+	// 終了処理を予約
+	atexit(OSD_Quit);
+
 	// イベントループを開始
 	return app.exec();
+
+
 }

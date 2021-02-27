@@ -168,7 +168,6 @@ void P6VXApp::startup()
 	if( !OSD_Init() ){
 		Error::SetError( Error::InitFailed );
 		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
-		OSD_Quit();	// 終了処理
 		exit();
 		return;
 	}
@@ -207,7 +206,6 @@ void P6VXApp::startup()
 
 		default:
 			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
-			OSD_Quit();			// 終了処理
 			exit();
 			return;
 		}
@@ -816,7 +814,6 @@ void P6VXApp::postExecuteEmulation()
 			// ウィンドウを閉じてサイズを保存
 			MWidget->close();
 		}
-		OSD_Quit();
 		exit();
 		return;
 	} else {

@@ -861,18 +861,22 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 	}
 }
 
-void P6VXApp::fixKeyModifiers(Event &ev)
+void P6VXApp::finishKeyEvent(Event &ev)
 {
 	// qDebug() << ev.key.sym << QChar(ev.key.unicode);
 
-	// かな、グラフィックキー有効時は何もしない
+	// かな、グラフィックキー有効時はキーイベントをそのまま送信
 	auto mod = KeyWatcher->GetModifierStatus();
-	if (
-			mod & KeyStateWatcher::KANA ||
-			mod & KeyStateWatcher::KKANA ||
-			mod & KeyStateWatcher::GRAPH ||
-			mod & KeyStateWatcher::CAPS ||
-			mod & KeyStateWatcher::KANA) return;
+	if ( mod & KeyStateWatcher::KANA ||
+		 mod & KeyStateWatcher::KKANA ||
+		 mod & KeyStateWatcher::GRAPH ||
+		 mod & KeyStateWatcher::CAPS ||
+		 mod & KeyStateWatcher::KANA) {
+		OSD_PushEvent(ev);
+	}
+
+	// イベント時点でのシフトキー状態
+	bool shiftStatus = ev.key.mod & KVM_SHIFT;
 
 	struct FixInfo
 	{
@@ -928,12 +932,35 @@ void P6VXApp::fixKeyModifiers(Event &ev)
 		if (i.shift){
 			// P6でSHIFTが必要な記号はSHIFTモディファイヤーを付与する
 			OSD_PushEvent(shiftDownEvent);	// SHIFTキーを押すイベントを挿入する
+			// キーイベント本体にSHIFTモディファイヤーを付与
 			ev.key.mod = (PCKEYmod)(ev.key.mod|KVM_SHIFT);
+			// キーイベントを送信
+			OSD_PushEvent(ev);
+			// キーを離した後、物理SHIFTキーの状態が離されていたならば
+			// SHIFTキーを離すイベントをキューに入れる(キーリピート中に離さないようにイベント優先度を下げる)
+			if(!ev.key.state && !shiftStatus) {
+				postEvent(this, new QKeyEvent(QEvent::KeyRelease, Qt::Key_Shift,
+											  Qt::NoModifier), Qt::LowEventPriority);
+			}
 		} else {
 			// P6でSHIFTなしで入力できる記号はSHIFTモディファイヤーを外す
-			OSD_PushEvent(shiftUpEvent);	// SHIFTキーを離すイベントを挿入する
+			// SHIFTキーを離すイベントを挿入する
+			OSD_PushEvent(shiftUpEvent);
+			// キーイベント本体にSHIFTモディファイヤーを付与
 			ev.key.mod = (PCKEYmod)(ev.key.mod&~KVM_SHIFT);
+			// キーイベントを送信
+			OSD_PushEvent(ev);
+			// キーを離した後、物理SHIFTキーの状態が押されていたならば
+			// SHIFTキーを押すイベントをキューに入れる(キーリピート中に押さないようにイベント優先度を下げる)
+			if(!ev.key.state && shiftStatus) {
+				postEvent(this, new QKeyEvent(QEvent::KeyPress, Qt::Key_Shift,
+											  Qt::NoModifier), Qt::LowEventPriority);
+			}
 		}
+		return;
+	} else {
+		// 修正対象に該当しなかったキーイベントはそのまま送信
+		OSD_PushEvent(ev);
 	}
 }
 
@@ -1079,8 +1106,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 					// | ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
 					);
 		ev.key.unicode = ke->text().utf16()[0];
-		fixKeyModifiers(ev);
-		OSD_PushEvent(ev);
+		finishKeyEvent(ev);
 		break;
 	}
 #ifdef ALWAYSFULLSCREEN

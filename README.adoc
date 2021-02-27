@@ -712,8 +712,10 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 .git master
 * テンキーのEnterが効かなかったのを修正
 * ジョイスティックがつながっている場合終了時にクラッシュするのを修正
+* SHIFTキーの押下、リリースイベントハンドリングを修正
 * Fixed enter key on numeric keypad was not working.
 * Fixed crash on exit if joystick is connected.
+* Better shift key press/release event handling.
 
 .3.7.0 2021/02/13
 * テープやディスクイメージなどをドラッグ&ドロップでマウントできるようにした。

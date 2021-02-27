@@ -169,7 +169,7 @@ protected:
 	// 特殊キー対策
 	void handleSpecialKeys(QKeyEvent* ke, int &keyCode);
 	// キーコードのモディファイヤー修正
-	void fixKeyModifiers(Event& ev);
+	void finishKeyEvent(Event& ev);
 
 	// プラットフォーム固有の設定で上書き
 	void overrideSettings(CFG6& cfg);

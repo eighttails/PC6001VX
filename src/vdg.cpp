@@ -670,6 +670,16 @@ bool VDG6::DokoSave( cIni *Ini )
 		Ini->PutEntry( "VDG", NULL, stren,		"%d",		COL_CG2[1][i] );
 	}
 	
+	// VSurface
+	Ini->PutEntry( "VDG", NULL, "VSurface_w",		"%d",	VSurface::w			);
+	Ini->PutEntry( "VDG", NULL, "VSurface_h",		"%d",	VSurface::h			);
+	Ini->PutEntry( "VDG", NULL, "VSurface_pitch",	"%d",	VSurface::pitch		);
+	Ini->PutEntry( "VDG", NULL, "VSurface_xscale",	"%d",	VSurface::xscale	);
+	Ini->PutEntry( "VDG", NULL, "VRect_x",			"%d",	VSurface::rect.x	);
+	Ini->PutEntry( "VDG", NULL, "VRect_y",			"%d",	VSurface::rect.y	);
+	Ini->PutEntry( "VDG", NULL, "VRect_w",			"%d",	VSurface::rect.w	);
+	Ini->PutEntry( "VDG", NULL, "VRect_h",			"%d",	VSurface::rect.h	);
+
 	return true;
 }
 
@@ -682,7 +692,7 @@ bool VDG6::DokoLoad( cIni *Ini )
 	int st;
 	
 	if( !Ini ) return false;
-	
+
 	// Core
 	Ini->GetTruth( "VDG", "CrtDisp",		&CrtDisp,		CrtDisp );
 	Ini->GetTruth( "VDG", "BusReq",			&BusReq,		BusReq );
@@ -733,6 +743,19 @@ bool VDG6::DokoLoad( cIni *Ini )
 		sprintf( stren, "COL_CG2_1_%02d", i );
 		Ini->GetInt( "VDG", stren,	&st,	COL_CG2[1][i] );	COL_CG2[1][i] = st;
 	}
+
+	// VSurface
+	Ini->GetInt( "VDG", "VSurface_w",		&st,	VSurface::w);		VSurface::w			= st;
+	Ini->GetInt( "VDG", "VSurface_h",		&st,	VSurface::h);		VSurface::h			= st;
+	Ini->GetInt( "VDG", "VSurface_pitch",	&st,	VSurface::pitch);	VSurface::pitch		= st;
+	Ini->GetInt( "VDG", "VSurface_xscale",	&st,	VSurface::xscale);	VSurface::xscale	= st;
+	Ini->GetInt( "VDG", "VRect_x",			&st,	VSurface::rect.x);	VSurface::rect.x	= st;
+	Ini->GetInt( "VDG", "VRect_y",			&st,	VSurface::rect.y);	VSurface::rect.y	= st;
+	Ini->GetInt( "VDG", "VRect_w",			&st,	VSurface::rect.w);	VSurface::rect.w	= st;
+	Ini->GetInt( "VDG", "VRect_h",			&st,	VSurface::rect.h);	VSurface::rect.h	= st;
+	delete[] (BYTE *)VSurface::pixels;
+	VSurface::pixels = new BYTE[VSurface::pitch * VSurface::h];
+
 	return true;
 }
 

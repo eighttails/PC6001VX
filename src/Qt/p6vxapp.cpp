@@ -873,6 +873,7 @@ void P6VXApp::finishKeyEvent(Event &ev)
 		 mod & KeyStateWatcher::CAPS ||
 		 mod & KeyStateWatcher::KANA) {
 		OSD_PushEvent(ev);
+		return;
 	}
 
 	// イベント時点でのシフトキー状態
@@ -957,7 +958,6 @@ void P6VXApp::finishKeyEvent(Event &ev)
 											  Qt::NoModifier), Qt::LowEventPriority);
 			}
 		}
-		return;
 	} else {
 		// 修正対象に該当しなかったキーイベントはそのまま送信
 		OSD_PushEvent(ev);

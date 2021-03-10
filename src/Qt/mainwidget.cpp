@@ -11,6 +11,9 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
+	//IMEを無効化
+	setAttribute(Qt::WA_InputMethodEnabled, false);
+
 	QVBoxLayout* layout = new QVBoxLayout();
 	layout->setSpacing(0);
 	layout->setMargin(0);

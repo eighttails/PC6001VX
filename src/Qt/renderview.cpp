@@ -41,10 +41,6 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	setAttribute(Qt::WA_Hover);
 	setAcceptDrops(true);
 
-#ifdef Q_OS_WIN
-	// IMEを無効化
-	ImmAssociateContext( (HWND)winId(), NULL );
-#endif
 	// 初回起動時にシーングラフが構築されたらウィンドウサイズを初期化
 	connect(scene, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(initializeSize()));
 }

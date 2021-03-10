@@ -711,9 +711,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 == 更新履歴
 .git master
 * テンキーのEnterが効かなかったのを修正
+* IMEが正しく無効化されていなかったのを修正
 * ジョイスティックがつながっている場合終了時にクラッシュするのを修正
 * SHIFTキーの押下、リリースイベントハンドリングを修正
 * Fixed enter key on numeric keypad was not working.
+* IME is now correctly disabled.
 * Fixed crash on exit if joystick is connected.
 * Better shift key press/release event handling.
 

@@ -25,7 +25,7 @@ public slots:
 
 	// QWidget interface
 protected:
-    virtual void closeEvent(QCloseEvent* event) override;
+	virtual void closeEvent(QCloseEvent* event) override;
 	virtual void resizeEvent(QResizeEvent *event) override;
 
 	RenderView* MainView;

@@ -540,6 +540,7 @@ bool QtEL6::GetPauseEnable()
 	if(sche){
 		return sche->GetPauseEnable();
 	}
+    return false;
 }
 
 void QtEL6::SetPauseEnable(bool en)

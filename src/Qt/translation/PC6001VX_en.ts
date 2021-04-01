@@ -830,29 +830,29 @@ cut off fre&amp;quency</translation>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
-        <translation>ROM files not found.
-Please copy ROM files to ROM folder(%1) or specify another folder.
+        <translation>BIOS ROM files not found.
+Please copy ROM files to the ROM folder (%1) or specify another folder.
 Do you want to specify another folder?</translation>
     </message>
     <message>
         <location filename="../p6vxapp.cpp" line="702"/>
         <source>エミュレーター内蔵の互換ROMを使用しますか?</source>
-        <translation>Do you want to use builtin compatible ROM?</translation>
+        <translation>Do you want to use the built-in compatible BIOS ROM?</translation>
     </message>
     <message>
         <location filename="../p6vxapp.cpp" line="729"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>
-        <translation>CRC of ROM image is invalid.
-Using invalid ROM may cause unexpected failure.
+        <translation>CRC of the ROM image is invalid.
+Using invalid ROMs may cause an unexpected failure.
 Do you want to continue anyway?</translation>
     </message>
     <message>
         <location filename="../p6vxapp.cpp" line="746"/>
         <source>ROMファイルの一部が見つかりません。
 エミュレーター内蔵の互換ROMを使用しますか?</source>
-        <translation>Some of ROM files are not found.\nDo you want to use builtin compatible ROM?</translation>
+        <translation>Some required BIOS ROM files could not be found.\nDo you want to use the built-in compatible BIOS ROM?</translation>
     </message>
 </context>
 <context>
@@ -877,7 +877,7 @@ Do you want to continue anyway?</translation>
         <source>変更は再起動後に有効となります。
 今すぐ再起動しますか?</source>
         <translation>The change will take effect after restart.
-Do you want reboot now?</translation>
+Do you wish to reboot now?</translation>
     </message>
     <message>
         <location filename="../osdQt.cpp" line="219"/>
@@ -887,12 +887,12 @@ Do you want reboot now?</translation>
     <message>
         <location filename="../osdQt.cpp" line="220"/>
         <source>拡張ROMを挿入してリセットします。</source>
-        <translation>Make a reset to insert a extended ROM.</translation>
+        <translation>You must reset in order to insert a extended ROM.</translation>
     </message>
     <message>
         <location filename="../osdQt.cpp" line="221"/>
         <source>拡張ROMを排出してリセットします。</source>
-        <translation>Make a reset to drain the extended ROM.</translation>
+        <translation>You must reset in order to remove the extended ROM.</translation>
     </message>
     <message>
         <location filename="../osdQt.cpp" line="222"/>
@@ -3167,8 +3167,8 @@ Save time and PC6001V version </translation>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
-        <translation type="vanished">ROM files not found.
-Please copy ROM files to ROM folder(%1) or specify another folder.
+        <translation type="vanished">BIOS ROM files not found.
+Please copy ROM files to the ROM folder (%1) or specify another folder.
 Do you want to specify another folder?</translation>
     </message>
     <message>

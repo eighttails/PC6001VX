@@ -1,72 +1,72 @@
 buildscript {
-	repositories {
-		google()
-		jcenter()
-	}
+    repositories {
+        google()
+        jcenter()
+    }
 
-	dependencies {
-		classpath 'com.android.tools.build:gradle:3.6.0'
-	}
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.6.0'
+    }
 }
 
 repositories {
-	google()
-	jcenter()
+    google()
+    jcenter()
 }
 
 apply plugin: 'com.android.application'
 
 dependencies {
-	implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-	implementation 'androidx.core:core:1.0.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation 'androidx.core:core:1.0.1'
 }
 
 android {
-	/*******************************************************
-	 * The following variables:
-	 * - androidBuildToolsVersion,
-	 * - androidCompileSdkVersion
-	 * - qt5AndroidDir - holds the path to qt android files
-	 *                   needed to build any Qt application
-	 *                   on Android.
-	 *
-	 * are defined in gradle.properties file. This file is
-	 * updated by QtCreator and androiddeployqt tools.
-	 * Changing them manually might break the compilation!
-	 *******************************************************/
+    /*******************************************************
+     * The following variables:
+     * - androidBuildToolsVersion,
+     * - androidCompileSdkVersion
+     * - qt5AndroidDir - holds the path to qt android files
+     *                   needed to build any Qt application
+     *                   on Android.
+     *
+     * are defined in gradle.properties file. This file is
+     * updated by QtCreator and androiddeployqt tools.
+     * Changing them manually might break the compilation!
+     *******************************************************/
 
-	compileSdkVersion androidCompileSdkVersion.toInteger()
+    compileSdkVersion androidCompileSdkVersion.toInteger()
 
-	buildToolsVersion '28.0.3'
+    buildToolsVersion '28.0.3'
 
-	sourceSets {
-		main {
-			manifest.srcFile 'AndroidManifest.xml'
-			java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java']
-			aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
-			res.srcDirs = [qt5AndroidDir + '/res', 'res']
-			resources.srcDirs = ['resources']
-			renderscript.srcDirs = ['src']
-			assets.srcDirs = ['assets']
-			jniLibs.srcDirs = ['libs']
-	   }
-	}
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java']
+            aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
+            res.srcDirs = [qt5AndroidDir + '/res', 'res']
+            resources.srcDirs = ['resources']
+            renderscript.srcDirs = ['src']
+            assets.srcDirs = ['assets']
+            jniLibs.srcDirs = ['libs']
+       }
+    }
 
-	lintOptions {
-		abortOnError false
-		checkReleaseBuilds false
-	}
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+    }
 
-	// Do not compress Qt binary resources file
-	aaptOptions {
-		noCompress 'rcc'
-	}
+    // Do not compress Qt binary resources file
+    aaptOptions {
+        noCompress 'rcc'
+    }
 
-	defaultConfig {
-		resConfig "en"
-		minSdkVersion = qtMinSdkVersion
-		// targetSdkVersion = qtTargetSdkVersion
-		// qtTargetSdkVersionは28なので、ストア配信要件の30で強制的に上書き
-		targetSdkVersion = 30
-	}
+    defaultConfig {
+        resConfig "en"
+        minSdkVersion = qtMinSdkVersion
+        // targetSdkVersion = qtTargetSdkVersion
+        // qtTargetSdkVersionは28なので、ストア配信要件の29で強制的に上書き
+        targetSdkVersion = 29
+    }
 }

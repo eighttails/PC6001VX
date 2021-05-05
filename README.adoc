@@ -543,13 +543,6 @@ image::doc/setting_sound.png[]
 ** TAPEモニタ音量 +
 各音源ごとの音量を指定します。 +
 
-* 入力 +
-キー入力に関する設定です。 +
-+
-image::doc/setting_input.png[]
-
-** キーリピート間隔 +
-キーリピート間隔を指定します。 +
 
 * ファイル +
 エミュレータにマウントするファイルを指定します。 +
@@ -710,7 +703,9 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 
 == 更新履歴
 .git master
+* 設定画面から「入力」タブを削除
 * どこでもSAVE/LOAD時のオブジェクトリークを修正
+* Removed "Input" tab from config dialog.
 * Fixed object leak in state save/load.
 
 .3.7.1 2021/03/19

@@ -213,10 +213,6 @@ void ConfigDialog::readConfig()
 	ui->horizontalSliderTapeVol->setValue(config->GetCmtVol());
 	ui->labelTapeVol->setText(QString::number(config->GetCmtVol()));
 
-	// 入力関係----------------------------------------------------
-	// キーリピート間隔
-	ui->lineEditKeyRepeat->setText(QString::number(config->GetKeyRepeat()));
-
 	// ファイル----------------------------------------------------
 	// 拡張ROMファイル
 	strncpy( str, config->GetExtRomFile(), PATH_MAX );
@@ -437,13 +433,6 @@ void ConfigDialog::writeConfig()
 
 	// TAPEモニタ音量
 	config->SetCmtVol(ui->horizontalSliderTapeVol->value());
-
-	// 入力関係--------------------------------------------------------
-	// キーリピート間隔
-	iVal = ui->lineEditKeyRepeat->text().toInt(&conv);
-	if(conv){
-		config->SetKeyRepeat(iVal);
-	}
 
 	// フォルダ-------------------------------------------------------------
 	// ROMパス

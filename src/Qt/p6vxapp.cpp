@@ -766,9 +766,11 @@ void P6VXApp::executeEmulation()
 		break;
 	}
 
+	P6Core->deleteLater();
 	P6Core = P6CoreObj.take();
 
 	// キーボード状態監視
+	KeyWatcher->deleteLater();
 	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), this);
 	MWidget->setKeyStateWatcher(KeyWatcher);
 

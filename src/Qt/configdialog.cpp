@@ -107,20 +107,20 @@ void ConfigDialog::readConfig()
 	// 基本------------------------------------------------------
 	// 機種
 	switch(config->GetModel()){
-	case 60:    ui->radioButtonModel6001->setChecked(true);         break;
-	case 61:    ui->radioButtonModel6001A->setChecked(true);         break;
-	case 62:    ui->radioButtonModel6001mk2->setChecked(true);      break;
-	case 64:    ui->radioButtonModel6001mk2SR->setChecked(true);    break;
-	case 66:    ui->radioButtonModel6601->setChecked(true);         break;
-	case 68:    ui->radioButtonModel6601SR->setChecked(true);       break;
+	case 60:    ui->radioButtonModel6001->setChecked(true);			break;
+	case 61:    ui->radioButtonModel6001A->setChecked(true);		break;
+	case 62:    ui->radioButtonModel6001mk2->setChecked(true);		break;
+	case 64:    ui->radioButtonModel6001mk2SR->setChecked(true);	break;
+	case 66:    ui->radioButtonModel6601->setChecked(true);			break;
+	case 68:    ui->radioButtonModel6601SR->setChecked(true);		break;
 	default:    Q_ASSERT(false);
 	}
 
 	// FDD
 	switch(config->GetFddNum()){
-	case 0: ui->radioButtonFDD0->setChecked(true);  break;
-	case 1: ui->radioButtonFDD1->setChecked(true);  break;
-	case 2: ui->radioButtonFDD2->setChecked(true);  break;
+	case 0: ui->radioButtonFDD0->setChecked(true);	break;
+	case 1: ui->radioButtonFDD1->setChecked(true);	break;
+	case 2: ui->radioButtonFDD2->setChecked(true);	break;
 	default:    Q_ASSERT(false);
 	}
 
@@ -156,11 +156,11 @@ void ConfigDialog::readConfig()
 	// 画面------------------------------------------------------
 	// MODE4カラー
 	switch(config->GetMode4Color()){
-	case 0: ui->radioButtonColorBW->setChecked(true);  break;
-	case 1: ui->radioButtonColorRB->setChecked(true);  break;
-	case 2: ui->radioButtonColorBR->setChecked(true);  break;
-	case 3: ui->radioButtonColorPG->setChecked(true);  break;
-	case 4: ui->radioButtonColorGP->setChecked(true);  break;
+	case 0: ui->radioButtonColorBW->setChecked(true);	break;
+	case 1: ui->radioButtonColorRB->setChecked(true);	break;
+	case 2: ui->radioButtonColorBR->setChecked(true);	break;
+	case 3: ui->radioButtonColorPG->setChecked(true);	break;
+	case 4: ui->radioButtonColorGP->setChecked(true);	break;
 	default:    Q_ASSERT(false);
 	}
 
@@ -366,17 +366,17 @@ void ConfigDialog::writeConfig()
 
 	// 基本------------------------------------------------
 	// 機種
-	if      (ui->radioButtonModel6001->isChecked())       config->SetModel(60);
-	else if (ui->radioButtonModel6001A->isChecked())      config->SetModel(61);
-	else if (ui->radioButtonModel6001mk2->isChecked())    config->SetModel(62);
-	else if (ui->radioButtonModel6001mk2SR->isChecked())  config->SetModel(64);
-	else if (ui->radioButtonModel6601->isChecked())       config->SetModel(66);
-	else if (ui->radioButtonModel6601SR->isChecked())     config->SetModel(68);
+	if      (ui->radioButtonModel6001->isChecked())			config->SetModel(60);
+	else if (ui->radioButtonModel6001A->isChecked())		config->SetModel(61);
+	else if (ui->radioButtonModel6001mk2->isChecked())		config->SetModel(62);
+	else if (ui->radioButtonModel6001mk2SR->isChecked())	config->SetModel(64);
+	else if (ui->radioButtonModel6601->isChecked())			config->SetModel(66);
+	else if (ui->radioButtonModel6601SR->isChecked())		config->SetModel(68);
 
 	// FDD
-	if      (ui->radioButtonFDD0->isChecked())    config->SetFddNum(0);
-	else if (ui->radioButtonFDD1->isChecked())    config->SetFddNum(1);
-	else if (ui->radioButtonFDD2->isChecked())    config->SetFddNum(2);
+	if      (ui->radioButtonFDD0->isChecked())	config->SetFddNum(0);
+	else if (ui->radioButtonFDD1->isChecked())	config->SetFddNum(1);
+	else if (ui->radioButtonFDD2->isChecked())	config->SetFddNum(2);
 
 	// 拡張RAM使用
 	config->SetUseExtRam(ui->checkBoxExtRam->isChecked());
@@ -386,11 +386,11 @@ void ConfigDialog::writeConfig()
 
 	// 画面---------------------------------------------------------------------
 	// MODE4カラー
-	if      (ui->radioButtonColorBW->isChecked())   config->SetMode4Color(0);   // モノクロ
-	else if (ui->radioButtonColorBR->isChecked())   config->SetMode4Color(1);   // 赤/青
-	else if (ui->radioButtonColorRB->isChecked())   config->SetMode4Color(2);   // 青/赤
-	else if (ui->radioButtonColorPG->isChecked())   config->SetMode4Color(3);   // ピンク/緑
-	else if (ui->radioButtonColorGP->isChecked())   config->SetMode4Color(4);   // 緑/ピンク
+	if      (ui->radioButtonColorBW->isChecked())	config->SetMode4Color(0);	// モノクロ
+	else if (ui->radioButtonColorBR->isChecked())	config->SetMode4Color(1);	// 赤/青
+	else if (ui->radioButtonColorRB->isChecked())	config->SetMode4Color(2);	// 青/赤
+	else if (ui->radioButtonColorPG->isChecked())	config->SetMode4Color(3);	// ピンク/緑
+	else if (ui->radioButtonColorGP->isChecked())	config->SetMode4Color(4);	// 緑/ピンク
 
 	// スキャンライン
 	config->SetScanLine(ui->checkBoxScanline->isChecked());
@@ -561,8 +561,7 @@ void ConfigDialog::writeConfig()
 void ConfigDialog::dispFPS(int fps)
 {
 	QStringList list;
-	list
-			<< "0 (60fps)"
+	list	<< "0 (60fps)"
 			<< "1 (30fps)"
 			<< "2 (20fps)"
 			<< "3 (15fps)"

@@ -348,6 +348,8 @@ static void open_video(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, A
 	c->thread_count = av_cpu_count();
 	c->thread_type = FF_THREAD_SLICE;
 	av_dict_set(&opt, "row-mt", "1", AV_OPT_SEARCH_CHILDREN);
+	av_dict_set(&opt, "deadline", "realtime", AV_OPT_SEARCH_CHILDREN);
+	av_dict_set(&opt, "cpu-used", "10", AV_OPT_SEARCH_CHILDREN);
 
 	// コーデックを初期化
 	ret = avcodec_open2(c, codec, &opt);
@@ -487,8 +489,10 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 	
 	// 出力コンテキスト作成
 	avformat_alloc_output_context2(&oc, NULL, NULL, filename);
-	if (!oc) return false;
-
+	if (!oc) {
+		cCritical::UnLock();
+		return false;
+	}
 	fmt = oc->oformat;
 
 	// 音声、ビデオストリームを作成
@@ -513,6 +517,7 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 	if (!(fmt->flags & AVFMT_NOFILE)) {
 		ret = avio_open(&oc->pb, filename, AVIO_FLAG_WRITE);
 		if (0 > ret) {
+			cCritical::UnLock();
 			return false;
 		}
 	}
@@ -520,6 +525,7 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 	// ストリームヘッダを書き込み
 	ret = avformat_write_header(oc, &opt);
 	if (0 > ret) {
+		cCritical::UnLock();
 		return false;
 	}
 

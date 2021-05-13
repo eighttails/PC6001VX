@@ -78,10 +78,10 @@ int CPU6::GetIntrVector( void )
 bool CPU6::IsBUSREQ( void )
 {
 	return
-		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 			vm->ElIsMonitor() ? false :
-							#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-								vm->VdgIsBusReqStop();
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+			vm->VdgIsBusReqStop();
 }
 
 

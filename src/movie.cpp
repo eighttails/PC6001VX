@@ -349,7 +349,7 @@ static void open_video(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, A
 	c->thread_type = FF_THREAD_SLICE;
 	av_dict_set(&opt, "row-mt", "1", AV_OPT_SEARCH_CHILDREN);
 	av_dict_set(&opt, "deadline", "realtime", AV_OPT_SEARCH_CHILDREN);
-	av_dict_set(&opt, "cpu-used", "10", AV_OPT_SEARCH_CHILDREN);
+	av_dict_set(&opt, "cpu-used", "8", AV_OPT_SEARCH_CHILDREN);
 
 	// コーデックを初期化
 	ret = avcodec_open2(c, codec, &opt);

@@ -346,9 +346,9 @@ static void open_video(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, A
 
 	// マルチスレッドエンコード設定
 	c->thread_count = av_cpu_count();
-	c->thread_type = FF_THREAD_SLICE;
 	av_dict_set(&opt, "row-mt", "1", AV_OPT_SEARCH_CHILDREN);
-	av_dict_set(&opt, "deadline", "realtime", AV_OPT_SEARCH_CHILDREN);
+	av_dict_set(&opt, "frame-parallel", "1", AV_OPT_SEARCH_CHILDREN);
+	av_dict_set(&opt, "quality", "realtime", AV_OPT_SEARCH_CHILDREN);
 	av_dict_set(&opt, "cpu-used", "8", AV_OPT_SEARCH_CHILDREN);
 
 	// コーデックを初期化

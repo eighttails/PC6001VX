@@ -705,8 +705,10 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 .git master
 * 設定画面から「入力」タブを削除
 * どこでもSAVE/LOAD時のオブジェクトリークを修正
+* 動画エンコード速度を改善。
 * Removed "Input" tab from config dialog.
 * Fixed object leak in state save/load.
+* Improved video capture performance.
 
 .3.7.1 2021/03/19
 * テンキーのEnterが効かなかったのを修正

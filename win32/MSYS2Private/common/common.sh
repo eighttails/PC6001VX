@@ -124,10 +124,12 @@ pushd $MINGW_PREFIX/bin
 if [ "$MINGW_CHOST" = "i686-w64-mingw32" ]; then
     #32bit
         export BIT='32bit'
+        export ARCH='x86'
     NEEDED_DLLS='libgcc_s_dw2-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
 else
     #64bit
         export BIT='64bit'
+        export ARCH='x64'
     NEEDED_DLLS='libgcc_s_seh-1.dll libstdc++-6.dll libwinpthread-1.dll zlib1.dll'
 fi
 cp -f $NEEDED_DLLS $PREFIX/bin

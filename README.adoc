@@ -702,6 +702,12 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * X11では、なぜかかなキー(PAUSE)の利きが悪いです。 +
 
 == 更新履歴
+.git master
+* PC-6001互換BASICを0.7.3に更新。
+* 互換ROM使用時にPC-6001Aを選択できるようになった。
+* Updated PC-6001 compatible basic ROMs to 0.7.3.
+* PC-6001A(aka NEC TREK) is now available in compatible ROM mode.
+
 .3.7.2 2021/05/17
 * 設定画面から「入力」タブを削除
 * どこでもSAVE/LOAD時のオブジェクトリークを修正

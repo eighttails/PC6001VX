@@ -128,7 +128,7 @@ void ConfigDialog::readConfig()
 	const bool CompatibleRomMode = QString(config->GetRomPath()).startsWith(":");
 	ui->checkBoxCompatibleRomMode->setChecked(CompatibleRomMode);
 	if (CompatibleRomMode){
-		ui->radioButtonModel6001A->setEnabled(false);
+		ui->radioButtonModel6001A->setEnabled(true);
 		ui->radioButtonModel6001mk2->setEnabled(true);
 		ui->radioButtonModel6001mk2SR->setEnabled(false);
 		ui->radioButtonModel6601->setEnabled(true);

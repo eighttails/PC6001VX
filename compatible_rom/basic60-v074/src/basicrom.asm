@@ -552,7 +552,7 @@ SYSNAME:
 SYSNAME2:
 	db	"Compatible ", 00h
 BASICVER:
-	db	"BASIC Ver.0.7.3", 0dh, 0ah, 00h
+	db	"BASIC Ver.0.7.4", 0dh, 0ah, 00h
 
 PAGEDATA:
 	db	0c0h		;fd91	VRAM address
@@ -10464,7 +10464,7 @@ GETALP:
 ;	dec	b
 ;	jr	nz,GETALP
 	djnz	GETALP
-	jp	SNERR
+	jp	BSERR
 
 NOTCMM:
 	inc	b
@@ -10518,7 +10518,7 @@ AUTOLP1:
 	pop	bc		;dimensions
 	inc	c
 	bit	2,c
-	jp	nc,BSERR	;over 3 dimensions
+	jp	nz,BSERR	;over 3 dimensions
 
 	ex	de,hl
 	pop	de		;element bytes

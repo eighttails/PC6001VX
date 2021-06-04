@@ -553,7 +553,7 @@
   012C                	SYSNAME2:
   012C  436F6D70617469		db	"Compatible ", 00h
   0138                	BASICVER:
-  0138  42415349432056		db	"BASIC Ver.0.7.3", 0dh, 0ah, 00h
+  0138  42415349432056		db	"BASIC Ver.0.7.4", 0dh, 0ah, 00h
                       	
   014A                	PAGEDATA:
   014A  C0            		db	0c0h		;fd91	VRAM address
@@ -10465,7 +10465,7 @@
                       	;	dec	b
                       	;	jr	nz,GETALP
   331E  10B8          		djnz	GETALP
-  3320  C3DC03        		jp	SNERR
+  3320  C3F103        		jp	BSERR
                       	
   3323                	NOTCMM:
   3323  04            		inc	b
@@ -10519,7 +10519,7 @@
   3352  C1            		pop	bc		;dimensions
   3353  0C            		inc	c
   3354  CB51          		bit	2,c
-  3356  D2F103        		jp	nc,BSERR	;over 3 dimensions
+  3356  C2F103        		jp	nz,BSERR	;over 3 dimensions
                       	
   3359  EB            		ex	de,hl
   335A  D1            		pop	de		;element bytes

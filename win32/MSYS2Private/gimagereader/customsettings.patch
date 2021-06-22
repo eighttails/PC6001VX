@@ -1,0 +1,32 @@
+Only in gImageReader-master-orig/: build
+diff -ur gImageReader-master-orig/qt/src/Config.cc gImageReader-master-64bit/qt/src/Config.cc
+--- gImageReader-master-orig/qt/src/Config.cc	2021-05-16 16:21:24.433390400 +0900
++++ gImageReader-master-64bit/qt/src/Config.cc	2021-05-16 16:27:50.616971000 +0900
+@@ -82,12 +82,12 @@
+ 	connect(ui.lineEditLangCode, &QLineEdit::textChanged, this, &Config::clearLineEditErrorState);
+ 	connect(ui.comboBoxDataLocation, qOverload<int>(&QComboBox::currentIndexChanged), this, &Config::setDataLocations);
+ 
+-	ADD_SETTING(SwitchSetting("dictinstall", ui.checkBoxDictInstall, true));
++	ADD_SETTING(SwitchSetting("dictinstall", ui.checkBoxDictInstall, false));
+ 	ADD_SETTING(SwitchSetting("updatecheck", ui.checkBoxUpdateCheck, true));
+ 	ADD_SETTING(SwitchSetting("openafterexport", ui.checkBoxOpenAfterExport, false));
+ 	ADD_SETTING(TableSetting("customlangs", ui.tableWidgetAdditionalLang));
+-	ADD_SETTING(SwitchSetting("systemoutputfont", ui.checkBoxDefaultOutputFont, true));
+-	ADD_SETTING(FontSetting("customoutputfont", &m_fontDialog, QFont().toString()));
++	ADD_SETTING(SwitchSetting("systemoutputfont", ui.checkBoxDefaultOutputFont, false));
++	ADD_SETTING(FontSetting("customoutputfont", &m_fontDialog, QFont("Consolas",11).toString()));
+ 	ADD_SETTING(ComboSetting("textencoding", ui.comboBoxEncoding, 0));
+ 	ADD_SETTING(ComboSetting("datadirs", ui.comboBoxDataLocation, 0));
+ 	ADD_SETTING(VarSetting<QString>("sourcedir", Utils::documentsFolder()));
+diff -ur gImageReader-master-orig/qt/src/RecognitionMenu.cc gImageReader-master-64bit/qt/src/RecognitionMenu.cc
+--- gImageReader-master-orig/qt/src/RecognitionMenu.cc	2021-05-16 16:21:24.464633400 +0900
++++ gImageReader-master-64bit/qt/src/RecognitionMenu.cc	2021-05-16 16:24:09.605814000 +0900
+@@ -37,7 +37,7 @@
+ 	connect(m_charListDialogUi.radioButtonBlacklist, &QRadioButton::toggled, m_charListDialogUi.lineEditBlacklist, &QLineEdit::setEnabled);
+ 	connect(m_charListDialogUi.radioButtonWhitelist, &QRadioButton::toggled, m_charListDialogUi.lineEditWhitelist, &QLineEdit::setEnabled);
+ 
+-	ADD_SETTING(VarSetting<QString>("language", "eng:en_EN"));
++	ADD_SETTING(VarSetting<QString>("language", "bas+hex+n6x:"));
+ 	ADD_SETTING(VarSetting<int>("psm", 6));
+ 	ADD_SETTING(LineEditSetting("ocrcharwhitelist", m_charListDialogUi.lineEditWhitelist));
+ 	ADD_SETTING(LineEditSetting("ocrcharblacklist", m_charListDialogUi.lineEditBlacklist));

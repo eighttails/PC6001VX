@@ -52,7 +52,11 @@ fi
 rm -rf $GIMAGEREADER_SRC_DIR $GIMAGEREADER_BUILD_DIR 
 tar xf $GIMAGEREADER_ARCHIVE
 mv $GIMAGEREADER_SRC_DIR $GIMAGEREADER_BUILD_DIR
+
 pushd $GIMAGEREADER_BUILD_DIR
+#gImageReaderのデフォルト設定を変更
+patch -p1 < $SCRIPT_DIR/customsettings.patch
+
 rm -rf build
 mkdir build
 pushd build

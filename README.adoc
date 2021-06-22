@@ -678,7 +678,7 @@ image::doc/qtsetting_envvar.png[]
 ==== Linux
 Debian系のディストリビューションについて解説します。 +
 
-. `apt install build-essential libx11-dev mesa-common-dev qtcreator qt5-default qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
+. `apt install build-essential libx11-dev mesa-common-dev qtcreator qtbase5-dev qtmultimedia5-dev libqt5x11extras5-dev libqt5multimedia5-plugins libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
 . `apt install libqt5gamepad5-dev || apt install libsdl2-dev` を実行。(libqt5gamepad5-devは比較的新しいパッケージのため、インストールできない場合はlibsdl2-devをインストール) +
 . ダウンロードしたPC6001VXのソースを解凍してください。 +
 . PC6001VX.proをQtCreatorで開いてビルドしてください。 +

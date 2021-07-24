@@ -459,7 +459,7 @@ bool AVI6::Init( void )
 {
 #ifndef NOAVI
 	PRINTD( GRP_LOG, "[MOVIE][Init]\n" );
-	// av_log_set_level(AV_LOG_DEBUG);
+	//	av_log_set_level(AV_LOG_DEBUG);
 #endif
 	return true;
 }
@@ -552,8 +552,10 @@ void AVI6::StopAVI( void )
 		isAVI = false;
 		av_write_trailer(oc);
 		close_stream(oc, &video_st);
+		video_st = {};
 		close_stream(oc, &audio_st);
 		avio_closep(&oc->pb);
+		audio_st = {};
 		avformat_free_context(oc);
 		oc = NULL;
 		cCritical::UnLock();

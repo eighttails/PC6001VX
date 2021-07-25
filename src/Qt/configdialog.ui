@@ -92,7 +92,7 @@
           <item>
            <widget class="QRadioButton" name="radioButtonModel6001A">
             <property name="text">
-             <string>PC-&amp;6001A</string>
+             <string>PC-&amp;6001A (NEC TREK)</string>
             </property>
            </widget>
           </item>

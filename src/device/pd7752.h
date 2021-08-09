@@ -1,3 +1,7 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 /* $Id:	d7752.h,v 1.3 2004/02/25 12:25:58 cisc Exp $ */
 
 /*
@@ -27,7 +31,9 @@
 #ifndef	PD7752_H_INCLUDED
 #define	PD7752_H_INCLUDED
 
-#include "../typedef.h"
+#include <queue>
+
+#include "typedef.h"
 
 
 typedef	int	D7752_SAMPLE;
@@ -42,16 +48,16 @@ typedef	int	D7752_FIXED;
 #define	D7752_ERR_BUFFER_EMPTY	(-5)
 
 
-#define	D7752E_BSY	(0x80)	/* b7 BSY -	音声合成中なら 1 */
-#define	D7752E_REQ	(0x40)	/* b6 REQ -	音声パラメータバッファに余裕があれば 1 */
-#define	D7752E_EXT	(0x20)	/* b5 INT/EXT -	1 */
-#define	D7752E_ERR	(0x10)	/* b4 ERR -	転送エラーがあった場合 1 */
-#define	D7752E_IDL	(0x00)	/* 待機中 */
+#define	D7752E_BSY	(0x80)	// b7 BSY -	音声合成中なら 1
+#define	D7752E_REQ	(0x40)	// b6 REQ -	音声パラメータバッファに余裕があれば 1
+#define	D7752E_EXT	(0x20)	// b5 INT/EXT -	1
+#define	D7752E_ERR	(0x10)	// b4 ERR -	転送エラーがあった場合 1
+#define	D7752E_IDL	(0x00)	// 待機中
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class cD7752 {
 private:
 	// フィルタ係数
@@ -81,12 +87,12 @@ private:
 	const static int iir2[64];
 	
 public:
-	cD7752();								// コンストラクタ
-	virtual	~cD7752();						// デストラクタ
+	cD7752();							// Constructor
+	virtual	~cD7752();					// Destructor
 	
-	int	Start( int );						// 音声合成開始
-	int	GetFrameSize();						// 1フレーム分のサンプル数取得
-	int	Synth( BYTE *, D7752_SAMPLE * );	// 1フレーム分の音声を合成
+	int	Start( int );					// 音声合成開始
+	int	GetFrameSize();					// 1フレーム分のサンプル数取得
+	int	Synth( BYTE*, std::queue<D7752_SAMPLE>& );	// 1フレーム分の音声を合成
 };
 
 #endif	// PD7752_H_INCLUDED

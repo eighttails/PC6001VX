@@ -114,7 +114,7 @@ void OPNBase::SetPrescaler(uint p)
 	if (prescale != p)
 	{
 		prescale = p;
-		assert(0 <= prescale && prescale < 3);
+//		assert(0 <= prescale && prescale < 3);
 		
 		uint fmclock = clock / table[p][0] / 12;
 		

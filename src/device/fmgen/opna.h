@@ -75,14 +75,23 @@
 //		タイマーが停止している場合は ULONG_MAX を返す… と思う
 //	
 //	void SetVolumeFM(int db)/SetVolumePSG(int db) ...
-//		各音源の音量を＋−方向に調節する．標準値は 0.
+//		各音源の音量を＋－方向に調節する．標準値は 0.
 //		単位は約 1/2 dB，有効範囲の上限は 20 (10dB)
 //
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class OPN64;
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 namespace FM
 {
 	//	OPN Base -------------------------------------------------------
 	class OPNBase : public Timer
 	{
+		// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		friend class ::OPN64;
+		// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		
 	public:
 		OPNBase();
 		
@@ -91,7 +100,7 @@ namespace FM
 		
 		void	SetVolumeFM(int db);
 		void	SetVolumePSG(int db);
-		void	SetLPFCutoff(uint freq) {}	// obsolete
+//		void	SetLPFCutoff(uint freq) {}	// obsolete
 
 	protected:
 		void	SetParameter(Channel4* ch, uint addr, uint data);
@@ -223,6 +232,10 @@ namespace FM
 	//	YM2203(OPN) ----------------------------------------------------
 	class OPN : public OPNBase
 	{
+		// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		friend class ::OPN64;
+		// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		
 	public:
 		OPN();
 		virtual ~OPN() {}

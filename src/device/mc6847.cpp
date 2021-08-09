@@ -1,8 +1,10 @@
-#include <stdlib.h>
-
-#include "../log.h"
-#include "../vsurface.h"
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
+#include "log.h"
 #include "mc6847.h"
+#include "vsurface.h"
 
 
 #define	P60W		256			// 水平有効表示期間(N60)
@@ -12,23 +14,27 @@
 #define	P64W		320			// 水平有効表示期間(SR)
 #define	P64H		((!CharMode && SRLine204) ? 204 : 200)	// 垂直有効表示ライン(SR)
 
-// バックバッファサイズ
-#define	WBBUF		(376-16)	// 必ず4の倍数
-#define	HBBUF		(242-12)
+// 画面サイズ(標準)
+#define	SCRNW		(376-16)	// 必ず4の倍数
+#define	SCRNH		(242-12)
+
+// アスペクトレシオ(幅に対する高さの比)
+#define	ARATIO		116.443
+
 
 // ボーダーサイズ
-#define	LB60		((int)((WBBUF-P60W)/2))
-#define	RB60		(WBBUF-P60W-LB60)
-#define	TB60		((int)((HBBUF-P60H)/2))
-#define	BB60		(HBBUF-P60H-TB60)
-#define	LB62		((int)((WBBUF-P62W)/2))
-#define	RB62		(WBBUF-P62W-LB62)
-#define	TB62		((int)((HBBUF-P62H)/2))
-#define	BB62		(HBBUF-P62H-TB62)
-#define	LB64		((int)((WBBUF-P64W)/2))
-#define	RB64		(WBBUF-P64W-LB64)
-#define	TB64		((int)((HBBUF-P64H)/2))
-#define	BB64		(HBBUF-P64H-TB64)
+#define	LB60		((int)((SCRNW-P60W)/2))
+#define	RB60		(SCRNW-P60W-LB60)
+#define	TB60		((int)((SCRNH-P60H)/2))
+#define	BB60		(SCRNH-P60H-TB60)
+#define	LB62		((int)((SCRNW-P62W)/2))
+#define	RB62		(SCRNW-P62W-LB62)
+#define	TB62		((int)((SCRNH-P62H)/2))
+#define	BB62		(SCRNH-P62H-TB62)
+#define	LB64		((int)((SCRNW-P64W)/2))
+#define	RB64		(SCRNW-P64W-LB64)
+#define	TB64		((int)((SCRNH-P64H)/2))
+#define	BB64		(SCRNH-P64H-TB64)
 
 // アトリビュート
 #define ATTR_AG		0x80
@@ -74,7 +80,7 @@ const BYTE MC6847::VDGfont[] = {
 	0x00, 0x00, 0x00, 0x22, 0x36, 0x2a, 0x2a, 0x22, 0x22, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// M
 	0x00, 0x00, 0x00, 0x22, 0x32, 0x2a, 0x26, 0x22, 0x22, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// N
 	0x00, 0x00, 0x00, 0x3e, 0x22, 0x22, 0x22, 0x22, 0x22, 0x3e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// O
-
+	
 	0x00, 0x00, 0x00, 0x3c, 0x22, 0x22, 0x3c, 0x20, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// P
 	0x00, 0x00, 0x00, 0x1c, 0x22, 0x22, 0x22, 0x2a, 0x24, 0x1a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// Q
 	0x00, 0x00, 0x00, 0x3c, 0x22, 0x22, 0x3c, 0x28, 0x24, 0x22, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// R
@@ -91,7 +97,7 @@ const BYTE MC6847::VDGfont[] = {
 	0x00, 0x00, 0x00, 0x0e, 0x02, 0x02, 0x02, 0x02, 0x02, 0x0e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// ]
 	0x00, 0x00, 0x00, 0x08, 0x1c, 0x2a, 0x08, 0x08, 0x08, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// ↑
 	0x00, 0x00, 0x00, 0x00, 0x08, 0x10, 0x3e, 0x10, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// ←
-
+	
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// ' '
 	0x00, 0x00, 0x00, 0x08, 0x08, 0x08, 0x08, 0x08, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// !
 	0x00, 0x00, 0x00, 0x14, 0x14, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// "
@@ -108,7 +114,7 @@ const BYTE MC6847::VDGfont[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// -
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// .
 	0x00, 0x00, 0x00, 0x02, 0x02, 0x04, 0x08, 0x10, 0x20, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// /
-
+	
 	0x00, 0x00, 0x00, 0x18, 0x24, 0x24, 0x24, 0x24, 0x24, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// 0
 	0x00, 0x00, 0x00, 0x08, 0x18, 0x08, 0x08, 0x08, 0x08, 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// 1
 	0x00, 0x00, 0x00, 0x1c, 0x22, 0x02, 0x1c, 0x20, 0x20, 0x3e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// 2
@@ -179,31 +185,41 @@ const BYTE MC6847core::NJM_TBL[][2] = {
 //青/緑　明←4 1 5→暗
 
 
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
+const VDGInfo vinfo = { SCRNW, SCRNH, ARATIO };
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
 MC6847core::MC6847core( void ) :
-	CrtDisp(true), BusReq(false), N60Win(true),
-	Mode4Col(0), VAddr(0), HAddr(0), RowCntA(0), RowCntG(0),
-	CharMode(true), GraphMode(false), Css1(1), Css2(1), Css3(1),
-	SRmode(false), SRBusReq(true), SRBitmap(false), SRBMPage(false), SRLine204(false),
-	SRCharLine(true), SRCharWidth(true),
-	SRTextAddr(0), SRRollX(0), SRRollY(0), SRVramAddrY(0),
-	AT_AG(0), AT_AS(0), AT_IE(0), AT_GM(0), AT_CSS(0), AT_INV(0) {}
+	CrtDisp( true ), BusReq( false ), N60Win( true ),
+	Mode4Col( 0 ), VAddr( 0 ), HAddr( 0 ), RowCntA( 0 ), RowCntG( 0 ),
+	AT_AG( 0 ), AT_AS( 0 ), AT_IE( 0 ), AT_GM( 0 ), AT_CSS( 0 ), AT_INV( 0 ),
+	CharMode( true ), GraphMode( false ), Css1( 1 ), Css2( 1 ), Css3( 1 ),
+	SRmode( false ), SRBusReq( true ), SRBitmap( false ), SRBMPage( false ), SRLine204( false ),
+	SRCharLine( true ), SRCharWidth( true ),
+	SRTextAddr( 0 ), SRRollX( 0 ), SRRollY( 0 ), SRVramAddrY( 0 )
+{
+}
 
-MC6847::MC6847( void ){}
+MC6847::MC6847( void )
+{
+}
 
-PCZ80_07::PCZ80_07( void ){}
+PCZ80_07::PCZ80_07( void )
+{
+}
 
 PCZ80_12::PCZ80_12( void )
 {
-	SRmode    = true;
+	SRmode = true;
 }
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
 MC6847core::~MC6847core( void ){}
 
 MC6847::~MC6847( void ){}
@@ -213,43 +229,25 @@ PCZ80_07::~PCZ80_07( void ){}
 PCZ80_12::~PCZ80_12( void ){}
 
 
-////////////////////////////////////////////////////////////////
-// バックバッファ幅取得(規定値)
-////////////////////////////////////////////////////////////////
-int MC6847core::GetW( void ) const
-{
-	return WBBUF;
-}
-
-
-////////////////////////////////////////////////////////////////
-// バックバッファ高さ取得(規定値)
-////////////////////////////////////////////////////////////////
-int MC6847core::GetH( void ) const
-{
-	return HBBUF;
-}
-
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // セミグラ4データ取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 BYTE MC6847core::GetSemi4( BYTE data ) const
 {
 	BYTE bdat = (data<<(4+(RowCntA/6)*2)&0x80) | (data<<(1+(RowCntA/6)*2)&0x08);
-	bdat = bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
+	bdat |= bdat>>1;
+	bdat |= bdat>>2;
 	return bdat;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // セミグラ6データ取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 BYTE MC6847core::GetSemi6( BYTE data ) const
 {
-	BYTE bdat = (data<<(2+(RowCntA/4)*2)&0x80) | (((data<<(3+(RowCntA/4)*2))>>4)&0x08);
-	bdat = bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
-	return bdat;
+	BYTE bdat = ((data<<(2+(RowCntA/4)*2))&0x80) | (((data<<(3+(RowCntA/4)*2))>>4)&0x08);
+	return bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
 }
 
 BYTE PCZ80_07::GetSemi6( BYTE data ) const
@@ -263,88 +261,130 @@ BYTE PCZ80_12::GetSemi6( BYTE data ) const
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // セミグラ8データ取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 BYTE PCZ80_12::GetSemi8( BYTE data ) const
 {
 	BYTE bdat = ((data<<(RowCntA&0xe))&0x80) | (((data<<(RowCntA&0xe))>>3)&0x08);
-	bdat = bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
-	return bdat;
+	return bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // CRT表示状態取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 bool MC6847core::GetCrtDisp( void ) const
 {
 	return CrtDisp;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // CRT表示状態設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void MC6847core::SetCrtDisp( bool st )
 {
 	CrtDisp = st;
 }
 
 
-////////////////////////////////////////////////////////////////
-// ウィンドウサイズ取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウサイズ取得(N60/N60m)
+/////////////////////////////////////////////////////////////////////////////
 bool MC6847core::GetWinSize( void ) const
 {
 	return N60Win;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // モード4カラーモード取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 int MC6847core::GetMode4Color( void ) const
 {
 	return Mode4Col;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // モード4カラーモード設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void MC6847core::SetMode4Color( int col )
 {
 	Mode4Col = col;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// 画面情報取得
+/////////////////////////////////////////////////////////////////////////////
+const VDGInfo& MC6847core::GetVideoInfo( void ) const
+{
+	return vinfo;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// SRモード取得
+/////////////////////////////////////////////////////////////////////////////
+bool MC6847core::IsSRmode( void ) const
+{
+	return SRmode;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// SRビットマップモード取得
+//
+// 引数:	addr	アドレス
+// 返値:	bool	true:ビットマップモード false:直接アクセスモード
+/////////////////////////////////////////////////////////////////////////////
+bool MC6847core::IsSRBitmap( WORD addr ) const
+{
+	return SRmode && SRBitmap;
+//	return SRBitmap && !(SRBMPage ^ (addr & 0x8000));
+//	変更したら画像崩れたのでもとに戻す
+//	そもそもなんで変更しようとしたんだっけ？？？
+//	VRAMアドレス以外のアクセスを制限しようとしてた？？？
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// SRの高解像度?
+/////////////////////////////////////////////////////////////////////////////
+bool MC6847core::IsSRHires( void ) const
+{
+	return SRmode && ((CharMode && !SRCharWidth) || (!CharMode && !GraphMode));
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // 色の組合せ指定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void MC6847core::SetCss( BYTE data )
 {
 	PRINTD( VDG_LOG, "[VDG][SetCss] -> %02X : ", data );
-
+	
 	Css1 =  data    &1;
 	Css2 = (data>>1)&1;
 	Css3 = (data>>2)&1;
-
+	
 	PRINTD( VDG_LOG, "1:%d 2:%d 3:%d\n", Css1, Css2, Css3 );
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // CRTコントローラモード設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void MC6847core::SetCrtControler( BYTE data )
 {
 	PRINTD( VDG_LOG, "[VDG][62][SetCrtControler] -> %02X\n", data );
-
+	
 	N60Win    = data&2 ? true : false;	// ウィンドウサイズ		true:N60		false:N60m
 	CharMode  = data&4 ? true : false;	// 表示モード			true:キャラクタ	false:グラフィック
 	GraphMode = data&8 ? true : false;	// グラフィック解像度	true:160*200	false:320*200
-
+	
 	PRINTD( VDG_LOG, " DATA      :%02X\n", data );
 	PRINTD( VDG_LOG, " N60Win    :%s\n", N60Win    ? "N60"  : "N60m" );
 	PRINTD( VDG_LOG, " CharMode  :%s\n", CharMode  ? "Char" : "Graph" );
@@ -354,26 +394,26 @@ void MC6847core::SetCrtControler( BYTE data )
 void PCZ80_12::SetCrtControler( BYTE data )
 {
 	PRINTD( VDG_LOG, "[VDG][64][SetCrtControler]" );
-
+	
 	if( SRmode ){	// SRモード
 		PRINTD( VDG_LOG, "[SRmode] -> %02X\n", data );
-
+		
 		SRLine204   = data&1 ? false : true;	// グラフィックライン数	true:204ライン	false:200ライン
 		SRCharWidth = data&2 ? true : false;	// テキスト文字数		true:40文字		false:80文字
 		CharMode    = data&4 ? true : false;	// テキスト表示モード	true:キャラクタ	false:グラフィック
 		GraphMode   = data&8 ? true : false;	// グラフィック解像度	true:320*200	false:640*200
-
+		
 		PRINTD( VDG_LOG, " Lines       :%d\n", SRLine204   ? 204    : 200 );
 		PRINTD( VDG_LOG, " SRTextWidth :%d\n", SRCharWidth ? 40     : 80 );
 		PRINTD( VDG_LOG, " CharMode    :%s\n", CharMode    ? "Char" : "Graph" );
 		PRINTD( VDG_LOG, " GraphMode   :%d\n", GraphMode   ? 640    : 320 );
 	}else{			// 旧モード
 		PRINTD( VDG_LOG, "[66mode] -> %02X\n", data );
-
+		
 		N60Win    = data&2 ? true : false;	// ウィンドウサイズ		true:N60		false:N60m
 		CharMode  = data&4 ? true : false;	// テキスト表示モード	true:キャラクタ	false:グラフィック
 		GraphMode = data&8 ? true : false;	// グラフィック解像度	true:160*200	false:320*200
-
+		
 		PRINTD( VDG_LOG, " N60Win    :%s\n", N60Win    ? "N60"  : "N60m" );
 		PRINTD( VDG_LOG, " CharMode  :%s\n", CharMode  ? "Char" : "Graph" );
 		PRINTD( VDG_LOG, " GraphMode :%d\n", GraphMode ? 160    : 320 );
@@ -381,19 +421,19 @@ void PCZ80_12::SetCrtControler( BYTE data )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // CRTコントローラタイプ設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PCZ80_12::SetCrtCtrlType( BYTE data )
 {
 	PRINTD( VDG_LOG, "[VDG][64][SetCrtCtrlType] -> %02X\n", data );
-
+	
 	SRmode     = data&0x01 ? false : true;	// SRモードフラグ 		true:SR-BASIC	false:旧BASIC
 	SRBusReq   = data&0x02 ? false : true;	// バスリクエスト		true:ON			false:OFF
 	SRCharLine = data&0x04 ? true  : false;	// SRテキスト行数		true:20行		false:25行
 	SRBitmap   = data&0x08 ? false : true;	// SRビットマップフラグ	true:有効		false:無効
 	SRBMPage   = data&0x10 ? true  : false;	// SRビットマップページ	true:上位32KB	false:下位32KB
-
+	
 	PRINTD( VDG_LOG, " BasicMode    :%s\n",   SRmode     ? "SR"     : "66" );
 	PRINTD( VDG_LOG, " SRBusReqest  :%s\n",   SRBusReq   ? "ON"     : "OFF" );
 	PRINTD( VDG_LOG, " SRTextLines  :%d\n",   SRCharLine ? 20       : 25 );
@@ -402,38 +442,38 @@ void PCZ80_12::SetCrtCtrlType( BYTE data )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // バックバッファ更新
 //
 // 引数:	なし
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void MC6847::UpdateBackBuf( void )
 {
 	PRINTD( VDG_LOG, "[VDG][60][UpdateBackBuf]\n" );
-
+	
 	#if INBPP == 8	// 8bit
 	BYTE bcol;
-	BYTE *doff   = (BYTE *)GetBufAddr();
+	BYTE* doff   = (BYTE*)GetBufAddr().data();
 	const int pt = GetBufPitch();
 	#else			// 32bit
 	DWORD bcol;
-	DWORD *doff  = (DWORD *)GetBufAddr();
+	DWORD* doff  = (DWORD*)GetBufAddr().data();
 	const int pt = GetBufPitch() / sizeof(DWORD);
 	#endif
-
+	
 	VAddr = HAddr = RowCntA = RowCntG = 0;
-
+	
 	const int tbline = TB60 * pt;
 	const int bbline = BB60 * pt;
-
+	
 	// 上側ボーダ描画
 	bcol = GetBcol();
 	for( int i=0; i<tbline; i++ ) *doff++ = bcol;
-
+	
 	// 表示エリア描画
 	for( int i=0; i<P60H; i++ ) Draw1line1( i );
-
+	
 	// 下側ボーダ描画
 	doff += P60H * pt;
 	bcol = GetBcol();
@@ -443,30 +483,30 @@ void MC6847::UpdateBackBuf( void )
 void PCZ80_07::UpdateBackBuf( void )
 {
 	PRINTD( VDG_LOG, "[VDG][62][UpdateBackBuf]\n" );
-
+	
 	#if INBPP == 8	// 8bit
 	BYTE bcol;
-	BYTE *doff   = (BYTE *)GetBufAddr();
+	BYTE* doff   = (BYTE*)GetBufAddr().data();
 	const int pt = GetBufPitch();
 	#else			// 32bit
 	DWORD bcol;
-	DWORD *doff  = (DWORD *)GetBufAddr();
+	DWORD* doff  = (DWORD*)GetBufAddr().data();
 	const int pt = GetBufPitch() / sizeof(DWORD);
 	#endif
-
+	
 	VAddr = HAddr = RowCntA = 0;
-
+	
 	bcol = GetBcol();
 	if( N60Win ){	// N60
 		const int tbline = TB60 * pt;
 		const int bbline = BB60 * pt;
-
+		
 		// 上側ボーダ描画
 		for( int i=0; i<tbline; i++ ) *doff++ = bcol;
-
+		
 		// 表示エリア描画
 		for( int i=0; i<P60H; i++ ) Draw1line1( i );
-
+		
 		// 下側ボーダ描画
 		doff += P60H * pt;
 		bcol = GetBcol();
@@ -474,13 +514,13 @@ void PCZ80_07::UpdateBackBuf( void )
 	}else{			// N60m
 		const int tbline = TB62 * pt;
 		const int bbline = BB62 * pt;
-
+		
 		// 上側ボーダ描画
 		for( int i=0; i<tbline; i++ ) *doff++ = bcol;
-
+		
 		// 表示エリア描画
 		for( int i=0; i<P62H; i++ ) Draw1line2( i );
-
+		
 		// 下側ボーダ描画
 		doff += P62H * pt;
 		bcol = GetBcol();
@@ -491,30 +531,30 @@ void PCZ80_07::UpdateBackBuf( void )
 void PCZ80_12::UpdateBackBuf( void )
 {
 	PRINTD( VDG_LOG, "[VDG][64][UpdateBackBuf]\n" );
-
+	
 	#if INBPP == 8	// 8bit
 	BYTE bcol;
-	BYTE *doff   = (BYTE *)GetBufAddr();
+	BYTE* doff   = (BYTE*)GetBufAddr().data();
 	const int pt = GetBufPitch();
 	#else			// 32bit
 	DWORD bcol;
-	DWORD *doff  = (DWORD *)GetBufAddr();
+	DWORD* doff  = (DWORD*)GetBufAddr().data();
 	const int pt = GetBufPitch() / sizeof(DWORD);
 	#endif
-
+	
 	VAddr = HAddr = RowCntA = 0;
-
+	
 	bcol = GetBcol();
 	if( SRmode ){	// SRモード
 		const int tbline = TB64 * pt;
 		const int bbline = BB64 * pt;
-
+		
 		// 上側ボーダ描画
 		for( int i=0; i<tbline; i++ ) *doff++ = bcol;
-
+		
 		// 表示エリア描画
 		for( int i=0; i<P64H; i++ ) Draw1line3( i );
-
+		
 		// 下側ボーダ描画
 		doff += P64H * pt;
 		bcol = GetBcol();
@@ -523,13 +563,13 @@ void PCZ80_12::UpdateBackBuf( void )
 		if( N60Win ){	// N60
 			const int tbline  = TB60 * pt;
 			const int bbline  = BB60 * pt;
-
+			
 			// 上側ボーダ描画
 			for( int i=0; i<tbline; i++ ) *doff++ = bcol;
-
+			
 			// 表示エリア描画
 			for( int i=0; i<P60H; i++ ) Draw1line1( i );
-
+			
 			// 下側ボーダ描画
 			doff += P60H * pt;
 			bcol = GetBcol();
@@ -537,13 +577,13 @@ void PCZ80_12::UpdateBackBuf( void )
 		}else{			// N60m
 			const int tbline  = TB62 * pt;
 			const int bbline  = BB62 * pt;
-
+			
 			// 上側ボーダ描画
 			for( int i=0; i<tbline; i++ ) *doff++ = bcol;
-
+			
 			// 表示エリア描画
 			for( int i=0; i<P62H; i++ ) Draw1line2( i );
-
+			
 			// 下側ボーダ描画
 			doff += P62H * pt;
 			bcol = GetBcol();
@@ -553,31 +593,31 @@ void PCZ80_12::UpdateBackBuf( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 1ライン描画(N60)
 //
 // 引数:	line	描画するライン番号(0-191)
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void MC6847::Draw1line1( int line )
 {
 	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line ); }
-
+	
 	BYTE data=0xff, prevdata=0, nextdata=0, bdat=0;
 	BYTE LAT_AG=0, LAT_GM=0;
-
+	
 	#if INBPP == 8	// 8bit
 	BYTE wdat, fg=0, bg=0;
-	BYTE *doff  = (BYTE *)GetBufAddr()  + ( TB60 + line ) * GetBufPitch();
+	BYTE* doff  = (BYTE*)GetBufAddr().data()  + ( TB60 + line ) * GetBufPitch();
 	#else			// 32bit
 	DWORD wdat, fg=0, bg=0;
-	DWORD *doff = (DWORD *)GetBufAddr() + ( TB60 + line ) * GetBufPitch() / sizeof(DWORD);
+	DWORD* doff = (DWORD*)GetBufAddr().data() + ( TB60 + line ) * GetBufPitch() / sizeof(DWORD);
 	#endif
-
+	
 	// 左側ボーダー描画
 	wdat = GetBcol();
 	for( int i=0; i<LB60; i++ ) *doff++ = wdat;
-
+	
 	// 表示エリア描画
 	for( int x=0; x<( P60W / 8 ); x++ ){
 		if( !CrtDisp ){
@@ -592,7 +632,7 @@ void MC6847::Draw1line1( int line )
 			nextdata = ( x < (P60W/8-1) ) ? GetVram() : 0xff;
 			LAT_AG |= AT_AG;				// とりあえず
 			if( x == 2 ) LAT_GM = AT_GM;	// とりあえず
-
+			
 			// 1byte先のグラフィックモード取得
 			if( LAT_AG ) LatchGMODE();
 				// 初代機のVDG(周辺回路?)にはバグがあるらしい
@@ -601,7 +641,7 @@ void MC6847::Draw1line1( int line )
 				// 右端の場合はそのラインの先頭(左端)のデータを読むらしい
 				// mk2,66ではどちらも正しく読める
 		}
-
+		
 		if( AT_AG ){	// グラフィック
 			switch( AT_GM ){
 			case GM_CG1:	//  64x 64 カラー   (CG1)
@@ -615,7 +655,7 @@ void MC6847::Draw1line1( int line )
 				}
 				x++;
 				break;
-
+				
 			case GM_CG2:	// 128x 64 カラー   (CG2)
 			case GM_CG3:	// 128x 96 カラー   (CG3)
 			case GM_CG6:	// 128x192 カラー   (CG6)
@@ -629,7 +669,7 @@ void MC6847::Draw1line1( int line )
 					*doff++ = wdat;
 				}
 				break;
-
+				
 			case GM_RG1:	// 128x 64 モノクロ (RG1)
 			case GM_RG2:	// 128x 96 モノクロ (RG2)
 			case GM_RG3:	// 128x192 モノクロ (RG3)
@@ -644,7 +684,7 @@ void MC6847::Draw1line1( int line )
 				}
 				x++;
 				break;
-
+				
 			case GM_RG6:	// 256x192 モノクロ (RG6)
 				if( Mode4Col ){	// 128x192 カラー(にじみ)
 					// VRAM上の連続した3バイト
@@ -670,7 +710,7 @@ void MC6847::Draw1line1( int line )
 						#endif
 				}
 			}
-
+			
 		}else{			// アルファニューメリック
 			switch( ANMODE ){
 			case AM_AN0:		// アルファニューメリック(内部フォント)
@@ -683,7 +723,7 @@ void MC6847::Draw1line1( int line )
 				#endif
 				bdat = VDGfont[ (data&0x3f)*16 + RowCntA ];
 				break;
-
+				
 			case AM_AN1:		// アルファニューメリック(外部フォント)
 				#if INBPP == 8	// 8bit
 				fg   = COL_AN[(AT_CSS<<1) |   AT_INV];
@@ -694,7 +734,7 @@ void MC6847::Draw1line1( int line )
 				#endif
 				bdat = GetFont1( data*16 + RowCntA );
 				break;
-
+				
 			case AM_SG4:		// セミグラフィック4
 				#if INBPP == 8	// 8bit
 				fg   = COL_SG[(data>>4)&7];
@@ -705,7 +745,7 @@ void MC6847::Draw1line1( int line )
 				#endif
 				bdat = GetSemi4( data );
 				break;
-
+				
 			case AM_SG6:		// セミグラフィック6
 				#if INBPP == 8	// 8bit
 				fg   = COL_SG[(AT_CSS<<2) | ((data>>6)&3)];
@@ -720,8 +760,8 @@ void MC6847::Draw1line1( int line )
 				*doff++ = (bdat>>i)&1 ? fg : bg;
 		};
 	}
-
-
+	
+	
 	// メモリアドレスオフセット求める
 	//   どうやら各ライン3byte目の表示モードで決まってくるらしい
 	//   ただし同一ラインに異なるモードが混在するときは挙動が変わる
@@ -756,7 +796,7 @@ void MC6847::Draw1line1( int line )
 		RowCntG = 0;
 	}
 	HAddr = 0;
-
+	
 	// 右側ボーダー描画
 	wdat = GetBcol();
 	for( int i=0; i<RB60; i++ ) *doff++ = wdat;
@@ -765,22 +805,22 @@ void MC6847::Draw1line1( int line )
 void PCZ80_07::Draw1line1( int line )
 {
 	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line ) };
-
+	
 	BYTE data=0, prevdata=0, nextdata=0, bdat=0;
 	BYTE LAT_AG=0;
-
+	
 	#if INBPP == 8	// 8bit
 	BYTE wdat, fg=0, bg=0;
-	BYTE *doff  = (BYTE *)GetBufAddr()  + ( TB60 + line ) * GetBufPitch();
+	BYTE* doff  = (BYTE*)GetBufAddr().data()  + ( TB60 + line ) * GetBufPitch();
 	#else			// 32bit
 	DWORD wdat, fg=0, bg=0;
-	DWORD *doff = (DWORD *)GetBufAddr() + ( TB60 + line ) * GetBufPitch() / sizeof(DWORD);
+	DWORD* doff = (DWORD*)GetBufAddr().data() + ( TB60 + line ) * GetBufPitch() / sizeof(DWORD);
 	#endif
-
+	
 	// 左側ボーダー描画
 	wdat = GetBcol();
 	for( int i=0; i<LB60; i++ ) *doff++ = wdat;
-
+	
 	// 表示エリア描画
 	for( int x=0; x<( P60W / 8 ); x++ ){
 		if( !CrtDisp ){
@@ -795,7 +835,7 @@ void PCZ80_07::Draw1line1( int line )
 			nextdata = ( x < (P60W/8-1) ) ? GetVram() : 0;
 			LAT_AG |= AT_AG;				// とりあえず
 		}
-
+		
 		if( AT_AG ){	// グラフィック
 			switch( AT_GM ){
 			case GM_CG1:	//  64x 64 カラー   (CG1)(無効)
@@ -812,7 +852,7 @@ void PCZ80_07::Draw1line1( int line )
 					*doff++ = wdat;
 				}
 				break;
-
+				
 			case GM_RG1:	// 128x 64 モノクロ (RG1)(無効)
 			case GM_RG2:	// 128x 96 モノクロ (RG2)(無効)
 			case GM_RG3:	// 128x192 モノクロ (RG3)(無効)
@@ -854,7 +894,7 @@ void PCZ80_07::Draw1line1( int line )
 				#endif
 				bdat = GetFont1( data*16 + RowCntA );
 				break;
-
+				
 			case AM_SG4:		// セミグラフィック4(無効)
 			case AM_SG6:		// セミグラフィック6
 				#if INBPP == 8	// 8bit
@@ -870,8 +910,8 @@ void PCZ80_07::Draw1line1( int line )
 				*doff++ = (bdat>>i)&1 ? fg : bg;
 		};
 	}
-
-
+	
+	
 	// メモリアドレスオフセット求める
 	//   どうやら各ライン3byte目の表示モードで決まってくるらしい
 	//   ただし同一ラインに異なるモードが混在するときは挙動が変わる
@@ -886,37 +926,37 @@ void PCZ80_07::Draw1line1( int line )
 		}
 	}
 	HAddr = 0;
-
+	
 	// 右側ボーダー描画
 	wdat = GetBcol();
 	for( int i=0; i<RB60; i++ ) *doff++ = wdat;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 1ライン描画(N60m)
 //
 // 引数:	line	描画するライン番号(0-199)
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PCZ80_07::Draw1line2( int line )
 {
 	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line2] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph3" : "Graph4" ); }
-
+	
 	BYTE attr, data, bdat;
-
+	
 	#if INBPP == 8	// 8bit
 	BYTE wdat, fg, bg;
-	BYTE *doff  = (BYTE *)GetBufAddr()  + ( TB62 + line ) * GetBufPitch();
+	BYTE* doff  = (BYTE*)GetBufAddr().data()  + ( TB62 + line ) * GetBufPitch();
 	#else			// 32bit
 	DWORD wdat, fg, bg;
-	DWORD *doff = (DWORD *)GetBufAddr() + ( TB62 + line ) * GetBufPitch() / sizeof(DWORD);
+	DWORD* doff = (DWORD*)GetBufAddr().data() + ( TB62 + line ) * GetBufPitch() / sizeof(DWORD);
 	#endif
-
+	
 	// 左側ボーダー描画
 	wdat = GetBcol();
 	for( int i=0; i<LB62; i++ ) *doff++ = wdat;
-
+	
 	// 表示エリア描画
 	for( int x=0; x<( P62W / 8 ); x++){
 		if( !CrtDisp ){
@@ -927,7 +967,7 @@ void PCZ80_07::Draw1line2( int line )
 			data = GetVram();
 			HAddr++;
 		}
-
+		
 		if( CharMode ){	// キャラクタモード
 			#if INBPP == 8	// 8bit
 			fg   = COL_AN2[attr&0x0f];
@@ -961,8 +1001,8 @@ void PCZ80_07::Draw1line2( int line )
 			}
 		}
 	}
-
-
+	
+	
 	// メモリアドレスオフセット求める
 	if( CharMode ){	// アルファニューメリック
 		if( ++RowCntA == 10 ){
@@ -974,40 +1014,40 @@ void PCZ80_07::Draw1line2( int line )
 		RowCntA = 0;
 	}
 	HAddr = 0;
-
+	
 	// 右側ボーダー描画
 	wdat = GetBcol();
 	for( int i=0; i<RB62; i++ ) *doff++ = wdat;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 1ライン描画(SR)
 //
 // 引数:	line	描画するライン番号(0-204)
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PCZ80_12::Draw1line3( int line )
 {
 	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line3] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph2" : "Graph3" ); }
-
+	
 	BYTE attr, data, bdat;
 	BYTE attr1=0, data1=0, scrl1=0, scrl2=0;
-
+	
 	#if INBPP == 8	// 8bit
 	BYTE wdat, fg, bg;
-	BYTE *doff  = (BYTE *)GetBufAddr()  + ( TB64 + line ) * GetBufPitch();
+	BYTE* doff  = (BYTE*)GetBufAddr().data()  + ( TB64 + line ) * GetBufPitch();
 	#else			// 32bit
 	DWORD wdat, fg, bg;
-	DWORD *doff = (DWORD *)GetBufAddr() + ( TB64 + line ) * GetBufPitch() / sizeof(DWORD);
+	DWORD* doff = (DWORD*)GetBufAddr().data() + ( TB64 + line ) * GetBufPitch() / sizeof(DWORD);
 	#endif
-
-	const int xsc = ((CharMode && !SRCharWidth) || (!CharMode && !GraphMode)) ? 2 : 1;
-
+	
+	const int xsc = IsSRHires() ? 2 : 1;
+	
 	// 左側ボーダー描画
 	wdat = GetBcol();
 	for( int i=0; i<(LB64*xsc); i++ ) *doff++ = wdat;
-
+	
 	// 表示エリア描画
 	for( int x=0; x<( P64W / 8 * xsc ); x++){
 		if( CharMode ){	// テキストモード
@@ -1020,7 +1060,7 @@ void PCZ80_12::Draw1line3( int line )
 				attr = GetVram();
 				HAddr++;
 			}
-
+			
 			#if INBPP == 8	// 8bit
 			fg   = COL_AN2[attr&0x0f];
 			bg   = COL_AN2[((attr>>4)&0x07)|((Css2&1)<<3)];
@@ -1031,21 +1071,21 @@ void PCZ80_12::Draw1line3( int line )
 			bdat = SRCharLine  ? GetFont2( (data+((attr&0x80)?256:0))*16 + RowCntA ) :	// 20行
 				   attr & 0x80 ? GetSemi8( data ) :										// 25行 セミグラモード
 								 GetFont3( (data+((attr&0x80)?256:0))*16 + RowCntA );	// 25行 キャラクタモード
-
+			
 			for( int i=7; i>=0; i-- )
 				*doff++ = (bdat>>i)&1 ? fg : bg;
-
+			
 		}else{			// ビットマップモード
 			if( GraphMode ){	// グラフィック モード2
 				BYTE d1;
 				if( (SRRollX&1) && (x == 0) ){
 					data1 = GetVram();
 					HAddr += 2;
-
+					
 					scrl1 = data1<<4;
 					data1 >>= 4;
 				}
-
+				
 				for( int i=0; i<4; i++ ){
 					if( !CrtDisp ){
 						data = 0;	// ホント？
@@ -1053,7 +1093,7 @@ void PCZ80_12::Draw1line3( int line )
 						if( HAddr < 320 ){
 							d1 = GetVram();
 							HAddr += 2;
-
+							
 							data  = data1 | (d1<<4);
 							data1 = d1>>4;
 						}else{
@@ -1080,20 +1120,20 @@ void PCZ80_12::Draw1line3( int line )
 					if( x == 0 ){
 						data1 = GetVram(); HAddr += 2;
 						attr1 = GetVram(); HAddr += 2;
-
+						
 						scrl1 = data1 >> (8-((SRRollX&3)<<1));
 						scrl2 = attr1 >> (8-((SRRollX&3)<<1));
-
+						
 						data1 <<= ((SRRollX&3)<<1);
 						attr1 <<= ((SRRollX&3)<<1);
 					}
 					if( HAddr < 320 ){
 						d1 = GetVram(); HAddr += 2;
 						d2 = GetVram(); HAddr += 2;
-
+						
 						data = data1 | (d1>>(8-((SRRollX&3)<<1)));
 						attr = attr1 | (d2>>(8-((SRRollX&3)<<1)));
-
+						
 						data1 = d1 << ((SRRollX&3)<<1);
 						attr1 = d2 << ((SRRollX&3)<<1);
 					}else{
@@ -1104,17 +1144,18 @@ void PCZ80_12::Draw1line3( int line )
 					data = GetVram(); HAddr += 2;
 					attr = GetVram(); HAddr += 2;
 				}
-
-				for( int i=0; i<8; i++ )
+				
+				for( int i=0; i<8; i++ ){
 					#if INBPP == 8	// 8bit
 					*doff++ =                     COL_CG2[Css3][((Css2&1)<<3)|((Css1&1)<<2)|(((attr>>(7-i))<<1)&2)|((data>>(7-i))&1)];
 					#else			// 32bit
 					*doff++ = VSurface::GetColor( COL_CG2[Css3][((Css2&1)<<3)|((Css1&1)<<2)|(((attr>>(7-i))<<1)&2)|((data>>(7-i))&1)] );
 					#endif
+				}
 			}
 		}
 	}
-
+	
 	// メモリアドレスオフセット求める
 	if( CharMode ){	// アルファニューメリック
 		if( ++RowCntA == (SRCharLine ? 10 : 8) ){
@@ -1126,24 +1167,24 @@ void PCZ80_12::Draw1line3( int line )
 		RowCntA = 0;
 	}
 	HAddr = 0;
-
+	
 	// 右側ボーダー描画
 	wdat = GetBcol();
 	for( int i=0; i<(RB64*xsc); i++ ) *doff++ = wdat;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ボーダーカラー取得
 //
 // 引数:	なし
 // 返値:	BYTE	ボーダーカラーコード
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 #if INBPP == 8	// 8bit
 BYTE MC6847::GetBcol( void ) const
 {
 	BYTE bcol;
-
+	
 	if( AT_AG ){	// グラフィックモード
 		if( AT_GM & 4 )	bcol = COL_RG[AT_CSS][1];	// モノクロ
 		else			bcol = COL_CG[AT_CSS][0];	// カラー
@@ -1151,14 +1192,14 @@ BYTE MC6847::GetBcol( void ) const
 		if( AT_AS )		bcol = COL_SG[8];			// セミグラフィック
 		else			bcol = COL_AN[4];			// アルファニューメリック
 	}
-
+	
 	return bcol;
 }
 
 BYTE PCZ80_07::GetBcol( void ) const
 {
 	BYTE bcol;
-
+	
 	// 実際は全部同じかも
 	if( SRmode ){
 		if( CharMode )		bcol = COL_AN2[0];		// キャラクタモード
@@ -1170,14 +1211,14 @@ BYTE PCZ80_07::GetBcol( void ) const
 			else			bcol = COL_CG2[0][0];	// グラフィック
 		}
 	}
-
+	
 	return bcol;
 }
 #else			// 32bit
 DWORD MC6847::GetBcol( void ) const
 {
 	DWORD bcol;
-
+	
 	if( AT_AG ){	// グラフィックモード
 		if( AT_GM & 4 )	bcol = VSurface::GetColor( COL_RG[AT_CSS][1] );	// モノクロ
 		else			bcol = VSurface::GetColor( COL_CG[AT_CSS][0] );	// カラー
@@ -1185,14 +1226,14 @@ DWORD MC6847::GetBcol( void ) const
 		if( AT_AS )		bcol = VSurface::GetColor( COL_SG[8] );			// セミグラフィック
 		else			bcol = VSurface::GetColor( COL_AN[4] );			// アルファニューメリック
 	}
-
+	
 	return bcol;
 }
 
 DWORD PCZ80_07::GetBcol( void ) const
 {
 	DWORD bcol;
-
+	
 	// 実際は全部同じかも
 	if( SRmode ){
 		if( CharMode )		bcol = VSurface::GetColor( COL_AN2[0] );	// キャラクタモード
@@ -1204,22 +1245,22 @@ DWORD PCZ80_07::GetBcol( void ) const
 			else			bcol = VSurface::GetColor( COL_CG2[0][0] );	// グラフィック
 		}
 	}
-
+	
 	return bcol;
 }
 #endif
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // パレット設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PCZ80_12::SetPalette( int col, BYTE dat )
 {
 	PRINTD( VDG_LOG, "[VDG][SetPalette] %d ->%d\n", col, dat );
-
+	
 	int tpal  =   (col&8) | ((col&4)>>1) | ((col&2)>>1) | ((col&1)<<2);
-	BYTE pdat = ( (dat&8) | ((dat&4)>>1) | ((dat&2)>>1) | ((dat&1)<<2) ) + 65;
-
+	BYTE pdat = ( (dat&8) | ((dat&4)>>1) | ((dat&2)>>1) | ((dat&1)<<2) ) + COL_AN2[0];
+	
 	COL_AN2[tpal]   = pdat;
 	COL_CG2[0][col] = pdat;
 	COL_CG2[1][col] = pdat;

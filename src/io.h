@@ -1,35 +1,38 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef IO_H_INCLUDED
 #define IO_H_INCLUDED
+
+#include <memory>
+#include <vector>
 
 #include "typedef.h"
 #include "device.h"
 
-// デフォルトポート数
-#define	BANKSIZE	256
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
-// ---------------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////
+// --------------------------------------------------------------------------
 //	IOBus : I/O空間を提供するクラス
 //	  Original     : cisc
 //	  Modification : Yumitaro
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 class IOBus {
 // 型定義
 public:
-	typedef Device::InFuncPtr InFuncPtr;
-	typedef Device::OutFuncPtr OutFuncPtr;
+	using InFuncPtr  = Device::InFuncPtr;
+	using OutFuncPtr = Device::OutFuncPtr;
 	
 	struct InBank{
 		IDevice* device;
 		InFuncPtr func;
-		InBank* next;
 	};
 	struct OutBank{
 		IDevice* device;
 		OutFuncPtr func;
-		OutBank* next;
 	};
 	
 	enum ConnectRule{
@@ -44,67 +47,67 @@ public:
 private:
 	class DummyIO : public Device{
 	public:
-		DummyIO() : Device(NULL,0) {}
-		~DummyIO() {}
+		DummyIO();
+		~DummyIO();
 		
 		BYTE dummyin( int );
 		void dummyout( int, BYTE );
 	};
-
+	
+	static DummyIO dummyio;
+	
+	bool ConnectIn ( int bank, const std::shared_ptr<IDevice>&, InFuncPtr  );
+	bool ConnectOut( int bank, const std::shared_ptr<IDevice>&, OutFuncPtr );
+	
 // ここから本体
 public:
 	IOBus();
-	~IOBus();
+	virtual ~IOBus();
 	
-	bool Init( DeviceList* devlist = 0, int bs = BANKSIZE );
+	virtual bool Init( int );
 	
-	bool ConnectIn( int bank, IDevice* device, InFuncPtr func );
-	bool ConnectOut( int bank, IDevice* device, OutFuncPtr func );
+	bool Connect( const std::shared_ptr<IDevice>&, const std::vector<Connector>& );
+	bool Disconnect( const DeviceList::ID );
 	
-	InBank* GetIns() { return ins; }
-	OutBank* GetOuts() { return outs; }
-	BYTE* GetFlags() { return flags; }
+	BYTE In( int );
+	void Out( int, BYTE );
 	
-	bool Connect( IDevice* device, const Connector* connector );
-	bool Disconnect( IDevice* device );
-	BYTE In( int port );
-	void Out( int port, BYTE data );
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	void GetPortList( std::vector<int>&, std::vector<int>& );	// 登録済I/Oポートリスト取得
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 private:
-	InBank* ins;
-	OutBank* outs;
-	BYTE* flags;
-	DeviceList* devlist;
+	std::vector<std::vector<InBank>> ins;
+	std::vector<std::vector<OutBank>> outs;
 	
-	int banksize;
-	
-	static DummyIO dummyio;
+	DeviceList devlist;
 };
-class IO6 {
+
+
+
+class IO6 : public IOBus {
 private:
-	// オブジェクトポインタ
-	IOBus *io;								// I/Oバス
-	DeviceList *dl;							// デバイスリスト
-	
-	int Iwait[BANKSIZE];					// IN ウェイトテーブル
-	int Owait[BANKSIZE];					// OUTウェイトテーブル
+	std::vector<int> Iwait, Owait;	// IN/OUT ウェイトテーブル
+	std::vector<int> Idata, Odata;	// IN/OUT データ
 	
 public:
-	IO6();									// コンストラクタ
-	~IO6();									// デストラクタ
+	IO6();
+	~IO6();
 	
-	bool Init( int );						// 初期化
+	bool Init( int ) override;				// 初期化
 	
-	bool Connect( IDevice*, const IOBus::Connector* );	// デバイス接続
-	bool Disconnect( IDevice* );						// デバイス切断
-	
-	BYTE In( int, int * = NULL );			// IN関数
-	void Out( int, BYTE, int * = NULL );	// OUT関数
+	BYTE In( int, int* = nullptr );			// IN関数
+	void Out( int, BYTE, int* = nullptr );	// OUT関数
 	
 	void SetInWait( int, int );				// IN ウェイト設定
 	void SetOutWait( int, int );			// OUTウェイト設定
 	int GetInWait( int );					// IN ウェイト取得
 	int GetOutWait( int );					// OUTウェイト取得
+	
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	int PeepIn( int );						// IN データ参照
+	int PeepOut( int );						// OUTデータ参照
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 };
 
 

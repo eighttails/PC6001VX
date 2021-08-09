@@ -1,16 +1,20 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef YM2203_H_INCLUDED
 #define YM2203_H_INCLUDED
 
-#include "../typedef.h"
-#include "../ini.h"
+#include "ini.h"
 #include "psgbase.h"
+#include "typedef.h"
 #include "fmgen/opna.h"
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
-class cYM2203 : public cPSG, public virtual IDoko {
+/////////////////////////////////////////////////////////////////////////////
+class cYM2203 : public cPSG {
 protected:
 	FM::OPN	opn;
 	
@@ -18,32 +22,27 @@ protected:
 	BYTE RegTimerB;
 	BYTE RegTimerCtr;
 	
-	void _WriteReg( BYTE, BYTE );		// レジスタ書込みサブ
-	void WriteReg( BYTE, BYTE );		// レジスタ書込み
-	BYTE ReadReg();						// レジスタ読込み
-	BYTE ReadStatus();					// ステータスレジスタ読込み
+	void _WriteReg( BYTE, BYTE );			// レジスタ書込みサブ
+	void WriteReg( BYTE, BYTE ) override;	// レジスタ書込み
+	BYTE ReadReg() override;				// レジスタ読込み
+	BYTE ReadStatus() override;				// ステータスレジスタ読込み
 	
-	void SetClock( int, int );			// クロック設定
-	void SetVolumeTable( int );			// 音量設定(ボリュームテーブル設定)
+	void SetClock( int, int ) override;		// クロック設定
+	void SetVolumeTable( int ) override;	// 音量設定(ボリュームテーブル設定)
 	
-	bool Init( int, int );				// 初期化
-	void Reset();						// リセット
+	bool InitMod( int, int ) override;		// 初期化
+	void Reset() override;					// リセット
 	
-	virtual void SetTimerA( int ){}		// TimerA設定
-	virtual void SetTimerB( int ){}		// TimerB設定
+	virtual void SetTimerA( int ){}			// TimerA設定
+	virtual void SetTimerB( int ){}			// TimerB設定
 	
-	bool TimerIntr();					// タイマ割込み発生
+	bool TimerIntr();						// タイマ割込み発生
 	
 public:
-	cYM2203();							// コンストラクタ
-	virtual ~cYM2203();					// デストラクタ
+	cYM2203();								// Constructor
+	virtual ~cYM2203();						// Destructor
 	
-	int Update1Sample();				// ストリーム1Sample更新
-	
-	// ------------------------------------------
-	bool DokoSave( cIni * );	// どこでもSAVE
-	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	int Update1Sample() override;			// ストリーム1Sample更新
 };
 
 

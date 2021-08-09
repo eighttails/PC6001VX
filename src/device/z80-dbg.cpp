@@ -1,7 +1,16 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
+//***************************************************************************
+// QUASI88 --- PC-8801 emulator
+//	 Copyright (C) Showzoh Fukunaga 1998
+//***************************************************************************
+#include "common.h"
 #include "z80.h"
 
 
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 // オペランドの型
 //	NOTHING	なし	 XX				そのまま表示
@@ -35,7 +44,7 @@ enum{
 
 typedef struct{
 	int Type;
-	const char *Str;
+	const char* Str;
 } Mnemonics;
 
 
@@ -154,7 +163,7 @@ static Mnemonics Instruction[256] =
 	{OP_NUM_16,		" CALL NZ,%04XH"},	{OP_NOTHING,	" PUSH BC"},
 	{OP_NUM_8,		" ADD  A,%02XH"},	{OP_NOTHING,	" RST  00H"},
 	{OP_NOTHING,	" RET  Z"},			{OP_NOTHING,	" RET"},
-	{OP_NUM_16,		" JP   Z,%04XH"},	{OP_PREFIX,		NULL},
+	{OP_NUM_16,		" JP   Z,%04XH"},	{OP_PREFIX,		nullptr},
 	{OP_NUM_16,		" CALL Z,%04XH"},	{OP_NUM_16,		" CALL %04XH"},
 	{OP_NUM_8,		" ADC  A,%02XH"},	{OP_NOTHING,	" RST  08H"},
 
@@ -164,7 +173,7 @@ static Mnemonics Instruction[256] =
 	{OP_NUM_8,		" SUB  %02XH"},		{OP_NOTHING,	" RST  10H"},
 	{OP_NOTHING,	" RET  C"},			{OP_NOTHING,	" EXX"},
 	{OP_NUM_16,		" JP   C,%04XH"},	{OP_NUM_8,		" IN   A,(%02XH)"},
-	{OP_NUM_16,		" CALL C,%04XH"},	{OP_PREFIX,		NULL},
+	{OP_NUM_16,		" CALL C,%04XH"},	{OP_PREFIX,		nullptr},
 	{OP_NUM_8,		" SBC  A,%02XH"},	{OP_NOTHING,	" RST  18H"},
 
 	{OP_NOTHING,	" RET  PO"},		{OP_NOTHING,	" POP  HL"},
@@ -173,7 +182,7 @@ static Mnemonics Instruction[256] =
 	{OP_NUM_8,		" AND  %02XH"},		{OP_NOTHING,	" RST  20H"},
 	{OP_NOTHING,	" RET  PE"},		{OP_NOTHING,	" JP   (HL)"},
 	{OP_NUM_16,		" JP   PE,%04XH"},	{OP_NOTHING,	" EX   DE,HL"},
-	{OP_NUM_16,		" CALL PE,%04XH"},	{OP_PREFIX,		NULL},
+	{OP_NUM_16,		" CALL PE,%04XH"},	{OP_PREFIX,		nullptr},
 	{OP_NUM_8,		" XOR  %02XH"},		{OP_NOTHING,	" RST  28H"},
 
 	{OP_NOTHING,	" RET  P"},			{OP_NOTHING,	" POP  AF"},
@@ -182,7 +191,7 @@ static Mnemonics Instruction[256] =
 	{OP_NUM_8,		" OR   %02XH"},		{OP_NOTHING,	" RST  30H"},
 	{OP_NOTHING,	" RET  M"},			{OP_NOTHING,	" LD   SP,HL"},
 	{OP_NUM_16,		" JP   M,%04XH"},	{OP_NOTHING,	" EI"},
-	{OP_NUM_16,		" CALL M,%04XH"},	{OP_PREFIX,		NULL},
+	{OP_NUM_16,		" CALL M,%04XH"},	{OP_PREFIX,		nullptr},
 	{OP_NUM_8,		" CP   %02XH"},		{OP_NOTHING,	" RST  38H"}
 };
 
@@ -595,7 +604,7 @@ static Mnemonics Instruction_DD[256]=
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
-	{OP_SKIP,		"+DB   %02XH"},		{OP_PREFIX,		NULL},
+	{OP_SKIP,		"+DB   %02XH"},		{OP_PREFIX,		nullptr},
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
 	
@@ -1017,7 +1026,7 @@ static Mnemonics Instruction_FD[256]=
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
-	{OP_SKIP,		"+DB   %02XH"},		{OP_PREFIX,		NULL},
+	{OP_SKIP,		"+DB   %02XH"},		{OP_PREFIX,		nullptr},
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
 	{OP_SKIP,		"+DB   %02XH"},		{OP_SKIP,		"+DB   %02XH"},
 	
@@ -1327,62 +1336,61 @@ static Mnemonics Instruction_FD_CB[256]=
 
 
 // アドレス／インストラクションコードの表示
-void cZ80::PrintfHead( char *str, WORD pc, int num )
+void cZ80::PrintfHead( std::string& str, WORD pc, int num )
 {
-	sprintf( str, "%04X:", pc );
-	str += strlen( str );
+	str = Stringf( "%04X:", pc );
 	
 	switch( num ){
 	case 1:
-		sprintf( str, "%02X       ",       ReadMemNW( pc ) );
+		str += Stringf( "%02X       ",       ReadMemNW( pc ) );
 		break;
 	case 2:
-		sprintf( str, "%02X%02X     ",     ReadMemNW( pc ), ReadMemNW( pc+1 ) );
+		str += Stringf( "%02X%02X     ",     ReadMemNW( pc ), ReadMemNW( pc+1 ) );
 		break;
 	case 3:
-		sprintf( str, "%02X%02X%02X   ",   ReadMemNW( pc ), ReadMemNW( pc+1 ), ReadMemNW( pc+2 ) );
+		str += Stringf( "%02X%02X%02X   ",   ReadMemNW( pc ), ReadMemNW( pc+1 ), ReadMemNW( pc+2 ) );
 		break;
 	case 4:
-		sprintf( str, "%02X%02X%02X%02X ", ReadMemNW( pc ), ReadMemNW( pc+1 ), ReadMemNW( pc+2 ), ReadMemNW( pc+3 ) );
+		str += Stringf( "%02X%02X%02X%02X ", ReadMemNW( pc ), ReadMemNW( pc+1 ), ReadMemNW( pc+2 ), ReadMemNW( pc+3 ) );
 		break;
 	default:
-		sprintf( str, "Internal Error -" );
+		str += Stringf( "Internal Error -" );
 		break;
 	}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 1ライン逆アセンブル
-////////////////////////////////////////////////////////////////
-int cZ80::Disasm( char *str, WORD pc )
+/////////////////////////////////////////////////////////////////////////////
+int cZ80::Disasm( std::string& str, WORD pc )
 {
 	int num;
-	Mnemonics *Inst;
+	Mnemonics* Inst;
 	
 	Inst = &Instruction[ ReadMemNW( pc ) ];
 	switch( Inst->Type ){
 	case OP_NOTHING:
 		PrintfHead( str, pc, 1 );
-		sprintf( &str[strlen(str)], Inst->Str );
+		str += Inst->Str;
 		return 1;
 		
 	case OP_NUM_8:
 		num = ReadMemNW( pc+1 );
 		PrintfHead( str, pc, 2 );
-		sprintf( &str[strlen(str)], Inst->Str, num );
+		str += Stringf( Inst->Str, num );
 		return 2;
 		
 	case OP_NUM_16:
 		num = ReadMemNW( pc+1 ) + ReadMemNW( pc+2 )*256;
 		PrintfHead( str, pc, 3 );
-		sprintf( &str[strlen(str)], Inst->Str, num );
+		str += Stringf( Inst->Str, num );
 		return 3;
 		
 	case OP_ADR_REL:
 		num = pc +2 + (offset)ReadMemNW( pc+1 );
 		PrintfHead( str, pc, 2 );
-		sprintf( &str[strlen(str)], Inst->Str, num );
+		str += Stringf( Inst->Str, num );
 		return 2;
 		
 	case OP_PREFIX:
@@ -1392,47 +1400,47 @@ int cZ80::Disasm( char *str, WORD pc )
 		case 0xED:	Inst = &Instruction_ED[ ReadMemNW( pc+1 ) ];	break;
 		case 0xFD:	Inst = &Instruction_FD[ ReadMemNW( pc+1 ) ];	break;
 		default:
-			sprintf( &str[strlen(str)], " - Internal Error ! - ");
+			str += " - Internal Error ! - ";
 			return 2;
 		}
 		
 		switch( Inst->Type ){
 		case OP_NOTHING:
 			PrintfHead( str, pc, 2 );
-			sprintf( &str[strlen(str)], Inst->Str );
+			str += Inst->Str;
 			return 2;
 			
 		case OP_UNEXIST:
-		PrintfHead( str, pc, 2 );
-		sprintf( &str[strlen(str)], Inst->Str, ReadMemNW( pc ), ReadMemNW( pc+1 ) );
-		return 2;
-		
+			PrintfHead( str, pc, 2 );
+			str += Stringf( Inst->Str, ReadMemNW( pc ), ReadMemNW( pc+1 ) );
+			return 2;
+			
 		case OP_SKIP:
 			PrintfHead( str, pc, 1 );
-			sprintf( &str[strlen(str)], Inst->Str, ReadMemNW( pc ) );
+			str += Stringf( Inst->Str, ReadMemNW( pc ) );
 			return 1;
 			
 		case OP_NUM_8:
 			num = ReadMemNW( pc+2 );
 			PrintfHead( str, pc, 3 );
-			sprintf( &str[strlen(str)], Inst->Str, num );
+			str += Stringf( Inst->Str, num );
 			return 3;
 			
 		case OP_NUM_16:
 			num = ReadMemNW( pc+2 ) + ReadMemNW( pc+3 )*256;
 			PrintfHead( str, pc, 4 );
-			sprintf( &str[strlen(str)], Inst->Str, num );
+			str += Stringf( Inst->Str, num );
 			return 4;
 		
 		case OP_INDEX:
 			PrintfHead( str, pc, 3 );
-			sprintf( &str[strlen(str)], Inst->Str, (offset)ReadMemNW( pc+2 ) );
+			str += Stringf( Inst->Str, (offset)ReadMemNW( pc+2 ) );
 			return 3;
 		
 		case OP_IDX_NUM:
 			num = (int)ReadMemNW( pc+3 );
 			PrintfHead( str, pc, 4 );
-			sprintf( &str[strlen(str)], Inst->Str, (int)ReadMemNW( pc+2 ) ,num );
+			str += Stringf( Inst->Str, (int)ReadMemNW( pc+2 ), num );
 			return 4;
 			
 		case OP_PREFIX:
@@ -1440,18 +1448,18 @@ int cZ80::Disasm( char *str, WORD pc )
 			case 0xDD:   Inst = &Instruction_DD_CB[ ReadMemNW( pc+3 ) ];	break;
 			case 0xFD:   Inst = &Instruction_FD_CB[ ReadMemNW( pc+3 ) ];	break;
 			default:
-				sprintf( &str[strlen(str)]," - Internal Error - ");
+				str += " - Internal Error - ";
 				return 4;
 			}
 			switch( Inst->Type ){
 			case OP_INDEX:
 				PrintfHead( str, pc, 4 );
-				sprintf( &str[strlen(str)], Inst->Str, (offset)ReadMemNW( pc+2 ) );
+				str += Stringf( Inst->Str, (offset)ReadMemNW( pc+2 ) );
 				return 4;
 				
 			case OP_UNEXIST:
 				PrintfHead( str, pc, 4 );
-				sprintf( &str[strlen(str)], Inst->Str, ReadMemNW( pc ),  ReadMemNW( pc+1 ), ReadMemNW( pc+2 ),ReadMemNW( pc+3 ));
+				str += Stringf( Inst->Str, ReadMemNW( pc ),  ReadMemNW( pc+1 ), ReadMemNW( pc+2 ),ReadMemNW( pc+3 ));
 				return 4;
 			}
 			break;
@@ -1459,15 +1467,15 @@ int cZ80::Disasm( char *str, WORD pc )
 		break;
 	}
 	
-	sprintf( &str[strlen(str)], " - Internal Error - ");
+	str += " - Internal Error - ";
 	return 1;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // レジスタ値取得
-////////////////////////////////////////////////////////////////
-void cZ80::GetRegister( Register * reg )
+/////////////////////////////////////////////////////////////////////////////
+void cZ80::GetRegister( Register* reg )
 {
 	// 汎用レジスタ
 	reg->AF = AF;
@@ -1506,10 +1514,10 @@ void cZ80::GetRegister( Register * reg )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // レジスタ値設定
-////////////////////////////////////////////////////////////////
-void cZ80::SetRegister( Register * reg )
+/////////////////////////////////////////////////////////////////////////////
+void cZ80::SetRegister( Register* reg )
 {
 	// 汎用レジスタ
 	AF = reg->AF;
@@ -1548,12 +1556,12 @@ void cZ80::SetRegister( Register * reg )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // PCレジスタ値取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 WORD cZ80::GetPC( void )
 {
 	return PC.W;
 }
 
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

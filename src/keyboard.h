@@ -1,5 +1,13 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef KEYBOARD_H_INCLUDED
 #define KEYBOARD_H_INCLUDED
+
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
 #include "typedef.h"
 #include "device.h"
@@ -7,22 +15,22 @@
 #include "keydef.h"
 
 
-
 // キーボードインジケータ状態
-#define	KI_KANA		(1)
-#define	KI_KKANA	(2)
-#define	KI_CAPS		(4)
+#define	KI_KANA		(0b00000001)
+#define	KI_KKANA	(0b00000010)
+#define	KI_CAPS		(0b00000100)
+#define	KI_SHIFT	(0b00001000)
+#define	KI_GRAPH	(0b00010000)
+#define	KI_CTRL		(0b00100000)
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class KEY6 : public Device, public IDoko {
-	friend class KeyStateWatcher;
-
 protected:
-	P6KEYsym K6Table[KVC_LAST];		// 仮想キーコード -> P6キーコード 変換テーブル
-	BYTE MatTable[KP6_LAST];		// P6キーコード -> マトリクス 変換テーブル
+	std::unordered_map<PCKEYsym,P6KEYsym> K6Table;	// 仮想キーコード -> P6キーコード 変換テーブル
+	std::unordered_map<P6KEYsym,BYTE> MatTable;		// P6キーコード -> マトリクス 変換テーブル
 	
 	// 特殊キー フラグ
 	bool ON_SHIFT;	// SHIFT
@@ -33,44 +41,51 @@ protected:
 	bool ON_STOP;	// STOP
 	bool ON_CAPS;	// CAPS
 	
-	BYTE P6Matrix[16*2];		// キーマトリクス (前半:今回 後半:前回)
-	BYTE P6Mtrx[16*2];			// キーマトリクス保存用
+	std::vector<BYTE> P6Matrix;	// キーマトリクス (前半:今回 後半:前回)
+	std::vector<BYTE> P6Mtrx;	// キーマトリクス保存用
 								//  いずれも末尾の2byteはジョイスティックの状態保存用
+
 public:
-	KEY6( VM6 *, const ID& );			// コンストラクタ
-	virtual ~KEY6();					// デストラクタ
+	KEY6( VM6*, const ID& );
+	virtual ~KEY6();
 	
-	bool Init( int );					// 初期化
+	bool Init();										// 初期化
+	void Reset();										// リセット
 	
-	void UpdateMatrixKey( int, bool );	// キーマトリクス更新(キー)
-	void UpdateMatrixJoy( BYTE, BYTE );	// キーマトリクス更新(ジョイスティック)
-	bool ScanMatrix();					// キーマトリクススキャン
-	int GetMatrixSize() const;			// キーマトリクスサイズ取得
-	BYTE *GetMatrix();					// キーマトリクスポインタ取得
-	const BYTE *GetMatrix2() const;		// キーマトリクスポインタ(保存用)取得
+	void UpdateMatrixKey( const PCKEYsym, const bool );	// キーマトリクス更新(キー)
+	void UpdateMatrixJoy( const BYTE, const BYTE );		// キーマトリクス更新(ジョイスティック)
+	bool ScanMatrix();									// キーマトリクススキャン
+	std::vector<BYTE>& GetMatrix();						// キーマトリクス取得
+	const std::vector<BYTE>& GetMatrix2() const;		// キーマトリクス(保存用)取得
 	
-	BYTE GetKeyJoy() const;				// カーソルキー状態取得
-	BYTE GetKeyIndicator() const;		// キーボードインジケータ状態取得
+	BYTE GetKeyJoy() const;								// カーソルキー状態取得
+	BYTE GetKeyIndicator() const;						// キーボードインジケータ状態取得
 	
-	void SetVKeySymbols( VKeyConv * );	// 仮想キーコード -> P6キーコード 設定
+	void SetVKeySymbols( std::vector<VKeyConv>& );		// 仮想キーコード -> P6キーコード 設定
 	
-	BYTE GetJoy( int ) const;			// ジョイスティック状態取得
+	BYTE GetJoy( const int ) const;						// ジョイスティック状態取得
 	
-	void ChangeKana();					// 英字<->かな切換
-	void ChangeKKana();					// かな<->カナ切換
+	void ChangeKana();									// 英字<->かな切換
+	void ChangeKKana();									// かな<->カナ切換
 	
 	
-	// ------------------------------------------
-	bool DokoSave( cIni * );	// どこでもSAVE
-	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	// ----------------------------------------------------------------------
+	bool DokoSave( cIni* ) override;	// どこでもSAVE
+	bool DokoLoad( cIni* ) override;	// どこでもLOAD
+	// ----------------------------------------------------------------------
 };
 
 
 class KEY60 : public KEY6 {
 public:
-	KEY60( VM6 *, const ID& );		// コンストラクタ
-	~KEY60();							// デストラクタ
+	KEY60( VM6*, const ID& );
+	~KEY60();
+};
+
+class KEY62 : public KEY6 {
+public:
+	KEY62( VM6*, const ID& );
+	~KEY62();
 };
 
 

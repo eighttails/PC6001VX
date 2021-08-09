@@ -1,5 +1,12 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef TAPE_H_INCLUDED
 #define TAPE_H_INCLUDED
+
+#include <memory>
+#include <string>
 
 #include "typedef.h"
 #include "device.h"
@@ -14,93 +21,81 @@
 #define PG_D	(0x0200)
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
-class CMTL : public Device, public SndDev, public IDoko {
+/////////////////////////////////////////////////////////////////////////////
+class CMTL : public Device, public SndDev, public cP6T, public IDoko {
 private:
-	char FilePath[PATH_MAX];			// TAPEファイルフルパス
-	cP6T *p6t;
+	P6VPATH FilePath;					// TAPEファイルフルパス
 	bool Relay;							// リレーの状態
 	bool stron;							// ストリーム内部処理用
 	
 	bool Boost;							// BoostUp使う? true:使う false:使わない
 	int MaxBoost60;						// BoostUp 最大倍率(N60モード)
 	int MaxBoost62;						// BoostUp 最大倍率(N60m/N66モード)
+	int StopBit;						// ストップビット数
 	
 	bool Remote( bool );				// リモート制御(PLAY,STOP)
 	WORD CmtRead();						// CMT 1文字読込み
 	int GetSinCurve( int );				// sin波取得
 	
-	// デバイス定義
-	static const Descriptor descriptor;
-	static const InFuncPtr  indef[];
-	static const OutFuncPtr outdef[];
-	const Descriptor* GetDesc() const { return &descriptor; }
-	
 	// I/Oアクセス関数
 	void OutB0H( int, BYTE );
 	
 public:
-	CMTL( VM6 *, const ID& );			// コンストラクタ
-	virtual ~CMTL();					// デストラクタ
+	CMTL( VM6*, const ID& );
+	virtual ~CMTL();
 	
-	void EventCallback( int, int );		// イベントコールバック関数
+	void EventCallback( int, int ) override;	// イベントコールバック関数
 	
-	bool Init( int );					// 初期化
-	void Reset();						// リセット
+	bool Init( int ) override;					// 初期化
 	
-	bool Mount( const char * );			// TAPE マウント
-	void Unmount();						// TAPE アンマウント
+	bool Mount( const P6VPATH& );				// TAPE マウント
+	void Unmount();								// TAPE アンマウント
 	
-	WORD Update();						// ストリーム更新(1byte分)
-	int SoundUpdate( int );				// ストリーム更新
+	WORD Update();								// ストリーム更新(1byte分)
+	int SoundUpdate( int ) override;			// ストリーム更新
 	
-	bool IsMount() const;				// マウント済み?
-	bool IsAutoStart() const;			// オートスタート?
+	const P6VPATH& GetFile() const;				// ファイルパス取得
+	bool IsMount() const;						// マウント済み?
+	bool IsRelay() const;						// リレーの状態取得
 	
-	const char *GetFile() const;		// ファイルパス取得
-	const char *GetName() const;		// TAPE名取得
-	DWORD GetSize() const;				// ベタイメージサイズ取得
-	int GetCount() const;				// カウンタ取得
-	bool IsRelay() const;				// リレーの状態取得
+	void SetBoost( bool );						// BoostUp設定
+	void SetMaxBoost( int, int );				// BoostUp最大倍率設定
+	bool IsBoostUp() const;						// BoostUp状態取得
 	
-	void SetBoost( bool );				// BoostUp設定
-	void SetMaxBoost( int, int );		// BoostUp最大倍率設定
-	bool IsBoostUp() const;				// BoostUp状態取得
-	
-	const P6TAUTOINFO *GetAutoStartInfo() const;	// オートスタート情報取得
+	void SetStopBit( int );						// ストップビット数設定
+	int GetStopBit() const;						// ストップビット数取得
 	
 	// デバイスID
 	enum IDOut{ outB0H=0 };
 	enum IDIn {};
 	
-	// ------------------------------------------
-	bool DokoSave( cIni * );		// どこでもSAVE
-	bool DokoLoad( cIni * );		// どこでもLOAD
-	// ------------------------------------------
+	// ----------------------------------------------------------------------
+	bool DokoSave( cIni* ) override;	// どこでもSAVE
+	bool DokoLoad( cIni* ) override;	// どこでもLOAD
+	// ----------------------------------------------------------------------
 };
 
 
 class CMTS : public Device {
 private:
-	char FilePath[PATH_MAX];			// TAPEファイルフルパス
-	
-	FILE *fp;							// FILE ポインタ
+	P6VPATH FilePath;					// TAPEファイルフルパス
+	std::fstream fs;					// ファイルストリーム
 	int Baud;							// ボーレート
 	
 public:
-	CMTS( VM6 *, const ID& );			// コンストラクタ
-	~CMTS();							// デストラクタ
+	CMTS( VM6*, const ID& );
+	~CMTS();
 	
-	bool Init( const char * );			// 初期化
+	bool Init( const P6VPATH& );		// 初期化
 	
 	bool Mount();						// TAPE マウント
 	void Unmount();						// TAPE アンマウント
 	
 	void SetBaud( int );				// ボーレート設定
 	
-	void CmtWrite( BYTE );				// CMT 1文字書込み
+	void WriteOne( BYTE );				// 1文字書込み
 };
 
 

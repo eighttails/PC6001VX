@@ -1,12 +1,18 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef Z80_H_INCLUDED
 #define Z80_H_INCLUDED
 
-#include "../typedef.h"
+#include <string>
+
+#include "typedef.h"
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class cZ80 {
 public:
 	// ペアレジスタ データ型定義
@@ -45,7 +51,7 @@ protected:
 	
 	int mstate;				// メモリアクセスウェイト ステート数
 	
-	virtual BYTE Fetch( WORD, int * )   = 0;	// フェッチ(M1)
+	virtual BYTE Fetch( WORD, int* )    = 0;	// フェッチ(M1)
 	virtual BYTE ReadMemNW( WORD )      = 0;	// メモリアクセス(ウェイトなし)
 	virtual BYTE ReadMem( WORD )        = 0;	// メモリアクセス(ウェイトあり) Read
 	virtual void WriteMem( WORD, BYTE ) = 0;	// メモリアクセス(ウェイトあり) Write
@@ -56,21 +62,21 @@ protected:
 	
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	void PrintfHead( char *, WORD, int );	// アドレス/インストラクションコードの表示
+	void PrintfHead( std::string&, WORD, int );	// アドレス/インストラクションコードの表示
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 public:
-	cZ80();						// コンストラクタ
-	virtual ~cZ80();			// デストラクタ
+	cZ80();						// Constructor
+	virtual ~cZ80();			// Destructor
 	
 	void Reset();				// リセット
 	int Exec();					// 1命令実行
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	int Disasm( char *, WORD );		// 1ライン逆アセンブル
-	void GetRegister( Register * );	// レジスタ値取得
-	void SetRegister( Register * );	// レジスタ値設定
-	WORD GetPC();					// PCレジスタ値取得
+	int Disasm( std::string&, WORD );	// 1ライン逆アセンブル
+	void GetRegister( Register* );		// レジスタ値取得
+	void SetRegister( Register* );		// レジスタ値設定
+	WORD GetPC();						// PCレジスタ値取得
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 };
 

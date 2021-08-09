@@ -8,7 +8,7 @@ QT += core gui widgets network
 
 TARGET = PC6001VX
 TEMPLATE = app
-VERSION = 3.8.0
+VERSION = 4.0.0
 
 QMAKE_TARGET_COMPANY = eighttails
 QMAKE_TARGET_DESCRIPTION = PC6001VX
@@ -45,7 +45,7 @@ DEFINES += QTP6VX
 
 debug:DEFINES += DEBUG
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
+INCLUDEPATH += src src/Qt src/Qt/qtsingleapplication
 
 #Configuration for UNIX variants
 unix:!macx {
@@ -161,10 +161,8 @@ SOURCES += \
     src/Qt/qtsingleapplication/qtsingleapplication.cpp \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
     src/Qt/renderview.cpp \
-    src/Qt/semaphore.cpp \
     src/Qt/simplevirtualkeyboardscene.cpp \
     src/Qt/systeminfodialog.cpp \
-    src/Qt/thread.cpp \
     src/Qt/virtualkeyboardscene.cpp \
     src/Qt/virtualkeyboardview.cpp \
     src/Qt/virtualkeyitem.cpp \
@@ -193,12 +191,14 @@ SOURCES += \
     src/device/z80.cpp \
     src/disk.cpp \
     src/error.cpp \
+    src/filesystem.cpp \
     src/graph.cpp \
     src/ini.cpp \
     src/intr.cpp \
     src/io.cpp \
     src/joystick.cpp \
     src/keyboard.cpp \
+    src/memblk.cpp \
     src/memory.cpp \
     src/movie.cpp \
     src/p6el.cpp \
@@ -208,9 +208,11 @@ SOURCES += \
     src/psgfm.cpp \
     src/replay.cpp \
     src/schedule.cpp \
+    src/semaphore.cpp \
     src/sound.cpp \
     src/status.cpp \
     src/tape.cpp \
+    src/thread.cpp \
     src/vdg.cpp \
     src/voice.cpp \
     src/vsurface.cpp
@@ -288,6 +290,7 @@ HEADERS  += \
     src/keyboard.h \
     src/keydef.h \
     src/log.h \
+    src/memblk.h \
     src/memory.h \
     src/movie.h \
     src/osd.h \

@@ -1,5 +1,12 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef DISK_H_INCLUDED
 #define DISK_H_INCLUDED
+
+#include <memory>
+#include <string>
 
 #include "typedef.h"
 #include "device.h"
@@ -11,32 +18,26 @@
 
 
 // 装置タイプ
-enum UnitType
-{
+enum UnitType{
 	PC6031 = 0,
 	PC6031SR,
 	PC8031,
 	PC80S31,
 	PC6601,
-	PC6601SR,
-	EndofUnitType
+	PC6601SR
 };
 
 // ドライブタイプ
-enum FddType
-{
+enum FddType{
 	FDD1D = 0,
 	FDD1DD,
 	FDD2D,
-	FDD2DD,
-	
-	EndofFddType
+	FDD2DD
 };
 
 // コマンド
 // PC-6031準拠(えすびさん調査ベース)
-enum FddCommand
-{
+enum FddCommand{
 	INITIALIZE			= 0x00,
 	WRITE_DATA			= 0x01,
 	READ_DATA			= 0x02,
@@ -51,8 +52,7 @@ enum FddCommand
 	FAST_SEND_DATA		= 0x12,	// PC-6031SR
 	SET_MODE			= 0x17,	// PC-6031SR
 	
-	IDLE				= 0xff,	// 処理待ちの状態
-	EndofFddCmd
+	IDLE				= 0xff	// 処理待ちの状態
 };
 
 // ミニフロッピーディスク 各種情報
@@ -92,17 +92,17 @@ struct DISK60 {
 	bool error;			// エラーフラグ true:エラーあり false:エラーなし
 	
 	DISK60() :
-		Type(FDD1D),
-		PD_DAC(false), PD_RFD(false), PD_DAV(false), PD_ATN(false),
-		DP_DAC(false), DP_RFD(false), DP_DAV(false),
-		command(IDLE), step(0),
-		blk(0), drv(0), trk(0), sct(0),
-		size(0), Fast(false), FastStat(false),
-		retdat(0xff), busy(0), error(false) {}
+		Type( FDD1D ),
+		PD_ATN( false ), PD_DAC( false ), PD_RFD( false ), PD_DAV( false ),
+		DP_DAC( false ), DP_RFD( false ), DP_DAV( false ),
+		command( IDLE ), step( 0 ),
+		blk( 0 ), drv( 0 ), trk( 0 ), sct( 0 ),
+		size( 0 ), Fast( false ), FastStat( false ),
+		retdat( 0xff ), busy( 0 ), error( false ) {}
 };
 
 
-enum FdcPhase {
+enum FdcPhase{
 	IDLEP = 0,
 	C_PHASE,
 	E_PHASE,
@@ -157,11 +157,11 @@ struct PD765 {
 	bool Intr;			// FDC割込み発生フラグ
 	
 		PD765() :
-		command(0), // phase(R_PHASE), step(0),
-		SRT(32), HUT(0), HLT(0), ND(false),
-		MT(0), MF(0), SK(0), HD(0), US(0), C(0), H(0), R(0), N(0),
-		EOT(0), GPL(0), DTL(0),
-		ST0(0), ST1(0), ST2(0), ST3(0), Status(0), Intr(false)
+		command( 0 ), // phase(R_PHASE), step(0),
+		SRT( 32 ), HUT( 0 ), HLT( 0 ), ND( false ),
+		MT( 0 ), MF( 0 ), SK( 0 ), HD( 0 ), US( 0 ), C( 0 ), H( 0 ), R( 0 ), N( 0 ),
+		EOT( 0 ), GPL( 0 ), DTL( 0 ),
+		ST0( 0 ), ST1( 0 ), ST2( 0 ), ST3( 0 ), Status( 0 ), Intr( false )
 		{
 			INITARRAY( SeekSta, SK_STOP );
 			INITARRAY( NCN, 0 );
@@ -170,52 +170,56 @@ struct PD765 {
 };
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class DSK6 : public Device, public IDoko {
 protected:
 	UnitType UType;						// 装置タイプ
 	int DrvNum;							// ドライブ数
-	char FilePath[MAXDRV][PATH_MAX];	// ファイルパス
+	P6VPATH FilePath[MAXDRV];			// ファイルパス
 	cD88 *Dimg[MAXDRV];					// ディスクイメージオブジェクトへのポインタ
 	bool Sys[MAXDRV];					// システムディスクフラグ
 	bool DDDrv[MAXDRV];					// 1DDドライブフラグ
 	int waitcnt;						// ウェイトカウンタ
 	bool waiten;						// ウェイト有効フラグ
 	
-	void ResetWait();					// ウェイトカウンタリセット
-	void AddWait( int );				// ウェイトカウンタ加算
-	bool SetWait( int, int=0 );			// ウェイト設定
+	void ResetWait();							// ウェイトカウンタリセット
+	void AddWait( int );						// ウェイトカウンタ加算
+	bool SetWait( int, int=0 );					// ウェイト設定
 	
 public:
-	DSK6( VM6 *, const ID& );			// コンストラクタ
-	virtual ~DSK6();					// デストラクタ
+	DSK6( VM6*, const ID& );
+	virtual ~DSK6();
 	
-	virtual void EventCallback( int, int );	// イベントコールバック関数
+	virtual void EventCallback( int, int ) override;	// イベントコールバック関数
 	
-	virtual bool Init( int ) = 0;		// 初期化
-	virtual void Reset() = 0;			// リセット
+	virtual bool Init( int );					// 初期化
+	virtual void Reset();						// リセット
 	
-	bool Mount( int, const char * );	// DISK マウント
-	void Unmount( int );				// DISK アンマウント
+	bool Mount( int, const P6VPATH& );			// DISK マウント
+	void Unmount( int );						// DISK アンマウント
 	
-	int GetDrives();					// ドライブ数取得
+	int GetDrives();							// ドライブ数取得
 	
-	bool IsMount( int ) const;			// マウント済み?
-	bool IsSystem( int ) const;			// システムディスク?
-	bool IsProtect( int ) const;		// プロテクト?
-	virtual bool InAccess( int ) const = 0;	// アクセス中?
+	bool IsMount( int ) const;					// マウント済み?
+	bool IsSystem( int ) const;					// システムディスク?
+	bool IsProtect( int ) const;				// プロテクト?
+	virtual bool InAccess( int ) const;			// アクセス中?
 	
-	const char *GetFile( int ) const;	// ファイルパス取得
-	const char *GetName( int ) const;	// DISK名取得
+	const P6VPATH& GetFile( int ) const;		// ファイルパス取得
+	const std::string& GetName( int ) const;	// DISK名取得
 	
-	void WaitEnable( bool );			// ウェイト有効フラグ設定
+	void WaitEnable( bool );					// ウェイト有効フラグ設定
 	
-	// ------------------------------------------
+	// デバイスID
+	enum IDOut{ outB1H=0, outB3H, outD0H, outD1H, outD2H, outD3H, outD6H, outD8H, outDAH, outDDH, outDEH };
+	enum IDIn {  inB2H=0,  inD0H,  inD1H,  inD2H,  inD3H,  inD4H,  inDCH,  inDDH };
+	
+	// ----------------------------------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	// ----------------------------------------------------------------------
 };
 
 
@@ -233,12 +237,6 @@ protected:
 	BYTE FddCntIn();		// DISKユニットからの制御信号入力 		(port D2H)
 	void FddCntOut( BYTE );	// DISKユニットへの制御信号出力 		(port D3H)
 	
-	// デバイス定義
-	static const Descriptor descriptor;
-	static const InFuncPtr  indef[];
-	static const OutFuncPtr outdef[];
-	const Descriptor* GetDesc() const { return &descriptor; }
-	
 	// I/Oアクセス関数
 	void OutD1H( int, BYTE );
 	void OutD2H( int, BYTE );
@@ -248,30 +246,26 @@ protected:
 	BYTE InD2H( int );
 	
 public:
-	DSK60( VM6 *, const ID& );			// コンストラクタ
-	virtual ~DSK60();					// デストラクタ
+	DSK60( VM6*, const ID& );
+	virtual ~DSK60();
 	
-	void EventCallback( int, int );		// イベントコールバック関数
+	void EventCallback( int, int ) override;	// イベントコールバック関数
 	
-	bool Init( int );					// 初期化
-	void Reset();						// リセット
-	bool InAccess( int ) const;			// アクセス中?
+	bool Init( int ) override;					// 初期化
+	void Reset() override;						// リセット
+	bool InAccess( int ) const override;		// アクセス中?
 	
-	// デバイスID
-	enum IDOut{ outD1H=0, outD2H, outD3H };
-	enum IDIn {  inD0H=0,  inD1H,  inD2H };
-	
-	// ------------------------------------------
+	// ----------------------------------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	// ----------------------------------------------------------------------
 };
 
 
 class DSK64 : public DSK60 {
 public:
-	DSK64( VM6 *, const ID& );			// コンストラクタ
-	virtual ~DSK64();					// デストラクタ
+	DSK64( VM6*, const ID& );
+	virtual ~DSK64();
 };
 
 
@@ -316,12 +310,6 @@ private:
 	void Seek();						// Seek
 	void SenseInterruptStatus();		// Sense Interrupt Status
 	
-	// デバイス定義
-	static const Descriptor descriptor;
-	static const InFuncPtr  indef[];
-	static const OutFuncPtr outdef[];
-	const Descriptor* GetDesc() const { return &descriptor; }
-	
 	// I/Oアクセス関数
 	void OutB1H( int, BYTE );	// FDCIモード設定
 	void OutB3H( int, BYTE );	// PortB2hの入出力制御
@@ -345,31 +333,26 @@ private:
 	BYTE InDDH( int );			// FDC データレジスタ
 
 public:
-	DSK66( VM6 *, const ID& );			// コンストラクタ
-	~DSK66();							// デストラクタ
+	DSK66( VM6*, const ID& );
+	~DSK66();
 	
-	void EventCallback( int, int );		// イベントコールバック関数
+	void EventCallback( int, int ) override;	// イベントコールバック関数
 	
-	bool Init( int );					// 初期化
-	void Reset();						// リセット
-	bool InAccess( int ) const;			// アクセス中?
+	bool Init( int ) override;					// 初期化
+	void Reset() override;						// リセット
+	bool InAccess( int ) const override;		// アクセス中?
 	
-	// デバイスID
-	enum IDOut{ outB1H=0, outB3H, outD0H, outD1H, outD2H, outD3H, outD6H, outD8H,
-				outDAH,   outDDH, outDEH };
-	enum IDIn {  inB2H=0,  inD0H,  inD1H,  inD2H,  inD3H,  inD4H,  inDCH,  inDDH };
-	
-	// ------------------------------------------
+	// ----------------------------------------------------------------------
 	bool DokoSave( cIni * );	// どこでもSAVE
 	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	// ----------------------------------------------------------------------
 };
 
 
 class DSK68 : public DSK66 {
 public:
-	DSK68( VM6 *, const ID& );			// コンストラクタ
-	virtual ~DSK68();					// デストラクタ
+	DSK68( VM6*, const ID& );
+	virtual ~DSK68();
 };
 
 #endif	// DISK_H_INCLUDED

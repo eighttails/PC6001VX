@@ -450,6 +450,7 @@ void Operator::ShiftPhase(EGPhase nextphase)
 			eg_phase_ = attack;
 			break;
 		}
+		[[fallthrough]];
 	case decay:			// Decay Phase
 		if (sl_)
 		{
@@ -460,6 +461,7 @@ void Operator::ShiftPhase(EGPhase nextphase)
 			eg_phase_ = decay;
 			break;
 		}
+		[[fallthrough]];
 	case sustain:		// Sustain Phase
 		eg_level_ = sl_ * 8;
 		eg_level_on_next_phase_ = ssg_type_ ? 0x200 : 0x400;
@@ -482,6 +484,7 @@ void Operator::ShiftPhase(EGPhase nextphase)
 			eg_phase_ = release;
 			break;
 		}
+		[[fallthrough]];
 	case off:			// off
 	default:
 		eg_level_ = FM_EG_BOTTOM;
@@ -714,6 +717,9 @@ Channel4::Channel4()
 
 	SetAlgorithm(0);
 	pms = pmtable[0][0];
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	tablehasmade = true;
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 }
 
 void Channel4::MakeTable()

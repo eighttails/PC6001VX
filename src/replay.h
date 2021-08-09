@@ -1,45 +1,41 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef REPLAY_H_INCLUDED
 #define REPLAY_H_INCLUDED
+
+#include <vector>
 
 #include "typedef.h"
 #include "ini.h"
 
-#define	REP_IDLE	(0)
-#define	REP_RECORD	(1)
-#define	REP_REPLAY	(2)
 
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
-class REPLAY {
+/////////////////////////////////////////////////////////////////////////////
+class REPLAY : public cIni {
 protected:
-	cIni *Ini;
-	
-	int RepST;					// ステータス
-	
-	BYTE *Matrix;				// キーマトリクスバッファポインタ
-	int MSize;					// キーマトリクスサイズ
-	
+	DWORD RepST;				// ステータス
 	DWORD RepFrm;				// フレームNo.カウンタ
 	DWORD EndFrm;				// リプレイ終了フレーム
 	
 public:
-	REPLAY();								// コンストラクタ
-	~REPLAY();								// デストラクタ
+	REPLAY();
+	~REPLAY();
 	
-	bool Init( int );						// 初期化
+	bool Init();												// 初期化
 	
-	int GetStatus() const;					// ステータス取得
+	DWORD GetStatus() const;									// ステータス取得
 	
-	bool StartRecord( const char * );		// リプレイ記録開始
-	bool ResumeRecord(const char * , int );	// リプレイ記録再開
-	void StopRecord();						// リプレイ記録停止
-	bool ReplayWriteFrame( const BYTE *, bool );	// リプレイ1フレーム書出し
+	bool StartRecord( const P6VPATH& );							// リプレイ記録開始
+	bool ResumeRecord( const P6VPATH&, int );					// リプレイ記録再開
+	void StopRecord();											// リプレイ記録停止
+	bool ReplayWriteFrame( const std::vector<BYTE>&, bool );	// リプレイ1フレーム書出し
 	
-	bool StartReplay( const char * );		// リプレイ再生開始
-	void StopReplay();						// リプレイ再生止
-	bool ReplayReadFrame( BYTE * );			// リプレイ1フレーム読込み
+	bool StartReplay( const P6VPATH& );							// リプレイ再生開始
+	void StopReplay();											// リプレイ再生止
+	bool ReplayReadFrame( std::vector<BYTE>& );					// リプレイ1フレーム読込み
 	
 };
 

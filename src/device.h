@@ -1,93 +1,106 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef DEVICE_H_INCLUDE
 #define DEVICE_H_INCLUDE
 
-// 8888888888888888888888888888888888888
+#include <functional>
 #include <map>
-// 8888888888888888888888888888888888888
+#include <memory>
+
 #include "typedef.h"
+
 
 #define DEV_ID(a)	BTODW((BYTE)a[0], (BYTE)a[1], (BYTE)a[2], (BYTE)a[3])
 
 
 class VM6;
+class MemCell;
 
-
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 //	デバイスのインターフェース
 //	  Original     : cisc
 //	  Modification : Yumitaro
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 struct IDevice {
-	typedef DWORD ID;
-	typedef BYTE (IDevice::*InFuncPtr)( int port );
-	typedef void (IDevice::*OutFuncPtr)( int port, BYTE data );
+	using ID         = DWORD;
+	
+	// I/Oアクセス関数
+	using InFuncPtr  = BYTE (IDevice::*)( int );
+	using OutFuncPtr = void (IDevice::*)( int, BYTE );
+	
+	// メモリアクセス関数
+	using RFuncPtr   = BYTE (IDevice::*)( MemCell*, WORD, int* );
+	using WFuncPtr   = void (IDevice::*)( MemCell*, WORD, BYTE, int* );
+	using RFunc      = std::function<BYTE( MemCell*, WORD, int* )>;
+	using WFunc      = std::function<void( MemCell*, WORD, BYTE, int* )>;
+	RFunc FR( RFuncPtr fn ){ return std::bind( fn, std::ref(*this), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 ); }
+	WFunc FW( WFuncPtr fn ){ return std::bind( fn, std::ref(*this), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4 ); }
+	
+	// メモリブロック名取得用
+	using NFuncPtr   = const std::string& (IDevice::*)( WORD, bool );
+	using NFunc      = std::function<const std::string&( WORD, bool )>;
+	NFunc FN( NFuncPtr fn ){ return std::bind( fn, std::ref(*this), std::placeholders::_1, std::placeholders::_2 ); }
+	
 	struct Descriptor{
-		const InFuncPtr *indef;
-		const OutFuncPtr *outdef;
+		std::map<int, InFuncPtr>  indef;
+		std::map<int, OutFuncPtr> outdef;
 	};
 	
-	virtual const ID &GetID() const = 0;
-	virtual const Descriptor *GetDesc() const = 0;
+	virtual const ID& GetID() const = 0;
+	virtual const Descriptor& GetDescriptors() const = 0;
 	virtual void EventCallback( int, int ) = 0;
-	
-	
-	typedef BYTE (IDevice::*RFuncPtr)( BYTE *, WORD );
-	typedef void (IDevice::*WFuncPtr)( BYTE *, WORD, BYTE );
 };
 
 
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 //	Device
 //	  Original     : cisc
 //	  Modification : Yumitaro
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 class Device : public IDevice {
 protected:
-	VM6 *vm;
+	VM6* vm;
+	
 	ID id;
-	
+	Descriptor descs;
+
 public:
-	Device( VM6 *_vm, const ID &_id ) : vm( _vm ), id( _id ) {}
-	virtual ~Device() {}
+	Device( VM6*, const ID& );
+	virtual ~Device();
 	
-	const ID &GetID() const { return id; }
-	virtual const Descriptor *GetDesc() const { return 0; }
-	virtual void EventCallback( int, int ){};
+	const ID& GetID() const override;
+	const Descriptor& GetDescriptors() const override { return descs; }
+	virtual void EventCallback( int, int ) override;
 };
 
 
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // デバイスリストクラス
 //	  Original     : cisc
 //	  Modification : Yumitaro
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 class DeviceList {
 public:
-	typedef IDevice::ID ID;
-	
+	using ID = IDevice::ID;
+
 private:
 	struct Node{
-		IDevice *entry;
-		Node *next;
+		std::shared_ptr<IDevice> entry;
 		int count;
 	};
 	
-// 8888888888888888888888888888888888888
-//	Node *node;
-// 8888888888888888888888888888888888888
-	std::map<int, Node> nodeMap;
-	Node *FindNode( const ID );
-// 8888888888888888888888888888888888888
-	
+	std::map<int, Node> NodeMap;
+	std::shared_ptr<IDevice> dummydev;
+
 public:
 	DeviceList();
 	~DeviceList();
 	
-	void Cleanup();
-	bool Add( IDevice * );
-	bool Del( IDevice * );
+	bool Add( const std::shared_ptr<IDevice>& );
 	bool Del( const ID );
-	IDevice *Find( const ID );
+	std::shared_ptr<IDevice>& Find( const ID );
 };
 
 

@@ -6,7 +6,7 @@
 #define KEYDEF_H_INCLUDED
 
 #include <string>
-
+#include "typedef.h"
 
 // P6キーコード定義
 typedef enum {

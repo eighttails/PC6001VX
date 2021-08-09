@@ -18,7 +18,7 @@ QMAKE_TARGET_PRODUCT = PC6001VX
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 TR_EXCLUDE += /usr/include/*
 
-CONFIG += link_prl link_pkgconfig c++11
+CONFIG += link_prl link_pkgconfig c++14
 
 #Define for Qt dependent code
 DEFINES += QTP6VX
@@ -96,6 +96,8 @@ win32 {
     #Workaround to this bug
     #https://bugreports.qt.io/browse/QTBUG-61553
     DEFINES += SDLJOYSTICK
+} else {
+    DEFINES += __stdcall=
 }
 
 #Find library to handle joysticks.

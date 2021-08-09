@@ -28,6 +28,7 @@
 // クラス定義
 /////////////////////////////////////////////////////////////////////////////
 class KEY6 : public Device, public IDoko {
+friend class KeyStateWatcher;
 protected:
 	std::unordered_map<PCKEYsym,P6KEYsym> K6Table;	// 仮想キーコード -> P6キーコード 変換テーブル
 	std::unordered_map<P6KEYsym,BYTE> MatTable;		// P6キーコード -> マトリクス 変換テーブル

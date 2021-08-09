@@ -25,7 +25,7 @@ signals:
 	void finished();
 public slots:
 	// エミュレーションイベントループを開始
-	void doEventLoop();
+    void doEventLoop(EL6::ReturnCode rc);
 
 protected:
 

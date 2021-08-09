@@ -223,6 +223,7 @@ void OSD_FlushEvents();
 bool OSD_GetEvent( Event* );
 // イベントをキューにプッシュする
 bool OSD_PushEvent( EventType, ... );
+bool OSD_PushEvent(const Event& ev);
 // キューに指定のイベントが存在するか調査する
 bool OSD_HasEvent( EventType );
 // イベント処理の状態を種類ごとに設定する

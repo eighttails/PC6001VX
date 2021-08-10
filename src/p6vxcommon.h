@@ -5,6 +5,12 @@
 #include <QCoreApplication>
 #include <QString>
 #include <QDebug>
+
+#include "../typedef.h"
+
+#define QSTR2P6VPATH(st)			STR2P6VPATH(st.toStdString())
+#define P6VPATH2QSTR(st)			QString::fromStdString(P6VPATH2STR(st))
+
 //翻訳された文字列を返す
 #define TRANS(a) (QCoreApplication::translate("PC6001VX", a).toUtf8().data())
 #else

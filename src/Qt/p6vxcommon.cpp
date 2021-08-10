@@ -28,7 +28,7 @@ extern QVector<QRgb> PaletteTable;              // パレットテーブル
 //			pos				保存する領域情報へのポインタ
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool SaveImgData( const char *filename, BYTE *pixels, const int bpp, const int ww, const int hh, VRect *pos )
+bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const int ww, const int hh, VRect *pos )
 {
 	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
 
@@ -57,7 +57,7 @@ bool SaveImgData( const char *filename, BYTE *pixels, const int bpp, const int w
 		doff += pitch;
 	}
 
-	auto saveFilePath = QDir::cleanPath(filename);
+    auto saveFilePath = QDir::cleanPath(P6VPATH2QSTR(filename));
 	auto saveDir = QFileInfo(saveFilePath).absoluteDir();
 	// P6VXでは独自にファイル名をつける(filenameは無視する)
 	auto dt = QDateTime::currentDateTime();
@@ -95,9 +95,9 @@ bool SaveImgData( const char *filename, BYTE *pixels, const int bpp, const int w
 //			pos				保存する領域情報へのポインタ
 // 返値:	bool	true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool SaveImg( const char *filename, VSurface *sur, VRect *pos )
+bool SaveImg( const P6VPATH& filename, VSurface *sur, VRect *pos )
 {
-	return SaveImgData( filename, (BYTE *)sur->GetPixels(), INBPP, sur->Width(), sur->Height(), pos );
+    return SaveImgData( filename, (BYTE *)sur->GetPixels().data(), INBPP, sur->Width(), sur->Height(), pos );
 }
 
 ////////////////////////////////////////////////////////////////
@@ -120,7 +120,7 @@ VSurface *LoadImg( const char *filename )
 	sur->InitSurface( image.width(), image.height() );
 
 	// 画像データを取得
-	BYTE *doff = (BYTE *)sur->GetPixels();
+    BYTE *doff = (BYTE *)sur->GetPixels().data();
 	for( int i=0; i<(int)sur->Height(); i++ ){
 		memcpy( doff, image.scanLine(i), sur->Width() * image.depth() / 8 );
 		doff += sur->Pitch();
@@ -179,29 +179,7 @@ char *UTF8toLocal( const char *str )
 	return array.data();
 }
 
-////////////////////////////////////////////////////////////////
-// ファイルをオープンする。
-// Qtのリソースに埋め込まれたファイルも開けるようにする
-//
-// 引数:	fileName		ファイル名
-// 引数:	mode			ファイルオープンモード
-// 返値:	FILE *			ファイルポインタ
-////////////////////////////////////////////////////////////////
-FILE *FOPENEN(const char *fileName, const char *mode)
-{
-	QString strFileName = fileName;
 
-	if (strFileName.startsWith(":")){
-		// リソース内のファイルはテンポラリファイルとして作成
-		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(strFileName);
-		tempFile->setAutoRemove(true);
-		// アプリ終了時に削除されるように設定
-		tempFile->setParent(qApp);
-		return fopen(tempFile->fileName().toLocal8Bit(), mode);
-	} else {
-		return fopen(UTF8toLocal(fileName), mode);
-	}
-}
 
 void TiltScreen(TiltDirection dir)
 {

@@ -330,6 +330,7 @@ const char *MsgErr[] = {
 };
 
 
+#if 0 //#TODO 廃止？
 ////////////////////////////////////////////////////////////////
 // 色の名前取得
 //
@@ -553,6 +554,7 @@ const char *OSD_KeyName( PCKEYsym sym )
 	}
 	return str;
 }
+#endif
 
 ////////////////////////////////////////////////////////////////
 // 小文字による文字列比較
@@ -589,24 +591,14 @@ int stricmp ( const char *s1, const char *s2 )
 	return (int)c1 - (int)c2;
 }
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 初期化
 //
 // 引数:	なし
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
 bool OSD_Init( void )
 {
-#ifndef NOJOYSTICK
-#ifdef SDLJOYSTICK
-	if( SDL_Init( SDL_INIT_JOYSTICK ) )
-		return false;
-    SDL_JoystickEventState(SDL_DISABLE);
-#else
-	// 何もしない
-#endif // SDLJOYSTICK
-#endif // NOJOYSTICK
-
 	// 経過時間タイマーをスタート
 	elapsedTimer.start();
 
@@ -614,9 +606,28 @@ bool OSD_Init( void )
 	for( int i=0; i < COUNTOF(VKeyDef); i++ )
 		VKTable[VKeyDef[i].InKey] = VKeyDef[i].VKey;
 
-	return true;
+    return OSD_Init_Sub();
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// 初期化Sub(ライブラリ依存処理等)
+//
+// 引数:	なし
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_Init_Sub( void )
+{
+#ifndef NOJOYSTICK
+#ifdef SDLJOYSTICK
+    if( SDL_Init( SDL_INIT_JOYSTICK ) )
+        return false;
+    SDL_JoystickEventState(SDL_DISABLE);
+#else
+    // 何もしない
+#endif // SDLJOYSTICK
+#endif // NOJOYSTICK
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////
 // 終了処理
@@ -628,24 +639,36 @@ void OSD_Quit( void )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_Quit]\n" );
 
+    OSD_Quit_Sub();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// 終了処理Sub(ライブラリ依存処理等)
+//
+// 引数:	なし
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_Quit_Sub( void )
+{
 #ifndef NOJOYSTICK
 #ifdef SDLJOYSTICK
-	SDL_Quit();
+    SDL_Quit();
 #else
-	// 何もしない
+    // 何もしない
 #endif // SDLJOYSTICK
 #endif // NOJOYSTICK
 }
 
-////////////////////////////////////////////////////////////////
-// キーリピート設定
+/////////////////////////////////////////////////////////////////////////////
+// 多重起動チェック
 //
-// 引数:	repeat	キーリピートの間隔(ms) 0で無効
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_SetKeyRepeat( int repeat )
+// 引数:	なし
+// 返値:	bool			true:起動済み false:未起動
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_IsWorking( void )
 {
-	QApplication::setKeyboardInputInterval(repeat);
+    P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+    return app->isRunning();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -663,104 +686,10 @@ PCKEYsym OSD_ConvertKeyCode( int scode )
 	return VKTable[scode];
 }
 
-////////////////////////////////////////////////////////////////
-// 指定時間待機
-//
-// 引数:	tms			待機時間(ms)
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_Delay( DWORD tms )
-{
-	QThread::msleep(tms);
-}
 
 
-////////////////////////////////////////////////////////////////
-// プロセス開始からの経過時間取得
-//
-// 引数:	なし
-// 返値:	DWORD		経過時間(ms)
-////////////////////////////////////////////////////////////////
-DWORD OSD_GetTicks( void )
-{
-	return elapsedTimer.elapsed();
-}
 
 
-////////////////////////////////////////////////////////////////
-// イベント取得(イベントが発生するまで待つ)
-//
-// 引数:	ev			イベント情報共用体へのポインタ
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_GetEvent( Event *ev )
-{
-	eventMutex.lock();
-	// イベントキューが空の場合、イベントが発行されるまで待つ
-	if(eventQueue.empty()){
-		eventEmitted.wait(&eventMutex);
-	}
-	*ev = eventQueue.front();
-	eventQueue.pop_front();
-	eventMutex.unlock();
-
-	return true;
-}
-
-////////////////////////////////////////////////////////////////
-// イベントをキューにプッシュする
-//
-// 引数:	ev			イベント
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_PushEvent(const Event& ev)
-{
-	// イベントキューにプッシュ
-	eventMutex.lock();
-	eventQueue.push_back(ev);
-	eventEmitted.wakeAll();
-	eventMutex.unlock();
-	return true;
-}
-
-////////////////////////////////////////////////////////////////
-// イベントをキューにプッシュする
-//
-// 引数:	ev			イベントタイプ
-//		...			イベントタイプに応じた引数
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_PushEvent( EventType ev, ... )
-{
-	Event event;
-	event.type = ev;
-	va_list args;
-	va_start( args, ev );
-
-	switch( ev ){
-	case EV_DEBUGMODEBP:
-		event.bp.addr = va_arg( args, int );
-		break;
-	default:;
-	}
-
-	va_end( args );
-
-	return OSD_PushEvent( event ) ? false : true;
-}
-
-
-////////////////////////////////////////////////////////////////
-// マウスカーソル表示/非表示
-//
-// 引数:	disp		true:表示 false:非表示
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_ShowCursor( bool disp )
-{
-	QMetaObject::invokeMethod(qApp, "deactivateMouseCursorTimer");
-	qApp->setOverrideCursor(disp ? Qt::ArrowCursor : Qt::BlankCursor);
-}
 
 ////////////////////////////////////////////////////////////////
 // キャプション設定
@@ -771,285 +700,45 @@ void OSD_ShowCursor( bool disp )
 ////////////////////////////////////////////////////////////////
 void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 {
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
-	if(view == NULL) return;
-	auto window = view->parentWidget();
-	QMetaObject::invokeMethod(window, "setWindowTitle",
-							  Q_ARG(QString, str));
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    if(view == NULL) return;
+    auto window = view->parentWidget();
+    QMetaObject::invokeMethod(window, "setWindowTitle",
+                              Q_ARG(QString, str));
 }
 
-////////////////////////////////////////////////////////////////
-// ウィンドウ作成
+/////////////////////////////////////////////////////////////////////////////
+// 設定ファイルパス取得
 //
-// 引数:	pwh			ウィンドウハンドルへのポインタ
-//		w			幅
-//		h			高さ
-//		bpp			色深度
-//		fsflag		true:フルスクリーン false:ウィンドウ
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_CreateWindow( HWINDOW *pwh, int w, int h, bool fsflag )
+// 引数:	なし
+// 返値:	P6VPATH&		取得した文字列への参照(UTF-8)
+/////////////////////////////////////////////////////////////////////////////
+const P6VPATH& OSD_GetConfigPath()
 {
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+    PRINTD( OSD_LOG, "[OSD][OSD_GetConfigPath]\n" );
+    static char mpath[PATH_MAX] = "";	// モジュールパス取得用
 
-	RenderView* view = app->getView();
-	QGraphicsScene* scene = view->scene();
-
-	scene->setSceneRect(0, 0, w, h);
-	*pwh = view;
-
-	QMetaObject::invokeMethod(qApp, "createWindow",
-							  Q_ARG(HWINDOW, *pwh),
-							  Q_ARG(bool, fsflag));
-
-	return true;
+    // Windowsの場合はexe本体と同じ場所。
+    // それ以外(UNIX系を想定)は ~/.pc6001vx を返す
+#if defined Q_OS_WIN
+    QString confPath = qApp->applicationDirPath();
+#elif defined Q_OS_IOS
+    QString confPath = QDir::homePath() + QDir::separator() + QString("Documents");
+#else
+    QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
+#endif
+    sprintf( mpath, "%s", confPath.toUtf8().constData() );
+    OSD_AddDelimiter( mpath );	// 念のため
+    return mpath;
 }
 
-
-////////////////////////////////////////////////////////////////
-// ウィンドウ破棄
-//
-// 引数:	Wh			ウィンドウハンドル
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_DestroyWindow( HWINDOW Wh )
-{
-	// 何もしない
-}
-
-
-////////////////////////////////////////////////////////////////
-// ウィンドウの幅を取得
-//
-// 引数:	Wh			ウィンドウハンドル
-// 返値:	int			幅
-////////////////////////////////////////////////////////////////
-int OSD_GetWindowWidth( HWINDOW Wh )
-{
-	// QtではSceneRectの幅を返す
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
-	Q_ASSERT(view);
-
-	return view->scene()->width();
-}
-
-
-////////////////////////////////////////////////////////////////
-// ウィンドウの高さを取得
-//
-// 引数:	Wh			ウィンドウハンドル
-// 返値:	int			高さ
-////////////////////////////////////////////////////////////////
-int OSD_GetWindowHeight( HWINDOW Wh )
-{
-	// QtではSceneRectの高さを返す
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
-	Q_ASSERT(view);
-
-	return view->scene()->height();
-}
-
-////////////////////////////////////////////////////////////////
-// パレット設定
-//
-// 引数:	Wh			ウィンドウハンドル
-//		pal			パレットへのポインタ
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
-{
-	PaletteTable.clear();
-	for (int i=0; i < pal->ncols; i++){
-		COLOR24& col = pal->colors[i];
-		PaletteTable.push_back(qRgb(col.r, col.g, col.b));
-	}
-	return true;
-}
-
-
-////////////////////////////////////////////////////////////////
-// ウィンドウ反映
-//
-// 引数:	Wh			ウィンドウハンドル
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_RenderWindow( HWINDOW Wh )
-{
-	// 何もしない
-}
-
-
-////////////////////////////////////////////////////////////////
-// ウィンドウクリア
-//  色は0(黒)で決め打ち
-//
-// 引数:	Wh			ウィンドウハンドル
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_ClearWindow( HWINDOW Wh )
-{
-	QMetaObject::invokeMethod(qApp, "clearLayout",
-							  Q_ARG(HWINDOW, Wh));
-}
-
-
-////////////////////////////////////////////////////////////////
-// ウィンドウに転送
-//
-// 引数:	Wh			ウィンドウハンドル
-//		src			転送元サーフェス
-//		pal			パレットへのポインタ
-//		x,y			転送先座標
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_BlitToWindow( HWINDOW Wh, VSurface *src, int x, int y )
-{
-	VRect src1,drc1;
-
-	QImage image(src->Width(), src->Height(), QImage::Format_Indexed8);
-	image.setColorTable(PaletteTable);
-
-	// 転送元範囲設定
-	src1.x = 0;
-	src1.y = 0;
-	src1.w = src->Width();
-	src1.h = src->Height();
-
-	if( src1.w <= 0 || src1.h <= 0 ) return;
-
-	// 転送先範囲設定
-	drc1.x = 0;
-	drc1.y = 0;
-
-	BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x;
-
-	const int length = image.bytesPerLine();
-	for( int i=0; i < src1.h; i++ ){
-		BYTE *pdst = (BYTE *)image.scanLine(i);
-		memcpy( pdst, psrc, length );
-		psrc += src->Pitch();
-	}
-	image = image.convertToFormat(QImage::Format_RGBX8888);
-	// 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
-	// スロットを呼び出してメインスレッドでSceneを更新する
-	// (直接呼び出すと呼び出し側スレッドで実行されてしまう)
-	QMetaObject::invokeMethod(qApp, "layoutBitmap",
-							  Q_ARG(HWINDOW, Wh),
-							  Q_ARG(int, x),
-							  Q_ARG(int, y),
-							  Q_ARG(double, 1.0),
-							  Q_ARG(double, 1.0),
-							  Q_ARG(QImage, image));
-}
-
-////////////////////////////////////////////////////////////////
-// ウィンドウに転送(拡大等)
-//
-// 引数:	wh			ウィンドウハンドル
-//		src			転送元サーフェス
-//		dx			転送先x座標
-//		dy			転送先y座標
-//		dh			転送先高さ
-//		ntsc		4:3表示フラグ
-//		scan		スキャンラインフラグ
-//		brscan		スキャンライン輝度
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-#define	RESO		256		/* 中間色計算用分解能(1ラインをRESO分割する) */
-void OSD_BlitToWindowEx( HWINDOW wh, VSurface *src, const int dx, const int dy, const int dh,
-						 const bool ntsc, const bool scan, const int brscan )
-{
-	VRect src1,drc1;
-	if( !src || !wh ) return;
-
-	const int s = (scan ? 2 : 1);   // スキャンライン時には2行ずつ処理する
-
-	const BYTE *spt  = (BYTE *)src->GetPixels();
-	const int pp     = src->Pitch();
-
-	const int xsc    = src->XScale();
-	const int ww     = src->Width();
-	const int hh     = src->Height();
-
-	QImage image(src->Width(), src->Height() * s, QImage::Format_Indexed8);
-	image.setColorTable(PaletteTable);
-
-	const int dpp    = image.bytesPerLine();
-
-	// 転送元範囲設定
-	src1.x = qMax( 0, -dx / 2 * xsc );
-	src1.y = qMax( 0, -dy );
-	src1.w = qMin( ww * xsc - src1.x, image.width() );
-	src1.h = qMin( hh       - src1.y, image.height() );
-
-	if( src1.w <= 0 || src1.h <= 0 ) return;
-
-	// 転送先範囲設定
-	drc1.x = qMax( 0, dx );
-	drc1.y = qMax( 0, dy );
-	drc1.w = qMin( ww, (image.width() - drc1.x)*xsc );
-	drc1.h = qMin( dh, image.height() - drc1.y );
-
-	for( int y=0; y<drc1.h; y+=s ){
-		BYTE *sof  = (BYTE *)spt  + pp * y / s + src1.x;
-
-		memcpy( (BYTE *)image.scanLine(y), sof, dpp );
-
-		if(scan){
-			BYTE *sdoff = (BYTE *)image.scanLine(y+1);
-			memcpy( sdoff, sof, dpp );
-			for( int x=0; x<drc1.w; x++ ){
-				// スキャンライン用の暗い色は128ずらしたインデックスに登録されている
-				(*sdoff++) += 128;
-			}
-		}
-	}
-
-	double imgXScale = 720.0 / image.width();
-	double imgYScale = (ntsc ? 540.0 : 460.0) / image.height();
-	// 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
-	// スロットを呼び出してメインスレッドでSceneを更新する
-	// (直接呼び出すと呼び出し側スレッドで実行されてしまう)
-	QMetaObject::invokeMethod(qApp, "layoutBitmap",
-							  Q_ARG(HWINDOW, wh),
-							  Q_ARG(int, dx),
-							  Q_ARG(int, dy),
-							  Q_ARG(double, imgXScale),
-							  Q_ARG(double, imgYScale),
-							  Q_ARG(QImage, image));
-}
-
-
-////////////////////////////////////////////////////////////////
-// ウィンドウのイメージデータ取得
-//
-// 引数:	wh			ウィンドウハンドル
-//		pixels		転送先配列ポインタへのポインタ
-//		pos			保存する領域情報へのポインタ
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_GetWindowImage( HWINDOW wh, void **pixels, VRect *pos )
-{
-	if( !wh || !pixels ) return false;
-	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
-	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
-				Qt::DirectConnection : Qt::BlockingQueuedConnection;
-	QMetaObject::invokeMethod(qApp, "getWindowImage",
-							  cType,
-							  Q_ARG(HWINDOW, wh),
-							  Q_ARG(QRect, QRect(pos->x, pos->y, pos->w, pos->h)),
-							  Q_ARG(void**, pixels));
-
-	return true;
-}
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // パスの末尾にデリミタを追加
 //
-// 引数:	path		パス格納バッファポインタ
+// 引数:	path			パス
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_AddDelimiter( char *path )
+/////////////////////////////////////////////////////////////////////////////
+void OSD_AddDelimiter( P6VPATH& path )
 {
 	if( !strlen( path ) )
 		strncpy( path, "/", PATH_MAX );
@@ -1064,26 +753,26 @@ void OSD_AddDelimiter( char *path )
 // 引数:	path		パス格納バッファポインタ
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_DelDelimiter( char *path )
+void OSD_DelDelimiter( P6VPATH& path )
 {
 	if( strlen( path ) > 1 )
 		while( ( path[strlen(path)-1] == '/' ) || ( path[strlen(path)-1] == '\\' ) )
 			path[strlen(path)-1] = '\0';
 }
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 相対パス化
 //
-// 引数:	path		パス格納バッファポインタ
+// 引数:	path			パス
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_RelativePath( char *path )
+/////////////////////////////////////////////////////////////////////////////
+void OSD_RelativePath( P6VPATH& path )
 {
 #ifdef Q_OS_WIN
 	if( QDir( path ).isRelative()
 			|| QDir( path ).path().startsWith(":")
 			|| !strlen( path ) ) return;
-	QDir dir(OSD_GetModulePath());
+    QDir dir(OSD_GetConfigPath());
 	QString relPath = dir.relativeFilePath(path);
 	strcpy(path, relPath.toUtf8().constData());
 #else
@@ -1093,29 +782,29 @@ void OSD_RelativePath( char *path )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 絶対パス化
 //
-// 引数:	path		パス格納バッファポインタ
+// 引数:	path			パス
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_AbsolutePath( char *path )
+/////////////////////////////////////////////////////////////////////////////
+void OSD_AbsolutePath( P6VPATH& path )
 {
 	if( !QDir( path ).isRelative()  || !strlen( path ) ) return;
-	QDir dir(OSD_GetModulePath());
+    QDir dir(OSD_GetConfigPath());
 	strcpy(path, QDir::cleanPath(dir.absoluteFilePath(path)).toUtf8().constData());
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // パス結合
 //
-// 引数:	pdst		結合後パス格納バッファポインタ
-//		psrc1		パス1格納バッファポインタ
-//		psrc2		パス2格納バッファポインタ
+// 引数:	cpath			結合後パス
+//			path1			パス1
+//			path2			パス2
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_AddPath( char *pdst, const char *psrc1, const char *psrc2 )
+/////////////////////////////////////////////////////////////////////////////
+void OSD_AddPath( P6VPATH& cpath, const P6VPATH& path1, const P6VPATH& path2 )
 {
 	Q_ASSERT(pdst);
 	Q_ASSERT(psrc1);
@@ -1129,96 +818,14 @@ void OSD_AddPath( char *pdst, const char *psrc1, const char *psrc2 )
 	strcpy(pdst, path.toUtf8().constData());
 }
 
-////////////////////////////////////////////////////////////////
-// 設定及び諸ファイル(ROMなどの初期位置)フォルダ作成
+
+/////////////////////////////////////////////////////////////////////////////
+// パスからフォルダ名を取得
 //
-// 引数:	なし
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-bool OSD_CreateModulePath()
-{
-	QString basePath = QString::fromUtf8(OSD_GetModulePath());
-
-	// ROMイメージ
-	if(!QDir(basePath).mkpath(QString::fromUtf8(ROM_DIR)))
-		return false;
-
-	// TAPEイメージ
-	if(!QDir(basePath).mkpath(QString::fromUtf8(TAPE_DIR)))
-		return false;
-
-	// DISKイメージ
-	if(!QDir(basePath).mkpath(QString::fromUtf8(DISK_DIR)))
-		return false;
-
-	// 拡張ROMイメージ
-	if(!QDir(basePath).mkpath(QString::fromUtf8(EXTROM_DIR)))
-		return false;
-
-	// スナップショット
-	if(!QDir(basePath).mkpath(QString::fromUtf8(IMAGE_DIR)))
-		return false;
-
-	// WAVEファイル
-	if(!QDir(basePath).mkpath(QString::fromUtf8(WAVE_DIR)))
-		return false;
-
-	// どこでもSAVEファイル
-	if(!QDir(basePath).mkpath(QString::fromUtf8(DOKOSAVE_DIR)))
-		return false;
-
-	return true;
-}
-
-////////////////////////////////////////////////////////////////
-// 設定及び諸ファイル(ROMなどの初期位置)パス取得
-//
-// 引数:	なし
-// 返値:	char *		取得した文字列へのポインタ
-////////////////////////////////////////////////////////////////
-const char *OSD_GetModulePath( void )
-{
-	PRINTD( OSD_LOG, "[OSD][OSD_GetModulePath]\n" );
-	static char mpath[PATH_MAX] = "";	// モジュールパス取得用
-
-	// Windowsの場合はexe本体と同じ場所。
-	// それ以外(UNIX系を想定)は ~/.pc6001vx を返す
-#if defined Q_OS_WIN
-	QString confPath = qApp->applicationDirPath();
-#elif defined Q_OS_IOS
-	QString confPath = QDir::homePath() + QDir::separator() + QString("Documents");
-#else
-	QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
-#endif
-	sprintf( mpath, "%s", confPath.toUtf8().constData() );
-	OSD_AddDelimiter( mpath );	// 念のため
-	return mpath;
-}
-
-
-////////////////////////////////////////////////////////////////
-// フルパスからファイル名を取得
-//
-// 引数:	path		フルパス格納バッファポインタ
-// 返値:	char *		ファイル名の開始ポインタ
-////////////////////////////////////////////////////////////////
-const char *OSD_GetFileNamePart( const char *path )
-{
-	PRINTD( OSD_LOG, "[OSD][OSD_GetFileNamePart]\n" );
-
-	static QByteArray fileName;
-	QFileInfo info(QString::fromUtf8(path));
-	fileName = info.fileName().toUtf8();
-	return fileName.constData();
-}
-
-////////////////////////////////////////////////////////////////
-// フルパスからフォルダ名を取得
-//
-// 引数:	path		フルパス格納バッファポインタ
-// 返値:	char *		フォルダ名の開始ポインタ
-////////////////////////////////////////////////////////////////
-const char *OSD_GetFolderNamePart( const char *path )
+// 引数:	path			パス
+// 返値:	std::string		取得した文字列
+/////////////////////////////////////////////////////////////////////////////
+const std::string OSD_GetFolderNamePart( const P6VPATH& path )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_GetFolderNamePart]\n" );
 
@@ -1228,13 +835,31 @@ const char *OSD_GetFolderNamePart( const char *path )
 	return filePath.constData();
 }
 
-////////////////////////////////////////////////////////////////
-// フルパスから拡張子名を取得
+
+/////////////////////////////////////////////////////////////////////////////
+// パスからファイル名を取得
 //
-// 引数:	path		フルパス格納バッファポインタ
-// 返値:	char *		拡張子名の開始ポインタ
-////////////////////////////////////////////////////////////////
-const char *OSD_GetFileNameExt( const char *path )
+// 引数:	path			パス
+// 返値:	std::string		取得した文字列(UTF-8)
+/////////////////////////////////////////////////////////////////////////////
+const std::string OSD_GetFileNamePart( const P6VPATH& path )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_GetFileNamePart]\n" );
+
+    static QByteArray fileName;
+    QFileInfo info(QString::fromUtf8(path));
+    fileName = info.fileName().toUtf8();
+    return fileName.constData();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// パスから拡張子名を取得
+//
+// 引数:	path			パス
+// 返値:	std::string		取得した文字列(UTF-8)
+/////////////////////////////////////////////////////////////////////////////
+const std::string OSD_GetFileNameExt( const P6VPATH& path )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_GetFileNameExt]\n" );
 
@@ -1244,13 +869,83 @@ const char *OSD_GetFileNameExt( const char *path )
 	return strstr(path, ext.constData());
 }
 
-////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// ファイルを開く
+//
+// 引数:	path			パス
+//			mode			モード文字列への参照
+// 返値:	FILE*			ファイルポインタ
+/////////////////////////////////////////////////////////////////////////////
+FILE* OSD_Fopen( const P6VPATH& path, const std::string& mode )
+{
+    QString strFileName = path;
+
+    if (strFileName.startsWith(":")){
+        // リソース内のファイルはテンポラリファイルとして作成
+        QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(strFileName);
+        tempFile->setAutoRemove(true);
+        // アプリ終了時に削除されるように設定
+        tempFile->setParent(qApp);
+        return fopen(tempFile->fileName().toLocal8Bit(), mode);
+    } else {
+        return fopen(UTF8toLocal(path), mode);
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ファイルストリームを開く
+//
+// 引数:	fs				ファイルストリームへの参照
+//			path			パス
+//			mode			モード
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_FSopen( std::fstream& fs, const P6VPATH& path, const std::ios_base::openmode mode )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_FSopen] %s\n", P6VPATH2STR( path ).c_str() );
+
+    fs.open( path, mode );
+    return fs.is_open() && fs.good();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// フォルダを作成
+//
+// 引数:	path			パス
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_CreateFolder( const P6VPATH& path )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_CreateFolder] %s\n", P6VPATH2STR( path ).c_str() );
+
+    try{
+        std::error_code ec;
+
+        P6VPATH tpath = path;
+        OSD_DelDelimiter( tpath );	// デリミタ付きだと作成されない?
+        OSD_AbsolutePath( tpath );
+        PRINTD( OSD_LOG, "-> %s\n", P6VPATH2STR( tpath ).c_str() );
+
+        // 設定ファイルパスより外側には作成しない
+        if( P6VPATH2STR( tpath ).compare( 0, P6VPATH2STR( OSD_GetConfigPath() ).length(), P6VPATH2STR( OSD_GetConfigPath() ) ) ) return false;
+
+        return std::filesystem::create_directories( tpath, ec );
+    }
+    catch( std::filesystem::filesystem_error& ){
+        return false;
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // ファイルの存在チェック
 //
-// 引数:	path		フルパス格納バッファポインタ
-// 返値:	bool		true:存在する false:存在しない
-////////////////////////////////////////////////////////////////
-bool OSD_FileExist( const char *fullpath )
+// 引数:	fullpath		パス
+// 返値:	bool			true:存在する false:存在しない
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_FileExist( const P6VPATH& fullpath )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_FileExist]\n" );
 
@@ -1278,14 +973,29 @@ bool OSD_FileExist( const char *fullpath )
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// ファイルサイズ取得
+//
+// 引数:	fullpath		パス
+// 返値:	DWORD			ファイルサイズ
+/////////////////////////////////////////////////////////////////////////////
+DWORD OSD_GetFileSize( const P6VPATH& fullpath )
+{
+    try{
+        return std::filesystem::file_size( fullpath );
+    }
+    catch( std::filesystem::filesystem_error& ){
+        return 0;
+    }
+}
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ファイルの読取り専用チェック
 //
-// 引数:	path		フルパス格納バッファポインタ
-// 返値:	bool		true:読取り専用 false:読み書き
-///////////////////////////////////////////////////////////////
-bool OSD_FileReadOnly( const char *fullpath )
+// 引数:	fullpath		パス
+// 返値:	bool			true:読取り専用 false:読み書き
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_FileReadOnly( const P6VPATH& fullpath )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_FileReadOnly]\n" );
 
@@ -1294,14 +1004,83 @@ bool OSD_FileReadOnly( const char *fullpath )
 }
 
 
-///////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// ファイルを削除
+//
+// 引数:	fullpath		パス
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_FileDelete( const P6VPATH& fullpath )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_FileDelete] %s\n", P6VPATH2STR( fullpath ).c_str() );
+
+    try{
+        return std::filesystem::remove( fullpath );
+    }
+    catch( std::filesystem::filesystem_error& ){
+        return false;
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ファイルを探す
+//
+// 引数:	path			パス
+//			file			探すファイル名
+//			folders			見つかったパスを格納するvectorへの参照
+//			size			ファイルサイズ (0:チェックしない)
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_FindFile( const P6VPATH& path, const P6VPATH& file, std::vector<P6VPATH>& files, size_t size )
+{
+    std::string sfile = OSD_GetFileNamePart( file );
+    std::transform( sfile.begin(), sfile.end(), sfile.begin(), ::tolower );	// 小文字
+
+    for( const std::filesystem::directory_entry& ent : std::filesystem::recursive_directory_iterator( path ) ){
+        if( is_regular_file( ent.path() ) ){
+            std::string tfile = OSD_GetFileNamePart( ent.path() );
+            std::transform( tfile.begin(), tfile.end(), tfile.begin(), ::tolower );	// 小文字
+            if( tfile == sfile && (!size || OSD_GetFileSize( ent.path() ) == size) ){
+                files.emplace_back( ent.path() );
+            }
+        }
+    }
+
+    return true;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ファイル名を変更
+//
+// 引数:	fullpath1		変更元のパス
+//			fullpath2		変更するパス
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_FileRename( const P6VPATH& fullpath1, const P6VPATH& fullpath2 )
+{
+    PRINTD( OSD_LOG, "[OSD][OSD_FileRename] %s -> %s\n", P6VPATH2STR( fullpath1 ).c_str(), P6VPATH2STR( fullpath2 ).c_str() );
+
+    try{
+        std::filesystem::rename( fullpath1, fullpath2 );
+        return true;
+    }
+    catch( std::filesystem::filesystem_error& ){
+        return false;
+    }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // フォルダの参照
 //
 // 引数:	hwnd		親のウィンドウハンドル
-//		Result		フォルダへのパス格納バッファポインタ
-// 返値:	char *		取得した文字列へのポインタ
-///////////////////////////////////////////////////////////
-const char *OSD_FolderDiaog( void *hwnd, char *Result )
+//			path		パス
+// 返値:	bool		true:選択成功 false:エラーorキャンセル
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_FolderDiaog( HWINDOW hwnd, P6VPATH& path )
 {
 	const char* ret = NULL;
 	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
@@ -1316,48 +1095,16 @@ const char *OSD_FolderDiaog( void *hwnd, char *Result )
 }
 
 
-///////////////////////////////////////////////////////////
-// ファイルの参照
-//
-// 引数:	hwnd		親のウィンドウハンドル
-//		mode		モード FM_Load:ファイルを開く FM_Save:名前を付けて保存
-//		title		ウィンドウキャプション文字列へのポインタ
-//		filter		ファイルフィルタ文字列へのポインタ
-//		fullpath	フルパス格納バッファポインタ
-//		path		ファイル検索パス格納バッファポインタ
-//		ext			拡張子文字列へのポインタ
-// 返値:	char *		取得したファイル名へのポインタ(フルパスではない)
-///////////////////////////////////////////////////////////
-const char *OSD_FileDiaog( void *hwnd, FileMode mode, const char *title, const char *filter, char *fullpath, char *path, const char *ext )
-{
-	const char* ret = NULL;
-	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
-	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
-				Qt::DirectConnection : Qt::BlockingQueuedConnection;
-	QMetaObject::invokeMethod(qApp, "fileDialog",
-							  cType,
-							  Q_RETURN_ARG(const char*, ret),
-							  Q_ARG(void *, hwnd),
-							  Q_ARG(FileMode, mode),
-							  Q_ARG(const char*, title),
-							  Q_ARG(const char*, filter),
-							  Q_ARG(char*, fullpath),
-							  Q_ARG(char*, path),
-							  Q_ARG(const char*, ext));
-	return ret;
-}
-
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 各種ファイル選択
 //
-// 引数:	hwnd		親のウィンドウハンドル(NULLの場合はスクリーンサーフェスのハンドル取得を試みる)
-//		type		ダイアログの種類(FileDlg参照)
-//		fullpath	フルパス格納バッファポインタ
-//		path		ファイル検索パス格納バッファポインタ
-// 返値:	char *		取得したファイル名へのポインタ(フルパスではない)
-////////////////////////////////////////////////////////////////
-const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path )
+// 引数:	hwnd		親のウィンドウハンドル
+//			type		ダイアログの種類(FileDlg参照)
+//			fullpath	フルパス
+//			path		ファイル検索パス
+// 返値:	bool		true:選択成功 false:エラーorキャンセル
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& path )
 {
 	FileMode mode = FM_Load;
 	const char *title   = NULL;
@@ -1473,7 +1220,21 @@ const char *OSD_FileSelect( void *hwnd, FileDlg type, char *fullpath, char *path
 		break;
 	}
 
-	return OSD_FileDiaog( hwnd, mode, TRANS(title), TRANS(filter), fullpath, path, ext );
+    const char* ret = NULL;
+    // 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+    Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
+                Qt::DirectConnection : Qt::BlockingQueuedConnection;
+    QMetaObject::invokeMethod(qApp, "fileDialog",
+                              cType,
+                              Q_RETURN_ARG(const char*, ret),
+                              Q_ARG(void *, hwnd),
+                              Q_ARG(FileMode, mode),
+                              Q_ARG(const char*, TRANS(title)),
+                              Q_ARG(const char*, TRANS(filter)),
+                              Q_ARG(char*, fullpath),
+                              Q_ARG(char*, path),
+                              Q_ARG(const char*, ext));
+    return ret;
 }
 
 
@@ -1504,17 +1265,322 @@ int OSD_Message( const char *mes, const char *cap, int type )
 	return ret;
 }
 
-
 ////////////////////////////////////////////////////////////////
+// キーリピート設定
+//
+// 引数:	repeat	キーリピートの間隔(ms) 0で無効
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_SetKeyRepeat( int repeat )
+{
+    QApplication::setKeyboardInputInterval(repeat);
+}
+
+
+#ifndef NOJOYSTICK
+std::map<int, HJOYINFO> joyMap;
+#endif // NOJOYSTICK
+
+/////////////////////////////////////////////////////////////////////////////
+// 利用可能なジョイスティック数取得
+//
+// 引数:	なし
+// 返値:	int				利用可能なジョイスティック数
+/////////////////////////////////////////////////////////////////////////////
+int OSD_GetJoyNum( void )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    return SDL_NumJoysticks();
+#else
+    auto mgr = QGamepadManager::instance();
+    auto num = mgr->connectedGamepads().length();
+    return num;
+#endif // SDLJOYSTICK
+#else
+    return 0;
+#endif // NOJOYSTICK
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティック名取得
+//
+// 引数:	int				インデックス
+// 返値:	std::string		ジョイスティック名文字列(UTF-8)
+/////////////////////////////////////////////////////////////////////////////
+const std::string OSD_GetJoyName( int index )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    return SDL_JoystickNameForIndex( index );
+#else
+    auto mgr = QGamepadManager::instance();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+    auto devIndex = mgr->connectedGamepads()[index];
+    auto name = mgr->gamepadName(devIndex);
+#else
+    QString name = "";
+#endif
+    return name.length() > 0
+            ? name.toStdString()
+            : QString("Joystick%1").arg(index).toStdString();
+#endif // SDLJOYSTICK
+#else
+    return "";
+#endif // NOJOYSTICK
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティックオープンされてる？
+//
+// 引数:	HJOYINFO		ジョイスティック情報へのポインタ
+// 返値:	bool			true:OPEN false:CLOSE
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_OpenedJoy( HJOYINFO joy )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    return SDL_JoystickGetAttached( (SDL_Joystick*)joyMap[index] ) ? true : false;
+#else
+    auto mgr = QGamepadManager::instance();
+    auto devIndex = mgr->connectedGamepads()[index];
+    return joyMap.count(devIndex) > 0;
+#endif // SDLJOYSTICK
+#else
+    return false;
+#endif // NOJOYSTICK
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティックオープン
+//
+// 引数:	int				インデックス
+// 返値:	HJOYINFO		ジョイスティック情報へのポインタ
+/////////////////////////////////////////////////////////////////////////////
+HJOYINFO OSD_OpenJoy( int index )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    joyMap[index] = (HJOYINFO)SDL_JoystickOpen( index );
+    return joyMap[index];
+#else
+    auto mgr = QGamepadManager::instance();
+    auto devIndex = mgr->connectedGamepads()[index];
+    if (joyMap.count(devIndex) == 0){
+        joyMap[devIndex] = new QGamepad(devIndex, qApp);
+    }
+    return (HJOYINFO)joyMap[devIndex];
+#endif // SDLJOYSTICK
+#else
+    return (HJOYINFO)NULL;
+#endif // NOJOYSTICK
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティッククローズ
+//
+// 引数:	int				インデックス
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_CloseJoy( HJOYINFO jinfo )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    SDL_JoystickClose( static_cast<SDL_Joystick*>(jinfo) );
+#else
+    (static_cast<QGamepad*>(jinfo))->deleteLater();
+#endif // SDLJOYSTICK
+    for (auto p = joyMap.begin(); p != joyMap.end();){
+        if(p->second == jinfo){
+            p = joyMap.erase(p);
+        } else {
+            ++p;
+        }
+    }
+#else
+#endif // NOJOYSTICK
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティックの軸の数取得
+//
+// 引数:	HJOYINFO		ジョイスティック情報へのポインタ
+// 返値:	int				軸の数
+/////////////////////////////////////////////////////////////////////////////
+int OSD_GetJoyNumAxes( HJOYINFO jinfo )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    return SDL_JoystickNumAxes( static_cast<SDL_Joystick*>(jinfo) );
+#else
+    // QtGamepadでは固定(スティックがLR2本、軸がXYの2軸でトータルで4つ)
+    return 4;
+#endif // SDLJOYSTICK
+#else
+    return 1;
+#endif // NOJOYSTICK
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティックのボタンの数取得
+//
+// 引数:	HJOYINFO		ジョイスティック情報へのポインタ
+// 返値:	int				ボタンの数
+/////////////////////////////////////////////////////////////////////////////
+int OSD_GetJoyNumButtons( HJOYINFO jinfo )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    return SDL_JoystickNumButtons( static_cast<SDL_Joystick*>(jinfo) );
+#else
+    // QtGamepadでは固定(エミュレーターに渡すのはABXYの4つ)
+    return 4;
+#endif // SDLJOYSTICK
+#else
+    return 0;
+#endif // NOJOYSTICK
+}
+
+#if 0 //#TODO 廃止？
+////////////////////////////////////////////////////////////////
+// ジョイスティックの状態を更新
+//
+// 引数:	なし
+// 返値:	なし
+////////////////////////////////////////////////////////////////
+void OSD_UpdateJoy()
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    SDL_JoystickUpdate();
+#else
+    // 何もしない
+#endif // SDLJOYSTICK
+#else
+#endif // NOJOYSTICK
+}
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティックの軸の状態取得
+//
+// 引数:	HJOYINFO		ジョイスティック情報へのポインタ
+//			int				軸の番号
+// 返値:	int				軸の状態(-32768～32767)
+/////////////////////////////////////////////////////////////////////////////
+int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    // HAT(デジタルスティック)から値を取得
+    auto hat = SDL_JoystickGetHat( static_cast<SDL_Joystick*>(jinfo), 0 );
+    int hatVal = 0;
+    switch (num){
+    case 0:
+        if (hat & SDL_HAT_RIGHT)	hatVal = 32767;
+        if (hat & SDL_HAT_LEFT)		hatVal = -32767;
+        break;
+    case 1:;
+        if (hat & SDL_HAT_UP)		hatVal = -32767;
+        if (hat & SDL_HAT_DOWN)		hatVal = 32767;
+        break;
+    default:;
+    }
+
+    // アナログスティックから値を取得
+    int axisVal = SDL_JoystickGetAxis( static_cast<SDL_Joystick*>(jinfo), num );
+
+    // 出力値はHAT優先
+    return hatVal ? hatVal : axisVal;
+#else
+    QGamepad* joy = static_cast<QGamepad*>(jinfo);
+    if (!joy) return 0;
+    int val = 0;
+    // 出力値はHAT優先
+    switch (num){
+    case 0:
+        if (joy->buttonRight()) val = 32767;
+        else if (joy->buttonLeft()) val = -32767;
+        else val = int16_t(joy->axisLeftX() * 32767);
+        break;
+    case 1:
+        if (joy->buttonUp()) val = -32767;
+        else if (joy->buttonDown()) val = 32767;
+        else val = int16_t(joy->axisLeftY() * 32767);
+        break;
+    case 2:
+        val = int16_t(joy->axisRightX() * 32767);	break;
+    case 3:
+        val = int16_t(joy->axisRightY() * 32767);	break;
+    default:;
+    }
+    return val;
+#endif // SDLJOYSTICK
+#else
+    return 0;
+#endif // NOJOYSTICK
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティックのボタンの状態取得
+//
+// 引数:	HJOYINFO		ジョイスティック情報へのポインタ
+//			int				ボタンの番号
+// 返値:	bool			ボタンの状態 true:ON false:OFF
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
+{
+#ifndef NOJOYSTICK
+    QMutexLocker lock(&joystickMutex);
+#ifdef SDLJOYSTICK
+    return SDL_JoystickGetButton( static_cast<SDL_Joystick*>(jinfo), num ) ? true : false;
+#else
+    QGamepad* joy = static_cast<QGamepad*>(jinfo);
+    if (!joy) return false;
+    bool val = false;
+    switch (num) {
+    case 0:
+        val = joy->buttonA();	break;
+    case 1:
+        val = joy->buttonB();	break;
+    case 2:
+        val = joy->buttonX();	break;
+    case 3:
+        val = joy->buttonY();	break;
+    default:;
+    }
+    return val;
+#endif // SDLJOYSTICK
+#else
+    return false;
+#endif // NOJOYSTICK
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // オーディオデバイスオープン
 //
-// 引数:	obj			自分自身へのオブジェクトポインタ
-//		callback	コールバック関数へのポインタ
-//		rate		サンプリングレート
-//		sample		バッファサイズ(サンプル数)
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
+// 引数:	obj				自分自身へのオブジェクトポインタ
+//			callback		コールバック関数へのポインタ
+//			rate			サンプリングレート
+//			sample			バッファサイズ(サンプル数)
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 {
 #ifndef NOSOUND
 	// 実行時に出る警告の抑止
@@ -1539,7 +1605,7 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 	}
 
 	audioOutput = new AudioOutputWrapper(info, format);
-	// #PENDING これではグローバルボリュームを変えてしまう？
+    // #TODO これではグローバルボリュームを変えてしまう？
 	// audioOutput->setVolume(0.5);
 
 	audioOutput->moveToThread(qApp->thread());
@@ -1548,12 +1614,12 @@ bool OSD_OpenAudio( void *obj, CBF_SND callback, int rate, int samples )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // オーディオデバイスクローズ
 //
 // 引数:	なし
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void OSD_CloseAudio( void )
 {
 #ifndef NOSOUND
@@ -1564,12 +1630,12 @@ void OSD_CloseAudio( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 再生開始
 //
 // 引数:	なし
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void OSD_StartAudio( void )
 {
 #ifndef NOSOUND
@@ -1588,12 +1654,12 @@ void OSD_StartAudio( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 再生停止
 //
 // 引数:	なし
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void OSD_StopAudio( void )
 {
 #ifndef NOSOUND
@@ -1623,12 +1689,12 @@ void OSD_WriteAudioStream(BYTE *stream, int samples)
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 再生状態取得
 //
 // 引数:	なし
-// 返値:	bool		true:再生中 false:停止中
-////////////////////////////////////////////////////////////////
+// 返値:	bool			true:再生中 false:停止中
+/////////////////////////////////////////////////////////////////////////////
 bool OSD_AudioPlaying( void )
 {
 #ifndef NOSOUND
@@ -1643,17 +1709,17 @@ bool OSD_AudioPlaying( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // Waveファイル読込み
 // 　対応形式は 22050Hz以上,符号付き16bit,1ch
 //
-// 引数:	filepath	ファイルパス
-//		buf			バッファポインタ格納ポインタ
-//		len			ファイル長さ格納ポインタ
-//		freq		サンプリングレート格納ポインタ
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
+// 引数:	filepath		入力ファイルパス
+//			buf				バッファポインタ格納ポインタ
+//			len				ファイル長さ格納ポインタ
+//			freq			サンプリングレート格納ポインタ
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_LoadWAV( const P6VPATH& filepath, BYTE** buf, DWORD* len, int* freq )
 {
 #ifndef NOSOUND
 	WavFile w;
@@ -1673,37 +1739,36 @@ bool OSD_LoadWAV( const char *filepath, BYTE **buf, DWORD *len, int *freq )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // Waveファイル開放
 //
-// 引数:	buf			バッファへのポインタ
+// 引数:	buf				バッファへのポインタ
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_FreeWAV( BYTE *buf )
+/////////////////////////////////////////////////////////////////////////////
+void OSD_FreeWAV( BYTE* buf )
 {
 	if(buf) delete[] buf;
 }
 
 
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // オーディオをロックする
 //
 // 引数:	なし
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void OSD_LockAudio( void )
 {
 	// 何もしない
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // オーディオをアンロックする
 //
 // 引数:	なし
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void OSD_UnlockAudio( void )
 {
 	// 何もしない
@@ -1711,346 +1776,428 @@ void OSD_UnlockAudio( void )
 
 
 ////////////////////////////////////////////////////////////////
-// フォントファイル作成
+// 指定時間待機
 //
-// 引数:	hfile		半角フォントファイルパス
-//		zfile		全角フォントファイルパス
-//		size		文字サイズ(半角文字幅ピクセル数)
-// 返値:	bool		true:作成成功 false:作成失敗
+// 引数:	tms			待機時間(ms)
+// 返値:	なし
 ////////////////////////////////////////////////////////////////
-bool OSD_CreateFont( const char *hfile, const char *zfile, int size )
+void OSD_Delay( DWORD tms )
 {
-	// 何もしない
-	// フォントファイルはQtのリソースから読み込む
-	return true;
+    QThread::msleep(tms);
 }
 
 
+////////////////////////////////////////////////////////////////
+// プロセス開始からの経過時間取得
+//
+// 引数:	なし
+// 返値:	DWORD		経過時間(ms)
+////////////////////////////////////////////////////////////////
+DWORD OSD_GetTicks( void )
+{
+    return elapsedTimer.elapsed();
+}
 
-///////////////////////////////////////////////////////////
-// アイコン設定
+/////////////////////////////////////////////////////////////////////////////
+// タイマ追加
+//
+// 引数:	interval		割込み間隔(ms)
+//			callback		コールバック関数
+//			param			コールバック関数に渡す引数
+// 返値:	TIMERID			タイマID(失敗したら0)
+/////////////////////////////////////////////////////////////////////////////
+TIMERID OSD_AddTimer( DWORD interval, CBF_TMR callback, void* param )
+{
+    // 何もしない(失敗を返す)
+    return 0;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// タイマ削除
+//
+// 引数:	id				タイマID
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_DelTimer( TIMERID id )
+{
+    // 何もしない(失敗を返す)
+    return false;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウ作成
+//
+// 引数:	hwnd			ウィンドウハンドルへのポインタ
+//			w				ウィンドウの幅
+//			h				ウィンドウの高さ
+//			sw				スクリーンの幅
+//			sh				スクリーンの高さ
+//			fsflag			true:フルスクリーン false:ウィンドウ
+//			filter			true:拡縮時にフィルタリングする false:しない
+//			scanbr			スキャンライン輝度
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_CreateWindow( HWINDOW* hwnd, const int w, const int h, const int sw, const int sh, const bool fsflag, const bool filter, const int scanbr )
+{
+    P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+
+    RenderView* view = app->getView();
+    QGraphicsScene* scene = view->scene();
+
+    scene->setSceneRect(0, 0, w, h);
+    *pwh = view;
+
+    QMetaObject::invokeMethod(qApp, "createWindow",
+                              Q_ARG(HWINDOW, *pwh),
+                              Q_ARG(bool, fsflag));
+
+    return true;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウ破棄
+//
+// 引数:	hwnd			ウィンドウハンドル
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_DestroyWindow( HWINDOW hwnd )
+{
+    // 何もしない
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウの幅を取得
+//
+// 引数:	hwnd			ウィンドウハンドル
+// 返値:	int				幅
+/////////////////////////////////////////////////////////////////////////////
+int OSD_GetWindowWidth( HWINDOW hwnd )
+{
+    // QtではSceneRectの幅を返す
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    Q_ASSERT(view);
+
+    return view->scene()->width();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウの高さを取得
+//
+// 引数:	hwnd			ウィンドウハンドル
+// 返値:	int				高さ
+/////////////////////////////////////////////////////////////////////////////
+int OSD_GetWindowHeight( HWINDOW hwnd )
+{
+    // QtではSceneRectの高さを返す
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    Q_ASSERT(view);
+
+    return view->scene()->height();
+}
+
+#if 0 //#TODO 廃止？
+////////////////////////////////////////////////////////////////
+// パレット設定
 //
 // 引数:	Wh			ウィンドウハンドル
-//		model		機種 60,62,66
-// 返値:	なし
-///////////////////////////////////////////////////////////
-void OSD_SetIcon( HWINDOW Wh, int model )
+//		pal			パレットへのポインタ
+// 返値:	bool		true:成功 false:失敗
+////////////////////////////////////////////////////////////////
+bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
 {
-	// 機種別P6オブジェクト確保
-	const char* iconRes = NULL;
-	switch( model ){
-	case 68: iconRes = ":/res/PC-6601SR.ico"; break;
-	case 66: iconRes = ":/res/PC-6601.ico"; break;
-	case 64: iconRes = ":/res/PC-6001mk2SR.ico"; break;
-	case 62: iconRes = ":/res/PC-6001mk2.ico"; break;
-	default: iconRes = ":/res/PC-6001.ico";
-	}
-
-	// アイコン設定
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	QMetaObject::invokeMethod(app, "setWindowIcon",
-							  Q_ARG(QIcon, QIcon(iconRes)));
+    PaletteTable.clear();
+    for (int i=0; i < pal->ncols; i++){
+        COLOR24& col = pal->colors[i];
+        PaletteTable.push_back(qRgb(col.r, col.g, col.b));
+    }
+    return true;
 }
-
-
-#ifndef NOJOYSTICK
-std::map<int, HJOYINFO> joyMap;
-#endif // NOJOYSTICK
-
-////////////////////////////////////////////////////////////////
-// 利用可能なジョイスティック数取得
-//
-// 引数:	なし
-// 返値:	int			利用可能なジョイスティック数
-////////////////////////////////////////////////////////////////
-int OSD_GetJoyNum( void )
-{
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-	return SDL_NumJoysticks();
-#else
-    auto mgr = QGamepadManager::instance();
-    auto num = mgr->connectedGamepads().length();
-    return num;
-#endif // SDLJOYSTICK
-#else
-	return 0;
-#endif // NOJOYSTICK
-}
-
-
-////////////////////////////////////////////////////////////////
-// ジョイスティック名取得
-//
-// 引数:	int			インデックス
-// 返値:	char *		ジョイスティック名文字列へのポインタ
-////////////////////////////////////////////////////////////////
-const char *OSD_GetJoyName( int index )
-{
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-    return SDL_JoystickNameForIndex( index );
-#else
-	auto mgr = QGamepadManager::instance();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
-	auto devIndex = mgr->connectedGamepads()[index];
-	auto name = mgr->gamepadName(devIndex);
-#else
-	QString name = "";
 #endif
-	return name.length() > 0
-			? name.toLocal8Bit().data()
-			: QString("Joystick%1").arg(index).toLocal8Bit().data();
-#endif // SDLJOYSTICK
-#else
-	return "";
-#endif // NOJOYSTICK
-}
 
-
-////////////////////////////////////////////////////////////////
-// ジョイスティックオープンされてる？
+/////////////////////////////////////////////////////////////////////////////
+// フルスクリーン?
 //
-// 引数:	int			インデックス
-// 返値:	bool		true:OPEN false:CLOSE
-////////////////////////////////////////////////////////////////
-bool OSD_OpenedJoy( int index )
+// 引数:	hwnd			ウィンドウハンドル
+// 返値:	bool			true:フルスクリーン表示 false:ウィンドウ表示
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_IsFullScreen( HWINDOW hwnd )
 {
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-    return SDL_JoystickGetAttached( (SDL_Joystick*)joyMap[index] ) ? true : false;
-#else
-	auto mgr = QGamepadManager::instance();
-	auto devIndex = mgr->connectedGamepads()[index];
-	return joyMap.count(devIndex) > 0;
-#endif // SDLJOYSTICK
-#else
-	return false;
-#endif // NOJOYSTICK
+    //#TODO 後で実装
+    return false;
 }
 
 
-////////////////////////////////////////////////////////////////
-// ジョイスティックオープン
+/////////////////////////////////////////////////////////////////////////////
+// フィルタリング有効?
 //
-// 引数:	int			インデックス
-// 返値:	HJOYINFO	ジョイスティック情報へのポインタ
-////////////////////////////////////////////////////////////////
-HJOYINFO OSD_OpenJoy( int index )
+// 引数:	hwnd			ウィンドウハンドル
+// 返値:	bool			true:有効 false:無効
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_IsFiltering( HWINDOW hwnd )
 {
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-    joyMap[index] = (HJOYINFO)SDL_JoystickOpen( index );
-	return joyMap[index];
-#else
-	auto mgr = QGamepadManager::instance();
-	auto devIndex = mgr->connectedGamepads()[index];
-	if (joyMap.count(devIndex) == 0){
-		joyMap[devIndex] = new QGamepad(devIndex, qApp);
-	}
-	return (HJOYINFO)joyMap[devIndex];
-#endif // SDLJOYSTICK
-#else
-	return (HJOYINFO)NULL;
-#endif // NOJOYSTICK
+    //#TODO 後で実装
+    return false;
 }
 
-
-////////////////////////////////////////////////////////////////
-// ジョイスティッククローズ
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウのサイズ変更可否設定
 //
-// 引数:	int			インデックス
+// 引数:	hwnd			ウィンドウハンドル
+// 返値:	bool			true:変更可 false:変更不可
+/////////////////////////////////////////////////////////////////////////////
+void OSD_SetWindowResizable( HWINDOW hwnd, bool resize )
+{
+    // 何もしない(常にリサイズ可能)
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウクリア
+//  色は0(黒)で決め打ち
+//
+// 引数:	hwnd			ウィンドウハンドル
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_CloseJoy( HJOYINFO jinfo )
+/////////////////////////////////////////////////////////////////////////////
+void OSD_ClearWindow( HWINDOW hwnd )
 {
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-    SDL_JoystickClose( static_cast<SDL_Joystick*>(jinfo) );
-#else
-	(static_cast<QGamepad*>(jinfo))->deleteLater();
-#endif // SDLJOYSTICK
-	for (auto p = joyMap.begin(); p != joyMap.end();){
-		if(p->second == jinfo){
-			p = joyMap.erase(p);
-		} else {
-			++p;
-		}
-	}
-#else
-#endif // NOJOYSTICK
+    QMetaObject::invokeMethod(qApp, "clearLayout",
+                              Q_ARG(HWINDOW, Wh));
 }
 
-////////////////////////////////////////////////////////////////
-// ジョイスティックの軸の数取得
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウ反映
 //
-// 引数:	HJOYINFO	ジョイスティック情報へのポインタ
-// 返値:	int			軸の数
-////////////////////////////////////////////////////////////////
-int OSD_GetJoyNumAxes( HJOYINFO jinfo )
-{
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-    return SDL_JoystickNumAxes( static_cast<SDL_Joystick*>(jinfo) );
-#else
-	// QtGamepadでは固定(スティックがLR2本、軸がXYの2軸でトータルで4つ)
-	return 4;
-#endif // SDLJOYSTICK
-#else
-	return 1;
-#endif // NOJOYSTICK
-}
-
-
-////////////////////////////////////////////////////////////////
-// ジョイスティックのボタンの数取得
-//
-// 引数:	HJOYINFO	ジョイスティック情報へのポインタ
-// 返値:	int			ボタンの数
-////////////////////////////////////////////////////////////////
-int OSD_GetJoyNumButtons( HJOYINFO jinfo )
-{
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-    return SDL_JoystickNumButtons( static_cast<SDL_Joystick*>(jinfo) );
-#else
-	// QtGamepadでは固定(エミュレーターに渡すのはABXYの4つ)
-	return 4;
-#endif // SDLJOYSTICK
-#else
-	return 0;
-#endif // NOJOYSTICK
-}
-
-////////////////////////////////////////////////////////////////
-// ジョイスティックの状態を更新
-//
-// 引数:	なし
+// 引数:	hwnd			ウィンドウハンドル
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_UpdateJoy()
+/////////////////////////////////////////////////////////////////////////////
+void OSD_RenderWindow( HWINDOW hwnd )
 {
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-    SDL_JoystickUpdate();
-#else
-	// 何もしない
-#endif // SDLJOYSTICK
-#else
-#endif // NOJOYSTICK
+    // 何もしない
 }
 
-////////////////////////////////////////////////////////////////
-// ジョイスティックの軸の状態取得
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウに転送(等倍)
 //
-// 引数:	HJOYINFO	ジョイスティック情報へのポインタ
-//		int			軸の番号
-// 返値:	int			軸の状態(-32768〜32767)
-////////////////////////////////////////////////////////////////
-int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
+// 引数:	hwnd			ウィンドウハンドル
+//			src				転送元サーフェス
+//			x				転送先x座標
+//			y				転送先y座標
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_BlitToWindow( HWINDOW hwnd, VSurface* src, const int x, const int y )
 {
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-	// HAT(デジタルスティック)から値を取得
-	auto hat = SDL_JoystickGetHat( static_cast<SDL_Joystick*>(jinfo), 0 );
-	int hatVal = 0;
-	switch (num){
-	case 0:
-		if (hat & SDL_HAT_RIGHT)	hatVal = 32767;
-		if (hat & SDL_HAT_LEFT)		hatVal = -32767;
-		break;
-	case 1:;
-		if (hat & SDL_HAT_UP)		hatVal = -32767;
-		if (hat & SDL_HAT_DOWN)		hatVal = 32767;
-		break;
-	default:;
-	}
+    VRect src1,drc1;
 
-	// アナログスティックから値を取得
-	int axisVal = SDL_JoystickGetAxis( static_cast<SDL_Joystick*>(jinfo), num );
+    QImage image(src->Width(), src->Height(), QImage::Format_Indexed8);
+    image.setColorTable(PaletteTable);
 
-	// 出力値はHAT優先
-	return hatVal ? hatVal : axisVal;
-#else
-	QGamepad* joy = static_cast<QGamepad*>(jinfo);
-	if (!joy) return 0;
-	int val = 0;
-	// 出力値はHAT優先
-	switch (num){
-	case 0:
-		if (joy->buttonRight()) val = 32767;
-		else if (joy->buttonLeft()) val = -32767;
-		else val = int16_t(joy->axisLeftX() * 32767);
-		break;
-	case 1:
-		if (joy->buttonUp()) val = -32767;
-		else if (joy->buttonDown()) val = 32767;
-		else val = int16_t(joy->axisLeftY() * 32767);
-		break;
-	case 2:
-		val = int16_t(joy->axisRightX() * 32767);	break;
-	case 3:
-		val = int16_t(joy->axisRightY() * 32767);	break;
-	default:;
-	}
-	return val;
-#endif // SDLJOYSTICK
-#else
-	return 0;
-#endif // NOJOYSTICK
+    // 転送元範囲設定
+    src1.x = 0;
+    src1.y = 0;
+    src1.w = src->Width();
+    src1.h = src->Height();
+
+    if( src1.w <= 0 || src1.h <= 0 ) return;
+
+    // 転送先範囲設定
+    drc1.x = 0;
+    drc1.y = 0;
+
+    BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x;
+
+    const int length = image.bytesPerLine();
+    for( int i=0; i < src1.h; i++ ){
+        BYTE *pdst = (BYTE *)image.scanLine(i);
+        memcpy( pdst, psrc, length );
+        psrc += src->Pitch();
+    }
+    image = image.convertToFormat(QImage::Format_RGBX8888);
+    // 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
+    // スロットを呼び出してメインスレッドでSceneを更新する
+    // (直接呼び出すと呼び出し側スレッドで実行されてしまう)
+    QMetaObject::invokeMethod(qApp, "layoutBitmap",
+                              Q_ARG(HWINDOW, Wh),
+                              Q_ARG(int, x),
+                              Q_ARG(int, y),
+                              Q_ARG(double, 1.0),
+                              Q_ARG(double, 1.0),
+                              Q_ARG(QImage, image));
 }
 
-
-////////////////////////////////////////////////////////////////
-// ジョイスティックのボタンの状態取得
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウに転送(拡大等)
 //
-// 引数:	HJOYINFO	ジョイスティック情報へのポインタ
-//		int			ボタンの番号
-// 返値:	bool		ボタンの状態 true:ON false:OFF
-////////////////////////////////////////////////////////////////
-bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
+// 引数:	hwnd			ウィンドウハンドル
+//			src				転送元サーフェス
+//			pos				転送先 座標/サイズ
+//			scanen			スキャンラインフラグ
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bool scanen )
 {
-#ifndef NOJOYSTICK
-	QMutexLocker lock(&joystickMutex);
-#ifdef SDLJOYSTICK
-    return SDL_JoystickGetButton( static_cast<SDL_Joystick*>(jinfo), num ) ? true : false;
-#else
-	QGamepad* joy = static_cast<QGamepad*>(jinfo);
-	if (!joy) return false;
-	bool val = false;
-	switch (num) {
-	case 0:
-		val = joy->buttonA();	break;
-	case 1:
-		val = joy->buttonB();	break;
-	case 2:
-		val = joy->buttonX();	break;
-	case 3:
-		val = joy->buttonY();	break;
-	default:;
-	}
-	return val;
-#endif // SDLJOYSTICK
-#else
-	return false;
-#endif // NOJOYSTICK
+    VRect src1,drc1;
+    if( !src || !wh ) return;
+
+    const int s = (scan ? 2 : 1);   // スキャンライン時には2行ずつ処理する
+
+    const BYTE *spt  = (BYTE *)src->GetPixels();
+    const int pp     = src->Pitch();
+
+    const int xsc    = src->XScale();
+    const int ww     = src->Width();
+    const int hh     = src->Height();
+
+    QImage image(src->Width(), src->Height() * s, QImage::Format_Indexed8);
+    image.setColorTable(PaletteTable);
+
+    const int dpp    = image.bytesPerLine();
+
+    // 転送元範囲設定
+    src1.x = qMax( 0, -dx / 2 * xsc );
+    src1.y = qMax( 0, -dy );
+    src1.w = qMin( ww * xsc - src1.x, image.width() );
+    src1.h = qMin( hh       - src1.y, image.height() );
+
+    if( src1.w <= 0 || src1.h <= 0 ) return;
+
+    // 転送先範囲設定
+    drc1.x = qMax( 0, dx );
+    drc1.y = qMax( 0, dy );
+    drc1.w = qMin( ww, (image.width() - drc1.x)*xsc );
+    drc1.h = qMin( dh, image.height() - drc1.y );
+
+    for( int y=0; y<drc1.h; y+=s ){
+        BYTE *sof  = (BYTE *)spt  + pp * y / s + src1.x;
+
+        memcpy( (BYTE *)image.scanLine(y), sof, dpp );
+
+        if(scan){
+            BYTE *sdoff = (BYTE *)image.scanLine(y+1);
+            memcpy( sdoff, sof, dpp );
+            for( int x=0; x<drc1.w; x++ ){
+                // スキャンライン用の暗い色は128ずらしたインデックスに登録されている
+                (*sdoff++) += 128;
+            }
+        }
+    }
+
+    double imgXScale = 720.0 / image.width();
+    double imgYScale = (ntsc ? 540.0 : 460.0) / image.height();
+    // 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
+    // スロットを呼び出してメインスレッドでSceneを更新する
+    // (直接呼び出すと呼び出し側スレッドで実行されてしまう)
+    QMetaObject::invokeMethod(qApp, "layoutBitmap",
+                              Q_ARG(HWINDOW, wh),
+                              Q_ARG(int, dx),
+                              Q_ARG(int, dy),
+                              Q_ARG(double, imgXScale),
+                              Q_ARG(double, imgYScale),
+                              Q_ARG(QImage, image));
 }
 
-///////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウのイメージデータ取得
+//
+// 引数:	hwnd			ウィンドウハンドル
+//			pixels			転送先配列への参照
+//			pos				保存する領域情報へのポインタ
+//			pxfmt			ピクセルフォーマット
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_GetWindowImage( HWINDOW hwnd, std::vector<BYTE>& pixels, VRect* pos, PixelFMT pxfmt )
+{
+    if( !hwnd ) return false;
+    // 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
+    Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
+                Qt::DirectConnection : Qt::BlockingQueuedConnection;
+    QMetaObject::invokeMethod(qApp, "getWindowImage",
+                              cType,
+                              Q_ARG(HWINDOW, wh),
+                              Q_ARG(QRect, QRect(pos->x, pos->y, pos->w, pos->h)),
+                              Q_ARG(void**, pixels));
+
+    return true;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// アイコン設定
+//
+// 引数:	hwnd			ウィンドウハンドル
+//			model			機種 60,61,62,66,64,68
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_SetIcon( HWINDOW hwnd, int model )
+{
+    // 機種別P6オブジェクト確保
+    const char* iconRes = NULL;
+    switch( model ){
+    case 68: iconRes = ":/res/PC-6601SR.ico"; break;
+    case 66: iconRes = ":/res/PC-6601.ico"; break;
+    case 64: iconRes = ":/res/PC-6001mk2SR.ico"; break;
+    case 62: iconRes = ":/res/PC-6001mk2.ico"; break;
+    default: iconRes = ":/res/PC-6001.ico";
+    }
+
+    // アイコン設定
+    P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+    QMetaObject::invokeMethod(app, "setWindowIcon",
+                              Q_ARG(QIcon, QIcon(iconRes)));
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// キャプション設定
+//
+// 引数:	hwnd			ウィンドウハンドル
+//			str				キャプション文字列への参照
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_SetWindowCaption( HWINDOW hwnd, const std::string& str )
+{
+    QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+    if(view == NULL) return;
+    auto window = view->parentWidget();
+    QMetaObject::invokeMethod(window, "setWindowTitle",
+                              Q_ARG(QString, str));
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// マウスカーソル表示/非表示
+//
+// 引数:	disp			true:表示 false:非表示
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_ShowCursor( bool disp )
+{
+    QMetaObject::invokeMethod(qApp, "deactivateMouseCursorTimer");
+    qApp->setOverrideCursor(disp ? Qt::ArrowCursor : Qt::BlankCursor);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// OS依存のウィンドウハンドルを取得
+//
+// 引数:	hwnd			ウィンドウハンドル
+// 返値:	void*			OS依存のウィンドウハンドル
+/////////////////////////////////////////////////////////////////////////////
+void* OSD_GetWindowHandle( HWINDOW hwnd )
+{
+    // 使わない
+    assert(false);
+    return nullptr;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // 環境設定ダイアログ表示
 //
 // 引数:	hwnd		ウィンドウハンドル
 // 返値:	int			1:OK 0:CANCEL -1:ERROR
-///////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 int OSD_ConfigDialog( HWINDOW hwnd )
 {
 	// INIファイルを開く
@@ -2080,13 +2227,13 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 	}
 }
 
-///////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // バージョン情報表示
 //
 // 引数:	hwnd		ウィンドウハンドル
-//		mdl			機種
+//			mdl			機種
 // 返値:	なし
-///////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 {
 	QWidget* parent = static_cast<QWidget*>(hwnd);
@@ -2095,4 +2242,142 @@ void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 					  "https://eighttails.seesaa.net\n"
 					  "©2012-2021, Tadahito Yao (@eighttails)\n"
 					  "Based on PC6001V by Yumitaro.");
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// イベント取得(イベントが発生するまで待つ)
+//
+// 引数:	ev				イベント情報共用体へのポインタ
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_GetEvent( Event *ev )
+{
+    QMutexLocker lock(&eventMutex);
+    // イベントキューが空の場合、イベントが発行されるまで待つ
+    if(eventQueue.empty()){
+        eventEmitted.wait(&eventMutex);
+    }
+    *ev = eventQueue.front();
+    eventQueue.pop_front();
+
+    return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// イベントをキューにプッシュする
+//
+// 引数:	ev				イベントタイプ
+//			...				イベントタイプに応じた引数
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_PushEvent(const Event& ev)
+{
+    // イベントキューにプッシュ
+    QMutexLocker lock(&eventMutex);
+    eventQueue.push_back(ev);
+    eventEmitted.wakeAll();
+    return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// イベントをキューにプッシュする
+//
+// 引数:	ev				イベントタイプ
+//			...				イベントタイプに応じた引数
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_PushEvent( EventType ev, ... )
+{
+    Event event;
+    event.type = ev;
+    va_list args;
+    va_start( args, ev );
+
+    switch( ev ){
+    case EV_DEBUGMODEBP:
+        event.bp.addr = va_arg( args, int );
+        break;
+    default:;
+    }
+
+    va_end( args );
+
+    return OSD_PushEvent( event );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// キューに指定のイベントが存在するか調査する
+//
+// 引数:	ev				イベントタイプ
+// 返値:	bool			true:ある false:ない
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_HasEvent( EventType ev )
+{
+    QMutexLocker lock(&eventMutex);
+    foreach(auto e, eventQueue) {
+        if (e.type == ev) return true;
+    }
+    return false;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// イベント処理の状態を種類ごとに設定する
+//
+// 引数:	ev				イベントタイプ
+//			st				ステータス
+// 返値:	bool			変更前の状態 true:有効 false:無効
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_EventState( EventType ev, EventState st )
+{
+    // 何もしない(呼ばれない)
+    assert(false);
+    return false;
+}
+
+////////////////////////////////////////////////////////////////
+// フォントファイル作成
+//
+// 引数:	hfile		半角フォントファイルパス
+//		zfile		全角フォントファイルパス
+//		size		文字サイズ(半角文字幅ピクセル数)
+// 返値:	bool		true:作成成功 false:作成失敗
+////////////////////////////////////////////////////////////////
+bool OSD_CreateFont( const char *hfile, const char *zfile, int size )
+{
+    // 何もしない
+    // フォントファイルはQtのリソースから読み込む
+    return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// ShiftJIS -> UTF-8
+//
+// 引数:	str			文字列バッファへの参照
+// 返値:	bool		true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_SJIStoUTF8( std::string& str )
+{
+    QByteArray encodedString = str.c_str();
+    QTextCodec *codec = QTextCodec::codecForName("Shift-JIS");
+    if (!codec) return false;
+    str = codec->toUnicode(encodedString).toUtf8().data();
+    return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// UTF-8 -> ShiftJIS
+//
+// 引数:	str			文字列バッファへの参照
+// 返値:	bool		true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_UTF8toSJIS( std::string& str )
+{
+    QString string = str.c_str();
+    QTextCodec *codec = QTextCodec::codecForName("Shift-JIS");
+    if (!codec) return false;
+    str = codec->fromUnicode(string).data();
+    return true;
 }

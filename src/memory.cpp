@@ -1904,53 +1904,53 @@ void MEM6::AddDeviceDescriptorExt( void )
 	case EXC660101:	// 拡張漢字ROMカートリッジ
 	case EXC6007SR:	// 拡張漢字ROM&RAMカートリッジ
 		// Device Description (Out)
-		descs.outdef.emplace( outFCH,  STATIC_CAST( Device::OutFuncPtr, &OutFCH  ) );
-		descs.outdef.emplace( outFFH,  STATIC_CAST( Device::OutFuncPtr, &OutFFH  ) );
+		descs.outdef.emplace( outFCH,  STATIC_CAST( Device::OutFuncPtr, &MEM6::OutFCH  ) );
+		descs.outdef.emplace( outFFH,  STATIC_CAST( Device::OutFuncPtr, &MEM6::OutFFH  ) );
 		
 		// Device Description (In)
-		descs.indef.emplace ( inFDH,   STATIC_CAST( Device::InFuncPtr,  &InFDH   ) );
-		descs.indef.emplace ( inFEH,   STATIC_CAST( Device::InFuncPtr,  &InFEH   ) );
+		descs.indef.emplace ( inFDH,   STATIC_CAST( Device::InFuncPtr,  &MEM6::InFDH   ) );
+		descs.indef.emplace ( inFEH,   STATIC_CAST( Device::InFuncPtr,  &MEM6::InFEH   ) );
 		break;
 		
 	case EXC6053:	// ボイスシンセサイザー
 		// Device Description (Out)
-		descs.outdef.emplace( out70H,  STATIC_CAST( Device::OutFuncPtr, &Out70H  ) );
-		descs.outdef.emplace( out72H,  STATIC_CAST( Device::OutFuncPtr, &Out72H  ) );
-		descs.outdef.emplace( out73H,  STATIC_CAST( Device::OutFuncPtr, &Out73H  ) );
-		descs.outdef.emplace( out74H,  STATIC_CAST( Device::OutFuncPtr, &Out74H  ) );
+		descs.outdef.emplace( out70H,  STATIC_CAST( Device::OutFuncPtr, &MEM6::Out70H  ) );
+		descs.outdef.emplace( out72H,  STATIC_CAST( Device::OutFuncPtr, &MEM6::Out72H  ) );
+		descs.outdef.emplace( out73H,  STATIC_CAST( Device::OutFuncPtr, &MEM6::Out73H  ) );
+		descs.outdef.emplace( out74H,  STATIC_CAST( Device::OutFuncPtr, &MEM6::Out74H  ) );
 		
 		// Device Description (In)
-		descs.indef.emplace ( in70H,   STATIC_CAST( Device::InFuncPtr,  &In70H   ) );
-		descs.indef.emplace ( in72H,   STATIC_CAST( Device::InFuncPtr,  &In72H   ) );
-		descs.indef.emplace ( in73H,   STATIC_CAST( Device::InFuncPtr,  &In73H   ) );
+		descs.indef.emplace ( in70H,   STATIC_CAST( Device::InFuncPtr,  &MEM6::In70H   ) );
+		descs.indef.emplace ( in72H,   STATIC_CAST( Device::InFuncPtr,  &MEM6::In72H   ) );
+		descs.indef.emplace ( in73H,   STATIC_CAST( Device::InFuncPtr,  &MEM6::In73H   ) );
 		break;
 		
 	case EXC60M55:	// FM音源カートリッジ
 		// Device Description (Out)
-		descs.outdef.emplace( out70Hf, STATIC_CAST( Device::OutFuncPtr, &Out70Hf ) );
-		descs.outdef.emplace( out71Hf, STATIC_CAST( Device::OutFuncPtr, &Out71Hf ) );
+		descs.outdef.emplace( out70Hf, STATIC_CAST( Device::OutFuncPtr, &MEM6::Out70Hf ) );
+		descs.outdef.emplace( out71Hf, STATIC_CAST( Device::OutFuncPtr, &MEM6::Out71Hf ) );
 		
 		// Device Description (In)
-		descs.indef.emplace ( in72Hf,  STATIC_CAST( Device::InFuncPtr,  &In72Hf  ) );
-		descs.indef.emplace ( in73Hf,  STATIC_CAST( Device::InFuncPtr,  &In73Hf  ) );
+		descs.indef.emplace ( in72Hf,  STATIC_CAST( Device::InFuncPtr,  &MEM6::In72Hf  ) );
+		descs.indef.emplace ( in73Hf,  STATIC_CAST( Device::InFuncPtr,  &MEM6::In73Hf  ) );
 		break;
 		
 	case EXCSOL3:	// 戦士のカートリッジmkⅢ
 		// Device Description (Out)
-		descs.outdef.emplace( out07H,  STATIC_CAST( Device::OutFuncPtr, &Out07H  ) );
+		descs.outdef.emplace( out07H,  STATIC_CAST( Device::OutFuncPtr, &MEM6::Out07H  ) );
 		[[fallthrough]];
 		
 	case EXCSOL2:	// 戦士のカートリッジmkⅡ
 		// Device Description (Out)
-		descs.outdef.emplace( out06H,  STATIC_CAST( Device::OutFuncPtr, &Out06H  ) );
-		descs.outdef.emplace( out3xH,  STATIC_CAST( Device::OutFuncPtr, &Out3xH  ) );
-		descs.outdef.emplace( outF0Hs, STATIC_CAST( Device::OutFuncPtr, &OutF0Hs ) );	// 戦士のカートリッジ 60対応
-		descs.outdef.emplace( outF2Hs, STATIC_CAST( Device::OutFuncPtr, &OutF2Hs ) );	// 戦士のカートリッジ 60対応
+		descs.outdef.emplace( out06H,  STATIC_CAST( Device::OutFuncPtr, &MEM6::Out06H  ) );
+		descs.outdef.emplace( out3xH,  STATIC_CAST( Device::OutFuncPtr, &MEM6::Out3xH  ) );
+		descs.outdef.emplace( outF0Hs, STATIC_CAST( Device::OutFuncPtr, &MEM6::OutF0Hs ) );	// 戦士のカートリッジ 60対応
+		descs.outdef.emplace( outF2Hs, STATIC_CAST( Device::OutFuncPtr, &MEM6::OutF2Hs ) );	// 戦士のカートリッジ 60対応
 		[[fallthrough]];
 		
 	case EXCSOL1:	// 戦士のカートリッジ
 		// Device Description (Out)
-		descs.outdef.emplace( out7FH,  STATIC_CAST( Device::OutFuncPtr, &Out7FH  ) );
+		descs.outdef.emplace( out7FH,  STATIC_CAST( Device::OutFuncPtr, &MEM6::Out7FH  ) );
 		break;
 	}
 }
@@ -2175,14 +2175,14 @@ bool MEM6::InitExt( void )
 		break;
 		
 	case EXCSOL1:	// 戦士のカートリッジ
-		EMem[EXTROM+0].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), nullptr, MemTable.ExtRom->Wait );
-		EMem[EXTROM+1].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), nullptr, MemTable.ExtRom->Wait );
+		EMem[EXTROM+0].SetFunc( FN( STATIC_CAST( NFuncPtr, &MEM6::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &MEM6::Sol2Read ) ), nullptr, MemTable.ExtRom->Wait );
+		EMem[EXTROM+1].SetFunc( FN( STATIC_CAST( NFuncPtr, &MEM6::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &MEM6::Sol2Read ) ), nullptr, MemTable.ExtRom->Wait );
 		break;
 		
 	case EXCSOL2:	// 戦士のカートリッジmkⅡ
 	case EXCSOL3:	// 戦士のカートリッジmkⅢ
-		EMem[EXTROM+0].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRom->Wait );
-		EMem[EXTROM+1].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRom->Wait );
+		EMem[EXTROM+0].SetFunc( FN( STATIC_CAST( NFuncPtr, &MEM6::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &MEM6::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &MEM6::Sol2Write ) ), MemTable.ExtRom->Wait );
+		EMem[EXTROM+1].SetFunc( FN( STATIC_CAST( NFuncPtr, &MEM6::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &MEM6::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &MEM6::Sol2Write ) ), MemTable.ExtRom->Wait );
 		break;
 	}
 	
@@ -2199,9 +2199,9 @@ bool MEM6::InitExt( void )
 	case EXCSOL1:	// 戦士のカートリッジ
 		SolBank.fill( NONBANK );
 		SolBankSet = 0;
-		EMem[EXTRAM+3].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRam->Wait );
-		EMem[EXTRAM+4].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRam->Wait );
-		EMem[EXTRAM+5].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRam->Wait );
+		EMem[EXTRAM+3].SetFunc( FN( STATIC_CAST( NFuncPtr, &MEM6::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &MEM6::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &MEM6::Sol2Write ) ), MemTable.ExtRam->Wait );
+		EMem[EXTRAM+4].SetFunc( FN( STATIC_CAST( NFuncPtr, &MEM6::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &MEM6::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &MEM6::Sol2Write ) ), MemTable.ExtRam->Wait );
+		EMem[EXTRAM+5].SetFunc( FN( STATIC_CAST( NFuncPtr, &MEM6::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &MEM6::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &MEM6::Sol2Write ) ), MemTable.ExtRam->Wait );
 		break;
 		
 	case EXCSOL2:	// 戦士のカートリッジmkⅡ
@@ -2209,7 +2209,7 @@ bool MEM6::InitExt( void )
 		SolBank.fill( NONBANK );
 		SolBankSet = 0;
 		for( int i = 0; i < 8; i++ ){
-			EMem[EXTRAM + i].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRam->Wait );
+			EMem[EXTRAM + i].SetFunc( FN( STATIC_CAST( NFuncPtr, &MEM6::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &MEM6::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &MEM6::Sol2Write ) ), MemTable.ExtRam->Wait );
 		}
 		break;
 	}
@@ -3088,53 +3088,53 @@ void EXTCART::AddDeviceDescriptorExt( void )
 	case EXC660101:	// 拡張漢字ROMカートリッジ
 	case EXC6007SR:	// 拡張漢字ROM&RAMカートリッジ
 		// Device Description (Out)
-		descs.outdef.emplace( outFCH,  STATIC_CAST( Device::OutFuncPtr, &OutFCH  ) );
-		descs.outdef.emplace( outFFH,  STATIC_CAST( Device::OutFuncPtr, &OutFFH  ) );
+		descs.outdef.emplace( outFCH,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::OutFCH  ) );
+		descs.outdef.emplace( outFFH,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::OutFFH  ) );
 		
 		// Device Description (In)
-		descs.indef.emplace ( inFDH,   STATIC_CAST( Device::InFuncPtr,  &InFDH   ) );
-		descs.indef.emplace ( inFEH,   STATIC_CAST( Device::InFuncPtr,  &InFEH   ) );
+		descs.indef.emplace ( inFDH,   STATIC_CAST( Device::InFuncPtr,  &EXTCART::InFDH   ) );
+		descs.indef.emplace ( inFEH,   STATIC_CAST( Device::InFuncPtr,  &EXTCART::InFEH   ) );
 		break;
 		
 	case EXC6053:	// ボイスシンセサイザー
 		// Device Description (Out)
-		descs.outdef.emplace( out70H,  STATIC_CAST( Device::OutFuncPtr, &Out70H  ) );
-		descs.outdef.emplace( out72H,  STATIC_CAST( Device::OutFuncPtr, &Out72H  ) );
-		descs.outdef.emplace( out73H,  STATIC_CAST( Device::OutFuncPtr, &Out73H  ) );
-		descs.outdef.emplace( out74H,  STATIC_CAST( Device::OutFuncPtr, &Out74H  ) );
+		descs.outdef.emplace( out70H,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out70H  ) );
+		descs.outdef.emplace( out72H,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out72H  ) );
+		descs.outdef.emplace( out73H,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out73H  ) );
+		descs.outdef.emplace( out74H,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out74H  ) );
 		
 		// Device Description (In)
-		descs.indef.emplace ( in70H,   STATIC_CAST( Device::InFuncPtr,  &In70H   ) );
-		descs.indef.emplace ( in72H,   STATIC_CAST( Device::InFuncPtr,  &In72H   ) );
-		descs.indef.emplace ( in73H,   STATIC_CAST( Device::InFuncPtr,  &In73H   ) );
+		descs.indef.emplace ( in70H,   STATIC_CAST( Device::InFuncPtr,  &EXTCART::In70H   ) );
+		descs.indef.emplace ( in72H,   STATIC_CAST( Device::InFuncPtr,  &EXTCART::In72H   ) );
+		descs.indef.emplace ( in73H,   STATIC_CAST( Device::InFuncPtr,  &EXTCART::In73H   ) );
 		break;
 		
 	case EXC60M55:	// FM音源カートリッジ
 		// Device Description (Out)
-		descs.outdef.emplace( out70Hf, STATIC_CAST( Device::OutFuncPtr, &Out70Hf ) );
-		descs.outdef.emplace( out71Hf, STATIC_CAST( Device::OutFuncPtr, &Out71Hf ) );
+		descs.outdef.emplace( out70Hf, STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out70Hf ) );
+		descs.outdef.emplace( out71Hf, STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out71Hf ) );
 		
 		// Device Description (In)
-		descs.indef.emplace ( in72Hf,  STATIC_CAST( Device::InFuncPtr,  &In72Hf  ) );
-		descs.indef.emplace ( in73Hf,  STATIC_CAST( Device::InFuncPtr,  &In73Hf  ) );
+		descs.indef.emplace ( in72Hf,  STATIC_CAST( Device::InFuncPtr,  &EXTCART::In72Hf  ) );
+		descs.indef.emplace ( in73Hf,  STATIC_CAST( Device::InFuncPtr,  &EXTCART::In73Hf  ) );
 		break;
 		
 	case EXCSOL3:	// 戦士のカートリッジmkⅢ
 		// Device Description (Out)
-		descs.outdef.emplace( out07H,  STATIC_CAST( Device::OutFuncPtr, &Out07H  ) );
+		descs.outdef.emplace( out07H,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out07H  ) );
 		[[fallthrough]];
 		
 	case EXCSOL2:	// 戦士のカートリッジmkⅡ
 		// Device Description (Out)
-		descs.outdef.emplace( out06H,  STATIC_CAST( Device::OutFuncPtr, &Out06H  ) );
-		descs.outdef.emplace( out3xH,  STATIC_CAST( Device::OutFuncPtr, &Out3xH  ) );
-		descs.outdef.emplace( outF0Hs, STATIC_CAST( Device::OutFuncPtr, &OutF0Hs ) );	// 戦士のカートリッジ 60対応
-		descs.outdef.emplace( outF2Hs, STATIC_CAST( Device::OutFuncPtr, &OutF2Hs ) );	// 戦士のカートリッジ 60対応
+		descs.outdef.emplace( out06H,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out06H  ) );
+		descs.outdef.emplace( out3xH,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out3xH  ) );
+		descs.outdef.emplace( outF0Hs, STATIC_CAST( Device::OutFuncPtr, &EXTCART::OutF0Hs ) );	// 戦士のカートリッジ 60対応
+		descs.outdef.emplace( outF2Hs, STATIC_CAST( Device::OutFuncPtr, &EXTCART::OutF2Hs ) );	// 戦士のカートリッジ 60対応
 		[[fallthrough]];
 		
 	case EXCSOL1:	// 戦士のカートリッジ
 		// Device Description (Out)
-		descs.outdef.emplace( out7FH,  STATIC_CAST( Device::OutFuncPtr, &Out7FH  ) );
+		descs.outdef.emplace( out7FH,  STATIC_CAST( Device::OutFuncPtr, &EXTCART::Out7FH  ) );
 		break;
 	}
 }
@@ -3359,14 +3359,14 @@ bool EXTCART::InitExt( std::vector<MemBlock>& memb )
 		break;
 		
 	case EXCSOL1:	// 戦士のカートリッジ
-		memb[EXTROM+0].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), nullptr, MemTable.ExtRom->Wait );
-		memb[EXTROM+1].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), nullptr, MemTable.ExtRom->Wait );
+		memb[EXTROM+0].SetFunc( FN( STATIC_CAST( NFuncPtr, &EXTCART::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &EXTCART::Sol2Read ) ), nullptr, MemTable.ExtRom->Wait );
+		memb[EXTROM+1].SetFunc( FN( STATIC_CAST( NFuncPtr, &EXTCART::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &EXTCART::Sol2Read ) ), nullptr, MemTable.ExtRom->Wait );
 		break;
 		
 	case EXCSOL2:	// 戦士のカートリッジmkⅡ
 	case EXCSOL3:	// 戦士のカートリッジmkⅢ
-		memb[EXTROM+0].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRom->Wait );
-		memb[EXTROM+1].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRom->Wait );
+		memb[EXTROM+0].SetFunc( FN( STATIC_CAST( NFuncPtr, &EXTCART::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &EXTCART::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &EXTCART::Sol2Write ) ), MemTable.ExtRom->Wait );
+		memb[EXTROM+1].SetFunc( FN( STATIC_CAST( NFuncPtr, &EXTCART::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &EXTCART::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &EXTCART::Sol2Write ) ), MemTable.ExtRom->Wait );
 		break;
 	}
 	
@@ -3383,9 +3383,9 @@ bool EXTCART::InitExt( std::vector<MemBlock>& memb )
 	case EXCSOL1:	// 戦士のカートリッジ
 		SolBank.fill( NONBANK );
 		SolBankSet = 0;
-		memb[EXTRAM+3].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRam->Wait );
-		memb[EXTRAM+4].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRam->Wait );
-		memb[EXTRAM+5].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRam->Wait );
+		memb[EXTRAM+3].SetFunc( FN( STATIC_CAST( NFuncPtr, &EXTCART::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &EXTCART::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &EXTCART::Sol2Write ) ), MemTable.ExtRam->Wait );
+		memb[EXTRAM+4].SetFunc( FN( STATIC_CAST( NFuncPtr, &EXTCART::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &EXTCART::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &EXTCART::Sol2Write ) ), MemTable.ExtRam->Wait );
+		memb[EXTRAM+5].SetFunc( FN( STATIC_CAST( NFuncPtr, &EXTCART::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &EXTCART::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &EXTCART::Sol2Write ) ), MemTable.ExtRam->Wait );
 		break;
 		
 	case EXCSOL2:	// 戦士のカートリッジmkⅡ
@@ -3393,7 +3393,7 @@ bool EXTCART::InitExt( std::vector<MemBlock>& memb )
 		SolBank.fill( NONBANK );
 		SolBankSet = 0;
 		for( int i = 0; i < 8; i++ ){
-			memb[EXTRAM + i].SetFunc( FN( STATIC_CAST( NFuncPtr, &Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &Sol2Write ) ), MemTable.ExtRam->Wait );
+			memb[EXTRAM + i].SetFunc( FN( STATIC_CAST( NFuncPtr, &EXTCART::Sol2GetName ) ), FR( STATIC_CAST( RFuncPtr, &EXTCART::Sol2Read ) ), FW( STATIC_CAST( WFuncPtr, &EXTCART::Sol2Write ) ), MemTable.ExtRam->Wait );
 		}
 		break;
 	}

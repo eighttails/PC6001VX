@@ -14,7 +14,7 @@ class AudioOutputWrapper : public QObject
 	Q_OBJECT
 public:
 	explicit AudioOutputWrapper(const QAudioDeviceInfo& info,
-								const QAudioFormat& format, QObject* parent = NULL)
+								const QAudioFormat& format, QObject* parent = nullptr)
 		: QObject(parent)
 		, AudioOutput(new QAudioOutput(info, format, this)) {}
 

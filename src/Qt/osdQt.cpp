@@ -49,8 +49,8 @@ QVector<QRgb> PaletteTable;				// パレットテーブル
 #ifndef NOSOUND
 //サウンド関連
 #include "audiooutputwrapper.h"
-QPointer<QIODevice> audioBuffer = NULL;
-QPointer<AudioOutputWrapper> audioOutput = NULL;
+QPointer<QIODevice> audioBuffer = nullptr;
+QPointer<AudioOutputWrapper> audioOutput = nullptr;
 #endif
 
 //ジョイスティック関連
@@ -410,7 +410,7 @@ const char *OSD_ColorName( int num )
 		QT_TRANSLATE_NOOP("PC6001VX", "mk2〜 白")
 	};
 
-	if( num < 0 || num >= COUNTOF( JColorName ) ) return NULL;
+	if( num < 0 || num >= COUNTOF( JColorName ) ) return nullptr;
 	else                                          return JColorName[num];
 
 }
@@ -548,7 +548,7 @@ const char *OSD_KeyName( PCKEYsym sym )
 		{ KVX_MENU,			QT_TRANSLATE_NOOP("PC6001VX", "Menu") }
 	};
 
-	const char *str = NULL;
+	const char *str = nullptr;
 	for( int i=0; i<(int)(sizeof(kname)/sizeof(PCKeyName)); i++ ){
 		if( kname[i].PCKey == sym ){
 			str = kname[i].Name;
@@ -704,7 +704,7 @@ PCKEYsym OSD_ConvertKeyCode( int scode )
 void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
 {
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
-	if(view == NULL) return;
+	if(view == nullptr) return;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
 							  Q_ARG(QString, str));
@@ -1028,12 +1028,18 @@ bool OSD_FindFile( const P6VPATH& path, const P6VPATH& file, std::vector<P6VPATH
 	std::string sfile = OSD_GetFileNamePart( file );
 	std::transform( sfile.begin(), sfile.end(), sfile.begin(), ::tolower );	// 小文字
 
-	for( const std::filesystem::directory_entry& ent : std::filesystem::recursive_directory_iterator( path ) ){
-		if( is_regular_file( ent.path() ) ){
-			std::string tfile = OSD_GetFileNamePart( ent.path() );
-			std::transform( tfile.begin(), tfile.end(), tfile.begin(), ::tolower );	// 小文字
-			if( tfile == sfile && (!size || OSD_GetFileSize( ent.path() ) == size) ){
-				files.emplace_back( ent.path() );
+	QDirIterator it(P6VPATH2QSTR(path),  QDir::Files, QDirIterator::FollowSymlinks);
+	while (it.hasNext()) {
+		it.next();
+		// パスからファイル名を抽出し、小文字に変換
+		std::string tfile = it.fileName().toLower().toStdString();
+
+		// ファイル名比較。
+		if (sfile == tfile){
+			// #TODO ファイル名一致＆サイズ一致してたら結果に登録
+			QFileInfo info(it.filePath());
+			if (size_t(info.size()) == size){
+				files.push_back(QSTR2P6VPATH(it.filePath()));
 			}
 		}
 	}
@@ -1053,13 +1059,8 @@ bool OSD_FileRename( const P6VPATH& fullpath1, const P6VPATH& fullpath2 )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_FileRename] %s -> %s\n", P6VPATH2STR( fullpath1 ).c_str(), P6VPATH2STR( fullpath2 ).c_str() );
 
-	try{
-		std::filesystem::rename( fullpath1, fullpath2 );
-		return true;
-	}
-	catch( std::filesystem::filesystem_error& ){
-		return false;
-	}
+	QFile file(P6VPATH2QSTR(fullpath1));
+	return file.rename(P6VPATH2QSTR(fullpath2));
 }
 
 
@@ -1067,21 +1068,24 @@ bool OSD_FileRename( const P6VPATH& fullpath1, const P6VPATH& fullpath2 )
 // フォルダの参照
 //
 // 引数:	hwnd		親のウィンドウハンドル
-//			path		パス
+//		path		パス
 // 返値:	bool		true:選択成功 false:エラーorキャンセル
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_FolderDiaog( HWINDOW hwnd, P6VPATH& path )
 {
-	const char* ret = NULL;
+	const char* ret = nullptr;
+	char cpath[PATH_MAX];
+	strcpy(cpath, P6VPATH2STR(path).c_str());
 	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "folderDialog",
 							  cType,
 							  Q_RETURN_ARG(const char*, ret),
-							  Q_ARG(void *, hwnd),
-							  Q_ARG(char*, Result));
-	return ret;
+							  Q_ARG(void*, hwnd),
+							  Q_ARG(char*, cpath));
+	path = STR2P6VPATH(ret);
+	return strlen(ret) ? true : false;
 }
 
 
@@ -1097,9 +1101,9 @@ bool OSD_FolderDiaog( HWINDOW hwnd, P6VPATH& path )
 bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& path )
 {
 	FileMode mode = FM_Load;
-	const char *title   = NULL;
-	const char *filter  = NULL;
-	const char *ext     = NULL;
+	const char *title   = nullptr;
+	const char *filter  = nullptr;
+	const char *ext     = nullptr;
 
 	switch( type ){
 	case FD_TapeLoad:	// TAPE(LOAD)選択
@@ -1210,21 +1214,27 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		break;
 	}
 
-	const char* ret = NULL;
+	const char* ret = nullptr;
+	char cpath[PATH_MAX];
+	strcpy(cpath, P6VPATH2STR(path).c_str());
+	char cfullpath[PATH_MAX];
+	strcpy(cpath, P6VPATH2STR(fullpath).c_str());
+
 	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "fileDialog",
 							  cType,
 							  Q_RETURN_ARG(const char*, ret),
-							  Q_ARG(void *, hwnd),
+							  Q_ARG(void*, hwnd),
 							  Q_ARG(FileMode, mode),
 							  Q_ARG(const char*, TRANS(title)),
 							  Q_ARG(const char*, TRANS(filter)),
-							  Q_ARG(char*, fullpath),
-							  Q_ARG(char*, path),
+							  Q_ARG(char*, cfullpath),
+							  Q_ARG(char*, cpath),
 							  Q_ARG(const char*, ext));
-	return ret;
+	path = STR2P6VPATH(ret);
+	return strlen(ret) ? true : false;
 }
 
 
@@ -1338,8 +1348,12 @@ bool OSD_OpenedJoy( HJOYINFO joy )
 	return SDL_JoystickGetAttached( (SDL_Joystick*)joyMap[index] ) ? true : false;
 #else
 	auto mgr = QGamepadManager::instance();
-	auto devIndex = mgr->connectedGamepads()[index];
-	return joyMap.count(devIndex) > 0;
+	for(auto index : mgr->connectedGamepads()){
+		if((static_cast<QGamepad*>(joy))->deviceId() == index){
+			return true;
+		}
+	}
+	return false;
 #endif // SDLJOYSTICK
 #else
 	return false;
@@ -1369,7 +1383,7 @@ HJOYINFO OSD_OpenJoy( int index )
 	return (HJOYINFO)joyMap[devIndex];
 #endif // SDLJOYSTICK
 #else
-	return (HJOYINFO)NULL;
+	return (HJOYINFO)nullptr;
 #endif // NOJOYSTICK
 }
 
@@ -1713,7 +1727,7 @@ bool OSD_LoadWAV( const P6VPATH& filepath, BYTE** buf, DWORD* len, int* freq )
 {
 #ifndef NOSOUND
 	WavFile w;
-	if(!w.open(filepath)) return false;
+	if(!w.open(P6VPATH2STR(filepath).c_str())) return false;
 
 	const QAudioFormat& format = w.fileFormat();
 	size_t bodySize = w.size() - w.headerLength();
@@ -2125,7 +2139,7 @@ bool OSD_GetWindowImage( HWINDOW hwnd, std::vector<BYTE>& pixels, VRect* pos, Pi
 void OSD_SetIcon( HWINDOW hwnd, int model )
 {
 	// 機種別P6オブジェクト確保
-	const char* iconRes = NULL;
+	const char* iconRes = nullptr;
 	switch( model ){
 	case 68: iconRes = ":/res/PC-6601SR.ico"; break;
 	case 66: iconRes = ":/res/PC-6601.ico"; break;
@@ -2151,7 +2165,7 @@ void OSD_SetIcon( HWINDOW hwnd, int model )
 void OSD_SetWindowCaption( HWINDOW hwnd, const std::string& str )
 {
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
-	if(view == NULL) return;
+	if(view == nullptr) return;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
 							  Q_ARG(QString, str));

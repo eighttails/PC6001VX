@@ -3,7 +3,7 @@
 
 EmulationAdaptor::EmulationAdaptor(QObject *parent)
 	: QObject(parent)
-	, P6Core(NULL)
+	, P6Core(nullptr)
 	, RetCode(EL6::Quit)
 {
 }

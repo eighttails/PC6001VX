@@ -70,10 +70,10 @@ bool SerchRom( CFG6 *cfg )
 
 P6VXApp::P6VXApp(int &argc, char **argv)
 	: ParentAppClass(argc, argv)
-	, P6Core(NULL)
+	, P6Core(nullptr)
 	, Restart(EL6::Quit)
 	, Adaptor(new EmulationAdaptor())
-	, KPanel(NULL)
+	, KPanel(nullptr)
 	, MouseCursorTimer(new QTimer(this))
 	, Setting(QString(OSD_GetConfigPath()) + "/pc6001vx.ini", QSettings::IniFormat)
 	, TiltEnabled(false)
@@ -268,7 +268,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if (dialog->exec() == QDialog::Accepted) {
 			result = dialog->selectedFiles().value(0);
 		}
-		if(result.isEmpty())    return NULL;
+		if(result.isEmpty())    return nullptr;
 		// 入力されたファイル名に拡張子がついていない場合は付与する
 		QFileInfo info(result);
 		if(info.suffix() != ext){
@@ -276,9 +276,9 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		}
 		if (OSD_FileExist(result.toUtf8().constData())){
 			if (OSD_Message(QString(tr("ファイルはすでに存在しています。上書きしますか?")).toUtf8().constData(),
-							NULL, OSDM_OKCANCEL | OSDM_ICONQUESTION)
+							nullptr, OSDM_OKCANCEL | OSDM_ICONQUESTION)
 					== OSDM_OKCANCEL){
-				return NULL;
+				return nullptr;
 			}
 		}
 	} else {
@@ -286,7 +286,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if (dialog->exec() == QDialog::Accepted) {
 			result = dialog->selectedFiles().value(0);
 		}
-		if(result.isEmpty()) return NULL;
+		if(result.isEmpty()) return nullptr;
 	}
 
 	QDir dir(result);
@@ -359,8 +359,8 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 
 	// 指定座標に生成済みのQPixmapItemが存在するかチェック
 	// (同一座標にビットマップが重なることはないという前提)
-	QGraphicsItem* item = NULL;
-	QGraphicsPixmapItem* pItem = NULL;
+	QGraphicsItem* item = nullptr;
+	QGraphicsPixmapItem* pItem = nullptr;
 	foreach(item, scene->items()){
 		if(item->scenePos() == QPointF(x, y)){
 			// QPixmapItemが見つかったら一旦sceneから除去する
@@ -373,8 +373,8 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 		}
 	}
 
-	if(pItem == NULL){
-		pItem = new QGraphicsPixmapItem(NULL);
+	if(pItem == nullptr){
+		pItem = new QGraphicsPixmapItem(nullptr);
 		// フィルタリング
 		if(getSetting(keyFiltering).toBool()){
 			pItem->setTransformationMode(Qt::SmoothTransformation);
@@ -425,7 +425,7 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 			isTiltEnabled()){
 		// 画面に対する、枠を含めたサイズの比率
 		qreal merginRatio = 1.0;
-		QGraphicsPixmapItem* background = NULL;
+		QGraphicsPixmapItem* background = nullptr;
 		switch(this->Cfg.GetModel()){
 		case 60:
 		case 61:
@@ -497,7 +497,7 @@ void P6VXApp::deactivateMouseCursorTimer()
 void P6VXApp::resetSettings()
 {
 	if (OSD_Message(QString(tr("本当に設定を初期化しますか?")).toUtf8().constData(),
-					NULL, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
+					nullptr, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
 		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(),
 					   MSG_QUITC, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
 
@@ -631,7 +631,7 @@ void P6VXApp::exportSavedTape()
 	if(OSD_FileSelect( nullptr, FD_TapeSave, dest, src )){
 		if (OSD_FileExist(dest)){
 			if (OSD_Message(QString(tr("ファイルはすでに存在しています。上書きしますか?")).toUtf8().constData(),
-							NULL, OSDM_OKCANCEL | OSDM_ICONQUESTION)
+							nullptr, OSDM_OKCANCEL | OSDM_ICONQUESTION)
 					== OSDR_OK){
 				CFG6 cfg;
 				cfg.Write();
@@ -680,7 +680,7 @@ void P6VXApp::executeEmulation()
 		if (!romFolderSpecified){
 			// 互換ROMを使用するか問い合わせる
 			int ret = OSD_Message( tr("エミュレーター内蔵の互換ROMを使用しますか?").toUtf8().constData(),
-								   NULL, OSDM_YESNO | OSDM_ICONQUESTION );
+								   nullptr, OSDM_YESNO | OSDM_ICONQUESTION );
 			if(ret == OSDR_YES) {
 				enableCompatibleRomMode(&Cfg, true);
 				Cfg.Write();
@@ -787,7 +787,7 @@ void P6VXApp::executeEmulation()
 void P6VXApp::postExecuteEmulation()
 {
 	Restart = Adaptor->getReturnCode();
-	Adaptor->setEmulationObj(NULL);
+	Adaptor->setEmulationObj(nullptr);
 
 	if(P6Core){
 		P6Core->Stop();

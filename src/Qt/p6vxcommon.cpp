@@ -161,26 +161,6 @@ void RectAdd( VRect *rr, VRect *r1, VRect *r2 )
 #include <QDateTime>
 #include <QDateTime>
 
-////////////////////////////////////////////////////////////////
-// UTF8->Local(Windowsの場合SJIS,Linuxの場合UTF8)
-//
-// 引数:	str				SJIS文字列へのポインタ
-// 返値:	char *			Local文字列へのポインタ
-////////////////////////////////////////////////////////////////
-char *UTF8toLocal( const char *str )
-{
-	// 文字コード変換用バッファ
-	static QByteArray array;
-	QMutex mutex;
-	QMutexLocker lock(&mutex);
-
-	QString qStr = QString::fromUtf8(str);
-	array = qStr.toLocal8Bit();
-	return array.data();
-}
-
-
-
 void TiltScreen(TiltDirection dir)
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);

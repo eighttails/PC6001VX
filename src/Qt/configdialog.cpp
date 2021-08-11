@@ -597,7 +597,7 @@ void ConfigDialog::selectFile(QWidget *widget)
 		}
 
 		folder = QSTR2P6VPATH(edit->text());
-		OSD_FileSelect(NULL, dlg, folder, path);
+		OSD_FileSelect(nullptr, dlg, folder, path);
 		if(folder.size() > 0){
 			edit->setText(P6VPATH2QSTR(folder));
 			warnFileOrFolderNotExist(edit);

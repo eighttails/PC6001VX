@@ -85,7 +85,7 @@ void EL6::ExecMenu( int id )
 	case ID_SPEED300:		Speed = 300;							break;	// 速度調整(300%)
 	case ID_SPEEDMANUAL:
 	{
-		int speed = QInputDialog::getInt(NULL, QtEL6::tr("動作速度"), QtEL6::tr("動作速度(%)を入力してください。(10-2000)"), 100, 10, 2000);
+		int speed = QInputDialog::getInt(nullptr, QtEL6::tr("動作速度"), QtEL6::tr("動作速度(%)を入力してください。(10-2000)"), 100, 10, 2000);
 		// 200%以下は10%刻み、それ以上は100%刻み
 		if (speed <= 200) speed -= speed % 10;
 		if (speed > 200) speed -= speed % 100;
@@ -199,7 +199,7 @@ void EL6::ExecMenu( int id )
 		break;
 	case ID_SIZEMANUAL:
 	{
-		const int magnification = QInputDialog::getInt(NULL, QtEL6::tr("表示サイズ"), QtEL6::tr("表示サイズ(%)を入力してください。(50-1000)"), 100, 50, 1000);
+		const int magnification = QInputDialog::getInt(nullptr, QtEL6::tr("表示サイズ"), QtEL6::tr("表示サイズ(%)を入力してください。(50-1000)"), 100, 50, 1000);
 		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(magnification);
 		break;
 	}
@@ -256,7 +256,7 @@ QtEL6::~QtEL6()
 void QtEL6::ShowPopupImpl(int x, int y)
 {
 	OSD_ShowCursor( true );
-	QAction* selectedAction = NULL;
+	QAction* selectedAction = nullptr;
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
 	QMenu menu;
@@ -483,7 +483,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	selectedAction = menu.exec(QPoint(x,y));
 
-	if (selectedAction != NULL) {
+	if (selectedAction != nullptr) {
 		// 項目ごとの処理
 		MenuCommand id = selectedAction->property(MENUIDPROPERTY).value<MenuCommand>();
 		ExecMenu(id);
@@ -519,7 +519,7 @@ void QtEL6::UpdateFPS()
 //    // 例外発生
 //    catch( Error::Errno i ){
 //        delete ecfg;
-//        ecfg = NULL;
+//        ecfg = nullptr;
 //        return -1;
 //    }
 
@@ -530,7 +530,7 @@ void QtEL6::UpdateFPS()
 //    if( ret == QDialog::Accepted) ecfg->Write();
 
 //    delete ecfg;
-//    ecfg = NULL;
+//    ecfg = nullptr;
 
 //    return ret;
 //}

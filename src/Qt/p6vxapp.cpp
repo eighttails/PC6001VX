@@ -75,7 +75,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, Adaptor(new EmulationAdaptor())
 	, KPanel(NULL)
 	, MouseCursorTimer(new QTimer(this))
-    , Setting(QString(OSD_GetConfigPath()) + "/pc6001vx.ini", QSettings::IniFormat)
+	, Setting(QString(OSD_GetConfigPath()) + "/pc6001vx.ini", QSettings::IniFormat)
 	, TiltEnabled(false)
 	, TiltDir(NEWTRAL)
 	, TiltStep(0)
@@ -140,7 +140,7 @@ void P6VXApp::startup()
 {
 #ifndef NOSINGLEAPP
 	// 二重起動禁止
-    if( OSD_IsWorking() ) {
+	if( OSD_IsWorking() ) {
 		exit();
 		return;
 	}
@@ -508,10 +508,10 @@ void P6VXApp::resetSettings()
 			QFile::remove(path);
 #endif
 			// P6V設定ファイルを削除
-            OSD_AddPath( path, OSD_GetConfigPath(), CONF_FILE );
+			OSD_AddPath( path, OSD_GetConfigPath(), CONF_FILE );
 			QFile::remove(path);
 			// P6VX設定ファイルを削除
-            OSD_AddPath( path, OSD_GetConfigPath(), "pc6001vx.ini" );
+			OSD_AddPath( path, OSD_GetConfigPath(), "pc6001vx.ini" );
 			QFile::remove(path);
 			// アプリを終了(終了時に設定を保存しないようにしてから)
 			this->Cfg.SetSaveQuit(false);
@@ -974,17 +974,17 @@ void P6VXApp::overrideSettings(CFG6 &cfg)
 	// Androidではこの方法でないとSDカードが検出できない場合がある。
 	const auto dataPath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0].toLocal8Bit();
 	// ROM,TAPE,DISK,拡張ROM,WAVEパスの初期値にはこのデータフォルダを設定する。
-    if(QString(cfg.GetRomPath()).contains(OSD_GetConfigPath())) cfg.SetRomPath(dataPath);
-    if(QString(cfg.GetTapePath()).contains(OSD_GetConfigPath())) cfg.SetTapePath(dataPath);
-    if(QString(cfg.GetDiskPath()).contains(OSD_GetConfigPath())) cfg.SetDiskPath(dataPath);
-    if(QString(cfg.GetExtRomPath()).contains(OSD_GetConfigPath())) cfg.SetExtRomPath(dataPath);
-    if(QString(cfg.GetWavePath()).contains(OSD_GetConfigPath())) cfg.SetWavePath(dataPath);
+	if(QString(cfg.GetRomPath()).contains(OSD_GetConfigPath())) cfg.SetRomPath(dataPath);
+	if(QString(cfg.GetTapePath()).contains(OSD_GetConfigPath())) cfg.SetTapePath(dataPath);
+	if(QString(cfg.GetDiskPath()).contains(OSD_GetConfigPath())) cfg.SetDiskPath(dataPath);
+	if(QString(cfg.GetExtRomPath()).contains(OSD_GetConfigPath())) cfg.SetExtRomPath(dataPath);
+	if(QString(cfg.GetWavePath()).contains(OSD_GetConfigPath())) cfg.SetWavePath(dataPath);
 
 	// AndroidではSDカードにファイルを書き出せないため、
 	// SnapshotおよびどこでもSAVEはアプリ内のサンドボックス領域に固定する。
-    OSD_AddPath( str, OSD_GetConfigPath(), IMAGE_DIR );
+	OSD_AddPath( str, OSD_GetConfigPath(), IMAGE_DIR );
 	cfg.SetImgPath( str );
-    OSD_AddPath( str, OSD_GetConfigPath(), DOKOSAVE_DIR );
+	OSD_AddPath( str, OSD_GetConfigPath(), DOKOSAVE_DIR );
 	cfg.SetDokoSavePath( str );
 	cfg.Write();
 

@@ -29,8 +29,8 @@ void ColorButton::initialize(int id, CFG6 *cfg)
 	colorId = id;
 
 	// 設定情報から自ボタンに対応する色を取得
-    color = config->GetColor(colorId);
-    // 自身の色に反映
+	color = config->GetColor(colorId);
+	// 自身の色に反映
 	updateColor();
 }
 

@@ -57,7 +57,7 @@ bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const in
 		doff += pitch;
 	}
 
-    auto saveFilePath = QDir::cleanPath(P6VPATH2QSTR(filename));
+	auto saveFilePath = QDir::cleanPath(P6VPATH2QSTR(filename));
 	auto saveDir = QFileInfo(saveFilePath).absoluteDir();
 	// P6VXでは独自にファイル名をつける(filenameは無視する)
 	auto dt = QDateTime::currentDateTime();
@@ -97,7 +97,7 @@ bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const in
 ////////////////////////////////////////////////////////////////
 bool SaveImg( const P6VPATH& filename, VSurface *sur, VRect *pos )
 {
-    return SaveImgData( filename, (BYTE *)sur->GetPixels().data(), INBPP, sur->Width(), sur->Height(), pos );
+	return SaveImgData( filename, (BYTE *)sur->GetPixels().data(), INBPP, sur->Width(), sur->Height(), pos );
 }
 
 ////////////////////////////////////////////////////////////////
@@ -120,7 +120,7 @@ VSurface *LoadImg( const char *filename )
 	sur->InitSurface( image.width(), image.height() );
 
 	// 画像データを取得
-    BYTE *doff = (BYTE *)sur->GetPixels().data();
+	BYTE *doff = (BYTE *)sur->GetPixels().data();
 	for( int i=0; i<(int)sur->Height(); i++ ){
 		memcpy( doff, image.scanLine(i), sur->Width() * image.depth() / 8 );
 		doff += sur->Pitch();

@@ -21,4 +21,9 @@ exitOnError
 ./gimagereader/gimagereader.sh
 exitOnError
 
+pacman "${PACMAN_INSTALL_OPTS[@]}" \
+$MINGW_PACKAGE_PREFIX-clang \
+$MINGW_PACKAGE_PREFIX-qt-creator \
+2> /dev/null
+
 ) 200>$LOCKFILE

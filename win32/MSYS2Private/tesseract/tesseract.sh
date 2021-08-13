@@ -18,6 +18,7 @@ $MINGW_PACKAGE_PREFIX-libarchive \
 $MINGW_PACKAGE_PREFIX-cairo \
 $MINGW_PACKAGE_PREFIX-pango \
 $MINGW_PACKAGE_PREFIX-icu \
+$MINGW_PACKAGE_PREFIX-asciidoc \
 $MINGW_PACKAGE_PREFIX-docbook-xsl \
 2>/dev/null
 
@@ -72,10 +73,12 @@ if [ "$TESSERACT_DEBUG" != "" ]; then
 fi
 ./configure \
 $DEBUG_FLAGS \
+--disable-legacy \
 --build=$MINGW_CHOST \
 --host=$MINGW_CHOST \
 --target=$MINGW_CHOST \
 --prefix=$PREFIX \
+--datarootdir=$PREFIX/bin \
 --with-extra-includes=$PREFIX/include \
 --with-extra-libraries=$PREFIX/lib
 
@@ -95,6 +98,14 @@ makeParallel training && make training-install
 exitOnError
 makeParallel && make install
 exitOnError
+
+pushd $PREFIX/bin/tessdata
+wget -c https://github.com/tesseract-ocr/tessdata_best/raw/master/eng.traineddata
+wget -c https://github.com/tesseract-ocr/tessdata_best/raw/master/jpn.traineddata
+wget -c https://github.com/tesseract-ocr/tessdata_best/raw/master/jpn_vert.traineddata
+wget -c https://github.com/tesseract-ocr/tessdata_best/raw/master/osd.traineddata
+popd
+
 popd
 }
 

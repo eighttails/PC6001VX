@@ -57,8 +57,9 @@ void EL6::ExecMenu( int id )
 	case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );	break;
 	case ID_DISKEJECT1:														// DISK 排出
 	case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );		break;
-	case ID_ROMINSERT:		UI_RomInsert();							break;	// 拡張ROM 挿入
-	case ID_ROMEJECT:		UI_RomEject();							break;	// 拡張ROM 排出
+	//#TODO case ID_ROMINSERT:		UI_CartInsert();							break;	// 拡張ROM 挿入
+	//#TODO ROM挿入系
+	case ID_CARTEJECT:		UI_CartEject();							break;	// 拡張ROM 排出
 	case ID_JOY100:															// ジョイスティック1
 	case ID_JOY101:
 	case ID_JOY102:
@@ -116,12 +117,12 @@ void EL6::ExecMenu( int id )
 	case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();					break;	// リプレイ中どこでもLOAD
 	case ID_REPLAYROLLBACK:	UI_ReplayRollback();					break;	// リプレイ中どこでもLOADを巻き戻し
 	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
-	case ID_REPLAYLOAD:		UI_ReplayLoad();						break;	// リプレイ再生
+	case ID_REPLAYPLAY:		UI_ReplayPlay();						break;	// リプレイ再生
 	case ID_REPLAYMOVIE:													// リプレイを動画に変換
-		UI_ReplayLoad();
+		UI_ReplayMovie();
 		OSD_PushEvent(EV_REPLAYMOVIE);
 		break;
-	case ID_AVISAVE:		UI_AVISave();							break;	// ビデオキャプチャ
+	case ID_AVISAVE:		UI_AVISaveStart();						break;	// ビデオキャプチャ
 	case ID_KEYPANEL:		app->toggleKeyPanel();					break;	// キーパネル
 	case ID_VIRTURLKEY:		app->toggleVirtualKeyboard();			break;	// 仮想キーボード
 	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
@@ -129,7 +130,7 @@ void EL6::ExecMenu( int id )
 	case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
 	case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
 	case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
-	case ID_FULLSCREEN:
+	case ID_FULLSCRN:
 		OSD_ShowCursor(cfg->GetFullScreen() ? true : false);
 		cfg->SetFullScreen( cfg->GetFullScreen() ? false : true );
 		graph->ResizeScreen();	// スクリーンサイズ変更

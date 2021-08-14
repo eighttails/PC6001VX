@@ -697,13 +697,13 @@ PCKEYsym OSD_ConvertKeyCode( int scode )
 ////////////////////////////////////////////////////////////////
 // キャプション設定
 //
-// 引数:	Wh			ウィンドウハンドル
+// 引数:	hwnd			ウィンドウハンドル
 //		str			キャプション文字列へのポインタ
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_SetWindowCaption( HWINDOW Wh, const char *str )
+void OSD_SetWindowCaption( HWINDOW hwnd, const char *str )
 {
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+	QGraphicsView* view = static_cast<QGraphicsView*>(hwnd);
 	if(view == nullptr) return;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
@@ -1238,19 +1238,21 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 }
 
 
-////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
 // メッセージ表示
 //
-// 引数:	mes			メッセージ文字列へのポインタ
-//		cap			ウィンドウキャプション文字列へのポインタ
+// 引数:	hwnd		親のウィンドウハンドル
+//		mes			メッセージ文字列への参照(UTF-8)
+//		cap			ウィンドウキャプション文字列への参照(UTF-8)
 //		type		表示形式指示のフラグ
 // 返値:	int			押されたボタンの種類
-//					OSDR_OK:     OKボタン
-//					OSDR_CANCEL: CANCELボタン
-//					OSDR_YES:    YESボタン
-//					OSDR_NO:     NOボタン
-////////////////////////////////////////////////////////////////
-int OSD_Message( const char *mes, const char *cap, int type )
+//							OSDR_OK:     OKボタン
+//							OSDR_CANCEL: CANCELボタン
+//							OSDR_YES:    YESボタン
+//							OSDR_NO:     NOボタン
+/////////////////////////////////////////////////////////////////////////////
+int OSD_Message( HWINDOW hwnd, const std::string& mes, const std::string& cap, int type )
 {
 	int ret = OSDR_OK;
 	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
@@ -1259,18 +1261,19 @@ int OSD_Message( const char *mes, const char *cap, int type )
 	QMetaObject::invokeMethod(qApp, "showMessageBox",
 							  cType,
 							  Q_RETURN_ARG(int, ret),
-							  Q_ARG(const char*, mes),
-							  Q_ARG(const char*, cap),
+							  Q_ARG(const char*, mes.c_str()),
+							  Q_ARG(const char*, cap.c_str()),
 							  Q_ARG(int, type));
 	return ret;
 }
 
-////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
 // キーリピート設定
 //
-// 引数:	repeat	キーリピートの間隔(ms) 0で無効
+// 引数:	repeat			キーリピートの間隔(ms) 0で無効
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void OSD_SetKeyRepeat( int repeat )
 {
 	QApplication::setKeyboardInputInterval(repeat);
@@ -1851,10 +1854,10 @@ bool OSD_CreateWindow( HWINDOW* hwnd, const int w, const int h, const int sw, co
 	QGraphicsScene* scene = view->scene();
 
 	scene->setSceneRect(0, 0, w, h);
-	*pwh = view;
+	*hwnd = view;
 
 	QMetaObject::invokeMethod(qApp, "createWindow",
-							  Q_ARG(HWINDOW, *pwh),
+							  Q_ARG(HWINDOW, *hwnd),
 							  Q_ARG(bool, fsflag));
 
 	return true;
@@ -1882,7 +1885,7 @@ void OSD_DestroyWindow( HWINDOW hwnd )
 int OSD_GetWindowWidth( HWINDOW hwnd )
 {
 	// QtではSceneRectの幅を返す
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+	QGraphicsView* view = static_cast<QGraphicsView*>(hwnd);
 	Q_ASSERT(view);
 
 	return view->scene()->width();
@@ -1898,7 +1901,7 @@ int OSD_GetWindowWidth( HWINDOW hwnd )
 int OSD_GetWindowHeight( HWINDOW hwnd )
 {
 	// QtではSceneRectの高さを返す
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+	QGraphicsView* view = static_cast<QGraphicsView*>(hwnd);
 	Q_ASSERT(view);
 
 	return view->scene()->height();
@@ -1908,11 +1911,11 @@ int OSD_GetWindowHeight( HWINDOW hwnd )
 ////////////////////////////////////////////////////////////////
 // パレット設定
 //
-// 引数:	Wh			ウィンドウハンドル
+// 引数:	hwnd			ウィンドウハンドル
 //		pal			パレットへのポインタ
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool OSD_SetPalette( HWINDOW Wh, VPalette *pal )
+bool OSD_SetPalette( HWINDOW hwnd, VPalette *pal )
 {
 	PaletteTable.clear();
 	for (int i=0; i < pal->ncols; i++){
@@ -1969,7 +1972,7 @@ void OSD_SetWindowResizable( HWINDOW hwnd, bool resize )
 void OSD_ClearWindow( HWINDOW hwnd )
 {
 	QMetaObject::invokeMethod(qApp, "clearLayout",
-							  Q_ARG(HWINDOW, Wh));
+							  Q_ARG(HWINDOW, hwnd));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2011,7 +2014,7 @@ void OSD_BlitToWindow( HWINDOW hwnd, VSurface* src, const int x, const int y )
 	drc1.x = 0;
 	drc1.y = 0;
 
-	BYTE *psrc = (BYTE *)src->GetPixels() + src->Pitch() * src1.y + src1.x;
+	BYTE *psrc = src->GetPixels().data() + src->Pitch() * src1.y + src1.x;
 
 	const int length = image.bytesPerLine();
 	for( int i=0; i < src1.h; i++ ){
@@ -2024,7 +2027,7 @@ void OSD_BlitToWindow( HWINDOW hwnd, VSurface* src, const int x, const int y )
 	// スロットを呼び出してメインスレッドでSceneを更新する
 	// (直接呼び出すと呼び出し側スレッドで実行されてしまう)
 	QMetaObject::invokeMethod(qApp, "layoutBitmap",
-							  Q_ARG(HWINDOW, Wh),
+							  Q_ARG(HWINDOW, hwnd),
 							  Q_ARG(int, x),
 							  Q_ARG(int, y),
 							  Q_ARG(double, 1.0),
@@ -2036,22 +2039,21 @@ void OSD_BlitToWindow( HWINDOW hwnd, VSurface* src, const int x, const int y )
 // ウィンドウに転送(拡大等)
 //
 // 引数:	hwnd			ウィンドウハンドル
-//			src				転送元サーフェス
-//			pos				転送先 座標/サイズ
-//			scanen			スキャンラインフラグ
+//		src				転送元サーフェス
+//		pos				転送先 座標/サイズ
+//		scanen			スキャンラインフラグ
 // 返値:	なし
 /////////////////////////////////////////////////////////////////////////////
 void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bool scanen )
 {
 	VRect src1,drc1;
-	if( !src || !wh ) return;
+	if( !src || !hwnd ) return;
 
-	const int s = (scan ? 2 : 1);   // スキャンライン時には2行ずつ処理する
+	const int s = (scanen ? 2 : 1);   // スキャンライン時には2行ずつ処理する
 
-	const BYTE *spt  = (BYTE *)src->GetPixels();
+	const BYTE *spt  = src->GetPixels().data();
 	const int pp     = src->Pitch();
 
-	const int xsc    = src->XScale();
 	const int ww     = src->Width();
 	const int hh     = src->Height();
 
@@ -2061,25 +2063,25 @@ void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bo
 	const int dpp    = image.bytesPerLine();
 
 	// 転送元範囲設定
-	src1.x = qMax( 0, -dx / 2 * xsc );
-	src1.y = qMax( 0, -dy );
-	src1.w = qMin( ww * xsc - src1.x, image.width() );
-	src1.h = qMin( hh       - src1.y, image.height() );
+	src1.x = qMax( 0, -pos->x );
+	src1.y = qMax( 0, -pos->y );
+	src1.w = qMin( ww - src1.x, image.width() );
+	src1.h = qMin( hh - src1.y, image.height() );
 
 	if( src1.w <= 0 || src1.h <= 0 ) return;
 
 	// 転送先範囲設定
-	drc1.x = qMax( 0, dx );
-	drc1.y = qMax( 0, dy );
-	drc1.w = qMin( ww, (image.width() - drc1.x)*xsc );
-	drc1.h = qMin( dh, image.height() - drc1.y );
+	drc1.x = qMax( 0, pos->x );
+	drc1.y = qMax( 0, pos->y );
+	drc1.w = qMin( ww, (image.width() - drc1.x) );
+	drc1.h = qMin( hh, image.height() - drc1.y );
 
 	for( int y=0; y<drc1.h; y+=s ){
 		BYTE *sof  = (BYTE *)spt  + pp * y / s + src1.x;
 
 		memcpy( (BYTE *)image.scanLine(y), sof, dpp );
 
-		if(scan){
+		if(scanen){
 			BYTE *sdoff = (BYTE *)image.scanLine(y+1);
 			memcpy( sdoff, sof, dpp );
 			for( int x=0; x<drc1.w; x++ ){
@@ -2090,14 +2092,14 @@ void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bo
 	}
 
 	double imgXScale = 720.0 / image.width();
-	double imgYScale = (ntsc ? 540.0 : 460.0) / image.height();
+	double imgYScale = 460.0 / image.height();
 	// 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
 	// スロットを呼び出してメインスレッドでSceneを更新する
 	// (直接呼び出すと呼び出し側スレッドで実行されてしまう)
 	QMetaObject::invokeMethod(qApp, "layoutBitmap",
-							  Q_ARG(HWINDOW, wh),
-							  Q_ARG(int, dx),
-							  Q_ARG(int, dy),
+							  Q_ARG(HWINDOW, hwnd),
+							  Q_ARG(int, pos->x),
+							  Q_ARG(int, pos->y),
 							  Q_ARG(double, imgXScale),
 							  Q_ARG(double, imgYScale),
 							  Q_ARG(QImage, image));
@@ -2121,9 +2123,9 @@ bool OSD_GetWindowImage( HWINDOW hwnd, std::vector<BYTE>& pixels, VRect* pos, Pi
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "getWindowImage",
 							  cType,
-							  Q_ARG(HWINDOW, wh),
+							  Q_ARG(HWINDOW, hwnd),
 							  Q_ARG(QRect, QRect(pos->x, pos->y, pos->w, pos->h)),
-							  Q_ARG(void**, pixels));
+							  Q_ARG(void**, (void**)pixels.data()));
 
 	return true;
 }
@@ -2164,11 +2166,11 @@ void OSD_SetIcon( HWINDOW hwnd, int model )
 /////////////////////////////////////////////////////////////////////////////
 void OSD_SetWindowCaption( HWINDOW hwnd, const std::string& str )
 {
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+	QGraphicsView* view = static_cast<QGraphicsView*>(hwnd);
 	if(view == nullptr) return;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
-							  Q_ARG(QString, str));
+							  Q_ARG(QString, QString::fromStdString(str)));
 }
 
 /////////////////////////////////////////////////////////////////////////////

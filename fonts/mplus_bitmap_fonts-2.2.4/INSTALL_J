@@ -1,0 +1,83 @@
+-
+M+ BITMAP FONTS            Copyright 2002-2005  COZ <coz@users.sourceforge.jp>
+-
+
+INSTALL
+
+
+
+
+インストール用に簡単なシェルスクリプト install_mplus_fonts を用意しました。
+このスクリプトは
+
+・ 和文太字フォント作成（*1）のための /usr/bin/perl
+・ pcf ファイル圧縮のための gzip
+
+の存在を想定し、以下の作業を行う事ができます。
+
+・ インストール先として /usr/X11R6/lib/X11/fonts/mplus ディレクトリの作成
+・ 上記ディレクトリが既に存在する場合は mplus.BAK として移動
+・ mplus.BAK ディレクトリが既に存在する場合は古い方を削除
+・ M+ BITMAP FONTS 欧文 (iso8859-1、iso8859-15) フォントのインストール
+・ M+ BITMAP FONTS 和文フォントのインストール
+・ M+ カーソルをインストール（初期設定値ではインストールされません）
+・ fonts.alias の作成
+・ mkfontdir
+・ xset fp rehash
+
+フォントパスの設定はされていませんので、別途 /etc/XF86Config の編集や
+"xset fp+ /usr/X11R6/lib/X11/fonts/mplus" などで設定してください。
+
+*1 太字作成用のプログラム mkbold（永尾制一さん作）は
+   install_mplus_fonts から利用可能な状態で同梱されています。
+   perl のパスを変更する場合は mkbold の 1 行目を修正してください。
+
+
+以上の環境が準備されていて、インストールされる内容に問題が無ければ、
+
+$ su
+# ./install_mplus_fonts
+
+でインストール作業は完了します。
+
+
+
+
+□ インストールオプションの変更（[ ] 内は初期設定値）
+   "./install_mplus_fonts" の前に以下のコマンドを実行してください。
+
+・ インストールされるディレクトリ名 [ /usr/X11R6/lib/X11/fonts/mplus ]
+   変更する場合は "DESTDIR=/some/where/mplus-x.x.x"
+   注）DESTDIR が指定された場合は "xset fp rehash" が実行されません。
+
+・ ユーロフォント（Euro 文字セット：iso8859-15）のインストール [ YES ]
+   不要であれば "EURO15=NO"
+
+・ 和文フォントのインストール [ YES ]
+   不要であれば "MPLUSJ=NO"
+
+・ 和文太字フォントのインストール [ YES ]
+   不要であれば "MKBOLD=NO"
+
+・ 10 ドット和文フォント用の半角欧文文字「W」と「w」の横幅 [ W4 ]
+   5 ドット幅（自然な字体になりますが、次の文字と接してしまう事があります）
+   にする場合は "J10RIS=W5"
+
+   例えば "/some/where/mplus-x.x.x" 以下に、ユーロフォント無し、和文太字無し、
+   の設定でインストールする場合は、
+
+   $ su
+   # DESTDIR=/some/where/mplus-x.x.x EURO15=NO MKBOLD=NO ./install_mplus_fonts
+
+   とします。
+
+□ M+ カーソルのインストール
+   インストールする場合は 26 行目の CURSOR 設定を YES に変更、
+   27 行目の CURPTH に標準カーソルファイル "cursor.pcf.gz" が配置されている
+   ディレクトリを設定してください。
+
+
+
+
+インストールされるフォントについての説明は README_J をご覧ください。
+お気付きの点などありましたら coz@users.sourceforge.jp までお願いいたします。

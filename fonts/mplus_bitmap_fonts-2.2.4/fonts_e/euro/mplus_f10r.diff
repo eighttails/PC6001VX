@@ -1,0 +1,281 @@
+*** mplus_f10r.bdf	Fri Jan  9 10:30:40 2004
+--- mplus_f10r-euro.bdf	Fri Jan  9 10:26:42 2004
+***************
+*** 3,9 ****
+  COMMENT Unlimited permission is granted to use, copy, and distribute it,
+  COMMENT with or without modification, either commercially and noncommercially.
+  COMMENT THIS FONT IS PROVIDED "AS IS" WITHOUT WARRANTY.
+! FONT -mplus-fxd-medium-R-normal--10-100-75-75-C-60-iso8859-1
+  SIZE 10 75 75
+  FONTBOUNDINGBOX 6 13 0 -4
+  STARTPROPERTIES 20
+--- 3,9 ----
+  COMMENT Unlimited permission is granted to use, copy, and distribute it,
+  COMMENT with or without modification, either commercially and noncommercially.
+  COMMENT THIS FONT IS PROVIDED "AS IS" WITHOUT WARRANTY.
+! FONT -mplus-fxd-medium-R-normal--10-100-75-75-C-60-iso8859-15
+  SIZE 10 75 75
+  FONTBOUNDINGBOX 6 13 0 -4
+  STARTPROPERTIES 20
+***************
+*** 2677,2689 ****
+  BITMAP
+  00
+  00
+! 00
+! 88
+! 70
+! 50
+! 70
+! 88
+! 00
+  00
+  00
+  00
+--- 2677,2689 ----
+  BITMAP
+  00
+  00
+! 30
+! 48
+! F0
+! 40
+! F0
+! 48
+! 30
+  00
+  00
+  00
+***************
+*** 2715,2730 ****
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
+! 00
+! 20
+! 20
+! 20
+  20
+  00
+! 20
+! 20
+! 20
+! 20
+  00
+  00
+  00
+--- 2715,2730 ----
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
+! 50
+  20
+  00
+! 70
+! 88
+! 70
+! 08
+! 88
+! 70
+! 00
+  00
+  00
+  00
+***************
+*** 2755,2769 ****
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
+  00
+  00
+! D8
+! 00
+! 00
+! 00
+! 00
+! 00
+! 00
+  00
+  00
+  00
+--- 2755,2769 ----
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
++ 50
++ 20
+  00
+  00
+! 78
+! 80
+! 70
+! 08
+! F0
+  00
+  00
+  00
+***************
+*** 2995,3009 ****
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
+! 10
+  20
+  00
+! 00
+! 00
+! 00
+! 00
+! 00
+! 00
+  00
+  00
+  00
+--- 2995,3009 ----
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
+! 50
+  20
+  00
+! F8
+! 10
+! 20
+! 40
+! 80
+! F8
+  00
+  00
+  00
+***************
+*** 3075,3091 ****
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
+  00
+  00
+! 00
+! 00
+! 00
+! 00
+! 00
+! 00
+  10
+  20
+  40
+  00
+  00
+  ENDCHAR
+--- 3075,3091 ----
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
++ 50
++ 20
+  00
+  00
+! F8
+  10
+  20
+  40
++ F8
++ 00
++ 00
+  00
+  00
+  ENDCHAR
+***************
+*** 3156,3169 ****
+  BBX 6 13 0 -4
+  BITMAP
+  00
+! 40
+! C0
+! 40
+! 40
+! 30
+! 50
+  78
+- 10
+  00
+  00
+  00
+--- 3156,3169 ----
+  BBX 6 13 0 -4
+  BITMAP
+  00
+! 00
+! 78
+! A0
+! A0
+! B8
+! A0
+! A0
+  78
+  00
+  00
+  00
+***************
+*** 3176,3189 ****
+  BBX 6 13 0 -4
+  BITMAP
+  00
+! 40
+! C0
+! 40
+! 40
+! 30
+! 08
+! 10
+! 38
+  00
+  00
+  00
+--- 3176,3189 ----
+  BBX 6 13 0 -4
+  BITMAP
+  00
+! 00
+! 00
+! 00
+! 78
+! A8
+! B8
+! A0
+! 78
+  00
+  00
+  00
+***************
+*** 3195,3209 ****
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
+  00
+! E0
+! 40
+! 20
+! C0
+! 30
+  50
+! 78
+! 10
+  00
+  00
+  00
+--- 3195,3209 ----
+  DWIDTH 6 0
+  BBX 6 13 0 -4
+  BITMAP
++ 50
++ 50
+  00
+! 88
+! 88
+  50
+! 20
+! 20
+! 20
+  00
+  00
+  00

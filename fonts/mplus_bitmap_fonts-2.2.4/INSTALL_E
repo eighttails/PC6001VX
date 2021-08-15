@@ -1,0 +1,93 @@
+-
+M+ BITMAP FONTS            Copyright 2002-2005  COZ <coz@users.sourceforge.jp>
+-
+
+INSTALL
+
+
+
+
+For the installation, a simple shell script "install_mplus_fonts"
+is now provided. And...
+
+-  "/usr/bin/perl": for the creation of the bold version of
+   the Japanese fonts (*1)
+-  "gzip": for the compression of the pcf fonts.
+
+are all supposed to exist (and run) to go on with the following steps.
+
+-  the directory "/usr/X11R6/lib/X11/fonts/mplus" is created
+-  if it already existed before the installation began, the old directory
+   is renamed into "mplus.BAK"
+-  if "mplus.BAK" existed earlier, it will be destroyed
+-  the Latin M+ BITMAP FONTS (iso8859-1, iso8859-15) are installed
+-  the Japanese M+ BITMAP FONTS are installed
+-  the M+ cursors are inatalled (NOT installed with initial settings)
+-  fonts.alias is created
+-  "mkfontdir" is run
+-  "xset fp rehash" is run
+
+As the font path is not set, please edit your "/etc/XF86Config" or use
+"xset fp+ /usr/X11R6/lib/X11/fonts/mplus" to set the font path.
+
+*1 The program "mkbold (by Mr. Nagao)" used to create bold fonts from normal
+   fonts is called from the shell script "install_mplus_fonts".
+   If perl is in a different location,
+   you will need to modify the first line of "mkbold" script.
+
+
+If all the environment as described above is correctly set, the installation
+should proceed this way.
+
+$ su
+# ./install_mplus_fonts
+
+and complete without trouble.
+
+
+
+
+Initial settings configuration ("[ ]" is the default)
+Run following commands before "./install_mplus_fonts".
+
+-  Install location [ /usr/X11R6/lib/X11/fonts/mplus ]
+   If you want to change, "DESTDIR=/some/where/mplus-x.x.x"
+   * Then "xset fp rehash" command will not run.
+
+-  Installation of Euro symbol in the latin fonts (iso8859-15) [ YES ]
+   If you don't want to install them, "EURO15=NO"
+
+-  Installation of Japanese fonts [ YES ]
+   If you don't want to install them, "MPLUSJ=NO"
+
+-  Installation of Japanese bold fonts [ YES ]
+   If you don't want to install them, "MKBOLD=NO"
+
+-  Select mplus_j10r-iso font [ W4 ]
+   If you want to select 5 dots width "W" and "w" (more natural glyph,
+   but will be connected to the next glyph many times), "J10RIS=W5"
+
+   If you want to install M+ BITMAP FONTS in "/some/where/mplus-x.x.x",
+   with no Euro symbol, with no Japanese bold fonts,
+   the installation should proceed this way.
+
+   $ su
+   # DESTDIR=/some/where/mplus-x.x.x EURO15=NO MKBOLD=NO ./install_mplus_fonts
+
+-  Installation of M+ cursors
+   If you wish to install them, change the "CURSOR" setting
+   in 26rd line to "YES".
+   Correct the X11R6's original "cursor.pcf.gz" path with "CURPTH" setting
+   in 27th line.
+
+
+
+
+To understand what font exactly are installed, please read the explanations
+in the provided file README_E.
+For any remark, please write to "coz@users.sourceforge.jp".
+
+
+
+
+[ Special thanks to Mr.Guillaume Proux ]

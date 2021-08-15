@@ -1,0 +1,299 @@
+*** mplus_f12r.bdf	Fri Jan  9 10:31:01 2004
+--- mplus_f12r-euro.bdf	Fri Jan  9 10:26:42 2004
+***************
+*** 3,9 ****
+  COMMENT Unlimited permission is granted to use, copy, and distribute it,
+  COMMENT with or without modification, either commercially and noncommercially.
+  COMMENT THIS FONT IS PROVIDED "AS IS" WITHOUT WARRANTY.
+! FONT -mplus-fxd-medium-R-semicondensed--12-120-75-75-C-60-iso8859-1
+  SIZE 13 75 75
+  FONTBOUNDINGBOX 6 13 0 -2
+  STARTPROPERTIES 23
+--- 3,9 ----
+  COMMENT Unlimited permission is granted to use, copy, and distribute it,
+  COMMENT with or without modification, either commercially and noncommercially.
+  COMMENT THIS FONT IS PROVIDED "AS IS" WITHOUT WARRANTY.
+! FONT -mplus-fxd-medium-R-semicondensed--12-120-75-75-C-60-iso8859-15
+  SIZE 13 75 75
+  FONTBOUNDINGBOX 6 13 0 -2
+  STARTPROPERTIES 23
+***************
+*** 2680,2694 ****
+  BITMAP
+  00
+  00
+! 00
+! 00
+! 88
+! 70
+! 50
+! 50
+! 70
+! 88
+! 00
+  00
+  00
+  ENDCHAR
+--- 2680,2694 ----
+  BITMAP
+  00
+  00
+! 30
+! 48
+! 40
+! F0
+! 40
+! F0
+! 40
+! 48
+! 30
+  00
+  00
+  ENDCHAR
+***************
+*** 2719,2735 ****
+  BBX 6 13 0 -2
+  BITMAP
+  00
+! 20
+! 20
+! 20
+! 20
+  20
+  00
+! 20
+! 20
+! 20
+! 20
+! 20
+  00
+  ENDCHAR
+  STARTCHAR 0x00A7
+--- 2719,2735 ----
+  BBX 6 13 0 -2
+  BITMAP
+  00
+! 50
+  20
+  00
+! 70
+! 88
+! 80
+! 70
+! 08
+! 88
+! 70
+! 00
+  00
+  ENDCHAR
+  STARTCHAR 0x00A7
+***************
+*** 2759,2774 ****
+  BBX 6 13 0 -2
+  BITMAP
+  00
+! 00
+! D8
+! 00
+! 00
+! 00
+! 00
+! 00
+! 00
+  00
+  00
+  00
+  00
+  ENDCHAR
+--- 2759,2774 ----
+  BBX 6 13 0 -2
+  BITMAP
+  00
+! 50
+! 20
+  00
+  00
++ 70
++ 88
++ 70
++ 08
++ 88
++ 70
+  00
+  00
+  ENDCHAR
+***************
+*** 2999,3014 ****
+  BBX 6 13 0 -2
+  BITMAP
+  00
+! 10
+  20
+  00
+! 00
+! 00
+! 00
+! 00
+! 00
+! 00
+! 00
+  00
+  00
+  ENDCHAR
+--- 2999,3014 ----
+  BBX 6 13 0 -2
+  BITMAP
+  00
+! 50
+  20
+  00
+! F8
+! 08
+! 10
+! 20
+! 40
+! 80
+! F8
+  00
+  00
+  ENDCHAR
+***************
+*** 3079,3096 ****
+  BBX 6 13 0 -2
+  BITMAP
+  00
+  00
+  00
+! 00
+! 00
+! 00
+! 00
+! 00
+! 00
+! 00
+  10
+  20
+  40
+  ENDCHAR
+  STARTCHAR 0x00B9
+  ENCODING 185
+--- 3079,3096 ----
+  BBX 6 13 0 -2
+  BITMAP
+  00
++ 50
++ 20
+  00
+  00
+! F8
+  10
+  20
+  40
++ 80
++ F8
++ 00
++ 00
+  ENDCHAR
+  STARTCHAR 0x00B9
+  ENCODING 185
+***************
+*** 3160,3174 ****
+  BITMAP
+  00
+  00
+- 40
+- C0
+- 40
+- 40
+- 50
+- 30
+- 50
+  78
+! 10
+  00
+  00
+  ENDCHAR
+--- 3160,3174 ----
+  BITMAP
+  00
+  00
+  78
+! A0
+! A0
+! A0
+! B8
+! A0
+! A0
+! A0
+! 78
+  00
+  00
+  ENDCHAR
+***************
+*** 3180,3194 ****
+  BITMAP
+  00
+  00
+! 40
+! C0
+! 40
+! 40
+! 50
+! 28
+! 08
+! 10
+! 38
+  00
+  00
+  ENDCHAR
+--- 3180,3194 ----
+  BITMAP
+  00
+  00
+! 00
+! 00
+! 00
+! 78
+! A8
+! B8
+! A0
+! A0
+! 78
+  00
+  00
+  ENDCHAR
+***************
+*** 3199,3214 ****
+  BBX 6 13 0 -2
+  BITMAP
+  00
+  00
+! E0
+  20
+- 40
+  20
+- D0
+- 30
+- 50
+- 78
+- 10
+  00
+  00
+  ENDCHAR
+--- 3199,3214 ----
+  BBX 6 13 0 -2
+  BITMAP
+  00
++ 50
++ 50
+  00
+! 88
+! 88
+! 50
+! 50
+! 20
+  20
+  20
+  00
+  00
+  ENDCHAR

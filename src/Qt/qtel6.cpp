@@ -26,8 +26,6 @@
 #include "qtel6.h"
 #include "p6vxapp.h"
 
-#define	FRAMERATE	(VSYNC_HZ/(cfg->GetFrameSkip()+1))
-
 ///////////////////////////////////////////////////////////
 // ポップアップメニュー表示
 ///////////////////////////////////////////////////////////
@@ -47,7 +45,7 @@ void EL6::ShowPopupMenu( int x, int y )
 void EL6::ExecMenu( int id )
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	char str[PATH_MAX];
+	std::string str;
 	// 項目ごとの処理
 	switch( id ){
 	case ID_TAPEINSERT:		UI_TapeInsert();						break;	// TAPE 挿入
@@ -93,24 +91,18 @@ void EL6::ExecMenu( int id )
 		Speed = speed;
 		break;
 	}
-	case ID_SNAPSHOT:		graph->SnapShot( cfg->GetImgPath() );	break;	// スナップショット取得
+	case ID_SNAPSHOT:		graph->SnapShot( cfg->GetValue(CF_ImgPath) );	break;	// スナップショット取得
 	case ID_DOKOSAVE:		UI_DokoSave();							break;	// どこでもSAVE
 	case ID_DOKOSAVE1:                                                      // どこでもSAVE1
 	case ID_DOKOSAVE2:                                                      // どこでもSAVE2
 	case ID_DOKOSAVE3:                                                      // どこでもSAVE3
-		OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOSAVE).toUtf8().constData());
-		DokoDemoSave( str );
+		UI_DokoSave( id - ID_DOKOSAVE );
 		break;
 	case ID_DOKOLOAD:		UI_DokoLoad();							break;	// どこでもLOAD
 	case ID_DOKOLOAD1:                                                      // どこでもLOAD1
 	case ID_DOKOLOAD2:                                                      // どこでもLOAD2
 	case ID_DOKOLOAD3:                                                      // どこでもLOAD3
-		OSD_AddPath(str, cfg->GetDokoSavePath(), QString(".%1.dds").arg(id - ID_DOKOLOAD).toUtf8().constData());
-		if( OSD_FileExist( str ) ){
-			cfg->SetModel( GetDokoModel( str ) );
-			cfg->SetDokoFile( str );
-			OSD_PushEvent( EV_DOKOLOAD );
-		}
+		UI_DokoLoad( id - ID_DOKOLOAD );
 		break;
 	case ID_REPLAYSAVE:		UI_ReplaySave();						break;	// リプレイ保存
 	case ID_REPLAYRESUME:	UI_ReplayResumeSave();					break;	// リプレイ保存再開
@@ -131,8 +123,8 @@ void EL6::ExecMenu( int id )
 	case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
 	case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
 	case ID_FULLSCRN:
-		OSD_ShowCursor(cfg->GetFullScreen() ? true : false);
-		cfg->SetFullScreen( cfg->GetFullScreen() ? false : true );
+		OSD_ShowCursor(cfg->GetValue(CB_FullScreen) ? true : false);
+		cfg->SetValue(CB_FullScreen,  cfg->GetValue(CB_FullScreen) ? false : true );
 		graph->ResizeScreen();	// スクリーンサイズ変更
 		break;
 	case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
@@ -163,7 +155,7 @@ void EL6::ExecMenu( int id )
 		QDesktopServices::openUrl(QUrl("https://github.com/eighttails/PC6001VX/blob/master/README.adoc"));
 		break;
 #endif
-	case ID_VERSION:		OSD_VersionDialog( graph->GetWindowHandle(), cfg->GetModel() );	break;	// バージョン情報
+	case ID_VERSION:		OSD_VersionDialog( graph->GetWindowHandle(), cfg->GetValue(CV_Model) );	break;	// バージョン情報
 	case ID_ABOUTQT:		QMessageBox::aboutQt(static_cast<RenderView*>(graph->GetWindowHandle()));
 		break;
 	case ID_SYSINFO:														// システム情報ダイアログ
@@ -209,7 +201,7 @@ void EL6::ExecMenu( int id )
 						!app->getSetting(P6VXApp::keyFixMagnification).toBool());
 		break;
 	case ID_HWACCEL:
-		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(), MSG_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
+		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toStdString(), T_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
 			app->setSetting(P6VXApp::keyHwAccel,
 							!app->getSetting(P6VXApp::keyHwAccel).toBool());
 			UI_Quit();
@@ -303,7 +295,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	// またはリプレイ記録中だったらリプレイ再生無効
 	if(!(
 			#ifndef NOMONITOR
-				cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+				cfg->GetValue(CV_MonDisp) || vm->bp->ExistBreakPoint() ||
 			#endif
 				( REPLAY::GetStatus() == REP_RECORD ) )){
 		addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
@@ -312,7 +304,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	// またはリプレイ再生中だったらリプレイ記録無効
 	if(!(
 			#ifndef NOMONITOR
-				cfg->GetMonDisp() || vm->bp->ExistBreakPoint() ||
+				cfg->GetValue(CV_MonDisp) || vm->bp->ExistBreakPoint() ||
 			#endif
 				( REPLAY::GetStatus() == REP_REPLAY ) )){
 		addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
@@ -412,14 +404,14 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (app->getSetting(P6VXApp::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
 #ifndef ALWAYSFULLSCREEN
 	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
-	if (cfg->GetFullScreen()) fullScreen->setChecked(true);
+	if (cfg->GetValue(CV_FullScreen)) fullScreen->setChecked(true);
 #endif
 	QAction* statusBar = addCommand(settingsMenu, tr("ステータスバー"), ID_STATUS, true);
-	if (cfg->GetDispStat()) statusBar->setChecked(true);
+	if (cfg->GetValue(CV_DispStat)) statusBar->setChecked(true);
 	QAction* disp43 = addCommand(settingsMenu, tr("4:3表示"), ID_DISP43, true);
-	if (cfg->GetDispNTSC()) disp43->setChecked(true);
+	if (cfg->GetValue(CV_DispNTSC)) disp43->setChecked(true);
 	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
-	if (cfg->GetScanLine()) scanLine->setChecked(true);
+	if (cfg->GetValue(CV_ScanLine)) scanLine->setChecked(true);
 #ifndef NOOPENGL
 	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
 	if (app->getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
@@ -455,13 +447,13 @@ void QtEL6::ShowPopupImpl(int x, int y)
 						   << "5 (10fps)");
 	for( int i = 0; i < fpsList.size(); i++ ){
 		QAction* fps = addCommand(fpsMenu, fpsList[i], MenuCommand(ID_FSKP0 + i), true);
-		if (cfg->GetFrameSkip() == i) fps->setChecked(true);
+		if (cfg->GetValue(CV_FrameSkip) == i) fps->setChecked(true);
 	}
 
 	QAction* noWait = addCommand(settingsMenu, tr("ウェイト無効"), ID_NOWAIT, true);
 	if (!sche->GetWaitEnable()) noWait->setChecked(true);
 	QAction* turboTape = addCommand(settingsMenu, tr("Turbo TAPE"), ID_TURBO, true);
-	if (cfg->GetTurboTAPE()) turboTape->setChecked(true);
+	if (cfg->GetValue(CV_TurboTAPE)) turboTape->setChecked(true);
 	QAction* boostUp =  addCommand(settingsMenu, tr("Boost Up"), ID_BOOST, true);
 	if (vm->cmtl->IsBoostUp()) boostUp->setChecked(true);
 	addCommand(settingsMenu, tr("環境設定..."), ID_CONFIG);
@@ -471,7 +463,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QMenu* debugMenu = menu.addMenu(tr("デバッグ"));
 	menu.addSeparator();
 	QAction* monitorMode =  addCommand(debugMenu, tr("モニタモード"), ID_MONITOR, true);
-	if (cfg->GetMonDisp()) monitorMode->setChecked(true);
+	if (cfg->GetValue(CV_MonDisp)) monitorMode->setChecked(true);
 #endif
 
 	// ヘルプメニュー
@@ -554,5 +546,10 @@ void QtEL6::SetPauseEnable(bool en)
 KEY6 *QtEL6::GetKeyboard()
 {
 	return vm->key;
+}
+
+bool QtEL6::IsMonitor()
+{
+	return vm->IsMonitor();
 }
 

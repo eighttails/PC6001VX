@@ -7,6 +7,8 @@
 #include <QPointer>
 #include <QSettings>
 
+#include <memory>
+
 #include "../typedef.h"
 #include "../osd.h"
 #include "../p6vm.h"
@@ -85,7 +87,7 @@ public:
 
 	// 内蔵互換ROM使用モード(リソースファイル内のROMを使う)
 	bool isCompatibleRomMode();
-	void enableCompatibleRomMode(CFG6 *config, bool enable);
+	void enableCompatibleRomMode(std::shared_ptr<CFG6> &config, bool enable);
 
 	// SAVEテープをエクスポート
 	void exportSavedTape();
@@ -96,7 +98,7 @@ public slots:
 	void startup();
 
 	// メッセージボックスの表示
-	int showMessageBox(const char *mes, const char *cap, int type);
+	int showMessageBox(void *hwnd, const char *mes, const char *cap, int type);
 
 	// ファイルダイアログの表示
 	const char* fileDialog( void *hwnd, FileMode mode, const char *title,
@@ -173,7 +175,7 @@ protected:
 	void finishKeyEvent(Event& ev);
 
 	// プラットフォーム固有の設定で上書き
-	void overrideSettings(CFG6& cfg);
+	void overrideSettings(std::shared_ptr<CFG6> &cfg);
 
 	// ファイル選択ダイアログの生成
 	QFileDialog* createFileDialog(void *hwnd);
@@ -182,7 +184,7 @@ private:
 	QPointer<QtEL6> P6Core;		// オブジェクトポインタ
 	QPointer<KeyStateWatcher> KeyWatcher;	// オブジェクトポインタ
 	EL6::ReturnCode Restart;	// 再起動フラグ
-	CFG6 Cfg;					// 環境設定オブジェクト
+	std::shared_ptr<CFG6> Cfg;					// 環境設定オブジェクト
 	EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ
 	QMutex PropretyMutex;       // 属性値保護のためのMutex
 	QMutex MenuMutex;           // メニュー表示中にロックされるMutex

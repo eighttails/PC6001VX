@@ -42,24 +42,24 @@ const QString P6VXApp::keyVirtualKeyTabIndex	= "virtualkey/tabindex";
 ///////////////////////////////////////////////////////////
 // ROMファイル存在チェック&機種変更
 ///////////////////////////////////////////////////////////
-bool SerchRom( CFG6 *cfg )
+bool SerchRom( std::shared_ptr<CFG6> &cfg )
 {
-	char RomSerch[PATH_MAX];
+	P6VPATH RomSearch;
 
-	int IniModel = cfg->GetModel();
-	sprintf( RomSerch, "*.%2d", IniModel );
-	OSD_AddPath( RomSerch, cfg->GetRomPath(), RomSerch );
-	if( OSD_FileExist( RomSerch ) ){
-		Error::Reset();
+	int IniModel = cfg->GetValue(CV_Model);
+	RomSearch = QSTR2P6VPATH(QString("*.%2d").arg( IniModel ));
+	OSD_AddPath( RomSearch, cfg->GetValue(CF_RomPath), RomSearch );
+	if( OSD_FileExist( RomSearch ) ){
+		Error::Clear();
 		return true;
 	}
 
 	int models[] = { 60, 61, 62, 66, 64, 68 };
 	for( int i=0; i < COUNTOF(models); i++ ){
-		sprintf( RomSerch, "*.%2d", models[i] );
-		OSD_AddPath( RomSerch, cfg->GetRomPath(), RomSerch );
-		if( OSD_FileExist( RomSerch ) ){
-			cfg->SetModel( models[i] );
+		RomSearch = QSTR2P6VPATH(QString("*.%2d").arg( models[i] ));
+		OSD_AddPath( RomSearch, cfg->GetValue(CF_RomPath), RomSearch );
+		if( OSD_FileExist( RomSearch ) ){
+			cfg->SetValue( CV_Model,  models[i] );
 			Error::SetError( Error::RomChange );
 			return true;
 		}
@@ -75,7 +75,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, Adaptor(new EmulationAdaptor())
 	, KPanel(nullptr)
 	, MouseCursorTimer(new QTimer(this))
-	, Setting(QString(OSD_GetConfigPath()) + "/pc6001vx.ini", QSettings::IniFormat)
+	, Setting(P6VPATH2QSTR(OSD_GetConfigPath()) + "/pc6001vx.ini", QSettings::IniFormat)
 	, TiltEnabled(false)
 	, TiltDir(NEWTRAL)
 	, TiltStep(0)
@@ -153,32 +153,36 @@ void P6VXApp::startup()
 		QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
 		r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
 		if(r == QtAndroid::PermissionResult::Denied) {
-			OSD_Message( QString(tr("Storage access denied.")).toUtf8().constData(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core->GetWindowHandle(), QString(tr("Storage access denied.")).toUtf8().constData(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 		}
 	}
 #endif
 
-	// 設定ファイルパスを作成
-	if(!OSD_CreateModulePath()){
-		exit();
-		return;
-	}
+	// 設定ファイルフォルダの存在チェック&作成
+	if( !OSD_FileExist( OSD_GetConfigPath() ) ) OSD_CreateFolder( OSD_GetConfigPath() );
+
 
 	// OSD関連初期化
 	if( !OSD_Init() ){
 		Error::SetError( Error::InitFailed );
-		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
+		OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 		exit();
 		return;
 	}
 
+	// 各種フォルダの存在チェック&作成
+	std::vector<TCPath> paths = { CF_RomPath, CF_TapePath, CF_DiskPath, CF_ExtRomPath, CF_ImgPath, CF_WavePath, CF_FontPath, CF_DokoPath };
+	for( auto& cf : paths ){
+		if( !OSD_FileExist( Cfg->GetValue( cf ) ) ) OSD_CreateFolder( Cfg->GetValue( cf ) );
+	}
+
 	// コンソール用フォント読込み
-	char FontZ[PATH_MAX], FontH[PATH_MAX];
-	sprintf( FontZ, ":/res/%s/%s", FONT_DIR, FONTZ_FILE );
-	sprintf( FontH, ":/res/%s/%s", FONT_DIR, FONTH_FILE );
+	P6VPATH FontZ, FontH;
+	FontZ = QSTR2P6VPATH(QString(":/res/font/%s").arg(FILE_FONTZ));
+	FontH = QSTR2P6VPATH(QString(":/res/font/%s").arg(FILE_FONTH));
 	if( !JFont::OpenFont( FontZ, FontH ) ){
 		Error::SetError( Error::FontLoadFailed );
-		OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
+		OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 		Error::SetError( Error::NoError );
 	}
 
@@ -197,15 +201,15 @@ void P6VXApp::startup()
 #endif
 
 	// INIファイル読込み
-	if( !Cfg.Init() ){
+	if( !Cfg->Init() ){
 		switch( Error::GetError() ){
 		case Error::IniDefault:
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONWARNING );
+			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
 			Error::SetError( Error::NoError );
 			break;
 
 		default:
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 			exit();
 			return;
 		}
@@ -219,8 +223,9 @@ void P6VXApp::startup()
 	emit initialized();
 }
 
-int P6VXApp::showMessageBox(const char *mes, const char *cap, int type)
+int P6VXApp::showMessageBox(void *hwnd, const char *mes, const char *cap, int type)
 {
+	QWidget* parent = static_cast<QWidget*>(hwnd);
 	QMessageBox::StandardButtons Type = QMessageBox::Ok;
 	QMessageBox::Icon IconType = QMessageBox::Information;
 
@@ -240,7 +245,7 @@ int P6VXApp::showMessageBox(const char *mes, const char *cap, int type)
 	case OSDM_ICONINFO:		IconType = QMessageBox::Information;	break;
 	}
 
-	QMessageBox mb(IconType, TRANS(cap), TRANS(mes), Type);
+	QMessageBox mb(IconType, TRANS(cap), TRANS(mes), Type, parent);
 	int res = mb.exec();
 
 	switch( res ){
@@ -275,7 +280,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 			result += QString(".") + ext;
 		}
 		if (OSD_FileExist(result.toUtf8().constData())){
-			if (OSD_Message(QString(tr("ファイルはすでに存在しています。上書きしますか?")).toUtf8().constData(),
+			if (OSD_Message(P6Core->GetWindowHandle(), QString(tr("ファイルはすでに存在しています。上書きしますか?")).toStdString(),
 							nullptr, OSDM_OKCANCEL | OSDM_ICONQUESTION)
 					== OSDM_OKCANCEL){
 				return nullptr;
@@ -418,15 +423,15 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 
 #ifndef NOOPENGL
 	// ステータスバー非表示またはフルスクリーン、かつTILTモードが有効になっている場合、背景を描く
-	if( (!Cfg.GetDispStat() || Cfg.GetFullScreen()) &&
+	if( (!Cfg->GetValue(CB_DispStatus)|| Cfg->GetValue(CB_FullScreen)) &&
 		#ifndef NOMONITOR
-			!Cfg.GetMonDisp() &&
+			!P6Core->IsMonitor() &&
 		#endif
 			isTiltEnabled()){
 		// 画面に対する、枠を含めたサイズの比率
 		qreal merginRatio = 1.0;
 		QGraphicsPixmapItem* background = nullptr;
-		switch(this->Cfg.GetModel()){
+		switch(this->Cfg->GetValue(CV_Model)) {
 		case 60:
 		case 61:
 			// 初代機の場合はPC-6042Kを使う
@@ -496,25 +501,25 @@ void P6VXApp::deactivateMouseCursorTimer()
 
 void P6VXApp::resetSettings()
 {
-	if (OSD_Message(QString(tr("本当に設定を初期化しますか?")).toUtf8().constData(),
+	if (OSD_Message(P6Core->GetWindowHandle(), QString(tr("本当に設定を初期化しますか?")).toStdString(),
 					nullptr, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
-		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toUtf8().constData(),
-					   MSG_QUITC, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
+		if(OSD_Message(P6Core->GetWindowHandle(), QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toStdString(),
+					   GetText(T_QUITC), OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
 
-			char path[PATH_MAX];
+			P6VPATH path;
 #ifdef AUTOSUSPEND
 			// 自動ステートセーブファイルを削除
-			OSD_AddPath( path, Cfg.GetDokoSavePath(), ".0.dds" );
-			QFile::remove(path);
+			OSD_AddPath( path, Cfg->GetValue(CF_DokoPath), ".0.dds" );
+			QFile::remove(P6VPATH2QSTR(path));
 #endif
 			// P6V設定ファイルを削除
-			OSD_AddPath( path, OSD_GetConfigPath(), CONF_FILE );
-			QFile::remove(path);
+			OSD_AddPath( path, OSD_GetConfigPath(), FILE_CONFIG );
+			QFile::remove(P6VPATH2QSTR(path));
 			// P6VX設定ファイルを削除
 			OSD_AddPath( path, OSD_GetConfigPath(), "pc6001vx.ini" );
-			QFile::remove(path);
+			QFile::remove(P6VPATH2QSTR(path));
 			// アプリを終了(終了時に設定を保存しないようにしてから)
-			this->Cfg.SetSaveQuit(false);
+			this->Cfg->SetValue(CB_SaveQuit, false);
 			OSD_PushEvent(EV_QUIT);
 		}
 	}
@@ -590,31 +595,32 @@ void P6VXApp::setCustomRomPath(QString path)
 	CustomRomPath = path;
 }
 
-void P6VXApp::enableCompatibleRomMode(CFG6* config, bool enable)
+void P6VXApp::enableCompatibleRomMode(std::shared_ptr<CFG6>& config, bool enable)
 {
 	QMutexLocker lock(&PropretyMutex);
 	// P6V本体の設定ファイルに対して互換ROMに必要な設定を行う。
 	// この時点では設定ファイルに反映しない点に注意。
 	if(enable){
 		// 互換ROM使用時の設定
-		auto model = config->GetModel();
-		if (model != 60 && model != 62 && model != 66){
-			config->SetModel(60);
+		auto model = config->GetValue(CV_Model);
+		if (model != 60 && model != 61 && model != 62 && model != 66){
+			config->SetValue(CV_Model, 60);
 		}
-		config->SetCheckCRC(false);
-		config->SetRomPath(":/res/rom");
+		config->SetValue(CB_CheckCRC, false);
+		config->SetValue(CF_RomPath, ":/res/rom");
 	} else {
-		config->SetCheckCRC(true);
-		config->SetRomPath("");
+		config->SetValue(CB_CheckCRC, true);
+		config->SetValue(CF_RomPath, "");
 	}
 }
 
 void P6VXApp::exportSavedTape()
 {
 	// TAPE(SAVE)ファイル名を取得
-	auto src = Cfg.GetSaveFile();
+	auto src = Cfg->GetValue(CF_save);
 	if (!OSD_FileExist(src)){
-		OSD_Message(QString(tr("TAPE(SAVE)ファイルが存在しません。")).toUtf8().constData(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR);
+		OSD_Message(P6Core->GetWindowHandle(), QString(tr("TAPE(SAVE)ファイルが存在しません。")).toStdString(),
+					GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR);
 		return;
 	}
 #ifdef Q_OS_ANDROID
@@ -622,22 +628,21 @@ void P6VXApp::exportSavedTape()
 	ShareUtils util;
 	int req = 0;
 	bool altImpl = false;
-	util.sendFile(QDir::cleanPath(src), "TAPE(TAPE)", "application/octet-stream", req, altImpl);
+	util.sendFile(QDir::cleanPath(P6VPATH2QSTR(src)), "TAPE(TAPE)", "application/octet-stream", req, altImpl);
 #else
 	// エクスポート先を指定
-	char dest[PATH_MAX];
-	strcpy(dest, QDir::homePath().toLocal8Bit());
-	QFile savedTape(src);
+	P6VPATH dest = QSTR2P6VPATH(QDir::homePath());
+	QFile savedTape(P6VPATH2QSTR(src));
 	if(OSD_FileSelect( nullptr, FD_TapeSave, dest, src )){
 		if (OSD_FileExist(dest)){
-			if (OSD_Message(QString(tr("ファイルはすでに存在しています。上書きしますか?")).toUtf8().constData(),
+			if (OSD_Message(P6Core->GetWindowHandle(),QString(tr("ファイルはすでに存在しています。上書きしますか?")).toStdString(),
 							nullptr, OSDM_OKCANCEL | OSDM_ICONQUESTION)
 					== OSDR_OK){
 				CFG6 cfg;
-				cfg.Write();
+				Cfg->Write();
 			}
 		}
-		savedTape.rename(dest);
+		savedTape.rename(P6VPATH2QSTR(dest));
 	}
 #endif
 
@@ -648,42 +653,43 @@ void P6VXApp::executeEmulation()
 {
 	// カスタムROMパスが設定されている場合はそちらを使う
 	if(getCustomRomPath() != ""){
-		Cfg.SetRomPath(getCustomRomPath().toUtf8().data());
+		Cfg->SetValue(CF_RomPath, QSTR2P6VPATH(getCustomRomPath()));
 	}
 
 	// ROMファイル存在チェック&機種変更
-	if( SerchRom( &Cfg ) ){
+	if( SerchRom( Cfg ) ){
 		if( Error::GetError() != Error::NoError ){
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONWARNING );
+			OSD_Message(P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
 			Error::SetError( Error::NoError );
 		}
 	}else{
 		bool romFolderSpecified = false;
-		if(OSD_Message( QString(tr("ROMファイルが見つかりません。\n"
-								   "ROMフォルダ(%1)にROMファイルをコピーするか、"
-								   "別のROMフォルダを指定してください。\n"
-								   "別のROMフォルダを指定しますか?")).arg(Cfg.GetRomPath()).toUtf8().constData(), MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING ) == OSDR_YES){
+		if(OSD_Message(P6Core->GetWindowHandle(),
+					   QString(tr("ROMファイルが見つかりません。\n"
+								  "ROMフォルダ(%1)にROMファイルをコピーするか、"
+								  "別のROMフォルダを指定してください。\n"
+								  "別のROMフォルダを指定しますか?")).arg(P6VPATH2QSTR(Cfg->GetValue(CF_RomPath))).toStdString(),
+					   GetText(TERR_ERROR), OSDM_YESNO | OSDM_ICONWARNING ) == OSDR_YES){
 			// ROMフォルダ再設定
-			char folder[PATH_MAX];
-			strncpy(folder, Cfg.GetRomPath(), PATH_MAX);
+			P6VPATH folder = Cfg->GetValue(CF_RomPath);
 			OSD_AddDelimiter(folder);
 			OSD_FolderDiaog(MWidget, folder);
 			OSD_DelDelimiter(folder);
 
-			if(strlen(folder) > 0){
-				Cfg.SetRomPath(folder);
-				Cfg.Write();
+			if(!folder.empty()){
+				Cfg->SetValue(CF_RomPath, folder);
+				Cfg->Write();
 				Restart = EL6::Restart;
 				romFolderSpecified = true;
 			}
 		}
 		if (!romFolderSpecified){
 			// 互換ROMを使用するか問い合わせる
-			int ret = OSD_Message( tr("エミュレーター内蔵の互換ROMを使用しますか?").toUtf8().constData(),
+			int ret = OSD_Message( P6Core->GetWindowHandle(), tr("エミュレーター内蔵の互換ROMを使用しますか?").toStdString(),
 								   nullptr, OSDM_YESNO | OSDM_ICONQUESTION );
 			if(ret == OSDR_YES) {
-				enableCompatibleRomMode(&Cfg, true);
-				Cfg.Write();
+				enableCompatibleRomMode(Cfg, true);
+				Cfg->Write();
 				Restart = EL6::Restart;
 			} else {
 				terminateEmulation();
@@ -703,16 +709,17 @@ void P6VXApp::executeEmulation()
 	}
 
 	// VM初期化
-	if( !P6CoreObj->Init( &Cfg ) ){
+	if( !P6CoreObj->Init( Cfg ) ){
 		if(Error::GetError() == Error::RomCrcNG){
 			// CRCが合わない場合
-			int ret = OSD_Message( tr("ROMイメージのCRCが不正です。\n"
+			int ret = OSD_Message( P6Core->GetWindowHandle(),
+								   tr("ROMイメージのCRCが不正です。\n"
 									  "CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。\n"
-									  "それでも起動しますか?").toUtf8().constData(),
-								   MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING );
+									  "それでも起動しますか?").toStdString(),
+								   GetText(TERR_ERROR), OSDM_YESNO | OSDM_ICONWARNING );
 			if(ret == OSDR_YES) {
-				Cfg.SetCheckCRC(false);
-				Cfg.Write();
+				Cfg->SetValue(CB_CheckCRC, false);
+				Cfg->Write();
 				emit vmRestart();
 				return;
 			} else {
@@ -722,12 +729,13 @@ void P6VXApp::executeEmulation()
 			}
 		}else if(Error::GetError() == Error::NoRom){
 			// ROMの一部が見つからない場合
-			int ret = OSD_Message( tr("ROMファイルの一部が見つかりません。\n"
-									  "エミュレーター内蔵の互換ROMを使用しますか?").toUtf8().constData(),
-								   MSERR_ERROR, OSDM_YESNO | OSDM_ICONWARNING );
+			int ret = OSD_Message( P6Core->GetWindowHandle(),
+								   tr("ROMファイルの一部が見つかりません。\n"
+									  "エミュレーター内蔵の互換ROMを使用しますか?").toStdString(),
+								   GetText(TERR_ERROR), OSDM_YESNO | OSDM_ICONWARNING );
 			if(ret == OSDR_YES) {
-				enableCompatibleRomMode(&Cfg, true);
-				Cfg.Write();
+				enableCompatibleRomMode(Cfg, true);
+				Cfg->Write();
 				emit vmRestart();
 				return;
 			} else {
@@ -736,7 +744,7 @@ void P6VXApp::executeEmulation()
 				return;
 			}
 		}else{
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 			exit();
 			return;
 		}
@@ -749,17 +757,24 @@ void P6VXApp::executeEmulation()
 		P6CoreObj->DokoDemoLoad(0);
 #endif
 		break;
-	case EL6::Dokoload:	// どこでもLOAD?
-		P6CoreObj->DokoDemoLoad( Cfg.GetDokoFile() );
+	case EL6::Dokoload:	// どこでもLOAD
+		if( !P6Core->DokoDemoLoad( Cfg->GetDokoFile() ) ){
+			// 失敗した場合
+			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
+			Error::Clear();
+		}
+		Cfg->SetDokoFile( "" );
 		break;
 
-	case EL6::Replay:	// リプレイ再生?
-	{
-		char temp[PATH_MAX];
-		strncpy( temp, Cfg.GetDokoFile(), PATH_MAX );
-		P6CoreObj->DokoDemoLoad( temp );
-		P6CoreObj->REPLAY::StartReplay( temp );
-	}
+	case EL6::ReplayPlay:	// リプレイ再生
+	case EL6::ReplayResume:	// リプレイ保存再開
+	case EL6::ReplayMovie:	// リプレイを動画に変換
+		if( !P6Core->DokoDemoLoad( Cfg->GetDokoFile() ) ){
+			// 失敗した場合
+			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
+			Error::Clear();
+			Cfg->SetDokoFile( "" );
+		}
 		break;
 
 	default:
@@ -803,9 +818,9 @@ void P6VXApp::postExecuteEmulation()
 
 	// 再起動ならばINIファイル再読込み
 	if( Restart == EL6::Restart ){
-		if( !Cfg.Init() ){
+		if( !Cfg->Init() ){
 			Error::SetError( Error::IniDefault );
-			OSD_Message( (char *)Error::GetErrorText(), MSERR_ERROR, OSDM_OK | OSDM_ICONWARNING );
+			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
 			Error::SetError( Error::NoError );
 		}
 	}
@@ -966,30 +981,30 @@ void P6VXApp::finishKeyEvent(Event &ev)
 	}
 }
 
-void P6VXApp::overrideSettings(CFG6 &cfg)
+void P6VXApp::overrideSettings(std::shared_ptr<CFG6>& cfg)
 {
 #ifdef Q_OS_ANDROID
-	char str[PATH_MAX];
+	P6VPATH str;
 	// 設定のデフォルト値でなく、プラットフォームごとのデータフォルダを探す。
 	// Androidではこの方法でないとSDカードが検出できない場合がある。
 	const auto dataPath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0].toLocal8Bit();
 	// ROM,TAPE,DISK,拡張ROM,WAVEパスの初期値にはこのデータフォルダを設定する。
-	if(QString(cfg.GetRomPath()).contains(OSD_GetConfigPath())) cfg.SetRomPath(dataPath);
-	if(QString(cfg.GetTapePath()).contains(OSD_GetConfigPath())) cfg.SetTapePath(dataPath);
-	if(QString(cfg.GetDiskPath()).contains(OSD_GetConfigPath())) cfg.SetDiskPath(dataPath);
-	if(QString(cfg.GetExtRomPath()).contains(OSD_GetConfigPath())) cfg.SetExtRomPath(dataPath);
-	if(QString(cfg.GetWavePath()).contains(OSD_GetConfigPath())) cfg.SetWavePath(dataPath);
+	if(P6VPATH2QSTR(cfg->GetValue(CF_RomPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_RomPath, dataPath);
+	if(P6VPATH2QSTR(cfg->GetValue(CF_TapePath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_TapePath, dataPath);
+	if(P6VPATH2QSTR(cfg->GetValue(CF_DiskPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_DiskPath, dataPath);
+	if(P6VPATH2QSTR(cfg->GetValue(CF_ExtRomPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_ExtRomPath, dataPath);
+	if(P6VPATH2QSTR(cfg->GetValue(CF_WavePath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_WavePath, dataPath);
 
 	// AndroidではSDカードにファイルを書き出せないため、
 	// SnapshotおよびどこでもSAVEはアプリ内のサンドボックス領域に固定する。
-	OSD_AddPath( str, OSD_GetConfigPath(), IMAGE_DIR );
-	cfg.SetImgPath( str );
-	OSD_AddPath( str, OSD_GetConfigPath(), DOKOSAVE_DIR );
-	cfg.SetDokoSavePath( str );
-	cfg.Write();
+	OSD_AddPath( str, OSD_GetConfigPath(), DIR_IMAGE );
+	cfg->SetValue(CF_ImgPath,  str );
+	OSD_AddPath( str, OSD_GetConfigPath(), DIR_DOKO );
+	cfg->SetValue(CF_DokoPath,  str );
+	cfg->Write();
 
 	// Androidでは起動時にスナップショット画像を削除する
-	auto imgDir = QDir(cfg.GetImgPath());
+	auto imgDir = QDir(P6VPATH2QSTR(cfg->GetValue(CF_ImgPath)));
 	imgDir.setNameFilters(QStringList() << "*.png");
 	imgDir.setFilter(QDir::Files);
 	foreach(QString dirFile, imgDir.entryList())
@@ -999,7 +1014,7 @@ void P6VXApp::overrideSettings(CFG6 &cfg)
 #endif
 
 	// サンプリングレートは44100に固定
-	cfg.SetSampleRate(44100);
+	cfg->SetValue(CV_SampleRate, 44100);
 }
 
 QFileDialog *P6VXApp::createFileDialog(void *hwnd)

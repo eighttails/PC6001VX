@@ -779,7 +779,7 @@ void OSD_RelativePath( P6VPATH& path )
 			|| !strlen( path ) ) return;
 	QDir dir(OSD_GetConfigPath());
 	QString relPath = dir.relativeFilePath(path);
-	strcpy(path, relPath.toUtf8().constData());
+	path = QSTR2P6VPATH(relPath);
 #else
 	// Windows以外では相対パスを使った運用はしない
 	OSD_AbsolutePath(path);
@@ -831,10 +831,8 @@ const std::string OSD_GetFolderNamePart( const P6VPATH& path )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_GetFolderNamePart]\n" );
 
-	static QByteArray filePath;
 	QFileInfo info(P6VPATH2QSTR(path));
-	filePath = QDir::cleanPath(info.dir().absolutePath()).toUtf8();
-	return filePath.toStdString();
+	return QDir::cleanPath(info.dir().absolutePath()).toStdString();
 }
 
 
@@ -848,10 +846,10 @@ const std::string OSD_GetFileNamePart( const P6VPATH& path )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_GetFileNamePart]\n" );
 
-	static QByteArray fileName;
+	static QByteArray filename;
 	QFileInfo info(P6VPATH2QSTR(path));
-	fileName = info.fileName().toUtf8();
-	return fileName.toStdString();
+	filename = info.fileName().toUtf8();
+	return filename.toStdString();
 }
 
 
@@ -868,7 +866,7 @@ const std::string OSD_GetFileNameExt( const P6VPATH& path )
 	static QByteArray ext;
 	QFileInfo info(P6VPATH2QSTR(path));
 	ext = info.suffix().toUtf8();
-	return path, ext.toStdString();
+	return ext.toStdString();
 }
 
 

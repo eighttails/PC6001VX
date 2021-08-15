@@ -153,7 +153,7 @@ void P6VXApp::startup()
 		QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
 		r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
 		if(r == QtAndroid::PermissionResult::Denied) {
-			OSD_Message( P6Core->GetWindowHandle(), QString(tr("Storage access denied.")).toUtf8().constData(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core->GetWindowHandle(), QString(tr("Storage access denied.")).toStdString(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 		}
 	}
 #endif
@@ -279,7 +279,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if(info.suffix() != ext){
 			result += QString(".") + ext;
 		}
-		if (OSD_FileExist(result.toUtf8().constData())){
+		if (OSD_FileExist(QSTR2P6VPATH(result))){
 			if (OSD_Message(P6Core->GetWindowHandle(), QString(tr("ファイルはすでに存在しています。上書きしますか?")).toStdString(),
 							nullptr, OSDM_OKCANCEL | OSDM_ICONQUESTION)
 					== OSDM_OKCANCEL){

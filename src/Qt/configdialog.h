@@ -21,7 +21,7 @@ public:
 
 private:
 	Ui::ConfigDialog *ui;
-	CFG6* config;
+	std::shared_ptr<CFG6> config;
 
 private slots:
 	void readConfig();

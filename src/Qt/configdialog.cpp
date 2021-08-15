@@ -326,7 +326,7 @@ void ConfigDialog::readConfig()
 		QString buttonName = QString("pushButtonColor%1").arg(id);
 		// ダイアログから動的に部品を取得する
 		ColorButton* button = this->findChild<ColorButton*>(buttonName);
-		button->initialize(id, config);
+		button->initialize(id, config.get());
 	}
 
 	// その他

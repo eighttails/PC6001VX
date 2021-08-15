@@ -193,7 +193,6 @@ SOURCES += \
     src/device/z80.cpp \
     src/disk.cpp \
     src/error.cpp \
-    src/filesystem.cpp \
     src/graph.cpp \
     src/ini.cpp \
     src/intr.cpp \

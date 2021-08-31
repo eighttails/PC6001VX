@@ -107,12 +107,12 @@ bool SaveImg( const P6VPATH& filename, VSurface *sur, VRect *pos )
 // 引数:	filename		読込むファイル名
 // 返値:	VSurface *		読込まれたサーフェスへのポインタ
 ////////////////////////////////////////////////////////////////
-VSurface *LoadImg( const char *filename )
+VSurface *LoadImg( const P6VPATH& filepath )
 {
 	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filename );
 
 	// 画像を読み込む
-	QImage loadImage(filename);
+	QImage loadImage(P6VPATH2QSTR(filepath));
 	QImage image = loadImage.convertToFormat(QImage::Format_Indexed8);
 
 	// サーフェスを作成

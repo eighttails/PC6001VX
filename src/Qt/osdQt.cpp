@@ -299,6 +299,7 @@ const char *MsgIni[] = {
 
 };
 
+
 // どこでもSAVE用メッセージ ------
 const char *MsgDok[] = {
 	QT_TRANSLATE_NOOP("PC6001VX", "; === PC6001V どこでもSAVEファイル ===\n\n")
@@ -869,6 +870,26 @@ const std::string OSD_GetFileNameExt( const P6VPATH& path )
 	return ext.toStdString();
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// 拡張子名を変更
+//
+// 引数:	path			パス
+//		ext				新しい拡張子への参照
+// 返値:	bool			true:成功 false:失敗
+/////////////////////////////////////////////////////////////////////////////
+bool OSD_ChangeFileNameExt( P6VPATH& path, const std::string& ext )
+{
+	PRINTD( OSD_LOG, "[OSD][OSD_ChangeFileNameExt] %s -> %s\n", OSD_GetFileNameExt( path ).c_str(), ext.c_str() );
+
+	QString qPath = P6VPATH2QSTR(path);
+	QFileInfo info(qPath);
+	if (!info.exists()) {
+		return false;
+	}
+	QString newPath = info.path() + info.completeBaseName() + "." + QString::fromStdString(ext);
+	QFile::rename(qPath, newPath);
+	return true;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // ファイルを開く
@@ -879,6 +900,7 @@ const std::string OSD_GetFileNameExt( const P6VPATH& path )
 /////////////////////////////////////////////////////////////////////////////
 FILE* OSD_Fopen( const P6VPATH& path, const std::string& mode )
 {
+	PRINTD( OSD_LOG, "[OSD][OSD_Fopen] %s(%s) ", P6VPATH2STR( path ).c_str(), mode.c_str() );
 	QString strFileName = P6VPATH2QSTR(path);
 
 	if (strFileName.startsWith(":")){
@@ -1016,9 +1038,9 @@ bool OSD_FileDelete( const P6VPATH& fullpath )
 // ファイルを探す
 //
 // 引数:	path			パス
-//			file			探すファイル名
-//			folders			見つかったパスを格納するvectorへの参照
-//			size			ファイルサイズ (0:チェックしない)
+//		file			探すファイル名
+//		folders			見つかったパスを格納するvectorへの参照
+//		size			ファイルサイズ (0:チェックしない)
 // 返値:	bool			true:成功 false:失敗
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_FindFile( const P6VPATH& path, const P6VPATH& file, std::vector<P6VPATH>& files, size_t size )
@@ -1050,7 +1072,7 @@ bool OSD_FindFile( const P6VPATH& path, const P6VPATH& file, std::vector<P6VPATH
 // ファイル名を変更
 //
 // 引数:	fullpath1		変更元のパス
-//			fullpath2		変更するパス
+//		fullpath2		変更するパス
 // 返値:	bool			true:成功 false:失敗
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_FileRename( const P6VPATH& fullpath1, const P6VPATH& fullpath2 )
@@ -1091,9 +1113,9 @@ bool OSD_FolderDiaog( HWINDOW hwnd, P6VPATH& path )
 // 各種ファイル選択
 //
 // 引数:	hwnd		親のウィンドウハンドル
-//			type		ダイアログの種類(FileDlg参照)
-//			fullpath	フルパス
-//			path		ファイル検索パス
+//		type		ダイアログの種類(FileDlg参照)
+//		fullpath	フルパス
+//		path		ファイル検索パス
 // 返値:	bool		true:選択成功 false:エラーorキャンセル
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& path )
@@ -1245,10 +1267,10 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 //		cap			ウィンドウキャプション文字列への参照(UTF-8)
 //		type		表示形式指示のフラグ
 // 返値:	int			押されたボタンの種類
-//							OSDR_OK:     OKボタン
-//							OSDR_CANCEL: CANCELボタン
-//							OSDR_YES:    YESボタン
-//							OSDR_NO:     NOボタン
+//						OSDR_OK:     OKボタン
+//						OSDR_CANCEL: CANCELボタン
+//						OSDR_YES:    YESボタン
+//						OSDR_NO:     NOボタン
 /////////////////////////////////////////////////////////////////////////////
 int OSD_Message( HWINDOW hwnd, const std::string& mes, const std::string& cap, int type )
 {
@@ -2248,6 +2270,18 @@ void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 					  "Based on PC6001V by Yumitaro.");
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// イベントキュークリア
+//
+// 引数:	なし
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_FlushEvents( void )
+{
+	QMutexLocker lock(&eventMutex);
+	eventQueue.clear();
+}
 
 
 /////////////////////////////////////////////////////////////////////////////

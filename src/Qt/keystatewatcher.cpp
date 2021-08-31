@@ -3,7 +3,7 @@
 #include <QTimer>
 #include "../keyboard.h"
 
-KeyStateWatcher::KeyStateWatcher(KEY6 *key, QObject *parent)
+KeyStateWatcher::KeyStateWatcher(std::shared_ptr<KEY6> key, QObject *parent)
 	: QObject(parent)
 	, Key(key)
 	, ON_SHIFT(false)

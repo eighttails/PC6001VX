@@ -14,7 +14,7 @@ public:
 	void ShowPopupImpl(int x, int y);
 	bool GetPauseEnable();
 	void SetPauseEnable(bool en);
-	KEY6* GetKeyboard();
+	std::shared_ptr<KEY6> GetKeyboard();
 	bool IsMonitor();
 public slots:
 	void UpdateFPS();

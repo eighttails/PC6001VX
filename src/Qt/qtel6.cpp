@@ -26,6 +26,124 @@
 #include "qtel6.h"
 #include "p6vxapp.h"
 
+// --- メッセージ配列 ---
+// 一般メッセージ
+extern const char *MsgStr[];
+#define	MSG_QUIT			MsgStr[0]	// "終了してよろしいですか?"
+#define	MSG_QUITC			MsgStr[1]	// "終了確認"
+#define	MSG_RESTART0		MsgStr[2]	// "再起動してよろしいですか?"
+#define	MSG_RESTART			MsgStr[3]	// "変更は再起動後に有効となります。\n今すぐ再起動しますか?"
+#define	MSG_RESTARTC		MsgStr[4]	// "再起動確認"
+#define	MSG_RESETI			MsgStr[5]	// "拡張ROMを挿入してリセットします。"
+#define	MSG_RESETE			MsgStr[6]	// "拡張ROMを排出してリセットします。"
+#define	MSG_RESETC			MsgStr[7]	// "リセット確認"
+
+
+// メニュー用メッセージ ------
+extern const char *MsgMen[];
+// [システム]
+#define	MSMEN_AVI0			MsgMen[0]	// "ビデオキャプチャ..."
+#define	MSMEN_AVI1			MsgMen[1]	// "ビデオキャプチャ停止"
+#define	MSMEN_REP0			MsgMen[2]	// "記録..."  (リプレイ)
+#define	MSMEN_REP1			MsgMen[3]	// "記録停止" (リプレイ)
+#define	MSMEN_REP2			MsgMen[4]	// "再生..."  (リプレイ)
+#define	MSMEN_REP3			MsgMen[5]	// "v" (リプレイ)
+
+
+// INIファイル用メッセージ ------
+extern const char *MsgIni[];
+// [CONFIG]
+#define	MSINI_TITLE			MsgIni[0]	// "; === PC6001V 初期設定ファイル ===\n\n"
+#define	MSINI_Model			MsgIni[1]	// " 機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR"
+#define	MSINI_FDD			MsgIni[2]	// " FDD接続台数 (0-2)"
+#define	MSINI_ExtRam		MsgIni[3]	// " 拡張RAM使用"
+#define	MSINI_TurboTAPE		MsgIni[4]	// " Turbo TAPE Yes:有効 No:無効"
+#define	MSINI_BoostUp		MsgIni[5]	// " BoostUp Yes:有効 No:無効"
+#define	MSINI_MaxBoost60	MsgIni[6]	// " BoostUp 最大倍率(N60モード)
+#define	MSINI_MaxBoost62	MsgIni[7]	// " BoostUp 最大倍率(N60m/N66モード)
+#define	MSINI_OverClock		MsgIni[8]	// " オーバークロック率 (1-1000)%"
+#define	MSINI_CheckCRC		MsgIni[9]	// " CRCチェック Yes:有効 No:無効"
+#define	MSINI_RomPatch		MsgIni[10]	// " ROMパッチ Yes:あてる No:あてない"
+#define	MSINI_FDDWait		MsgIni[11]	// " FDDウェイト Yes:有効 No:無効"
+// [DISPLAY]
+#define	MSINI_Mode4Color	MsgIni[12]	// " MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク"
+#define	MSINI_ScanLine		MsgIni[13]	// " スキャンライン Yes:あり No:なし"
+#define	MSINI_ScanLineBr	MsgIni[14]	// " スキャンライン輝度 (0-100)%"
+#define	MSINI_DispNTSC		MsgIni[15]	// " 4:3表示 Yes:有効 No:無効"
+#define	MSINI_FullScreen	MsgIni[16]	// " フルスクリーンモード Yes:有効 No:無効"
+#define	MSINI_DispStatus	MsgIni[17]	// " ステータスバー Yes:表示 No:非表示"
+#define	MSINI_FrameSkip		MsgIni[18]	// " フレームスキップ"
+// [SOUND]
+#define	MSINI_SampleRate	MsgIni[19]	// " サンプリングレート (44100/22050/11025)Hz"
+#define	MSINI_SoundBuffer	MsgIni[20]	// " サウンドバッファサイズ"
+#define	MSINI_MasterVolume	MsgIni[21]	// " マスター音量 (0-100)"
+#define	MSINI_PsgVolume		MsgIni[22]	// " PSG音量 (0-100)"
+#define	MSINI_VoiceVolume	MsgIni[23]	// " 音声合成音量 (0-100)"
+#define	MSINI_TapeVolume	MsgIni[24]	// " TAPEモニタ音量 (0-100)"
+#define	MSINI_PsgLPF		MsgIni[25]	// " PSG LPFカットオフ周波数(0で無効)"
+// [MOVIE]
+#define	MSINI_AviBpp		MsgIni[26]	// " ビデオキャプチャ色深度 (16,24,32)"
+// [FILES]
+#define	MSINI_ExtRom		MsgIni[27]	// " 拡張ROMファイル名"
+#define	MSINI_tape			MsgIni[28]	// " TAPE(LODE)ファイル名(起動時に自動マウント)"
+#define	MSINI_save			MsgIni[29]	// " TAPE(SAVE)ファイル名(SAVE時に自動マウント)"
+#define	MSINI_disk1			MsgIni[30]	// " DISK1ファイル名(起動時に自動マウント)"
+#define	MSINI_disk2			MsgIni[31]	// " DISK2ファイル名(起動時に自動マウント)"
+#define	MSINI_printer		MsgIni[32]	// " プリンタ出力ファイル名"
+#define	MSINI_fontz			MsgIni[33]	// " 全角フォントファイル名"
+#define	MSINI_fonth			MsgIni[34]	// " 半角フォントファイル名"
+// [PATH]
+#define	MSINI_RomPath		MsgIni[35]	// " ROMイメージ格納パス"
+#define	MSINI_TapePath		MsgIni[36]	// " TAPEイメージ格納パス"
+#define	MSINI_DiskPath		MsgIni[37]	// " DISKイメージ格納パス"
+#define	MSINI_ExtRomPath	MsgIni[38]	// " 拡張ROMイメージ格納パス"
+#define	MSINI_ImgPath		MsgIni[39]	// " スナップショット格納パス"
+#define	MSINI_WavePath		MsgIni[40]	// " WAVEファイル格納パス"
+#define	MSINI_FontPath		MsgIni[41]	// " FONT格納パス"
+#define	MSINI_DokoSavePath	MsgIni[42]	// " どこでもSAVE格納パス"
+// [CHECK]
+#define	MSINI_CkQuit		MsgIni[43]	// " 終了時確認 Yes:する No:しない"
+#define	MSINI_SaveQuit		MsgIni[44]	// " 終了時INIファイルを保存 Yes:する No:しない"
+// [KEY]
+#define	MSINI_KeyRepeat		MsgIni[45]	// " キーリピートの間隔(単位:ms 0で無効)"
+// [OPTION]
+#define	MSINI_UseSoldier	MsgIni[46]	// " 戦士のカートリッジ Yes:有効 No:無効"
+
+
+// どこでもSAVE用メッセージ ------
+extern const char *MsgDok[];
+#define	MSDOKO_TITLE		MsgDok[0]	// "; === PC6001V どこでもSAVEファイル ===\n\n"
+
+
+// Error用メッセージ ------
+extern const char *MsgErr[];
+#define	MSERR_ERROR				MsgErr[0]	// "Error"
+#define	MSERR_NoError			MsgErr[1]	// "エラーはありません"
+#define	MSERR_Unknown			MsgErr[2]	// "原因不明のエラーが発生しました"
+#define	MSERR_MemAllocFailed	MsgErr[3]	// "メモリの確保に失敗しました"
+#define	MSERR_RomChange			MsgErr[4]	// "指定された機種のROMイメージが見つからないため機種を変更しました\n設定を確認してください"
+#define	MSERR_NoRom				MsgErr[5]	// "ROMイメージが見つかりません\n設定とファイル名を確認してください"
+#define	MSERR_RomSizeNG			MsgErr[6]	// "ROMイメージのサイズが不正です"
+#define	MSERR_RomCrcNG			MsgErr[7]	// "ROMイメージのCRCが不正です"
+#define	MSERR_LibInitFailed		MsgErr[8]	// "ライブラリの初期化に失敗しました"
+#define	MSERR_InitFailed		MsgErr[9]	// "初期化に失敗しました\n設定を確認してください"
+#define	MSERR_FontLoadFailed	MsgErr[10]	// "フォントの読込みに失敗しました"
+#define	MSERR_FontCreateFailed	MsgErr[11]	// "フォントファイルの作成に失敗しました"
+#define	MSERR_IniDefault		MsgErr[12]	// "INIファイルの読込みに失敗しました\nデフォルト設定で起動します"
+#define	MSERR_IniReadFailed		MsgErr[13]	// "INIファイルの読込みに失敗しました"
+#define	MSERR_IniWriteFailed	MsgErr[14]	// "INIファイルの保存に失敗しました"
+#define	MSERR_TapeMountFailed	MsgErr[15]	// "TAPEイメージのマウントに失敗しました"
+#define	MSERR_DiskMountFailed	MsgErr[16]	// "DISKイメージのマウントに失敗しました"
+#define	MSERR_ExtRomMountFailed	MsgErr[17]	// "拡張ROMイメージのマウントに失敗しました"
+#define	MSERR_DokoReadFailed	MsgErr[18]	// "どこでもLOADに失敗しました"
+#define	MSERR_DokoWriteFailed	MsgErr[19]	// "どこでもSAVEに失敗しました"
+#define	MSERR_DokoDiffVersion	MsgErr[20]	// "どこでもLOADに失敗しました\n保存時とPC6001Vのバージョンが異なります"
+#define	MSERR_ReplayPlayError	MsgErr[21]	// "リプレイ再生に失敗しました"
+#define	MSERR_ReplayRecError	MsgErr[22]	// "リプレイ記録に失敗しました"
+#define	MSERR_NoReplayData		MsgErr[23]	// "リプレイデータがありません"
+
+
+
 ///////////////////////////////////////////////////////////
 // ポップアップメニュー表示
 ///////////////////////////////////////////////////////////
@@ -55,8 +173,8 @@ void EL6::ExecMenu( int id )
 	case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );	break;
 	case ID_DISKEJECT1:														// DISK 排出
 	case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );		break;
-	//#TODO case ID_ROMINSERT:		UI_CartInsert();							break;	// 拡張ROM 挿入
-	//#TODO ROM挿入系
+		//#TODO case ID_ROMINSERT:		UI_CartInsert();							break;	// 拡張ROM 挿入
+		//#TODO ROM挿入系
 	case ID_CARTEJECT:		UI_CartEject();							break;	// 拡張ROM 排出
 	case ID_JOY100:															// ジョイスティック1
 	case ID_JOY101:
@@ -149,7 +267,7 @@ void EL6::ExecMenu( int id )
 	case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );			break;	// フレームスキップ 5
 	case ID_ONLINEHELP:
 #ifdef Q_OS_WIN
-        QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromLocal8Bit(OSD_GetConfigPath()) + "/README.html"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromLocal8Bit(OSD_GetConfigPath()) + "/README.html"));
 		break;
 #else
 		QDesktopServices::openUrl(QUrl("https://github.com/eighttails/PC6001VX/blob/master/README.adoc"));
@@ -170,7 +288,7 @@ void EL6::ExecMenu( int id )
 	case ID_RESETSETTINGS:	app->resetSettings();	break;
 		break;
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	case ID_MONITOR:		ToggleMonitor();						break;	// モニターモード
+	case ID_MONITOR:		UI_Monitor();						break;	// モニターモード
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	case ID_SIZE50:
 		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(50);
@@ -201,7 +319,7 @@ void EL6::ExecMenu( int id )
 						!app->getSetting(P6VXApp::keyFixMagnification).toBool());
 		break;
 	case ID_HWACCEL:
-		if(OSD_Message(QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toStdString(), T_QUITC, OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
+		if(OSD_Message(GetWindowHandle(), QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toStdString(), GetText(T_QUITC), OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
 			app->setSetting(P6VXApp::keyHwAccel,
 							!app->getSetting(P6VXApp::keyHwAccel).toBool());
 			UI_Quit();
@@ -295,27 +413,27 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	// またはリプレイ記録中だったらリプレイ再生無効
 	if(!(
 			#ifndef NOMONITOR
-				cfg->GetValue(CV_MonDisp) || vm->bp->ExistBreakPoint() ||
+				IsMonitor() || vm->bp->GetNum() ||
 			#endif
-				( REPLAY::GetStatus() == REP_RECORD ) )){
-		addCommand(replayMenu, (REPLAY::GetStatus() == REP_REPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYLOAD);
+				( REPLAY::GetStatus() == ST_REPLAYREC ) )){
+		addCommand(replayMenu, (REPLAY::GetStatus() == ST_REPLAYPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYPLAY);
 	}
 	// モニタモード or ブレークポインタが設定されている
 	// またはリプレイ再生中だったらリプレイ記録無効
 	if(!(
 			#ifndef NOMONITOR
-				cfg->GetValue(CV_MonDisp) || vm->bp->ExistBreakPoint() ||
+				IsMonitor() || vm->bp->GetNum() ||
 			#endif
-				( REPLAY::GetStatus() == REP_REPLAY ) )){
-		addCommand(replayMenu, (REPLAY::GetStatus() == REP_RECORD) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
+				( REPLAY::GetStatus() == ST_REPLAYPLAY ) )){
+		addCommand(replayMenu, (REPLAY::GetStatus() == ST_REPLAYREC) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
 	}
-	if (REPLAY::GetStatus() == REP_IDLE){
+	if (REPLAY::GetStatus() == ST_IDLE){
 		addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
 #ifndef NOAVI
 		addCommand(replayMenu, tr("リプレイを動画に変換..."), ID_REPLAYMOVIE);
 #endif
 	}
-	if (REPLAY::GetStatus() == REP_RECORD){
+	if (REPLAY::GetStatus() == ST_REPLAYREC){
 		addCommand(replayMenu, tr("途中保存"), ID_REPLAYDOKOSAVE);
 		addCommand(replayMenu, tr("途中保存から再開"), ID_REPLAYDOKOLOAD);
 		addCommand(replayMenu, tr("1つ前の途中保存から再開"), ID_REPLAYROLLBACK);
@@ -342,7 +460,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QMenu* tapeMenu = menu.addMenu(tr("TAPE"));
 	addCommand(tapeMenu, tr("挿入..."), ID_TAPEINSERT);
 	QAction* tapeEject = addCommand(tapeMenu, tr("取出"), ID_TAPEEJECT);
-	if(!*vm->cmtl->GetFile()) tapeEject->setEnabled(false);
+	if(!P6VPATH2QSTR(vm->cmtl->GetFile()).isEmpty()) tapeEject->setEnabled(false);
 	QAction* tapeExport = addCommand(tapeMenu, tr("TAPE(SAVE)をエクスポート..."), ID_TAPEEXPORT);
 
 	// DISKメニュー
@@ -353,15 +471,48 @@ void QtEL6::ShowPopupImpl(int x, int y)
 			QMenu* driveMenu = diskMenu->addMenu(item);
 			addCommand(driveMenu, tr("挿入..."), MenuCommand(ID_DISKINSERT1 + i));
 			QAction* diskEject = addCommand(driveMenu, tr("取出"), MenuCommand(ID_DISKEJECT1 + i));
-			if (!*vm->disk->GetFile(i)) diskEject->setEnabled(false);
+			if (!P6VPATH2QSTR(vm->disk->GetFile(i)).isEmpty()){
+				diskEject->setEnabled(false);
+			}
 		}
 	}
 
-	// 拡張ROMメニュー
-	QMenu* extRomMenu = menu.addMenu(tr("拡張ROM"));
-	addCommand(extRomMenu, tr("挿入..."), ID_ROMINSERT);
-	QAction* romEject = addCommand(extRomMenu, tr("取出"), ID_ROMEJECT);
-	if(!*vm->mem->GetFile()) romEject->setEnabled(false);
+	// 拡張カートリッジメニュー
+	QMenu* extRomMenu = menu.addMenu(tr("拡張カートリッジ"));
+	QAction* romEject = addCommand(extRomMenu, tr("なし"), ID_CARTEJECT);
+	if(!P6VPATH2QSTR(vm->mem->GetFile()).isEmpty()) romEject->setEnabled(false);
+	extRomMenu->addSeparator();
+	QAction* romC6005 = addCommand(extRomMenu, tr("PC-6005    ROMカートリッジ..."), ID_C6005);
+	{
+		QMenu* extRomSubMenu = extRomMenu->addMenu(tr("PC-6006    拡張ROM/RAMカートリッジ"));
+		QAction* romC6006 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_C6006);
+		QAction* romC6006NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_C6006NR);
+	}
+	extRomMenu->addSeparator();
+	QAction* romC6001 = addCommand(extRomMenu, tr("PCS-6001R  拡張BASIC"), ID_C6001);
+	QAction* romC660101 = addCommand(extRomMenu, tr("PC-6601-01 拡張漢字ROMカートリッジ"), ID_C660101);
+	QAction* romC6006SR = addCommand(extRomMenu, tr("PC-6006SR  拡張64KRAMカートリッジ"), ID_C6006SR);
+	QAction* romC6007SR = addCommand(extRomMenu, tr("PC-6007SR  拡張漢字ROM&&RAMカートリッジ"), ID_C6007SR);
+	extRomMenu->addSeparator();
+	QAction* romC6053 = addCommand(extRomMenu, tr("PC-6053    ボイスシンセサイザー"), ID_C6053);
+	QAction* romC60M55 = addCommand(extRomMenu, tr("PC-60m55   FM音源カートリッジ"), ID_C60M55);
+	extRomMenu->addSeparator();
+	{
+		QMenu* extRomSubMenu = extRomMenu->addMenu(tr("戦士のカートリッジ"));
+		QAction* romCSOL1 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_CSOL1);
+		QAction* romCSOL1NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_CSOL1NR);
+	}
+	{
+		QMenu* extRomSubMenu = extRomMenu->addMenu(tr("戦士のカートリッジmkⅡ"));
+		QAction* romCSOL2 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_CSOL2);
+		QAction* romCSOL2NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_CSOL2NR);
+	}
+	{
+		QMenu* extRomSubMenu = extRomMenu->addMenu(tr("戦士のカートリッジmkⅢ"));
+		QAction* romCSOL3 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_CSOL3);
+		QAction* romCSOL3NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_CSOL3NR, true);
+	}
+
 
 #ifndef NOJOYSTICK
 	// ジョイスティックメニュー
@@ -373,8 +524,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QActionGroup* joyGroup2 = new QActionGroup(&menu);
 	for( int i = 0; i < 5; i++ ){
 		if( i < OSD_GetJoyNum() ){
-			QAction* joyAction1 = addCommand(joyMenu1, OSD_GetJoyName( i ), MenuCommand(ID_JOY101 + i), true);
-			QAction* joyAction2 = addCommand(joyMenu2, OSD_GetJoyName( i ), MenuCommand(ID_JOY201 + i), true);
+			QAction* joyAction1 = addCommand(joyMenu1, QString::fromStdString(OSD_GetJoyName( i )), MenuCommand(ID_JOY101 + i), true);
+			QAction* joyAction2 = addCommand(joyMenu2, QString::fromStdString(OSD_GetJoyName( i )), MenuCommand(ID_JOY201 + i), true);
 			joyGroup1->addAction(joyAction1);
 			joyGroup2->addAction(joyAction2);
 			if(joy->GetID(0) == i) joyAction1->setChecked(true);
@@ -403,15 +554,15 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QAction* fixMagnification = addCommand(dispSizeMenu, tr("倍率を固定"), ID_FIXMAGNIFICATION, true);
 	if (app->getSetting(P6VXApp::keyFixMagnification).toBool()) fixMagnification->setChecked(true);
 #ifndef ALWAYSFULLSCREEN
-	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCREEN, true);
-	if (cfg->GetValue(CV_FullScreen)) fullScreen->setChecked(true);
+	QAction* fullScreen = addCommand(settingsMenu, tr("フルスクリーン"), ID_FULLSCRN, true);
+	if (cfg->GetValue(CB_FullScreen)) fullScreen->setChecked(true);
 #endif
 	QAction* statusBar = addCommand(settingsMenu, tr("ステータスバー"), ID_STATUS, true);
-	if (cfg->GetValue(CV_DispStat)) statusBar->setChecked(true);
+	if (cfg->GetValue(CB_DispStatus)) statusBar->setChecked(true);
 	QAction* disp43 = addCommand(settingsMenu, tr("4:3表示"), ID_DISP43, true);
-	if (cfg->GetValue(CV_DispNTSC)) disp43->setChecked(true);
+	if (cfg->GetValue(CB_DispNTSC)) disp43->setChecked(true);
 	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
-	if (cfg->GetValue(CV_ScanLine)) scanLine->setChecked(true);
+	if (cfg->GetValue(CB_ScanLine)) scanLine->setChecked(true);
 #ifndef NOOPENGL
 	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
 	if (app->getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
@@ -453,7 +604,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QAction* noWait = addCommand(settingsMenu, tr("ウェイト無効"), ID_NOWAIT, true);
 	if (!sche->GetWaitEnable()) noWait->setChecked(true);
 	QAction* turboTape = addCommand(settingsMenu, tr("Turbo TAPE"), ID_TURBO, true);
-	if (cfg->GetValue(CV_TurboTAPE)) turboTape->setChecked(true);
+	if (cfg->GetValue(CB_TurboTAPE)) turboTape->setChecked(true);
 	QAction* boostUp =  addCommand(settingsMenu, tr("Boost Up"), ID_BOOST, true);
 	if (vm->cmtl->IsBoostUp()) boostUp->setChecked(true);
 	addCommand(settingsMenu, tr("環境設定..."), ID_CONFIG);
@@ -463,7 +614,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QMenu* debugMenu = menu.addMenu(tr("デバッグ"));
 	menu.addSeparator();
 	QAction* monitorMode =  addCommand(debugMenu, tr("モニタモード"), ID_MONITOR, true);
-	if (cfg->GetValue(CV_MonDisp)) monitorMode->setChecked(true);
+	if ( vm->IsMonitor() ) monitorMode->setChecked(true);
 #endif
 
 	// ヘルプメニュー
@@ -487,11 +638,13 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 void QtEL6::UpdateFPS()
 {
+#if 0	//#TODO 後で消す
 	Event ev;
 	ev.type = EV_FPSUPDATE;
 	ev.fps.fps = UDFPSCount;
 	OSD_PushEvent( ev );
 	UDFPSCount = 0;
+#endif
 }
 
 
@@ -533,7 +686,7 @@ bool QtEL6::GetPauseEnable()
 	if(sche){
 		return sche->GetPauseEnable();
 	}
-    return false;
+	return false;
 }
 
 void QtEL6::SetPauseEnable(bool en)
@@ -543,7 +696,7 @@ void QtEL6::SetPauseEnable(bool en)
 	}
 }
 
-KEY6 *QtEL6::GetKeyboard()
+std::shared_ptr<KEY6> QtEL6::GetKeyboard()
 {
 	return vm->key;
 }

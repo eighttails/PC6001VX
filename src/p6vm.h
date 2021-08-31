@@ -56,6 +56,7 @@ class cWndMon;
 class VM6 : public std::enable_shared_from_this<VM6> {
 	
 	friend class EL6;
+	friend class QtEL6;
 	friend class cWndStat;
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	friend class cWndReg;

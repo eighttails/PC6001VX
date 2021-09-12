@@ -47,7 +47,7 @@ bool SerchRom( std::shared_ptr<CFG6> &cfg )
 	P6VPATH RomSearch;
 
 	int IniModel = cfg->GetValue(CV_Model);
-	RomSearch = QSTR2P6VPATH(QString("*.%2d").arg( IniModel ));
+	RomSearch = QSTR2P6VPATH(QString("*.%1").arg( IniModel ));
 	OSD_AddPath( RomSearch, cfg->GetValue(CF_RomPath), RomSearch );
 	if( OSD_FileExist( RomSearch ) ){
 		Error::Clear();
@@ -56,7 +56,7 @@ bool SerchRom( std::shared_ptr<CFG6> &cfg )
 
 	int models[] = { 60, 61, 62, 66, 64, 68 };
 	for( int i=0; i < COUNTOF(models); i++ ){
-		RomSearch = QSTR2P6VPATH(QString("*.%2d").arg( models[i] ));
+		RomSearch = QSTR2P6VPATH(QString("*.%1").arg( models[i] ));
 		OSD_AddPath( RomSearch, cfg->GetValue(CF_RomPath), RomSearch );
 		if( OSD_FileExist( RomSearch ) ){
 			cfg->SetValue( CV_Model,  models[i] );
@@ -72,6 +72,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	: ParentAppClass(argc, argv)
 	, P6Core(nullptr)
 	, Restart(EL6::Quit)
+	, Cfg(std::make_shared<CFG6>())
 	, Adaptor(new EmulationAdaptor())
 	, KPanel(nullptr)
 	, MouseCursorTimer(new QTimer(this))
@@ -85,6 +86,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	qRegisterMetaType<HWINDOW>("HWINDOW");
 	qRegisterMetaType<TiltDirection>("TiltDirection");
 	qRegisterMetaType<FileMode>("FileMode");
+	qRegisterMetaType<EL6::ReturnCode>("EL6::ReturnCode");
 
 	// エミュレーションコア部分用スレッドを生成
 	QThread* emulationThread = new QThread(this);
@@ -96,7 +98,7 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	setQuitOnLastWindowClosed (false);
 
 	connect(this, SIGNAL(initialized()), this, SLOT(executeEmulation()), Qt::QueuedConnection);
-	connect(this, SIGNAL(vmPrepared()), Adaptor, SLOT(doEventLoop()), Qt::QueuedConnection);
+	connect(this, SIGNAL(vmPrepared(EL6::ReturnCode)), Adaptor, SLOT(doEventLoop(EL6::ReturnCode)), Qt::QueuedConnection);
 	connect(this, SIGNAL(vmRestart()), this, SLOT(executeEmulation()), Qt::QueuedConnection);
 	connect(Adaptor, SIGNAL(finished()), this, SLOT(postExecuteEmulation()), Qt::QueuedConnection);
 
@@ -659,12 +661,13 @@ void P6VXApp::executeEmulation()
 	// ROMファイル存在チェック&機種変更
 	if( SerchRom( Cfg ) ){
 		if( Error::GetError() != Error::NoError ){
-			OSD_Message(P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
+			OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr,
+						Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
 			Error::SetError( Error::NoError );
 		}
 	}else{
 		bool romFolderSpecified = false;
-		if(OSD_Message(P6Core->GetWindowHandle(),
+		if(OSD_Message(nullptr,
 					   QString(tr("ROMファイルが見つかりません。\n"
 								  "ROMフォルダ(%1)にROMファイルをコピーするか、"
 								  "別のROMフォルダを指定してください。\n"
@@ -685,8 +688,9 @@ void P6VXApp::executeEmulation()
 		}
 		if (!romFolderSpecified){
 			// 互換ROMを使用するか問い合わせる
-			int ret = OSD_Message( P6Core->GetWindowHandle(), tr("エミュレーター内蔵の互換ROMを使用しますか?").toStdString(),
-								   nullptr, OSDM_YESNO | OSDM_ICONQUESTION );
+			int ret = OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
+								   tr("エミュレーター内蔵の互換ROMを使用しますか?").toStdString(),
+								   APPNAME, OSDM_YESNO | OSDM_ICONQUESTION );
 			if(ret == OSDR_YES) {
 				enableCompatibleRomMode(Cfg, true);
 				Cfg->Write();
@@ -712,7 +716,7 @@ void P6VXApp::executeEmulation()
 	if( !P6CoreObj->Init( Cfg ) ){
 		if(Error::GetError() == Error::RomCrcNG){
 			// CRCが合わない場合
-			int ret = OSD_Message( P6Core->GetWindowHandle(),
+			int ret = OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
 								   tr("ROMイメージのCRCが不正です。\n"
 									  "CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。\n"
 									  "それでも起動しますか?").toStdString(),
@@ -729,7 +733,7 @@ void P6VXApp::executeEmulation()
 			}
 		}else if(Error::GetError() == Error::NoRom){
 			// ROMの一部が見つからない場合
-			int ret = OSD_Message( P6Core->GetWindowHandle(),
+			int ret = OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
 								   tr("ROMファイルの一部が見つかりません。\n"
 									  "エミュレーター内蔵の互換ROMを使用しますか?").toStdString(),
 								   GetText(TERR_ERROR), OSDM_YESNO | OSDM_ICONWARNING );
@@ -744,7 +748,8 @@ void P6VXApp::executeEmulation()
 				return;
 			}
 		}else{
-			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
+						 Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 			exit();
 			return;
 		}
@@ -760,7 +765,8 @@ void P6VXApp::executeEmulation()
 	case EL6::Dokoload:	// どこでもLOAD
 		if( !P6Core->DokoDemoLoad( Cfg->GetDokoFile() ) ){
 			// 失敗した場合
-			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
+						 Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
 			Error::Clear();
 		}
 		Cfg->SetDokoFile( "" );
@@ -771,7 +777,8 @@ void P6VXApp::executeEmulation()
 	case EL6::ReplayMovie:	// リプレイを動画に変換
 		if( !P6Core->DokoDemoLoad( Cfg->GetDokoFile() ) ){
 			// 失敗した場合
-			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
+						 Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
 			Error::Clear();
 			Cfg->SetDokoFile( "" );
 		}
@@ -794,7 +801,7 @@ void P6VXApp::executeEmulation()
 
 	// VM実行
 	Adaptor->setEmulationObj(P6Core);
-	emit vmPrepared();
+	emit vmPrepared(Restart);
 	P6Core->Start();
 }
 
@@ -820,7 +827,8 @@ void P6VXApp::postExecuteEmulation()
 	if( Restart == EL6::Restart ){
 		if( !Cfg->Init() ){
 			Error::SetError( Error::IniDefault );
-			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
+			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
+						 Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
 			Error::SetError( Error::NoError );
 		}
 	}

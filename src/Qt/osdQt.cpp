@@ -728,7 +728,7 @@ const P6VPATH& OSD_GetConfigPath()
 #elif defined Q_OS_IOS
 	QString confPath = QDir::homePath() + QDir::separator() + QString("Documents");
 #else
-	QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx");
+	QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx4");
 #endif
 	static P6VPATH cpath = QSTR2P6VPATH(confPath);
 	OSD_AddDelimiter( cpath );	// 念のため
@@ -927,8 +927,18 @@ FILE* OSD_Fopen( const P6VPATH& path, const std::string& mode )
 bool OSD_FSopen( std::fstream& fs, const P6VPATH& path, const std::ios_base::openmode mode )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_FSopen] %s\n", P6VPATH2STR( path ).c_str() );
+	QString strFileName = P6VPATH2QSTR(path);
 
-	fs.open( path, mode );
+	if (strFileName.startsWith(":")){
+		// リソース内のファイルはテンポラリファイルとして作成
+		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(strFileName);
+		tempFile->setAutoRemove(true);
+		// アプリ終了時に削除されるように設定
+		tempFile->setParent(qApp);
+		fs.open( tempFile->fileName().toStdString(), mode );
+	} else {
+		fs.open( strFileName.toStdString(), mode );
+	}
 	return fs.is_open() && fs.good();
 }
 
@@ -1274,6 +1284,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 /////////////////////////////////////////////////////////////////////////////
 int OSD_Message( HWINDOW hwnd, const std::string& mes, const std::string& cap, int type )
 {
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	int ret = OSDR_OK;
 	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
@@ -1281,6 +1292,7 @@ int OSD_Message( HWINDOW hwnd, const std::string& mes, const std::string& cap, i
 	QMetaObject::invokeMethod(qApp, "showMessageBox",
 							  cType,
 							  Q_RETURN_ARG(int, ret),
+							  Q_ARG(void*, app->getView()),
 							  Q_ARG(const char*, mes.c_str()),
 							  Q_ARG(const char*, cap.c_str()),
 							  Q_ARG(int, type));

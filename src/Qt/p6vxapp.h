@@ -146,7 +146,7 @@ signals:
 	void initialized();
 
 	// 仮想マシン実行前準備終了シグナル
-	void vmPrepared();
+	void vmPrepared(EL6::ReturnCode);
 
 	// 仮想マシンの実行終了シグナル
 	void vmRestart();

@@ -225,8 +225,8 @@ void RenderView::dropEvent(QDropEvent *event)
 			Event ev;
 			ev.type = EV_DROPFILE;
 			auto filename = url.toLocalFile().toStdString();
-			char *data = new char[filename.size()];
-			strcpy(data, filename.data());
+			char *data = new char[filename.length()+1];
+			strcpy(data, filename.c_str());
 			ev.drop.file = data;
 			OSD_PushEvent(ev);
 		}

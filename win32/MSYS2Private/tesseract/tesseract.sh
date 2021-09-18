@@ -38,13 +38,13 @@ if [ "$TESSERACT_GIT" != "" ]; then
     pushd $TESSERACT_SRC_DIR
     git pull
 else
-    TESSERACT_VERSION=master
+    TESSERACT_VERSION=5.0.0-beta-20210916
     TESSERACT_TAG=$TESSERACT_VERSION
     TESSERACT_ARCHIVE=tesseract-$TESSERACT_TAG.tar.gz
     TESSERACT_SRC_DIR=tesseract-$TESSERACT_VERSION
     TESSERACT_BUILD_DIR=$TESSERACT_SRC_DIR-$BIT
 
-    if [ "$TESSERACT_VERSION" == "master" ]; then
+    if [ "$TESSERACT_VERSION" == "main" ]; then
     rm $TESSERACT_ARCHIVE 2> /dev/null
     fi
 
@@ -56,9 +56,6 @@ else
     mv $TESSERACT_SRC_DIR $TESSERACT_BUILD_DIR
     pushd $TESSERACT_BUILD_DIR
 fi
-
-#asciidocが動かない問題への暫定対応
-sed -i -e 's/AM_CONDITIONAL(\[ASCIIDOC\], true)/AM_CONDITIONAL([ASCIIDOC], false)/' configure.ac
 
 if [ -e Makefile ]; then
 make clean
@@ -73,7 +70,7 @@ if [ "$TESSERACT_DEBUG" != "" ]; then
 fi
 ./configure \
 $DEBUG_FLAGS \
---disable-legacy \
+--enable-float32 \
 --build=$MINGW_CHOST \
 --host=$MINGW_CHOST \
 --target=$MINGW_CHOST \
@@ -100,10 +97,10 @@ makeParallel && make install
 exitOnError
 
 pushd $PREFIX/bin/tessdata
-wget -c https://github.com/tesseract-ocr/tessdata_best/raw/master/eng.traineddata
-wget -c https://github.com/tesseract-ocr/tessdata_best/raw/master/jpn.traineddata
-wget -c https://github.com/tesseract-ocr/tessdata_best/raw/master/jpn_vert.traineddata
-wget -c https://github.com/tesseract-ocr/tessdata_best/raw/master/osd.traineddata
+wget -c https://github.com/tesseract-ocr/tessdata_best/raw/main/eng.traineddata
+wget -c https://github.com/tesseract-ocr/tessdata_best/raw/main/jpn.traineddata
+wget -c https://github.com/tesseract-ocr/tessdata_best/raw/main/jpn_vert.traineddata
+wget -c https://github.com/tesseract-ocr/tessdata_best/raw/main/osd.traineddata
 popd
 
 popd

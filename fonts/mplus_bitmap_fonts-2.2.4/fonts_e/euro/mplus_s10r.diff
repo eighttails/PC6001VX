@@ -1,0 +1,281 @@
+*** mplus_s10r.bdf	Fri Jan  9 10:31:51 2004
+--- mplus_s10r-euro.bdf	Fri Jan  9 10:26:43 2004
+***************
+*** 3,9 ****
+  COMMENT Unlimited permission is granted to use, copy, and distribute it,
+  COMMENT with or without modification, either commercially and noncommercially.
+  COMMENT THIS FONT IS PROVIDED "AS IS" WITHOUT WARRANTY.
+! FONT -mplus-sys-medium-R-normal--10-100-75-75-P-60-iso8859-1
+  SIZE 10 75 75
+  FONTBOUNDINGBOX 7 11 0 -2
+  STARTPROPERTIES 20
+--- 3,9 ----
+  COMMENT Unlimited permission is granted to use, copy, and distribute it,
+  COMMENT with or without modification, either commercially and noncommercially.
+  COMMENT THIS FONT IS PROVIDED "AS IS" WITHOUT WARRANTY.
+! FONT -mplus-sys-medium-R-normal--10-100-75-75-P-60-iso8859-15
+  SIZE 10 75 75
+  FONTBOUNDINGBOX 7 11 0 -2
+  STARTPROPERTIES 20
+***************
+*** 1356,1370 ****
+  ENDCHAR
+  STARTCHAR 0x00A4
+  ENCODING 164
+! SWIDTH 576 0
+! DWIDTH 6 0
+! BBX 5 5 0 1
+  BITMAP
+! 88
+! 70
+! 50
+! 70
+! 88
+  ENDCHAR
+  STARTCHAR 0x00A5
+  ENCODING 165
+--- 1356,1372 ----
+  ENDCHAR
+  STARTCHAR 0x00A4
+  ENCODING 164
+! SWIDTH 672 0
+! DWIDTH 7 0
+! BBX 6 7 0 0
+  BITMAP
+! 38
+! 44
+! F0
+! 40
+! F0
+! 44
+! 38
+  ENDCHAR
+  STARTCHAR 0x00A5
+  ENCODING 165
+***************
+*** 1384,1400 ****
+  ENCODING 166
+  SWIDTH 576 0
+  DWIDTH 6 0
+! BBX 1 9 2 -1
+  BITMAP
+! 80
+! 80
+! 80
+! 80
+  00
+! 80
+! 80
+! 80
+! 80
+  ENDCHAR
+  STARTCHAR 0x00A7
+  ENCODING 167
+--- 1386,1402 ----
+  ENCODING 166
+  SWIDTH 576 0
+  DWIDTH 6 0
+! BBX 5 9 0 0
+  BITMAP
+! 50
+! 20
+  00
+! 70
+! 88
+! 70
+! 08
+! 88
+! 70
+  ENDCHAR
+  STARTCHAR 0x00A7
+  ENCODING 167
+***************
+*** 1416,1424 ****
+  ENCODING 168
+  SWIDTH 576 0
+  DWIDTH 6 0
+! BBX 5 1 0 6
+  BITMAP
+! D8
+  ENDCHAR
+  STARTCHAR 0x00A9
+  ENCODING 169
+--- 1418,1434 ----
+  ENCODING 168
+  SWIDTH 576 0
+  DWIDTH 6 0
+! BBX 5 9 0 0
+  BITMAP
+! 50
+! 20
+! 00
+! 00
+! 78
+! 80
+! 70
+! 08
+! F0
+  ENDCHAR
+  STARTCHAR 0x00A9
+  ENCODING 169
+***************
+*** 1553,1564 ****
+  ENDCHAR
+  STARTCHAR 0x00B4
+  ENCODING 180
+! SWIDTH 480 0
+! DWIDTH 5 0
+! BBX 2 2 1 7
+  BITMAP
+  40
+  80
+  ENDCHAR
+  STARTCHAR 0x00B5
+  ENCODING 181
+--- 1563,1581 ----
+  ENDCHAR
+  STARTCHAR 0x00B4
+  ENCODING 180
+! SWIDTH 576 0
+! DWIDTH 6 0
+! BBX 5 9 0 0
+  BITMAP
++ 50
++ 20
++ 00
++ F8
++ 10
++ 20
+  40
+  80
++ F8
+  ENDCHAR
+  STARTCHAR 0x00B5
+  ENCODING 181
+***************
+*** 1600,1610 ****
+  ENCODING 184
+  SWIDTH 576 0
+  DWIDTH 6 0
+! BBX 3 3 1 -2
+  BITMAP
+  20
+  40
+! 80
+  ENDCHAR
+  STARTCHAR 0x00B9
+  ENCODING 185
+--- 1617,1633 ----
+  ENCODING 184
+  SWIDTH 576 0
+  DWIDTH 6 0
+! BBX 5 9 0 0
+  BITMAP
++ 50
++ 20
++ 00
++ 00
++ F8
++ 10
+  20
+  40
+! F8
+  ENDCHAR
+  STARTCHAR 0x00B9
+  ENCODING 185
+***************
+*** 1647,1694 ****
+  ENDCHAR
+  STARTCHAR 0x00BC
+  ENCODING 188
+! SWIDTH 576 0
+! DWIDTH 6 0
+! BBX 5 8 0 0
+  BITMAP
+! 40
+! C0
+! 40
+! 40
+! 30
+! 50
+! 78
+! 10
+  ENDCHAR
+  STARTCHAR 0x00BD
+  ENCODING 189
+! SWIDTH 576 0
+! DWIDTH 6 0
+! BBX 5 8 0 0
+  BITMAP
+! 40
+! C0
+! 40
+! 40
+! 30
+! 08
+! 10
+! 38
+  ENDCHAR
+  STARTCHAR 0x00BE
+  ENCODING 190
+  SWIDTH 576 0
+  DWIDTH 6 0
+! BBX 5 8 0 0
+  BITMAP
+- E0
+- 40
+- 20
+- C0
+- 30
+  50
+! 78
+! 10
+  ENDCHAR
+  STARTCHAR 0x00BF
+  ENCODING 191
+--- 1670,1714 ----
+  ENDCHAR
+  STARTCHAR 0x00BC
+  ENCODING 188
+! SWIDTH 768 0
+! DWIDTH 8 0
+! BBX 7 7 0 0
+  BITMAP
+! 7E
+! 90
+! 90
+! 9E
+! 90
+! 90
+! 7E
+  ENDCHAR
+  STARTCHAR 0x00BD
+  ENCODING 189
+! SWIDTH 768 0
+! DWIDTH 8 0
+! BBX 7 5 0 0
+  BITMAP
+! 7C
+! 92
+! 9E
+! 90
+! 7E
+  ENDCHAR
+  STARTCHAR 0x00BE
+  ENCODING 190
+  SWIDTH 576 0
+  DWIDTH 6 0
+! BBX 5 9 0 0
+  BITMAP
+  50
+! 50
+! 00
+! 88
+! 88
+! 50
+! 20
+! 20
+! 20
+  ENDCHAR
+  STARTCHAR 0x00BF
+  ENCODING 191

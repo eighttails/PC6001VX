@@ -1,0 +1,307 @@
+*** mplus_h12rw.bdf	Fri Jan  9 10:31:36 2004
+--- mplus_h12rw-euro.bdf	Fri Jan  9 10:26:44 2004
+***************
+*** 3,9 ****
+  COMMENT Unlimited permission is granted to use, copy, and distribute it,
+  COMMENT with or without modification, either commercially and noncommercially.
+  COMMENT THIS FONT IS PROVIDED "AS IS" WITHOUT WARRANTY.
+! FONT -mplus-hlvw-medium-R-normal--12-120-75-75-P-60-iso8859-1
+  SIZE 12 75 75
+  FONTBOUNDINGBOX 10 14 -1 -3
+  STARTPROPERTIES 20
+--- 3,9 ----
+  COMMENT Unlimited permission is granted to use, copy, and distribute it,
+  COMMENT with or without modification, either commercially and noncommercially.
+  COMMENT THIS FONT IS PROVIDED "AS IS" WITHOUT WARRANTY.
+! FONT -mplus-hlvw-medium-R-normal--12-120-75-75-P-60-iso8859-15
+  SIZE 12 75 75
+  FONTBOUNDINGBOX 10 14 -1 -3
+  STARTPROPERTIES 20
+***************
+*** 1515,1528 ****
+  ENCODING 164
+  SWIDTH 640 0
+  DWIDTH 8 0
+! BBX 6 6 0 1
+  BITMAP
+! 84
+! 78
+! 48
+! 48
+! 78
+! 84
+  ENDCHAR
+  STARTCHAR 0x00A5
+  ENCODING 165
+--- 1515,1531 ----
+  ENCODING 164
+  SWIDTH 640 0
+  DWIDTH 8 0
+! BBX 6 9 0 0
+  BITMAP
+! 38
+! 44
+! 40
+! F8
+! 40
+! F8
+! 40
+! 44
+! 38
+  ENDCHAR
+  STARTCHAR 0x00A5
+  ENCODING 165
+***************
+*** 1542,1562 ****
+  ENDCHAR
+  STARTCHAR 0x00A6
+  ENCODING 166
+! SWIDTH 560 0
+! DWIDTH 7 0
+! BBX 1 11 2 -1
+  BITMAP
+! 80
+! 80
+! 80
+! 80
+! 80
+  00
+  80
+! 80
+! 80
+! 80
+! 80
+  ENDCHAR
+  STARTCHAR 0x00A7
+  ENCODING 167
+--- 1545,1565 ----
+  ENDCHAR
+  STARTCHAR 0x00A6
+  ENCODING 166
+! SWIDTH 640 0
+! DWIDTH 8 0
+! BBX 6 11 0 0
+  BITMAP
+! 28
+! 10
+  00
++ 78
++ 84
+  80
+! 78
+! 04
+! 04
+! 84
+! 78
+  ENDCHAR
+  STARTCHAR 0x00A7
+  ENCODING 167
+***************
+*** 1578,1588 ****
+  ENDCHAR
+  STARTCHAR 0x00A8
+  ENCODING 168
+! SWIDTH 640 0
+! DWIDTH 8 0
+! BBX 6 1 0 8
+  BITMAP
+! CC
+  ENDCHAR
+  STARTCHAR 0x00A9
+  ENCODING 169
+--- 1581,1601 ----
+  ENDCHAR
+  STARTCHAR 0x00A8
+  ENCODING 168
+! SWIDTH 560 0
+! DWIDTH 7 0
+! BBX 5 11 0 0
+  BITMAP
+! 50
+! 20
+! 00
+! 00
+! 00
+! 70
+! 88
+! 70
+! 08
+! 88
+! 70
+  ENDCHAR
+  STARTCHAR 0x00A9
+  ENCODING 169
+***************
+*** 1729,1741 ****
+  ENDCHAR
+  STARTCHAR 0x00B4
+  ENCODING 180
+! SWIDTH 560 0
+! DWIDTH 7 0
+! BBX 3 3 1 8
+  BITMAP
+  20
+  40
+  80
+  ENDCHAR
+  STARTCHAR 0x00B5
+  ENCODING 181
+--- 1742,1762 ----
+  ENDCHAR
+  STARTCHAR 0x00B4
+  ENCODING 180
+! SWIDTH 640 0
+! DWIDTH 8 0
+! BBX 6 11 0 0
+  BITMAP
++ 28
++ 10
++ 00
++ FC
++ 04
++ 08
++ 10
+  20
+  40
+  80
++ FC
+  ENDCHAR
+  STARTCHAR 0x00B5
+  ENCODING 181
+***************
+*** 1781,1791 ****
+  ENCODING 184
+  SWIDTH 560 0
+  DWIDTH 7 0
+! BBX 3 3 1 -2
+  BITMAP
+  20
+  40
+  80
+  ENDCHAR
+  STARTCHAR 0x00B9
+  ENCODING 185
+--- 1802,1820 ----
+  ENCODING 184
+  SWIDTH 560 0
+  DWIDTH 7 0
+! BBX 5 11 0 0
+  BITMAP
++ 50
++ 20
++ 00
++ 00
++ 00
++ F8
++ 10
+  20
+  40
+  80
++ F8
+  ENDCHAR
+  STARTCHAR 0x00B9
+  ENCODING 185
+***************
+*** 1833,1883 ****
+  ENDCHAR
+  STARTCHAR 0x00BC
+  ENCODING 188
+! SWIDTH 720 0
+! DWIDTH 9 0
+! BBX 7 9 0 0
+  BITMAP
+! 40
+! C2
+! 44
+! 48
+! 10
+! 2C
+! 54
+! 9E
+! 04
+  ENDCHAR
+  STARTCHAR 0x00BD
+  ENCODING 189
+! SWIDTH 720 0
+! DWIDTH 9 0
+! BBX 7 9 0 0
+  BITMAP
+! 40
+! C2
+! 44
+! 48
+! 10
+! 2C
+! 42
+! 84
+! 0E
+  ENDCHAR
+  STARTCHAR 0x00BE
+  ENCODING 190
+  SWIDTH 720 0
+  DWIDTH 9 0
+! BBX 7 9 0 0
+  BITMAP
+- E0
+- 42
+  24
+! C8
+  10
+- 2C
+- 54
+- 9E
+- 04
+  ENDCHAR
+  STARTCHAR 0x00BF
+  ENCODING 191
+--- 1862,1911 ----
+  ENDCHAR
+  STARTCHAR 0x00BC
+  ENCODING 188
+! SWIDTH 880 0
+! DWIDTH 11 0
+! BBX 9 9 0 0
+  BITMAP
+! 3F80
+! 4400
+! 8400
+! 8400
+! 8780
+! 8400
+! 8400
+! 4400
+! 3F80
+  ENDCHAR
+  STARTCHAR 0x00BD
+  ENCODING 189
+! SWIDTH 880 0
+! DWIDTH 11 0
+! BBX 9 6 0 0
+  BITMAP
+! 7F00
+! 8880
+! 8F80
+! 8800
+! 8880
+! 7F00
+  ENDCHAR
+  STARTCHAR 0x00BE
+  ENCODING 190
+  SWIDTH 720 0
+  DWIDTH 9 0
+! BBX 7 11 0 0
+  BITMAP
+  24
+! 24
+! 00
+! 82
+! 82
+! 44
+! 28
+! 10
+! 10
+! 10
+  10
+  ENDCHAR
+  STARTCHAR 0x00BF
+  ENCODING 191

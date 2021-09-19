@@ -180,8 +180,8 @@ void P6VXApp::startup()
 
 	// コンソール用フォント読込み
 	P6VPATH FontZ, FontH;
-	FontZ = QSTR2P6VPATH(QString(":/res/font/%s").arg(FILE_FONTZ));
-	FontH = QSTR2P6VPATH(QString(":/res/font/%s").arg(FILE_FONTH));
+	FontZ = QSTR2P6VPATH(QString(":/res/font/%1").arg(FILE_FONTZ));
+	FontH = QSTR2P6VPATH(QString(":/res/font/%1").arg(FILE_FONTH));
 	if( !JFont::OpenFont( FontZ, FontH ) ){
 		Error::SetError( Error::FontLoadFailed );
 		OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );

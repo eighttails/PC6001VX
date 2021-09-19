@@ -165,6 +165,7 @@ SOURCES += \
     src/Qt/renderview.cpp \
     src/Qt/simplevirtualkeyboardscene.cpp \
     src/Qt/systeminfodialog.cpp \
+    src/Qt/thread.cpp \
     src/Qt/virtualkeyboardscene.cpp \
     src/Qt/virtualkeyboardview.cpp \
     src/Qt/virtualkeyitem.cpp \
@@ -213,7 +214,6 @@ SOURCES += \
     src/sound.cpp \
     src/status.cpp \
     src/tape.cpp \
-    src/thread.cpp \
     src/vdg.cpp \
     src/voice.cpp \
     src/vsurface.cpp
@@ -240,6 +240,7 @@ HEADERS  += \
     src/Qt/renderview.h \
     src/Qt/simplevirtualkeyboardscene.h \
     src/Qt/systeminfodialog.h \
+    src/Qt/thread.h \
     src/Qt/utils.h \
     src/Qt/virtualkeyboardscene.h \
     src/Qt/virtualkeyboardview.h \
@@ -308,7 +309,6 @@ HEADERS  += \
     src/sound.h \
     src/status.h \
     src/tape.h \
-    src/thread.h \
     src/typedef.h \
     src/vdg.h \
     src/voice.h \

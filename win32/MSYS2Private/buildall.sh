@@ -21,6 +21,9 @@ exitOnError
 ./gimagereader/gimagereader.sh
 exitOnError
 
+./qt5-static-angle/qt.sh
+exitOnError
+
 pacman "${PACMAN_INSTALL_OPTS[@]}" \
 $MINGW_PACKAGE_PREFIX-clang \
 $MINGW_PACKAGE_PREFIX-qt-creator \

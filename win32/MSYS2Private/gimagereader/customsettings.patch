@@ -1,8 +1,21 @@
-Only in gImageReader-master-orig/: build
-diff -ur gImageReader-master-orig/qt/src/Config.cc gImageReader-master-64bit/qt/src/Config.cc
---- gImageReader-master-orig/qt/src/Config.cc	2021-05-16 16:21:24.433390400 +0900
-+++ gImageReader-master-64bit/qt/src/Config.cc	2021-05-16 16:27:50.616971000 +0900
-@@ -82,12 +82,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7871918..f04b74c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -9,7 +9,7 @@ SET(ENV{LC_ALL} "C")
+ 
+ # Project properties
+ PROJECT(gimagereader)
+-SET(PACKAGE_NAME gImageReader)
++SET(PACKAGE_NAME ProgramListOCR)
+ SET(PACKAGE_VERSION 3.3.1)
+ SET(PACKAGE_LOCALE_DIR "${CMAKE_INSTALL_PREFIX}/share/locale")
+ 
+diff --git a/qt/src/Config.cc b/qt/src/Config.cc
+index 73689fe..5c37b1e 100644
+--- a/qt/src/Config.cc
++++ b/qt/src/Config.cc
+@@ -82,12 +82,12 @@ Config::Config(QWidget* parent)
  	connect(ui.lineEditLangCode, &QLineEdit::textChanged, this, &Config::clearLineEditErrorState);
  	connect(ui.comboBoxDataLocation, qOverload<int>(&QComboBox::currentIndexChanged), this, &Config::setDataLocations);
  
@@ -18,15 +31,38 @@ diff -ur gImageReader-master-orig/qt/src/Config.cc gImageReader-master-64bit/qt/
  	ADD_SETTING(ComboSetting("textencoding", ui.comboBoxEncoding, 0));
  	ADD_SETTING(ComboSetting("datadirs", ui.comboBoxDataLocation, 0));
  	ADD_SETTING(VarSetting<QString>("sourcedir", Utils::documentsFolder()));
-diff -ur gImageReader-master-orig/qt/src/RecognitionMenu.cc gImageReader-master-64bit/qt/src/RecognitionMenu.cc
---- gImageReader-master-orig/qt/src/RecognitionMenu.cc	2021-05-16 16:21:24.464633400 +0900
-+++ gImageReader-master-64bit/qt/src/RecognitionMenu.cc	2021-05-16 16:24:09.605814000 +0900
-@@ -37,7 +37,7 @@
+diff --git a/qt/src/Displayer.cc b/qt/src/Displayer.cc
+index 9d3ed83..c6f3651 100644
+--- a/qt/src/Displayer.cc
++++ b/qt/src/Displayer.cc
+@@ -138,7 +138,7 @@ bool Displayer::setSources(QList<Source*> sources) {
+ 	Utils::setSpinBlocked(ui.spinBoxRotation, 0);
+ 	Utils::setSpinBlocked(ui.spinBoxBrightness, 0);
+ 	Utils::setSpinBlocked(ui.spinBoxContrast, 0);
+-	Utils::setSpinBlocked(ui.spinBoxResolution, 100);
++	Utils::setSpinBlocked(ui.spinBoxResolution, 300);
+ 	ui.checkBoxInvertColors->blockSignals(true);
+ 	ui.checkBoxInvertColors->setChecked(false);
+ 	ui.checkBoxInvertColors->blockSignals(false);
+@@ -168,7 +168,7 @@ bool Displayer::setSources(QList<Source*> sources) {
+ 			if(source->resolution == -1) { source->resolution = 300; }
+ 		} else {
+ 			renderer = new ImageRenderer(source->path);
+-			if(source->resolution == -1) { source->resolution = 100; }
++			if(source->resolution == -1) { source->resolution = 300; }
+ 		}
+ 		if(renderer->getNPages() >= 0) {
+ 			source->angle.resize(renderer->getNPages()); // getNPages can potentially return -1
+diff --git a/qt/src/RecognitionMenu.cc b/qt/src/RecognitionMenu.cc
+index db28118..59a5742 100644
+--- a/qt/src/RecognitionMenu.cc
++++ b/qt/src/RecognitionMenu.cc
+@@ -37,7 +37,7 @@ RecognitionMenu::RecognitionMenu(QWidget* parent)
  	connect(m_charListDialogUi.radioButtonBlacklist, &QRadioButton::toggled, m_charListDialogUi.lineEditBlacklist, &QLineEdit::setEnabled);
  	connect(m_charListDialogUi.radioButtonWhitelist, &QRadioButton::toggled, m_charListDialogUi.lineEditWhitelist, &QLineEdit::setEnabled);
  
 -	ADD_SETTING(VarSetting<QString>("language", "eng:en_EN"));
-+	ADD_SETTING(VarSetting<QString>("language", "bas+hex+n6x:"));
++	ADD_SETTING(VarSetting<QString>("language", "n6x:"));
  	ADD_SETTING(VarSetting<int>("psm", 6));
  	ADD_SETTING(LineEditSetting("ocrcharwhitelist", m_charListDialogUi.lineEditWhitelist));
  	ADD_SETTING(LineEditSetting("ocrcharblacklist", m_charListDialogUi.lineEditBlacklist));

@@ -10,7 +10,6 @@ commonSetup
 #ツール類のインストール
 pacman "${PACMAN_INSTALL_OPTS[@]}" \
 $MINGW_PACKAGE_PREFIX-SDL2 \
-$MINGW_PACKAGE_PREFIX-qt5-static \
 $MINGW_PACKAGE_PREFIX-asciidoctor \
 2>/dev/null
 

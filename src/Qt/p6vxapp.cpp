@@ -136,7 +136,10 @@ VirtualKeyTabWidget* P6VXApp::getVirtualKeyboard()
 	return MWidget->getVirtualKeyboard();
 }
 
-
+const QVector<QRgb> &P6VXApp::getPaletteTable() const
+{
+	return PaletteTable;
+}
 
 void P6VXApp::startup()
 {

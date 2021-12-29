@@ -2102,7 +2102,7 @@ void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bo
 	drc1.x = qMax( 0, pos->x );
 	drc1.y = qMax( 0, pos->y );
 	drc1.w = qMin( ww, (image.width() - drc1.x) );
-	drc1.h = qMin( hh, image.height() - drc1.y );
+	drc1.h = qMin( hh * s, image.height() - drc1.y );
 
 	for( int y=0; y<drc1.h; y+=s ){
 		BYTE *sof  = (BYTE *)spt  + pp * y / s + src1.x;
@@ -2119,11 +2119,12 @@ void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bo
 		}
 	}
 
-	double imgXScale = 720.0 / image.width();
-	double imgYScale = 460.0 / image.height();
+	double imgXScale = double(pos->w) / image.width();
+	double imgYScale = double(pos->h) / image.height();
 	// 表示用のQPixmapItemへの変換はメインスレッドでないとできないため、
 	// スロットを呼び出してメインスレッドでSceneを更新する
 	// (直接呼び出すと呼び出し側スレッドで実行されてしまう)
+
 	QMetaObject::invokeMethod(qApp, "layoutBitmap",
 							  Q_ARG(HWINDOW, hwnd),
 							  Q_ARG(int, pos->x),

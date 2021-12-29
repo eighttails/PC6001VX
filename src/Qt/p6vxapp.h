@@ -57,8 +57,8 @@ public:
 	KeyPanel* getKeyPanel();
 	VirtualKeyTabWidget *getVirtualKeyboard();
 
-	// パレットテーブル設定
-	const QVector<QRgb>& getPaletteTable() const {return PaletteTable;}
+	// 画面設定
+	const QVector<QRgb>& getPaletteTable() const;
 
 	// P6VX固有の設定
 	bool hasSetting(const QString& key);

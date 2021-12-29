@@ -706,3 +706,13 @@ bool QtEL6::IsMonitor()
 	return vm->IsMonitor();
 }
 
+void QtEL6::SetPaletteTable(QVector<QRgb> &palette)
+{
+	palette.clear();
+	for (int i=0; i < 255; i++){
+		DWORD DWCOL = GetBackBuffer()->GetColor(i);
+		COLOR24 col = {BYTE(DWCOL >> RSHIFT32), BYTE(DWCOL >> GSHIFT32), BYTE(DWCOL >> BSHIFT32)};
+		palette.push_back(qRgb(col.r, col.g, col.b));
+	}
+}
+

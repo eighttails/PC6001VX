@@ -31,6 +31,7 @@ extern QVector<QRgb> PaletteTable;              // パレットテーブル
 bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const int ww, const int hh, VRect *pos )
 {
 	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
 	VRect rec;
 	int pitch = ww * bpp / 8;
@@ -48,7 +49,7 @@ bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const in
 
 	QImage image(rec.w, rec.h, format);
 	if(bpp == 8){
-		image.setColorTable(PaletteTable);
+		image.setColorTable(app->getPaletteTable());
 	}
 
 	BYTE *doff = pixels + rec.x + rec.y * pitch;

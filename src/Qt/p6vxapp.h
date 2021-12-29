@@ -57,6 +57,9 @@ public:
 	KeyPanel* getKeyPanel();
 	VirtualKeyTabWidget *getVirtualKeyboard();
 
+	// パレットテーブル設定
+	const QVector<QRgb>& getPaletteTable() const {return PaletteTable;}
+
 	// P6VX固有の設定
 	bool hasSetting(const QString& key);
 	const QVariant getSetting(const QString& key);
@@ -181,13 +184,14 @@ protected:
 	QFileDialog* createFileDialog(void *hwnd);
 
 private:
-	QPointer<QtEL6> P6Core;		// オブジェクトポインタ
+	QPointer<QtEL6> P6Core;					// オブジェクトポインタ
 	QPointer<KeyStateWatcher> KeyWatcher;	// オブジェクトポインタ
-	EL6::ReturnCode Restart;	// 再起動フラグ
-	std::shared_ptr<CFG6> Cfg;					// 環境設定オブジェクト
-	EmulationAdaptor* Adaptor;  // P6Coreにシグナル・スロットを付加するアダプタ
-	QMutex PropretyMutex;       // 属性値保護のためのMutex
-	QMutex MenuMutex;           // メニュー表示中にロックされるMutex
+	EL6::ReturnCode Restart;				// 再起動フラグ
+	std::shared_ptr<CFG6> Cfg;				// 環境設定オブジェクト
+	QVector<QRgb> PaletteTable;				// パレットテーブル
+	EmulationAdaptor* Adaptor;				// P6Coreにシグナル・スロットを付加するアダプタ
+	QMutex PropretyMutex;					// 属性値保護のためのMutex
+	QMutex MenuMutex;						// メニュー表示中にロックされるMutex
 
 	// ウィンドウ関連
 	QPointer<MainWidget> MWidget;

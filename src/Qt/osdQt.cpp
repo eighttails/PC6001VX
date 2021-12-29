@@ -44,7 +44,6 @@ QWaitCondition eventEmitted;
 QElapsedTimer elapsedTimer;
 
 std::map<int, PCKEYsym> VKTable;		// Qtキーコード  -> 仮想キーコード 変換テーブル
-QVector<QRgb> PaletteTable;				// パレットテーブル
 
 #ifndef NOSOUND
 //サウンド関連
@@ -1939,7 +1938,7 @@ int OSD_GetWindowHeight( HWINDOW hwnd )
 	return view->scene()->height();
 }
 
-#if 0 //#TODO 廃止？
+
 ////////////////////////////////////////////////////////////////
 // パレット設定
 //
@@ -1947,16 +1946,10 @@ int OSD_GetWindowHeight( HWINDOW hwnd )
 //		pal			パレットへのポインタ
 // 返値:	bool		true:成功 false:失敗
 ////////////////////////////////////////////////////////////////
-bool OSD_SetPalette( HWINDOW hwnd, VPalette *pal )
+bool OSD_SetPalette( VSurface* sur )
 {
-	PaletteTable.clear();
-	for (int i=0; i < pal->ncols; i++){
-		COLOR24& col = pal->colors[i];
-		PaletteTable.push_back(qRgb(col.r, col.g, col.b));
-	}
-	return true;
+
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // フルスクリーン?
@@ -2029,10 +2022,11 @@ void OSD_RenderWindow( HWINDOW hwnd )
 /////////////////////////////////////////////////////////////////////////////
 void OSD_BlitToWindow( HWINDOW hwnd, VSurface* src, const int x, const int y )
 {
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	VRect src1,drc1;
 
 	QImage image(src->Width(), src->Height(), QImage::Format_Indexed8);
-	image.setColorTable(PaletteTable);
+	image.setColorTable(app->getPaletteTable());
 
 	// 転送元範囲設定
 	src1.x = 0;
@@ -2078,6 +2072,7 @@ void OSD_BlitToWindow( HWINDOW hwnd, VSurface* src, const int x, const int y )
 /////////////////////////////////////////////////////////////////////////////
 void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bool scanen )
 {
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	VRect src1,drc1;
 	if( !src || !hwnd ) return;
 
@@ -2089,8 +2084,9 @@ void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bo
 	const int ww     = src->Width();
 	const int hh     = src->Height();
 
+
 	QImage image(src->Width(), src->Height() * s, QImage::Format_Indexed8);
-	image.setColorTable(PaletteTable);
+	image.setColorTable(app->getPaletteTable());
 
 	const int dpp    = image.bytesPerLine();
 

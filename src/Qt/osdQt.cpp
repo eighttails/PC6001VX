@@ -1247,7 +1247,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 	char cpath[PATH_MAX];
 	strcpy(cpath, P6VPATH2STR(path).c_str());
 	char cfullpath[PATH_MAX];
-	strcpy(cpath, P6VPATH2STR(fullpath).c_str());
+	strcpy(cfullpath, P6VPATH2STR(fullpath).c_str());
 
 	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
@@ -1263,6 +1263,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 							  Q_ARG(char*, cpath),
 							  Q_ARG(const char*, ext));
 	path = STR2P6VPATH(ret);
+	fullpath = STR2P6VPATH(ret);
 	return strlen(ret) ? true : false;
 }
 

@@ -47,7 +47,7 @@ extern const char *MsgMen[];
 #define	MSMEN_REP0			MsgMen[2]	// "記録..."  (リプレイ)
 #define	MSMEN_REP1			MsgMen[3]	// "記録停止" (リプレイ)
 #define	MSMEN_REP2			MsgMen[4]	// "再生..."  (リプレイ)
-#define	MSMEN_REP3			MsgMen[5]	// "v" (リプレイ)
+#define	MSMEN_REP3			MsgMen[5]	// "再生停止" (リプレイ)
 
 
 // INIファイル用メッセージ ------

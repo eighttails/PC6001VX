@@ -910,7 +910,15 @@ int EL6::SoundUpdate( int samples, cRing* exbuf )
 	vm->voice->SoundUpdate( size );
 	
 	// サウンドバッファ更新
-	return snd->PreUpdate( size, exbuf );
+	int ret = snd->PreUpdate( size, exbuf );
+
+	// P6VXサウンド再生
+	std::vector<BYTE> stream;
+	stream.resize(size * sizeof(uint16_t));
+	snd->Update(stream.data(), size);
+	OSD_WriteAudioStream(stream.data(), size);
+
+	return ret;
 }
 
 

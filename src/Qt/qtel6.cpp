@@ -267,7 +267,7 @@ void EL6::ExecMenu( int id )
 	case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );			break;	// フレームスキップ 5
 	case ID_ONLINEHELP:
 #ifdef Q_OS_WIN
-		QDesktopServices::openUrl(QUrl::fromLocalFile(QString::fromLocal8Bit(OSD_GetConfigPath()) + "/README.html"));
+		QDesktopServices::openUrl(QUrl::fromLocalFile(P6VPATH2QSTR(OSD_GetConfigPath()) + "/README.html"));
 		break;
 #else
 		QDesktopServices::openUrl(QUrl("https://github.com/eighttails/PC6001VX/blob/master/README.adoc"));

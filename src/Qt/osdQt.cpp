@@ -776,11 +776,11 @@ void OSD_DelDelimiter( P6VPATH& path )
 void OSD_RelativePath( P6VPATH& path )
 {
 #ifdef Q_OS_WIN
-	if( QDir( path ).isRelative()
-			|| QDir( path ).path().startsWith(":")
-			|| !strlen( path ) ) return;
-	QDir dir(OSD_GetConfigPath());
-	QString relPath = dir.relativeFilePath(path);
+	if( QDir( P6VPATH2QSTR(path) ).isRelative()
+			|| QDir( P6VPATH2QSTR(path) ).path().startsWith(":")
+			|| ! path.length() ) return;
+	QDir dir(P6VPATH2QSTR(OSD_GetConfigPath()));
+	QString relPath = dir.relativeFilePath(P6VPATH2QSTR(path));
 	path = QSTR2P6VPATH(relPath);
 #else
 	// Windows以外では相対パスを使った運用はしない
@@ -1382,7 +1382,7 @@ bool OSD_OpenedJoy( HJOYINFO joy )
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
 #ifdef SDLJOYSTICK
-	return SDL_JoystickGetAttached( (SDL_Joystick*)joyMap[index] ) ? true : false;
+	return SDL_JoystickGetAttached( (SDL_Joystick*)joy ) ? true : false;
 #else
 	auto mgr = QGamepadManager::instance();
 	for(auto index : mgr->connectedGamepads()){

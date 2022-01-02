@@ -1714,16 +1714,16 @@ void OSD_StopAudio( void )
 // オーディオストリーム書き込み
 //
 // 引数:	stream  書き込むデータへのポインタ
-//      samples 書き込むバイト数
+//      size 書き込むバイト数
 // 返値:	なし
 ////////////////////////////////////////////////////////////////
-void OSD_WriteAudioStream(BYTE *stream, int samples)
+void OSD_WriteAudioStream(BYTE *stream, int size)
 {
 #ifndef NOSOUND
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	if(!app->isAVI()){
 		if(audioBuffer){
-			audioBuffer->write((const char*)stream, samples);
+			audioBuffer->write((const char*)stream, size);
 		}
 	}
 #endif

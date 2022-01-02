@@ -916,7 +916,7 @@ int EL6::SoundUpdate( int samples, cRing* exbuf )
 	std::vector<BYTE> stream;
 	stream.resize(size * sizeof(uint16_t));
 	snd->Update(stream.data(), size);
-	OSD_WriteAudioStream(stream.data(), size);
+	OSD_WriteAudioStream(stream.data(), stream.size());
 
 	return ret;
 }

@@ -104,10 +104,10 @@ public slots:
 	int showMessageBox(void *hwnd, const char *mes, const char *cap, int type);
 
 	// ファイルダイアログの表示
-	const char* fileDialog( void *hwnd, FileMode mode, const char *title,
+	bool fileDialog( void *hwnd, FileMode mode, const char *title,
 							const char *filter, char *fullpath, char *path, const char *ext );
 	// フォルダダイアログの表示
-	const char* folderDialog( void *hwnd, char *Result );
+	bool folderDialog( void *hwnd, char *Result );
 
 	// ウィンドウを生成
 	void createWindow(HWINDOW Wh, bool fsflag );

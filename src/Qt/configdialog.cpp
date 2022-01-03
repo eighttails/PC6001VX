@@ -7,7 +7,7 @@
 #include "../osd.h"
 #include "p6vxapp.h"
 
-ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
+ConfigDialog::ConfigDialog(std::shared_ptr<CFG6> cfg, QWidget *parent)
 	: QDialog(parent)
 	, ui(new Ui::ConfigDialog)
 	, config(cfg)

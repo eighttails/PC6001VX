@@ -261,7 +261,7 @@ int P6VXApp::showMessageBox(void *hwnd, const char *mes, const char *cap, int ty
 	}
 }
 
-const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, const char *filter, char *fullpath, char *path, const char *ext)
+bool P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, const char *filter, char *fullpath, char *path, const char *ext)
 {
 	QSharedPointer<QFileDialog> dialog(createFileDialog(hwnd));
 	QString result;
@@ -278,7 +278,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if (dialog->exec() == QDialog::Accepted) {
 			result = dialog->selectedFiles().value(0);
 		}
-		if(result.isEmpty())    return nullptr;
+		if(result.isEmpty()) return false;
 		// 入力されたファイル名に拡張子がついていない場合は付与する
 		QFileInfo info(result);
 		if(info.suffix() != ext){
@@ -288,7 +288,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 			if (OSD_Message(P6Core->GetWindowHandle(), QString(tr("ファイルはすでに存在しています。上書きしますか?")).toStdString(),
 							nullptr, OSDM_OKCANCEL | OSDM_ICONQUESTION)
 					== OSDM_OKCANCEL){
-				return nullptr;
+				return false;
 			}
 		}
 	} else {
@@ -296,7 +296,7 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 		if (dialog->exec() == QDialog::Accepted) {
 			result = dialog->selectedFiles().value(0);
 		}
-		if(result.isEmpty()) return nullptr;
+		if(result.isEmpty()) return false;
 	}
 
 	QDir dir(result);
@@ -304,10 +304,10 @@ const char *P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, co
 	if( path ) strcpy( path, dir.path().toUtf8().constData() );
 	if( fullpath ) strcpy( fullpath, result.toUtf8().constData() );
 	QFile file(result);
-	return file.fileName().toUtf8().constData();
+	return true;
 }
 
-const char *P6VXApp::folderDialog(void *hwnd, char *Result)
+bool P6VXApp::folderDialog(void *hwnd, char *Result)
 {
 	QSharedPointer<QFileDialog> dialog(createFileDialog(hwnd));
 	dialog->setDirectory(strcmp(Result, "/") ? Result : QDir::homePath());
@@ -317,10 +317,12 @@ const char *P6VXApp::folderDialog(void *hwnd, char *Result)
 	OSD_ShowCursor(true);
 	if (dialog->exec() == QDialog::Accepted) {
 		result = dialog->selectedFiles().value(0).toUtf8();
+	} else {
+		return false;
 	}
 
 	strcpy(Result, result);
-	return result.constData();
+	return true;
 }
 
 void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)

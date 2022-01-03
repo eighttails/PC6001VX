@@ -16,7 +16,7 @@ class ConfigDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit ConfigDialog(CFG6* cfg, QWidget *parent = 0);
+	explicit ConfigDialog(std::shared_ptr<CFG6> cfg, QWidget *parent = 0);
 	~ConfigDialog();
 
 private:

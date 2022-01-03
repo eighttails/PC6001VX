@@ -1104,7 +1104,7 @@ bool OSD_FileRename( const P6VPATH& fullpath1, const P6VPATH& fullpath2 )
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_FolderDiaog( HWINDOW hwnd, P6VPATH& path )
 {
-	const char* ret = nullptr;
+	bool ret = false;
 	char cpath[PATH_MAX];
 	strcpy(cpath, P6VPATH2STR(path).c_str());
 	// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
@@ -1112,11 +1112,13 @@ bool OSD_FolderDiaog( HWINDOW hwnd, P6VPATH& path )
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "folderDialog",
 							  cType,
-							  Q_RETURN_ARG(const char*, ret),
+							  Q_RETURN_ARG(bool, ret),
 							  Q_ARG(void*, hwnd),
 							  Q_ARG(char*, cpath));
-	path = STR2P6VPATH(ret);
-	return strlen(ret) ? true : false;
+	if (ret) {
+		path = STR2P6VPATH(cpath);
+	}
+	return ret;
 }
 
 
@@ -1245,7 +1247,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		break;
 	}
 
-	const char* ret = nullptr;
+	bool ret = false;
 	char cpath[PATH_MAX];
 	strcpy(cpath, P6VPATH2STR(path).c_str());
 	char cfullpath[PATH_MAX];
@@ -1256,7 +1258,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "fileDialog",
 							  cType,
-							  Q_RETURN_ARG(const char*, ret),
+							  Q_RETURN_ARG(bool, ret),
 							  Q_ARG(void*, hwnd),
 							  Q_ARG(FileMode, mode),
 							  Q_ARG(const char*, TRANS(title)),
@@ -1264,9 +1266,11 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 							  Q_ARG(char*, cfullpath),
 							  Q_ARG(char*, cpath),
 							  Q_ARG(const char*, ext));
-	path = STR2P6VPATH(ret);
-	fullpath = STR2P6VPATH(ret);
-	return strlen(ret) ? true : false;
+	if (ret) {
+		path = STR2P6VPATH(cpath);
+		fullpath = STR2P6VPATH(cfullpath);
+	}
+	return ret;
 }
 
 
@@ -2240,10 +2244,10 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 {
 	// INIファイルを開く
 	try{
-		CFG6 ecfg;
-		if( !ecfg.Init() ) throw Error::IniReadFailed;
+		std::shared_ptr<CFG6> ecfg(new CFG6());
+		if( !ecfg->Init() ) throw Error::IniReadFailed;
 
-		ConfigDialog dialog(&ecfg);
+		ConfigDialog dialog(ecfg);
 #ifdef ALWAYSFULLSCREEN
 		dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
 #endif
@@ -2251,7 +2255,7 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 		int ret = dialog.result();
 		// OKボタンが押されたならINIファイル書込み
 		if( ret == QDialog::Accepted) {
-			ecfg.Write();
+			ecfg->Write();
 		}
 		return ret;
 	}

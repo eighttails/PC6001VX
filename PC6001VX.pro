@@ -143,6 +143,7 @@ contains(DEFINES, SDLJOYSTICK) {
 }
 
 SOURCES += \
+    src/Qt/audiooutputwrapper.cpp \
     src/Qt/colorbutton.cpp \
     src/Qt/configdialog.cpp \
     src/Qt/emulationadaptor.cpp \

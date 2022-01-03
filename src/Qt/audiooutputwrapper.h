@@ -14,19 +14,17 @@ class AudioOutputWrapper : public QObject
 	Q_OBJECT
 public:
 	explicit AudioOutputWrapper(const QAudioDeviceInfo& info,
-								const QAudioFormat& format, QObject* parent = nullptr)
-		: QObject(parent)
-		, AudioOutput(new QAudioOutput(info, format, this)) {}
+								const QAudioFormat& format, QObject* parent = nullptr);
 
 public slots:
 	// 下記のメソッドはinvokeMethodから呼ぶこと。
-	QPointer<QIODevice> start() { return AudioOutput->start(); }
-	void suspend() { AudioOutput->suspend(); }
-	void resume() { AudioOutput->resume(); }
-	void stop() { AudioOutput->stop(); }
+	QPointer<QIODevice> start();
+	void suspend();
+	void resume();
+	void stop();
 
 public:
-	QAudio::State state() const { return AudioOutput->state(); }
+	QAudio::State state() const;
 
 private:
 	QAudioOutput* AudioOutput;

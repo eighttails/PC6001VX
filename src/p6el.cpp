@@ -910,15 +910,7 @@ int EL6::SoundUpdate( int samples, cRing* exbuf )
 	vm->voice->SoundUpdate( size );
 	
 	// サウンドバッファ更新
-	int ret = snd->PreUpdate( size, exbuf );
-
-	// P6VXサウンド再生
-	std::vector<BYTE> stream;
-	stream.resize(size * sizeof(uint16_t));
-	snd->Update(stream.data(), size);
-	OSD_WriteAudioStream(stream.data(), stream.size());
-
-	return ret;
+	return snd->PreUpdate( size, exbuf );
 }
 
 
@@ -933,12 +925,12 @@ int EL6::SoundUpdate( int samples, cRing* exbuf )
 void EL6::StreamUpdate( void* userdata, BYTE* stream, int len )
 {
 	EL6* p6 = STATIC_CAST( EL6*, userdata );	// 自分自身のオブジェクトポインタ取得
-	
+
 	// サウンドバッファ更新
 	//  もしサンプル数が足りなければここで追加
 	//  ただしビデオキャプチャ中,ポーズ中,モニタモードの場合は無視
 	int addsam = len/sizeof(int16_t) - p6->snd->cRing::ReadySize();
-	
+
 	if( addsam > 0 && !p6->AVI6::IsAVI() && !p6->sche->GetPauseEnable()
 		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		&& !p6->vm->IsMonitor()

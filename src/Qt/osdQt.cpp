@@ -48,7 +48,6 @@ std::map<int, PCKEYsym> VKTable;		// Qtキーコード  -> 仮想キーコード
 #ifndef NOSOUND
 //サウンド関連
 #include "audiooutputwrapper.h"
-QPointer<QIODevice> audioBuffer = nullptr;
 QPointer<AudioOutputWrapper> audioOutput = nullptr;
 #endif
 
@@ -1649,11 +1648,10 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 		format = info.nearestFormat(format);
 	}
 
-	audioOutput = new AudioOutputWrapper(info, format);
+	audioOutput = new AudioOutputWrapper(info, format, callback, obj, samples);
 	// #TODO これではグローバルボリュームを変えてしまう？
 	// audioOutput->setVolume(0.5);
 
-	audioOutput->moveToThread(qApp->thread());
 #endif
 	return true;
 }
@@ -1671,6 +1669,7 @@ void OSD_CloseAudio( void )
 	if(audioOutput){
 		QMetaObject::invokeMethod(audioOutput, "stop");
 	}
+	audioOutput->deleteLater();
 #endif
 }
 
@@ -1691,8 +1690,7 @@ void OSD_StartAudio( void )
 			// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
 			Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
 						Qt::DirectConnection : Qt::BlockingQueuedConnection;
-			QMetaObject::invokeMethod(audioOutput, "start", cType,
-									  Q_RETURN_ARG(QPointer<QIODevice>, audioBuffer));
+			QMetaObject::invokeMethod(audioOutput, "start", cType);
 		}
 	}
 #endif
@@ -1710,25 +1708,6 @@ void OSD_StopAudio( void )
 #ifndef NOSOUND
 	if(audioOutput){
 		QMetaObject::invokeMethod(audioOutput, "suspend");
-	}
-#endif
-}
-
-////////////////////////////////////////////////////////////////
-// オーディオストリーム書き込み
-//
-// 引数:	stream  書き込むデータへのポインタ
-//      size 書き込むバイト数
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void OSD_WriteAudioStream(BYTE *stream, int size)
-{
-#ifndef NOSOUND
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	if(!app->isAVI()){
-		if(audioBuffer){
-			audioBuffer->write((const char*)stream, size);
-		}
 	}
 #endif
 }

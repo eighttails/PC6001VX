@@ -149,7 +149,11 @@ extern const char *MsgErr[];
 ///////////////////////////////////////////////////////////
 void EL6::ShowPopupMenu( int x, int y )
 {
+	// 呼び元スレッドによってコネクションタイプを変える(メニューが閉じるまで待つように)
+	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
+				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "showPopupMenu",
+							  cType,
 							  Q_ARG(int, x),
 							  Q_ARG(int, y));
 }

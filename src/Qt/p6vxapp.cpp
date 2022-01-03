@@ -569,7 +569,7 @@ bool P6VXApp::isPlatform(const QString platform)
 
 bool P6VXApp::isAVI()
 {
-	return P6Core->IsAVI();
+	return P6Core && P6Core->IsAVI();
 }
 
 int P6VXApp::getTiltStep()

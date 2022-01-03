@@ -149,8 +149,6 @@ void OSD_CloseAudio();
 void OSD_StartAudio();
 // 再生停止
 void OSD_StopAudio();
-// オーディオストリーム書き込み
-void OSD_WriteAudioStream( BYTE *stream, int size );
 // 再生状態取得
 bool OSD_AudioPlaying();
 // Waveファイル読込み

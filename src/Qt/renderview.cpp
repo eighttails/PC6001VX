@@ -175,7 +175,9 @@ void RenderView::mouseReleaseEvent(QMouseEvent *event)
 	case Qt::LeftButton:
 		ev.mousebt.button = MBT_LEFT;	break;
 	case Qt::RightButton:
-		ev.mousebt.button = MBT_RIGHT;	break;
+		return;
+		// contextMenuEventと重複するため無視する
+		// ev.mousebt.button = MBT_RIGHT;	break;
 	case Qt::MiddleButton:
 		ev.mousebt.button = MBT_MIDDLE;	break;
 	default:

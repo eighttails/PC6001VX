@@ -711,13 +711,30 @@ bool QtEL6::IsMonitor()
 	return vm->IsMonitor();
 }
 
-void QtEL6::SetPaletteTable(QVector<QRgb> &palette)
+void QtEL6::SetPaletteTable(QVector<QRgb> &palette, int scanbr)
 {
+	// パレットテーブルを設定
 	palette.clear();
-	for (int i=0; i < 255; i++){
+	palette.resize(256);
+	float brRate = float(scanbr) / 100;
+	for (int i=0; i < 256; i++){
 		DWORD DWCOL = GetBackBuffer()->GetColor(i);
-		COLOR24 col = {BYTE(DWCOL >> RSHIFT32), BYTE(DWCOL >> GSHIFT32), BYTE(DWCOL >> BSHIFT32)};
-		palette.push_back(qRgb(col.r, col.g, col.b));
+		COLOR24 col = {BYTE(DWCOL >> RSHIFT32),
+					   BYTE(DWCOL >> GSHIFT32),
+					   BYTE(DWCOL >> BSHIFT32),
+					   BYTE(DWCOL >> ASHIFT32)};
+		palette[i] = qRgb(col.r, col.g, col.b);
+		// スキャンライン用のパレットは元の色+64のインデックスに格納する。
+		if (i>=64 && i<128) {
+			DWORD DWCOL = GetBackBuffer()->GetColor(i-64);
+			COLOR24 col = {BYTE(DWCOL >> RSHIFT32),
+						   BYTE(DWCOL >> GSHIFT32),
+						   BYTE(DWCOL >> BSHIFT32),
+						   BYTE(DWCOL >> ASHIFT32)};
+			palette[i] = qRgb(brRate * col.r,
+							  brRate * col.g,
+							  brRate * col.b);
+		}
 	}
 }
 

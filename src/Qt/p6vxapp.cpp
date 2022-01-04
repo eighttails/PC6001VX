@@ -797,7 +797,7 @@ void P6VXApp::executeEmulation()
 	P6Core = P6CoreObj.take();
 
 	// パレット設定
-	P6Core->SetPaletteTable(PaletteTable);
+	P6Core->SetPaletteTable(PaletteTable, Cfg->GetValue( CV_ScanLineBr ));
 
 	// キーボード状態監視
 	KeyWatcher->deleteLater();

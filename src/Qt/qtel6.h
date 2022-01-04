@@ -17,7 +17,7 @@ public:
 	void SetPauseEnable(bool en);
 	std::shared_ptr<KEY6> GetKeyboard();
 	bool IsMonitor();
-	void SetPaletteTable(QVector<QRgb>& palette);
+	void SetPaletteTable(QVector<QRgb>& palette, int scanbr);
 public slots:
 	void UpdateFPS();
 };

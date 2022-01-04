@@ -2072,6 +2072,7 @@ void OSD_BlitToWindowEx( HWINDOW hwnd, VSurface* src, const VRect* pos, const bo
 
 
 	QImage image(src->Width(), src->Height() * s, QImage::Format_Indexed8);
+	image.fill(Qt::black);
 	image.setColorTable(app->getPaletteTable());
 
 	const int dpp    = image.bytesPerLine();

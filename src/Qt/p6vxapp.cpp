@@ -768,9 +768,9 @@ void P6VXApp::executeEmulation()
 #endif
 		break;
 	case EL6::Dokoload:	// どこでもLOAD
-		if( !P6Core->DokoDemoLoad( Cfg->GetDokoFile() ) ){
+		if( !P6CoreObj->DokoDemoLoad( Cfg->GetDokoFile() ) ){
 			// 失敗した場合
-			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
+			OSD_Message( P6CoreObj ? P6CoreObj->GetWindowHandle() : nullptr,
 						 Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
 			Error::Clear();
 		}
@@ -782,7 +782,7 @@ void P6VXApp::executeEmulation()
 	case EL6::ReplayMovie:	// リプレイを動画に変換
 		if( !P6Core->DokoDemoLoad( Cfg->GetDokoFile() ) ){
 			// 失敗した場合
-			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr,
+			OSD_Message( P6CoreObj ? P6CoreObj->GetWindowHandle() : nullptr,
 						 Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
 			Error::Clear();
 			Cfg->SetDokoFile( "" );

@@ -404,19 +404,19 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 	pItem->setTransform(trans);
 }
 
-void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void **pixels)
+void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void *pixels)
 {
 	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
 	QGraphicsScene* scene = view->scene();
-	QImage image(pos.width(), pos.height(), QImage::Format_RGB32);
+	QImage image(pos.width(), pos.height(), QImage::Format_RGB888);
 
 	QPainter painter(&image);
 	scene->render(&painter, image.rect(), pos);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-	memcpy(*pixels, image.bits(), image.sizeInBytes());
+	memcpy(pixels, image.bits(), image.sizeInBytes());
 #else
-	memcpy(*pixels, image.bits(), image.byteCount());
+	memcpy(pixels, image.bits(), image.byteCount());
 #endif
 }
 

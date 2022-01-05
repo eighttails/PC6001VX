@@ -123,7 +123,7 @@ public slots:
 	// ウィンドウイメージバイト列でを取得
 	// QGraphicsSceneの操作はメインスレッドでしかできないため、
 	// ここで実装する
-	void getWindowImage(HWINDOW Wh, QRect pos, void** pixels);
+	void getWindowImage(HWINDOW Wh, QRect pos, void *pixels);
 
 	// グラフィックシーンをクリア
 	void clearLayout(HWINDOW Wh);

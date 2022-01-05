@@ -34,8 +34,6 @@ bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const in
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
 	VRect rec;
-	int pitch = ww * bpp / 8;
-
 	// 領域設定
 	if( pos ){
 		rec.x = pos->x;	rec.y = pos->y;
@@ -45,18 +43,12 @@ bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const in
 		rec.w = ww; rec.h = hh;
 	}
 
-	QImage::Format format = (bpp == 8) ? QImage::Format_Indexed8 : QImage::Format_RGB32;
-
-	QImage image(rec.w, rec.h, format);
+	QImage image(rec.w, rec.h, QImage::Format_RGB888);
 	if(bpp == 8){
 		image.setColorTable(app->getPaletteTable());
 	}
 
-	BYTE *doff = pixels + rec.x + rec.y * pitch;
-	for( int i=0; i<rec.h; i++ ){
-		memcpy( image.scanLine(i), doff, rec.w * bpp / 8);
-		doff += pitch;
-	}
+	memcpy( image.bits(), pixels, image.sizeInBytes());
 
 	auto saveFilePath = QDir::cleanPath(P6VPATH2QSTR(filename));
 	auto saveDir = QFileInfo(saveFilePath).absoluteDir();

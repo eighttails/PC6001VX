@@ -2141,7 +2141,7 @@ bool OSD_GetWindowImage( HWINDOW hwnd, std::vector<BYTE>& pixels, VRect* pos, Pi
 							  cType,
 							  Q_ARG(HWINDOW, hwnd),
 							  Q_ARG(QRect, QRect(pos->x, pos->y, pos->w, pos->h)),
-							  Q_ARG(void**, (void**)pixels.data()));
+							  Q_ARG(void*, (void*)pixels.data()));
 
 	return true;
 }

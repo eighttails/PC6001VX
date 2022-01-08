@@ -236,7 +236,8 @@ void EL6::ExecMenu( int id )
 		UI_ReplayMovie();
 		OSD_PushEvent(EV_REPLAYMOVIE);
 		break;
-	case ID_AVISAVE:		UI_AVISaveStart();						break;	// ビデオキャプチャ
+	case ID_AVISAVE:		AVI6::IsAVI() ? UI_AVISaveStop()
+										  : UI_AVISaveStart();		break;	// ビデオキャプチャ
 	case ID_KEYPANEL:		app->toggleKeyPanel();					break;	// キーパネル
 	case ID_VIRTURLKEY:		app->toggleVirtualKeyboard();			break;	// 仮想キーボード
 	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行

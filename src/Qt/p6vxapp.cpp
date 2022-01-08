@@ -158,7 +158,7 @@ void P6VXApp::startup()
 		QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
 		r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
 		if(r == QtAndroid::PermissionResult::Denied) {
-			OSD_Message( P6Core->GetWindowHandle(), QString(tr("Storage access denied.")).toStdString(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr, tr("Storage access denied.")).toStdString(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 		}
 	}
 #endif
@@ -170,7 +170,7 @@ void P6VXApp::startup()
 	// OSD関連初期化
 	if( !OSD_Init() ){
 		Error::SetError( Error::InitFailed );
-		OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
+		OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr, Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 		exit();
 		return;
 	}
@@ -187,7 +187,7 @@ void P6VXApp::startup()
 	FontH = QSTR2P6VPATH(QString(":/res/font/%1").arg(FILE_FONTH));
 	if( !JFont::OpenFont( FontZ, FontH ) ){
 		Error::SetError( Error::FontLoadFailed );
-		OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
+		OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr, Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 		Error::SetError( Error::NoError );
 	}
 
@@ -209,12 +209,12 @@ void P6VXApp::startup()
 	if( !Cfg->Init() ){
 		switch( Error::GetError() ){
 		case Error::IniDefault:
-			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
+			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr, Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONWARNING );
 			Error::SetError( Error::NoError );
 			break;
 
 		default:
-			OSD_Message( P6Core->GetWindowHandle(), Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
+			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr, Error::GetErrorText(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 			exit();
 			return;
 		}
@@ -236,7 +236,7 @@ int P6VXApp::showMessageBox(void *hwnd, const char *mes, const char *cap, int ty
 
 	// メッセージボックスのタイプ
 	switch( type&0x000f ){
-	case OSDM_OK:		Type = QMessageBox::Ok;                         break;
+	case OSDM_OK:			Type = QMessageBox::Ok;                         break;
 	case OSDM_OKCANCEL:		Type = QMessageBox::Ok | QMessageBox::Cancel;	break;
 	case OSDM_YESNO:		Type = QMessageBox::Yes | QMessageBox::No;	break;
 	case OSDM_YESNOCANCEL:	Type = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;    break;
@@ -285,9 +285,9 @@ bool P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, const cha
 			result += QString(".") + ext;
 		}
 		if (OSD_FileExist(QSTR2P6VPATH(result))){
-			if (OSD_Message(P6Core->GetWindowHandle(), QString(tr("ファイルはすでに存在しています。上書きしますか?")).toStdString(),
-							nullptr, OSDM_OKCANCEL | OSDM_ICONQUESTION)
-					== OSDM_OKCANCEL){
+			if (OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr,
+							tr("ファイルはすでに存在しています。上書きしますか?").toStdString(),
+							title, OSDM_OKCANCEL | OSDM_ICONQUESTION)	== OSDM_OKCANCEL){
 				return false;
 			}
 		}
@@ -508,9 +508,9 @@ void P6VXApp::deactivateMouseCursorTimer()
 
 void P6VXApp::resetSettings()
 {
-	if (OSD_Message(P6Core->GetWindowHandle(), QString(tr("本当に設定を初期化しますか?")).toStdString(),
-					nullptr, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
-		if(OSD_Message(P6Core->GetWindowHandle(), QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toStdString(),
+	if (OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr, tr("本当に設定を初期化しますか?").toStdString(),
+					APPNAME, OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
+		if(OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr, tr("設定を反映するには一度終了しますがよろしいですか?").toStdString(),
 					   GetText(T_QUITC), OSDM_YESNO | OSDM_ICONWARNING) == OSDR_YES){
 
 			P6VPATH path;
@@ -626,7 +626,7 @@ void P6VXApp::exportSavedTape()
 	// TAPE(SAVE)ファイル名を取得
 	auto src = Cfg->GetValue(CF_save);
 	if (!OSD_FileExist(src)){
-		OSD_Message(P6Core->GetWindowHandle(), QString(tr("TAPE(SAVE)ファイルが存在しません。")).toStdString(),
+		OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr, tr("TAPE(SAVE)ファイルが存在しません。").toStdString(),
 					GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR);
 		return;
 	}
@@ -642,8 +642,8 @@ void P6VXApp::exportSavedTape()
 	QFile savedTape(P6VPATH2QSTR(src));
 	if(OSD_FileSelect( nullptr, FD_TapeSave, dest, src )){
 		if (OSD_FileExist(dest)){
-			if (OSD_Message(P6Core->GetWindowHandle(),QString(tr("ファイルはすでに存在しています。上書きしますか?")).toStdString(),
-							nullptr, OSDM_OKCANCEL | OSDM_ICONQUESTION)
+			if (OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr,tr("ファイルはすでに存在しています。上書きしますか?").toStdString(),
+							APPNAME, OSDM_OKCANCEL | OSDM_ICONQUESTION)
 					== OSDR_OK){
 				CFG6 cfg;
 				Cfg->Write();
@@ -672,11 +672,11 @@ void P6VXApp::executeEmulation()
 		}
 	}else{
 		bool romFolderSpecified = false;
-		if(OSD_Message(nullptr,
-					   QString(tr("ROMファイルが見つかりません。\n"
+		if(OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr,
+					   tr("ROMファイルが見つかりません。\n"
 								  "ROMフォルダ(%1)にROMファイルをコピーするか、"
 								  "別のROMフォルダを指定してください。\n"
-								  "別のROMフォルダを指定しますか?")).arg(P6VPATH2QSTR(Cfg->GetValue(CF_RomPath))).toStdString(),
+								  "別のROMフォルダを指定しますか?").arg(P6VPATH2QSTR(Cfg->GetValue(CF_RomPath))).toStdString(),
 					   GetText(TERR_ERROR), OSDM_YESNO | OSDM_ICONWARNING ) == OSDR_YES){
 			// ROMフォルダ再設定
 			P6VPATH folder = Cfg->GetValue(CF_RomPath);

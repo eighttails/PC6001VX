@@ -2,10 +2,36 @@
 #include "ui_configdialog.h"
 
 #include <QDir>
+#include <QStandardItemModel>
 
 #include "../config.h"
 #include "../osd.h"
+#include "../pc6001v.h"
 #include "p6vxapp.h"
+
+// 設定ファイル内のモデルIDとコンボボックスのインデックスの対応
+static const QList<int> modelIds {
+		60,
+		61,
+		62,
+		66,
+		64,
+		68,
+};
+
+
+// 設定ファイル内の拡張カートリッジIDとコンボボックスのインデックスの対応
+static const QList<WORD> extCartIds {
+		0,
+		EXC6001,
+		EXC6005,
+		EXC6006,
+		EXC660101,
+		EXC6006SR,
+		EXC6007SR,
+		EXC6053,
+		EXC60M55
+};
 
 ConfigDialog::ConfigDialog(std::shared_ptr<CFG6> cfg, QWidget *parent)
 	: QDialog(parent)
@@ -13,7 +39,6 @@ ConfigDialog::ConfigDialog(std::shared_ptr<CFG6> cfg, QWidget *parent)
 	, config(cfg)
 {
 	ui->setupUi(this);
-	connect(ui->horizontalSliderFPS, SIGNAL(valueChanged(int)), this, SLOT(dispFPS(int)));
 
 	// 各種マッピング
 	// サウンド------------------------------------------------------
@@ -105,71 +130,67 @@ void ConfigDialog::readConfig()
 
 	// 基本------------------------------------------------------
 	// 機種
-	switch(config->GetValue(CV_Model)){
-	case 60:    ui->radioButtonModel6001->setChecked(true);			break;
-	case 61:    ui->radioButtonModel6001A->setChecked(true);		break;
-	case 62:    ui->radioButtonModel6001mk2->setChecked(true);		break;
-	case 64:    ui->radioButtonModel6001mk2SR->setChecked(true);	break;
-	case 66:    ui->radioButtonModel6601->setChecked(true);			break;
-	case 68:    ui->radioButtonModel6601SR->setChecked(true);		break;
-	default:    Q_ASSERT(false);
-	}
+	auto modelId = (config->GetValue(CV_Model));
+	ui->comboBoxModel->setCurrentIndex(modelIds.indexOf(modelId));
 
-	// FDD
-	switch(config->GetValue(CV_FDDrive)){
-	case 0: ui->radioButtonFDD0->setChecked(true);	break;
-	case 1: ui->radioButtonFDD1->setChecked(true);	break;
-	case 2: ui->radioButtonFDD2->setChecked(true);	break;
-	default:    Q_ASSERT(false);
-	}
+	// 拡張カートリッジ
+	auto extCartId = config->GetValue(CV_ExCartridge);
+	ui->comboBoxExtCartridge->setCurrentIndex(extCartIds.indexOf(extCartId));
+
+	//// FDD
+	// FDD数
+	ui->spinBoxNumFdd->setValue(config->GetValue(CV_FDDrive));
+	// FDDウェイト
+	ui->checkBoxFDDWaitEnable->setChecked(config->GetValue(CB_FDDWait));
+
+	//// CMT
+	// Turbo TAPE
+	ui->checkBoxTurboTape->setChecked(config->GetValue(CB_TurboTAPE));
+
+	// Boost Up
+	ui->groupBoxBoostUp->setChecked(config->GetValue(CB_BoostUp));
+
+	// BoostUp 最大倍率(N60モード)
+	ui->spinBoxBoost60->setValue(qMin(qMax(1, config->GetValue(CV_MaxBoost60)), 100));
+
+	// BoostUp 最大倍率(N60m/N66モード)
+	ui->spinBoxBoost66->setValue(qMin(qMax(1, config->GetValue(CV_MaxBoost62)), 100));
 
 	// 内蔵互換ROM使用
 	const bool CompatibleRomMode = P6VPATH2QSTR(config->GetValue(CF_RomPath)).startsWith(":");
 	ui->checkBoxCompatibleRomMode->setChecked(CompatibleRomMode);
 	if (CompatibleRomMode){
-		ui->radioButtonModel6001A->setEnabled(true);
-		ui->radioButtonModel6001mk2->setEnabled(true);
-		ui->radioButtonModel6001mk2SR->setEnabled(false);
-		ui->radioButtonModel6601->setEnabled(true);
-		ui->radioButtonModel6601SR->setEnabled(false);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(60), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(61), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(62), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(66), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(64), false);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(68), false);
 		ui->lineEditFolderRom->setEnabled(false);
 		ui->pushButtonClearFolderRom->setEnabled(false);
 		ui->pushButtonRefFolderRom->setEnabled(false);
 	} else {
-		ui->radioButtonModel6001A->setEnabled(true);
-		ui->radioButtonModel6001mk2->setEnabled(true);
-		ui->radioButtonModel6001mk2SR->setEnabled(true);
-		ui->radioButtonModel6601->setEnabled(true);
-		ui->radioButtonModel6601SR->setEnabled(true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(60), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(61), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(62), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(66), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(64), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(68), true);
 		ui->lineEditFolderRom->setEnabled(true);
 		ui->pushButtonClearFolderRom->setEnabled(true);
 		ui->pushButtonRefFolderRom->setEnabled(true);
 	}
 
-	// 拡張RAM使用
-	//#TODO
-	//	ui->checkBoxExtRam->setChecked(config->GetValue(CB_UseExtRam));
-
-	// 戦士のカートリッジ使用
-	//#TODO
-	//	ui->checkBoxUseSoldier->setChecked(config->GetValue(CB_UseSoldier));
 
 	// 画面------------------------------------------------------
 	// MODE4カラー
-	switch(config->GetValue(CV_Mode4Color)){
-	case 0: ui->radioButtonColorBW->setChecked(true);	break;
-	case 1: ui->radioButtonColorRB->setChecked(true);	break;
-	case 2: ui->radioButtonColorBR->setChecked(true);	break;
-	case 3: ui->radioButtonColorPG->setChecked(true);	break;
-	case 4: ui->radioButtonColorGP->setChecked(true);	break;
-	default:    Q_ASSERT(false);
-	}
+	ui->comboBoxMode4Color->setCurrentIndex(config->GetValue(CV_Mode4Color));
 
 	// スキャンライン
 	ui->checkBoxScanline->setChecked(config->GetValue(CB_ScanLine));
 
 	// スキャンライン輝度
-	ui->lineEditScanLineBr->setText(QString::number(config->GetValue(CV_ScanLineBr)));
+	ui->spinBoxScanLine->setValue(config->GetValue(CV_ScanLineBr));
 
 	// 4:3表示
 	ui->checkBoxDispNTSC->setChecked(config->GetValue(CB_DispNTSC));
@@ -194,8 +215,7 @@ void ConfigDialog::readConfig()
 	ui->checkBoxFiltering->setChecked(app->getSetting(P6VXApp::keyFiltering).toBool());
 
 	// フレームスキップ
-	ui->horizontalSliderFPS->setValue(config->GetValue(CV_FrameSkip));
-	dispFPS(config->GetValue(CV_FrameSkip));
+	ui->comboBoxMovieFrameSkip->setCurrentIndex(config->GetValue(CV_AviFrameSkip));
 
 	// サウンド------------------------------------------------------
 	// マスター音量
@@ -322,11 +342,13 @@ void ConfigDialog::readConfig()
 
 	// 色--------------------------------------------------------------------------
 	// 16〜72の色IDに対応させる。
-	for (int id = 16; id <= 80; id++){
+	for (int id = 0; id <= 64; id++){
 		QString buttonName = QString("pushButtonColor%1").arg(id);
 		// ダイアログから動的に部品を取得する
 		ColorButton* button = this->findChild<ColorButton*>(buttonName);
-		button->initialize(id, config.get());
+		if (button) {
+			button->initialize(id, config.get());
+		}
 	}
 
 	// その他
@@ -335,18 +357,6 @@ void ConfigDialog::readConfig()
 
 	// CRCチェック
 	ui->checkBoxRomCRC->setChecked(config->GetValue(CB_CheckCRC));
-
-	// Turbo TAPE
-	ui->checkBoxTurboTape->setChecked(config->GetValue(CB_TurboTAPE));
-
-	// Boost Up
-	ui->groupBoxBoostUp->setChecked(config->GetValue(CB_BoostUp));
-
-	// BoostUp 最大倍率(N60モード)
-	ui->lineEditBoost60->setText(QString::number(qMin(qMax(1, config->GetValue(CV_MaxBoost60)), 100)));
-
-	// BoostUp 最大倍率(N60m/N66モード)
-	ui->lineEditBoost66->setText(QString::number(qMin(qMax(1, config->GetValue(CV_MaxBoost62)), 100)));
 
 	// 終了時 確認する
 	ui->checkBoxFDDWaitEnable->setChecked(config->GetValue(CB_FDDWait));
@@ -360,6 +370,7 @@ void ConfigDialog::readConfig()
 
 void ConfigDialog::writeConfig()
 {
+#if 0 #TODO 後で消す
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	// 一時変数
 	int iVal = 0;
@@ -517,11 +528,13 @@ void ConfigDialog::writeConfig()
 
 	// 色-----------------------------------------------------------------
 	// 16〜72の色IDに対応させる。
-	for (int id = 16; id <= 80; id++){
+	for (int id = 0; id <= 64; id++){
 		QString buttonName = QString("pushButtonColor%1").arg(id);
 		// ダイアログから動的に部品を取得する
 		ColorButton* button = this->findChild<ColorButton*>(buttonName);
-		config->SetColor(id, button->getColor());
+		if (button) {
+			config->SetColor(id, button->getColor());
+		}
 	}
 
 	// その他--------------------------------------------------------------
@@ -560,18 +573,8 @@ void ConfigDialog::writeConfig()
 
 	// 終了時 INIファイルを保存する
 	config->SetValue(CB_SaveQuit, ui->checkBoxSaveQuit->isChecked());
-}
 
-void ConfigDialog::dispFPS(int fps)
-{
-	QStringList list;
-	list	<< "0 (60fps)"
-			<< "1 (30fps)"
-			<< "2 (20fps)"
-			<< "3 (15fps)"
-			<< "4 (12fps)"
-			<< "5 (10fps)";
-	ui->labelFps->setText(list[fps]);
+#endif
 }
 
 void ConfigDialog::selectFile(QWidget *widget)
@@ -633,6 +636,18 @@ void ConfigDialog::warnFileOrFolderNotExist(QLineEdit *edit)
 		palette->setColor(QPalette::Text, Qt::red);
 	}
 	edit->setPalette(*palette);
+}
+
+void ConfigDialog::setComboBoxItemEnabled(QComboBox *comboBox, int index, bool enabled)
+{
+	auto * model = qobject_cast<QStandardItemModel*>(comboBox->model());
+	assert(model);
+	if(!model) return;
+
+	auto * item = model->item(index);
+	assert(item);
+	if(!item) return;
+	item->setEnabled(enabled);
 }
 
 void ConfigDialog::on_checkBoxCompatibleRomMode_clicked(bool checked)

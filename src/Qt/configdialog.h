@@ -6,6 +6,7 @@
 
 class CFG6;
 class QLineEdit;
+class QComboBox;
 
 namespace Ui {
 class ConfigDialog;
@@ -26,10 +27,10 @@ private:
 private slots:
 	void readConfig();
 	void writeConfig();
-	void dispFPS(int fps);
 	void selectFile(QWidget* widget);
 	void selectFolder(QWidget* widget);
 	void warnFileOrFolderNotExist(QLineEdit* edit);
+	void setComboBoxItemEnabled(QComboBox * comboBox, int index, bool enabled);
 	void on_checkBoxCompatibleRomMode_clicked(bool checked);
 };
 

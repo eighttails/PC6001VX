@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>915</width>
-    <height>549</height>
+    <width>535</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -30,131 +30,393 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="enabled">
       <bool>true</bool>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="tabBasic">
       <attribute name="title">
        <string>基本(&amp;B)</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="1">
-        <widget class="QGroupBox" name="groupBoxFDD">
-         <property name="title">
-          <string>FDD接続数(&amp;N)</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QRadioButton" name="radioButtonFDD0">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="labelModel">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;機種(&amp;amp;M):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="buddy">
+            <cstring>comboBoxModel</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxModel">
+           <item>
             <property name="text">
-             <string>なし</string>
+             <string>PC-6001</string>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonFDD1">
+           </item>
+           <item>
             <property name="text">
-             <string>1</string>
+             <string>PC-6001A (NEC TREK)</string>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonFDD2">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           </item>
+           <item>
             <property name="text">
-             <string>2</string>
+             <string>PC-6001mkⅡ</string>
             </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBoxModel">
-         <property name="title">
-          <string>機種(&amp;M)</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QRadioButton" name="radioButtonModel6001">
-            <property name="text">
-             <string>&amp;PC-6001</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonModel6001A">
-            <property name="text">
-             <string>PC-&amp;6001A (NEC TREK)</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonModel6001mk2">
-            <property name="text">
-             <string>PC-6&amp;001mk2</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonModel6601">
+           </item>
+           <item>
             <property name="text">
              <string>PC-6601</string>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonModel6001mk2SR">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           </item>
+           <item>
             <property name="text">
-             <string>PC-6001&amp;mk2SR</string>
+             <string>PC-6001mkⅡSR</string>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonModel6601SR">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           </item>
+           <item>
             <property name="text">
              <string>PC-6601SR</string>
             </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="checkBoxExtRam">
-         <property name="text">
-          <string>拡張RAMを使う(&amp;X)</string>
-         </property>
-        </widget>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="labelExtCartridge">
+           <property name="text">
+            <string>拡張カートリッジ(&amp;E):</string>
+           </property>
+           <property name="buddy">
+            <cstring>comboBoxExtCartridge</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxExtCartridge">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <item>
+            <property name="text">
+             <string>なし</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PC-6005 ROMカートリッジ</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PC-6006 拡張ROM/RAMカートリッジ</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PCS-6001R 拡張BASIC</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PC-6601-01 拡張漢字ROMカートリッジ</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PC-6006SR 拡張64KRAMカートリッジ</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PC-6007SR 拡張漢字ROM&amp;RAMカートリッジ</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>戦士のカートリッジ</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>戦士のカートリッジmkⅡ</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>戦士のカートリッジmkⅢ</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_13">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
-       <item row="1" column="0">
+       <item>
         <widget class="QCheckBox" name="checkBoxCompatibleRomMode">
          <property name="text">
           <string>内蔵互換ROMを使う(&amp;C)</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="checkBoxUseSoldier">
-         <property name="text">
-          <string>戦士のカートリッジを使う(&amp;R)</string>
+       <item>
+        <widget class="QGroupBox" name="groupBoxFDD">
+         <property name="title">
+          <string>&amp;FDD</string>
          </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="labelNumFdd">
+              <property name="text">
+               <string>ドライブ数(&amp;N):</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxNumFdd">
+              <property name="maximum">
+               <number>2</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>(0-2)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxFDDWaitEnable">
+            <property name="text">
+             <string>FDDアクセスウェイト有効(&amp;W)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>CMT</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QCheckBox" name="checkBoxTurboTape">
+            <property name="text">
+             <string>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBoxBoostUp">
+            <property name="title">
+             <string>Boost Up (TAPE最速化)(&amp;U)</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_16">
+             <item>
+              <widget class="QLabel" name="label_56">
+               <property name="text">
+                <string>最大倍率</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_12">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_58">
+               <property name="text">
+                <string>N60</string>
+               </property>
+               <property name="buddy">
+                <cstring>spinBoxBoost60</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="spinBoxBoost60">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>10</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_11">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_57">
+               <property name="text">
+                <string>N60m/N66</string>
+               </property>
+               <property name="buddy">
+                <cstring>spinBoxBoost66</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="spinBoxBoost66">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>10</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_10">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="labelStopBit">
+              <property name="text">
+               <string>ストップビット数(&amp;B):</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBoxStopBit</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxStopBit">
+              <property name="minimum">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>bit (2-10)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -167,28 +429,287 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="2">
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tabScreen">
       <attribute name="title">
-       <string>画面(&amp;S)</string>
+       <string>画面(&amp;D)</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_4">
-       <item row="10" column="0">
-        <spacer name="verticalSpacer_12">
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="labelMode4Color">
+           <property name="text">
+            <string>MODE4カラー(&amp;M):</string>
+           </property>
+           <property name="buddy">
+            <cstring>comboBoxMode4Color</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxMode4Color">
+           <item>
+            <property name="text">
+             <string>モノクロ</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>赤/青</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>青/赤</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>桃/緑</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>緑/桃</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QCheckBox" name="checkBoxScanline">
+           <property name="text">
+            <string>スキャンライン(&amp;N)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelScanLineBrightness">
+           <property name="text">
+            <string>輝度(&amp;B):</string>
+           </property>
+           <property name="buddy">
+            <cstring>spinBoxScanLine</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBoxScanLine">
+           <property name="maximum">
+            <number>100</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelScanLinePercent">
+           <property name="text">
+            <string>％</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxDispNTSC">
+         <property name="text">
+          <string>4:3表示(&amp;3)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxFiltering">
+         <property name="text">
+          <string>フィルタリング(&amp;F)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxFullscreen">
+         <property name="text">
+          <string>フルスクリーン(&amp;U)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxStatDisp">
+         <property name="text">
+          <string>ステータスバーを表示する(&amp;T)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxHwAccel">
+         <property name="text">
+          <string>ハードウェアアクセラレーション
+(次回起動時に反映)(&amp;H)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBoxVideoCapture">
+         <property name="title">
+          <string>ビデオキャプチャ時の設定</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QCheckBox" name="checkBoxMovieScanline">
+              <property name="text">
+               <string>スキャンライン(&amp;N)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelMovieScanLineBrightness">
+              <property name="text">
+               <string>輝度(&amp;B):</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBoxMovieScanLine</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxMovieScanLine">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelMovieScanLinePercent">
+              <property name="text">
+               <string>％</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="labelMovieFrameSkip">
+              <property name="text">
+               <string>フレームスキップ(&amp;K):</string>
+              </property>
+              <property name="buddy">
+               <cstring>comboBoxMovieFrameSkip</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxMovieFrameSkip">
+              <item>
+               <property name="text">
+                <string>0(59.92fps)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1(29.96fps)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>2(19.97fps)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>3(14.98fps)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>4(11.98fps)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>5(9.99fps)</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxMovieDispNTSC">
+            <property name="text">
+             <string>4:3表示(&amp;3)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxMovieFiltering">
+            <property name="text">
+             <string>フィルタリング(&amp;F)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -200,203 +721,11 @@
          </property>
         </spacer>
        </item>
-       <item row="4" column="0" colspan="2">
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBoxScanline">
-           <property name="text">
-            <string>スキャンラインを表示する(&amp;N)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBoxFullscreen">
-           <property name="text">
-            <string>フルスクリーン(&amp;U)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBoxStatDisp">
-           <property name="text">
-            <string>ステータスバーを表示する(&amp;T)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="2">
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>スキャンライン輝度(&amp;R):</string>
-             </property>
-             <property name="buddy">
-              <cstring>lineEditScanLineBr</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="lineEditScanLineBr">
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="inputMethodHints">
-              <set>Qt::ImhDigitsOnly</set>
-             </property>
-             <property name="inputMask">
-              <string>999</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>％</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBoxDispNTSC">
-           <property name="text">
-            <string>4:3表示有効(&amp;3)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBoxHwAccel">
-           <property name="text">
-            <string>ハードウェアアクセラレーション
-(次回起動時に反映)(&amp;H)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBoxFiltering">
-           <property name="text">
-            <string>フィルタリング(&amp;F)</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBoxMode4Color">
-         <property name="title">
-          <string>モード4カラー(&amp;4)</string>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorBW">
-            <property name="text">
-             <string>モノクロ</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorRB">
-            <property name="text">
-             <string>赤/青</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorBR">
-            <property name="text">
-             <string>青/赤</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorPG">
-            <property name="text">
-             <string>桃/緑</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButtonColorGP">
-            <property name="text">
-             <string>緑/桃</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBoxFps">
-         <property name="title">
-          <string>フレームスキップ(&amp;K)</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QSlider" name="horizontalSliderFPS">
-            <property name="maximum">
-             <number>5</number>
-            </property>
-            <property name="pageStep">
-             <number>1</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksBelow</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="labelFps">
-            <property name="text">
-             <string>フレームスキップ</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tabSound">
       <attribute name="title">
-       <string>サウンド(&amp;D)</string>
+       <string>サウンド(&amp;S)</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_9">
        <item>
@@ -588,2026 +917,397 @@
          </item>
         </layout>
        </item>
-       <item>
-        <spacer name="horizontalSpacer_7">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tabFile">
       <attribute name="title">
        <string>ファイル(&amp;F)</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="6" column="5">
-        <widget class="QPushButton" name="pushButtonRefDisk2">
-         <property name="text">
-          <string>参照...</string>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>ファイル</string>
          </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelSaveTape">
+            <property name="text">
+             <string>TAPE(SAVE)(&amp;V):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditSaveTape</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QPushButton" name="pushButtonRefDisk1">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="lineEditDisk1"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEditLoadTape"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lineEditExtRom"/>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="lineEditDisk2"/>
+          </item>
+          <item row="1" column="3">
+           <widget class="QPushButton" name="pushButtonRefLoadTape">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QPushButton" name="pushButtonRefDisk2">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="pushButtonClearExtRom">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QPushButton" name="pushButtonClearDisk1">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QPushButton" name="pushButtonClearDisk2">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="pushButtonRefExtRom">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelExtRom">
+            <property name="text">
+             <string>拡張ROM(&amp;R):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditExtRom</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="pushButtonClearSaveTape">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelLoadTape">
+            <property name="text">
+             <string>TAPE(LOAD)(&amp;A):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditLoadTape</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QPushButton" name="pushButtonRefSaveTape">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="pushButtonClearLoadTape">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelDisk1">
+            <property name="text">
+             <string>DISK1(&amp;K):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditDisk1</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="labelDisk2">
+            <property name="text">
+             <string>DISK2(&amp;J):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditDisk2</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="lineEditSaveTape"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="labelPrinter">
+            <property name="text">
+             <string>プリンタ(&amp;P):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditPrinter</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="lineEditPrinter"/>
+          </item>
+          <item row="5" column="2">
+           <widget class="QPushButton" name="pushButtonClearPrinter">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3">
+           <widget class="QPushButton" name="pushButtonRefPrinter">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="6" column="1">
-        <widget class="QLabel" name="labelDisk2">
-         <property name="text">
-          <string>DISK2(&amp;J):</string>
+       <item>
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="title">
+          <string>フォルダ</string>
          </property>
-         <property name="buddy">
-          <cstring>lineEditDisk2</cstring>
-         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelFolderRom">
+            <property name="text">
+             <string>ROM(&amp;R):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditFolderRom</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lineEditFolderRom"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="pushButtonClearFolderRom">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="pushButtonRefFolderRom">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelFolderTape">
+            <property name="text">
+             <string>TAPE(&amp;T):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditFolderTape</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lineEditFolderTape"/>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="pushButtonClearFolderTape">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QPushButton" name="pushButtonRefFolderTape">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelFolderDisk">
+            <property name="text">
+             <string>DISK(&amp;K):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditFolderDisk</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="lineEditFolderDisk"/>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="pushButtonClearFolderDisk">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QPushButton" name="pushButtonRefFolderDisk">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelFolderExtRom">
+            <property name="text">
+             <string>拡張ROM(&amp;X):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditFolderExtRom</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="lineEditFolderExtRom"/>
+          </item>
+          <item row="3" column="2">
+           <widget class="QPushButton" name="pushButtonClearFolderExtRom">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QPushButton" name="pushButtonRefFolderExtRom">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="labelFolderImg">
+            <property name="text">
+             <string>SnapShot(&amp;H):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditFolderImg</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="lineEditFolderImg"/>
+          </item>
+          <item row="4" column="2">
+           <widget class="QPushButton" name="pushButtonClearFolderImg">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QPushButton" name="pushButtonRefFolderImg">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="labelFolderWave">
+            <property name="text">
+             <string>WAVE(&amp;W):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditFolderWave</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="lineEditFolderWave"/>
+          </item>
+          <item row="5" column="2">
+           <widget class="QPushButton" name="pushButtonClearFolderWave">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3">
+           <widget class="QPushButton" name="pushButtonRefFolderWave">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="labelFolderDokoSave">
+            <property name="text">
+             <string>どこでもSAVE(&amp;V):</string>
+            </property>
+            <property name="buddy">
+             <cstring>lineEditFolderDokoSave</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="lineEditFolderDokoSave"/>
+          </item>
+          <item row="6" column="2">
+           <widget class="QPushButton" name="pushButtonClearFolderDokoSave">
+            <property name="text">
+             <string>クリア</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3">
+           <widget class="QPushButton" name="pushButtonRefFolderDokoSave">
+            <property name="text">
+             <string>参照...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QLabel" name="labelExtRom">
-         <property name="text">
-          <string>拡張ROM(&amp;R):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditExtRom</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QLabel" name="labelPrinter">
-         <property name="text">
-          <string>プリンタ(&amp;P):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditPrinter</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLabel" name="labelSaveTape">
-         <property name="text">
-          <string>TAPE(SAVE)(&amp;V):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditSaveTape</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="labelLoadTape">
-         <property name="text">
-          <string>TAPE(LOAD)(&amp;A):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditLoadTape</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="lineEditLoadTape"/>
-       </item>
-       <item row="4" column="3">
-        <widget class="QLineEdit" name="lineEditSaveTape"/>
-       </item>
-       <item row="7" column="3">
-        <widget class="QLineEdit" name="lineEditPrinter"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="lineEditExtRom"/>
-       </item>
-       <item row="0" column="5">
-        <widget class="QPushButton" name="pushButtonRefExtRom">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="5">
-        <widget class="QPushButton" name="pushButtonRefLoadTape">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <spacer name="verticalSpacer_6">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="4" column="5">
-        <widget class="QPushButton" name="pushButtonRefSaveTape">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="5">
-        <widget class="QPushButton" name="pushButtonRefPrinter">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="3">
-        <widget class="QLineEdit" name="lineEditDisk1"/>
-       </item>
-       <item row="5" column="5">
-        <widget class="QPushButton" name="pushButtonRefDisk1">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLabel" name="labelDisk1">
-         <property name="text">
-          <string>DISK1(&amp;K):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditDisk1</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="3">
-        <widget class="QLineEdit" name="lineEditDisk2"/>
-       </item>
-       <item row="0" column="4">
-        <widget class="QPushButton" name="pushButtonClearExtRom">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QPushButton" name="pushButtonClearLoadTape">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="4">
-        <widget class="QPushButton" name="pushButtonClearSaveTape">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="4">
-        <widget class="QPushButton" name="pushButtonClearDisk1">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="4">
-        <widget class="QPushButton" name="pushButtonClearDisk2">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="4">
-        <widget class="QPushButton" name="pushButtonClearPrinter">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tabFolder">
-      <attribute name="title">
-       <string>フォルダ(&amp;L)</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_12">
-       <item row="4" column="0">
-        <widget class="QLabel" name="labelFolderExtRom">
-         <property name="text">
-          <string>拡張ROM(&amp;X):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditFolderExtRom</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="lineEditFolderExtRom"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="pushButtonClearFolderRom">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="pushButtonClearFolderTape">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QPushButton" name="pushButtonClearFolderDisk">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QPushButton" name="pushButtonClearFolderExtRom">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
-        <widget class="QPushButton" name="pushButtonClearFolderImg">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2">
-        <widget class="QPushButton" name="pushButtonClearFolderWave">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="labelFolderDokoSave">
-         <property name="text">
-          <string>どこでもSAVE(&amp;V):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditFolderDokoSave</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEditFolderRom"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderRom">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="labelFolderTape">
-         <property name="text">
-          <string>TAPE(&amp;T):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditFolderTape</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEditFolderTape"/>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEditFolderDisk"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderTape">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="labelFolderDisk">
-         <property name="text">
-          <string>DISK(&amp;K):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditFolderDisk</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderDisk">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="labelFolderImg">
-         <property name="text">
-          <string>SnapShot(&amp;H):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditFolderImg</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QLineEdit" name="lineEditFolderImg"/>
-       </item>
-       <item row="6" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderImg">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="labelFolderWave">
-         <property name="text">
-          <string>WAVE(&amp;W):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditFolderWave</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QLineEdit" name="lineEditFolderWave"/>
-       </item>
-       <item row="7" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderWave">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderExtRom">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="labelFolderRom">
-         <property name="text">
-          <string>ROM(&amp;R):</string>
-         </property>
-         <property name="buddy">
-          <cstring>lineEditFolderRom</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="2">
-        <widget class="QPushButton" name="pushButtonClearFolderDokoSave">
-         <property name="text">
-          <string>クリア</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1">
-        <widget class="QLineEdit" name="lineEditFolderDokoSave"/>
-       </item>
-       <item row="8" column="3">
-        <widget class="QPushButton" name="pushButtonRefFolderDokoSave">
-         <property name="text">
-          <string>参照...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0" colspan="3">
-        <spacer name="verticalSpacer_13">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tabColor1">
       <attribute name="title">
-       <string>色(&amp;1)</string>
+       <string>色(&amp;C)</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0" rowspan="2" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <item>
-            <widget class="QGroupBox" name="groupBoxColorMode1">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="title">
-              <string>MODE1(&amp;1)</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_13">
-              <item row="5" column="0">
-               <widget class="ColorButton" name="pushButtonColor19">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="ColorButton" name="pushButtonColor20">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QLabel" name="label_99">
-                <property name="text">
-                 <string>深橙</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QLabel" name="label_98">
-                <property name="text">
-                 <string>橙</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="ColorButton" name="pushButtonColor17">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLabel" name="label_97">
-                <property name="text">
-                 <string>深緑</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLabel" name="label_62">
-                <property name="text">
-                 <string>緑</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="ColorButton" name="pushButtonColor18">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0" colspan="2">
-               <widget class="QLabel" name="label_61">
-                <property name="text">
-                 <string>Set2</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0" colspan="2">
-               <widget class="QLabel" name="label_60">
-                <property name="text">
-                 <string>Set1</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_59">
-                <property name="text">
-                 <string>黒</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="ColorButton" name="pushButtonColor16">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_12">
-           <item>
-            <widget class="QGroupBox" name="groupBoxColorMode2">
-             <property name="title">
-              <string>MODE2(&amp;2)</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_8">
-              <item row="3" column="0">
-               <widget class="ColorButton" name="pushButtonColor24">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="QLabel" name="label_33">
-                <property name="text">
-                 <string>シアン</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLabel" name="label_30">
-                <property name="text">
-                 <string>青</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="label_29">
-                <property name="text">
-                 <string>黄</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="ColorButton" name="pushButtonColor28">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="ColorButton" name="pushButtonColor21">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="ColorButton" name="pushButtonColor26">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="1">
-               <widget class="QLabel" name="label_35">
-                <property name="text">
-                 <string>橙</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="ColorButton" name="pushButtonColor25">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="ColorButton" name="pushButtonColor22">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLabel" name="label_31">
-                <property name="text">
-                 <string>赤</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QLabel" name="label_32">
-                <property name="text">
-                 <string>白</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_28">
-                <property name="text">
-                 <string>緑</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="ColorButton" name="pushButtonColor27">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="ColorButton" name="pushButtonColor23">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QLabel" name="label_34">
-                <property name="text">
-                 <string>マゼンタ</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_9">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_13">
-           <item>
-            <widget class="QGroupBox" name="groupBoxColorMode3">
-             <property name="title">
-              <string>MODE3(&amp;3)</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_9">
-              <item row="1" column="0">
-               <widget class="ColorButton" name="pushButtonColor29">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="ColorButton" name="pushButtonColor30">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="ColorButton" name="pushButtonColor31">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="ColorButton" name="pushButtonColor32">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="2">
-               <widget class="QLabel" name="label_36">
-                <property name="text">
-                 <string>Set1</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0" colspan="2">
-               <widget class="QLabel" name="label_37">
-                <property name="text">
-                 <string>Set2</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="ColorButton" name="pushButtonColor33">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="ColorButton" name="pushButtonColor34">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0">
-               <widget class="ColorButton" name="pushButtonColor35">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="0">
-               <widget class="ColorButton" name="pushButtonColor36">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="label_38">
-                <property name="text">
-                 <string>緑</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLabel" name="label_39">
-                <property name="text">
-                 <string>黄</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLabel" name="label_40">
-                <property name="text">
-                 <string>青</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QLabel" name="label_41">
-                <property name="text">
-                 <string>赤</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QLabel" name="label_42">
-                <property name="text">
-                 <string>白</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="1">
-               <widget class="QLabel" name="label_43">
-                <property name="text">
-                 <string>シアン</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="1">
-               <widget class="QLabel" name="label_44">
-                <property name="text">
-                 <string>マゼンタ</string>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="1">
-               <widget class="QLabel" name="label_45">
-                <property name="text">
-                 <string>橙</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_10">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_14">
-           <item>
-            <widget class="QGroupBox" name="groupBoxColorMode4">
-             <property name="title">
-              <string>MODE4(&amp;4)</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_10">
-              <item row="5" column="8">
-               <widget class="QLabel" name="label_75">
-                <property name="text">
-                 <string>青</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="6">
-               <widget class="ColorButton" name="pushButtonColor53">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="8">
-               <widget class="QLabel" name="label_76">
-                <property name="text">
-                 <string>緑</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="8">
-               <widget class="QLabel" name="label_77">
-                <property name="text">
-                 <string>桃</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="5">
-               <widget class="ColorButton" name="pushButtonColor40">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="5">
-               <widget class="ColorButton" name="pushButtonColor39">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0">
-               <widget class="ColorButton" name="pushButtonColor51">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="ColorButton" name="pushButtonColor45">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0" colspan="5">
-               <widget class="QLabel" name="label_71">
-                <property name="text">
-                 <string>にじみ2</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="3">
-               <widget class="QLabel" name="label_78">
-                <property name="text">
-                 <string>桃</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="ColorButton" name="pushButtonColor47">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="4">
-               <widget class="QLabel" name="label_46">
-                <property name="text">
-                 <string>Set1</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="ColorButton" name="pushButtonColor49">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="ColorButton" name="pushButtonColor38">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="8">
-               <widget class="QLabel" name="label_74">
-                <property name="text">
-                 <string>赤</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="2">
-               <widget class="ColorButton" name="pushButtonColor46">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="3">
-               <widget class="QLabel" name="label_73">
-                <property name="text">
-                 <string>青</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="1">
-               <widget class="ColorButton" name="pushButtonColor44">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="7">
-               <widget class="ColorButton" name="pushButtonColor60">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="3">
-               <widget class="QLabel" name="label_72">
-                <property name="text">
-                 <string>赤</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="7">
-               <widget class="ColorButton" name="pushButtonColor64">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="7">
-               <widget class="ColorButton" name="pushButtonColor58">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="5">
-               <widget class="ColorButton" name="pushButtonColor61">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="5">
-               <widget class="ColorButton" name="pushButtonColor57">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="3">
-               <widget class="QLabel" name="label_79">
-                <property name="text">
-                 <string>緑</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="2">
-               <widget class="ColorButton" name="pushButtonColor52">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="ColorButton" name="pushButtonColor37">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="6">
-               <widget class="ColorButton" name="pushButtonColor54">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="6">
-               <widget class="ColorButton" name="pushButtonColor55">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="7">
-               <widget class="ColorButton" name="pushButtonColor62">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="1">
-               <widget class="ColorButton" name="pushButtonColor42">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="ColorButton" name="pushButtonColor41">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="5">
-               <widget class="ColorButton" name="pushButtonColor59">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="1">
-               <widget class="ColorButton" name="pushButtonColor43">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="2">
-               <widget class="ColorButton" name="pushButtonColor48">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="2">
-               <widget class="ColorButton" name="pushButtonColor50">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0" colspan="4">
-               <widget class="QLabel" name="label_68">
-                <property name="text">
-                 <string>にじみ1</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="5">
-               <widget class="ColorButton" name="pushButtonColor63">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="5" colspan="4">
-               <widget class="QLabel" name="label_69">
-                <property name="text">
-                 <string>にじみ1</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="6">
-               <widget class="ColorButton" name="pushButtonColor56">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0,0,0);
-border-style:solid;
-border-color: rgb(0, 0, 0);
-border-width: 1px;
-border-radius: 1;</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="5" colspan="4">
-               <widget class="QLabel" name="label_70">
-                <property name="text">
-                 <string>にじみ2</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="6" colspan="3">
-               <widget class="QLabel" name="label_67">
-                <property name="text">
-                 <string>白</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="6" colspan="3">
-               <widget class="QLabel" name="label_66">
-                <property name="text">
-                 <string>黒</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="5" colspan="4">
-               <widget class="QLabel" name="label_63">
-                <property name="text">
-                 <string>Set2</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1" colspan="3">
-               <widget class="QLabel" name="label_65">
-                <property name="text">
-                 <string>緑</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1" colspan="3">
-               <widget class="QLabel" name="label_64">
-                <property name="text">
-                 <string>深緑</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_11">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="0">
-        <spacer name="verticalSpacer_16">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="2" column="0" colspan="3">
-        <widget class="QLabel" name="label_27">
-         <property name="text">
-          <string>変更したい色をクリックしてください</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <spacer name="horizontalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tabColor2">
-      <attribute name="title">
-       <string>色(&amp;2)</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_11">
-       <item row="2" column="0">
-        <spacer name="verticalSpacer_8">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="2" column="0" rowspan="2" colspan="2">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
           <string>mk2〜(&amp;M)</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_14">
           <item row="0" column="0">
-           <widget class="ColorButton" name="pushButtonColor65">
+           <widget class="ColorButton" name="pushButtonColor41">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2630,7 +1330,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="ColorButton" name="pushButtonColor66">
+           <widget class="ColorButton" name="pushButtonColor42">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2653,7 +1353,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="ColorButton" name="pushButtonColor67">
+           <widget class="ColorButton" name="pushButtonColor43">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2676,7 +1376,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="4" column="0">
-           <widget class="ColorButton" name="pushButtonColor68">
+           <widget class="ColorButton" name="pushButtonColor44">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2699,7 +1399,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="5" column="0">
-           <widget class="ColorButton" name="pushButtonColor69">
+           <widget class="ColorButton" name="pushButtonColor45">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2722,7 +1422,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="6" column="0">
-           <widget class="ColorButton" name="pushButtonColor70">
+           <widget class="ColorButton" name="pushButtonColor46">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2745,7 +1445,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="7" column="0">
-           <widget class="ColorButton" name="pushButtonColor71">
+           <widget class="ColorButton" name="pushButtonColor47">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2768,7 +1468,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="9" column="0">
-           <widget class="ColorButton" name="pushButtonColor72">
+           <widget class="ColorButton" name="pushButtonColor48">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2847,7 +1547,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="0" column="2">
-           <widget class="ColorButton" name="pushButtonColor73">
+           <widget class="ColorButton" name="pushButtonColor49">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2870,7 +1570,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="2" column="2">
-           <widget class="ColorButton" name="pushButtonColor74">
+           <widget class="ColorButton" name="pushButtonColor50">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2893,7 +1593,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="3" column="2">
-           <widget class="ColorButton" name="pushButtonColor75">
+           <widget class="ColorButton" name="pushButtonColor51">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2916,7 +1616,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="ColorButton" name="pushButtonColor76">
+           <widget class="ColorButton" name="pushButtonColor52">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2939,7 +1639,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="5" column="2">
-           <widget class="ColorButton" name="pushButtonColor77">
+           <widget class="ColorButton" name="pushButtonColor53">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2962,7 +1662,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="6" column="2">
-           <widget class="ColorButton" name="pushButtonColor78">
+           <widget class="ColorButton" name="pushButtonColor54">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -2985,7 +1685,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="7" column="2">
-           <widget class="ColorButton" name="pushButtonColor79">
+           <widget class="ColorButton" name="pushButtonColor55">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -3008,7 +1708,7 @@ border-radius: 1;</string>
            </widget>
           </item>
           <item row="9" column="2">
-           <widget class="ColorButton" name="pushButtonColor80">
+           <widget class="ColorButton" name="pushButtonColor56">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -3089,15 +1789,16 @@ border-radius: 1;</string>
          </layout>
         </widget>
        </item>
-       <item row="1" column="0" colspan="3">
-        <widget class="QLabel" name="label_80">
+       <item row="2" column="3">
+        <widget class="QLabel" name="label_27">
          <property name="text">
-          <string>変更したい色をクリックしてください</string>
+          <string>変更したい色を
+クリックしてください</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <spacer name="horizontalSpacer_6">
+       <item row="0" column="4">
+        <spacer name="horizontalSpacer_5">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -3108,6 +1809,1245 @@ border-radius: 1;</string>
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="4" column="1">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1" rowspan="2">
+        <widget class="QGroupBox" name="groupBoxColorMode2">
+         <property name="title">
+          <string>MODE2/3(&amp;2)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0">
+           <widget class="ColorButton" name="pushButtonColor5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="ColorButton" name="pushButtonColor6">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="ColorButton" name="pushButtonColor11">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="ColorButton" name="pushButtonColor7">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="label_34">
+            <property name="text">
+             <string>マゼンタ</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="ColorButton" name="pushButtonColor12">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLabel" name="label_35">
+            <property name="text">
+             <string>橙</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="ColorButton" name="pushButtonColor8">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLabel" name="label_33">
+            <property name="text">
+             <string>シアン</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_31">
+            <property name="text">
+             <string>赤</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_28">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="ColorButton" name="pushButtonColor10">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="ColorButton" name="pushButtonColor9">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_32">
+            <property name="text">
+             <string>白</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_29">
+            <property name="text">
+             <string>黄</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_30">
+            <property name="text">
+             <string>青</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="3" rowspan="2">
+        <widget class="QGroupBox" name="groupBoxColorMode4">
+         <property name="title">
+          <string>MODE4(&amp;4)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_10">
+          <item row="8" column="5">
+           <widget class="ColorButton" name="pushButtonColor39">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="7">
+           <widget class="ColorButton" name="pushButtonColor36">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="5" colspan="4">
+           <widget class="QLabel" name="label_69">
+            <property name="text">
+             <string>にじみ1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="5">
+           <widget class="ColorButton" name="pushButtonColor16">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5" colspan="4">
+           <widget class="QLabel" name="label_63">
+            <property name="text">
+             <string>Set2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="6">
+           <widget class="ColorButton" name="pushButtonColor32">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="4">
+           <widget class="QLabel" name="label_46">
+            <property name="text">
+             <string>Set1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="5" colspan="4">
+           <widget class="QLabel" name="label_70">
+            <property name="text">
+             <string>にじみ2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="8">
+           <widget class="QLabel" name="label_77">
+            <property name="text">
+             <string>桃</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="ColorButton" name="pushButtonColor23">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="ColorButton" name="pushButtonColor19">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="5">
+           <widget class="ColorButton" name="pushButtonColor35">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="6">
+           <widget class="ColorButton" name="pushButtonColor30">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="6" colspan="3">
+           <widget class="QLabel" name="label_67">
+            <property name="text">
+             <string>白</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="5">
+           <widget class="QLabel" name="label_71">
+            <property name="text">
+             <string>にじみ2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="3">
+           <widget class="QLabel" name="label_73">
+            <property name="text">
+             <string>青</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="ColorButton" name="pushButtonColor24">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="7">
+           <widget class="ColorButton" name="pushButtonColor40">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="2">
+           <widget class="ColorButton" name="pushButtonColor26">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="ColorButton" name="pushButtonColor14">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="5">
+           <widget class="ColorButton" name="pushButtonColor37">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="2">
+           <widget class="ColorButton" name="pushButtonColor28">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="6">
+           <widget class="ColorButton" name="pushButtonColor29">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="3">
+           <widget class="QLabel" name="label_65">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QLabel" name="label_72">
+            <property name="text">
+             <string>赤</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="3">
+           <widget class="QLabel" name="label_79">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="ColorButton" name="pushButtonColor17">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="ColorButton" name="pushButtonColor22">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="6">
+           <widget class="ColorButton" name="pushButtonColor31">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="ColorButton" name="pushButtonColor27">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="ColorButton" name="pushButtonColor21">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="ColorButton" name="pushButtonColor25">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="6" colspan="3">
+           <widget class="QLabel" name="label_66">
+            <property name="text">
+             <string>黒</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="8">
+           <widget class="QLabel" name="label_76">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="7">
+           <widget class="ColorButton" name="pushButtonColor34">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="5">
+           <widget class="ColorButton" name="pushButtonColor33">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="8">
+           <widget class="QLabel" name="label_74">
+            <property name="text">
+             <string>赤</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="3">
+           <widget class="QLabel" name="label_78">
+            <property name="text">
+             <string>桃</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="8">
+           <widget class="QLabel" name="label_75">
+            <property name="text">
+             <string>青</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <widget class="ColorButton" name="pushButtonColor15">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="ColorButton" name="pushButtonColor18">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QLabel" name="label_64">
+            <property name="text">
+             <string>深緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="4">
+           <widget class="QLabel" name="label_68">
+            <property name="text">
+             <string>にじみ1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="7">
+           <widget class="ColorButton" name="pushButtonColor38">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="ColorButton" name="pushButtonColor20">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="ColorButton" name="pushButtonColor13">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0" rowspan="2">
+        <widget class="QGroupBox" name="groupBoxColorMode1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>MODE1(&amp;1)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_13">
+          <item row="7" column="1">
+           <widget class="QLabel" name="label_99">
+            <property name="text">
+             <string>深橙</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="label_98">
+            <property name="text">
+             <string>橙</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="ColorButton" name="pushButtonColor3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="ColorButton" name="pushButtonColor1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_62">
+            <property name="text">
+             <string>緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_59">
+            <property name="text">
+             <string>黒</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="ColorButton" name="pushButtonColor4">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="ColorButton" name="pushButtonColor0">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="label_97">
+            <property name="text">
+             <string>深緑</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QLabel" name="label_60">
+            <property name="text">
+             <string>Set1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="ColorButton" name="pushButtonColor2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(0,0,0);
+border-style:solid;
+border-color: rgb(0, 0, 0);
+border-width: 1px;
+border-radius: 1;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QLabel" name="label_61">
+            <property name="text">
+             <string>Set2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0" colspan="2">
+           <spacer name="verticalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -3177,136 +3117,6 @@ border-radius: 1;</string>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBoxTurboTape">
-         <property name="text">
-          <string>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBoxBoostUp">
-         <property name="title">
-          <string>Boost Up (TAPE最速化)(&amp;U)</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_16">
-          <item>
-           <widget class="QLabel" name="label_56">
-            <property name="text">
-             <string>最大倍率</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_12">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_58">
-            <property name="text">
-             <string>N60</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEditBoost60">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="inputMethodHints">
-             <set>Qt::ImhDigitsOnly</set>
-            </property>
-            <property name="inputMask">
-             <string>9</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_11">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_57">
-            <property name="text">
-             <string>N60m/N66</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEditBoost66">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="inputMethodHints">
-             <set>Qt::ImhDigitsOnly</set>
-            </property>
-            <property name="inputMask">
-             <string>9</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_10">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkBoxFDDWaitEnable">
-         <property name="text">
-          <string>FDDアクセスウェイト有効(&amp;W)</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="checkBoxCkQuit">
          <property name="text">
           <string>終了時に確認する(&amp;F)</string>
@@ -3347,49 +3157,19 @@ border-radius: 1;</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>lineEditFolderRom</tabstop>
-  <tabstop>pushButtonRefFolderRom</tabstop>
-  <tabstop>lineEditFolderTape</tabstop>
-  <tabstop>pushButtonRefFolderTape</tabstop>
-  <tabstop>lineEditFolderDisk</tabstop>
-  <tabstop>pushButtonRefFolderDisk</tabstop>
-  <tabstop>lineEditFolderExtRom</tabstop>
-  <tabstop>pushButtonRefFolderExtRom</tabstop>
-  <tabstop>lineEditFolderImg</tabstop>
-  <tabstop>pushButtonRefFolderImg</tabstop>
-  <tabstop>lineEditFolderWave</tabstop>
-  <tabstop>pushButtonRefFolderWave</tabstop>
   <tabstop>lineEditClockRatio</tabstop>
   <tabstop>checkBoxRomCRC</tabstop>
-  <tabstop>checkBoxTurboTape</tabstop>
-  <tabstop>lineEditBoost60</tabstop>
-  <tabstop>lineEditBoost66</tabstop>
   <tabstop>checkBoxCkQuit</tabstop>
   <tabstop>checkBoxSaveQuit</tabstop>
-  <tabstop>pushButtonColor21</tabstop>
-  <tabstop>pushButtonColor22</tabstop>
-  <tabstop>pushButtonColor23</tabstop>
-  <tabstop>pushButtonColor24</tabstop>
-  <tabstop>pushButtonColor25</tabstop>
-  <tabstop>pushButtonColor26</tabstop>
-  <tabstop>pushButtonColor27</tabstop>
-  <tabstop>pushButtonColor28</tabstop>
-  <tabstop>pushButtonColor29</tabstop>
-  <tabstop>pushButtonColor30</tabstop>
-  <tabstop>pushButtonColor31</tabstop>
-  <tabstop>pushButtonColor32</tabstop>
-  <tabstop>pushButtonColor33</tabstop>
-  <tabstop>pushButtonColor34</tabstop>
-  <tabstop>pushButtonColor35</tabstop>
-  <tabstop>pushButtonColor36</tabstop>
-  <tabstop>radioButtonFDD2</tabstop>
+  <tabstop>pushButtonColor5</tabstop>
+  <tabstop>pushButtonColor6</tabstop>
+  <tabstop>pushButtonColor7</tabstop>
+  <tabstop>pushButtonColor8</tabstop>
+  <tabstop>pushButtonColor9</tabstop>
+  <tabstop>pushButtonColor10</tabstop>
+  <tabstop>pushButtonColor11</tabstop>
+  <tabstop>pushButtonColor12</tabstop>
   <tabstop>buttonBox</tabstop>
-  <tabstop>radioButtonColorGP</tabstop>
-  <tabstop>horizontalSliderFPS</tabstop>
-  <tabstop>checkBoxScanline</tabstop>
-  <tabstop>checkBoxDispNTSC</tabstop>
-  <tabstop>checkBoxFullscreen</tabstop>
-  <tabstop>checkBoxStatDisp</tabstop>
   <tabstop>horizontalSliderMasterVol</tabstop>
   <tabstop>horizontalSliderPSGVol</tabstop>
   <tabstop>horizontalSliderVoiceVol</tabstop>

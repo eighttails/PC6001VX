@@ -186,11 +186,14 @@ void ConfigDialog::readConfig()
 	// MODE4カラー
 	ui->comboBoxMode4Color->setCurrentIndex(config->GetValue(CV_Mode4Color));
 
+	// フレームスキップ
+	// #設定しない
+
 	// スキャンライン
 	ui->checkBoxScanline->setChecked(config->GetValue(CB_ScanLine));
 
 	// スキャンライン輝度
-	ui->spinBoxScanLine->setValue(config->GetValue(CV_ScanLineBr));
+	ui->spinBoxScanLineBr->setValue(config->GetValue(CV_ScanLineBr));
 
 	// 4:3表示
 	ui->checkBoxDispNTSC->setChecked(config->GetValue(CB_DispNTSC));
@@ -214,8 +217,24 @@ void ConfigDialog::readConfig()
 	// フィルタリング
 	ui->checkBoxFiltering->setChecked(app->getSetting(P6VXApp::keyFiltering).toBool());
 
+	//// ビデオキャプチャ時の設定
 	// フレームスキップ
 	ui->comboBoxMovieFrameSkip->setCurrentIndex(config->GetValue(CV_AviFrameSkip));
+
+	// 解像度倍率
+	ui->spinBoxMovieZoom->setValue(config->GetValue(CV_AviZoom));
+
+	// スキャンライン
+	ui->checkBoxMovieScanline->setChecked(config->GetValue(CB_AviScanLine));
+
+	// スキャンライン輝度
+	ui->spinBoxMovieScanLineBr->setValue(config->GetValue(CV_AviScanLineBr));
+
+	// 4:3表示
+	ui->checkBoxMovieDispNTSC->setChecked(config->GetValue(CB_AviDispNTSC));
+
+	// フィルタリング
+	ui->checkBoxMovieFiltering->setChecked(config->GetValue(CB_AviFiltering));
 
 	// サウンド------------------------------------------------------
 	// マスター音量
@@ -353,7 +372,7 @@ void ConfigDialog::readConfig()
 
 	// その他
 	// オーバークロック率
-	ui->lineEditClockRatio->setText(QString::number(qMin(qMax(1, config->GetValue(CV_OverClock)), 1000)));
+	ui->spinBoxClockRatio->setValue(config->GetValue(CV_OverClock));
 
 	// CRCチェック
 	ui->checkBoxRomCRC->setChecked(config->GetValue(CB_CheckCRC));
@@ -370,51 +389,54 @@ void ConfigDialog::readConfig()
 
 void ConfigDialog::writeConfig()
 {
-#if 0 #TODO 後で消す
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	// 一時変数
-	int iVal = 0;
+//	int iVal = 0;
 	QString qStr;
-	bool conv = false;
+//	bool conv = false;
 
 	// 基本------------------------------------------------
 	// 機種
-	if      (ui->radioButtonModel6001->isChecked())			config->SetValue(CV_Model, 60);
-	else if (ui->radioButtonModel6001A->isChecked())		config->SetValue(CV_Model, 61);
-	else if (ui->radioButtonModel6001mk2->isChecked())		config->SetValue(CV_Model, 62);
-	else if (ui->radioButtonModel6001mk2SR->isChecked())	config->SetValue(CV_Model, 64);
-	else if (ui->radioButtonModel6601->isChecked())			config->SetValue(CV_Model, 66);
-	else if (ui->radioButtonModel6601SR->isChecked())		config->SetValue(CV_Model, 68);
+	config->SetValue(CV_Model, modelIds[ui->comboBoxModel->currentIndex()]);
 
-	// FDD
-	if      (ui->radioButtonFDD0->isChecked())	config->SetValue(CV_FDDrive, 0);
-	else if (ui->radioButtonFDD1->isChecked())	config->SetValue(CV_FDDrive, 1);
-	else if (ui->radioButtonFDD2->isChecked())	config->SetValue(CV_FDDrive, 2);
+	//// FDD
+	// FDDドライブ数
+	config->SetValue(CV_FDDrive, ui->spinBoxNumFdd->value());
+	// FDDアクセスウェイト有効
+	config->SetValue(CB_FDDWait, ui->checkBoxFDDWaitEnable->isChecked());
 
-	// 拡張RAM使用
-	// #TODO
-	//	config->SetValue(CB_UseExtRam, ui->checkBoxExtRam->isChecked());
+	//// CMT
+	// CRCチェック
+	config->SetValue(CB_CheckCRC, ui->checkBoxRomCRC->isChecked());
 
-	// 戦士のカートリッジ使用
-	// #TODO
-	//	config->SetValue(CB_UseSoldier, ui->checkBoxUseSoldier->isChecked());
+	// Turbo TAPE
+	config->SetValue(CB_TurboTAPE, ui->checkBoxTurboTape->isChecked());
+
+	// Boost Up
+	config->SetValue(CB_BoostUp, ui->groupBoxBoostUp->isChecked());
+
+	// BoostUp 最大倍率(N60モード)
+	config->SetValue(CV_MaxBoost60, ui->spinBoxBoost60->value());
+
+	// BoostUp 最大倍率(N60m/N66モード)
+	config->SetValue(CV_MaxBoost62, ui->spinBoxBoost66->value());
+
+	// 拡張カートリッジ
+	config->SetValue(CV_ExCartridge, int(extCartIds[ui->comboBoxExtCartridge->currentIndex()]));
+
 
 	// 画面---------------------------------------------------------------------
 	// MODE4カラー
-	if      (ui->radioButtonColorBW->isChecked())	config->SetValue(CV_Mode4Color, 0);	// モノクロ
-	else if (ui->radioButtonColorBR->isChecked())	config->SetValue(CV_Mode4Color, 1);	// 赤/青
-	else if (ui->radioButtonColorRB->isChecked())	config->SetValue(CV_Mode4Color, 2);	// 青/赤
-	else if (ui->radioButtonColorPG->isChecked())	config->SetValue(CV_Mode4Color, 3);	// ピンク/緑
-	else if (ui->radioButtonColorGP->isChecked())	config->SetValue(CV_Mode4Color, 4);	// 緑/ピンク
+	config->SetValue(CV_Mode4Color, ui->comboBoxMode4Color->currentIndex());
+
+	// フレームスキップ
+	// #設定しない
 
 	// スキャンライン
 	config->SetValue(CB_ScanLine, ui->checkBoxScanline->isChecked());
 
 	// スキャンライン輝度
-	iVal = ui->lineEditScanLineBr->text().toInt(&conv);
-	if(conv){
-		config->SetValue(CV_ScanLineBr, iVal);
-	}
+	config->SetValue(CV_ScanLineBr, ui->spinBoxScanLineBr->value());
 
 	// 4:3表示
 	config->SetValue(CB_DispNTSC, ui->checkBoxDispNTSC->isChecked());
@@ -432,8 +454,25 @@ void ConfigDialog::writeConfig()
 	// フィルタリング
 	app->setSetting(P6VXApp::keyFiltering, ui->checkBoxFiltering->isChecked());
 
+
+	//// ビデオキャプチャ時の設定
 	// フレームスキップ
-	config->SetValue(CV_FrameSkip, ui->horizontalSliderFPS->value());
+	config->SetValue(CV_AviFrameSkip, ui->comboBoxMovieFrameSkip->currentIndex());
+
+	// 解像度倍率
+	config->SetValue(CV_AviZoom, ui->spinBoxMovieZoom->value());
+
+	// スキャンライン
+	config->SetValue(CB_AviScanLine, ui->checkBoxMovieScanline->isChecked());
+
+	// スキャンライン輝度
+	config->SetValue(CV_AviScanLineBr, ui->spinBoxMovieScanLineBr->value());
+
+	// 4:3表示
+	config->SetValue(CB_AviDispNTSC, ui->checkBoxMovieDispNTSC->isChecked());
+
+	// フィルタリング
+	config->SetValue(CB_AviFiltering, ui->checkBoxMovieFiltering->isChecked());
 
 
 	// サウンド-------------------------------------------------------------------
@@ -539,42 +578,13 @@ void ConfigDialog::writeConfig()
 
 	// その他--------------------------------------------------------------
 	// オーバークロック率
-	iVal = ui->lineEditClockRatio->text().toInt(&conv);
-	if(conv){
-		config->SetValue(CV_OverClock, min(max(1, iVal), 1000));
-	}
-
-	// CRCチェック
-	config->SetValue(CB_CheckCRC, ui->checkBoxRomCRC->isChecked());
-
-	// Turbo TAPE
-	config->SetValue(CB_TurboTAPE, ui->checkBoxTurboTape->isChecked());
-
-	// Boost Up
-	config->SetValue(CB_BoostUp, ui->groupBoxBoostUp->isChecked());
-
-	// BoostUp 最大倍率(N60モード)
-	iVal = ui->lineEditBoost60->text().toInt(&conv);
-	if(conv){
-		config->SetValue(CV_MaxBoost60, min(max(1, iVal), 100));
-	}
-
-	// BoostUp 最大倍率(N60m/N66モード)
-	iVal = ui->lineEditBoost66->text().toInt(&conv);
-	if(conv){
-		config->SetValue(CV_MaxBoost62, min(max(1, iVal), 100));
-	}
-
-	// FDDアクセスウェイト有効
-	config->SetValue(CB_FDDWait, ui->checkBoxFDDWaitEnable->isChecked());
+	config->SetValue(CV_OverClock, ui->spinBoxClockRatio->value());
 
 	// 終了時 確認する
 	config->SetValue(CB_CkQuit, ui->checkBoxCkQuit->isChecked());
 
 	// 終了時 INIファイルを保存する
 	config->SetValue(CB_SaveQuit, ui->checkBoxSaveQuit->isChecked());
-
-#endif
 }
 
 void ConfigDialog::selectFile(QWidget *widget)

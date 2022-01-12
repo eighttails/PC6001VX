@@ -36,7 +36,7 @@
       <bool>true</bool>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabBasic">
       <attribute name="title">
@@ -502,17 +502,17 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="labelScanLineBrightness">
+          <widget class="QLabel" name="labelScanLineBr">
            <property name="text">
             <string>輝度(&amp;B):</string>
            </property>
            <property name="buddy">
-            <cstring>spinBoxScanLine</cstring>
+            <cstring>spinBoxScanLineBr</cstring>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBoxScanLine">
+          <widget class="QSpinBox" name="spinBoxScanLineBr">
            <property name="maximum">
             <number>100</number>
            </property>
@@ -597,12 +597,12 @@
                <string>輝度(&amp;B):</string>
               </property>
               <property name="buddy">
-               <cstring>spinBoxMovieScanLine</cstring>
+               <cstring>spinBoxMovieScanLineBr</cstring>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="spinBoxMovieScanLine">
+             <widget class="QSpinBox" name="spinBoxMovieScanLineBr">
               <property name="maximum">
                <number>100</number>
               </property>
@@ -646,38 +646,82 @@
              <widget class="QComboBox" name="comboBoxMovieFrameSkip">
               <item>
                <property name="text">
-                <string>0(59.92fps)</string>
+                <string>0 (59.92fps)</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>1(29.96fps)</string>
+                <string>1 (29.96fps)</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>2(19.97fps)</string>
+                <string>2 (19.97fps)</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>3(14.98fps)</string>
+                <string>3 (14.98fps)</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>4(11.98fps)</string>
+                <string>4 (11.98fps)</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>5(9.99fps)</string>
+                <string>5 (9.99fps)</string>
                </property>
               </item>
              </widget>
             </item>
             <item>
              <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLabel" name="labelMovieZoom">
+              <property name="text">
+               <string>解像度倍率(&amp;Z):</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBoxMovieZoom</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxMovieZoom">
+              <property name="minimum">
+               <number>50</number>
+              </property>
+              <property name="maximum">
+               <number>400</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>(50-400)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_14">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -3063,27 +3107,15 @@ border-radius: 1;</string>
            <property name="text">
             <string>オーバークロック率(&amp;V):</string>
            </property>
-           <property name="buddy">
-            <cstring>lineEditClockRatio</cstring>
-           </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEditClockRatio">
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
+          <widget class="QSpinBox" name="spinBoxClockRatio">
+           <property name="minimum">
+            <number>1</number>
            </property>
-           <property name="inputMethodHints">
-            <set>Qt::ImhDigitsOnly</set>
-           </property>
-           <property name="inputMask">
-            <string>9999</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <property name="maximum">
+            <number>1000</number>
            </property>
           </widget>
          </item>
@@ -3157,7 +3189,6 @@ border-radius: 1;</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>lineEditClockRatio</tabstop>
   <tabstop>checkBoxRomCRC</tabstop>
   <tabstop>checkBoxCkQuit</tabstop>
   <tabstop>checkBoxSaveQuit</tabstop>

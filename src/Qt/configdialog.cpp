@@ -11,26 +11,29 @@
 
 // 設定ファイル内のモデルIDとコンボボックスのインデックスの対応
 static const QList<int> modelIds {
-		60,
-		61,
-		62,
-		66,
-		64,
-		68,
+	60,
+	61,
+	62,
+	66,
+	64,
+	68,
 };
 
 
 // 設定ファイル内の拡張カートリッジIDとコンボボックスのインデックスの対応
 static const QList<WORD> extCartIds {
-		0,
-		EXC6001,
-		EXC6005,
-		EXC6006,
-		EXC660101,
-		EXC6006SR,
-		EXC6007SR,
-		EXC6053,
-		EXC60M55
+	0,
+	EXC6001,
+	EXC6005,
+	EXC6006,
+	EXC660101,
+	EXC6006SR,
+	EXC6007SR,
+	// EXC6053,
+	// EXC60M55,
+	EXCSOL1,
+	EXCSOL2,
+	EXCSOL3,
 };
 
 ConfigDialog::ConfigDialog(std::shared_ptr<CFG6> cfg, QWidget *parent)
@@ -391,9 +394,7 @@ void ConfigDialog::writeConfig()
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	// 一時変数
-//	int iVal = 0;
 	QString qStr;
-//	bool conv = false;
 
 	// 基本------------------------------------------------
 	// 機種

@@ -177,9 +177,24 @@ void EL6::ExecMenu( int id )
 	case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );	break;
 	case ID_DISKEJECT1:														// DISK 排出
 	case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );		break;
-		//#TODO case ID_ROMINSERT:		UI_CartInsert();							break;	// 拡張ROM 挿入
-		//#TODO ROM挿入系
-	case ID_CARTEJECT:		UI_CartEject();							break;	// 拡張ROM 排出
+
+	case ID_C6005:			UI_CartInsert     ( EXC6005   );		break;	// 拡張カートリッジ 挿入			(PC-6005	ROMカートリッジ)
+	case ID_C6006:			UI_CartInsert     ( EXC6006   );		break;	// 拡張カートリッジ 挿入			(PC-6006	拡張ROM/RAMカートリッジ)
+	case ID_C6006NR:		UI_CartInsertNoRom( EXC6006   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(PC-6006	拡張ROM/RAMカートリッジ)
+	case ID_C6001:			UI_CartInsert     ( EXC6001   );		break;	// 拡張カートリッジ 挿入			(PCS-6001R	拡張BASIC)
+	case ID_C660101:		UI_CartInsert     ( EXC660101 );		break;	// 拡張カートリッジ 挿入			(PC-6601-01	拡張漢字ROMカートリッジ)
+	case ID_C6006SR:		UI_CartInsert     ( EXC6006SR );		break;	// 拡張カートリッジ 挿入			(PC-6006SR	拡張64KRAMカートリッジ)
+	case ID_C6007SR:		UI_CartInsert     ( EXC6007SR );		break;	// 拡張カートリッジ 挿入			(PC-6007SR	拡張漢字ROM&RAMカートリッジ)
+	case ID_C6053:			UI_CartInsert     ( EXC6053   );		break;	// 拡張カートリッジ 挿入			(PC-6053    ボイスシンセサイザー)
+	case ID_C60M55:			UI_CartInsert     ( EXC60M55  );		break;	// 拡張カートリッジ 挿入			(PC-60m55   FM音源カートリッジ)
+	case ID_CSOL1:			UI_CartInsert     ( EXCSOL1   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジ)
+	case ID_CSOL1NR:		UI_CartInsertNoRom( EXCSOL1   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジ)
+	case ID_CSOL2:			UI_CartInsert     ( EXCSOL2   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジmkⅡ)
+	case ID_CSOL2NR:		UI_CartInsertNoRom( EXCSOL2   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅡ)
+	case ID_CSOL3:			UI_CartInsert     ( EXCSOL3   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジmkⅢ)
+	case ID_CSOL3NR:		UI_CartInsertNoRom( EXCSOL3   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅢ)
+	case ID_CARTEJECT:		UI_CartEject();							break;	// 拡張カートリッジ 排出
+
 	case ID_JOY100:															// ジョイスティック1
 	case ID_JOY101:
 	case ID_JOY102:
@@ -465,7 +480,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QMenu* tapeMenu = menu.addMenu(tr("TAPE"));
 	addCommand(tapeMenu, tr("挿入..."), ID_TAPEINSERT);
 	QAction* tapeEject = addCommand(tapeMenu, tr("取出"), ID_TAPEEJECT);
-	if(!P6VPATH2QSTR(vm->cmtl->GetFile()).isEmpty()) tapeEject->setEnabled(false);
+	if(P6VPATH2QSTR(vm->cmtl->GetFile()).isEmpty()) tapeEject->setEnabled(false);
 	QAction* tapeExport = addCommand(tapeMenu, tr("TAPE(SAVE)をエクスポート..."), ID_TAPEEXPORT);
 
 	// DISKメニュー
@@ -476,7 +491,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 			QMenu* driveMenu = diskMenu->addMenu(item);
 			addCommand(driveMenu, tr("挿入..."), MenuCommand(ID_DISKINSERT1 + i));
 			QAction* diskEject = addCommand(driveMenu, tr("取出"), MenuCommand(ID_DISKEJECT1 + i));
-			if (!P6VPATH2QSTR(vm->disk->GetFile(i)).isEmpty()){
+			if (P6VPATH2QSTR(vm->disk->GetFile(i)).isEmpty()){
 				diskEject->setEnabled(false);
 			}
 		}
@@ -484,40 +499,46 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	// 拡張カートリッジメニュー
 	QMenu* extRomMenu = menu.addMenu(tr("拡張カートリッジ"));
-	QAction* romEject = addCommand(extRomMenu, tr("なし"), ID_CARTEJECT);
-	if(!P6VPATH2QSTR(vm->mem->GetFile()).isEmpty()) romEject->setEnabled(false);
+	QAction* romEject = addCommand(extRomMenu, tr("なし"), ID_CARTEJECT, true);
 	extRomMenu->addSeparator();
-	QAction* romC6005 = addCommand(extRomMenu, tr("PC-6005    ROMカートリッジ..."), ID_C6005);
-	{
-		QMenu* extRomSubMenu = extRomMenu->addMenu(tr("PC-6006    拡張ROM/RAMカートリッジ"));
-		QAction* romC6006 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_C6006);
-		QAction* romC6006NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_C6006NR);
-	}
+	QAction* romC6005 = addCommand(extRomMenu, tr("PC-6005    ROMカートリッジ..."), ID_C6005, true);
+	QMenu* extRomSubMenu = extRomMenu->addMenu(tr("PC-6006    拡張ROM/RAMカートリッジ"));
+	QAction* romC6006 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_C6006, true);
+	QAction* romC6006NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_C6006NR, true);
 	extRomMenu->addSeparator();
-	QAction* romC6001 = addCommand(extRomMenu, tr("PCS-6001R  拡張BASIC"), ID_C6001);
-	QAction* romC660101 = addCommand(extRomMenu, tr("PC-6601-01 拡張漢字ROMカートリッジ"), ID_C660101);
-	QAction* romC6006SR = addCommand(extRomMenu, tr("PC-6006SR  拡張64KRAMカートリッジ"), ID_C6006SR);
-	QAction* romC6007SR = addCommand(extRomMenu, tr("PC-6007SR  拡張漢字ROM&&RAMカートリッジ"), ID_C6007SR);
+	QAction* romC6001 = addCommand(extRomMenu, tr("PCS-6001R  拡張BASIC"), ID_C6001, true);
+	QAction* romC660101 = addCommand(extRomMenu, tr("PC-6601-01 拡張漢字ROMカートリッジ"), ID_C660101, true);
+	QAction* romC6006SR = addCommand(extRomMenu, tr("PC-6006SR  拡張64KRAMカートリッジ"), ID_C6006SR, true);
+	QAction* romC6007SR = addCommand(extRomMenu, tr("PC-6007SR  拡張漢字ROM&&RAMカートリッジ"), ID_C6007SR, true);
 	extRomMenu->addSeparator();
-	QAction* romC6053 = addCommand(extRomMenu, tr("PC-6053    ボイスシンセサイザー"), ID_C6053);
-	QAction* romC60M55 = addCommand(extRomMenu, tr("PC-60m55   FM音源カートリッジ"), ID_C60M55);
-	extRomMenu->addSeparator();
-	{
-		QMenu* extRomSubMenu = extRomMenu->addMenu(tr("戦士のカートリッジ"));
-		QAction* romCSOL1 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_CSOL1);
-		QAction* romCSOL1NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_CSOL1NR);
-	}
-	{
-		QMenu* extRomSubMenu = extRomMenu->addMenu(tr("戦士のカートリッジmkⅡ"));
-		QAction* romCSOL2 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_CSOL2);
-		QAction* romCSOL2NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_CSOL2NR);
-	}
-	{
-		QMenu* extRomSubMenu = extRomMenu->addMenu(tr("戦士のカートリッジmkⅢ"));
-		QAction* romCSOL3 = addCommand(extRomSubMenu, tr("ROM選択..."), ID_CSOL3);
-		QAction* romCSOL3NR = addCommand(extRomSubMenu, tr("ROMなし"), ID_CSOL3NR, true);
-	}
+	// ボイスシンセサイザ,FM音源カートリッジは当面封印
+	// QAction* romC6053 = addCommand(extRomMenu, tr("PC-6053    ボイスシンセサイザー"), ID_C6053, true);
+	// QAction* romC60M55 = addCommand(extRomMenu, tr("PC-60m55   FM音源カートリッジ"), ID_C60M55, true);
+	// extRomMenu->addSeparator();
+	QMenu* extRomWarrior1SubMenu = extRomMenu->addMenu(tr("戦士のカートリッジ"));
+	QAction* romCSOL1 = addCommand(extRomWarrior1SubMenu, tr("ROM選択..."), ID_CSOL1, true);
+	QAction* romCSOL1NR = addCommand(extRomWarrior1SubMenu, tr("ROMなし"), ID_CSOL1NR, true);
+	QMenu* extRomWarrior2SubMenu = extRomMenu->addMenu(tr("戦士のカートリッジmkⅡ"));
+	QAction* romCSOL2 = addCommand(extRomWarrior2SubMenu, tr("ROM選択..."), ID_CSOL2, true);
+	QAction* romCSOL2NR = addCommand(extRomWarrior2SubMenu, tr("ROMなし"), ID_CSOL2NR, true);
+	QMenu* extRomWarrior3SubMenu = extRomMenu->addMenu(tr("戦士のカートリッジmkⅢ"));
+	QAction* romCSOL3 = addCommand(extRomWarrior3SubMenu, tr("ROM選択..."), ID_CSOL3, true);
+	QAction* romCSOL3NR = addCommand(extRomWarrior3SubMenu, tr("ROMなし"), ID_CSOL3NR, true);
 
+	switch( vm->mem->GetCartridge() ){
+	case EXC6001:	romC6001->setChecked(true);														break;
+	case EXC6005:	romC6005->setChecked(true);														break;
+	case EXC6006:	(cfg->GetValue( CF_ExtRom ).empty() ? romC6006NR : romC6006)->setChecked(true);	break;
+	case EXC660101:	romC660101->setChecked(true);													break;
+	case EXC6006SR:	romC6006SR->setChecked(true);													break;
+	case EXC6007SR:	romC6007SR->setChecked(true);													break;
+	// case EXC6053:	romC660101->setChecked(true);													break;
+	// case EXC60M55:	romC660101->setChecked(true);													break;
+	case EXCSOL1:	(cfg->GetValue( CF_ExtRom ).empty() ? romCSOL1NR : romCSOL1)->setChecked(true);	break;
+	case EXCSOL2:	(cfg->GetValue( CF_ExtRom ).empty() ? romCSOL2NR : romCSOL2)->setChecked(true);	break;
+	case EXCSOL3:	(cfg->GetValue( CF_ExtRom ).empty() ? romCSOL3NR : romCSOL3)->setChecked(true);	break;
+	default:		romEject->setChecked(true);
+	}
 
 #ifndef NOJOYSTICK
 	// ジョイスティックメニュー

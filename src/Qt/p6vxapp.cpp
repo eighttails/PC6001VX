@@ -843,6 +843,9 @@ void P6VXApp::postExecuteEmulation()
 
 	if( Restart == EL6::Quit ){
 		// 終了処理
+		if (Cfg->GetValue(CB_SaveQuit)){
+			Cfg->Write();
+		}
 		if(MWidget && MWidget->isVisible()){
 			// ウィンドウを閉じてサイズを保存
 			MWidget->close();

@@ -643,13 +643,9 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 void QtEL6::UpdateFPS()
 {
-#if 0	//#TODO 後で消す
 	Event ev;
 	ev.type = EV_FPSUPDATE;
-	ev.fps.fps = UDFPSCount;
 	OSD_PushEvent( ev );
-	UDFPSCount = 0;
-#endif
 }
 
 

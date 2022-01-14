@@ -2262,7 +2262,7 @@ void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 	QMessageBox::about(parent, "About PC6001VX",
 					   APPNAME " Version " VERSION "\n"
 					  "https://eighttails.seesaa.net\n"
-					  "©2012-2021, Tadahito Yao (@eighttails)\n"
+					  "©2012-2022, Tadahito Yao (@eighttails)\n"
 					  "Based on PC6001V by Yumitaro.");
 }
 

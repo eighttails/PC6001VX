@@ -35,23 +35,24 @@ void KeyStateWatcher::poll()
 {
 	QMutexLocker lock(&mutex);
 	bool changed = false;
-	if(Key->ON_SHIFT != this->ON_SHIFT)	changed = true;
-	this->ON_SHIFT = Key->ON_SHIFT;
+	auto keyStatus = Key->GetKeyIndicator();
+	if(bool(keyStatus & KI_SHIFT) != this->ON_SHIFT)	changed = true;
+	this->ON_SHIFT = bool(keyStatus & KI_SHIFT);
 
-	if(Key->ON_CTRL != this->ON_CTRL)	changed = true;
-	this->ON_CTRL = Key->ON_CTRL;
+	if(bool(keyStatus & KI_CTRL) != this->ON_CTRL)		changed = true;
+	this->ON_CTRL = bool(keyStatus & KI_CTRL);
 
-	if(Key->ON_GRAPH != this->ON_GRAPH)	changed = true;
-	this->ON_GRAPH = Key->ON_GRAPH;
+	if(bool(keyStatus & KI_GRAPH) != this->ON_GRAPH)	changed = true;
+	this->ON_GRAPH = bool(keyStatus & KI_GRAPH);
 
-	if(Key->ON_KANA != this->ON_KANA)	changed = true;
-	this->ON_KANA = Key->ON_KANA;
+	if(bool(keyStatus & KI_KANA) != this->ON_KANA)		changed = true;
+	this->ON_KANA = bool(keyStatus & KI_KANA);
 
-	if(Key->ON_KKANA != this->ON_KKANA)	changed = true;
-	this->ON_KKANA = Key->ON_KKANA;
+	if(bool(keyStatus & KI_KKANA) != this->ON_KKANA)	changed = true;
+	this->ON_KKANA = bool(keyStatus & KI_KKANA);
 
-	if(Key->ON_CAPS != this->ON_CAPS)	changed = true;
-	this->ON_CAPS = Key->ON_CAPS;
+	if(bool(keyStatus & KI_CAPS) != this->ON_CAPS)		changed = true;
+	this->ON_CAPS = bool(keyStatus & KI_CAPS);
 
 	if (changed){
 		emit stateChanged(

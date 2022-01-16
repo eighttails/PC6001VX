@@ -541,6 +541,67 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <item>
+          <widget class="QLabel" name="labelFrameSkip">
+           <property name="text">
+            <string>フレームスキップ(&amp;K):</string>
+           </property>
+           <property name="buddy">
+            <cstring>comboBoxMovieFrameSkip</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxFrameSkip">
+           <item>
+            <property name="text">
+             <string>0 (59.92fps)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1 (29.96fps)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2 (19.97fps)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>3 (14.98fps)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>4 (11.98fps)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>5 (9.99fps)</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_15">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QCheckBox" name="checkBoxDispNTSC">
          <property name="text">
           <string>4:3表示(&amp;3)</string>

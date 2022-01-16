@@ -190,7 +190,7 @@ void ConfigDialog::readConfig()
 	ui->comboBoxMode4Color->setCurrentIndex(config->GetValue(CV_Mode4Color));
 
 	// フレームスキップ
-	// #設定しない
+	ui->comboBoxFrameSkip->setCurrentIndex(config->GetValue(CV_FrameSkip));
 
 	// スキャンライン
 	ui->checkBoxScanline->setChecked(config->GetValue(CB_ScanLine));
@@ -431,7 +431,7 @@ void ConfigDialog::writeConfig()
 	config->SetValue(CV_Mode4Color, ui->comboBoxMode4Color->currentIndex());
 
 	// フレームスキップ
-	// #設定しない
+	config->SetValue(CV_FrameSkip, ui->comboBoxFrameSkip->currentIndex());
 
 	// スキャンライン
 	config->SetValue(CB_ScanLine, ui->checkBoxScanline->isChecked());

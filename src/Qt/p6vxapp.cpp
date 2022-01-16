@@ -780,7 +780,7 @@ void P6VXApp::executeEmulation()
 	case EL6::ReplayPlay:	// リプレイ再生
 	case EL6::ReplayResume:	// リプレイ保存再開
 	case EL6::ReplayMovie:	// リプレイを動画に変換
-		if( !P6Core->DokoDemoLoad( Cfg->GetDokoFile() ) ){
+		if( !P6CoreObj->DokoDemoLoad( Cfg->GetDokoFile() ) ){
 			// 失敗した場合
 			OSD_Message( P6CoreObj ? P6CoreObj->GetWindowHandle() : nullptr,
 						 Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );

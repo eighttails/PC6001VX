@@ -886,8 +886,9 @@ bool OSD_ChangeFileNameExt( P6VPATH& path, const std::string& ext )
 	if (!info.exists()) {
 		return false;
 	}
-	QString newPath = info.path() + info.completeBaseName() + "." + QString::fromStdString(ext);
+	QString newPath = info.path() + QDir::separator() + info.completeBaseName() + "." + QString::fromStdString(ext);
 	QFile::rename(qPath, newPath);
+	path = QSTR2P6VPATH(newPath);
 	return true;
 }
 
@@ -1145,7 +1146,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 											   "P6T形式 (*.p6t);;"
 											   "ベタ形式 (*.cas *.p6);;"
 											   "全てのファイル (*.*)");
-		ext    = "p6t";
+		ext    = EXT_P6T;
 		break;
 
 	case FD_TapeSave:	// TAPE(SAVE)選択
@@ -1155,7 +1156,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 											   "P6T形式 (*.p6t);;"
 											   "ベタ形式 (*.cas *.p6);;"
 											   "全てのファイル (*.*)");
-		ext    = "p6t";
+		ext    = EXT_P6T;
 		break;
 
 	case FD_Disk:		// DISK選択
@@ -1164,7 +1165,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "DISKイメージ(*.d88);;"
 											   "D88形式 (*.d88);;"
 											   "全てのファイル (*.*)");
-		ext    = "d88";
+		ext    = EXT_DISK;
 		break;
 
 	case FD_ExtRom:		// 拡張ROM選択
@@ -1177,7 +1178,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		mode   = FM_Save;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "プリンター出力ファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "全てのファイル (*.*)");
-		ext    = "txt";
+		ext    = EXT_TEXT;
 		break;
 
 	case FD_FontZ:		// 全角フォントファイル選択
@@ -1185,7 +1186,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "全角フォントファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "PNGファイル (*.png);;"
 											   "全てのファイル (*.*)");
-		ext    = "png";
+		ext    = EXT_IMG;
 		break;
 
 	case FD_FontH:		// 半角フォントファイル選択
@@ -1193,7 +1194,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "半角フォントファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "PNGファイル (*.png);;"
 											   "全てのファイル (*.*)");
-		ext    = "png";
+		ext    = EXT_IMG;
 		break;
 
 	case FD_DokoLoad:	// どこでもLOADファイル選択
@@ -1203,7 +1204,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 											   "どこでもSAVE形式 (*.dds);;"
 											   "リプレイファイル (*.ddr);;"
 											   "全てのファイル (*.*)");
-		ext    = "dds";
+		ext    = EXT_DOKO;
 		break;
 
 	case FD_DokoSave:	// どこでもSAVEファイル選択
@@ -1211,7 +1212,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "どこでもSAVEファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "どこでもSAVE形式 (*.dds);;"
 											   "全てのファイル (*.*)");
-		ext    = "dds";
+		ext    = EXT_DOKO;
 		break;
 
 	case FD_RepLoad:	// リプレイ再生ファイル選択
@@ -1219,7 +1220,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "リプレイ再生ファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "リプレイファイル (*.ddr);;"
 											   "全てのファイル (*.*)");
-		ext    = "ddr";
+		ext    = EXT_REPLAY;
 		break;
 
 	case FD_RepSave:	// リプレイ保存ファイル選択
@@ -1227,7 +1228,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "リプレイ保存ファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "リプレイファイル (*.ddr);;"
 											   "全てのファイル (*.*)");
-		ext    = "ddr";
+		ext    = EXT_REPLAY;
 		break;
 
 	case FD_AVISave:	// ビデオキャプチャ出力ファイル選択
@@ -1235,7 +1236,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "ビデオキャプチャ出力ファイル選択");
 		filter = QT_TRANSLATE_NOOP("PC6001VX", "WebMファイル (*.webm);;"
 											   "全てのファイル (*.*)");
-		ext    = "webm";
+		ext    = EXT_VIDEO;
 		break;
 
 	case FD_LoadAll:	// 汎用LOAD

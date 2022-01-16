@@ -26,123 +26,6 @@
 #include "qtel6.h"
 #include "p6vxapp.h"
 
-// --- メッセージ配列 ---
-// 一般メッセージ
-extern const char *MsgStr[];
-#define	MSG_QUIT			MsgStr[0]	// "終了してよろしいですか?"
-#define	MSG_QUITC			MsgStr[1]	// "終了確認"
-#define	MSG_RESTART0		MsgStr[2]	// "再起動してよろしいですか?"
-#define	MSG_RESTART			MsgStr[3]	// "変更は再起動後に有効となります。\n今すぐ再起動しますか?"
-#define	MSG_RESTARTC		MsgStr[4]	// "再起動確認"
-#define	MSG_RESETI			MsgStr[5]	// "拡張ROMを挿入してリセットします。"
-#define	MSG_RESETE			MsgStr[6]	// "拡張ROMを排出してリセットします。"
-#define	MSG_RESETC			MsgStr[7]	// "リセット確認"
-
-
-// メニュー用メッセージ ------
-extern const char *MsgMen[];
-// [システム]
-#define	MSMEN_AVI0			MsgMen[0]	// "ビデオキャプチャ..."
-#define	MSMEN_AVI1			MsgMen[1]	// "ビデオキャプチャ停止"
-#define	MSMEN_REP0			MsgMen[2]	// "記録..."  (リプレイ)
-#define	MSMEN_REP1			MsgMen[3]	// "記録停止" (リプレイ)
-#define	MSMEN_REP2			MsgMen[4]	// "再生..."  (リプレイ)
-#define	MSMEN_REP3			MsgMen[5]	// "再生停止" (リプレイ)
-
-
-// INIファイル用メッセージ ------
-extern const char *MsgIni[];
-// [CONFIG]
-#define	MSINI_TITLE			MsgIni[0]	// "; === PC6001V 初期設定ファイル ===\n\n"
-#define	MSINI_Model			MsgIni[1]	// " 機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR"
-#define	MSINI_FDD			MsgIni[2]	// " FDD接続台数 (0-2)"
-#define	MSINI_ExtRam		MsgIni[3]	// " 拡張RAM使用"
-#define	MSINI_TurboTAPE		MsgIni[4]	// " Turbo TAPE Yes:有効 No:無効"
-#define	MSINI_BoostUp		MsgIni[5]	// " BoostUp Yes:有効 No:無効"
-#define	MSINI_MaxBoost60	MsgIni[6]	// " BoostUp 最大倍率(N60モード)
-#define	MSINI_MaxBoost62	MsgIni[7]	// " BoostUp 最大倍率(N60m/N66モード)
-#define	MSINI_OverClock		MsgIni[8]	// " オーバークロック率 (1-1000)%"
-#define	MSINI_CheckCRC		MsgIni[9]	// " CRCチェック Yes:有効 No:無効"
-#define	MSINI_RomPatch		MsgIni[10]	// " ROMパッチ Yes:あてる No:あてない"
-#define	MSINI_FDDWait		MsgIni[11]	// " FDDウェイト Yes:有効 No:無効"
-// [DISPLAY]
-#define	MSINI_Mode4Color	MsgIni[12]	// " MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク"
-#define	MSINI_ScanLine		MsgIni[13]	// " スキャンライン Yes:あり No:なし"
-#define	MSINI_ScanLineBr	MsgIni[14]	// " スキャンライン輝度 (0-100)%"
-#define	MSINI_DispNTSC		MsgIni[15]	// " 4:3表示 Yes:有効 No:無効"
-#define	MSINI_FullScreen	MsgIni[16]	// " フルスクリーンモード Yes:有効 No:無効"
-#define	MSINI_DispStatus	MsgIni[17]	// " ステータスバー Yes:表示 No:非表示"
-#define	MSINI_FrameSkip		MsgIni[18]	// " フレームスキップ"
-// [SOUND]
-#define	MSINI_SampleRate	MsgIni[19]	// " サンプリングレート (44100/22050/11025)Hz"
-#define	MSINI_SoundBuffer	MsgIni[20]	// " サウンドバッファサイズ"
-#define	MSINI_MasterVolume	MsgIni[21]	// " マスター音量 (0-100)"
-#define	MSINI_PsgVolume		MsgIni[22]	// " PSG音量 (0-100)"
-#define	MSINI_VoiceVolume	MsgIni[23]	// " 音声合成音量 (0-100)"
-#define	MSINI_TapeVolume	MsgIni[24]	// " TAPEモニタ音量 (0-100)"
-#define	MSINI_PsgLPF		MsgIni[25]	// " PSG LPFカットオフ周波数(0で無効)"
-// [MOVIE]
-#define	MSINI_AviBpp		MsgIni[26]	// " ビデオキャプチャ色深度 (16,24,32)"
-// [FILES]
-#define	MSINI_ExtRom		MsgIni[27]	// " 拡張ROMファイル名"
-#define	MSINI_tape			MsgIni[28]	// " TAPE(LODE)ファイル名(起動時に自動マウント)"
-#define	MSINI_save			MsgIni[29]	// " TAPE(SAVE)ファイル名(SAVE時に自動マウント)"
-#define	MSINI_disk1			MsgIni[30]	// " DISK1ファイル名(起動時に自動マウント)"
-#define	MSINI_disk2			MsgIni[31]	// " DISK2ファイル名(起動時に自動マウント)"
-#define	MSINI_printer		MsgIni[32]	// " プリンタ出力ファイル名"
-#define	MSINI_fontz			MsgIni[33]	// " 全角フォントファイル名"
-#define	MSINI_fonth			MsgIni[34]	// " 半角フォントファイル名"
-// [PATH]
-#define	MSINI_RomPath		MsgIni[35]	// " ROMイメージ格納パス"
-#define	MSINI_TapePath		MsgIni[36]	// " TAPEイメージ格納パス"
-#define	MSINI_DiskPath		MsgIni[37]	// " DISKイメージ格納パス"
-#define	MSINI_ExtRomPath	MsgIni[38]	// " 拡張ROMイメージ格納パス"
-#define	MSINI_ImgPath		MsgIni[39]	// " スナップショット格納パス"
-#define	MSINI_WavePath		MsgIni[40]	// " WAVEファイル格納パス"
-#define	MSINI_FontPath		MsgIni[41]	// " FONT格納パス"
-#define	MSINI_DokoSavePath	MsgIni[42]	// " どこでもSAVE格納パス"
-// [CHECK]
-#define	MSINI_CkQuit		MsgIni[43]	// " 終了時確認 Yes:する No:しない"
-#define	MSINI_SaveQuit		MsgIni[44]	// " 終了時INIファイルを保存 Yes:する No:しない"
-// [KEY]
-#define	MSINI_KeyRepeat		MsgIni[45]	// " キーリピートの間隔(単位:ms 0で無効)"
-// [OPTION]
-#define	MSINI_UseSoldier	MsgIni[46]	// " 戦士のカートリッジ Yes:有効 No:無効"
-
-
-// どこでもSAVE用メッセージ ------
-extern const char *MsgDok[];
-#define	MSDOKO_TITLE		MsgDok[0]	// "; === PC6001V どこでもSAVEファイル ===\n\n"
-
-
-// Error用メッセージ ------
-extern const char *MsgErr[];
-#define	MSERR_ERROR				MsgErr[0]	// "Error"
-#define	MSERR_NoError			MsgErr[1]	// "エラーはありません"
-#define	MSERR_Unknown			MsgErr[2]	// "原因不明のエラーが発生しました"
-#define	MSERR_MemAllocFailed	MsgErr[3]	// "メモリの確保に失敗しました"
-#define	MSERR_RomChange			MsgErr[4]	// "指定された機種のROMイメージが見つからないため機種を変更しました\n設定を確認してください"
-#define	MSERR_NoRom				MsgErr[5]	// "ROMイメージが見つかりません\n設定とファイル名を確認してください"
-#define	MSERR_RomSizeNG			MsgErr[6]	// "ROMイメージのサイズが不正です"
-#define	MSERR_RomCrcNG			MsgErr[7]	// "ROMイメージのCRCが不正です"
-#define	MSERR_LibInitFailed		MsgErr[8]	// "ライブラリの初期化に失敗しました"
-#define	MSERR_InitFailed		MsgErr[9]	// "初期化に失敗しました\n設定を確認してください"
-#define	MSERR_FontLoadFailed	MsgErr[10]	// "フォントの読込みに失敗しました"
-#define	MSERR_FontCreateFailed	MsgErr[11]	// "フォントファイルの作成に失敗しました"
-#define	MSERR_IniDefault		MsgErr[12]	// "INIファイルの読込みに失敗しました\nデフォルト設定で起動します"
-#define	MSERR_IniReadFailed		MsgErr[13]	// "INIファイルの読込みに失敗しました"
-#define	MSERR_IniWriteFailed	MsgErr[14]	// "INIファイルの保存に失敗しました"
-#define	MSERR_TapeMountFailed	MsgErr[15]	// "TAPEイメージのマウントに失敗しました"
-#define	MSERR_DiskMountFailed	MsgErr[16]	// "DISKイメージのマウントに失敗しました"
-#define	MSERR_ExtRomMountFailed	MsgErr[17]	// "拡張ROMイメージのマウントに失敗しました"
-#define	MSERR_DokoReadFailed	MsgErr[18]	// "どこでもLOADに失敗しました"
-#define	MSERR_DokoWriteFailed	MsgErr[19]	// "どこでもSAVEに失敗しました"
-#define	MSERR_DokoDiffVersion	MsgErr[20]	// "どこでもLOADに失敗しました\n保存時とPC6001Vのバージョンが異なります"
-#define	MSERR_ReplayPlayError	MsgErr[21]	// "リプレイ再生に失敗しました"
-#define	MSERR_ReplayRecError	MsgErr[22]	// "リプレイ記録に失敗しました"
-#define	MSERR_NoReplayData		MsgErr[23]	// "リプレイデータがありません"
-
-
 
 ///////////////////////////////////////////////////////////
 // ポップアップメニュー表示
@@ -436,7 +319,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 				IsMonitor() || vm->bp->GetNum() ||
 			#endif
 				( REPLAY::GetStatus() == ST_REPLAYREC ) )){
-		addCommand(replayMenu, (REPLAY::GetStatus() == ST_REPLAYPLAY) ? MSMEN_REP3: MSMEN_REP2, ID_REPLAYPLAY);
+		addCommand(replayMenu, (REPLAY::GetStatus() == ST_REPLAYPLAY) ? tr("再生停止"): tr("再生..."), ID_REPLAYPLAY);
 	}
 	// モニタモード or ブレークポインタが設定されている
 	// またはリプレイ再生中だったらリプレイ記録無効
@@ -445,7 +328,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 				IsMonitor() || vm->bp->GetNum() ||
 			#endif
 				( REPLAY::GetStatus() == ST_REPLAYPLAY ) )){
-		addCommand(replayMenu, (REPLAY::GetStatus() == ST_REPLAYREC) ? MSMEN_REP1 : MSMEN_REP0, ID_REPLAYSAVE);
+		addCommand(replayMenu, (REPLAY::GetStatus() == ST_REPLAYREC) ? tr("記録停止") : tr("記録..."), ID_REPLAYSAVE);
 	}
 	if (REPLAY::GetStatus() == ST_IDLE){
 		addCommand(replayMenu, tr("記録再開..."), ID_REPLAYRESUME);
@@ -462,7 +345,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 #ifndef NOAVI
 	// ビデオキャプチャ
-	addCommand(systemMenu, AVI6::IsAVI() ? MSMEN_AVI1 : MSMEN_AVI0, ID_AVISAVE);
+	addCommand(systemMenu, AVI6::IsAVI() ?
+				   tr("ビデオキャプチャ停止") : tr("ビデオキャプチャ..."), ID_AVISAVE);
 	systemMenu->addSeparator();
 #endif
 

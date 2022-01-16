@@ -432,7 +432,7 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 	// ステータスバー非表示またはフルスクリーン、かつTILTモードが有効になっている場合、背景を描く
 	if( (!Cfg->GetValue(CB_DispStatus)|| Cfg->GetValue(CB_FullScreen)) &&
 		#ifndef NOMONITOR
-			!P6Core->IsMonitor() &&
+			!(P6Core && P6Core->IsMonitor()) &&
 		#endif
 			isTiltEnabled()){
 		// 画面に対する、枠を含めたサイズの比率
@@ -448,7 +448,7 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 		default:
 			// それ以外の場合はPC-60m43を使う
 			background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background.png")));
-			merginRatio = 1.2;
+			merginRatio = 1.1;
 		}
 		background->setTransformationMode(Qt::SmoothTransformation);
 		// 最前面に配置(他のアイテムのZ値はデフォルトの0)

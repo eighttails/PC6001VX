@@ -2,6 +2,7 @@
 
 #include <QTimer>
 #include "../keyboard.h"
+#include "../p6vxcommon.h"
 
 KeyStateWatcher::KeyStateWatcher(std::shared_ptr<KEY6> key, QObject *parent)
 	: QObject(parent)
@@ -13,7 +14,7 @@ KeyStateWatcher::KeyStateWatcher(std::shared_ptr<KEY6> key, QObject *parent)
 	, ON_CAPS(false)
 {
 	auto timer = new QTimer(this);
-	timer->setInterval(100);
+	timer->setInterval(1000 / 60);
 	connect(timer, SIGNAL(timeout()), this, SLOT(poll()));
 	timer->start();
 }
@@ -53,6 +54,16 @@ void KeyStateWatcher::poll()
 
 	if(bool(keyStatus & KI_CAPS) != this->ON_CAPS)		changed = true;
 	this->ON_CAPS = bool(keyStatus & KI_CAPS);
+
+	auto joyKeyStatus = Key->GetKeyJoy();
+	if (joyKeyStatus & 0b00100000){
+		TiltScreen(TiltDirection::LEFT);
+	} else if (joyKeyStatus & 0b00010000){
+		TiltScreen(TiltDirection::RIGHT);
+	} else {
+		TiltScreen(TiltDirection::NEWTRAL);
+	}
+	UpdateTilt();
 
 	if (changed){
 		emit stateChanged(

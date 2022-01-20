@@ -41,10 +41,10 @@ protected:
 	int ABPP;					// 色深度 (16,24,32)
 	std::vector<BYTE> Sbuf;		// イメージデータバッファ
 
-	AVOutputFormat *fmt;
+	const AVOutputFormat *fmt;
 	AVFormatContext *oc;
-	AVCodec *audio_codec;
-	AVCodec *video_codec;
+	const AVCodec *audio_codec;
+	const AVCodec *video_codec;
 	AVDictionary *opt;
 	OutputStream video_st;
 	OutputStream audio_st;

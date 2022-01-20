@@ -6,6 +6,7 @@ extern "C"{
 #include <libavcodec/avcodec.h>
 #include <libavutil/avassert.h>
 #include <libavutil/opt.h>
+#include <libavutil/cpu.h>
 #include <libavutil/timestamp.h>
 #include <libavutil/imgutils.h>
 #include <libavformat/avformat.h>
@@ -79,7 +80,7 @@ static int write_frame(AVFormatContext *fmt_ctx, AVCodecContext *c,
 
 /* Add an output stream. */
 static void add_stream(OutputStream *ost, AVFormatContext *oc,
-					   AVCodec **codec,
+					   const AVCodec **codec,
 					   enum AVCodecID codec_id, int source_width, int source_height, int source_samplerate)
 {
 	AVCodecContext *c = NULL;
@@ -184,7 +185,7 @@ static AVFrame *alloc_audio_frame(enum AVSampleFormat sample_fmt,
 	return frame;
 }
 
-static void open_audio(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg, int sample_rate)
+static void open_audio(const AVFormatContext *oc, const AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg, int sample_rate)
 {
 	AVCodecContext *c = NULL;
 	int nb_samples = 0;
@@ -336,7 +337,7 @@ static AVFrame *alloc_picture(enum AVPixelFormat pix_fmt, int width, int height)
 	return picture;
 }
 
-static void open_video(AVFormatContext *oc, AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg)
+static void open_video(const AVFormatContext *oc, const AVCodec *codec, OutputStream *ost, AVDictionary *opt_arg)
 {
 	int ret = 0;
 	AVCodecContext *c = ost->enc;
@@ -498,13 +499,11 @@ bool AVI6::StartAVI( const char *filename, int sw, int sh, int vrate, int arate,
 	// 音声、ビデオストリームを作成
 	if (fmt->video_codec != AV_CODEC_ID_NONE) {
 		// ビデオコーデックにはVP9を選択。
-		fmt->video_codec = AV_CODEC_ID_VP9;
-		add_stream(&video_st, oc, &video_codec, fmt->video_codec, sw, sh, arate);
+		add_stream(&video_st, oc, &video_codec, AV_CODEC_ID_VP9, sw, sh, arate);
 	}
 	if (fmt->audio_codec != AV_CODEC_ID_NONE) {
 		// FFmpegのOpusは48KHzしか扱えないため、強制的にVORBISにする。
-		fmt->audio_codec = AV_CODEC_ID_VORBIS;
-		add_stream(&audio_st, oc, &audio_codec, fmt->audio_codec, sw, sh, arate);
+		add_stream(&audio_st, oc, &audio_codec, AV_CODEC_ID_VORBIS, sw, sh, arate);
 	}
 
 	open_video(oc, video_codec, &video_st, opt);

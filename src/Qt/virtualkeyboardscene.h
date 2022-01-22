@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 
 #include <vector>
+#include "typedef.h"
 #include "../keydef.h"
 
 class KeyStateWatcher;

@@ -44,7 +44,11 @@ void BPoint::Set( const BPtype type, const WORD addr )
 /////////////////////////////////////////////////////////////////////////////
 void BPoint::Delete( const int num )
 {
-	BP.erase( BP.begin() + num - 1 );
+	if( num ){
+		BP.erase( BP.begin() + num - 1 );
+	}else{
+		BP.clear();
+	}
 }
 
 
@@ -107,7 +111,7 @@ int BPoint::GetReqNum( void ) const
 {
 	int num = 1;
 	for( auto &i : BP ){
-		if( i.Break ) return num;
+		if( i.Break ){ return num; }
 		num++;
 	}
 	return 0;
@@ -119,8 +123,9 @@ int BPoint::GetReqNum( void ) const
 /////////////////////////////////////////////////////////////////////////////
 void BPoint::Reset( void )
 {
-	for( auto &i : BP )
+	for( auto &i : BP ){
 		i.Break = false;
+	}
 }
 
 

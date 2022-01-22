@@ -350,11 +350,12 @@
 	case NOP:	break;
 	
 	case DI:
-		IFF = IFF2 = INT_DISABLE;	break;
+		IFF = IFF2 = false;
+		break;
 	
 	case EI:
-		if( IFF == INT_DISABLE ){
-			IFF = IFF2 = INT_ENABLE;
+		if( !IFF ){
+			IFF = IFF2 = true;
 			NotIntrCheck = true;
 		}
 		break;

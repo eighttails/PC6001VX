@@ -23,7 +23,7 @@ private:
 	void WriteMem( WORD, BYTE ) override;		// メモリアクセス(ウェイトあり) Write
 	BYTE ReadIO( int ) override;				// I/Oポートアクセス Read
 	void WriteIO( int, BYTE ) override;			// I/Oポートアクセス Write
-	int GetIntrVector() override;				// 割込みベクタ取得
+	int GetIntrVector() override;				// 割込みチェック＆ベクタ取得
 	bool IsBUSREQ() override;					// バスリクエスト区間停止フラグ取得
 	
 public:

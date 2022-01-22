@@ -265,30 +265,30 @@ void ConfigDialog::readConfig()
 	warnFileOrFolderNotExist(ui->lineEditExtRom);
 
 	// TAPE(LOAD)ファイル名
-	path = config->GetValue(CF_tape);
+	path = config->GetValue(CF_Tape);
 	OSD_DelDelimiter( path );
 	ui->lineEditLoadTape->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditLoadTape);
 
 	// TAPE(SAVE)ファイル名
-	path = config->GetValue(CF_save);
+	path = config->GetValue(CF_Save);
 	OSD_DelDelimiter( path );
 	ui->lineEditSaveTape->setText(P6VPATH2QSTR(path));
 
 	// DISK1ファイル名
-	path = config->GetValue(CF_disk1);
+	path = config->GetValue(CF_Disk1);
 	OSD_DelDelimiter( path );
 	ui->lineEditDisk1->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditDisk1);
 
 	// DISK2ファイル名
-	path = config->GetValue(CF_disk2);
+	path = config->GetValue(CF_Disk2);
 	OSD_DelDelimiter( path );
 	ui->lineEditDisk2->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditDisk2);
 
 	// プリンタファイル名
-	path = config->GetValue(CF_printer);
+	path = config->GetValue(CF_Printer);
 	OSD_DelDelimiter( path );
 	ui->lineEditPrinter->setText(P6VPATH2QSTR(path));
 
@@ -543,28 +543,28 @@ void ConfigDialog::writeConfig()
 	// TAPE(LOAD)ファイル名
 	qStr = ui->lineEditLoadTape->text();
 	if(qStr == "" || QFile(qStr).exists()){
-		config->SetValue(CF_tape, QSTR2P6VPATH(qStr));
+		config->SetValue(CF_Tape, QSTR2P6VPATH(qStr));
 	}
 
 	// TAPE(SAVE)ファイル名
 	qStr = ui->lineEditSaveTape->text();
-	config->SetValue(CF_save, QSTR2P6VPATH(qStr));
+	config->SetValue(CF_Save, QSTR2P6VPATH(qStr));
 
 	// DISK1ファイル名
 	qStr = ui->lineEditDisk1->text();
 	if(qStr == "" || QFile(qStr).exists()){
-		config->SetValue(CF_disk1, QSTR2P6VPATH(qStr));
+		config->SetValue(CF_Disk1, QSTR2P6VPATH(qStr));
 	}
 
 	// DISK2ファイル名
 	qStr = ui->lineEditDisk2->text();
 	if(qStr == "" || QFile(qStr).exists()){
-		config->SetValue(CF_disk2, QSTR2P6VPATH(qStr));
+		config->SetValue(CF_Disk2, QSTR2P6VPATH(qStr));
 	}
 
 	// プリンタファイル名
 	qStr = ui->lineEditPrinter->text();
-	config->SetValue(CF_printer, QSTR2P6VPATH(qStr));
+	config->SetValue(CF_Printer, QSTR2P6VPATH(qStr));
 
 	// 色-----------------------------------------------------------------
 	// 16〜72の色IDに対応させる。

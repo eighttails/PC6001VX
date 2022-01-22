@@ -153,7 +153,7 @@ bool SaveImgData( const P6VPATH&, BYTE*, const int, const int, const int, VRect*
 // Img SAVE from VSurface
 bool SaveImg( const P6VPATH&, VSurface*, VRect* );
 // Img LOAD to VSurface
-VSurface* LoadImg(const P6VPATH& filepath);
+VSurface* LoadImg( const P6VPATH& );
 
 
 /////////////////////////////////////////////////////////////////////////////

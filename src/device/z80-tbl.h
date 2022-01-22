@@ -23,8 +23,9 @@
 //	DAA_table[] … DAA 命令の際に、AFレジスタに入れる値
 //
 //***************************************************************************
+#include <array>
 
-static BYTE SZ_table[256] =
+static std::array<BYTE,256> SZ_table =
 {
 #define Z Z_FLAG
 #define S S_FLAG
@@ -48,7 +49,7 @@ static BYTE SZ_table[256] =
 #undef Z
 };
 
-static BYTE SZP_table[256] =
+static std::array<BYTE,256> SZP_table =
 {
 #define Z Z_FLAG
 #define S S_FLAG
@@ -95,7 +96,7 @@ static BYTE SZP_table[256] =
 // リターン命令 (RET, RET C/Z/P/PE/NC/NZ/M/PO,  RETI/N ) は、分岐時に、+6
 // ブロック命令 (LD*R, CP*R, IN*R, OT*R)             は、繰り返し時に、+5
 
-static int state_table[256] =
+static std::array<int,256> state_table =
 {
 	4,10, 7, 6, 4, 4, 7, 4, 4,11, 7, 6, 4, 4, 7, 4,
 	8,10, 7, 6, 4, 4, 7, 4, 7,11, 7, 6, 4, 4, 7, 4,
@@ -115,7 +116,7 @@ static int state_table[256] =
 	5,10,10, 4,10,11, 7,11, 5, 6,10, 4,10, 0, 7,11
 };
 
-static int state_CB_table[256] =
+static std::array<int,256> state_CB_table =
 {
 	8, 8, 8, 8, 8, 8,15, 8, 8, 8, 8, 8, 8, 8,15, 8,
 	8, 8, 8, 8, 8, 8,15, 8, 8, 8, 8, 8, 8, 8,15, 8,
@@ -135,7 +136,7 @@ static int state_CB_table[256] =
 	8, 8, 8, 8, 8, 8,15, 8, 8, 8, 8, 8, 8, 8,15, 8
 };
 
-static int state_ED_table[256] =
+static std::array<int,256> state_ED_table =
 {
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -155,7 +156,7 @@ static int state_ED_table[256] =
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-static int state_XX_table[256] =
+static std::array<int,256> state_XX_table =
 {
 	 0, 0, 0, 0, 0, 0, 0, 0, 0,15, 0, 0, 0, 0, 0, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0, 0,15, 0, 0, 0, 0, 0, 0,
@@ -175,7 +176,7 @@ static int state_XX_table[256] =
 	 0, 0, 0, 0, 0, 0, 0, 0, 0,10, 0, 0, 0, 0, 0, 0
 };
 
-static int state_XXCB_table[256] =
+static std::array<int,256> state_XXCB_table =
 {
 	 0, 0, 0, 0, 0, 0,23, 0, 0, 0, 0, 0, 0, 0,23, 0,
 	 0, 0, 0, 0, 0, 0,23, 0, 0, 0, 0, 0, 0, 0,23, 0,
@@ -197,7 +198,7 @@ static int state_XXCB_table[256] =
 
 
 
-static WORD DAA_table[2048] =
+static std::array<WORD,2048> DAA_table =
 {
 	0x0044,0x0100,0x0200,0x0304,0x0400,0x0504,0x0604,0x0700,
 	0x0808,0x090C,0x1010,0x1114,0x1214,0x1310,0x1414,0x1510,

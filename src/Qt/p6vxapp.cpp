@@ -2,6 +2,8 @@
 #include <QTimer>
 #include <QFileInfo>
 #include <QDir>
+#include <QTimer>
+#include <QThread>
 
 #include <map>
 
@@ -624,7 +626,7 @@ void P6VXApp::enableCompatibleRomMode(std::shared_ptr<CFG6>& config, bool enable
 void P6VXApp::exportSavedTape()
 {
 	// TAPE(SAVE)ファイル名を取得
-	auto src = Cfg->GetValue(CF_save);
+	auto src = Cfg->GetValue(CF_Save);
 	if (!OSD_FileExist(src)){
 		OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr, tr("TAPE(SAVE)ファイルが存在しません。").toStdString(),
 					GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR);

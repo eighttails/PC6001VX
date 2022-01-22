@@ -143,7 +143,7 @@ public:
 	void IomOut( int, BYTE, int* = nullptr );			// OUT関数
 	void IosOut( int, BYTE, int* = nullptr );			// OUT関数
 	// IRQ6
-	int	IntIntrCheck();									// 割込みチェック
+	int	IntIntrCheck();									// 割込みチェック＆ベクタ取得
 	void IntReqIntr( DWORD );							// 割込み要求
 	void IntCancelIntr( DWORD );						// 割込み撤回
 	bool IntGetTimerIntr();								// タイマ割込みスイッチ取得

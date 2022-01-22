@@ -5,51 +5,52 @@
 #ifndef CPUS_H_INCLUDED
 #define CPUS_H_INCLUDED
 
-#include <memory>
+#include <array>
 
 #include "device.h"
 #include "ini.h"
-
-
-// CMTステータス
-#define	CMTCLOSE	(0)
-#define	LOADOPEN	(1)
-#define	SAVEOPEN	(2)
-
-// I/Oポート番号
-#define	IO8049_BUS	(0x00)	// バスポート
-#define	IO8049_P1	(0x01)	// Port1
-#define	IO8049_P2	(0x02)	// Port2
-#define	IO8049_T0	(0x03)	// T0(OUT)
-#define	IO8049_INT	(0x04)	// ~INT(IN)
-
-
-/////////////////////////////////////////////////////////////////////////////
-// インターフェース定義
-/////////////////////////////////////////////////////////////////////////////
-struct ISUB {
-   virtual ~ISUB(){};							// Destructor
-   
-	virtual void Reset() = 0;					// リセット
-	virtual void ExtIntr() = 0;					// 外部割込み要求
-	
-	// キーボード関連
-	virtual void ReqKeyIntr( int, BYTE ) = 0;	// キー割込み要求
-	
-	// CMT関連
-	virtual void ReqCmtIntr( BYTE ) = 0;		// CMT READ割込み要求
-	virtual int GetCmtStatus() const = 0;		// CMTステータス取得
-	virtual bool IsCmtIntrReady() = 0;			// CMT割込み発生可?
-};
 
 
 /////////////////////////////////////////////////////////////////////////////
 // クラス定義
 /////////////////////////////////////////////////////////////////////////////
 class SUB6 : public Device, public IDoko {
+public:
+	// I/Oポート番号
+	enum {
+		IO_BUS,	// バスポート
+		IO_P1,	// Port1
+		IO_P2,	// Port2
+		IO_T0,	// T0(OUT)
+		IO_INT	// ~INT(IN)
+	};
+	
+	// CMTステータス
+	enum { CMTCLOSE, LOADOPEN, SAVEOPEN };
+	
+#ifdef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 protected:
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	// 動作ステータス
+	enum {
+		SS_IDLE,	// 何もしていない
+		SS_KEY1,	// キー割込み1その1
+		SS_KEY12,	// キー割込み1その2
+		SS_KEY2,	// キー割込み2
+		SS_KEY3,	// キー割込み3
+		SS_CMTR,	// CMT READ割込み
+		SS_CMTE,	// CMT ERROR割込み
+		SS_SIO,		// RS232C受信割込み
+		SS_JOY,		// ゲーム用キー割込み
+		SS_TVRR,	// TV予約読込み割込み
+		SS_DATE,	// DATE割込み
+		SS_CMTO,	// CMT 1文字出力 データ待ち
+		SS_TVRW		// TV予約書込み データ待ち
+	};
+	
+protected:
+	int CpuStatus;						// 動作ステータス
 	int CmtStatus;						// CMTステータス
-	int Status8049;						// 8049動作ステータス
 	
 	DWORD IntrFlag;						// 割込み要求フラグ
 	
@@ -58,8 +59,8 @@ protected:
 	BYTE CmtData;						// CMTリードデータ(割込み用)
 	BYTE SioData;						// RS232C受信データ(割込み用)
 	
-	BYTE TVRData[32];					// TV予約データ
-	BYTE DateData[5];					// DATEデータ
+	std::array<BYTE,32> TVRData;		// TV予約データ
+	std::array<BYTE, 5> DateData;		// DATEデータ
 	
 	int TVRCnt;							// TV予約割込み用カウンタ
 	int DateCnt;						// DATE割込み用カウンタ;
@@ -97,6 +98,10 @@ public:
 	void ReqCmtIntr( BYTE );			// CMT READ割込み要求
 	int GetCmtStatus() const;			// CMTステータス取得
 	bool IsCmtIntrReady();				// CMT割込み発生可?
+	
+	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	int GetStatus() const;				// 動作ステータス取得
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	// ----------------------------------------------------------------------
 	bool DokoSave( cIni* );		// どこでもSAVE

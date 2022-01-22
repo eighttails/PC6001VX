@@ -410,7 +410,7 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 	AVDictionary* opt = nullptr;;
 	
 	// FFMpegの初期化
-	av_register_all();
+//	av_register_all();	// 必要なくなったらしい
 	
 	// キャプチャフレーム設定
 	ss.x = 0;

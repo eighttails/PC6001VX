@@ -62,11 +62,11 @@ typedef enum {
 // 設定項目(path)
 typedef enum {
 	CF_ExtRom = 0,
-	CF_tape,
-	CF_save,
-	CF_disk1,
-	CF_disk2,
-	CF_printer,
+	CF_Tape,
+	CF_Save,
+	CF_Disk1,
+	CF_Disk2,
+	CF_Printer,
 	CF_RomPath,
 	CF_TapePath,
 	CF_DiskPath,

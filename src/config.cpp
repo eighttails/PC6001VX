@@ -63,11 +63,11 @@ static const std::map<TCBool, const CfgSet<TCBool>> ConfigBool = {
 
 static const std::map<TCPath, const CfgSet<TCPath>> ConfigPath = {
 	{ CF_ExtRom,		{ "FILES",		"ExtRom",		TINI_ExtRom,		"",			true	} },
-	{ CF_tape,			{ "FILES",		"tape",			TINI_tape,			"",			true	} },
-	{ CF_save,			{ "FILES",		"save",			TINI_save,			FILE_SAVE,	true	} },
-	{ CF_disk1,			{ "FILES",		"disk1",		TINI_disk1,			"",			true	} },
-	{ CF_disk2,			{ "FILES",		"disk2",		TINI_disk2,			"",			true	} },
-	{ CF_printer,		{ "FILES",		"printer",		TINI_printer,		FILE_PRINT,	true	} },
+	{ CF_Tape,			{ "FILES",		"tape",			TINI_tape,			"",			true	} },
+	{ CF_Save,			{ "FILES",		"save",			TINI_save,			FILE_SAVE,	true	} },
+	{ CF_Disk1,			{ "FILES",		"disk1",		TINI_disk1,			"",			true	} },
+	{ CF_Disk2,			{ "FILES",		"disk2",		TINI_disk2,			"",			true	} },
+	{ CF_Printer,		{ "FILES",		"printer",		TINI_printer,		FILE_PRINT,	true	} },
 	{ CF_RomPath,		{ "PATH",		"RomPath",		TINI_RomPath,		DIR_ROM,	false	} },
 	{ CF_TapePath,		{ "PATH",		"TapePath",		TINI_TapePath,		DIR_TAPE,	false	} },
 	{ CF_DiskPath,		{ "PATH",		"DiskPath",		TINI_DiskPath,		DIR_DISK,	false	} },
@@ -1018,11 +1018,11 @@ void CFG6::InitIni( bool over )
 	
 	// [FILES] -------------------------------------------------
 	SetDefault( CF_ExtRom,			over );	// 拡張ROMファイル名(起動時に自動マウント)
-	SetDefault( CF_tape,			over );	// TAPEファイル名(起動時に自動マウント)
-	SetDefault( CF_save,			over );	// TAPE(SAVE)ファイル名(SAVE時に自動マウント)
-	SetDefault( CF_disk1,			over );	// DISK1ファイル名(起動時に自動マウント)
-	SetDefault( CF_disk2,			over );	// DISK2ファイル名(起動時に自動マウント)
-	SetDefault( CF_printer,			over );	// プリンタファイル名
+	SetDefault( CF_Tape,			over );	// TAPEファイル名(起動時に自動マウント)
+	SetDefault( CF_Save,			over );	// TAPE(SAVE)ファイル名(SAVE時に自動マウント)
+	SetDefault( CF_Disk1,			over );	// DISK1ファイル名(起動時に自動マウント)
+	SetDefault( CF_Disk2,			over );	// DISK2ファイル名(起動時に自動マウント)
+	SetDefault( CF_Printer,			over );	// プリンタファイル名
 	
 	// [PATH] --------------------------------------------------
 	SetDefault( CF_RomPath,			over );	// ROMパス
@@ -1043,8 +1043,8 @@ void CFG6::InitIni( bool over )
 	
 	
 	// TAPE(SAVE)ファイル名(SAVE時に自動マウント)
-	OSD_AddPath( tpath,	GetValue( CF_TapePath ), STR2P6VPATH( OSD_GetFileNamePart( GetValue( CF_save ) ) ) );
-	SetValue( CF_save, tpath );
+	OSD_AddPath( tpath,	GetValue( CF_TapePath ), STR2P6VPATH( OSD_GetFileNamePart( GetValue( CF_Save ) ) ) );
+	SetValue( CF_Save, tpath );
 	
 	
 	// [COLOR] -------------------------------------------------

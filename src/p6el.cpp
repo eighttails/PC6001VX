@@ -77,7 +77,6 @@ EL6::~EL6( void )
 void EL6::OnThread( void* inst )
 {
 	EL6* p6 = STATIC_CAST( EL6*, inst );	// 自分自身のオブジェクトポインタ取得
-	int st  = 0;
 	
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -107,11 +106,12 @@ void EL6::OnThread( void* inst )
 					// ウェイト
 					p6->Wait();
 				}else{
-					st = p6->Emu();		// 1命令実行
+					int st = p6->Emu();		// 1命令実行
 					
 					// ブレークポイントチェック(バスリクエスト期間中はチェックしない)
-					if( st > 0 && ( p6->vm->bp->Check( BPoint::BP_PC, p6->vm->cpum->GetPC() ) || p6->vm->bp->GetReqNum() ) ){
-						p6->vm->bp->Reset();
+					if( st > 0 && ( p6->vm->bp->Check( BPoint::BP_PC,   p6->vm->cpum->GetPC() ) ||
+									p6->vm->bp->Check( BPoint::BP_INTR, (WORD)p6->vm->cpum->GetIntVec() ) ||
+									p6->vm->bp->GetReqNum() ) ){
 						OSD_PushEvent( EV_DEBUGMODEBP, p6->vm->cpum->GetPC() );
 						break;	// ブレーク条件にヒットしたらスレッド抜ける
 					}
@@ -220,7 +220,7 @@ void EL6::OnThread( void* inst )
 /////////////////////////////////////////////////////////////////////////////
 void EL6::Wait( void )
 {
-	if( sche->GetWaitEnable() && (!cfg->GetValue( CB_TurboTAPE ) || (vm->cpus->GetCmtStatus() == CMTCLOSE)) )
+	if( sche->GetWaitEnable() && (!cfg->GetValue( CB_TurboTAPE ) || (vm->cpus->GetCmtStatus() == SUB6::CMTCLOSE)) )
 		sche->VWait();
 	vm->evsc->ReVSYNC();
 }
@@ -361,11 +361,11 @@ bool EL6::Init( const std::shared_ptr<CFG6>& config )
 		
 		
 		// TAPE挿入
-		if( !cfg->GetValue( CF_tape ).empty() ) TapeMount( cfg->GetValue( CF_tape ) );
+		if( !cfg->GetValue( CF_Tape ).empty() ) TapeMount( cfg->GetValue( CF_Tape ) );
 		
 		// ドライブ1,2にDISK挿入
-		if( !cfg->GetValue( CF_disk1 ).empty() ) DiskMount( 0, cfg->GetValue( CF_disk1 ) );
-		if( !cfg->GetValue( CF_disk2 ).empty() ) DiskMount( 1, cfg->GetValue( CF_disk2 ) );
+		if( !cfg->GetValue( CF_Disk1 ).empty() ) DiskMount( 0, cfg->GetValue( CF_Disk1 ) );
+		if( !cfg->GetValue( CF_Disk2 ).empty() ) DiskMount( 1, cfg->GetValue( CF_Disk2 ) );
 		
 		// リセット
 		UI_Reset();
@@ -925,12 +925,12 @@ int EL6::SoundUpdate( int samples, cRing* exbuf )
 void EL6::StreamUpdate( void* userdata, BYTE* stream, int len )
 {
 	EL6* p6 = STATIC_CAST( EL6*, userdata );	// 自分自身のオブジェクトポインタ取得
-
+	
 	// サウンドバッファ更新
 	//  もしサンプル数が足りなければここで追加
 	//  ただしビデオキャプチャ中,ポーズ中,モニタモードの場合は無視
 	int addsam = len/sizeof(int16_t) - p6->snd->cRing::ReadySize();
-
+	
 	if( addsam > 0 && !p6->AVI6::IsAVI() && !p6->sche->GetPauseEnable()
 		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 		&& !p6->vm->IsMonitor()
@@ -2339,9 +2339,9 @@ void EL6::UI_Config( void )
 					cfg->GetValue( CV_OverClock )   != ccfg.GetValue( CV_OverClock )   ||	// オーバークロック率
 					cfg->GetValue( CV_ExCartridge ) != ccfg.GetValue( CV_ExCartridge ) ||	// 拡張カートリッジ
 					cfg->GetValue( CF_ExtRom )      != ccfg.GetValue( CF_ExtRom )      ||	// 拡張ROMファイル名取得
-					cfg->GetValue( CF_tape )        != ccfg.GetValue( CF_tape )        ||	// TAPE(LOAD)ファイル名
-					cfg->GetValue( CF_disk1 )       != ccfg.GetValue( CF_disk1 )       ||	// DISK1ファイル名
-					cfg->GetValue( CF_disk2 )       != ccfg.GetValue( CF_disk2 );			// DISK2ファイル名
+					cfg->GetValue( CF_Tape )        != ccfg.GetValue( CF_Tape )        ||	// TAPE(LOAD)ファイル名
+					cfg->GetValue( CF_Disk1 )       != ccfg.GetValue( CF_Disk1 )       ||	// DISK1ファイル名
+					cfg->GetValue( CF_Disk2 )       != ccfg.GetValue( CF_Disk2 );			// DISK2ファイル名
 		
 		cfg->Init();	// 変更したINIを読込み(オリジナル)
 		
@@ -2372,7 +2372,7 @@ void EL6::UI_Config( void )
 		vm->cmtl->SetLPF( cfg->GetValue( CV_TapeLPF ) );			// TAPE LPFカットオフ周波数取得
 		
 		// [FILES] -----------------------------------------------------
-		vm->pio->cPRT::SetFile( cfg->GetValue( CF_printer ) );		// プリンタファイル名取得
+		vm->pio->cPRT::SetFile( cfg->GetValue( CF_Printer ) );		// プリンタファイル名取得
 		
 		// [PATH] ------------------------------------------------------
 		vm->voice->SetPath( cfg->GetValue( CF_WavePath ) );			// WAVEパス取得
@@ -2390,7 +2390,7 @@ void EL6::UI_Config( void )
 //
 // 引数:	id		選択したメニューID
 // 返値:	なし
-//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 #if 0 // P6VXでは独自実装
 void EL6::ExecMenu( int id )
 {

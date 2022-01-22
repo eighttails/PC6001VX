@@ -98,8 +98,8 @@ void cWndStat::Update( EL6* el )
 	if( el->vm->cmtl->IsMount() ){
 		ZCons::SetColor( el->vm->cmtl->IsAutoStart() ? FC_YELLOW4 : FC_WHITE4, FC_WHITE2 );
 		ZCons::Printf( " %-16s", el->vm->cmtl->GetName().empty() ? OSD_GetFileNamePart( el->vm->cmtl->GetFile() ).c_str() : el->vm->cmtl->GetName().c_str() );
-		if( el->vm->cpus->IsCmtIntrReady() == LOADOPEN ){ ZCons::SetColor( FC_WHITE4, FC_MAGENTA4 ); }
-		else											{ ZCons::SetColor( FC_WHITE4, FC_WHITE2   ); }
+		if( el->vm->cpus->IsCmtIntrReady() == SUB6::LOADOPEN ){ ZCons::SetColor( FC_WHITE4, FC_MAGENTA4 ); }
+		else												  { ZCons::SetColor( FC_WHITE4, FC_WHITE2   ); }
 	}
 	ZCons::Locate( yyy ? -1 : -7, yyy );
 	ZCons::PrintfR( "%06d/%06d", el->vm->cmtl->GetCount(), el->vm->cmtl->GetBetaSize() );

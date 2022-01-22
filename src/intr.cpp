@@ -22,7 +22,7 @@
 // Constructor
 /////////////////////////////////////////////////////////////////////////////
 IRQ6::IRQ6( VM6* vm, const ID& id ) : Device( vm, id ),
-	IntrFlag( 0 ), TimerIntrEnable( false ), TimerCntUp( 0 ), Timer1st( 50 )
+	IntrFlag( 0 ), TimerIntrEnable( false ), TimerCntUp( 3 ), Timer1st( 50 )
 {
 	INITARRAY( IntEnable, false );
 	INITARRAY( VecOutput, false );
@@ -31,7 +31,6 @@ IRQ6::IRQ6( VM6* vm, const ID& id ) : Device( vm, id ),
 
 IRQ60::IRQ60( VM6* vm, const ID& id ) : IRQ6( vm, id )
 {
-	TimerCntUp   = 3;
 	IntEnable[0] = true;
 	IntEnable[2] = true;
 	
@@ -61,7 +60,8 @@ IRQ62::IRQ62( VM6* vm, const ID& id ) : IRQ6( vm, id )
 
 IRQ64::IRQ64( VM6* vm, const ID& id ) : IRQ6( vm, id )
 {
-	Timer1st = 88;
+	TimerCntUp = 0x7f;
+	Timer1st   = 88;
 	
 	// Device Description (Out)
 	descs.outdef.emplace( outB0H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutB0H ) );
@@ -126,6 +126,8 @@ void IRQ6::SetTimerIntr( bool en )
 {
 	PRINTD( INTR_LOG, "[INTR][SetTimerIntr] %s->%s\n", TimerIntrEnable ? "ON" : "OFF", en ? "ON" : "OFF" );
 	
+	// SRの場合はVRTC割込み制御にも使われるらしい
+	
 	// 割込みOff->Onのタイミングでカウンタはリセットされるらしい
 	if( en && !TimerIntrEnable ){
 		// 初代機は割込み有効後，最初の周期は指定の半分(1ms)になるらしい
@@ -150,6 +152,15 @@ bool IRQ6::GetTimerIntr( void )
 
 
 /////////////////////////////////////////////////////////////////////////////
+// 割込み要求フラグ取得
+/////////////////////////////////////////////////////////////////////////////
+DWORD IRQ6::GetIntrFlag( void )
+{
+	return IntrFlag;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // タイマ割込み周波数設定
 /////////////////////////////////////////////////////////////////////////////
 void IRQ6::SetTimerIntrHz( BYTE data, BYTE first )
@@ -158,7 +169,7 @@ void IRQ6::SetTimerIntrHz( BYTE data, BYTE first )
 	
 	// イベント追加
 	// 非SR系は 1[intr] : (2048*(TimerCntUp+1)) [clock]
-	vm->EventAdd( Device::GetID(), EID_TIMER, (double)(2048 * (TimerCntUp + 1)), EV_LOOP|EV_STATE );
+	vm->EventAdd( Device::GetID(), EID_TIMER, (double)(2048 * (TimerCntUp + 1)), EV_LOOP | EV_STATE );
 	
 	// 初回周期の指定がある場合の処理
 	if( first ){
@@ -173,17 +184,17 @@ void IRQ6::SetTimerIntrHz( BYTE data, BYTE first )
 	}
 }
 
-void IRQ64::SetTimerIntrHz(BYTE data, BYTE first)
+void IRQ64::SetTimerIntrHz( BYTE data, BYTE first )
 {
 	TimerCntUp = data;
 	
 	// イベント追加
 	// 八尾さんの検証による推定値
-	if( vm->VdgIsSRmode() )
-		vm->EventAdd( Device::GetID(), EID_TIMER, (double)((8*7) * (TimerCntUp+1)), EV_LOOP|EV_STATE );
-	else
-		vm->EventAdd( Device::GetID(), EID_TIMER, (double)((256*7) * (TimerCntUp+1)), EV_LOOP|EV_STATE );
-	
+	if( vm->VdgIsSRmode() ){
+		vm->EventAdd( Device::GetID(), EID_TIMER, (double)((  8 * 7) * (TimerCntUp + 1)), EV_LOOP | EV_STATE );
+	}else{
+		vm->EventAdd( Device::GetID(), EID_TIMER, (double)((256 * 7) * (TimerCntUp + 1)), EV_LOOP | EV_STATE );
+	}
 	// 初回周期の指定がある場合の処理
 	if( first ){
 		EVSC::evinfo e;
@@ -203,6 +214,18 @@ void IRQ64::SetTimerIntrHz(BYTE data, BYTE first)
 /////////////////////////////////////////////////////////////////////////////
 void IRQ6::Reset( void )
 {
+	// 各種変数初期化
+	TimerIntrEnable = false;	// タイマ割込み許可フラグ降ろす
+	IntrFlag        = 0;		// 割込み要求フラグクリア
+	
+	for( int i = 0; i < 8; i++ ){
+		IntEnable[i] = false;	// 割込み許可フラグ降ろす
+		VecOutput[i] = false;	// 割込みアドレス出力フラグ降ろす
+		IntVector[i] = 0;		// 割込みアドレス初期化
+	}
+	
+	// タイマ割込み周波数初期化
+	SetTimerIntrHz(	TimerCntUp );
 }
 
 void IRQ60::Reset( void )
@@ -210,53 +233,32 @@ void IRQ60::Reset( void )
 	PRINTD( INTR_LOG, "[INTR][Reset]\n" );
 	
 	// 各種変数初期化
-	TimerIntrEnable = false;	// タイマ割込み許可フラグ降ろす
-	IntrFlag        = 0;		// 割込み要求フラグクリア
+//	TimerCntUp = 3;		// タイマカウンタ初期化
+	IRQ6::Reset();
 	
-	// タイマ割込み周波数初期化
-	SetTimerIntrHz(	TimerCntUp );
+	IntEnable[0] = true;
+	IntEnable[2] = true;
 }
 
 void IRQ62::Reset( void )
 {
 	PRINTD( INTR_LOG, "[INTR][Reset]\n" );
 	
-	// 各種変数初期化
-	TimerCntUp      = 0;		// タイマカウンタ初期化
-	TimerIntrEnable = false;	// タイマ割込み許可フラグ降ろす
-	IntrFlag        = 0;		// 割込み要求フラグクリア
-	
-	for( int i=0; i<2; i++ ){
-		IntEnable[i] = false;	// 割込み許可フラグ降ろす
-		VecOutput[i] = false;	// 割込みアドレス出力フラグ降ろす
-		IntVector[i] = 0;		// 割込みアドレス初期化
-	}
-	
-	// タイマ割込み周波数初期化
-	SetTimerIntrHz(	TimerCntUp );
+	TimerCntUp = 3;		// タイマカウンタ初期化
+	IRQ6::Reset();
 }
 
 void IRQ64::Reset( void )
 {
 	PRINTD( INTR_LOG, "[INTR][Reset]\n" );
 	
-	// 各種変数初期化
-	TimerCntUp      = 0;		// タイマカウンタ初期化
-	TimerIntrEnable = false;	// タイマ割込み許可フラグ降ろす
-	IntrFlag        = 0;		// 割込み要求フラグクリア
-	
-	for( int i=0; i<8; i++ ){
-		IntEnable[i] = false;	// 割込み許可フラグ降ろす
-		VecOutput[i] = false;	// 割込みアドレス出力フラグ降ろす
-		IntVector[i] = 0;		// 割込みアドレス初期化
-	}
-	
-	// タイマ割込み周波数初期化
-	SetTimerIntrHz(	TimerCntUp );
+	TimerCntUp = 0x7f;	// タイマカウンタ初期化
+	IRQ6::Reset();
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
-// 割込みチェック
+// 割込みチェック＆ベクタ取得
 /////////////////////////////////////////////////////////////////////////////
 //   割込み発生源はタイマか8049で,タイマ優先か?
 //   と思ったけどSRの調査をしていたら違うような気がしてきた。
@@ -268,12 +270,15 @@ void IRQ64::Reset( void )
 //   ジョイスティック割込みはジョイスティックポートの7pinをトリガにした外部割込み
 //   8049を介したゲーム用キー割込みとは別物
 
+//   最終的にMr.PC テクニカルコレクションの記載に合わせることにしてみた
+
+
 // INT1: SUB CPU
 // INT2: JOYSTICK
 // INT3: TIMER
 // INT4: VOICE
 // INT5: VRTC
-// IRQ6: RS-232C
+// INT6: RS-232C
 // INT7: PRINTER
 // INT8: EXT INT
 
@@ -283,61 +288,62 @@ int IRQ6::IntrCheck( void )
 	
 	PRINTD( INTR_LOG, "[INTR][IntrCheck]" );
 	
-	// INT1:8049割込み
-	if( ( IntrFlag & IREQ_8049 ) && IntEnable[0] ){
-		PRINTD( INTR_LOG, "(8049)" );
-		
-		CancelIntr( IREQ_8049 );
-		IntrNo = ( VecOutput[0] ? IntVector[0] : vm->PioReadA() )>>1;
-	}
-	// INT1:ジョイスティック割込み(7pin)
-	else if( ( IntrFlag & IREQ_JOYSTK ) && IntEnable[1] ){
-		PRINTD( INTR_LOG, "(JoyStick)" );
-		
-		CancelIntr( IREQ_JOYSTK );
-		IntrNo = ( VecOutput[1] ? IntVector[1] : 0x00 )>>1;	// アドレス不明(とりあえず0x00)
-	}
 	// INT3:タイマ割込み
-	else if( ( IntrFlag & IREQ_TIMER ) && IntEnable[2] && TimerIntrEnable ){
+	if( ( IntrFlag & IREQ_TIMER ) && IntEnable[2] && TimerIntrEnable ){
 		PRINTD( INTR_LOG, "(Timer)" );
 		
 		CancelIntr( IREQ_TIMER );
-		IntrNo = ( VecOutput[2] ? IntVector[2] : 0x06 )>>1;	// アドレス0x06固定?
+		IntrNo = ( VecOutput[2] ? IntVector[2] : 0x06 ) >> 1;	// アドレス0x06固定?
+	}
+	// INT1:8049割込み
+	else if( ( IntrFlag & IREQ_8049 ) && IntEnable[0] ){
+		PRINTD( INTR_LOG, "(8049)" );
+		
+		CancelIntr( IREQ_8049 );
+		BYTE vec = vm->PioReadA();	// 割込みベクタ出力設定に関わらず必ずポートを読む
+		IntrNo = ( VecOutput[0] ? IntVector[0] : vec ) >> 1;
 	}
 	// INT4:音声合成割込み
 	else if( ( IntrFlag & IREQ_VOICE ) && IntEnable[3] ){
 		PRINTD( INTR_LOG, "(Voice)" );
 		
 		CancelIntr( IREQ_VOICE );
-		IntrNo = ( VecOutput[3] ? IntVector[3] : 0x20 )>>1;	// アドレス不明(とりあえず0x20)
+		IntrNo = ( VecOutput[3] ? IntVector[3] : 0x20 ) >> 1;	// アドレス不明(とりあえず0x20)
 	}
 	// INT5:VRTC割込み(SRモードの時だけ発生)
-	else if( ( IntrFlag & IREQ_VRTC ) && IntEnable[4] && vm->VdgIsSRmode() ){
+	else if( ( IntrFlag & IREQ_VRTC ) && IntEnable[4] && TimerIntrEnable && vm->VdgIsSRmode() ){
 		PRINTD( INTR_LOG, "(VRTC)" );
 		
 		CancelIntr( IREQ_VRTC );
-		IntrNo = ( VecOutput[4] ? IntVector[4] : 0x22 )>>1;	// アドレス不明(とりあえず0x22)
+		IntrNo = ( VecOutput[4] ? IntVector[4] : 0x22 ) >> 1;	// アドレス不明(とりあえず0x22)
 	}
 	// IRQ6:RS-232C割込み
 	else if( ( IntrFlag & IREQ_SIO ) && IntEnable[5] ){
 		PRINTD( INTR_LOG, "(RS-232C)" );
 		
 		CancelIntr( IREQ_SIO );
-		IntrNo = ( VecOutput[5] ? IntVector[5] : 0x04 )>>1;	// アドレス0x04固定？
+		IntrNo = ( VecOutput[5] ? IntVector[5] : 0x04 ) >> 1;	// アドレス0x04固定？
 	}
-	// INT7:プリンタ割込み
-	else if( ( IntrFlag & IREQ_PRINT ) && IntEnable[6] ){
-		PRINTD( INTR_LOG, "(Printer)" );
+	// INT2:ジョイスティック割込み(7pin)
+	else if( ( IntrFlag & IREQ_JOYSTK ) && IntEnable[1] ){
+		PRINTD( INTR_LOG, "(JoyStick)" );
 		
-		CancelIntr( IREQ_PRINT );
-		IntrNo = ( VecOutput[6] ? IntVector[6] : 0x00 )>>1;	// アドレス不明(とりあえず0x00)
+		CancelIntr( IREQ_JOYSTK );
+		IntrNo = ( VecOutput[1] ? IntVector[1] : 0x10 ) >> 1;	// アドレス不明(とりあえず0x10)
 	}
 	// INT8:外部割込み
 	else if( ( IntrFlag & IREQ_EXTINT ) && IntEnable[7] ){
 		PRINTD( INTR_LOG, "(Ext)" );
 		
 		CancelIntr( IREQ_EXTINT );
-		IntrNo = ( VecOutput[7] ? IntVector[7] : 0x00 )>>1;	// アドレス不明(とりあえず0x00)
+		IntrNo = ( VecOutput[7] ? IntVector[7] : 0x10 ) >> 1;	// アドレス不明(とりあえず0x10)
+	}
+	// INT7:プリンタ割込み
+	else if( ( IntrFlag & IREQ_PRINT ) && IntEnable[6] ){
+		PRINTD( INTR_LOG, "(Printer)" );
+		
+		CancelIntr( IREQ_PRINT );
+		IntrNo = ( VecOutput[6] ? IntVector[6] : 0x10 ) >> 1;	// アドレス不明(とりあえず0x10)
 	}
 	
 	
@@ -356,9 +362,36 @@ int IRQ6::IntrCheck( void )
 /////////////////////////////////////////////////////////////////////////////
 void IRQ6::ReqIntr( DWORD vec )
 {
-	IntrFlag |= vec;
+	PRINTD( INTR_LOG, "[INTR][ReqIntr] %04X -> ", (unsigned int)vec );
 	
-	PRINTD( INTR_LOG, "[INTR][ReqIntr] %04X -> %04X\n", (unsigned int)vec, (unsigned int)IntrFlag );
+	switch( vec ){
+	case IREQ_TIMER:	// INT3:タイマ割込み
+		if( IntEnable[2] && TimerIntrEnable ){
+			IntrFlag |= vec;
+		}else{
+			PRINTD( INTR_LOG, "(Reject TIMER) " );
+		}
+		break;
+		
+	case IREQ_VRTC:		// INT5:VRTC割込み(SRモードの時だけ発生)
+		if( IntEnable[4] && TimerIntrEnable && vm->VdgIsSRmode() ){
+			IntrFlag |= vec;
+		}else{
+			PRINTD( INTR_LOG, "(Reject VRTC) " );
+		}
+		break;
+		
+	case IREQ_8049:		// INT1:8049割込み
+	case IREQ_VOICE:	// INT4:音声合成割込み
+	case IREQ_SIO:		// IRQ6:RS-232C割込み
+	case IREQ_JOYSTK:	// INT2:ジョイスティック割込み(7pin)
+	case IREQ_EXTINT:	// INT8:外部割込み
+	case IREQ_PRINT:	// INT7:プリンタ割込み
+	default:
+		IntrFlag |= vec;
+	}
+	
+	PRINTD( INTR_LOG, "%04X\n", (unsigned int)IntrFlag );
 }
 
 
@@ -384,11 +417,11 @@ void IRQ62::SetIntrEnable( BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][SetIntrEnable]\n" );
 	
-	IntEnable[0] = (data&0x01 ? false : true);
-	IntEnable[1] = (data&0x02 ? false : true);
-	IntEnable[2] = (data&0x04 ? false : true);
-	VecOutput[0] = (data&0x08 ? true : false);
-	VecOutput[1] = (data&0x10 ? true : false);
+	IntEnable[0] = (data & 0x01 ? false : true);
+	IntEnable[1] = (data & 0x02 ? false : true);
+	IntEnable[2] = (data & 0x04 ? false : true);
+	VecOutput[0] = (data & 0x08 ? true : false);
+	VecOutput[1] = (data & 0x10 ? true : false);
 	
 	PRINTD( INTR_LOG, "\tINT1:SUB CPU  %s\n", IntEnable[0] ? "Enable" : "Disable" );
 	PRINTD( INTR_LOG, "\tINT2:JOYSTICK %s\n", IntEnable[1] ? "Enable" : "Disable" );
@@ -399,8 +432,26 @@ void IRQ64::SetIntrEnable( BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][SetIntrEnable]\n" );
 	
-	for( int i=0; i<8; i++ )
-		IntEnable[i] = (data>>i)&1 ? false : true;
+	if( vm->VdgIsSRmode() ){ return; }	// SRモード時無効
+	
+	IntEnable[0] = (data & 0x01 ? false : true);
+	IntEnable[1] = (data & 0x02 ? false : true);
+	IntEnable[2] = (data & 0x04 ? false : true);
+	VecOutput[0] = (data & 0x08 ? true : false);
+	VecOutput[1] = (data & 0x10 ? true : false);
+	
+	PRINTD( INTR_LOG, "\tINT1:SUB CPU  %s\n", IntEnable[0] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT2:JOYSTICK %s\n", IntEnable[1] ? "Enable" : "Disable" );
+	PRINTD( INTR_LOG, "\tINT3:TIMER    %s\n", IntEnable[2] ? "Enable" : "Disable" );
+}
+
+void IRQ64::SetIntrEnableSR( BYTE data )
+{
+	PRINTD( INTR_LOG, "[INTR][SetIntrEnableSR]\n" );
+	
+	for( int i = 0; i < 8; i++ ){
+		IntEnable[i] = (data >> i) & 1 ? false : true;
+	}
 	
 	PRINTD( INTR_LOG, "\tINT1:SUB CPU  %s\n", IntEnable[0] ? "Enable" : "Disable" );
 	PRINTD( INTR_LOG, "\tINT2:JOYSTICK %s\n", IntEnable[1] ? "Enable" : "Disable" );
@@ -414,14 +465,15 @@ void IRQ64::SetIntrEnable( BYTE data )
 
 
 /////////////////////////////////////////////////////////////////////////////
-// 割込みベクタアドレス出力フラグ設定
+// 割込みベクタアドレス出力フラグ設定(SR)
 /////////////////////////////////////////////////////////////////////////////
-void IRQ64::SetIntrVectorEnable( BYTE data )
+void IRQ64::SetIntrVectorEnableSR( BYTE data )
 {
-	PRINTD( INTR_LOG, "[INTR][SetIntrVectorEnable]\n" );
+	PRINTD( INTR_LOG, "[INTR][SetIntrVectorEnableSR]\n" );
 	
-	for( int i=0; i<8; i++ )
-		VecOutput[i] = (data>>i)&1 ? true : false;
+	for( int i = 0; i < 8; i++ ){
+		VecOutput[i] = (data >> i) & 1 ? true : false;
+	}
 	
 	PRINTD( INTR_LOG, "\tINT1:SUB CPU  %s\n", VecOutput[0] ? "Enable" : "Disable" );
 	PRINTD( INTR_LOG, "\tINT2:JOYSTICK %s\n", VecOutput[1] ? "Enable" : "Disable" );
@@ -437,12 +489,12 @@ void IRQ64::SetIntrVectorEnable( BYTE data )
 /////////////////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 /////////////////////////////////////////////////////////////////////////////
-void IRQ6::OutB0H( int, BYTE data ){ SetTimerIntr( data&1 ? false : true ); }
+void IRQ6::OutB0H( int, BYTE data ){ SetTimerIntr( data & 1 ? false : true ); }
 void IRQ6::OutF3H( int, BYTE data ){ SetIntrEnable( data ); }
-void IRQ6::OutF4H( int, BYTE data ){ IntVector[0] = data; }
-void IRQ6::OutF5H( int, BYTE data ){ IntVector[1] = data; }
+void IRQ6::OutF4H( int, BYTE data ){ if( !vm->VdgIsSRmode() ){ IntVector[0] = data; } }
+void IRQ6::OutF5H( int, BYTE data ){ if( !vm->VdgIsSRmode() ){ IntVector[1] = data; } }
 void IRQ6::OutF6H( int, BYTE data ){ SetTimerIntrHz( data ); }
-void IRQ6::OutF7H( int, BYTE data ){ IntVector[2] = data; }
+void IRQ6::OutF7H( int, BYTE data ){ if( !vm->VdgIsSRmode() ){ IntVector[2] = data; } }
 
 BYTE IRQ6::InF3H( int )
 {
@@ -455,9 +507,9 @@ BYTE IRQ6::InF5H( int ){ return IntVector[1]; }
 BYTE IRQ6::InF6H( int ){ return TimerCntUp; }
 BYTE IRQ6::InF7H( int ){ return IntVector[2]; }
 
-void IRQ64::OutBxH( int port, BYTE data ){ IntVector[port&7] = data; }
-void IRQ64::OutFAH( int, BYTE data ){ SetIntrEnable( data ); }
-void IRQ64::OutFBH( int, BYTE data ){ SetIntrVectorEnable( data ); }
+void IRQ64::OutBxH( int port, BYTE data ){ IntVector[port & 7] = data; }
+void IRQ64::OutFAH( int, BYTE data ){ SetIntrEnableSR( data ); }
+void IRQ64::OutFBH( int, BYTE data ){ SetIntrVectorEnableSR( data ); }
 
 BYTE IRQ64::InFAH( int )
 {
@@ -486,14 +538,17 @@ bool IRQ6::DokoSave( cIni* Ini )
 	Ini->SetVal( "INTR", "TimerIntrEnable",	"", TimerIntrEnable );
 	Ini->SetVal( "INTR", "TimerCntUp",		"", TimerCntUp );
 	
-	for( int i=0; i<8; i++ )
+	for( int i = 0; i < 8; i++ ){
 		Ini->SetVal( "INTR", Stringf( "IntEnable%d", i ),	"", IntEnable[i] );
+	}
 	
-	for( int i=0; i<8; i++ )
+	for( int i = 0; i < 8; i++ ){
 		Ini->SetVal( "INTR", Stringf( "VecOutput%d", i ),	"", VecOutput[i] );
+	}
 	
-	for( int i=0; i<8; i++ )
+	for( int i = 0; i < 8; i++ ){
 		Ini->SetVal( "INTR", Stringf( "IntVector%d", i ),	"", "0x%02X", IntVector[i] );
+	}
 	
 	return true;
 }
@@ -510,13 +565,15 @@ bool IRQ6::DokoLoad( cIni* Ini )
 	Ini->GetVal( "INTR", "TimerIntrEnable",	TimerIntrEnable );
 	Ini->GetVal( "INTR", "TimerCntUp",		TimerCntUp );
 	
-	for( int i=0; i<8; i++ )
+	for( int i = 0; i < 8; i++ ){
 		Ini->GetVal( "INTR", Stringf( "IntEnable%d", i ), IntEnable[i] );
+	}
 	
-	for( int i=0; i<8; i++ )
+	for( int i = 0; i < 8; i++ ){
 		Ini->GetVal( "INTR", Stringf( "VecOutput%d", i ), VecOutput[i] );
+	}
 	
-	for( int i=0; i<8; i++ ){
+	for( int i = 0; i < 8; i++ ){
 		Ini->GetVal( "INTR", Stringf( "IntVector%d", i ), IntVector[i] );
 	}
 	

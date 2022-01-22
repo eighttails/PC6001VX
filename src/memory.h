@@ -314,9 +314,9 @@ protected:
 	static const MEMINFO IVOICE;
 	static const MEMINFO IINTRAM;
 	
-	bool cgrom;							// CG ROM 選択用 true:N60モード false:N60mモード
 	bool kj_rom;						// 漢字ROM,音声合成ROM 選択用 true:漢字ROM false:音声合成ROM
 	bool kj_LR;							// 漢字ROM 左右選択用 true:右 false:左
+	bool cgrom;							// CG ROM選択用 true:N60モード false:N60mモード
 	bool cgenable;						// CG ROMアクセスフラグ true:アクセス可 false:アクセス不可
 	BYTE cgaden;						// CG ROMアドレスイネーブル
 	BYTE cgaddr;						// CG ROMアドレス A13,14,15
@@ -330,7 +330,7 @@ protected:
 	
 	void SetWait( BYTE );											// メモリアクセスウェイト設定
 	BYTE GetWait() const;											// メモリアクセスウェイト取得
-	void SetCGrom( BYTE );											// CG ROM アドレス設定
+	virtual void SetCGrom( BYTE );									// CG ROM アドレス設定
 	void SelectCGrom( bool );										// CG ROM 選択
 	void SetKanjiRom( BYTE );										// 漢字ROMおよび音声合成ROM設定
 	BYTE GetKanjiRom() const;										// 漢字ROMおよび音声合成ROM取得
@@ -362,6 +362,8 @@ protected:
 public:
 	MEM62( VM6*, const ID& );
 	virtual ~MEM62();
+	
+	virtual void Reset() override;						// リセット
 	
 	// 直接アクセス関数
 	virtual BYTE ReadCGrom2( WORD ) const override;
@@ -408,6 +410,8 @@ protected:
 	bool InitIntSpec() override;									// 内部メモリ初期化(機種別)
 	void SetMemBlockR( BYTE, BYTE ) override;						// メモリリード時のメモリブロック指定
 	void SetMemBlockSR( BYTE, BYTE );								// メモリリード/ライト時のメモリブロック指定(64,68)
+	
+	void SetCGrom( BYTE ) override;									// CG ROM アドレス設定
 	
 	// メモリブロック用関数 -------------------------------------------------
 	const std::string& KanjiGetName( WORD, bool = false ) override;	// 漢字ROM メモリブロック名取得

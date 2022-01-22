@@ -98,12 +98,13 @@ public:
 	
 	virtual void Reset();						// リセット
 	
-	int	IntrCheck();							// 割込みチェック
+	int	IntrCheck();							// 割込みチェック＆ベクタ取得
 	
 	void ReqIntr( DWORD );						// 割込み要求
 	void CancelIntr( DWORD );					// 割込み撤回
 	
 	bool GetTimerIntr();						// タイマ割込みスイッチ取得
+	DWORD GetIntrFlag();						// 割込み要求フラグ取得
 	
 	// デバイスID
 	enum IDOut{ outB0H=0, outBxH, outF3H, outF4H, outF5H, outF6H, outF7H, outFAH, outFBH };
@@ -142,8 +143,9 @@ public:
 class IRQ64 : public IRQ6 {
 private:
 	void SetIntrEnable( BYTE ) override;			// 割込み許可フラグ設定
+	void SetIntrEnableSR( BYTE );					// 割込み許可フラグ設定(SR)
 	void SetTimerIntrHz( BYTE, BYTE=0 ) override;	// タイマ割込み周波数設定
-	void SetIntrVectorEnable( BYTE );				// 割込みベクタアドレス出力フラグ設定
+	void SetIntrVectorEnableSR( BYTE );				// 割込みベクタアドレス出力フラグ設定(SR)
 	
 	// I/Oアクセス関数
 	void OutBxH( int, BYTE );

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QGraphicsPixmapItem>
 #include <array>
+#include "../typedef.h"
 #include "../keydef.h"
 #include "../event.h"
 

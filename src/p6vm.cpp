@@ -352,7 +352,7 @@ bool VM6::Init( const std::shared_ptr<CFG6>& cnfg  )
 	
 	// 8255 -----
 	pio->Reset();
-	pio->cPRT::SetFile( cnfg->GetValue( CF_printer ) );
+	pio->cPRT::SetFile( cnfg->GetValue( CF_Printer ) );
 	
 	// キー -----
 	if( !key->Init() ) return false;
@@ -369,7 +369,7 @@ bool VM6::Init( const std::shared_ptr<CFG6>& cnfg  )
 	cmtl->SetStopBit( cnfg->GetValue( CV_StopBit ) );	// ストップビット数
 	
 	// CMT(SAVE) -----
-	if( !cmts->Init( cnfg->GetValue( CF_save ) ) ) return false;
+	if( !cmts->Init( cnfg->GetValue( CF_Save ) ) ) return false;
 	
 	// DISK -----
 	if( !disk->Init( cnfg->GetValue( CV_FDDrive ) ) ) return false;
@@ -593,7 +593,7 @@ BYTE VM6::IomIn( int port, int* wcnt )
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ブレークポイントチェック
-	if( bp->Check( BPoint::BP_IN, port&0xff ) ){
+	if( bp->Check( BPoint::BP_IN, port & 0xff ) ){
 		PRINTD( IO_LOG, " -> Break!\n" );
 	}
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -616,7 +616,7 @@ void VM6::IomOut( int port, BYTE data, int* wcnt )
 	
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	// ブレークポイントチェック
-	if( bp->Check( BPoint::BP_OUT, port&0xff ) ){
+	if( bp->Check( BPoint::BP_OUT, port & 0xff ) ){
 		PRINTD( IO_LOG, " -> Break!\n" );
 	}
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -631,7 +631,7 @@ void VM6::IosOut( int port, BYTE data, int* wcnt )
 // IRQ6 --------------------------------------------------------
 
 /////////////////////////////////////////////////////////////////////////////
-// 割込みチェック
+// 割込みチェック＆ベクタ取得
 /////////////////////////////////////////////////////////////////////////////
 int VM6::IntIntrCheck( void )
 {
@@ -1014,10 +1014,10 @@ const std::vector<IOBus::Connector> VM60::c_psg = {
 
 // 8255(SUB CPU側) -----
 const std::vector<IOBus::Connector> VM60::c_8255s = {
-	{ IO8049_BUS, IOBus::portout, PIO6::outPBH },
-	{ IO8049_BUS, IOBus::portin,  PIO6::inPBH  },
-	{ IO8049_T0,  IOBus::portin,  PIO6::inIBF  },
-	{ IO8049_INT, IOBus::portin,  PIO6::inOBF  }
+	{ SUB6::IO_BUS, IOBus::portout, PIO6::outPBH },
+	{ SUB6::IO_BUS, IOBus::portin,  PIO6::inPBH  },
+	{ SUB6::IO_T0,  IOBus::portin,  PIO6::inIBF  },
+	{ SUB6::IO_INT, IOBus::portin,  PIO6::inOBF  }
 };
 
 // 8255(Z80側) -----
@@ -1170,10 +1170,10 @@ const std::vector<IOBus::Connector> VM62::c_8255m = {
 
 // 8255(SUB CPU側) -----
 const std::vector<IOBus::Connector> VM62::c_8255s = {
-	{ IO8049_BUS, IOBus::portout, PIO6::outPBH },
-	{ IO8049_BUS, IOBus::portin,  PIO6::inPBH  },
-	{ IO8049_T0,  IOBus::portin,  PIO6::inIBF  },
-	{ IO8049_INT, IOBus::portin,  PIO6::inOBF  }
+	{ SUB6::IO_BUS, IOBus::portout, PIO6::outPBH },
+	{ SUB6::IO_BUS, IOBus::portin,  PIO6::inPBH  },
+	{ SUB6::IO_T0,  IOBus::portin,  PIO6::inIBF  },
+	{ SUB6::IO_INT, IOBus::portin,  PIO6::inOBF  }
 };
 
 // 音声合成 -----
@@ -1397,10 +1397,10 @@ const std::vector<IOBus::Connector> VM64::c_8255m = {
 
 // 8255(SUB CPU側) -----
 const std::vector<IOBus::Connector> VM64::c_8255s = {
-	{ IO8049_BUS, IOBus::portout, PIO6::outPBH },
-	{ IO8049_BUS, IOBus::portin,  PIO6::inPBH  },
-	{ IO8049_T0,  IOBus::portin,  PIO6::inIBF  },
-	{ IO8049_INT, IOBus::portin,  PIO6::inOBF  }
+	{ SUB6::IO_BUS, IOBus::portout, PIO6::outPBH },
+	{ SUB6::IO_BUS, IOBus::portin,  PIO6::inPBH  },
+	{ SUB6::IO_T0,  IOBus::portin,  PIO6::inIBF  },
+	{ SUB6::IO_INT, IOBus::portin,  PIO6::inOBF  }
 };
 
 // 音声合成 -----

@@ -115,19 +115,25 @@ VDG60::VDG60( VM6* vm, const ID& id ) : VDG6( vm, id )
 	Hclk60 = HCLK6060;
 	
 	// カラーテーブル設定
-	for( int i=0; i<COUNTOF(COL_AN); i++ )
+	for( int i = 0; i < COUNTOF(COL_AN); i++ ){
 		COL_AN[i] = COL60_AN[i];
+	}
 	
-	for( int i=0; i<COUNTOF(COL_SG); i++ )
+	for( int i = 0; i < COUNTOF(COL_SG); i++ ){
 		COL_SG[i] = COL60_SG[i];
+	}
 	
-	for( int i=0; i<COUNTOF(COL_CG); i++ )
-		for( int j=0; j<COUNTOF(COL_CG[0]); j++ )
+	for( int i = 0; i < COUNTOF(COL_CG); i++ ){
+		for( int j = 0; j < COUNTOF(COL_CG[0]); j++ ){
 			COL_CG[i][j] = COL60_CG[i][j];
+		}
+	}
 	
-	for( int i=0; i<COUNTOF(COL_RG); i++ )
-		for( int j=0; j<COUNTOF(COL_RG[0]); j++ )
+	for( int i = 0; i < COUNTOF(COL_RG); i++ ){
+		for( int j = 0; j < COUNTOF(COL_RG[0]); j++ ){
 			COL_RG[i][j] = COL60_RG[i][j];
+		}
+	}
 	
 	// Device Description (Out)
 	descs.outdef.emplace( outB0H, STATIC_CAST( Device::OutFuncPtr, &VDG60::OutB0H ) );
@@ -139,26 +145,35 @@ VDG62::VDG62( VM6* vm, const ID& id ) : VDG6( vm, id )
 	Hclk60 = HCLK6062;
 	
 	// カラーテーブル設定
-	for( int i=0; i<COUNTOF(COL_AN); i++ )
+	for( int i = 0; i < COUNTOF(COL_AN); i++ ){
 		COL_AN[i] = COL62_AN[i];
+	}
 	
-	for( int i=0; i<COUNTOF(COL_SG); i++ )
+	for( int i = 0; i < COUNTOF(COL_SG); i++ ){
 		COL_SG[i] = COL62_SG[i];
+	}
 	
-	for( int i=0; i<COUNTOF(COL_CG); i++ )
-		for( int j=0; j<COUNTOF(COL_CG[0]); j++ )
+	for( int i = 0; i < COUNTOF(COL_CG); i++ ){
+		for( int j = 0; j < COUNTOF(COL_CG[0]); j++ ){
 			COL_CG[i][j] = COL62_CG[i][j];
+		}
+	}
 	
-	for( int i=0; i<COUNTOF(COL_RG); i++ )
-		for( int j=0; j<COUNTOF(COL_RG[0]); j++ )
+	for( int i = 0; i < COUNTOF(COL_RG); i++ ){
+		for( int j = 0; j < COUNTOF(COL_RG[0]); j++ ){
 			COL_RG[i][j] = COL62_RG[i][j];
+		}
+	}
 	
-	for( int i=0; i<COUNTOF(COL_AN2); i++ )
+	for( int i = 0; i < COUNTOF(COL_AN2); i++ ){
 		COL_AN2[i] = COL62_AN2[i];
+	}
 	
-	for( int i=0; i<COUNTOF(COL_CG2); i++ )
-		for( int j=0; j<COUNTOF(COL_CG2[0]); j++ )
+	for( int i = 0; i < COUNTOF(COL_CG2); i++ ){
+		for( int j = 0; j < COUNTOF(COL_CG2[0]); j++ ){
 			COL_CG2[i][j] = COL62_CG2[i][j];
+		}
+	}
 	
 	// Device Description (Out)
 	descs.outdef.emplace( outB0H, STATIC_CAST( Device::OutFuncPtr, &VDG62::OutB0H ) );
@@ -175,26 +190,35 @@ VDG64::VDG64( VM6* vm, const ID& id ) : VDG6( vm, id )
 	Hclk60 = HCLK6064;
 	
 	// カラーテーブル設定
-	for( int i=0; i<COUNTOF(COL_AN); i++ )
+	for( int i = 0; i < COUNTOF(COL_AN); i++ ){
 		COL_AN[i] = COL62_AN[i];
+	}
 	
-	for( int i=0; i<COUNTOF(COL_SG); i++ )
+	for( int i = 0; i < COUNTOF(COL_SG); i++ ){
 		COL_SG[i] = COL62_SG[i];
+	}
 	
-	for( int i=0; i<COUNTOF(COL_CG); i++ )
-		for( int j=0; j<COUNTOF(COL_CG[0]); j++ )
+	for( int i = 0; i < COUNTOF(COL_CG); i++ ){
+		for( int j = 0; j < COUNTOF(COL_CG[0]); j++ ){
 			COL_CG[i][j] = COL62_CG[i][j];
+		}
+	}
 	
-	for( int i=0; i<COUNTOF(COL_RG); i++ )
-		for( int j=0; j<COUNTOF(COL_RG[0]); j++ )
+	for( int i = 0; i < COUNTOF(COL_RG); i++ ){
+		for( int j = 0; j < COUNTOF(COL_RG[0]); j++ ){
 			COL_RG[i][j] = COL62_RG[i][j];
+		}
+	}
 	
-	for( int i=0; i<COUNTOF(COL_AN2); i++ )
+	for( int i = 0; i < COUNTOF(COL_AN2); i++ ){
 		COL_AN2[i] = COL62_AN2[i];
+	}
 	
-	for( int i=0; i<COUNTOF(COL_CG2); i++ )
-		for( int j=0; j<COUNTOF(COL_CG2[0]); j++ )
+	for( int i = 0; i < COUNTOF(COL_CG2); i++ ){
+		for( int j = 0; j < COUNTOF(COL_CG2[0]); j++ ){
 			COL_CG2[i][j] = COL62_CG2[i][j];
+		}
+	}
 	
 	// Device Description (Out)
 	descs.outdef.emplace( out4xH, STATIC_CAST( Device::OutFuncPtr, &VDG64::Out4xH ) );
@@ -284,10 +308,13 @@ void VDG64::EventCallback( int id, int clock )
 		
 	case EID_VSYNCE:	// VSYNC終了
 		VSYNC = false;
-		vm->IntReqIntr(IREQ_VRTC);		// VRTC割込み(立上りエッジで割込発生)
+		vm->IntReqIntr( IREQ_VRTC );	// VRTC割込み(立上りエッジで割込発生)
 		break;
 		
 	case EID_HDISPS:	// 表示区間開始
+		// (暫定)この時点でVRTC割込みが処理されていなkったらキャンセル
+		vm->IntCancelIntr( IREQ_VRTC );
+		
 		if( VLcnt ){
 			BusReq = CrtDisp ? true : false;
 			VLcnt--;
@@ -410,12 +437,12 @@ BYTE VDG64::GetVram( void ) const
 			
 			// HAddrは1dot毎@320 or 4dot/2byte毎@640
 			if( Had < 256 ){
-				addr =  Had      + ((Vad>>1) * 256);
+				addr =  Had      + ((Vad >> 1) * 256);
 			}else{
-				Vad = (Vad&0xfff1)|((Vad&2)<<2)|((Vad&0xc)>>1);	// bit1,2,3を入替える
-				addr = (Had-256) + ((Vad>>1) *  64);
+				Vad = (Vad & 0xfff1) | ((Vad & 2) << 2) | ((Vad & 0xc) >> 1);	// bit1,2,3を入替える
+				addr = (Had - 256) + ((Vad >> 1) *  64);
 			}
-			addr = ((addr&0xfffc) | ((Vad&1)<<1) | ((Had&2)>>1)) + ( Had < 256 ? 0x1a00 : 0 );
+			addr = ((addr & 0xfffc) | ((Vad & 1) << 1) | ((Had & 2) >> 1)) + ( Had < 256 ? 0x1a00 : 0 );
 		}
 	}else{
 		// HAddrは8dot毎
@@ -462,16 +489,16 @@ bool VDG6::Init( void )
 	PRINTD( VDG_LOG, "[VDG][Init]\n" );
 	
 	// イベント追加
-	if( !vm->EventAdd( Device::GetID(), EID_VSYNCS, VSYNC_HZ,          EV_LOOP|EV_HZ ) ) return false;
-	if( !vm->EventAdd( Device::GetID(), EID_VSYNCE, VSYNC_HZ,          EV_LOOP|EV_HZ ) ) return false;
-	if( !vm->EventAdd( Device::GetID(), EID_HDISPS, VSYNC_HZ * VSLINE, EV_LOOP|EV_HZ ) ) return false;
-	if( !vm->EventAdd( Device::GetID(), EID_HDISPE, VSYNC_HZ * VSLINE, EV_LOOP|EV_HZ ) ) return false;
+	if( !vm->EventAdd( Device::GetID(), EID_VSYNCS, VSYNC_HZ,          EV_LOOP | EV_HZ ) ) return false;
+	if( !vm->EventAdd( Device::GetID(), EID_VSYNCE, VSYNC_HZ,          EV_LOOP | EV_HZ ) ) return false;
+	if( !vm->EventAdd( Device::GetID(), EID_HDISPS, VSYNC_HZ * VSLINE, EV_LOOP | EV_HZ ) ) return false;
+	if( !vm->EventAdd( Device::GetID(), EID_HDISPE, VSYNC_HZ * VSLINE, EV_LOOP | EV_HZ ) ) return false;
 	
 	// VSYNC終了タイミングを合わせる
 	e.devid = this->Device::GetID();
 	e.id    = EID_VSYNCE;
 	vm->EventGetInfo( &e );
-	e.Clock = (e.Clock * 3) / VSLINE;
+	e.Clock += e.Clock / VSLINE * 4;	// SRに合わせて4H (mkIIは3H)
 	vm->EventSetInfo( &e );
 	
 	// バックバッファ作成
@@ -529,12 +556,12 @@ WORD VDG6::SRGVramAddr( WORD addr ) const
 	while( vv >= 204 ) vv -= 204;
 	
 	if( hh < 256 ){	// X = 0-255
-		ad += hh       + (vv>>1) * 256 + 0x1a00;
+		ad += hh       + (vv >> 1) * 256 + 0x1a00;
 	}else{			// X = 256-319
-		vv  = (vv&0xff1) | ((vv&2)<<2) | ((vv&0xc)>>1);	// bit1,2,3を入替える
-		ad += hh - 256 + (vv>>1) *  64;
+		vv  = (vv & 0xff1) | ((vv & 2) << 2) | ((vv & 0xc) >> 1);	// bit1,2,3を入替える
+		ad += hh - 256 + (vv >> 1) *  64;
 	}
-	ad = (ad&0xfffc) + ((vv&1)<<1) + ((hh&2)>>1);
+	ad = (ad & 0xfffc) + ((vv & 1) << 1) + ((hh & 2) >> 1);
 	
 	return ad;
 }
@@ -550,25 +577,24 @@ WORD VDG60::GetVramAddr( void ) const
 
 WORD VDG62::GetVramAddr( void ) const
 {
-	if( N60Win )			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
+	if( N60Win ){			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
 		return ( 0x8000 | AddrOff ) + 0x0200;
-	else{					// N60m
-		if( CharMode ) return (AddrOff<<1) + 0x0400;	// キャラクタモード   [00]8400H  [01]C400H  [10]0400H  [11]4400H
-		else		   return (AddrOff<<1) + 0x2000;	// グラフィックモード [00]A000H  [01]E000H  [10]2000H  [11]6000H
+	}else{					// N60m
+		if( CharMode ){ return (AddrOff << 1) + 0x0400; }	// キャラクタモード   [00]8400H  [01]C400H  [10]0400H  [11]4400H
+		else		  { return (AddrOff << 1) + 0x2000; }	// グラフィックモード [00]A000H  [01]E000H  [10]2000H  [11]6000H
 	}
 }
 
 WORD VDG64::GetVramAddr( void ) const
 {
 	if( SRmode ){	// SRモード
-		return	(WORD)(SRTextAddr & (CharMode ? 0x0f : 0x08))<<12;
-		
+		return	(WORD)(SRTextAddr & (CharMode ? 0x0f : 0x08)) << 12;
 	}else{			// 旧モード
-		if( N60Win )			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
+		if( N60Win ){			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
 			return AddrOff + 0x0200;
-		else{					// N60m
-			if( CharMode ) return AddrOff + 0x0400;	// キャラクタモード   [00]8400H  [01]C400H  [10]0400H  [11]4400H
-			else		   return AddrOff + 0x2000;	// グラフィックモード [00]A000H  [01]E000H  [10]2000H  [11]6000H
+		}else{					// N60m
+			if( CharMode ){ return AddrOff + 0x0400; }		// キャラクタモード   [00]8400H  [01]C400H  [10]0400H  [11]4400H
+			else		  { return AddrOff + 0x2000; }		// グラフィックモード [00]A000H  [01]E000H  [10]2000H  [11]6000H
 		}
 	}
 }
@@ -579,19 +605,19 @@ WORD VDG64::GetVramAddr( void ) const
 /////////////////////////////////////////////////////////////////////////////
 WORD VDG60::GerAttrAddr( void ) const
 {
-	return 0x8000 | AddrOff;				// [00]C000H  [01]E000H  [10]8000H  [11]A000H
+	return 0x8000 | AddrOff;					// [00]C000H  [01]E000H  [10]8000H  [11]A000H
 }
 
 WORD VDG62::GerAttrAddr( void ) const
 {
-	if( N60Win ) return 0x8000 | AddrOff;	// N60  [00]C000H  [01]E000H  [10]8000H  [11]A000H
-	else		 return AddrOff<<1;			// N60m [00]8000H  [01]C000H  [10]0000H  [11]4000H
+	if( N60Win ){ return 0x8000 | AddrOff; }	// N60  [00]C000H  [01]E000H  [10]8000H  [11]A000H
+	else		{ return AddrOff << 1; }		// N60m [00]8000H  [01]C000H  [10]0000H  [11]4000H
 }
 
 WORD VDG64::GerAttrAddr( void ) const
 {
-	if( SRmode ) return GetVramAddr() + 1;	// SRモード(テキストモードアクセスのみ)
-	else		 return AddrOff;			// 旧モード
+	if( SRmode ){ return GetVramAddr() + 1; }	// SRモード(テキストモードアクセスのみ)
+	else		{ return AddrOff; }				// 旧モード
 }
 
 
@@ -601,8 +627,8 @@ WORD VDG64::GerAttrAddr( void ) const
 void VDG6::SetAttrAddr( BYTE data )
 {
 	PRINTD( VDG_LOG, "[VDG][SetAttrAddr]" );
-	AddrOff = ((~data&4)|(data&2))<<12;
-	PRINTD( VDG_LOG, " %d%d -> %04X\n", data&4 ? 1 : 0, data&2 ? 1 : 0, AddrOff );
+	AddrOff = ((~data & 4) | (data & 2)) << 12;
+	PRINTD( VDG_LOG, " %d%d -> %04X\n", data & 4 ? 1 : 0, data & 2 ? 1 : 0, AddrOff );
 }
 
 void VDG64::SetAttrAddr( BYTE data )
@@ -612,11 +638,11 @@ void VDG64::SetAttrAddr( BYTE data )
 	// N60m [00]8000H  [01]C000H  [10]0000H  [11]4000H
 	PRINTD( VDG_LOG, "[VDG][SetAttrAddr]" );
 //	if( !SRmode ){		// SRモードの時は無効?わからんのでとりあえず有効にしておく
-		AddrOff = ((~data&4)|(data&2))<<12;
-		if( N60Win ) AddrOff |= 0x8000;	// N60
-		else		 AddrOff <<= 1;		// N60m
+		AddrOff = ((~data & 4) | (data & 2)) << 12;
+		if( N60Win ){ AddrOff |= 0x8000; }	// N60
+		else		{ AddrOff <<= 1; }		// N60m
 		
-		PRINTD( VDG_LOG, " %d%d -> %04X", data&4 ? 1 : 0, data&2 ? 1 : 0, AddrOff );
+		PRINTD( VDG_LOG, " %d%d -> %04X", data & 4 ? 1 : 0, data & 2 ? 1 : 0, AddrOff );
 //	}
 	PRINTD( VDG_LOG, "\n" );
 }
@@ -633,7 +659,7 @@ void VDG6::OutC1H( int, BYTE data )
 	CreateBuffer();
 }
 
-void VDG64::Out4xH( int port, BYTE data ){ SetPalette( 15-(port & 3), 15-(data & 0xf) ); }
+void VDG64::Out4xH( int port, BYTE data ){ SetPalette( 15 - (port & 3), 15 - (data & 0xf) ); }
 void VDG64::OutC8H( int, BYTE data ){ SetCrtCtrlType( data ); }
 void VDG64::OutC9H( int, BYTE data ){ SRTextAddr = data & 0x0f; }
 void VDG64::OutCAH( int, BYTE data ){ SRRollX = (SRRollX & 0xff00) |   (WORD)data; }

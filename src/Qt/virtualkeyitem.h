@@ -2,6 +2,7 @@
 #define VIRTUALKEYITEM_H
 #include <QObject>
 #include <QGraphicsPixmapItem>
+#include "../typedef.h"
 #include "../keydef.h"
 #include "../event.h"
 

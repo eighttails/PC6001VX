@@ -11,6 +11,7 @@
 #include <string>
 #include <climits>
 
+
 /////////////////////////////////////////////////////////////////////////////
 // 型,定数定義
 /////////////////////////////////////////////////////////////////////////////
@@ -62,22 +63,18 @@ using P6VPATH = std::string;
 /////////////////////////////////////////////////////////////////////////////
 // 定数など
 /////////////////////////////////////////////////////////////////////////////
-#define INBPP		8	// 内部色深度
+#define INBPP			8	// 内部色深度
 
 #ifndef M_PI
-#define M_PI		3.14159265358979323846
+#define M_PI			3.14159265358979323846
 #endif
 
 #ifndef PATH_MAX
-#define	PATH_MAX	260
+#define	PATH_MAX		260
 #endif
 
-#ifndef LIL_ENDIAN
-#define LIL_ENDIAN	1234
-#endif
-#ifndef BIG_ENDIAN
-#define BIG_ENDIAN	4321
-#endif
+#define P6V_LIL_ENDIAN	1234
+#define P6V_BIG_ENDIAN	4321
 
 #ifndef BYTEORDER
 #if defined(__hppa__) || \
@@ -85,9 +82,9 @@ using P6VPATH = std::string;
     (defined(__MIPS__) && defined(__MISPEB__)) || \
     defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
     defined(__sparc__)
-#define BYTEORDER	BIG_ENDIAN
+#define BYTEORDER		P6V_BIG_ENDIAN
 #else
-#define BYTEORDER	LIL_ENDIAN
+#define BYTEORDER		P6V_LIL_ENDIAN
 #endif
 #endif
 
@@ -117,7 +114,7 @@ using P6VPATH = std::string;
 
 #define CTODW(a,b,c,d)		((DWORD)(((BYTE)(a))|(((DWORD)((BYTE)(b)))<<8)|(((DWORD)((BYTE)(c)))<<16)|(((DWORD)((BYTE)(d)))<<24)))
 
-#if BYTEORDER == LIL_ENDIAN
+#if BYTEORDER == P6V_LIL_ENDIAN
 #define GET3BYTE(a,b,c,p)	{ a = *((BYTE *)p++); b = *((BYTE *)p++); c = *((BYTE *)p++); }
 #define PUT3BYTE(a,b,c,p)	{ *((BYTE *)p++) = a; *((BYTE *)p++) = b; *((BYTE *)p++) = c; }
 #define BTODW(a,b,c,d)		((DWORD)(((BYTE)(a))|(((DWORD)((BYTE)(b)))<<8)|(((DWORD)((BYTE)(c)))<<16)|(((DWORD)((BYTE)(d)))<<24)))

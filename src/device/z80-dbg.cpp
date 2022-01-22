@@ -1475,84 +1475,90 @@ int cZ80::Disasm( std::string& str, WORD pc )
 /////////////////////////////////////////////////////////////////////////////
 // レジスタ値取得
 /////////////////////////////////////////////////////////////////////////////
-void cZ80::GetRegister( Register* reg )
+void cZ80::GetRegister( Register& reg )
 {
 	// 汎用レジスタ
-	reg->AF = AF;
-	reg->BC = BC;
-	reg->DE = DE;
-	reg->HL = HL;
+	reg.AF = AF;
+	reg.BC = BC;
+	reg.DE = DE;
+	reg.HL = HL;
 	
 	// 専用レジスタ
-	reg->IX = IX;
-	reg->IY = IY;
-	reg->PC = PC;
-	reg->SP = SP;
+	reg.IX = IX;
+	reg.IY = IY;
+	reg.PC = PC;
+	reg.SP = SP;
 	
 	// 裏レジスタ
-	reg->AF1 = AF1;
-	reg->BC1 = BC1;
-	reg->DE1 = DE1;
-	reg->HL1 = HL1;
+	reg.AF1 = AF1;
+	reg.BC1 = BC1;
+	reg.DE1 = DE1;
+	reg.HL1 = HL1;
 	
 	// 特殊レジスタ
-	reg->I = I;
-	reg->R = R;
+	reg.I = I;
+	reg.R = R;
 	
 	// R reg 保存用
-	reg->R_saved = R_saved;
+	reg.R_saved = R_saved;
 	
 	// IFF,IFF2
-	reg->IFF = IFF;
-	reg->IFF2 = IFF2;
+	reg.IFF  = IFF;
+	reg.IFF2 = IFF2;
 	
 	// 割込モード
-	reg->IM = IM;
+	reg.IM = IM;
 	
 	// HALT フラグ
-	reg->Halt = Halt;
+	reg.Halt = Halt;
+	
+	// 割込みベクタ
+	reg.IntVec = IntVec;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // レジスタ値設定
 /////////////////////////////////////////////////////////////////////////////
-void cZ80::SetRegister( Register* reg )
+void cZ80::SetRegister( Register& reg )
 {
 	// 汎用レジスタ
-	AF = reg->AF;
-	BC = reg->BC;
-	DE = reg->DE;
-	HL = reg->HL;
+	AF = reg.AF;
+	BC = reg.BC;
+	DE = reg.DE;
+	HL = reg.HL;
 	
 	// 専用レジスタ
-	IX = reg->IX;
-	IY = reg->IY;
-	PC = reg->PC;
-	SP = reg->SP;
+	IX = reg.IX;
+	IY = reg.IY;
+	PC = reg.PC;
+	SP = reg.SP;
 	
 	// 裏レジスタ
-	AF1 = reg->AF1;
-	BC1 = reg->BC1;
-	DE1 = reg->DE1;
-	HL1 = reg->HL1;
+	AF1 = reg.AF1;
+	BC1 = reg.BC1;
+	DE1 = reg.DE1;
+	HL1 = reg.HL1;
 	
 	// 特殊レジスタ
-	I = reg->I;
-	R = reg->R;
+	I = reg.I;
+	R = reg.R;
 	
 	// R reg 保存用
-	R_saved = reg->R_saved;
+	R_saved = reg.R_saved;
 	
 	// IFF,IFF2
-	IFF = reg->IFF;
-	IFF2 = reg->IFF2;
+	IFF  = reg.IFF;
+	IFF2 = reg.IFF2;
 	
 	// 割込モード
-	IM = reg->IM;
+	IM = reg.IM;
 	
 	// HALT フラグ
-	Halt = reg->Halt;
+	Halt = reg.Halt;
+	
+	// 割込みベクタ
+	IntVec = reg.IntVec;
 }
 
 
@@ -1562,6 +1568,15 @@ void cZ80::SetRegister( Register* reg )
 WORD cZ80::GetPC( void )
 {
 	return PC.W;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 割込みベクタ取得
+/////////////////////////////////////////////////////////////////////////////
+BYTE cZ80::GetIntVec( void )
+{
+	return IntVec;
 }
 
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

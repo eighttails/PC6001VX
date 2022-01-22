@@ -42,6 +42,10 @@
 #define	IOPORTY		9		// I/Oポート 原点Y
 #define	IOPORTH		20		// I/Oポート 行数
 
+#define	IVECX		37		// 割込みベクタ 原点X
+#define	IVECY		0		// 割込みベクタ 原点Y
+#define	IVECH		5		// 割込みベクタ 行数
+
 
 // I/Oポート表示用
 #define	IO_PIO			(-1)
@@ -198,6 +202,28 @@ static const std::map<int,const std::vector<int>&> PortsList = {
 	{ 68, Ports68 }
 };
 
+static const std::vector<std::string> IntName = {
+	"",
+	"KEY3",
+	"SIO",
+	"TIMER",
+	"CMTR",
+	"",
+	"",
+	"KEY1A",
+	"KEY1B",
+	"CMTE",
+	"KEY2",
+	"STICK",
+	"TVR",
+	"DATE",
+	"",
+	"",
+	"VOICE",
+	"VRTC",
+	"",
+	""
+};
 
 
 
@@ -402,7 +428,7 @@ void cWndReg::Update( void )
 	int i,j;
 	
 	// レジスタ値取得
-	el->vm->cpum->GetRegister( &reg );
+	el->vm->cpum->GetRegister( reg );
 	
 	// 1ライン逆アセンブル
 	el->vm->cpum->Disasm( DisCode, reg.PC.W );
@@ -451,11 +477,11 @@ void cWndReg::Update( void )
 	// PRINTER STROBE 0/1
 	ZCons::Printf( "CRT  :%s\n", el->vm->vdg->GetCrtDisp() ? "DISP" : "KILL" );
 	// CGROM ON/OFF
-	ZCons::Printf( "TIMER:%s\n", el->vm->intr->GetTimerIntr() ? "ON" : "OFF" );
+	ZCons::Printf( "TIMER:%s\n", el->vm->intr->GetTimerIntr() ? "ON " : "OFF" );
 	ZCons::Printf( "ATTR :%04X VRAM:%04X\n", el->vm->vdg->GerAttrAddr(), el->vm->vdg->GetVramAddr() );
 	// RELAY ON/OFF
-
-
+	
+	
 	// I/O port
 	ZCons::Locate( IOPORTX, IOPORTY );
 	ZCons::SetColor( FC_YELLOW4, FC_CYAN2 );
@@ -562,7 +588,64 @@ void cWndReg::Update( void )
 		xx += 9;
 		yy  = 0;
 	}
-
+	
+	
+	// 割込みベクタ
+	ZCons::Locate( IVECX, IVECY );
+	ZCons::SetColor( FC_YELLOW4, FC_CYAN2 );
+	ZCons::Printf( "%-31s", "[INTERRUPT VECTOR]" );
+	ZCons::SetColor( FC_WHITE4, FC_BLACK );
+	
+	int imax = el->cfg->GetValue( CV_Model );
+	imax = (imax == 64 || imax == 68) ? 18 : 12;
+		
+	for( int y = 0, i = 0; y < (imax + 3) / 4; y++ ){
+		ZCons::Locate( IVECX, IVECY + y + 1 );
+		for( int x = 0; x < 4; x++, i++ ){
+			if( i >= imax ){ break; }
+			
+			DWORD flg = el->vm->intr->GetIntrFlag();
+			if( ((flg & IREQ_TIMER)  && i ==  3) ||	// INT3:タイマ割込み
+				((flg & IREQ_8049)   && (i == 1 || i == 4 || i == 7 || i == 8 || i == 9 || i == 10 || i == 11)) ||	// INT1:8049割込み
+				((flg & IREQ_VOICE)  && i == 16) ||	// INT4:音声合成割込み
+				((flg & IREQ_VRTC)   && i == 17) ||	// INT5:VRTC割込み(SRモードの時だけ発生)
+				((flg & IREQ_SIO)    && i ==  2) ||	// IRQ6:RS-232C割込み
+				((flg & IREQ_JOYSTK) && i ==  8) ||	// INT2:ジョイスティック割込み(7pin)
+				((flg & IREQ_EXTINT) && i ==  8) ||	// INT8:外部割込み
+				((flg & IREQ_PRINT)  && i ==  8) ){	// INT7:プリンタ割込み
+					ZCons::SetColor( FC_RED4, FC_BLACK );
+			}else{
+				ZCons::SetColor( IntName[ i ].size() ? FC_WHITE4 : FC_WHITE2, FC_BLACK );
+			}
+			ZCons::Printf( "%02X:%02X%02X ", i * 2, el->vm->mem->Read( (reg.I << 8) + i * 2 + 1 ), el->vm->mem->Read( (reg.I << 8) + i * 2 ) );
+		}
+	}
+	
+	
+	// SUB CPU
+	ZCons::Locate( IVECX, IVECY + (imax + 3) / 4 );
+	ZCons::SetColor( FC_YELLOW4, FC_CYAN2 );
+	ZCons::Printf( "%-31s", "[SUB CPU]" );
+	ZCons::SetColor( FC_WHITE4, FC_BLACK );
+	ZCons::Locate( IVECX, IVECY + (imax + 3) / 4 + 1 );
+	
+	ZCons::Printf( "CPU STATUS : " );
+	switch( el->vm->cpus->GetStatus() ){
+	case SUB6::SS_IDLE:		ZCons::Printf( "IDLE     " );	break;	// 何もしていない
+	case SUB6::SS_KEY1:		ZCons::Printf( "KEY1     " );	break;	// キー割込み1その1
+	case SUB6::SS_KEY12:	ZCons::Printf( "KEY1-2   " );	break;	// キー割込み1その2
+	case SUB6::SS_KEY2:		ZCons::Printf( "KEY2     " );	break;	// キー割込み2
+	case SUB6::SS_KEY3:		ZCons::Printf( "KEY3     " );	break;	// キー割込み3
+	case SUB6::SS_CMTR:		ZCons::Printf( "CMT READ " );	break;	// CMT READ割込み
+	case SUB6::SS_CMTE:		ZCons::Printf( "CMT ERROR" );	break;	// CMT ERROR割込み
+	case SUB6::SS_SIO:		ZCons::Printf( "SIO      " );	break;	// RS232C受信割込み
+	case SUB6::SS_JOY:		ZCons::Printf( "STICK    " );	break;	// ゲーム用キー割込み
+	case SUB6::SS_TVRR:		ZCons::Printf( "TVR READ " );	break;	// TV予約読込み割込み
+	case SUB6::SS_DATE:		ZCons::Printf( "DATE     " );	break;	// DATE割込み
+	case SUB6::SS_CMTO:		ZCons::Printf( "CMT WRITE" );	break;	// CMT 1文字出力 データ待ち
+	case SUB6::SS_TVRW:		ZCons::Printf( "TVR WRITE" );	break;	// TV予約書込み データ待ち
+	default:				ZCons::Printf( "(UNKNOWN)" );			// 何か
+	}
 
 }
 
@@ -658,8 +741,10 @@ enum ArgvName{
 	
 	// <action>
 	//ARG_PC,
-	ARG_READ,	ARG_WRITE,	ARG_IN,
-	ARG_OUT,	ARG_CLEAR,
+	ARG_READ,	ARG_WRITE,
+	ARG_IN,		ARG_OUT,
+	ARG_INTR,
+	ARG_CLEAR,
 	
 	// step <cmd>
 	//ARG_ALL
@@ -702,6 +787,7 @@ static const std::vector<MonArgv> MonitorArgv = {
 	{ "WRITE",	ARGV_BREAK,	ARG_WRITE,	},
 	{ "IN",		ARGV_BREAK,	ARG_IN,		},
 	{ "OUT",	ARGV_BREAK,	ARG_OUT,	},
+	{ "INTR",	ARGV_BREAK,	ARG_INTR,	},
 	{ "CLEAR",	ARGV_BREAK,	ARG_CLEAR,	},
 	
 	// step
@@ -856,14 +942,17 @@ void cWndMon::BreakIn( WORD addr )
 	ZCons::SetColor( FC_YELLOW4 );
 	ZCons::Printf( "\n << Break in %04XH >>", addr );
 	switch( el->vm->bp->GetType( el->vm->bp->GetReqNum() ) ){
-	case BPoint::BP_READ:	ZCons::Printf( " Read Memory %04XH",    el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
-	case BPoint::BP_WRITE:	ZCons::Printf( " Write Memory %04XH",   el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
-	case BPoint::BP_IN:		ZCons::Printf( " Read I/O Port %02XH",  el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
-	case BPoint::BP_OUT:	ZCons::Printf( " Write I/O Port %02XH", el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
-	default:				break;
+	case BPoint::BP_READ:	ZCons::Printf( " Read Memory %04XH",      el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
+	case BPoint::BP_WRITE:	ZCons::Printf( " Write Memory %04XH",     el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
+	case BPoint::BP_IN:		ZCons::Printf( " Read I/O Port %02XH",    el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
+	case BPoint::BP_OUT:	ZCons::Printf( " Write I/O Port %02XH",   el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
+	case BPoint::BP_INTR:	ZCons::Printf( " Interrupt Vector %02XH", el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
+	default:																											break;
 	}
 	ZCons::SetColor( FC_WHITE4 );
 	ZCons::Printf( "\n" PROMPT );
+	
+	el->vm->bp->Reset();
 }
 
 
@@ -1116,7 +1205,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		el->vm->cpum->GetRegister( &reg );
+		el->vm->cpum->GetRegister( reg );
 		
 		addr = reg.PC.W;
 		code = el->vm->mem->Read( addr );
@@ -1167,7 +1256,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		el->vm->cpum->GetRegister( &reg );
+		el->vm->cpum->GetRegister( reg );
 		
 		addr = reg.PC.W;
 		code = el->vm->mem->Read( addr );
@@ -1209,7 +1298,7 @@ void cWndMon::Exec( int cmd )
 		bool show = false;
 		int action = ARG_PC;
 		WORD addr = 0;
-		int number = 1;
+		int number = 0;
 		
 		if( argv.Type != ARGV_END ){
 			// <action>
@@ -1229,6 +1318,7 @@ void cWndMon::Exec( int cmd )
 			case ARG_PC:
 			case ARG_READ:
 			case ARG_WRITE:
+			case ARG_INTR:
 				if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
 				addr = argv.Val;
 				Shift();
@@ -1255,13 +1345,14 @@ void cWndMon::Exec( int cmd )
 					ZCons::Printf( "    #%02d  ", i );
 					addr = el->vm->bp->GetAddr( i );
 					switch( el->vm->bp->GetType( i ) ){
-					case BPoint::BP_NONE:	ZCons::Printf( "-- なし --\n" );					break;
-					case BPoint::BP_PC:		ZCons::Printf( "PC   reach %04XH\n", addr&0xffff );	break;
-					case BPoint::BP_READ:	ZCons::Printf( "READ  from %04XH\n", addr&0xffff );	break;
-					case BPoint::BP_WRITE:	ZCons::Printf( "WRITE   to %04XH\n", addr&0xffff );	break;
-					case BPoint::BP_IN:		ZCons::Printf( "INPUT from %02XH\n", addr&0xff   );	break;
-					case BPoint::BP_OUT:	ZCons::Printf( "OUTPUT  to %04XH\n", addr&0xff   );	break;
-					default:																	break;
+					case BPoint::BP_NONE:	ZCons::Printf( "-- なし --\n" );						break;
+					case BPoint::BP_PC:		ZCons::Printf( "PC    reach %04XH\n", addr & 0xffff );	break;
+					case BPoint::BP_READ:	ZCons::Printf( "READ   from %04XH\n", addr & 0xffff );	break;
+					case BPoint::BP_WRITE:	ZCons::Printf( "WRITE    to %04XH\n", addr & 0xffff );	break;
+					case BPoint::BP_IN:		ZCons::Printf( "INPUT  from %02XH\n", addr & 0xff   );	break;
+					case BPoint::BP_OUT:	ZCons::Printf( "OUTPUT   to %02XH\n", addr & 0xff   );	break;
+					case BPoint::BP_INTR:	ZCons::Printf( "INTR vector %02XH\n", addr & 0xff   );	break;
+					default:																		break;
 					}
 				}
 			}else
@@ -1269,7 +1360,11 @@ void cWndMon::Exec( int cmd )
 		}else{
 			if( action == ARG_CLEAR ){
 				el->vm->bp->Delete( number );
-				ZCons::Printf( "ブレークポイント #%02d を消去します。\n", number );
+				if( number ){
+					ZCons::Printf( "ブレークポイント #%02d を消去します。\n", number );
+				}else{
+					ZCons::Printf( "ブレークポイントを全て消去します。\n" );
+				}
 			}else{
 				std::string s = "";
 				
@@ -1279,7 +1374,8 @@ void cWndMon::Exec( int cmd )
 				case ARG_WRITE:	el->vm->bp->Set( BPoint::BP_WRITE, addr );	s = "WRITE : %04XH";	break;
 				case ARG_IN:	el->vm->bp->Set( BPoint::BP_IN,    addr );	s = "IN : %02XH";		break;
 				case ARG_OUT:	el->vm->bp->Set( BPoint::BP_OUT,   addr );	s = "OUT : %02XH";		break;
-				default:																		break;
+				case ARG_INTR:	el->vm->bp->Set( BPoint::BP_INTR,  addr );	s = "INTR : %02XH";		break;
+				default:																			break;
 				}
 				ZCons::Printf( "ブレークポイント #%02d を設定します。[ ", el->vm->bp->GetNum() );
 				ZCons::Printf( s, addr );
@@ -1570,7 +1666,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		el->vm->cpum->GetRegister( &reg );
+		el->vm->cpum->GetRegister( reg );
 		
 		switch( re ){
 		case ARG_AF:	reg.AF.W  = val;		break;
@@ -1592,7 +1688,7 @@ void cWndMon::Exec( int cmd )
 		case ARG_HALT:	if(val)  { val=1; reg.Halt = val; }	break;
 		}
 		
-		el->vm->cpum->SetRegister( &reg );
+		el->vm->cpum->SetRegister( reg );
 		
 		for( auto &m : MonitorArgv ){
 			if( re == m.Val ){
@@ -1629,7 +1725,7 @@ void cWndMon::Exec( int cmd )
 		}
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		el->vm->cpum->GetRegister( &reg );
+		el->vm->cpum->GetRegister( reg );
 		if( addr == -1 ){
 			addr = reg.PC.W;	// ADDR 未指定時
 		}
@@ -1700,23 +1796,24 @@ void cWndMon::Help( int cmd )
 		
 	case MONITOR_BREAK:
 		ZCons::Printf(
-			"  break [<action>] <addr|port>\n"
+			"  break [<action>] <addr|port|vec>\n"
 			"  break CLEAR [#<No>]\n"
 			"  break\n"
 			"    ブレークポイントを設定します\n"
-			"    [all omit]  ... 全てのブレークポイントを表示\n"
-			"    <action>    ... set action of conditon PC|READ|WRITE|IN|OUT or CLEAR\n"
-			"                    PC    ... break if PC reach addr\n"
-			"                    READ  ... break if data is read\n"
-			"                    WRITE ... break if data is written\n"
-			"                    IN    ... break if data is input\n"
-			"                    OUT   ... break if data is output\n"
-			"                    CLEAR ... clear all break point\n"
-			"                    [omit]... select PC\n"
-			"    <addr|port> ... specify address or port\n"
-			"                    if <action> is CLEAR, this argument is invalid\n"
-			"    #<No>       ... number of break point.\n"
-			"                    [omit]... select #1\n"
+			"    [all omit]      ... 全てのブレークポイントを表示\n"
+			"    <action>        ... set action of conditon PC|READ|WRITE|IN|OUT|INTR or CLEAR\n"
+			"                        PC    ... break if PC reach addr\n"
+			"                        READ  ... break if data is read\n"
+			"                        WRITE ... break if data is written\n"
+			"                        IN    ... break if data is input\n"
+			"                        OUT   ... break if data is output\n"
+			"                        INTR  ... break if interrupt\n"
+			"                        CLEAR ... clear break point\n"
+			"                        [omit]... select PC\n"
+			"    <addr|port|vec> ... specify address or port\n"
+			"                        if <action> is CLEAR, this argument is invalid\n"
+			"    #<No>           ... number of break point.\n"
+			"                        [omit]... select all\n"
 		);
 		break;
 		

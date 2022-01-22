@@ -9,11 +9,11 @@
 // 8ビット転送命令
 	case LD_A_I:
 		ACC  = I;
-		FLAG = SZ_table[ACC] | (IFF==INT_DISABLE? 0:P_FLAG)|(FLAG&C_FLAG);
+		FLAG = SZ_table[ACC] | (IFF ? P_FLAG : 0) | (FLAG & C_FLAG);
 		break;
 	case LD_A_R:
 		ACC = (R & 0x7f) | (R_saved & 0x80);
-		FLAG = SZ_table[ACC] | (IFF==INT_DISABLE? 0:P_FLAG)|(FLAG&C_FLAG);
+		FLAG = SZ_table[ACC] | (IFF ? P_FLAG : 0) | (FLAG&C_FLAG);
 		break;
 	case LD_I_A: I = ACC; break;
 	case LD_R_A: R = ACC; break;

@@ -422,7 +422,7 @@ MEM61::MEM61( VM6* vm, const ID& id ) : MEM60( vm, id )
 }
 
 MEM62::MEM62( VM6* vm, const ID& id ) : MEM6( vm, id ),
-	cgrom( true ), kj_rom( true ), kj_LR( true ), cgenable( true ), cgaden( 7 ), cgaddr( 3 ), c2acc( 0xff )
+	kj_rom( true ), kj_LR( true ), cgrom( true ), cgenable( true ), cgaden( 0 ), cgaddr( 3 ), c2acc( 0xff )
 {
 	MemTable.System1 = &MEM62::ISYSROM1;
 	MemTable.CGRom1  = &MEM62::ICGROM1;
@@ -538,7 +538,7 @@ const std::string& MEM62::GetNameCommon( WORD addr, bool rw )
 	int idx = addr>>MemBlock::PAGEBITS;
 	
 	// Port92HとF8H 両方とも設定されていたらCG ROM有効
-	if( CGBank && cgenable && ((idx & cgaden) == cgaddr) ){
+	if( CGBank && cgenable && ((idx | cgaden) == cgaddr) ){
 		return IRom[cgrom ? CGROM1 : CGROM2].GetName( addr, rw );
 	}
 	return rw ? WBLK2[idx]->GetName( addr, rw )
@@ -561,7 +561,7 @@ BYTE MEM62::CommonRead( MemCell* ptr, WORD addr, int* wcnt )
 	int idx = addr>>MemBlock::PAGEBITS;
 	
 	// Port92HとF8H 両方とも設定されていたらCG ROM有効
-	if( CGBank && cgenable && ((idx & cgaden) == cgaddr) ){
+	if( CGBank && cgenable && ((idx | cgaden) == cgaddr) ){
 		return IRom[cgrom ? CGROM1 : CGROM2].Read( addr, wcnt );
 	}
 	return RBLK2[idx]->Read( addr, wcnt );
@@ -1026,9 +1026,22 @@ void MEM6::Reset()
 	SetMemBlockW( Rf[2] );
 }
 
-void MEM64::Reset( void )
+void MEM62::Reset( void )
 {
 	MEM6::Reset();
+	
+	kj_rom   = true;
+	kj_LR    = true;
+	cgrom    = true;
+	cgenable = true;
+	cgaden   = 0;
+	cgaddr   = 3;
+	c2acc    = 0xff;
+}
+
+void MEM64::Reset( void )
+{
+	MEM62::Reset();
 	
 	// TO DO
 	const BYTE initmb[] = { 0xf8, 0xfa, 0xfc, 0xfe, 0x08, 0x0a, 0x0c, 0x0e,
@@ -1472,30 +1485,12 @@ void MEM64::SetMemBlockSR( BYTE port, BYTE data )
 	else			  mb = &RBLKSR[port & 0x07];	// 0-7 : Read
 	
 	switch( cs ){
-	case 0x00:	// System RAM (16KB毎)
-		switch( addr ){
-		case 0x00: *mb = port&1 ? &IRam[INTRAM+1] : &IRam[INTRAM+0]; break;
-		case 0x01: *mb = port&1 ? &IRam[INTRAM+1] : &IRam[INTRAM+0]; break;
-		case 0x02: *mb = port&1 ? &IRam[INTRAM+3] : &IRam[INTRAM+2]; break;
-		case 0x03: *mb = port&1 ? &IRam[INTRAM+3] : &IRam[INTRAM+2]; break;
-		case 0x04: *mb = port&1 ? &IRam[INTRAM+5] : &IRam[INTRAM+4]; break;
-		case 0x05: *mb = port&1 ? &IRam[INTRAM+5] : &IRam[INTRAM+4]; break;
-		case 0x06: *mb = port&1 ? &IRam[INTRAM+7] : &IRam[INTRAM+6]; break;
-		case 0x07: *mb = port&1 ? &IRam[INTRAM+7] : &IRam[INTRAM+6]; break;
-		}
+	case 0x00:	// System RAM (16KB単位でしか設定できない)
+		*mb = &IRam[INTRAM + (addr & 0x06) + (port & 1)];
 		break;
 		
-	case 0x02:	// Ext RAM (こっちも16KB毎とすべき?)
-		switch( addr ){
-		case 0x00: *mb = &EMem[EXTRAM+0]; break;
-		case 0x01: *mb = &EMem[EXTRAM+1]; break;
-		case 0x02: *mb = &EMem[EXTRAM+2]; break;
-		case 0x03: *mb = &EMem[EXTRAM+3]; break;
-		case 0x04: *mb = &EMem[EXTRAM+4]; break;
-		case 0x05: *mb = &EMem[EXTRAM+5]; break;
-		case 0x06: *mb = &EMem[EXTRAM+6]; break;
-		case 0x07: *mb = &EMem[EXTRAM+7]; break;
-		}
+	case 0x02:	// Ext RAM (こっちも16KB単位とすべき? 検証必要)
+		*mb = &EMem[EXTRAM + addr]; break;
 		break;
 		
 	case 0x0b:	// Ext ROM1
@@ -1507,7 +1502,7 @@ void MEM64::SetMemBlockSR( BYTE port, BYTE data )
 		break;
 		
 	case 0x0d:	// CGROM
-		switch( addr&0x01 ){
+		switch( addr & 0x01 ){
 		case 0x00: *mb = &IRom[CGROM1]; break;
 		case 0x01: *mb = &IRom[CGROM2]; break;
 		}
@@ -1527,16 +1522,7 @@ void MEM64::SetMemBlockSR( BYTE port, BYTE data )
 		break;
 		
 	case 0x0f:	// System Rom1
-		switch( addr ){
-		case 0x00: *mb = &IRom[MAINROM+0]; break;
-		case 0x01: *mb = &IRom[MAINROM+1]; break;
-		case 0x02: *mb = &IRom[MAINROM+2]; break;
-		case 0x03: *mb = &IRom[MAINROM+3]; break;
-		case 0x04: *mb = &IRom[MAINROM+4]; break;
-		case 0x05: *mb = &IRom[MAINROM+5]; break;
-		case 0x06: *mb = &IRom[MAINROM+6]; break;
-		case 0x07: *mb = &IRom[MAINROM+7]; break;
-		}
+		*mb = &IRom[MAINROM + addr];
 		break;
 		
 	default:
@@ -1570,13 +1556,39 @@ void MEM62::SetCGrom( BYTE data )
 	// bit 6 CG ROMアクセスフラグ true:アクセス可 false:アクセス不可
 	cgenable = data & 0x40 ? true : false;
 	
-	// bit 5,4,3 CG ROMアドレスイネーブル
-	cgaden   = (~data >> 3) & 7;
+	// bit 5,4,3 CG ROMアドレスイネーブル 0:ON 1:OFF
+	// 無効ビットは1固定??
+	cgaden   = (data >> 3) & 7;
 	
 	// bit 2,1,0 CG ROMアドレス A13,14,15
-	// 予めcgadenでマスクしておく
-	cgaddr   = data & cgaden;
+	// 予めcgadenでマスク(OR)しておく
+	cgaddr   = (data & 7) | cgaden;
 }
+
+void MEM64::SetCGrom( BYTE data )
+{
+	MEM62::SetCGrom( data );
+	
+	// CGROMは16KB単位でしか割当てられないらしい(内部RAMと同じ)
+	// SR 20行モードのフォントはCGROMの0x2000H-0x3FFFH
+	// C2H(0x4000H)を指示してもC3H(0x6000H)と同じ挙動になる
+	// 日本語ワードプロセッサの挙動だけで判断
+	cgaden |= 1;
+	cgaddr |= 1;
+}
+
+
+/*
+	http://sbeach.seesaa.net/article/459909631.html
+
+注）通常は8K毎に割り当てが出来ますが、内部RAM（VRAM）とCGROMには、制限があります。
+　　（基板接続間違いのようです）
+
+　　内部RAM（VRAM）、CGROMの	0x0000～0x1FFFは、									0x0000～0x1FFF、0x4000～0x5FFF、0x8000～0x9FFF、0xC000～0xDFFFにしか割り当てられない。
+　　内部RAM（VRAM）、CGROMの	0x2000～0x3FFFは、									0x2000～0x3FFF、0x6000～0x7FFF、0xA000～0xBFFF、0xE000～0xEFFFにしか割り当てられない。
+　　内部RAM（VRAM）の			0x4000～0x5FFF、0x8000～0x9FFF、0xC000～0xDFFFは、	0x0000～0x1FFF、0x4000～0x5FFF、0x8000～0x9FFF、0xC000～0xDFFFにしか割り当てられない。
+　　内部RAM（VRAM）の			0x6000～0x7FFF、0xA000～0xBFFF、0xE000～0xEFFFは、	0x2000～0x3FFF、0x6000～0x7FFF、0xA000～0xBFFF、0xE000～0xEFFFにしか割り当てられない。
+*/
 
 
 /////////////////////////////////////////////////////////////////////////////

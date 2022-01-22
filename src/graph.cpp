@@ -45,6 +45,7 @@
 #define	DISPSCAN	(!DISPMON && el->cfg->GetValue( CB_ScanLine ))
 #define	DISPNTSC	(!DISPMON && el->cfg->GetValue( CB_DispNTSC ))
 #else
+#define	DISPMON		(false)
 #define	DISPFULL	el->cfg->GetValue( CB_FullScreen )
 #define	DISPSCAN	el->cfg->GetValue( CB_ScanLine )
 #define	DISPNTSC	el->cfg->GetValue( CB_DispNTSC )

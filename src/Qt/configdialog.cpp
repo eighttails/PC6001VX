@@ -2,18 +2,46 @@
 #include "ui_configdialog.h"
 
 #include <QDir>
+#include <QStandardItemModel>
 
 #include "../config.h"
 #include "../osd.h"
+#include "../pc6001v.h"
 #include "p6vxapp.h"
 
-ConfigDialog::ConfigDialog(CFG6* cfg, QWidget *parent)
+// 設定ファイル内のモデルIDとコンボボックスのインデックスの対応
+static const QList<int> modelIds {
+	60,
+	61,
+	62,
+	66,
+	64,
+	68,
+};
+
+
+// 設定ファイル内の拡張カートリッジIDとコンボボックスのインデックスの対応
+static const QList<WORD> extCartIds {
+	0,
+	EXC6001,
+	EXC6005,
+	EXC6006,
+	EXC660101,
+	EXC6006SR,
+	EXC6007SR,
+	// EXC6053,
+	// EXC60M55,
+	EXCSOL1,
+	EXCSOL2,
+	EXCSOL3,
+};
+
+ConfigDialog::ConfigDialog(std::shared_ptr<CFG6> cfg, QWidget *parent)
 	: QDialog(parent)
 	, ui(new Ui::ConfigDialog)
 	, config(cfg)
 {
 	ui->setupUi(this);
-	connect(ui->horizontalSliderFPS, SIGNAL(valueChanged(int)), this, SLOT(dispFPS(int)));
 
 	// 各種マッピング
 	// サウンド------------------------------------------------------
@@ -101,87 +129,87 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::readConfig()
 {
-	char str[PATH_MAX];		// 文字列取得用
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
 	// 基本------------------------------------------------------
 	// 機種
-	switch(config->GetModel()){
-	case 60:    ui->radioButtonModel6001->setChecked(true);			break;
-	case 61:    ui->radioButtonModel6001A->setChecked(true);		break;
-	case 62:    ui->radioButtonModel6001mk2->setChecked(true);		break;
-	case 64:    ui->radioButtonModel6001mk2SR->setChecked(true);	break;
-	case 66:    ui->radioButtonModel6601->setChecked(true);			break;
-	case 68:    ui->radioButtonModel6601SR->setChecked(true);		break;
-	default:    Q_ASSERT(false);
-	}
+	auto modelId = (config->GetValue(CV_Model));
+	ui->comboBoxModel->setCurrentIndex(modelIds.indexOf(modelId));
 
-	// FDD
-	switch(config->GetFddNum()){
-	case 0: ui->radioButtonFDD0->setChecked(true);	break;
-	case 1: ui->radioButtonFDD1->setChecked(true);	break;
-	case 2: ui->radioButtonFDD2->setChecked(true);	break;
-	default:    Q_ASSERT(false);
-	}
+	// 拡張カートリッジ
+	auto extCartId = config->GetValue(CV_ExCartridge);
+	ui->comboBoxExtCartridge->setCurrentIndex(extCartIds.indexOf(extCartId));
+
+	//// FDD
+	// FDD数
+	ui->spinBoxNumFdd->setValue(config->GetValue(CV_FDDrive));
+	// FDDウェイト
+	ui->checkBoxFDDWaitEnable->setChecked(config->GetValue(CB_FDDWait));
+
+	//// CMT
+	// Turbo TAPE
+	ui->checkBoxTurboTape->setChecked(config->GetValue(CB_TurboTAPE));
+
+	// Boost Up
+	ui->groupBoxBoostUp->setChecked(config->GetValue(CB_BoostUp));
+
+	// BoostUp 最大倍率(N60モード)
+	ui->spinBoxBoost60->setValue(qMin(qMax(1, config->GetValue(CV_MaxBoost60)), 100));
+
+	// BoostUp 最大倍率(N60m/N66モード)
+	ui->spinBoxBoost66->setValue(qMin(qMax(1, config->GetValue(CV_MaxBoost62)), 100));
 
 	// 内蔵互換ROM使用
-	const bool CompatibleRomMode = QString(config->GetRomPath()).startsWith(":");
+	const bool CompatibleRomMode = P6VPATH2QSTR(config->GetValue(CF_RomPath)).startsWith(":");
 	ui->checkBoxCompatibleRomMode->setChecked(CompatibleRomMode);
 	if (CompatibleRomMode){
-		ui->radioButtonModel6001A->setEnabled(true);
-		ui->radioButtonModel6001mk2->setEnabled(true);
-		ui->radioButtonModel6001mk2SR->setEnabled(false);
-		ui->radioButtonModel6601->setEnabled(true);
-		ui->radioButtonModel6601SR->setEnabled(false);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(60), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(61), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(62), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(66), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(64), false);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(68), false);
 		ui->lineEditFolderRom->setEnabled(false);
 		ui->pushButtonClearFolderRom->setEnabled(false);
 		ui->pushButtonRefFolderRom->setEnabled(false);
 	} else {
-		ui->radioButtonModel6001A->setEnabled(true);
-		ui->radioButtonModel6001mk2->setEnabled(true);
-		ui->radioButtonModel6001mk2SR->setEnabled(true);
-		ui->radioButtonModel6601->setEnabled(true);
-		ui->radioButtonModel6601SR->setEnabled(true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(60), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(61), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(62), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(66), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(64), true);
+		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(68), true);
 		ui->lineEditFolderRom->setEnabled(true);
 		ui->pushButtonClearFolderRom->setEnabled(true);
 		ui->pushButtonRefFolderRom->setEnabled(true);
 	}
 
-	// 拡張RAM使用
-	ui->checkBoxExtRam->setChecked(config->GetUseExtRam());
-
-	// 戦士のカートリッジ使用
-	ui->checkBoxUseSoldier->setChecked(config->GetUseSoldier());
 
 	// 画面------------------------------------------------------
 	// MODE4カラー
-	switch(config->GetMode4Color()){
-	case 0: ui->radioButtonColorBW->setChecked(true);	break;
-	case 1: ui->radioButtonColorRB->setChecked(true);	break;
-	case 2: ui->radioButtonColorBR->setChecked(true);	break;
-	case 3: ui->radioButtonColorPG->setChecked(true);	break;
-	case 4: ui->radioButtonColorGP->setChecked(true);	break;
-	default:    Q_ASSERT(false);
-	}
+	ui->comboBoxMode4Color->setCurrentIndex(config->GetValue(CV_Mode4Color));
+
+	// フレームスキップ
+	ui->comboBoxFrameSkip->setCurrentIndex(config->GetValue(CV_FrameSkip));
 
 	// スキャンライン
-	ui->checkBoxScanline->setChecked(config->GetScanLine());
+	ui->checkBoxScanline->setChecked(config->GetValue(CB_ScanLine));
 
 	// スキャンライン輝度
-	ui->lineEditScanLineBr->setText(QString::number(config->GetScanLineBr()));
+	ui->spinBoxScanLineBr->setValue(config->GetValue(CV_ScanLineBr));
 
 	// 4:3表示
-	ui->checkBoxDispNTSC->setChecked(config->GetDispNTSC());
+	ui->checkBoxDispNTSC->setChecked(config->GetValue(CB_DispNTSC));
 
 	// フルスクリーン
 #ifdef ALWAYSFULLSCREEN
 	ui->checkBoxFullscreen->setVisible(false);
 #else
-	ui->checkBoxFullscreen->setChecked(config->GetFullScreen());
+	ui->checkBoxFullscreen->setChecked(config->GetValue(CB_FullScreen));
 #endif
 
 	// ステータスバー表示状態
-	ui->checkBoxStatDisp->setChecked(config->GetDispStat());
+	ui->checkBoxStatDisp->setChecked(config->GetValue(CB_DispStatus));
 
 	// ハードウェアアクセラレーション
 #ifndef NOOPENGL
@@ -192,107 +220,123 @@ void ConfigDialog::readConfig()
 	// フィルタリング
 	ui->checkBoxFiltering->setChecked(app->getSetting(P6VXApp::keyFiltering).toBool());
 
+	//// ビデオキャプチャ時の設定
 	// フレームスキップ
-	ui->horizontalSliderFPS->setValue(config->GetFrameSkip());
-	dispFPS(config->GetFrameSkip());
+	ui->comboBoxMovieFrameSkip->setCurrentIndex(config->GetValue(CV_AviFrameSkip));
+
+	// 解像度倍率
+	ui->spinBoxMovieZoom->setValue(config->GetValue(CV_AviZoom));
+
+	// スキャンライン
+	ui->checkBoxMovieScanline->setChecked(config->GetValue(CB_AviScanLine));
+
+	// スキャンライン輝度
+	ui->spinBoxMovieScanLineBr->setValue(config->GetValue(CV_AviScanLineBr));
+
+	// 4:3表示
+	ui->checkBoxMovieDispNTSC->setChecked(config->GetValue(CB_AviDispNTSC));
+
+	// フィルタリング
+	ui->checkBoxMovieFiltering->setChecked(config->GetValue(CB_AviFiltering));
 
 	// サウンド------------------------------------------------------
 	// マスター音量
-	ui->horizontalSliderMasterVol->setValue(config->GetMasterVol());
-	ui->labelMasterVol->setText(QString::number(config->GetMasterVol()));
+	ui->horizontalSliderMasterVol->setValue(config->GetValue(CV_MasterVol));
+	ui->labelMasterVol->setText(QString::number(config->GetValue(CV_MasterVol)));
 
 	// PSG音量
-	ui->horizontalSliderPSGVol->setValue(config->GetPsgVol());
-	ui->labelPSGVol->setText(QString::number(config->GetPsgVol()));
+	ui->horizontalSliderPSGVol->setValue(config->GetValue(CV_PsgVolume));
+	ui->labelPSGVol->setText(QString::number(config->GetValue(CV_PsgVolume)));
 
 	// 音声合成音量
-	ui->horizontalSliderVoiceVol->setValue(config->GetVoiceVol());
-	ui->labelVoiceVol->setText(QString::number(config->GetVoiceVol()));
+	ui->horizontalSliderVoiceVol->setValue(config->GetValue(CV_VoiceVolume));
+	ui->labelVoiceVol->setText(QString::number(config->GetValue(CV_VoiceVolume)));
 
 	// TAPEモニタ音量
-	ui->horizontalSliderTapeVol->setValue(config->GetCmtVol());
-	ui->labelTapeVol->setText(QString::number(config->GetCmtVol()));
+	ui->horizontalSliderTapeVol->setValue(config->GetValue(CV_TapeVolume));
+	ui->labelTapeVol->setText(QString::number(config->GetValue(CV_TapeVolume)));
 
 	// ファイル----------------------------------------------------
 	// 拡張ROMファイル
-	strncpy( str, config->GetExtRomFile(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditExtRom->setText(str);
+	P6VPATH path;
+	path = config->GetValue(CF_ExtRom);
+	OSD_DelDelimiter( path );
+	ui->lineEditExtRom->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditExtRom);
 
 	// TAPE(LOAD)ファイル名
-	strncpy( str, config->GetTapeFile(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditLoadTape->setText(str);
+	path = config->GetValue(CF_tape);
+	OSD_DelDelimiter( path );
+	ui->lineEditLoadTape->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditLoadTape);
 
 	// TAPE(SAVE)ファイル名
-	strncpy( str, config->GetSaveFile(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditSaveTape->setText(str);
+	path = config->GetValue(CF_save);
+	OSD_DelDelimiter( path );
+	ui->lineEditSaveTape->setText(P6VPATH2QSTR(path));
 
 	// DISK1ファイル名
-	strncpy( str, config->GetDiskFile(1), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditDisk1->setText(str);
+	path = config->GetValue(CF_disk1);
+	OSD_DelDelimiter( path );
+	ui->lineEditDisk1->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditDisk1);
 
 	// DISK2ファイル名
-	strncpy( str, config->GetDiskFile(2), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditDisk2->setText(str);
+	path = config->GetValue(CF_disk2);
+	OSD_DelDelimiter( path );
+	ui->lineEditDisk2->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditDisk2);
 
 	// プリンタファイル名
-	strncpy( str, config->GetPrinterFile(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditPrinter->setText(str);
+	path = config->GetValue(CF_printer);
+	OSD_DelDelimiter( path );
+	ui->lineEditPrinter->setText(P6VPATH2QSTR(path));
 
 	// フォルダ--------------------------------------------------------------
 	// ROMパス
-	strncpy( str, config->GetRomPath(), PATH_MAX );
-	OSD_DelDelimiter( str );
+	path = config->GetValue(CF_RomPath);
+	OSD_DelDelimiter( path );
 	if (CompatibleRomMode){
 		ui->lineEditFolderRom->setText(tr("互換ROM使用中"));
 	} else {
-		ui->lineEditFolderRom->setText(str);
+		ui->lineEditFolderRom->setText(P6VPATH2QSTR(path));
 	}
 	warnFileOrFolderNotExist(ui->lineEditFolderRom);
 
 	// TAPEパス
-	strncpy( str, config->GetTapePath(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditFolderTape->setText(str);
+	path = config->GetValue(CF_TapePath);
+	OSD_DelDelimiter( path );
+	ui->lineEditFolderTape->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditFolderTape);
 
 	// DISKパス
-	strncpy( str, config->GetDiskPath(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditFolderDisk->setText(str);
+	path = config->GetValue(CF_DiskPath);
+	OSD_DelDelimiter( path );
+	ui->lineEditFolderDisk->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditFolderDisk);
 
 	// 拡張ROMパス
-	strncpy( str, config->GetExtRomPath(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditFolderExtRom->setText(str);
+	path = config->GetValue(CF_ExtRomPath);
+	OSD_DelDelimiter( path );
+	ui->lineEditFolderExtRom->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditFolderExtRom);
 
 	// IMGパス
-	strncpy( str, config->GetImgPath(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditFolderImg->setText(str);
+	path = config->GetValue(CF_ImgPath);
+	OSD_DelDelimiter( path );
+	ui->lineEditFolderImg->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditFolderImg);
 
 	// WAVEパス
-	strncpy( str, config->GetWavePath(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditFolderWave->setText(str);
+	path = config->GetValue(CF_WavePath);
+	OSD_DelDelimiter( path );
+	ui->lineEditFolderWave->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditFolderWave);
 
 	// どこでもSAVEパス
-	strncpy( str, config->GetDokoSavePath(), PATH_MAX );
-	OSD_DelDelimiter( str );
-	ui->lineEditFolderDokoSave->setText(str);
+	path = config->GetValue(CF_DokoPath);
+	OSD_DelDelimiter( path );
+	ui->lineEditFolderDokoSave->setText(P6VPATH2QSTR(path));
 	warnFileOrFolderNotExist(ui->lineEditFolderDokoSave);
 
 #ifdef Q_OS_ANDROID
@@ -320,96 +364,90 @@ void ConfigDialog::readConfig()
 
 	// 色--------------------------------------------------------------------------
 	// 16〜72の色IDに対応させる。
-	for (int id = 16; id <= 80; id++){
+	for (int id = 0; id <= 64; id++){
 		QString buttonName = QString("pushButtonColor%1").arg(id);
 		// ダイアログから動的に部品を取得する
 		ColorButton* button = this->findChild<ColorButton*>(buttonName);
-		button->initialize(id, config);
+		if (button) {
+			button->initialize(id, config.get());
+		}
 	}
 
 	// その他
 	// オーバークロック率
-	ui->lineEditClockRatio->setText(QString::number(qMin(qMax(1, config->GetOverClock()), 1000)));
+	ui->spinBoxClockRatio->setValue(config->GetValue(CV_OverClock));
 
 	// CRCチェック
-	ui->checkBoxRomCRC->setChecked(config->GetCheckCRC());
-
-	// Turbo TAPE
-	ui->checkBoxTurboTape->setChecked(config->GetTurboTAPE());
-
-	// Boost Up
-	ui->groupBoxBoostUp->setChecked(config->GetBoostUp());
-
-	// BoostUp 最大倍率(N60モード)
-	ui->lineEditBoost60->setText(QString::number(qMin(qMax(1, config->GetMaxBoost1()), 100)));
-
-	// BoostUp 最大倍率(N60m/N66モード)
-	ui->lineEditBoost66->setText(QString::number(qMin(qMax(1, config->GetMaxBoost2()), 100)));
+	ui->checkBoxRomCRC->setChecked(config->GetValue(CB_CheckCRC));
 
 	// 終了時 確認する
-	ui->checkBoxFDDWaitEnable->setChecked(config->GetFddWaitEnable());
+	ui->checkBoxFDDWaitEnable->setChecked(config->GetValue(CB_FDDWait));
 
 	// 終了時 確認する
-	ui->checkBoxCkQuit->setChecked(config->GetCkQuit());
+	ui->checkBoxCkQuit->setChecked(config->GetValue(CB_CkQuit));
 
 	// 終了時 INIファイルを保存する
-	ui->checkBoxSaveQuit->setChecked(config->GetSaveQuit());
+	ui->checkBoxSaveQuit->setChecked(config->GetValue(CB_SaveQuit));
 }
 
 void ConfigDialog::writeConfig()
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	// 一時変数
-	int iVal = 0;
 	QString qStr;
-	bool conv = false;
 
 	// 基本------------------------------------------------
 	// 機種
-	if      (ui->radioButtonModel6001->isChecked())			config->SetModel(60);
-	else if (ui->radioButtonModel6001A->isChecked())		config->SetModel(61);
-	else if (ui->radioButtonModel6001mk2->isChecked())		config->SetModel(62);
-	else if (ui->radioButtonModel6001mk2SR->isChecked())	config->SetModel(64);
-	else if (ui->radioButtonModel6601->isChecked())			config->SetModel(66);
-	else if (ui->radioButtonModel6601SR->isChecked())		config->SetModel(68);
+	config->SetValue(CV_Model, modelIds[ui->comboBoxModel->currentIndex()]);
 
-	// FDD
-	if      (ui->radioButtonFDD0->isChecked())	config->SetFddNum(0);
-	else if (ui->radioButtonFDD1->isChecked())	config->SetFddNum(1);
-	else if (ui->radioButtonFDD2->isChecked())	config->SetFddNum(2);
+	//// FDD
+	// FDDドライブ数
+	config->SetValue(CV_FDDrive, ui->spinBoxNumFdd->value());
+	// FDDアクセスウェイト有効
+	config->SetValue(CB_FDDWait, ui->checkBoxFDDWaitEnable->isChecked());
 
-	// 拡張RAM使用
-	config->SetUseExtRam(ui->checkBoxExtRam->isChecked());
+	//// CMT
+	// CRCチェック
+	config->SetValue(CB_CheckCRC, ui->checkBoxRomCRC->isChecked());
 
-	// 戦士のカートリッジ使用
-	config->SetUseSoldier(ui->checkBoxUseSoldier->isChecked());
+	// Turbo TAPE
+	config->SetValue(CB_TurboTAPE, ui->checkBoxTurboTape->isChecked());
+
+	// Boost Up
+	config->SetValue(CB_BoostUp, ui->groupBoxBoostUp->isChecked());
+
+	// BoostUp 最大倍率(N60モード)
+	config->SetValue(CV_MaxBoost60, ui->spinBoxBoost60->value());
+
+	// BoostUp 最大倍率(N60m/N66モード)
+	config->SetValue(CV_MaxBoost62, ui->spinBoxBoost66->value());
+
+	// 拡張カートリッジ
+	config->SetValue(CV_ExCartridge, int(extCartIds[ui->comboBoxExtCartridge->currentIndex()]));
+
 
 	// 画面---------------------------------------------------------------------
 	// MODE4カラー
-	if      (ui->radioButtonColorBW->isChecked())	config->SetMode4Color(0);	// モノクロ
-	else if (ui->radioButtonColorBR->isChecked())	config->SetMode4Color(1);	// 赤/青
-	else if (ui->radioButtonColorRB->isChecked())	config->SetMode4Color(2);	// 青/赤
-	else if (ui->radioButtonColorPG->isChecked())	config->SetMode4Color(3);	// ピンク/緑
-	else if (ui->radioButtonColorGP->isChecked())	config->SetMode4Color(4);	// 緑/ピンク
+	config->SetValue(CV_Mode4Color, ui->comboBoxMode4Color->currentIndex());
+
+	// フレームスキップ
+	config->SetValue(CV_FrameSkip, ui->comboBoxFrameSkip->currentIndex());
 
 	// スキャンライン
-	config->SetScanLine(ui->checkBoxScanline->isChecked());
+	config->SetValue(CB_ScanLine, ui->checkBoxScanline->isChecked());
 
 	// スキャンライン輝度
-	iVal = ui->lineEditScanLineBr->text().toInt(&conv);
-	if(conv){
-		config->SetScanLineBr(iVal);
-	}
+	config->SetValue(CV_ScanLineBr, ui->spinBoxScanLineBr->value());
 
 	// 4:3表示
-	config->SetDispNTSC(ui->checkBoxDispNTSC->isChecked());
+	config->SetValue(CB_DispNTSC, ui->checkBoxDispNTSC->isChecked());
 
 #ifndef ALWAYSFULLSCREEN
 	// フルスクリーン
-	config->SetFullScreen(ui->checkBoxFullscreen->isChecked());
+	config->SetValue(CB_FullScreen, ui->checkBoxFullscreen->isChecked());
 #endif
 	// ステータスバー表示状態
-	config->SetDispStat(ui->checkBoxStatDisp->isChecked());
+	config->SetValue(CB_DispStatus, ui->checkBoxStatDisp->isChecked());
 
 	// ハードウェアアクセラレーション
 	app->setSetting(P6VXApp::keyHwAccel, ui->checkBoxHwAccel->isChecked());
@@ -417,185 +455,165 @@ void ConfigDialog::writeConfig()
 	// フィルタリング
 	app->setSetting(P6VXApp::keyFiltering, ui->checkBoxFiltering->isChecked());
 
+
+	//// ビデオキャプチャ時の設定
 	// フレームスキップ
-	config->SetFrameSkip(ui->horizontalSliderFPS->value());
+	config->SetValue(CV_AviFrameSkip, ui->comboBoxMovieFrameSkip->currentIndex());
+
+	// 解像度倍率
+	config->SetValue(CV_AviZoom, ui->spinBoxMovieZoom->value());
+
+	// スキャンライン
+	config->SetValue(CB_AviScanLine, ui->checkBoxMovieScanline->isChecked());
+
+	// スキャンライン輝度
+	config->SetValue(CV_AviScanLineBr, ui->spinBoxMovieScanLineBr->value());
+
+	// 4:3表示
+	config->SetValue(CB_AviDispNTSC, ui->checkBoxMovieDispNTSC->isChecked());
+
+	// フィルタリング
+	config->SetValue(CB_AviFiltering, ui->checkBoxMovieFiltering->isChecked());
 
 
 	// サウンド-------------------------------------------------------------------
 	// マスター音量
-	config->SetMasterVol(ui->horizontalSliderMasterVol->value());
+	config->SetValue(CV_MasterVol, ui->horizontalSliderMasterVol->value());
 
 	// PSG音量
-	config->SetPsgVol(ui->horizontalSliderPSGVol->value());
+	config->SetValue(CV_PsgVolume, ui->horizontalSliderPSGVol->value());
 
 	// 音声合成音量
-	config->SetVoiceVol(ui->horizontalSliderVoiceVol->value());
+	config->SetValue(CV_VoiceVolume, ui->horizontalSliderVoiceVol->value());
 
 	// TAPEモニタ音量
-	config->SetCmtVol(ui->horizontalSliderTapeVol->value());
+	config->SetValue(CV_TapeVolume, ui->horizontalSliderTapeVol->value());
 
 	// フォルダ-------------------------------------------------------------
 	// ROMパス
 	qStr = ui->lineEditFolderRom->text();
 	if (!ui->checkBoxCompatibleRomMode->isChecked()){
 		if(qStr == "" || QDir(qStr).exists()){
-			config->SetRomPath(qStr.toUtf8().constData());
+			config->SetValue(CF_RomPath, QSTR2P6VPATH(qStr));
 		}
 	}
 	// TAPEパス
 	qStr = ui->lineEditFolderTape->text();
 	if(qStr == "" || QDir(qStr).exists()){
-		config->SetTapePath(qStr.toUtf8().constData());
+		config->SetValue(CF_TapePath, QSTR2P6VPATH(qStr));
 	}
 
 	// DISKパス
 	qStr = ui->lineEditFolderDisk->text();
 	if(qStr == "" || QDir(qStr).exists()){
-		config->SetDiskPath(qStr.toUtf8().constData());
+		config->SetValue(CF_DiskPath, QSTR2P6VPATH(qStr));
 	}
 
 	// 拡張ROMパス
 	qStr = ui->lineEditFolderExtRom->text();
 	if(qStr == "" || QDir(qStr).exists()){
-		config->SetExtRomPath(qStr.toUtf8().constData());
+		config->SetValue(CF_ExtRomPath, QSTR2P6VPATH(qStr));
 	}
 
 	// IMGパス
 	qStr = ui->lineEditFolderImg->text();
 	if(qStr == "" || QDir(qStr).exists()){
-		config->SetImgPath(qStr.toUtf8().constData());
+		config->SetValue(CF_ImgPath, QSTR2P6VPATH(qStr));
 	}
 
 	// WAVEパス
 	qStr = ui->lineEditFolderWave->text();
 	if(qStr == "" || QDir(qStr).exists()){
-		config->SetWavePath(qStr.toUtf8().constData());
+		config->SetValue(CF_WavePath, QSTR2P6VPATH(qStr));
 	}
 
 	// どこでもSAVEパス
 	qStr = ui->lineEditFolderDokoSave->text();
 	if(qStr == "" || QDir(qStr).exists()){
-		config->SetDokoSavePath(qStr.toUtf8().constData());
+		config->SetValue(CF_DokoPath, QSTR2P6VPATH(qStr));
 	}
 
 	// ファイル--------------------------------------------------------
 	// 拡張ROMファイル
 	qStr = ui->lineEditExtRom->text();
 	if(qStr == "" || QFile(qStr).exists()){
-		config->SetExtRomFile(qStr.toUtf8().constData());
+		config->SetValue(CF_ExtRom, QSTR2P6VPATH(qStr));
 	}
 
 	// TAPE(LOAD)ファイル名
 	qStr = ui->lineEditLoadTape->text();
 	if(qStr == "" || QFile(qStr).exists()){
-		config->SetTapeFile(qStr.toUtf8().constData());
+		config->SetValue(CF_tape, QSTR2P6VPATH(qStr));
 	}
 
 	// TAPE(SAVE)ファイル名
 	qStr = ui->lineEditSaveTape->text();
-	config->SetSaveFile(qStr.toUtf8().constData());
+	config->SetValue(CF_save, QSTR2P6VPATH(qStr));
 
 	// DISK1ファイル名
 	qStr = ui->lineEditDisk1->text();
 	if(qStr == "" || QFile(qStr).exists()){
-		config->SetDiskFile(1, qStr.toUtf8().constData());
+		config->SetValue(CF_disk1, QSTR2P6VPATH(qStr));
 	}
 
 	// DISK2ファイル名
 	qStr = ui->lineEditDisk2->text();
 	if(qStr == "" || QFile(qStr).exists()){
-		config->SetDiskFile(2, qStr.toUtf8().constData());
+		config->SetValue(CF_disk2, QSTR2P6VPATH(qStr));
 	}
 
 	// プリンタファイル名
 	qStr = ui->lineEditPrinter->text();
-	config->SetPrinterFile(qStr.toUtf8().constData());
+	config->SetValue(CF_printer, QSTR2P6VPATH(qStr));
 
 	// 色-----------------------------------------------------------------
 	// 16〜72の色IDに対応させる。
-	for (int id = 16; id <= 80; id++){
+	for (int id = 0; id <= 64; id++){
 		QString buttonName = QString("pushButtonColor%1").arg(id);
 		// ダイアログから動的に部品を取得する
 		ColorButton* button = this->findChild<ColorButton*>(buttonName);
-		config->SetColor(id, &button->getColor());
+		if (button) {
+			config->SetColor(id, button->getColor());
+		}
 	}
 
 	// その他--------------------------------------------------------------
 	// オーバークロック率
-	iVal = ui->lineEditClockRatio->text().toInt(&conv);
-	if(conv){
-		config->SetOverClock(min(max(1, iVal), 1000));
-	}
-
-	// CRCチェック
-	config->SetCheckCRC(ui->checkBoxRomCRC->isChecked());
-
-	// Turbo TAPE
-	config->SetTurboTAPE(ui->checkBoxTurboTape->isChecked());
-
-	// Boost Up
-	config->SetBoostUp(ui->groupBoxBoostUp->isChecked());
-
-	// BoostUp 最大倍率(N60モード)
-	iVal = ui->lineEditBoost60->text().toInt(&conv);
-	if(conv){
-		config->SetMaxBoost1(min(max(1, iVal), 100));
-	}
-
-	// BoostUp 最大倍率(N60m/N66モード)
-	iVal = ui->lineEditBoost66->text().toInt(&conv);
-	if(conv){
-		config->SetMaxBoost2(min(max(1, iVal), 100));
-	}
-
-	// FDDアクセスウェイト有効
-	config->SetFddWaitEnable(ui->checkBoxFDDWaitEnable->isChecked());
+	config->SetValue(CV_OverClock, ui->spinBoxClockRatio->value());
 
 	// 終了時 確認する
-	config->SetCkQuit(ui->checkBoxCkQuit->isChecked());
+	config->SetValue(CB_CkQuit, ui->checkBoxCkQuit->isChecked());
 
 	// 終了時 INIファイルを保存する
-	config->SetSaveQuit(ui->checkBoxSaveQuit->isChecked());
-}
-
-void ConfigDialog::dispFPS(int fps)
-{
-	QStringList list;
-	list	<< "0 (60fps)"
-			<< "1 (30fps)"
-			<< "2 (20fps)"
-			<< "3 (15fps)"
-			<< "4 (12fps)"
-			<< "5 (10fps)";
-	ui->labelFps->setText(list[fps]);
+	config->SetValue(CB_SaveQuit, ui->checkBoxSaveQuit->isChecked());
 }
 
 void ConfigDialog::selectFile(QWidget *widget)
 {
-	char folder[PATH_MAX];
-	char path[PATH_MAX];
+	P6VPATH folder;
+	P6VPATH path;
 	QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
 	if(edit){
-		FileDlg dlg = EndofFileDlg;
+		FileDlg dlg = FD_LoadAll;
 
 		if(edit == ui->lineEditExtRom){
-			dlg = FD_ExtRom; strcpy(path, config->GetExtRomPath());
+			dlg = FD_ExtRom; path = config->GetValue(CF_ExtRomPath);
 		} else if(edit == ui->lineEditLoadTape){
-			dlg = FD_TapeLoad; strcpy(path, config->GetTapePath());
+			dlg = FD_TapeLoad; path = config->GetValue(CF_TapePath);
 		} else if(edit == ui->lineEditSaveTape){
-			dlg = FD_TapeSave; strcpy(path, config->GetTapePath());
+			dlg = FD_TapeSave; path = config->GetValue(CF_TapePath);
 		} else if(edit == ui->lineEditDisk1){
-			dlg = FD_Disk; strcpy(path, config->GetDiskPath());
+			dlg = FD_Disk; path = config->GetValue(CF_DiskPath);
 		} else if(edit == ui->lineEditDisk2){
-			dlg = FD_Disk; strcpy(path, config->GetDiskPath());
+			dlg = FD_Disk; path = config->GetValue(CF_DiskPath);
 		} else if(edit == ui->lineEditPrinter){
-			dlg = FD_Printer; strcpy(path, OSD_GetModulePath());
+			dlg = FD_Printer; path = OSD_GetConfigPath();
 		}
 
-		strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
-		OSD_FileSelect(NULL, dlg, folder, path);
-		if(strlen(folder) > 0){
-			edit->setText(QString::fromUtf8(folder));
+		folder = QSTR2P6VPATH(edit->text());
+		OSD_FileSelect(nullptr, dlg, folder, path);
+		if(folder.size() > 0){
+			edit->setText(P6VPATH2QSTR(folder));
 			warnFileOrFolderNotExist(edit);
 		}
 	}
@@ -604,15 +622,15 @@ void ConfigDialog::selectFile(QWidget *widget)
 
 void ConfigDialog::selectFolder(QWidget *widget)
 {
-	char folder[PATH_MAX];
+	P6VPATH folder;
 	QLineEdit* edit = qobject_cast<QLineEdit*>(widget);
 	if(edit){
-		strncpy(folder, edit->text().toUtf8().constData(), PATH_MAX);
+		folder = QSTR2P6VPATH(edit->text());
 		OSD_AddDelimiter(folder);
 		OSD_FolderDiaog(this, folder);
 		OSD_DelDelimiter(folder);
-		if(strlen(folder) > 0){
-			edit->setText(QString::fromUtf8(folder));
+		if(folder.size() > 0){
+			edit->setText(P6VPATH2QSTR(folder));
 			warnFileOrFolderNotExist(edit);
 		}
 	}
@@ -623,12 +641,24 @@ void ConfigDialog::warnFileOrFolderNotExist(QLineEdit *edit)
 	// QLineEditが指しているファイルが存在しない場合文字を赤くする
 	Q_ASSERT(edit);
 	QFileInfo info(edit->text());
-		QPalette *palette = new QPalette();
-		if (!info.exists()){
-			// ファイルが存在しないときだけ赤くする(存在する場合はテーマのデフォルトに戻る)
-			palette->setColor(QPalette::Text, Qt::red);
-		}
-		edit->setPalette(*palette);
+	QPalette *palette = new QPalette();
+	if (!info.exists()){
+		// ファイルが存在しないときだけ赤くする(存在する場合はテーマのデフォルトに戻る)
+		palette->setColor(QPalette::Text, Qt::red);
+	}
+	edit->setPalette(*palette);
+}
+
+void ConfigDialog::setComboBoxItemEnabled(QComboBox *comboBox, int index, bool enabled)
+{
+	auto * model = qobject_cast<QStandardItemModel*>(comboBox->model());
+	assert(model);
+	if(!model) return;
+
+	auto * item = model->item(index);
+	assert(item);
+	if(!item) return;
+	item->setEnabled(enabled);
 }
 
 void ConfigDialog::on_checkBoxCompatibleRomMode_clicked(bool checked)

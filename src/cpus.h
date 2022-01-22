@@ -1,5 +1,11 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef CPUS_H_INCLUDED
 #define CPUS_H_INCLUDED
+
+#include <memory>
 
 #include "device.h"
 #include "ini.h"
@@ -11,16 +17,35 @@
 #define	SAVEOPEN	(2)
 
 // I/Oポート番号
-#define	IO8049_BUS	(0x00)	/* バスポート */
-#define	IO8049_P1	(0x01)	/* Port1 */
-#define	IO8049_P2	(0x02)	/* Port2 */
-#define	IO8049_T0	(0x03)	/* T0(OUT) */
-#define	IO8049_INT	(0x04)	/* ~INT(IN) */
+#define	IO8049_BUS	(0x00)	// バスポート
+#define	IO8049_P1	(0x01)	// Port1
+#define	IO8049_P2	(0x02)	// Port2
+#define	IO8049_T0	(0x03)	// T0(OUT)
+#define	IO8049_INT	(0x04)	// ~INT(IN)
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// インターフェース定義
+/////////////////////////////////////////////////////////////////////////////
+struct ISUB {
+   virtual ~ISUB(){};							// Destructor
+   
+	virtual void Reset() = 0;					// リセット
+	virtual void ExtIntr() = 0;					// 外部割込み要求
+	
+	// キーボード関連
+	virtual void ReqKeyIntr( int, BYTE ) = 0;	// キー割込み要求
+	
+	// CMT関連
+	virtual void ReqCmtIntr( BYTE ) = 0;		// CMT READ割込み要求
+	virtual int GetCmtStatus() const = 0;		// CMTステータス取得
+	virtual bool IsCmtIntrReady() = 0;			// CMT割込み発生可?
+};
+
+
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class SUB6 : public Device, public IDoko {
 protected:
 	int CmtStatus;						// CMTステータス
@@ -57,12 +82,13 @@ protected:
 	virtual void ExtIntrExec( BYTE );	// 外部割込み処理
 	
 public:
-	SUB6( VM6 *, const ID& );			// コンストラクタ
-	virtual ~SUB6();					// デストラクタ
+	SUB6( VM6*, const ID& );
+	virtual ~SUB6();
 	
 	void EventCallback( int, int );		// イベントコールバック関数
 	
 	void Reset();						// リセット
+	void ExtIntr();						// 外部割込み要求
 	
 	// キーボード関連
 	void ReqKeyIntr( int, BYTE );		// キー割込み要求
@@ -72,43 +98,44 @@ public:
 	int GetCmtStatus() const;			// CMTステータス取得
 	bool IsCmtIntrReady();				// CMT割込み発生可?
 	
-	void ExtIntr();						// 外部割込み要求
-	
-	// ------------------------------------------
-	bool DokoSave( cIni * );	// どこでもSAVE
-	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	// ----------------------------------------------------------------------
+	bool DokoSave( cIni* );		// どこでもSAVE
+	bool DokoLoad( cIni* );		// どこでもLOAD
+	// ----------------------------------------------------------------------
 };
-class SUB60 : public SUB6 {
+
+
+class SUB60 : virtual public SUB6 {
 protected:
 	
 public:
-	SUB60( VM6 *, const ID& );			// コンストラクタ
-	~SUB60();							// デストラクタ
+	SUB60( VM6*, const ID& );
+	virtual ~SUB60();
 };
 
 
-class SUB62 : public SUB60 {
+class SUB62 : virtual public SUB6 {
 protected:
-	virtual void ExtIntrExec( BYTE );	// 外部割込み処理
+	void ExtIntrExec( BYTE ) override;	// 外部割込み処理
 	
 public:
-	SUB62( VM6 *, const ID& );			// コンストラクタ
-	~SUB62();							// デストラクタ
+	SUB62( VM6*, const ID& );
+	virtual ~SUB62();
 };
 
 
-class SUB68 : public SUB62 {
+class SUB68 : virtual public SUB6 {
 protected:
 	void ReqTVRReadIntr();				// TV予約読込み割込み要求
 	void ReqDateIntr();					// DATE割込み要求
 	
-	void ExtIntrExec( BYTE );			// 外部割込み処理
+	void ExtIntrExec( BYTE ) override;	// 外部割込み処理
 	
 public:
-	SUB68( VM6 *, const ID& );			// コンストラクタ
-	~SUB68();							// デストラクタ
+	SUB68( VM6*, const ID& );
+	~SUB68();
 };
+
 
 
 #endif	// CPUS_H_INCLUDED

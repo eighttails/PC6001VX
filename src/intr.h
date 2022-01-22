@@ -1,10 +1,15 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef INTR_H_INCLUDED
 #define INTR_H_INCLUDED
+
+#include <memory>
 
 #include "typedef.h"
 #include "device.h"
 #include "ini.h"
-
 
 // 割込み要求フラグ
 //  0 予約
@@ -49,9 +54,9 @@
 
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class IRQ6 : public Device, public IDoko {
 protected:
 	DWORD IntrFlag;			// 割込み要求フラグ
@@ -65,8 +70,8 @@ protected:
 	
 	BYTE Timer1st;			// タイマ割込み初回周期比率
 	
-	virtual void SetIntrEnable( BYTE );		// 割込み許可フラグ設定
-	void SetTimerIntr( bool );				// タイマ割込みスイッチ設定
+	virtual void SetIntrEnable( BYTE );				// 割込み許可フラグ設定
+	void SetTimerIntr( bool );						// タイマ割込みスイッチ設定
 	virtual void SetTimerIntrHz( BYTE, BYTE=0 );	// タイマ割込み周波数設定
 	
 	// I/Oアクセス関数
@@ -83,84 +88,62 @@ protected:
 	BYTE InF5H( int );
 	BYTE InF6H( int );
 	BYTE InF7H( int );
-	// ---------------------------------------------------------------------------------------
+	// ----------------------------------------------------------------------
 	
 public:
-	IRQ6( VM6 *, const ID& );				// コンストラクタ
-	virtual ~IRQ6();						// デストラクタ
+	IRQ6( VM6*, const ID& );
+	virtual ~IRQ6();
 	
-	void EventCallback( int, int );			// イベントコールバック関数
+	void EventCallback( int, int ) override;	// イベントコールバック関数
 	
-	virtual void Reset() = 0;				// リセット
+	virtual void Reset();						// リセット
 	
-	int	IntrCheck();						// 割込みチェック
+	int	IntrCheck();							// 割込みチェック
 	
-	void ReqIntr( DWORD );					// 割込み要求
-	void CancelIntr( DWORD );				// 割込み撤回
+	void ReqIntr( DWORD );						// 割込み要求
+	void CancelIntr( DWORD );					// 割込み撤回
 	
-	bool GetTimerIntr();					// タイマ割込みスイッチ取得
+	bool GetTimerIntr();						// タイマ割込みスイッチ取得
 	
-	// ------------------------------------------
-	bool DokoSave( cIni * );	// どこでもSAVE
-	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	// デバイスID
+	enum IDOut{ outB0H=0, outBxH, outF3H, outF4H, outF5H, outF6H, outF7H, outFAH, outFBH };
+	enum IDIn {  inF3H=0,  inF4H,  inF5H,  inF6H,  inF7H,  inFAH,  inFBH };
+	
+	// ----------------------------------------------------------------------
+	bool DokoSave( cIni* ) override;	// どこでもSAVE
+	bool DokoLoad( cIni* ) override;	// どこでもLOAD
+	// ----------------------------------------------------------------------
 };
 
 
 class IRQ60 : public IRQ6 {
 private:
-	// デバイス定義
-	static const Descriptor descriptor;
-	static const InFuncPtr  indef[];
-	static const OutFuncPtr outdef[];
-	const Descriptor* GetDesc() const { return &descriptor; }
 	
 public:
-	IRQ60( VM6 *, const ID& );				// コンストラクタ
-	~IRQ60();								// デストラクタ
+	IRQ60( VM6*, const ID& );
+	~IRQ60();
 	
 	void Reset();							// リセット
-	
-	// デバイスID
-	enum IDOut{ outB0H=0 };
-	enum IDIn {};
 };
 
 
 class IRQ62 : public IRQ6 {
 private:
-	void SetIntrEnable( BYTE );				// 割込み許可フラグ設定
-	
-	// デバイス定義
-	static const Descriptor descriptor;
-	static const InFuncPtr  indef[];
-	static const OutFuncPtr outdef[];
-	const Descriptor* GetDesc() const { return &descriptor; }
+	void SetIntrEnable( BYTE ) override;	// 割込み許可フラグ設定
 	
 public:
-	IRQ62( VM6 *, const ID& );				// コンストラクタ
-	~IRQ62();								// デストラクタ
+	IRQ62( VM6*, const ID& );
+	~IRQ62();
 	
 	void Reset();							// リセット
-	
-	// デバイスID
-	enum IDOut{ outB0H=0, outF3H,  outF4H, outF5H, outF6H, outF7H };
-	enum IDIn {            inF3H=0, inF4H,  inF5H,  inF6H,  inF7H };
 };
-
 
 
 class IRQ64 : public IRQ6 {
 private:
-	void SetIntrEnable( BYTE );				// 割込み許可フラグ設定
-	void SetTimerIntrHz( BYTE, BYTE=0 );	// タイマ割込み周波数設定
-	void SetIntrVectorEnable( BYTE );		// 割込みベクタアドレス出力フラグ設定
-	
-	// デバイス定義
-	static const Descriptor descriptor;
-	static const InFuncPtr  indef[];
-	static const OutFuncPtr outdef[];
-	const Descriptor* GetDesc() const { return &descriptor; }
+	void SetIntrEnable( BYTE ) override;			// 割込み許可フラグ設定
+	void SetTimerIntrHz( BYTE, BYTE=0 ) override;	// タイマ割込み周波数設定
+	void SetIntrVectorEnable( BYTE );				// 割込みベクタアドレス出力フラグ設定
 	
 	// I/Oアクセス関数
 	void OutBxH( int, BYTE );
@@ -170,15 +153,10 @@ private:
 	BYTE InFBH( int );
 	
 public:
-	IRQ64( VM6 *, const ID& );				// コンストラクタ
-	~IRQ64();								// デストラクタ
+	IRQ64( VM6*, const ID& );
+	~IRQ64();
 	
 	void Reset();							// リセット
-	
-	// デバイスID
-	enum IDOut{ outB0H=0, outBxH,
-				outF3H,   outF4H, outF5H, outF6H, outF7H, outFAH, outFBH };
-	enum IDIn {  inF3H=0,  inF4H,  inF5H,  inF6H,  inF7H,  inFAH,  inFBH };
 };
 
 

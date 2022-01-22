@@ -107,7 +107,8 @@ bool RenderView::event(QEvent *event)
 				// タップしたアイテムが原点にある場合、メイン画面とみなしてメニューを出す
 				if(item && item->pos() == QPoint(0, 0)){
 					Event e;
-					e.type = EV_CONTEXTMENU;
+					e.type = EV_MOUSEBUTTONUP;
+					e.mousebt.button = MBT_RIGHT;
 					e.mousebt.x = point.x();
 					e.mousebt.y = point.y();
 					OSD_PushEvent(e);
@@ -147,7 +148,8 @@ void RenderView::paintEvent(QPaintEvent *event)
 void RenderView::contextMenuEvent(QContextMenuEvent *event)
 {
 	Event ev;
-	ev.type = EV_CONTEXTMENU;
+	ev.type = EV_MOUSEBUTTONUP;
+	ev.mousebt.button = MBT_RIGHT;
 	auto p = event->globalPos();
 	ev.mousebt.x = p.x();
 	ev.mousebt.y = p.y();
@@ -158,9 +160,8 @@ void RenderView::contextMenuEvent(QContextMenuEvent *event)
 void RenderView::wheelEvent(QWheelEvent *event)
 {
 	Event ev;
-	ev.type = EV_MOUSEBUTTONUP;
-	ev.mousebt.button = event->angleDelta().y() > 0 ? MBT_WHEELUP : MBT_WHEELDOWN;
-	ev.mousebt.state = false;
+	ev.type = EV_MOUSEWHEEL;
+	ev.mousewh.y = event->angleDelta().y();
 	event->accept();
 	OSD_PushEvent(ev);
 }
@@ -168,22 +169,21 @@ void RenderView::wheelEvent(QWheelEvent *event)
 void RenderView::mouseReleaseEvent(QMouseEvent *event)
 {
 	Event ev;
-#ifdef Q_OS_ANDROID
-	ev.type = EV_CONTEXTMENU;
-#else
 	ev.type = EV_MOUSEBUTTONUP;
 	auto button = event->button();
 	switch (button) {
 	case Qt::LeftButton:
 		ev.mousebt.button = MBT_LEFT;	break;
 	case Qt::RightButton:
-		ev.mousebt.button = MBT_RIGHT;	break;
+		return;
+		// contextMenuEventと重複するため無視する
+		// ev.mousebt.button = MBT_RIGHT;	break;
 	case Qt::MiddleButton:
 		ev.mousebt.button = MBT_MIDDLE;	break;
 	default:
 		return;
 	}
-#endif
+
 	auto p = event->globalPos();
 	ev.mousebt.x = p.x();
 	ev.mousebt.y = p.y();

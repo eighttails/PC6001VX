@@ -1,34 +1,40 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef GRAPH_H_INCLUDED
 #define GRAPH_H_INCLUDED
 
-#include "typedef.h"
+#include <memory>
+#include <string>
+
 #include "p6vm.h"
-#include "vsurface.h"
+#include "typedef.h"
 
 
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class DSP6 {
 protected:
-	VM6* vm;
-	
-	HWINDOW Wh;				// ウィンドウハンドル
+	EL6* el;
+	HWINDOW Wh;
+	bool rsize;					// リサイズ通知
 	
 	bool SetScreenSurface();				// スクリーンサーフェス作成
-
+	
 public:
-	DSP6( VM6 * );							// コンストラクタ
-	~DSP6();								// デストラクタ
+	DSP6( EL6* );
+	~DSP6();
 	
 	bool Init();							// 初期化
 	void SetIcon( const int );				// アイコン設定
 	
 	bool ResizeScreen();					// スクリーンサイズ変更
+	bool CheckResize();						// ResizeScreen()でリサイズしたかチェック
 	
 	void DrawScreen();						// 画面更新
-	void SnapShot( const char * );			// スナップショット
+	void SnapShot( const P6VPATH& );		// スナップショット
 	
 	int ScreenX() const;					// 有効スクリーン幅取得
 	int ScreenY() const;					// 有効スクリーン高さ取得

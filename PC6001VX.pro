@@ -8,7 +8,7 @@ QT += core gui widgets network
 
 TARGET = PC6001VX
 TEMPLATE = app
-VERSION = 3.8.1
+VERSION = 4.0.0
 
 QMAKE_TARGET_COMPANY = eighttails
 QMAKE_TARGET_DESCRIPTION = PC6001VX
@@ -18,7 +18,7 @@ QMAKE_TARGET_PRODUCT = PC6001VX
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 TR_EXCLUDE += /usr/include/*
 
-CONFIG += link_prl link_pkgconfig c++11
+CONFIG += link_prl link_pkgconfig c++14
 
 #Define for Qt dependent code
 DEFINES += QTP6VX
@@ -45,7 +45,7 @@ DEFINES += QTP6VX
 
 debug:DEFINES += DEBUG
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-INCLUDEPATH += src/Qt src/Qt/qtsingleapplication
+INCLUDEPATH += src src/Qt src/Qt/qtsingleapplication
 
 #Configuration for UNIX variants
 unix:!macx {
@@ -96,6 +96,8 @@ win32 {
     #Workaround to this bug
     #https://bugreports.qt.io/browse/QTBUG-61553
     DEFINES += SDLJOYSTICK
+} else {
+    DEFINES += __stdcall=
 }
 
 #Find library to handle joysticks.
@@ -141,6 +143,7 @@ contains(DEFINES, SDLJOYSTICK) {
 }
 
 SOURCES += \
+    src/Qt/audiooutputwrapper.cpp \
     src/Qt/colorbutton.cpp \
     src/Qt/configdialog.cpp \
     src/Qt/emulationadaptor.cpp \
@@ -161,7 +164,6 @@ SOURCES += \
     src/Qt/qtsingleapplication/qtsingleapplication.cpp \
     src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
     src/Qt/renderview.cpp \
-    src/Qt/semaphore.cpp \
     src/Qt/simplevirtualkeyboardscene.cpp \
     src/Qt/systeminfodialog.cpp \
     src/Qt/thread.cpp \
@@ -199,6 +201,7 @@ SOURCES += \
     src/io.cpp \
     src/joystick.cpp \
     src/keyboard.cpp \
+    src/memblk.cpp \
     src/memory.cpp \
     src/movie.cpp \
     src/p6el.cpp \
@@ -208,6 +211,7 @@ SOURCES += \
     src/psgfm.cpp \
     src/replay.cpp \
     src/schedule.cpp \
+    src/semaphore.cpp \
     src/sound.cpp \
     src/status.cpp \
     src/tape.cpp \
@@ -237,6 +241,7 @@ HEADERS  += \
     src/Qt/renderview.h \
     src/Qt/simplevirtualkeyboardscene.h \
     src/Qt/systeminfodialog.h \
+    src/Qt/thread.h \
     src/Qt/utils.h \
     src/Qt/virtualkeyboardscene.h \
     src/Qt/virtualkeyboardview.h \
@@ -288,6 +293,7 @@ HEADERS  += \
     src/keyboard.h \
     src/keydef.h \
     src/log.h \
+    src/memblk.h \
     src/memory.h \
     src/movie.h \
     src/osd.h \
@@ -304,7 +310,6 @@ HEADERS  += \
     src/sound.h \
     src/status.h \
     src/tape.h \
-    src/thread.h \
     src/typedef.h \
     src/vdg.h \
     src/voice.h \

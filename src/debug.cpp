@@ -1,80 +1,256 @@
-#include <stdlib.h>
-#include <string.h>
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
+#include <algorithm>
+#include <cctype>
+#include <fstream>
 
 #include "pc6001v.h"
 
 #include "breakpoint.h"
-#include "debug.h"
-#include "osd.h"
 #include "common.h"
-#include "schedule.h"
-
+#include "config.h"
+#include "debug.h"
+#include "intr.h"
+#include "memory.h"
+#include "osd.h"
 #include "p6el.h"
 #include "p6vm.h"
+#include "schedule.h"
 
 
-#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 #define	SCRWINW		(380)
 #define	SCRWINH		(250)
 
 #define	REGWINW		(40+32)
-#define	REGWINH		( 8+10)
+#define	REGWINH		( 8+24)
 #define	MEMWINW		(72)
-#define	MEMWINH		(31)
+#define	MEMWINH		(22)
 #define	MONWINW		(60)
 #define	MONWINH		(30)
 
 #define	PROMPT		"P6V>"
 
-//------------------------------------------------------
+#define	MAX_CHRS	(256)	// キーバッファ最大値
+#define	MAX_HIS		(256)	// ヒストリバッファ最大値
+
+
+#define	IOPORTX		0		// I/Oポート 原点X
+#define	IOPORTY		9		// I/Oポート 原点Y
+#define	IOPORTH		20		// I/Oポート 行数
+
+
+// I/Oポート表示用
+#define	IO_PIO			(-1)
+#define	IO_PSG			(-2)
+#define	IO_OPN			(-3)
+#define	IO_SYSLATCH		(-4)
+#define	IO_PRINTER		(-5)
+#define	IO_SYS_VDG		(-6)
+#define	IO_FDD			(-7)
+#define	IO_VOICE		(-8)
+#define	IO_MEMORY		(-9)
+#define	IO_PALETTE		(-10)
+#define	IO_SRMEM		(-11)
+#define	IO_INTADDR		(-12)
+#define	IO_VDG			(-13)
+#define	IO_INTCTRL		(-14)
+
+#define	IO_SIO			(-30)
+#define	IO_EXVOICE		(-31)
+#define	IO_EXKANJI		(-32)
+#define	IO_EXSOL		(-33)
+
+#define	IO_SP			(-100)
+#define	IO_CR			(-101)
+#define	IO_GENERAL		(-102)
+#define	IO_SR			(-103)
+#define	IO_EXT			(-104)
+
+
+static const std::map<int,std::string> PGroup = {
+	{ IO_PIO,		"PIO"      },
+	{ IO_PSG,		"PSG"      },
+	{ IO_OPN,		"OPN"      },
+	{ IO_SYSLATCH,	"SYSLATCH" },
+	{ IO_PRINTER,	"PRINTER"  },
+	{ IO_SYS_VDG,	"SYS/VDG"  },
+	{ IO_FDD,		"FDD"      },
+	{ IO_VOICE,		"VOICE"    },
+	{ IO_MEMORY,	"MEMORY"   },
+	{ IO_PALETTE,	"PALETTE"  },
+	{ IO_SRMEM,		"SRMEMORY" },
+	{ IO_INTADDR,	"INT ADDR" },
+	{ IO_VDG,		"VDG"      },
+	{ IO_INTCTRL,	"INT CTRL" },
+	{ IO_SIO,		"SIO"      },
+	{ IO_EXVOICE,	"VOICE/FM" },
+	{ IO_EXKANJI,	"EXTKANJI" },
+	{ IO_EXSOL,		"SOLDIER"  },
+};
+
+// PC-6001,PC-6001A
+static const std::vector<int> Ports60 = {
+	IO_PIO,			0x90, 0x91, 0x92, 0x93,
+	IO_PSG,			0xa0, 0xa1, 0xa2, 0xa3,
+	IO_SYSLATCH,	0xb0,
+	IO_PRINTER,		0xc0,
+	IO_CR,
+	IO_FDD,			0xd0, 0xd1, 0xd2, 0xd3,
+};
+
+// PC-6001mkII
+static const std::vector<int> Ports62 = {
+	IO_PIO,			0x90, 0x91, 0x92, 0x93,
+	IO_PSG,			0xa0, 0xa1, 0xa2, 0xa3,
+	IO_SYSLATCH,	0xb0,
+	IO_SYS_VDG,		0xc0, 0xc1, 0xc2, 0xc3,
+	IO_CR,
+	IO_VOICE,		0xe0, 0xe1, 0xe2, 0xe3,
+	IO_MEMORY,		0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
+	IO_CR,
+	IO_FDD,			0xd0, 0xd1, 0xd2, 0xd3,
+};
+
+// PC-6601
+static const std::vector<int> Ports66 = {
+	IO_PIO,			0x90, 0x91, 0x92, 0x93,
+	IO_PSG,			0xa0, 0xa1, 0xa2, 0xa3,
+	IO_SYSLATCH,	0xb0, 0xb1, 0xb2, 0xb3,
+	IO_SYS_VDG,		0xc0, 0xc1, 0xc2, 0xc3,
+	IO_CR,
+	IO_VOICE,		0xe0, 0xe1, 0xe2, 0xe3,
+	IO_MEMORY,		0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
+	IO_CR,
+	IO_FDD,			0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd6, 0xd8, 0xda, 0xdc, 0xdd, 0xde,
+};
+
+// PC-6001mkIISR
+static const std::vector<int> Ports64 = {
+	IO_PIO,			0x90, 0x91, 0x92, 0x93,
+	IO_OPN,			0xa0, 0xa1, 0xa2, 0xa3,
+	IO_SYSLATCH,	0xb0, 0xb2,
+	IO_SYS_VDG,		0xc0, 0xc1, 0xc2, 0xc3,
+	IO_CR,
+	IO_VOICE,		0xe0, 0xe1, 0xe2, 0xe3,
+	IO_MEMORY,		0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
+	IO_CR,
+	IO_FDD,			0xd0, 0xd1, 0xd2, 0xd3,
+	
+	IO_SR, IO_SP, IO_SP, IO_SP, IO_SP, IO_SP, IO_SP, IO_SP, IO_SP, IO_SP, IO_SP,
+	IO_PALETTE,		0x40, 0x41, 0x42, 0x43,
+	IO_CR,
+	IO_SRMEM,		0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
+	IO_INTCTRL,		0xfa, 0xfb,
+	IO_CR,
+	IO_INTADDR,		0xb8, 0xb9, 0xba, 0xbb, 0xbc, 0xbd, 0xbe, 0xbf,
+	IO_VDG,			0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf,
+};
+
+// PC-6601SR
+static const std::vector<int> Ports68 = {
+	IO_PIO,			0x90, 0x91, 0x92, 0x93,
+	IO_OPN,			0xa0, 0xa1, 0xa2, 0xa3,
+	IO_SYSLATCH,	0xb0, 0xb1, 0xb2, 0xb3,
+	IO_SYS_VDG,		0xc0, 0xc1, 0xc2, 0xc3,
+	IO_CR,
+	IO_VOICE,		0xe0, 0xe1, 0xe2, 0xe3,
+	IO_MEMORY,		0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
+	IO_CR,
+	IO_FDD,			0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd6, 0xd8, 0xda, 0xdc, 0xdd, 0xde,
+	
+	IO_SR, IO_SP, IO_SP, IO_SP,
+	IO_PALETTE,		0x40, 0x41, 0x42, 0x43,
+	IO_CR,
+	IO_SRMEM,		0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
+	IO_INTCTRL,		0xfa, 0xfb,
+	IO_CR,
+	IO_INTADDR,		0xb8, 0xb9, 0xba, 0xbb, 0xbc, 0xbd, 0xbe, 0xbf,
+	IO_VDG,			0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf,
+};
+
+// OPT,拡張カートリッジ
+static const std::vector<int> PortsEx = {
+	IO_EXT,
+	IO_CR,
+	
+	// SIO
+	IO_SIO,			0x80, 0x81,
+	// ボイスシンセサイザ/FM音源カートリッジ
+	IO_EXVOICE,		0x70, 0x71, 0x72, 0x73, 0x74,
+	// 拡張漢字ROM
+	IO_EXKANJI,		0xfc, 0xfd, 0xfe, 0xff,
+	
+	IO_CR,
+	// 戦士のカートリッジ
+	IO_EXSOL,		0x06, 0x07, 0x10, 0x11, 0x12, 0x13, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x7f,
+};
+
+static const std::map<int,const std::vector<int>&> PortsList = {
+	{ 60, Ports60 },
+	{ 61, Ports60 },
+	{ 62, Ports62 },
+	{ 66, Ports66 },
+	{ 64, Ports64 },
+	{ 68, Ports68 }
+};
+
+
+
+
+
+//---------------------------------------------------------------------------
 //  モニタモードウィンドウ インターフェース(?)クラス
-//------------------------------------------------------
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-iMon::iMon( VM6 *vm, const ID& id ) : Device(vm,id)
+//---------------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+iMon::iMon( EL6* el ) : el( el ), x( 0 ), y( 0 )
 {
-	x = y = 0;
 }
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
-iMon::~iMon( void ){}
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+iMon::~iMon( void )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // X座標取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 int iMon::X( void )
 {
 	return x;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // Y座標取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 int iMon::Y( void )
 {
 	return y;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // X座標設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void iMon::SetX( int xx )
 {
 	x = xx;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // Y座標設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void iMon::SetY( int yy )
 {
 	x = yy;
@@ -82,24 +258,28 @@ void iMon::SetY( int yy )
 
 
 
-//------------------------------------------------------
+//---------------------------------------------------------------------------
 //  メモリダンプウィンドウクラス
-//------------------------------------------------------
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-cWndMem::cWndMem( VM6 *vm, const ID& id ) : iMon(vm,id), Addr(0) {}
+//---------------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+cWndMem::cWndMem( EL6* el ) : iMon( el ), Addr( 0 )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
-cWndMem::~cWndMem( void ){}
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+cWndMem::~cWndMem( void )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 初期化
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 bool cWndMem::Init( void )
 {
 	// 表示アドレス初期化
@@ -109,86 +289,73 @@ bool cWndMem::Init( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ウィンドウ更新
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cWndMem::Update( void )
 {
 	WORD addr = Addr;
-	static DWORD TexCol[] = { FC_GRAY, FC_BLUE, FC_GREEN, FC_CYAN, FC_RED, FC_MAGENTA, FC_YELLOW, FC_WHITE };
+	const DWORD TextCol[] = { FC_WHITE2, FC_CYAN2, FC_GREEN4, FC_CYAN4, FC_RED3, FC_MAGENTA4, FC_YELLOW4, FC_WHITE4 };
 	int i,j;
 	
 	ZCons::Locate( 0, 0 );
-	ZCons::SetColor( FC_YELLOW, FC_DYELLOW );
+	ZCons::SetColor( FC_YELLOW4, FC_YELLOW2 );
 	ZCons::Printf( "MAP " );
-	ZCons::SetColor( FC_DCYAN, FC_BLACK );
-	ZCons::Printf( "  0000   2000   4000   6000   8000   A000   C000   E000\n" );
-	ZCons::SetColor( FC_WHITE );
+	ZCons::SetColor( FC_WHITE4, FC_CYAN2 );
+	ZCons::Printf( "  0000   2000   4000   6000   8000   A000   C000   E000          \n" );
+	ZCons::SetColor( FC_WHITE4, FC_BLACK );
 	
 	// Read メモリブロック名表示
-	ZCons::Printf( "Read  " );
+	ZCons::Printf( "READ  " );
 	for( i=0; i<8; i++ ){
-		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( "%-7s", vm->MemGetReadMemBlk( i ) );
+		ZCons::SetColor( TextCol[i] );
+		ZCons::Printf( "%-7s", el->vm->mem->GetReadMemBlk( i ).c_str() );
 	}
-	ZCons::Printf( "\nWrire " );
+	ZCons::Printf( "\nWRITE " );
 	
 	// Write メモリブロック名表示
 	for( i=0; i<8; i++ ){
-		ZCons::SetColor( TexCol[i] );
-		ZCons::Printf( "%-7s", vm->MemGetWriteMemBlk( i ) );
+		ZCons::SetColor( TextCol[i] );
+		ZCons::Printf( "%-7s", el->vm->mem->GetWriteMemBlk( i ).c_str() );
 	}
 	ZCons::Printf( "\n" );
 	
 	// メモリダンプ表示
-	ZCons::SetColor( FC_YELLOW, FC_DYELLOW );
+	ZCons::SetColor( FC_YELLOW4, FC_YELLOW2 );
 	ZCons::Printf( "ADDR" );
-	ZCons::SetColor( FC_DCYAN, FC_BLACK );
-	ZCons::Printf( " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F" );
-	for( i=0; i<(ZCons::GetYline()-5)/2; i++ ){
-		ZCons::Printf( "\n" );
-		ZCons::SetColor( TexCol[ addr>>13 ] );
-		ZCons::Printf( "%04X ", addr );
-		ZCons::SetColor( FC_WHITE );
-		for( j=0; j<16; j++)
-			ZCons::Printf( "%02X ", vm->MemRead(addr+j) );
-		for( j=0; j<16; j++)
-			ZCons::PutCharH( vm->MemRead(addr+j) );
-		addr += 16;
-	}
+	ZCons::SetColor( FC_WHITE4, FC_CYAN2 );
+	ZCons::Printf( " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 0123456789ABCDEF" );
+	ZCons::SetColor( FC_WHITE4, FC_BLACK );
 	
-	addr = Addr;
-	ZCons::Printf( "\n" );
-	ZCons::SetColor( FC_YELLOW, FC_DYELLOW );
-	ZCons::Printf( "RAM " );
-	ZCons::SetColor( FC_DCYAN, FC_BLACK );
-	ZCons::Printf( " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F" );
-	for( i=0; i<(ZCons::GetYline()-5)/2; i++ ){
+	for( i = 0; i < GetYline() - 4; i++ ){
 		ZCons::Printf( "\n" );
-		ZCons::SetColor( TexCol[ addr>>13 ] );
-		ZCons::Printf( "%04X ", addr );
-		ZCons::SetColor( FC_WHITE );
-		for( j=0; j<16; j++)
-			ZCons::Printf( "%02X ", vm->MemReadIntRam(addr+j) );
-		for( j=0; j<16; j++)
-			ZCons::PutCharH( vm->MemReadIntRam(addr+j) );
+		ZCons::SetColor( TextCol[ addr>>13 ] );
+		ZCons::Printf( "%04X", addr );
+		ZCons::SetColor( FC_WHITE4, FC_BLACK );
+		ZCons::Printf( " " );
+		for( j=0; j<16; j++){
+			ZCons::Printf( "%02X ", el->vm->mem->Read(addr+j) );
+		}
+		for( j=0; j<16; j++){
+			ZCons::PutCharH( el->vm->mem->Read(addr+j) );
+		}
 		addr += 16;
 	}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 表示アドレス設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cWndMem::SetAddress( WORD addr )
 {
 	Addr = addr & 0xfff8;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 表示アドレス取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 WORD cWndMem::GetAddress( void )
 {
 	return Addr;
@@ -196,87 +363,218 @@ WORD cWndMem::GetAddress( void )
 
 
 
-//------------------------------------------------------
+//---------------------------------------------------------------------------
 //  レジスタウィンドウクラス
-//------------------------------------------------------
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-cWndReg::cWndReg( VM6 *vm, const ID& id ) : iMon(vm,id) {}
+//---------------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+cWndReg::cWndReg( EL6* el ) : iMon( el )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
-cWndReg::~cWndReg( void ){}
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+cWndReg::~cWndReg( void )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 初期化
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 bool cWndReg::Init( void )
 {
 	return ZCons::Init( REGWINW, REGWINH, "REGISTER" );
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ウィンドウ更新
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cWndReg::Update( void )
 {
-	const char flags[9] = "SZ.H.PNC";
+	const std::string flags = "SZ.H.PNC";
 	cZ80::Register reg;
-	char DisCode[128];
+	std::string DisCode;
 	int i,j;
 	
 	// レジスタ値取得
-	vm->CpumGetRegister( &reg );
+	el->vm->cpum->GetRegister( &reg );
 	
 	// 1ライン逆アセンブル
-	vm->CpumDisasm( DisCode, reg.PC.W );
+	el->vm->cpum->Disasm( DisCode, reg.PC.W );
 	
-	ZCons::Locate( 0, 0 ); ZCons::Print( "AF :%04X BC :%04X DE :%04X HL :%04X", reg.AF.W, reg.BC.W, reg.DE.W, reg.HL.W );
-	ZCons::Locate( 0, 1 ); ZCons::Print( "AF':%04X BC':%04X DE':%04X HL':%04X", reg.AF1.W, reg.BC1.W, reg.DE1.W, reg.HL1.W );
-	ZCons::Locate( 0, 2 ); ZCons::Print( "IX :%04X IY :%04X PC :%04X SP :%04X", reg.IX.W, reg.IY.W, reg.PC.W, reg.SP.W );
+	ZCons::SetColor( FC_WHITE4, FC_BLACK );
+	ZCons::Locate( 0, 0 );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "AF :" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.AF.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "BC :" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.BC.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "DE :" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.DE.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "HL :" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X\n", reg.HL.W );
 	
-	ZCons::Locate( 0, 3 ); ZCons::Print( "FLAG:");
-	for( j=0,i=reg.AF.B.l; j<8; j++,i<<=1 ){
-		ZCons::SetColor( i&0x80 ? FC_WHITE : FC_GRAY );
-		ZCons::Print( "%c", flags[j] );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "AF':" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.AF1.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "BC':" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.BC1.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "DE':" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.DE1.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "HL':" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X\n", reg.HL1.W );
+	
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "IX :" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.IX.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "IY :" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.IY.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "PC :" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X ",  reg.PC.W );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "SP :" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%04X\n", reg.SP.W );
+	
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "FLAG[" );
+	ZCons::SetColor( FC_WHITE4 );
+	for( j = 0, i = reg.AF.B.l; j < 8; j++, i <<= 1 ){
+		if( flags.data()[j] != '.' ){
+			ZCons::SetColor( i & 0x80 ? FC_WHITE4 : FC_WHITE2 );
+			ZCons::Printf( "%c", flags.data()[j] );
+		}
 	}
-	ZCons::SetColor( FC_WHITE );
-	ZCons::Print( " I:%02X IFF:%d IM:%1d HALT:%1d", reg.I, reg.IFF, reg.IM, reg.Halt );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "] " );
 	
-	ZCons::SetColor( FC_WHITE, FC_DCYAN );
-	ZCons::Locate( 0, 4 ); ZCons::Print( "%-36s", DisCode );
-	ZCons::SetColor( FC_WHITE, FC_BLACK );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "I:"    );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%02X ", reg.I    );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "IFF:"  );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%d ",   reg.IFF  );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "IM:"   );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%1d ",  reg.IM   );
+	ZCons::SetColor( FC_CYAN4 );	ZCons::Printf( "HALT:" );	ZCons::SetColor( FC_WHITE4 );	ZCons::Printf( "%1d\n", reg.Halt );
+	
+	ZCons::SetColor( FC_WHITE4, FC_GREEN2 );
+	ZCons::Locate( 0, 4 );
+	ZCons::Printf( "%-35s", DisCode.c_str() );
+	ZCons::SetColor( FC_WHITE4, FC_BLACK );
+	
+
 
 	ZCons::Locate( 0, 5 );
+	
+	// PRINTER STROBE 0/1
+	ZCons::Printf( "CRT  :%s\n", el->vm->vdg->GetCrtDisp() ? "DISP" : "KILL" );
+	// CGROM ON/OFF
+	ZCons::Printf( "TIMER:%s\n", el->vm->intr->GetTimerIntr() ? "ON" : "OFF" );
+	ZCons::Printf( "ATTR :%04X VRAM:%04X\n", el->vm->vdg->GerAttrAddr(), el->vm->vdg->GetVramAddr() );
+	// RELAY ON/OFF
 
-// PRINTER STROBE 0/1
-	ZCons::Printf( "CRT  :%s\n", vm->VdgGetCrtDisp() ? "DISP" : "KILL" );
-// CGROM ON/OFF
-	ZCons::Printf( "TIMER:%s\n", vm->IntGetTimerIntr() ? "ON" : "OFF" );
-	ZCons::Printf( "VRAM:%04X ATTR:%04X\n", vm->VdgGetVramAddr(), vm->VdgGerAttrAddr() );
-// RELAY ON/OFF
 
-
-
+	// I/O port
+	ZCons::Locate( IOPORTX, IOPORTY );
+	ZCons::SetColor( FC_YELLOW4, FC_CYAN2 );
+	ZCons::Printf( "%-62s", "[I/O PORT HISTORY] PORT:IN:OUT ??:NO ACCESS" );
+	
+	// 登録済I/Oポートリストを取得
+	std::vector<int> PIn, POut;
+	el->vm->iom->GetPortList( PIn, POut );
+	
+	// 機種別I/Oポートリスト取得
+	std::vector<int> Ports;
+	try{
+		Ports = PortsList.at( el->cfg->GetValue( CV_Model ) );
+	}
+	catch( std::out_of_range& ){
+		return;	// ポートリストが見つからなかったら何もしない
+	}
+	
+	// OPT,拡張カートリッジのポートリストを結合する
+	std::copy( PortsEx.begin(), PortsEx.end(), std::back_inserter( Ports ) );
+	
+	
+	int CPortE = FC_CYAN4;	// 文字色 有効ポート番号
+	int CPortD = FC_CYAN2;	// 文字色 無効ポート番号
+	int xx = 0, yy = 0;
+	
+	for( auto &p : Ports ){
+		switch( p ){
+		case IO_GENERAL:	// 一般ポート
+			CPortE = FC_CYAN4;
+			CPortD = FC_CYAN2;
+			continue;
+			
+		case IO_SR:			// SR専用ポート
+			CPortE = FC_MAGENTA4;
+			CPortD = FC_MAGENTA2;
+			continue;
+			
+		case IO_EXT:		// 拡張カートリッジ
+			CPortE = FC_GREEN4;
+			CPortD = FC_GREEN2;
+			continue;
+			
+		case IO_SP:			// 空欄
+			if( ++yy < IOPORTH ){ continue; }
+			[[fallthrough]];
+			
+		case IO_CR:			// 改行
+			if( yy != 0 ){	// 改行直後なら無視
+				xx += 9;
+				yy  = 0;
+			}
+			continue;
+		}
+		
+		ZCons::Locate( xx + IOPORTX, yy + IOPORTY+1 );
+		
+		if( p < 0 ){	// 負数ならグループ名表示
+			std::string str;
+			
+			try{
+				str = PGroup.at( p );
+			}
+			catch( std::out_of_range& ){
+				str = "???";
+			}
+			ZCons::SetColor( FC_YELLOW4, FC_BLUE4 );
+			ZCons::Printf( "%-8s", str.c_str() );
+			ZCons::SetColor( FC_WHITE4, FC_BLACK );
+			
+		}else{			// 正数ならポート情報表示
+			bool min  = (std::count( PIn.begin(),  PIn.end(),  p ));
+			bool mout = (std::count( POut.begin(), POut.end(), p ));
+			
+			ZCons::SetColor( min | mout ? CPortE : CPortD );
+			ZCons::Printf( "%02X:", p );
+			
+			if( min ){
+				ZCons::SetColor( FC_WHITE4 );
+				if( el->vm->iom->PeepIn ( p ) < 0 ){ ZCons::Printf( "??" ); }
+				else							   { ZCons::Printf( "%02X", el->vm->iom->PeepIn ( p ) ); }
+			}else{
+				ZCons::SetColor( FC_WHITE1 );
+				ZCons::Printf( "--" );
+			}
+			
+			ZCons::SetColor( FC_WHITE2 );
+			ZCons::Printf( ":" );
+			
+			if( mout ){
+				ZCons::SetColor( FC_WHITE4 );
+				if( el->vm->iom->PeepOut( p ) < 0 ){ ZCons::Printf( "??" ); }
+				else							   { ZCons::Printf( "%02X", el->vm->iom->PeepOut( p ) ); }
+			}else{
+				ZCons::SetColor( FC_WHITE1 );
+				ZCons::Printf( "--" );
+			}
+		}
+		
+		// 改行?
+		if( ++yy < IOPORTH ){ continue; }
+		
+		// 改行
+		xx += 9;
+		yy  = 0;
+	}
 
 
 }
 
 
-//------------------------------------------------------
+//---------------------------------------------------------------------------
 //  モニタウィンドウクラス
-//------------------------------------------------------
+//---------------------------------------------------------------------------
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 命令の種類判定テーブル
-////////////////////////////////////////////////////////////////
-enum MonitorJob	// ジョブ
-{
+/////////////////////////////////////////////////////////////////////////////
+enum MonitorJob{	// ジョブ
 	MONITOR_NONE = 0,
 	
 	MONITOR_HELP,
@@ -298,59 +596,55 @@ enum MonitorJob	// ジョブ
 	
 	MONITOR_RESET,
 	MONITOR_REG,
-	MONITOR_DISASM,
-	
-	EndofMONITOR
+	MONITOR_DISASM
 };
 
-const struct{
+struct MonCmd{
 	MonitorJob Step;
-	const char *cmd;
-	const char *HelpMes;
-}MonitorCmd[]=
-{
-{ MONITOR_HELP,		"help",		QT_TRANSLATE_NOOP("PC6001VX", "ヘルプを表示") },
-{ MONITOR_HELP,		"?",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
-{ MONITOR_GO,		"go",		QT_TRANSLATE_NOOP("PC6001VX", "実行") },
-{ MONITOR_GO,		"g",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
-{ MONITOR_TRACE,	"trace",	QT_TRANSLATE_NOOP("PC6001VX", "トレース実行") },
-{ MONITOR_TRACE,	"t",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
-{ MONITOR_STEP,		"step",		QT_TRANSLATE_NOOP("PC6001VX", "ステップ実行") },
-{ MONITOR_STEP,		"s",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
-{ MONITOR_STEPALL,	"S",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
-{ MONITOR_BREAK,	"break",	QT_TRANSLATE_NOOP("PC6001VX", "ブレークポイント設定") },
-{ MONITOR_BREAK,	"b",		QT_TRANSLATE_NOOP("PC6001VX", "    〃") },
-{ MONITOR_READ,		"read",		QT_TRANSLATE_NOOP("PC6001VX", "メモリを読込む") },
-{ MONITOR_WRITE,	"write",	QT_TRANSLATE_NOOP("PC6001VX", "メモリに書込む") },
-{ MONITOR_FILL,		"fill",		QT_TRANSLATE_NOOP("PC6001VX", "メモリを埋める") },
-{ MONITOR_MOVE,		"move",		QT_TRANSLATE_NOOP("PC6001VX", "メモリを移動") },
-{ MONITOR_SEARCH,	"search",	QT_TRANSLATE_NOOP("PC6001VX", "メモリを検索") },
-{ MONITOR_OUT,		"out",		QT_TRANSLATE_NOOP("PC6001VX", "ポート出力") },
-{ MONITOR_LOADMEM,	"loadmem",	QT_TRANSLATE_NOOP("PC6001VX", "ファイルからメモリに読込む") },
-{ MONITOR_SAVEMEM,	"savemem",	QT_TRANSLATE_NOOP("PC6001VX", "メモリからファイルに書込む") },
-{ MONITOR_RESET,	"reset",	QT_TRANSLATE_NOOP("PC6001VX", "PC6001Vをリセット") },
-{ MONITOR_REG,		"reg",		QT_TRANSLATE_NOOP("PC6001VX", "CPUレジスタを参照/設定") },
-{ MONITOR_DISASM,	"disasm",	QT_TRANSLATE_NOOP("PC6001VX", "逆アセンブル") },
+	const std::string cmd;
+	const std::string HelpMes;
+};
 
+static const std::vector<MonCmd> MonitorCmd = {
+	{ MONITOR_HELP,		"help",		"ヘルプを表示" },
+	{ MONITOR_HELP,		"?",		"    〃" },
+	{ MONITOR_GO,		"go",		"実行" },
+	{ MONITOR_GO,		"g",		"    〃" },
+	{ MONITOR_TRACE,	"trace",	"トレース実行" },
+	{ MONITOR_TRACE,	"t",		"    〃" },
+	{ MONITOR_STEP,		"step",		"ステップ実行" },
+	{ MONITOR_STEP,		"s",		"    〃" },
+	{ MONITOR_STEPALL,	"S",		"    〃" },
+	{ MONITOR_BREAK,	"break",	"ブレークポイント設定" },
+	{ MONITOR_BREAK,	"b",		"    〃" },
+	{ MONITOR_READ,		"read",		"メモリを読込む" },
+	{ MONITOR_WRITE,	"write",	"メモリに書込む" },
+	{ MONITOR_FILL,		"fill",		"メモリを埋める" },
+	{ MONITOR_MOVE,		"move",		"メモリを移動" },
+	{ MONITOR_SEARCH,	"search",	"メモリを検索" },
+	{ MONITOR_OUT,		"out",		"ポート出力" },
+	{ MONITOR_LOADMEM,	"loadmem",	"ファイルからメモリに読込む" },
+	{ MONITOR_SAVEMEM,	"savemem",	"メモリからファイルに書込む" },
+	{ MONITOR_RESET,	"reset",	"PC6001Vをリセット" },
+	{ MONITOR_REG,		"reg",		"CPUレジスタを参照/設定" },
+	{ MONITOR_DISASM,	"disasm",	"逆アセンブル" }
 };
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 引数の種類判定テーブル
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 enum ArgvType{
 	ARGV_END	= 0x00000,
 	ARGV_STR	= 0x00001,	// strings
-	ARGV_PORT	= 0x00002,	// 0〜0xff
-	ARGV_ADDR	= 0x00004,	// 0〜0xffff
-	ARGV_NUM	= 0x00008,	// 0〜0x7fffffff
-	ARGV_INT	= 0x00010,	// -0x7fffffff〜0x7fffffff
-	ARGV_SIZE	= 0x00080,	// #1〜#0x7fffffff
+	ARGV_PORT	= 0x00002,	// 0～0xff
+	ARGV_ADDR	= 0x00004,	// 0～0xffff
+	ARGV_NUM	= 0x00008,	// 0～0x7fffffff
+	ARGV_INT	= 0x00010,	// -0x7fffffff～0x7fffffff
+	ARGV_SIZE	= 0x00080,	// #1～#0x7fffffff
 	ARGV_REG	= 0x00400,	// RegisterName
 	ARGV_BREAK	= 0x00800,	// BreakAction
-	ARGV_STEP	= 0x04000,	// StepCommand
-	
-	EndofArgvType
+	ARGV_STEP	= 0x04000	// StepCommand
 };
 
 
@@ -372,82 +666,82 @@ enum ArgvName{
 	ARG_CALL,	ARG_JP,		ARG_REP,
 	
 	// reg all
-	ARG_ALL,
-	
-	EndofArgName
+	ARG_ALL
 };
 
 
-const struct{
-	const char *StrL;
-	const char *StrU;
+struct MonArgv{
+	const std::string Str;
 	int Type;
 	int Val;
-}MonitorArgv[]=
-{
+};
+
+static const std::vector<MonArgv> MonitorArgv = {
 	// <reg>
-{ "af",		"AF",		ARGV_REG,	ARG_AF,		},
-{ "bc",		"BC",		ARGV_REG,	ARG_BC,		},
-{ "de",		"DE",		ARGV_REG,	ARG_DE,		},
-{ "hl",		"HL",		ARGV_REG,	ARG_HL,		},
-{ "ix",		"IX",		ARGV_REG,	ARG_IX,		},
-{ "iy",		"IY",		ARGV_REG,	ARG_IY,		},
-{ "sp",		"SP",		ARGV_REG,	ARG_SP,		},
-{ "pc",		"PC",		ARGV_REG,	ARG_PC,		},
-{ "af'",	"AF'",		ARGV_REG,	ARG_AF1,	},
-{ "bc'",	"BC'",		ARGV_REG,	ARG_BC1,	},
-{ "de'",	"DE'",		ARGV_REG,	ARG_DE1,	},
-{ "hl'",	"HL'",		ARGV_REG,	ARG_HL1,	},
-{ "i",		"I",		ARGV_REG,	ARG_I,		},
-{ "r",		"R",		ARGV_REG,	ARG_R,		},
-{ "iff",	"IFF",		ARGV_REG,	ARG_IFF,	},
-{ "im",		"IM",		ARGV_REG,	ARG_IM,		},
-{ "halt",	"HALT",		ARGV_REG,	ARG_HALT,	},
-
-//<action>
-{ "pc",		"PC",		ARGV_BREAK,	ARG_PC,		},
-{ "read",	"READ",		ARGV_BREAK,	ARG_READ,	},
-{ "write",	"WRITE",	ARGV_BREAK,	ARG_WRITE,	},
-{ "in",		"IN",		ARGV_BREAK,	ARG_IN,		},
-{ "out",	"OUT",		ARGV_BREAK,	ARG_OUT,	},
-{ "clear",	"CLEAR",	ARGV_BREAK,	ARG_CLEAR,	},
-
-// step
-{ "call",	"CALL",		ARGV_STEP,	ARG_CALL,	},
-{ "jp",		"JP",		ARGV_STEP,	ARG_JP,		},
-{ "rep",	"REP",		ARGV_STEP,	ARG_REP,	},
-{ "all",	"ALL",		ARGV_STEP,	ARG_ALL,	},
+	{ "AF",		ARGV_REG,	ARG_AF,		},
+	{ "BC",		ARGV_REG,	ARG_BC,		},
+	{ "DE",		ARGV_REG,	ARG_DE,		},
+	{ "HL",		ARGV_REG,	ARG_HL,		},
+	{ "IX",		ARGV_REG,	ARG_IX,		},
+	{ "IY",		ARGV_REG,	ARG_IY,		},
+	{ "SP",		ARGV_REG,	ARG_SP,		},
+	{ "PC",		ARGV_REG,	ARG_PC,		},
+	{ "AF'",	ARGV_REG,	ARG_AF1,	},
+	{ "BC'",	ARGV_REG,	ARG_BC1,	},
+	{ "DE'",	ARGV_REG,	ARG_DE1,	},
+	{ "HL'",	ARGV_REG,	ARG_HL1,	},
+	{ "I",		ARGV_REG,	ARG_I,		},
+	{ "R",		ARGV_REG,	ARG_R,		},
+	{ "IFF",	ARGV_REG,	ARG_IFF,	},
+	{ "IM",		ARGV_REG,	ARG_IM,		},
+	{ "HALT",	ARGV_REG,	ARG_HALT,	},
+	
+	//<action>
+	{ "PC",		ARGV_BREAK,	ARG_PC,		},
+	{ "READ",	ARGV_BREAK,	ARG_READ,	},
+	{ "WRITE",	ARGV_BREAK,	ARG_WRITE,	},
+	{ "IN",		ARGV_BREAK,	ARG_IN,		},
+	{ "OUT",	ARGV_BREAK,	ARG_OUT,	},
+	{ "CLEAR",	ARGV_BREAK,	ARG_CLEAR,	},
+	
+	// step
+	{ "CALL",	ARGV_STEP,	ARG_CALL,	},
+	{ "JP",		ARGV_STEP,	ARG_JP,		},
+	{ "REP",	ARGV_STEP,	ARG_REP,	},
+	{ "ALL",	ARGV_STEP,	ARG_ALL,	}
 };
 
 
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-cWndMon::cWndMon( VM6 *vm, const ID& id ) : iMon(vm,id), Argc(0), ArgvCounter(0)
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+cWndMon::cWndMon( EL6* el ) : iMon( el ), ArgvCounter( 0 )
 {
-	INITARRAY( KeyBuf, '\0' );
-	for( int i=0; i<MAX_HIS; i++ ) ZeroMemory( HisBuf[i], MAX_CHRS );
-	INITARRAY( Argv, NULL );
+	KeyBuf.clear();
+	HisBuf.clear();
+	Argv.clear();
 }
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
-cWndMon::~cWndMon( void ){}
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+cWndMon::~cWndMon( void )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 初期化
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 bool cWndMon::Init( void )
 {
 	if( ZCons::Init( MONWINW, MONWINH, "" ) ){
 		// 最初だけメッセージ表示
-		ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "***********************************************\n") );
-		ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "* PC6001V  - monitor mode -                   *\n") );
-		ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "*  help 又は ? と入力するとヘルプを表示します *\n") );
-		ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "***********************************************\n\n") );
+		ZCons::Printf( "***********************************************\n" );
+		ZCons::Printf( "* PC6001V  - monitor mode -                   *\n" );
+		ZCons::Printf( "*  help 又は ? と入力するとヘルプを表示します *\n" );
+		ZCons::Printf( "***********************************************\n\n" );
 		ZCons::Printf( PROMPT );
 		return true;
 	}
@@ -456,296 +750,323 @@ bool cWndMon::Init( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ウィンドウ更新
-////////////////////////////////////////////////////////////////
-void cWndMon::Update( void ){}
+/////////////////////////////////////////////////////////////////////////////
+void cWndMon::Update( void )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // キー入力処理
-////////////////////////////////////////////////////////////////
-void cWndMon::KeyIn( int kcode, bool shift, int ccode )
+/////////////////////////////////////////////////////////////////////////////
+void cWndMon::KeyIn( int kcode, int ccode )
 {
 	static int LastKey  = KVC_ENTER;	// 前回のキー
-	static int HisLevel = 1;			// ヒストリレベル
+	static int HisLevel = 0;			// ヒストリレベル
 	
 	switch( kcode ){		// キーコード
-	case KVC_F6:			// モニタモード変更
-		vm->el->ToggleMonitor();
-		break;
-		
 	case KVC_ENTER:			// Enter
 	case KVC_P_ENTER:		// Enter(テンキー)
 		ZCons::Printf( "\n" );
 		
-		if( strlen( KeyBuf ) > 0 ){						// キーバッファが有効で
-			if( stricmp( KeyBuf, HisBuf[1] ) != 0 ){	// 直前のヒストリと異なるなら
-				for( int i=MAX_HIS-1; i>1; i-- ) strcpy( HisBuf[i], HisBuf[i-1] );
-				strcpy( HisBuf[1], KeyBuf );			// キーバッファをヒストリバッファにコピー
+		if( !KeyBuf.empty() ){	// キーバッファに文字列あり
+			// 末尾のスペースを削除
+			while( KeyBuf.substr( KeyBuf.length()-1, 1) == " " ){
+				KeyBuf.pop_back();
+			}
+			
+			auto result = std::find( HisBuf.begin(), HisBuf.end(), KeyBuf );
+			
+			// ヒストリに含まれるなら一旦削除
+			if( result != HisBuf.end() ){
+				HisBuf.erase( HisBuf.begin() + std::distance( HisBuf.begin(), result ) );
+			}
+			
+			// ヒストリバッファがいっぱいなら削除
+			while( HisBuf.size() >= MAX_HIS ){
+				HisBuf.erase( HisBuf.begin() );
+			}
+			
+			// キーバッファをヒストリバッファにコピー
+			if( HisBuf.size() < MAX_HIS ){
+				HisBuf.emplace_back( KeyBuf );
 			}
 		}
 		
 		// ここで引数解析処理
 		Exec( GetArg() );
 		
-		*KeyBuf = '\0';						// キーバッファクリア
+		KeyBuf.clear();						// キーバッファクリア
 		ZCons::Printf( PROMPT );
 		break;
 		
 	case KVC_UP:			// 上矢印
 	case KVC_DOWN:			// 下矢印
+		if( !HisBuf.size() ) break;
+		
 		if( LastKey == KVC_UP || LastKey == KVC_DOWN ){
-			if( kcode == KVC_UP   && HisLevel < MAX_HIS-1 && strlen( HisBuf[HisLevel+1] ) > 0 ) HisLevel++;
-			if( kcode == KVC_DOWN && HisLevel > 0 )                                             HisLevel--;
+			if( kcode == KVC_UP   && HisLevel < (int)HisBuf.size() ){ HisLevel++; }
+			if( kcode == KVC_DOWN && HisLevel > 0 )                 { HisLevel--; }
 		}else{
-			if( kcode == KVC_UP ) HisLevel = 1;
-			else                  HisLevel = 0;
+			if( kcode == KVC_UP ){ HisLevel = 1; }
+			else                 { HisLevel = 0; }
 		}
 		
 		// 今のコマンドラインを消去
-		while( strlen(KeyBuf) > 0 ){
-			ZCons::LocateR( -1, 0 );
-			ZCons::PutCharH( ' ' );
-			ZCons::LocateR( -1, 0 );
-			KeyBuf[strlen(KeyBuf)-1] = (BYTE)'\0';
+		while( !KeyBuf.empty() ){
+			ZCons::Printf( "\b" );
+			KeyBuf.pop_back();
 		}
+		
 		// ヒストリバッファからキーバッファにコピーして表示
-		strcpy( KeyBuf, HisBuf[HisLevel] );
-		ZCons::Printf( KeyBuf );
+		if( HisLevel > 0 ){
+			KeyBuf = HisBuf[HisBuf.size() - HisLevel];
+			ZCons::Printf( KeyBuf );
+		}
 		break;
 		
 	case KVC_BACKSPACE:		// BackSpace
-		if( strlen(KeyBuf) > 0 ){
-			ZCons::LocateR( -1, 0 );
-			ZCons::PutCharH( ' ' );
-			ZCons::LocateR( -1, 0 );
-			KeyBuf[strlen(KeyBuf)-1] = (BYTE)'\0';
+		if( !KeyBuf.empty() ){
+			ZCons::Printf( "\b" );
+			KeyBuf.pop_back();
 		}
-		break;
-		
-	// メモリウィンドウ
-	case KVC_PAGEDOWN:		// PageDown
-		vm->el->memw->SetAddress( vm->el->memw->GetAddress() + ( shift ? 2048 : 16 ) );
-		break;
-		
-	case KVC_PAGEUP:		// PageUp
-		vm->el->memw->SetAddress( vm->el->memw->GetAddress() - ( shift ? 2048 : 16 ) );
 		break;
 		
 	default:
 		// 有効な文字コードかつバッファがあふれていなければ
 		if( ( ccode > 0x1f ) && ( ccode < 0x80 ) ){
-			if( strlen(KeyBuf) < (MAX_CHRS-1) ){
-				char *p = &KeyBuf[strlen(KeyBuf)];
-				*p++ = (BYTE)ccode;
-				*p   = (BYTE)'\0';
-//				ZCons::PutCharH( ccode );
+			if( KeyBuf.length() < (MAX_CHRS-1) ){
+				KeyBuf.push_back( ccode );
 				ZCons::Printf( "%c", ccode );
 			}
 		}
 	}
 	
 	LastKey = kcode;
-	
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ブレークポイント到達
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cWndMon::BreakIn( WORD addr )
 {
-	ZCons::SetColor( FC_YELLOW );
+	ZCons::SetColor( FC_YELLOW4 );
 	ZCons::Printf( "\n << Break in %04XH >>", addr );
-	switch( vm->BpGetType( vm->BpGetReqBPNum() ) ){
-	case BPoint::BP_READ:	ZCons::Printf( " Read Memory %04XH",    vm->BpGetAddr( vm->BpGetReqBPNum() ) );	break;
-	case BPoint::BP_WRITE:	ZCons::Printf( " Write Memory %04XH",   vm->BpGetAddr( vm->BpGetReqBPNum() ) );	break;
-	case BPoint::BP_IN:		ZCons::Printf( " Read I/O Port %02XH",  vm->BpGetAddr( vm->BpGetReqBPNum() ) );	break;
-	case BPoint::BP_OUT:	ZCons::Printf( " Write I/O Port %02XH", vm->BpGetAddr( vm->BpGetReqBPNum() ) );	break;
+	switch( el->vm->bp->GetType( el->vm->bp->GetReqNum() ) ){
+	case BPoint::BP_READ:	ZCons::Printf( " Read Memory %04XH",    el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
+	case BPoint::BP_WRITE:	ZCons::Printf( " Write Memory %04XH",   el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
+	case BPoint::BP_IN:		ZCons::Printf( " Read I/O Port %02XH",  el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
+	case BPoint::BP_OUT:	ZCons::Printf( " Write I/O Port %02XH", el->vm->bp->GetAddr( el->vm->bp->GetReqNum() ) );	break;
 	default:				break;
 	}
-	ZCons::SetColor( FC_WHITE );
+	ZCons::SetColor( FC_WHITE4 );
 	ZCons::Printf( "\n" PROMPT );
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 引数処理
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 int cWndMon::GetArg( void )
 {
-	char *p = KeyBuf;
+	std::string::size_type ps = 0, pe = 0;
 	
-	ArgvCounter = 1;	// Shift()用カウンタ初期化
-	Argc = 0;			// 引数の個数初期化
+	ArgvCounter = 0;	// Shift()用カウンタ初期化
 	
 	// 引数分解
-	while( (*p!='\0') && (Argc<=MAX_ARGS) ){
-		if( *p==' ' )
-			p++;
-		else{
-			Argv[Argc++] = p;
-			while( (*p!='\0') && (*p!=' ') )
-				p++;
-			if( *p==' ' ) *p++ = '\0';
+	Argv.clear();
+	while( ps != std::string::npos ){
+		pe = KeyBuf.find( ' ', ps );
+		
+		if( pe == std::string::npos ){
+			if( KeyBuf.substr( ps ).length() ){
+				Argv.push_back( KeyBuf.substr( ps ) );
+			}
+			break;
+		}else{
+			if( pe > ps ){
+				Argv.push_back( KeyBuf.substr( ps, pe - ps ) );
+			}
+			ps = pe + 1;
 		}
 	}
 	
-	int JobNo;
-	if( !Argc )	// 空行?
-		JobNo = MONITOR_NONE;
-	else{		// 有効命令?
-		int i;
-		for( i=0; i < COUNTOF(MonitorCmd); i++ )
-			if( !strcmp( Argv[0], MonitorCmd[i].cmd ) ) break;
-		
-		if( i == COUNTOF( MonitorCmd ) ){	// 無効命令の場合
-			ZCons::SetColor( FC_RED );
-			ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "無効なコマンドです : %s\n"), Argv[0] );
-			ZCons::SetColor( FC_WHITE );
-			JobNo = MONITOR_NONE;
-		}else{								// 引数が ? の場合
-			if( Argc==2 && !strcmp( Argv[1], "?" ) ){
-				Help( MonitorCmd[i].Step );
-				JobNo = MONITOR_NONE;
-			}else{							// 通常の命令の場合
-				JobNo = MonitorCmd[i].Step;
+	if( !Argv.size() )	// 空行?
+		return MONITOR_NONE;
+	
+	// 有効命令探す
+	for( auto &m : MonitorCmd ){
+		if( !StriCmp( Argv.front(), m.cmd ) ){
+			if( Argv.size() == 2 && (Argv[1] == "?") ){	// 引数が ? の場合
+				Help( m.Step );
+				return MONITOR_NONE;
+			}else{										// 通常の命令の場合
 				Shift();
+				return m.Step;
 			}
 		}
 	}
 	
-	return JobNo;
+	// 無効命令の場合
+	ZCons::SetColor( FC_RED4 );
+	ZCons::Printf( "無効なコマンドです : %s\n", Argv.front().c_str() );
+	ZCons::SetColor( FC_WHITE4 );
+	
+	return MONITOR_NONE;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 引数配列シフト
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cWndMon::Shift( void )
 {
 	bool size = false;
-	char *p, *chk;
+	size_t chk;
 	
 	// これ以上引数が無い
-	if( ArgvCounter > MAX_ARGS || ArgvCounter >= Argc )
+	if( Argv.size() <= 1 ){
 		argv.Type = ARGV_END;
+		Argv.clear();
 	// まだ引数があるので解析
-	else{
-		p = Argv[ ArgvCounter ];
-		if( *p == '#' ){ size = true; p++; }
+	}else{
+		// 先頭要素(処理済み)を削除
+		Argv.erase( Argv.begin() );
 		
 		argv.Type = ARGV_END;
-		argv.Val  = strtol( p, &chk, 0 );
-		argv.Str  = Argv[ ArgvCounter ];
+		argv.Str  = Argv.front();
+		
+		// 大文字化
+		std::transform( argv.Str.begin(), argv.Str.end(), argv.Str.begin(), ::toupper );
+		
+		if( argv.Str.front() == '#' ){
+			size = true;
+			argv.Str.erase( argv.Str.begin() );
+		}
+		
+		try{
+			argv.Val = std::stoi( argv.Str, &chk, 0 );
+		}
+		catch( std::logic_error& ){	// 変換失敗
+			chk = 0;
+		}
 		
 		// 数値の場合
-		if( p!=chk && *chk=='\0' ){
+		if( chk == argv.Str.length() ){
 			if( size ){		// #で始まる
-				if( argv.Val <= 0 ) argv.Type = ARGV_STR;
-				else                argv.Type = ARGV_SIZE;
+				if( argv.Val <= 0 ){ argv.Type = ARGV_STR;  }
+				else               { argv.Type = ARGV_SIZE; }
 			}else{			// 数で始まる
 				argv.Type |= ARGV_INT;
-				if( argv.Val >= 0 )      argv.Type |= ARGV_NUM;
-				if( argv.Val <= 0xff )   argv.Type |= ARGV_PORT;
-				if( argv.Val <= 0xffff ) argv.Type |= ARGV_ADDR;
+				if( argv.Val >= 0      ){ argv.Type |= ARGV_NUM;  }
+				if( argv.Val <= 0xff   ){ argv.Type |= ARGV_PORT; }
+				if( argv.Val <= 0xffff ){ argv.Type |= ARGV_ADDR; }
 			}
-			// 文字列の場合
+		// 文字列の場合
 		}else{
 			if( size ){		// #で始まる
 				argv.Type = ARGV_STR;
 			}else{			// 字で始まる
-				for( int i=0; i<COUNTOF( MonitorArgv ); i++ ){
-					if( !strcmp( p, MonitorArgv[i].StrL ) || !strcmp( p, MonitorArgv[i].StrU ) ){
-						argv.Type |= MonitorArgv[i].Type;
-						argv.Val   = MonitorArgv[i].Val;
+				for( auto &m : MonitorArgv ){
+					if( !StriCmp( argv.Str, m.Str ) ){
+						argv.Type |= m.Type;
+						argv.Val   = m.Val;
 					}
 				}
-				if( argv.Type == ARGV_END ) argv.Type = ARGV_STR;
+				if( argv.Type == ARGV_END ){
+					argv.Type = ARGV_STR;
+				}
 			}
 		}
-		ArgvCounter++;
 	}
+	ArgvCounter++;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 引数エラーメッセージ処理
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 #define ErrorMes()													\
 	do{																\
-	ZCons::SetColor( FC_RED );									\
-	ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "引数が無効です (arg %d)\n"), ArgvCounter );	\
-	ZCons::SetColor( FC_WHITE );								\
-	return;														\
+		ZCons::SetColor( FC_RED4 );									\
+		ZCons::Printf( "引数が無効です (arg %d)\n", ArgvCounter );	\
+		ZCons::SetColor( FC_WHITE4 );								\
+		return;														\
 	}while(0)
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // コマンド実行
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cWndMon::Exec( int cmd )
 {
-	// 処理された引数の種類をチェック
+// 処理された引数の種類をチェック
 #define	ArgvIs( x )	(argv.Type & (x))
 
 	switch( cmd ){
 	case MONITOR_HELP:
-		//--------------------------------------------------------------
-		// help [<cmd>]
-		//	ヘルプを表示する
-		//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
+	// help [<cmd>]
+	//	ヘルプを表示する
+	//-----------------------------------------------------------------------
 	{
-		int i;
-		char *cmd = NULL;
+		std::string cmds = "";
 		
 		if( argv.Type != ARGV_END ){				// [cmd]
-			cmd = argv.Str;
+			cmds = argv.Str;
 			Shift();
 		}
 		if( argv.Type != ARGV_END ) ErrorMes();		// 余計な引数があればエラー
 		
-		if( !cmd ){	// 引数なし。全ヘルプ表示
+		if( cmds.empty() ){	// 引数なし。全ヘルプ表示
 			ZCons::Printf( "help\n" );
-			for( i=0; i < COUNTOF(MonitorCmd); i++ )
-				ZCons::Printf( "  %-7s %s\n", TRANS(MonitorCmd[i].cmd), TRANS(MonitorCmd[i].HelpMes) );
-			ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX","     注: \"help <コマンド名>\" と入力すると 更に詳細なヘルプを表示します。\n") );
+			for( auto &m : MonitorCmd ){
+				ZCons::Printf( "  %-7s %s\n", m.cmd.c_str(), m.HelpMes.c_str() );
+			}
+			ZCons::Printf( "     注: \"help <コマンド名>\" と入力すると\n         更に詳細なヘルプを表示します。\n" );
 		}else{		// 引数のコマンドのヘルプ表示
-			for( i=0; i < COUNTOF(MonitorCmd); i++ )
-				if( !strcmp( cmd, MonitorCmd[i].cmd ) ) break;
-			if( i==COUNTOF(MonitorCmd) ) ErrorMes();
-			Help( MonitorCmd[i].Step );
+			size_t i = 0;
+			for( auto &m : MonitorCmd ){
+				if( !StriCmp( cmds, m.cmd ) ){
+					Help( m.Step );
+					break;
+				}
+				i++;
+			}
+			if( i == MonitorCmd.size() ) ErrorMes();
 		}
 		
 		break;
 	}
 	case MONITOR_GO:
-		//--------------------------------------------------------------
-		//  go
-		//	 実行
-		//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
+	//  go
+	//	 実行
+	//-----------------------------------------------------------------------
 	{
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->el->ToggleMonitor();
+		OSD_PushEvent( EV_DEBUGMODETOGGLE );
 		
 		break;
 	}
-
+	
 	case MONITOR_TRACE:
-		//--------------------------------------------------------------
-		//  trace <step>
-		//  trace #<step>
-		//  指定したステップ分処理が変わるまで実行
-		//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
+	//  trace <step>
+	//  trace #<step>
+	//  指定したステップ分処理が変わるまで実行
+	//-----------------------------------------------------------------------
 	{
 		int step = 1;
 		
 		if( argv.Type != ARGV_END ){
-			if     ( ArgvIs( ARGV_SIZE ) ) step = argv.Val;	// [<step>]
-			else if( ArgvIs( ARGV_NUM )  ) step = argv.Val;	// [#<step>]
-			else                            ErrorMes();
+			if     ( ArgvIs( ARGV_SIZE ) ){ step = argv.Val; }	// [<step>]
+			else if( ArgvIs( ARGV_NUM  ) ){ step = argv.Val; }	// [#<step>]
+			else                          { ErrorMes(); }
 			Shift();
 		}
 		
@@ -755,53 +1076,54 @@ void cWndMon::Exec( int cmd )
 		while( step-- ){
 			int st = 0;
 			while( st <= 0 ){	// バスリクエスト期間をスキップ
-				st = vm->Emu();
-				vm->EventUpdate( st <= 0 ? 1 : st );	// 1命令実行とイベント更新
+				st = el->vm->Emu();
+				el->vm->EventUpdate( st <= 0 ? 1 : st );	// 1命令実行とイベント更新
 			}
 		}
 		
-		//		if( CheckBreakPointPC() ) set_emumode( TRACE_BP );
-		//		else                      set_emumode( M_TRACE );
+//		if( CheckBreakPointPC() ) set_emumode( TRACE_BP );
+//		else                      set_emumode( M_TRACE );
 		
 		break;
 	}
-
+	
 	case MONITOR_STEP:
-		//--------------------------------------------------------------
-		//  step
-		//  step [call] [jp] [rep] [all]
-		//  1ステップ,実行
-		//  CALL,DJNZ,LDIR etc のスキップも可
-		//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
+	//  step
+	//  step [call] [jp] [rep] [all]
+	//  1ステップ,実行
+	//  CALL,DJNZ,LDIR etc のスキップも可
+	//-----------------------------------------------------------------------
 	{
 		bool call = false, jp = false, rep = false;
 		BYTE code;
 		WORD addr;
-		char DisCode[128];
+		std::string DisCode;
 		cZ80::Register reg;
 		int st = 0;
 		
 		while( argv.Type != ARGV_END ){
 			if( ArgvIs( ARGV_STEP ) ){
-				if( argv.Val == ARG_CALL )	call = true;
-				if( argv.Val == ARG_JP )	jp   = true;
-				if( argv.Val == ARG_REP )	rep  = true;
-				if( argv.Val == ARG_ALL )	call = jp = rep = true;
+				if( argv.Val == ARG_CALL ){ call = true; }
+				if( argv.Val == ARG_JP   ){ jp   = true; }
+				if( argv.Val == ARG_REP  ){ rep  = true; }
+				if( argv.Val == ARG_ALL  ){ call = jp = rep = true; }
 				Shift();
-			}else
+			}else{
 				ErrorMes();
+			}
 		}
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->CpumGetRegister( &reg );
+		el->vm->cpum->GetRegister( &reg );
 		
 		addr = reg.PC.W;
-		code = vm->MemRead( addr );
+		code = el->vm->mem->Read( addr );
 		
 		if( call ){
 			if( code		== 0xcd ||	// CALL nn    = 11001101B
-					( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
+			  ( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
 				addr += 3;
 			}
 		}
@@ -812,46 +1134,46 @@ void cWndMon::Exec( int cmd )
 			}
 		}
 		
-		if( rep ){
+	    if( rep ){
 			if( code == 0xed ){			// LDIR/LDDR/CPIR/CPDR etc
-				code = vm->MemRead( addr+1 );
+				code = el->vm->mem->Read( addr+1 );
 				if( (code&0xf4) == 0xb0 ){
 					addr += 2;
 				}
 			}
 		}
 		
-		vm->CpumDisasm( DisCode, addr );
-		ZCons::Printf( "%s\n", DisCode );
+		el->vm->cpum->Disasm( DisCode, addr );
+		ZCons::Printf( "%s\n", DisCode.c_str() );
 		
 		while( st <= 0 ){	// バスリクエスト期間をスキップ
-			st = vm->Emu();
-			vm->EventUpdate( st <= 0 ? 1 : st );	// 1命令実行とイベント更新
+			st = el->vm->Emu();
+			el->vm->EventUpdate( st <= 0 ? 1 : st );	// 1命令実行とイベント更新
 		}
 		
 		break;
-	}
+	}	
 	case MONITOR_STEPALL:
-		//--------------------------------------------------------------
-		//  S
-		//  step all に同じ
-		//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
+	//  S
+	//  step all に同じ
+	//-----------------------------------------------------------------------
 	{
 		BYTE code;
 		WORD addr;
-		char DisCode[128];
+		std::string DisCode;
 		cZ80::Register reg;
 		int st = -1;
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->CpumGetRegister( &reg );
+		el->vm->cpum->GetRegister( &reg );
 		
 		addr = reg.PC.W;
-		code = vm->MemRead( addr );
+		code = el->vm->mem->Read( addr );
 		
 		if( code		== 0xcd ||	// CALL nn    = 11001101B
-				( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
+		  ( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
 			addr += 3;
 		}
 		
@@ -860,34 +1182,34 @@ void cWndMon::Exec( int cmd )
 		}
 		
 		if( code == 0xed ){			// LDIR/LDDR/CPIR/CPDR etc
-			code = vm->MemRead( addr+1 );
+			code = el->vm->mem->Read( addr+1 );
 			if( (code&0xf4) == 0xb0 ){
 				addr += 2;
 			}
 		}
 		
-		vm->CpumDisasm( DisCode, addr );
-		ZCons::Printf( "%s\n", DisCode );
+		el->vm->cpum->Disasm( DisCode, addr );
+		ZCons::Printf( "%s\n", DisCode.c_str() );
 		
 		while( st <= 0 ){	// バスリクエスト期間をスキップ
-			st = vm->Emu();
-			vm->EventUpdate( st <= 0 ? 1 : st );	// 1命令実行とイベント更新
+			st = el->vm->Emu();
+			el->vm->EventUpdate( st <= 0 ? 1 : st );	// 1命令実行とイベント更新
 		}
 		
 		break;
-	}
+	}	
 	case MONITOR_BREAK:
-		//--------------------------------------------------------------
-		//  break [PC|READ|WRITE|IN|OUT] <addr|port> [#<No>]
-		//  break CLEAR [#<No>]
-		//  break
-		//  ブレークポイントの設定／解除／表示
-		//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
+	//  break [PC|READ|WRITE|IN|OUT] <addr|port>
+	//  break CLEAR [#<No>]
+	//  break
+	//  ブレークポイントの設定／解除／表示
+	//-----------------------------------------------------------------------
 	{
 		bool show = false;
 		int action = ARG_PC;
 		WORD addr = 0;
-		int number = 0;
+		int number = 1;
 		
 		if( argv.Type != ARGV_END ){
 			// <action>
@@ -916,8 +1238,8 @@ void cWndMon::Exec( int cmd )
 			// [#<No>]
 			if( argv.Type != ARGV_END ){
 				if( !ArgvIs( ARGV_SIZE ) ) ErrorMes();
-				if( argv.Val < 1 || argv.Val > NR_BP ) ErrorMes();
-				number = argv.Val - 1;
+				if( argv.Val < 1 || argv.Val > el->vm->bp->GetNum() ) ErrorMes();
+				number = argv.Val;
 				Shift();
 			}
 		}else{
@@ -928,63 +1250,38 @@ void cWndMon::Exec( int cmd )
 		
 		
 		if( show ){
-			for( int i=0; i<NR_BP; i++ ){
-				ZCons::Printf( "    #%02d  ", i+1 );
-				addr = vm->BpGetAddr( i );
-				switch( vm->BpGetType( i ) ){
-				case BPoint::BP_NONE:
-					ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "-- なし --\n") );
-					break;
-				case BPoint::BP_PC:
-					ZCons::Printf( "PC   reach %04XH\n", addr&0xffff );
-					break;
-				case BPoint::BP_READ:
-					ZCons::Printf( "READ  from %04XH\n", addr&0xffff );
-					break;
-				case BPoint::BP_WRITE:
-					ZCons::Printf( "WRITE   to %04XH\n", addr&0xffff );
-					break;
-				case BPoint::BP_IN:
-					ZCons::Printf( "INPUT from %02XH\n", addr&0xff );
-					break;
-				case BPoint::BP_OUT:
-					ZCons::Printf( "OUTPUT  to %04XH\n", addr&0xff) ;
-					break;
-				default:
-					break;
+			if( el->vm->bp->GetNum() ){
+				for( int i=1; i<=el->vm->bp->GetNum(); i++ ){
+					ZCons::Printf( "    #%02d  ", i );
+					addr = el->vm->bp->GetAddr( i );
+					switch( el->vm->bp->GetType( i ) ){
+					case BPoint::BP_NONE:	ZCons::Printf( "-- なし --\n" );					break;
+					case BPoint::BP_PC:		ZCons::Printf( "PC   reach %04XH\n", addr&0xffff );	break;
+					case BPoint::BP_READ:	ZCons::Printf( "READ  from %04XH\n", addr&0xffff );	break;
+					case BPoint::BP_WRITE:	ZCons::Printf( "WRITE   to %04XH\n", addr&0xffff );	break;
+					case BPoint::BP_IN:		ZCons::Printf( "INPUT from %02XH\n", addr&0xff   );	break;
+					case BPoint::BP_OUT:	ZCons::Printf( "OUTPUT  to %04XH\n", addr&0xff   );	break;
+					default:																	break;
+					}
 				}
-			}
+			}else
+				ZCons::Printf( "ブレークポイントは設定されていません。\n" );
 		}else{
 			if( action == ARG_CLEAR ){
-				vm->BpSetType( number, BPoint::BP_NONE );
-				ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "ブレークポイント #%02d を消去します。\n"), number+1 );
+				el->vm->bp->Delete( number );
+				ZCons::Printf( "ブレークポイント #%02d を消去します。\n", number );
 			}else{
-				const char *s = NULL;
+				std::string s = "";
 				
 				switch( action ){
-				case ARG_PC:
-					vm->BpSetType( number, BPoint::BP_PC );
-					s = "PC : %04XH";
-					break;
-				case ARG_READ:
-					vm->BpSetType( number, BPoint::BP_READ );
-					s = "READ : %04XH";
-					break;
-				case ARG_WRITE:
-					vm->BpSetType( number, BPoint::BP_WRITE );
-					s = "WRITE : %04XH";
-					break;
-				case ARG_IN:
-					vm->BpSetType( number, BPoint::BP_IN );
-					s = "IN : %02XH";
-					break;
-				case ARG_OUT:
-					vm->BpSetType( number, BPoint::BP_OUT );
-					s = "OUT : %02XH";
-					break;
+				case ARG_PC:	el->vm->bp->Set( BPoint::BP_PC,    addr );	s = "PC : %04XH";		break;
+				case ARG_READ:	el->vm->bp->Set( BPoint::BP_READ,  addr );	s = "READ : %04XH";		break;
+				case ARG_WRITE:	el->vm->bp->Set( BPoint::BP_WRITE, addr );	s = "WRITE : %04XH";	break;
+				case ARG_IN:	el->vm->bp->Set( BPoint::BP_IN,    addr );	s = "IN : %02XH";		break;
+				case ARG_OUT:	el->vm->bp->Set( BPoint::BP_OUT,   addr );	s = "OUT : %02XH";		break;
+				default:																		break;
 				}
-				vm->BpSetAddr( number, addr );
-				ZCons::Printf( QT_TRANSLATE_NOOP("PC6001VX", "ブレークポイント #%02d を設定します。[ "),number+1 );
+				ZCons::Printf( "ブレークポイント #%02d を設定します。[ ", el->vm->bp->GetNum() );
 				ZCons::Printf( s, addr );
 				ZCons::Printf( " ]\n" );
 			}
@@ -992,17 +1289,17 @@ void cWndMon::Exec( int cmd )
 		break;
 	}
 	case MONITOR_READ:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  read <addr>
 	//  特定のアドレスをリード
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 		break;
 		
 	case MONITOR_WRITE:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  write <addr> <data>
 	//  特定のアドレスにライト
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	{
 		if( argv.Type == ARGV_END ) ErrorMes();
 		
@@ -1018,22 +1315,24 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->MemWrite( addr, data );
+		el->vm->mem->Write( addr, data );
 		
 		ZCons::Printf( "WRITE memory [ %04XH ] <- %02X  (= %d | %+d | ", addr, (BYTE)data, (BYTE)data, (int8_t)data );
 		int i,j;
-		for( i=0, j=0x80; i<8; i++, j>>=1 ) ZCons::Printf( "%d", (data & j) ? 1 : 0 );
+		for( i=0, j=0x80; i<8; i++, j>>=1 ){
+			ZCons::Printf( "%d", (data & j) ? 1 : 0 );
+		}
 		ZCons::Printf( "B )\n");
 		
 		break;
 	}
 	
 	case MONITOR_FILL:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  fill <start-addr> <end-addr> <value>
 	//  fill <start-addr> #<size> <value>
 	//  メモリを埋める
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	{
 		int start, size, value;
 		
@@ -1045,9 +1344,9 @@ void cWndMon::Exec( int cmd )
 		Shift();
 		
 		// [<addr|#size>]
-		if     ( ArgvIs( ARGV_SIZE ) ) size = argv.Val;
-		else if( ArgvIs( ARGV_ADDR ) ) size = argv.Val - start +1;
-		else                           ErrorMes();
+		if     ( ArgvIs( ARGV_SIZE ) ){ size = argv.Val; }
+		else if( ArgvIs( ARGV_ADDR ) ){ size = argv.Val - start +1; }
+		else                          { ErrorMes(); }
 		Shift();
 		
 		// <data>
@@ -1057,17 +1356,19 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		for( int i=0; i<size; i++ ) vm->MemWrite( start+i, value );
+		for( int i=0; i<size; i++ ){
+			el->vm->mem->Write( start+i, value );
+		}
 		
 		break;
 	}
 	
 	case MONITOR_MOVE:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  move <src-addr> <end-addr> <dist-addr>
 	//  move <src-addr> #size      <dist-addr>
 	//  メモリ転送
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	{
 		int start, size, dist;
 		
@@ -1079,9 +1380,9 @@ void cWndMon::Exec( int cmd )
 		Shift();
 		
 		// [<addr|#size>]
-		if     ( ArgvIs( ARGV_SIZE ) ) size = argv.Val;
-		else if( ArgvIs( ARGV_ADDR ) ) size = argv.Val - start +1;
-		else                           ErrorMes();
+		if     ( ArgvIs( ARGV_SIZE ) ){ size = argv.Val; }
+		else if( ArgvIs( ARGV_ADDR ) ){ size = argv.Val - start +1; }
+		else                          { ErrorMes(); }
 		Shift();
 		
 		// <addr>
@@ -1092,26 +1393,32 @@ void cWndMon::Exec( int cmd )
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		// 転送元-転送先が 重ならない
-		if( start+size <= dist ) for( int i=0; i<size; i++ )    vm->MemWrite( dist+i, vm->MemRead( start+i ) );
+		if( start+size <= dist ){
+			for( int i=0; i<size; i++ ){
+				el->vm->mem->Write( dist+i, el->vm->mem->Read( start+i ) );
+			}
 		// 転送元-転送先が 重なる
-		else                     for( int i=size-1; i>=0; i-- ) vm->MemWrite( dist+i, vm->MemRead( start+i ) );
-		
+		}else{
+			for( int i=size-1; i>=0; i-- ){
+				el->vm->mem->Write( dist+i, el->vm->mem->Read( start+i ) );
+			}
+		}
 		break;
 	}
 	
 	case MONITOR_SEARCH:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  search [<value> [<start-addr> <end-addr>]]
 	//  search [<value> [<start-addr> #<size>]]
 	//  特定の定数 (1バイト) をサーチ
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 		break;
 		
 	case MONITOR_OUT:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  out <port> <data>
 	//  特定のポートに出力
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	{
 		if( argv.Type == ARGV_END ) ErrorMes();
 		
@@ -1127,32 +1434,33 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->IomOut( port, data );
+		el->vm->iom->Out( port, data );
 		
 		ZCons::Printf( "OUT port [ %02XH ] <- %02X  (= %d | %+d | ", port, (BYTE)data, (BYTE)data, (int8_t)data );
 		int i,j;
-		for( i=0, j=0x80; i<8; i++, j>>=1 ) ZCons::Printf( "%d", (data & j) ? 1 : 0 );
+		for( i=0, j=0x80; i<8; i++, j>>=1 ){
+			ZCons::Printf( "%d", (data & j) ? 1 : 0 );
+		}
 		ZCons::Printf( "B )\n");
 		
 		break;
 	}
 		
 	case MONITOR_LOADMEM:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  loadmem <filename> <start-addr> <end-addr>
 	//  loadmem <filename> <start-addr> #<size>
 	// ファイルからメモリにロード
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	{
-		char *fname;
+		std::fstream fs;
 		int start,size;
-		FILE *fp;
 		
 		if( argv.Type == ARGV_END ) ErrorMes();
 		
 		// <filename>
 		if( !ArgvIs( ARGV_STR ) ) ErrorMes();
-		fname = argv.Str;
+		P6VPATH fname = STR2P6VPATH( argv.Str );
 		Shift();
 		
 		// <addr>
@@ -1161,45 +1469,45 @@ void cWndMon::Exec( int cmd )
 		Shift();
 		
 		// [<addr|#size>]
-		if     ( ArgvIs( ARGV_SIZE ) ) size = (argv.Val > 0xffff) ? 0xffff : argv.Val;
-		else if( ArgvIs( ARGV_ADDR ) ) size = (argv.Val < start ) ? (0x10000 | argv.Val) - start + 1 : argv.Val - start + 1;
-		else                           ErrorMes();
+		if     ( ArgvIs( ARGV_SIZE ) ){ size = (argv.Val > 0xffff) ? 0xffff : argv.Val; }
+		else if( ArgvIs( ARGV_ADDR ) ){ size = (argv.Val < start ) ? (0x10000 | argv.Val) - start + 1 : argv.Val - start + 1; }
+		else                          { ErrorMes(); }
 		Shift();
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		if( (fp=fopen( fname, "rb" )) != NULL ){
-			int addr = start;
-			for( int i=0; i<size; i++ ){
-				BYTE dat = fgetc( fp );
-				vm->MemWrite( (addr++)&0xffff, dat );
-			}
-			fclose( fp );
-			ZCons::Printf( " Loaded [%s] -> %d bytes\n", fname, addr-start );
-		}else{
-			ZCons::SetColor( FC_RED );
+		if( !OSD_FSopen( fs, fname, std::ios_base::in|std::ios_base::binary ) ){
+			ZCons::SetColor( FC_RED4 );
 			ZCons::Printf( "Failed : File open error\n" );
-			ZCons::SetColor( FC_WHITE );
+			ZCons::SetColor( FC_WHITE4 );
+			break;
 		}
+		
+		int addr = start;
+		for( int i=0; i<size; i++ ){
+			el->vm->mem->Write( (addr++)&0xffff, FSGETBYTE( fs ) );
+		}
+		fs.close();
+		
+		ZCons::Printf( " Loaded [%s] -> %d bytes\n", P6VPATH2STR( fname ).c_str(), addr-start );
 		break;
 	}
 		
 	case MONITOR_SAVEMEM:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  savemem <filename> <start-addr> <end-addr>
 	//  savemem <filename> <start-addr> #<size>
 	//  メモリをファイルにセーブ
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	{
-		char *fname;
+		std::fstream fs;
 		int start,size;
-		FILE *fp;
 		
 		if( argv.Type == ARGV_END ) ErrorMes();
 		
 		// <filename>
 		if( !ArgvIs( ARGV_STR ) ) ErrorMes();
-		fname = argv.Str;
+		P6VPATH fname = STR2P6VPATH( argv.Str );
 		Shift();
 		
 		// <addr>
@@ -1208,105 +1516,105 @@ void cWndMon::Exec( int cmd )
 		Shift();
 		
 		// [<addr|#size>]
-		if     ( ArgvIs( ARGV_SIZE ) ) size = (argv.Val > 0xffff) ? 0xffff : argv.Val;
-		else if( ArgvIs( ARGV_ADDR ) ) size = (argv.Val < start ) ? (0x10000 | argv.Val) - start + 1 : argv.Val - start + 1;
-		else                           ErrorMes();
+		if     ( ArgvIs( ARGV_SIZE ) ){ size = (argv.Val > 0xffff) ? 0xffff : argv.Val; }
+		else if( ArgvIs( ARGV_ADDR ) ){ size = (argv.Val < start ) ? (0x10000 | argv.Val) - start + 1 : argv.Val - start + 1; }
+		else                          { ErrorMes(); }
 		Shift();
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		if( (fp=fopen( fname, "wb" )) != NULL ){
-			int addr = start;
-			for( int i=0; i<size; i++ ){
-				if( fputc( vm->MemRead( (addr++)&0xffff ), fp ) == EOF ){
-					ZCons::SetColor( FC_RED );
-					ZCons::Printf( "Failed : Data write error\n" );
-					ZCons::SetColor( FC_WHITE );
-					break;
-				}
-			}
-			fclose( fp );
-			ZCons::Printf( " Saved [%s] -> %d bytes\n", fname, addr-start );
-		}else{
-			ZCons::SetColor( FC_RED );
+		if( !OSD_FSopen( fs, fname, std::ios_base::out|std::ios_base::binary|std::ios_base::trunc ) ){
+			ZCons::SetColor( FC_RED4 );
 			ZCons::Printf( "Failed : File open error\n" );
-			ZCons::SetColor( FC_WHITE );
+			ZCons::SetColor( FC_WHITE4 );
+			break;
 		}
+		
+		int addr = start;
+		for( int i=0; i<size; i++ ){
+			FSPUTBYTE( el->vm->mem->Read( (addr++)&0xffff ), fs );
+		}
+		fs.close();
+		
+		ZCons::Printf( " Saved [%s] -> %d bytes\n", P6VPATH2STR( fname ).c_str(), addr-start );
 		break;
 	}
 		
 	case MONITOR_RESET:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  reset
 	//	リセット
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 		if( argv.Type != ARGV_END ) ErrorMes();
-		vm->Reset();
+		el->vm->Reset();
 		
 		break;
 		
 	case MONITOR_REG:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  reg <name> <value>
 	//  レジスタの内容を変更
-	//--------------------------------------------------------------
-	{	int re = -1, val=0, i;
-		const char *str;
+	//-----------------------------------------------------------------------
+	{	int re = -1, val=0;
+		std::string str = "XX";
 		cZ80::Register reg;
 		
-		if( argv.Type != ARGV_END ){
-			if( !ArgvIs( ARGV_REG )) ErrorMes();		// <name>
-			re = argv.Val;
-			Shift();
-			if( !ArgvIs( ARGV_INT )) ErrorMes();		// <value>
-			val = argv.Val;
-			Shift();
-		}
+		if( argv.Type == ARGV_END ) ErrorMes();
+		
+		if( !ArgvIs( ARGV_REG ) ) ErrorMes();		// <name>
+		re = argv.Val;
+		Shift();
+		if( !ArgvIs( ARGV_INT ) ) ErrorMes();		// <value>
+		val = argv.Val;
+		Shift();
+		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->CpumGetRegister( &reg );
+		el->vm->cpum->GetRegister( &reg );
 		
 		switch( re ){
-		case ARG_AF:	reg.AF.W = val;		break;
-		case ARG_BC:	reg.BC.W = val;		break;
-		case ARG_DE:	reg.DE.W = val;		break;
-		case ARG_HL:	reg.HL.W = val;		break;
-		case ARG_IX:	reg.IX.W = val;		break;
-		case ARG_IY:	reg.IY.W = val;		break;
-		case ARG_SP:	reg.SP.W = val;		break;
-		case ARG_PC:	reg.PC.W = val;		break;
-		case ARG_AF1:	reg.AF1.W = val;	break;
-		case ARG_BC1:	reg.BC1.W = val;	break;
-		case ARG_DE1:	reg.DE1.W = val;	break;
-		case ARG_HL1:	reg.HL1.W = val;	break;
-		case ARG_I:		val &= 0xff; reg.I = val;		break;
-		case ARG_R:		val &= 0xff; reg.R = val;		break;
-		case ARG_IFF:	if(val)   val=1; reg.IFF  = val;	break;
-		case ARG_IM:	if(val>3) val=2; reg.IM   = val;	break;
-		case ARG_HALT:	if(val)   val=1; reg.Halt = val;	break;
+		case ARG_AF:	reg.AF.W  = val;		break;
+		case ARG_BC:	reg.BC.W  = val;		break;
+		case ARG_DE:	reg.DE.W  = val;		break;
+		case ARG_HL:	reg.HL.W  = val;		break;
+		case ARG_IX:	reg.IX.W  = val;		break;
+		case ARG_IY:	reg.IY.W  = val;		break;
+		case ARG_SP:	reg.SP.W  = val;		break;
+		case ARG_PC:	reg.PC.W  = val;		break;
+		case ARG_AF1:	reg.AF1.W = val;		break;
+		case ARG_BC1:	reg.BC1.W = val;		break;
+		case ARG_DE1:	reg.DE1.W = val;		break;
+		case ARG_HL1:	reg.HL1.W = val;		break;
+		case ARG_I:		val &= 0xff; reg.I = val;			break;
+		case ARG_R:		val &= 0xff; reg.R = val;			break;
+		case ARG_IFF:	if(val)  { val=1; reg.IFF  = val; }	break;
+		case ARG_IM:	if(val>3){ val=2; reg.IM   = val; }	break;
+		case ARG_HALT:	if(val)  { val=1; reg.Halt = val; }	break;
 		}
 		
-		vm->CpumSetRegister( &reg );
+		el->vm->cpum->SetRegister( &reg );
 		
-		for( i=0; i<COUNTOF( MonitorArgv ); i++ )
-			if( re == MonitorArgv[i].Val ) break;
-		if( i == COUNTOF( MonitorArgv ) ) str = "";
-		else                              str = MonitorArgv[i].StrU;
-		ZCons::Printf( "reg %s <- %04X\n", str, val );
+		for( auto &m : MonitorArgv ){
+			if( re == m.Val ){
+				str = m.Str;
+				break;
+			}
+		}
+		ZCons::Printf( "reg %s <- %04X\n", str.c_str(), val );
 		
 		break;
 	}
 		
 	case MONITOR_DISASM:
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	//  disasm [[<start-addr>][#<steps>]]
 	//  逆アセンブル
-	//--------------------------------------------------------------
+	//-----------------------------------------------------------------------
 	{	static int SaveDisasmAddr = -1;
 		int i, pc;
 		int addr = SaveDisasmAddr;
 		int step = 16;
-		char DisCode[128];
+		std::string DisCode;
 		cZ80::Register reg;
 		
 		if( argv.Type != ARGV_END ){
@@ -1321,13 +1629,15 @@ void cWndMon::Exec( int cmd )
 		}
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		vm->CpumGetRegister( &reg );
-		if( addr == -1 ) addr = reg.PC.W;	// ADDR 未指定時
+		el->vm->cpum->GetRegister( &reg );
+		if( addr == -1 ){
+			addr = reg.PC.W;	// ADDR 未指定時
+		}
 		
 		pc = 0;
 		for( i=0; i<step; i++ ){
-			pc += vm->CpumDisasm( DisCode, (WORD)(addr+pc) );
-			ZCons::Printf( "%s\n", DisCode );
+			pc += el->vm->cpum->Disasm( DisCode, (WORD)(addr+pc) );
+			ZCons::Printf( "%s\n", DisCode.c_str() );
 		}
 		SaveDisasmAddr = ( addr + pc ) & 0xffff;
 		break;
@@ -1337,46 +1647,39 @@ void cWndMon::Exec( int cmd )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ヘルプ表示
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cWndMon::Help( int cmd )
 {
 	switch( cmd ){
 	case MONITOR_HELP:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
 			"  help [<cmd>]\n"
 			"    ヘルプを表示します\n"
 			"    <cmd> ... ヘルプを表示したいコマンド\n"
 			"              [omit]... 全コマンドの簡易ヘルプを表示\n"
-			)
 		);
 		break;
 		
 	case MONITOR_GO:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
 			"  go\n"
 			"    プログラムを実行します\n"
-			)
 		);
 		break;
 		
 	case MONITOR_TRACE:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
 			"  trace [#<steps>|<steps>]\n"
 			"    execute program specityes times\n"
 			"    [all omit]        ... trace some steps (previous steps)\n"
 			"    #<steps>, <steps> ... step counts of trace  ( you can omit '#' )\n"
-			)
 		);
 		break;
 		
 	case MONITOR_STEP:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
 			"  step [call][jp][rep]\n"
 			"    execute program 1 time\n"
 			"    [all omit] ... execute 1 step\n"
@@ -1385,23 +1688,19 @@ void cWndMon::Help( int cmd )
 			"    rep        ... not trace LD*R/CP*R/IN*R/OT*R instruction\n"
 			"    CAUTION)\n"
 			"         call/jp/rep are use break-point #10.\n"
-			)
 		);
 		break;
 		
 	case MONITOR_STEPALL:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
 			"  S\n"
 			"    'step all' と同じ   (stepを参照)\n"
-			)
 		);
 		break;
 		
 	case MONITOR_BREAK:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
-			"  break [<action>] <addr|port> [#<No>]\n"
+			"  break [<action>] <addr|port>\n"
 			"  break CLEAR [#<No>]\n"
 			"  break\n"
 			"    ブレークポイントを設定します\n"
@@ -1416,36 +1715,30 @@ void cWndMon::Help( int cmd )
 			"                    [omit]... select PC\n"
 			"    <addr|port> ... specify address or port\n"
 			"                    if <action> is CLEAR, this argument is invalid\n"
-			"    #<No>       ... number of break point. (#1..#10)\n"
+			"    #<No>       ... number of break point.\n"
 			"                    [omit]... select #1\n"
-			"                    CAUTION).. #10 is used by system\n"
-			)
 		);
 		break;
 		
 	case MONITOR_READ:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
 			"  read <addr>\n"
 			"    メモリを読込みます\n"
 			"    <addr> ... 指定アドレス\n"
-			)
 		);
+		break;
 		
 	case MONITOR_WRITE:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
 			"  write <addr> <data>\n"
 			"    メモリに書込みます\n"
 			"    <addr> ... 指定アドレス\n"
 			"    <data> ... 書込むデータ\n"
-			)
 		);
 		break;
 		
 	case MONITOR_FILL:
 		ZCons::Printf(
-			QT_TRANSLATE_NOOP("PC6001VX",
 			"  fill <start-addr> <end-addr> <value>\n"
 			"  fill <start-addr> #<size>    <value>\n"
 			"    メモリを指定値で埋めます\n"
@@ -1453,202 +1746,97 @@ void cWndMon::Help( int cmd )
 			"    <end-addr>   ... 終了アドレス\n"
 			"    #<size>      ... サイズ\n"
 			"    <value>      ... 書込む値\n"
-			)
 		);
 		break;
 		
 	case MONITOR_MOVE:
 		ZCons::Printf(
-					QT_TRANSLATE_NOOP("PC6001VX",
-									  "  move <src-addr> <end-addr> <dist-addr>\n"
-									  "  move <src-addr> #<size>    <dist-addr>\n"
-									  "    メモリを転送します\n"
-									  "    <src-addr>  ... 転送元開始アドレス\n"
-									  "    <end-addr>  ... 転送元終了アドレス\n"
-									  "    #<size>     ... 転送サイズ\n"
-									  "    <dist-addr> ... 転送先アドレス\n"
-									  )
-					);
+			"  move <src-addr> <end-addr> <dist-addr>\n"
+			"  move <src-addr> #<size>    <dist-addr>\n"
+			"    メモリを転送します\n"
+			"    <src-addr>  ... 転送元開始アドレス\n"
+			"    <end-addr>  ... 転送元終了アドレス\n"
+			"    #<size>     ... 転送サイズ\n"
+			"    <dist-addr> ... 転送先アドレス\n"
+		);
 		break;
 		
 	case MONITOR_SEARCH:
 		ZCons::Printf(
-					QT_TRANSLATE_NOOP("PC6001VX",
-									  "  search [<value> [<start-addr> <end-addr>]]\n"
-									  "  search [<value> [<start-addr> #<size>]]\n"
-									  "    メモリを検索します\n"
-									  "    <value>      ... 検索値\n"
-									  "    <start-addr> ... 検索開始アドレス\n"
-									  "    <end-addr>   ... 検索終了アドレス\n"
-									  "    #<size>      ... 検索サイズ\n"
-									  "    [omit-all]   ... 前回の値または文字列を検索\n"
-									  )
-					);
+			"  search [<value> [<start-addr> <end-addr>]]\n"
+			"  search [<value> [<start-addr> #<size>]]\n"
+			"    メモリを検索します\n"
+			"    <value>      ... 検索値\n"
+			"    <start-addr> ... 検索開始アドレス\n"
+			"    <end-addr>   ... 検索終了アドレス\n"
+			"    #<size>      ... 検索サイズ\n"
+			"    [omit-all]   ... 前回の値または文字列を検索\n"
+		);
 		break;
 		
 	case MONITOR_OUT:
 		ZCons::Printf(
-					QT_TRANSLATE_NOOP("PC6001VX",
-									  "  out <port> <data>\n"
-									  "    I/Oポートに出力します\n"
-									  "    <port> ... I/Oポートアドレス\n"
-									  "    <data> ... 出力データ\n"
-									  )
-					);
+			"  out <port> <data>\n"
+			"    I/Oポートに出力します\n"
+			"    <port> ... I/Oポートアドレス\n"
+			"    <data> ... 出力データ\n"
+		);
 		break;
 		
 	case MONITOR_LOADMEM:
 		ZCons::Printf(
-					QT_TRANSLATE_NOOP("PC6001VX",
-									  "  loadmem <filename> <start-addr> <end-addr>\n"
-									  "  loadmem <filename> <start-addr> #<size>\n"
-									  "    ファイルからメモリにロードします\n"
-									  "    <filename>   ... ファイル名\n"
-									  "    <start-addr> ... ロード開始アドレス\n"
-									  "    <end-addr>   ... ロード終了アドレス\n"
-									  "    #<size>      ... ロードサイズ\n"
-									  )
-					);
+			"  loadmem <filename> <start-addr> <end-addr>\n"
+			"  loadmem <filename> <start-addr> #<size>\n"
+			"    ファイルからメモリにロードします\n"
+			"    <filename>   ... ファイル名\n"
+			"    <start-addr> ... ロード開始アドレス\n"
+			"    <end-addr>   ... ロード終了アドレス\n"
+			"    #<size>      ... ロードサイズ\n"
+		);
 		break;
 		
 	case MONITOR_SAVEMEM:
 		ZCons::Printf(
-					QT_TRANSLATE_NOOP("PC6001VX",
-									  "  savemem <filename> <start-addr> <end-addr>\n"
-									  "  savemem <filename> <start-addr> #<size>\n"
-									  "    メモリイメージをファイルにセーブします\n"
-									  "    <filename>   ... ファイル名\n"
-									  "    <start-addr> ... セーブ開始アドレス\n"
-									  "    <end-addr>   ... セーブ終了アドレス\n"
-									  "    #<size>      ... セーブサイズ\n"
-									  )
-					);
+			"  savemem <filename> <start-addr> <end-addr>\n"
+			"  savemem <filename> <start-addr> #<size>\n"
+			"    メモリイメージをファイルにセーブします\n"
+			"    <filename>   ... ファイル名\n"
+			"    <start-addr> ... セーブ開始アドレス\n"
+			"    <end-addr>   ... セーブ終了アドレス\n"
+			"    #<size>      ... セーブサイズ\n"
+		);
 		break;
 		
 	case MONITOR_RESET:
 		ZCons::Printf(
-					QT_TRANSLATE_NOOP("PC6001VX",
-									  "  reset\n"
-									  "    PC6001Vをリセットし，アドレス 0000H から実行します\n"
-									  )
-					);
+			"  reset\n"
+			"    PC6001Vをリセットし，アドレス 0000H から実行します\n"
+		);
 		break;
 		
 	case MONITOR_REG:
 		ZCons::Printf(
-					QT_TRANSLATE_NOOP("PC6001VX",
-									  "  reg <name> <value>\n"
-									  "    レジスタの値を参照，設定します\n"
-									  "    <name>     ... specity register name.\n"
-									  "                   AF|BC|DE|HL|AF'|BC'|DE'|HL'|IX|IY|SP|PC|I|R|IFF|IM\n"
-									  "    <value>    ... set value\n"
-									  )
-					);
+			"  reg <name> <value>\n"
+			"    レジスタの値を参照，設定します\n"
+			"    <name>     ... specity register name.\n"
+			"                   AF|BC|DE|HL|AF'|BC'|DE'|HL'|IX|IY|SP|PC|I|R|IFF|IM\n"
+			"    <value>    ... set value\n"
+		);
 		break;
 		
 	case MONITOR_DISASM:
 		ZCons::Printf(
-					QT_TRANSLATE_NOOP("PC6001VX",
-									  "  disasm [[<start-addr>][#<steps>]]\n"
-									  "    逆アセンブルします\n"
-									  "    [all omit]   ... PCレジスタアドレスから16ステップ分を逆アセンブル\n"
-									  "    <start-addr> ... start-addr から逆アセンブルします\n"
-									  "                     [omit]... PCレジスタアドレス\n"
-									  "    #<steps>     ... 逆アセンブルするステップ数\n"
-									  "                     [omit]... 16ステップ\n"
-									  )
-					);
+			"  disasm [[<start-addr>][#<steps>]]\n"
+			"    逆アセンブルします\n"
+			"    [all omit]   ... PCレジスタアドレスから16ステップ分を逆アセンブル\n"
+			"    <start-addr> ... start-addr から逆アセンブルします\n"
+			"                     [omit]... PCレジスタアドレス\n"
+			"    #<steps>     ... 逆アセンブルするステップ数\n"
+			"                     [omit]... 16ステップ\n"
+		);
 		break;
 		
 	}
 }
 
-
-
-
-
-
-
-//------------------------------------------------------
-//  モニタモードクラス
-//------------------------------------------------------
-
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-Monitor::Monitor( VM6 *vm ) : vm(vm)
-{
-	for( int i=0; i<COUNTOF(dcn); i++ )
-		dcn[i] = NULL;
-}
-
-
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
-Monitor::~Monitor( void )
-{
-	for( int i=0; i<COUNTOF(dcn); i++ )
-		if( dcn[i] ) delete dcn[i];
-}
-
-
-////////////////////////////////////////////////////////////////
-// 初期化
-////////////////////////////////////////////////////////////////
-bool Monitor::Init( void )
-{
-	dcn[0] = new cWndMon( vm, DEV_ID("MONW") );	// モニタウィンドウ
-	dcn[1] = new cWndReg( vm, DEV_ID("REGW") );	// レジスタウィンドウ
-	dcn[2] = new cWndMem( vm, DEV_ID("MEMW") );	// メモリウィンドウ
-	
-	for( int i=0; i<COUNTOF(dcn); i++ )
-		if( !(dcn[i] && dcn[i]->Init()) ) return false;
-	
-	// 位置合わせ
-	dcn[0]->SetX( 0 );								dcn[0]->SetY( SCRWINH/12 );
-	dcn[1]->SetX( dcn[0]->X() + dcn[0]->Width());	dcn[1]->SetY( 0 );
-	dcn[2]->SetX( dcn[1]->X() );					dcn[2]->SetY( dcn[1]->Y() + dcn[1]->Height() );
-	return true;
-}
-
-
-////////////////////////////////////////////////////////////////
-// ウィンドウ更新
-////////////////////////////////////////////////////////////////
-void Monitor::Update( void )
-{
-	for( int i=0; i<COUNTOF(dcn); i++ )
-		dcn[i]->Update();
-}
-
-
-////////////////////////////////////////////////////////////////
-// モニタモード ウィンドウ幅取得
-////////////////////////////////////////////////////////////////
-int Monitor::Width( void )
-{
-	int ww = 0;
-	for( int i=0; i<COUNTOF(dcn); i++ )
-		ww = max( ww, dcn[i]->X() + dcn[i]->Width() );
-	
-	return ww;
-}
-
-
-////////////////////////////////////////////////////////////////
-// モニタモード ウィンドウ高さ取得
-////////////////////////////////////////////////////////////////
-int Monitor::Height( void )
-{
-	int hh = 0;
-	for( int i=0; i<COUNTOF(dcn); i++ )
-		hh = max( hh, dcn[i]->Y() + dcn[i]->Height() );
-	
-	return hh;
-}
-
-
-
-
-#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

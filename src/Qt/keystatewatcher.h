@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <memory>
 
 class KEY6;
 
@@ -11,7 +12,7 @@ class KeyStateWatcher : public QObject
 {
 	Q_OBJECT
 public:
-	explicit KeyStateWatcher(KEY6* key, QObject *parent = nullptr);
+	explicit KeyStateWatcher(std::shared_ptr<KEY6> key, QObject *parent = nullptr);
 
 signals:
 	void stateChanged(
@@ -40,7 +41,7 @@ protected slots:
 	void poll();
 
 protected:
-	KEY6* Key;	// 監視対象のキーボード
+	std::shared_ptr<KEY6> Key;	// 監視対象のキーボード
 
 	bool ON_SHIFT;	// SHIFT
 	bool ON_CTRL;	// CTRL

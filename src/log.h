@@ -1,3 +1,7 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef LOG_H_INCLUDED
 #define LOG_H_INCLUDED
 
@@ -35,11 +39,8 @@
 
 #include <stdio.h>
 #define PRINTD(m,...)	{ if( m ){ fprintf( stdout, __VA_ARGS__ );	fflush( stdout ); } }
-
 #else
-
 #define PRINTD(m,...)
-
 #endif
 
 

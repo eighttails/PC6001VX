@@ -3,7 +3,9 @@
 #ifndef NOSOUND
 #include <QObject>
 #include <QPointer>
+#include <QTimer>
 #include <QAudioOutput>
+#include "typedef.h"
 
 // QAudioOutputのラッパークラス。
 // P6Vのコードではサウンド制御が複数のスレッドから呼ばれるが、
@@ -14,22 +16,31 @@ class AudioOutputWrapper : public QObject
 	Q_OBJECT
 public:
 	explicit AudioOutputWrapper(const QAudioDeviceInfo& info,
-								const QAudioFormat& format, QObject* parent = NULL)
-		: QObject(parent)
-		, AudioOutput(new QAudioOutput(info, format, this)) {}
+								const QAudioFormat& format,
+								CBF_SND cbFunc,
+								void* cbData,
+								int samples,
+								QObject* parent = nullptr);
+	virtual ~AudioOutputWrapper();
 
 public slots:
 	// 下記のメソッドはinvokeMethodから呼ぶこと。
-	QPointer<QIODevice> start() { return AudioOutput->start(); }
-	void suspend() { AudioOutput->suspend(); }
-	void resume() { AudioOutput->resume(); }
-	void stop() { AudioOutput->stop(); }
+	void start();
+	void suspend();
+	void resume();
+	void stop();
 
 public:
-	QAudio::State state() const { return AudioOutput->state(); }
+	QAudio::State state() const;
 
+protected slots:
+	void pullAudioData();
 private:
 	QAudioOutput* AudioOutput;
+	QPointer<QIODevice> AudioBuffer;
+	CBF_SND CbFunc;
+	void* CbData;
+	QTimer PollingTimer;
 };
 #endif // NOSOUND
 #endif // AUDIOOUTPUTWRAPPER_H

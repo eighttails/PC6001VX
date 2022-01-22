@@ -1,8 +1,9 @@
-////////////////////////////////////////////////////////////////////
-//  ay8910.cpp
-////////////////////////////////////////////////////////////////////
-#include "../log.h"
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #include "ay8910.h"
+#include "log.h"
 
 
 #define MAX_OUTPUT	(0x7fff)
@@ -27,9 +28,9 @@
 #define AY_PORTB	(15)
 
 
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
 cAY8910::cAY8910( void )
 #ifdef USEFMGEN
 {}
@@ -49,21 +50,21 @@ cAY8910::cAY8910( void )
 #endif
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
 cAY8910::~cAY8910( void ){}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クロック設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cAY8910::SetClock( int clock, int rate )
 {
 	PRINTD( PSG_LOG, "[PSG][SetClock] clock:%d SampleRate:%d\n", clock, rate );
 	
 #ifdef USEFMGEN
-	psg.SetClock( clock/2, rate );
+	PSG::SetClock( clock/2, rate );
 #else
 	// the step clock for the tone and noise generators is the chip clock
 	// divided by 8; for the envelope generator of the AY-3-8910, it is half
@@ -78,17 +79,17 @@ void cAY8910::SetClock( int clock, int rate )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 音量設定(ボリュームテーブル設定)
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cAY8910::SetVolumeTable( int vol )
 {
 	PRINTD( PSG_LOG, "[PSG][SetVolumeTable] %d\n", vol );
 	
 #ifdef USEFMGEN
 	// とりあえず
-	psg.SetVolume( 0 );
-//	psg.SetVolume( vol );
+	PSG::SetVolume( 0 );
+//	PSG::SetVolume( vol );
 #else
 	double out = (MAX_OUTPUT * min( max( vol, 0 ), 100 ) ) / 100;
 	
@@ -101,9 +102,22 @@ void cAY8910::SetVolumeTable( int vol )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// 初期化
+/////////////////////////////////////////////////////////////////////////////
+bool cAY8910::InitMod( int clock, int rate )
+{
+	PRINTD( PSG_LOG, "[PSG][InitMod] clock:%d SampleRate:%d\n", clock, rate );
+	
+	SetClock( clock, rate );
+	Reset();
+	return true;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // リセット
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cAY8910::Reset( void )
 {
 	PRINTD( PSG_LOG, "[PSG][Reset]\n" );
@@ -111,7 +125,7 @@ void cAY8910::Reset( void )
 	RegisterLatch = 0;
 	LastEnable    = 0xff;
 #ifdef USEFMGEN
-	psg.Reset();
+	PSG::Reset();
 #else
 	RNG = 1;
 	OutputA = 0;
@@ -123,24 +137,24 @@ void cAY8910::Reset( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // レジスタ書込み
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // レジスタ書込みサブ
 void cAY8910::_WriteReg( BYTE r, BYTE v )
 {
 #ifdef USEFMGEN
-	psg.SetReg( r, v );
+	PSG::SetReg( r, v );
 	
 	switch( r ){
 	case AY_ENABLE:
 		if( (LastEnable == 0xff) || ((LastEnable & 0x40) != (v & 0x40)) ){
 			// write out 0xff if port set to input
-			PortAwrite( (v & 0x40) ? psg.GetReg(AY_PORTA) : 0xff );
+			PortAwrite( (v & 0x40) ? PSG::GetReg(AY_PORTA) : 0xff );
 		}
 		if( (LastEnable == 0xff) || ((LastEnable & 0x80) != (v & 0x80)) ){
 			// write out 0xff if port set to input
-			PortBwrite( (v & 0x80) ? psg.GetReg(AY_PORTB) : 0xff );
+			PortBwrite( (v & 0x80) ? PSG::GetReg(AY_PORTB) : 0xff );
 		}
 		LastEnable = v;
 		break;
@@ -148,14 +162,14 @@ void cAY8910::_WriteReg( BYTE r, BYTE v )
 	case AY_PORTA:
 		// 暫定措置
 		// 実機ではポートがinput設定でも書込みできるようだ??
-		if( psg.GetReg(AY_ENABLE) & 0x40 )
+		if( PSG::GetReg(AY_ENABLE) & 0x40 )
 			PortAwrite( v );
 		break;
 		
 	case AY_PORTB:
 		// 暫定措置
 		// 実機ではポートがinput設定でも書込みできるようだ??
-		if( psg.GetReg(AY_ENABLE) & 0x80 )
+		if( PSG::GetReg(AY_ENABLE) & 0x80 )
 			PortBwrite( v );
 		break;
 	}
@@ -277,7 +291,7 @@ void cAY8910::WriteReg( BYTE addr, BYTE v )
 		
 		if( RegisterLatch > 15 ) return;
 #ifdef USEFMGEN
-		if( RegisterLatch == AY_ESHAPE || psg.GetReg( RegisterLatch ) != v ){
+		if( RegisterLatch == AY_ESHAPE || PSG::GetReg( RegisterLatch ) != v ){
 #else
 		if( RegisterLatch == AY_ESHAPE || Regs[RegisterLatch]         != v ){
 #endif
@@ -293,9 +307,9 @@ void cAY8910::WriteReg( BYTE addr, BYTE v )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // レジスタ読込み
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 BYTE cAY8910::ReadReg( void )
 {
 	PRINTD( PSG_LOG, "[PSG][ReadReg] -> %02X ", RegisterLatch );
@@ -308,17 +322,17 @@ BYTE cAY8910::ReadReg( void )
 #ifdef USEFMGEN
 	switch( RegisterLatch ){
 	case AY_PORTA:
-//		if( !(psg.GetReg(AY_ENABLE) & 0x40) )
-			psg.SetReg( AY_PORTA, PortAread() );
+//		if( !(PSG::GetReg(AY_ENABLE) & 0x40) )
+			PSG::SetReg( AY_PORTA, PortAread() );
 		break;
 		
 	case AY_PORTB:
-//		if( !(psg.GetReg(AY_ENABLE) & 0x80) )
-			psg.SetReg( AY_PORTB, PortBread() );
+//		if( !(PSG::GetReg(AY_ENABLE) & 0x80) )
+			PSG::SetReg( AY_PORTB, PortBread() );
 		break;
 	}
-	PRINTD( PSG_LOG, "%02X\n", psg.GetReg( RegisterLatch ) );
-	return psg.GetReg( RegisterLatch );
+	PRINTD( PSG_LOG, "%02X\n", PSG::GetReg( RegisterLatch ) );
+	return PSG::GetReg( RegisterLatch );
 #else
 	switch( RegisterLatch ){
 	case AY_PORTA:
@@ -337,12 +351,12 @@ BYTE cAY8910::ReadReg( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ストリーム1Sample更新
 //
 // 引数:	なし
 // 返値:	int		更新サンプル
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 int cAY8910::Update1Sample( void )
 {
 	PRINTD( PSG_LOG, "[PSG][Update1Sample]\n" );
@@ -350,7 +364,7 @@ int cAY8910::Update1Sample( void )
 #ifdef USEFMGEN
 	PSG::Sample sbuf[2] = { 0, 0 };
 	
-	psg.Mix( sbuf, 1 );
+	PSG::Mix( sbuf, 1 );
 	
 	return sbuf[0];
 #else
@@ -517,168 +531,3 @@ int cAY8910::Update1Sample( void )
 #endif
 }
 
-
-////////////////////////////////////////////////////////////////
-// どこでもSAVE
-//
-// 引数:	Ini		INIオブジェクトポインタ
-// 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool cAY8910::DokoSave( cIni *Ini )
-{
-	if( !Ini ) return false;
-	
-	Ini->PutEntry( "PSG", NULL, "RegisterLatch",	"0x%02X",	RegisterLatch );
-	Ini->PutEntry( "PSG", NULL, "LastEnable",		"0x%02X",	LastEnable );
-
-#ifdef USEFMGEN
-/*
-	for( int i=0; i<16; i++ ){
-		char stren[16];
-		sprintf( stren, "reg_%02d", i );
-		Ini->PutEntry( "PSG", NULL, stren, "0x%02X", reg[i] );
-	}
-	
-	Ini->PutEntry( "PSG", NULL, "envelop",			"%d",		(envelop - enveloptable)/64 );
-	
-	for( int i=0; i<3; i++ ){
-		char stren[16];
-		sprintf( stren, "olevel_%02d", i );
-		Ini->PutEntry( "PSG", NULL, stren, "%d", olevel[i] );
-		sprintf( stren, "scount_%02d", i );
-		Ini->PutEntry( "PSG", NULL, stren, "0x%08X", scount[i] );
-		sprintf( stren, "speriod_%02d", i );
-		Ini->PutEntry( "PSG", NULL, stren, "0x%08X", speriod[i] );
-	}
-	Ini->PutEntry( "PSG", NULL, "ecount",			"0x%08X",	ecount );
-	Ini->PutEntry( "PSG", NULL, "eperiod",			"0x%08X",	eperiod );
-	Ini->PutEntry( "PSG", NULL, "ncount",			"0x%08X",	ncount );
-	Ini->PutEntry( "PSG", NULL, "nperiod",			"0x%08X",	nperiod );
-	
-	Ini->PutEntry( "PSG", NULL, "tperiodbase",		"0x%08X",	tperiodbase );
-	Ini->PutEntry( "PSG", NULL, "eperiodbase",		"0x%08X",	eperiodbase );
-	Ini->PutEntry( "PSG", NULL, "nperiodbase",		"0x%08X",	nperiodbase );
-	
-	Ini->PutEntry( "PSG", NULL, "mask",				"%d",		mask );
-*/
-#else
-	for( int i=0; i<16; i++ ){
-		char stren[16];
-		sprintf( stren, "Regs_%02d", i );
-		Ini->PutEntry( "PSG", NULL, stren, "0x%02X", Regs[i] );
-	}
-	Ini->PutEntry( "PSG", NULL, "PeriodA",		"%d",		PeriodA );
-	Ini->PutEntry( "PSG", NULL, "PeriodB",		"%d",		PeriodB );
-	Ini->PutEntry( "PSG", NULL, "PeriodC",		"%d",		PeriodC );
-	Ini->PutEntry( "PSG", NULL, "PeriodN",		"%d",		PeriodN );
-	Ini->PutEntry( "PSG", NULL, "PeriodE",		"%d",		PeriodE );
-	Ini->PutEntry( "PSG", NULL, "CountA",		"%d",		CountA );
-	Ini->PutEntry( "PSG", NULL, "CountB",		"%d",		CountB );
-	Ini->PutEntry( "PSG", NULL, "CountC",		"%d",		CountC );
-	Ini->PutEntry( "PSG", NULL, "CountN",		"%d",		CountN );
-	Ini->PutEntry( "PSG", NULL, "CountE",		"%d",		CountE );
-	Ini->PutEntry( "PSG", NULL, "VolA",			"%d",		VolA );
-	Ini->PutEntry( "PSG", NULL, "VolB",			"%d",		VolB );
-	Ini->PutEntry( "PSG", NULL, "VolC",			"%d",		VolC );
-	Ini->PutEntry( "PSG", NULL, "VolE",			"%d",		VolE );
-	Ini->PutEntry( "PSG", NULL, "EnvelopeA",	"0x%02X",	EnvelopeA );
-	Ini->PutEntry( "PSG", NULL, "EnvelopeB",	"0x%02X",	EnvelopeB );
-	Ini->PutEntry( "PSG", NULL, "EnvelopeC",	"0x%02X",	EnvelopeC );
-	Ini->PutEntry( "PSG", NULL, "OutputA",		"0x%02X",	OutputA );
-	Ini->PutEntry( "PSG", NULL, "OutputB",		"0x%02X",	OutputB );
-	Ini->PutEntry( "PSG", NULL, "OutputC",		"0x%02X",	OutputC );
-	Ini->PutEntry( "PSG", NULL, "OutputN",		"0x%02X",	OutputN );
-	Ini->PutEntry( "PSG", NULL, "CountEnv",		"%d",		CountEnv );
-	Ini->PutEntry( "PSG", NULL, "Hold",			"0x%02X",	Hold );
-	Ini->PutEntry( "PSG", NULL, "Alternate",	"0x%02X",	Alternate );
-	Ini->PutEntry( "PSG", NULL, "Attack",		"0x%02X",	Attack );
-	Ini->PutEntry( "PSG", NULL, "Holding",		"0x%02X",	Holding );
-	Ini->PutEntry( "PSG", NULL, "RNG",			"%d",		RNG );
-#endif
-	
-	return true;
-}
-
-
-////////////////////////////////////////////////////////////////
-// どこでもLOAD
-//
-// 引数:	Ini		INIオブジェクトポインタ
-// 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool cAY8910::DokoLoad( cIni *Ini )
-{
-	int st;
-	
-	if( !Ini ) return false;
-	
-	Ini->GetInt( "PSG", "RegisterLatch",	&st,	RegisterLatch );	RegisterLatch = st;
-	Ini->GetInt( "PSG", "LastEnable",		&st,	LastEnable );		LastEnable = st;
-
-#ifdef USEFMGEN
-/*
-	for( int i=0; i<16; i++ ){
-		char stren[16];
-		sprintf( stren, "reg_%02d", i );
-		Ini->GetInt( "PSG", stren, &st, reg[i] );	reg[i] = st;
-	}
-	
-	Ini->GetInt( "PSG", "envelop",		&st,	(envelop - enveloptable)/64 );	envelop = enveloptable[st];
-	
-	for( int i=0; i<3; i++ ){
-		char stren[16];
-		sprintf( stren, "olevel_%02d", i );
-		Ini->GetInt( "PSG", stren, &st, olevel[i] );	olevel[i] = st;
-		sprintf( stren, "scount_%02d", i );
-		Ini->GetInt( "PSG", stren, &st, scount[i] );	scount[i] = st;
-		sprintf( stren, "speriod_%02d", i );
-		Ini->GetInt( "PSG", stren, &st, speriod[i] );	speriod[i] = st;
-	}
-	
-	Ini->GetInt( "PSG", "ecount",		&st,	ecount );		ecount  = st;
-	Ini->GetInt( "PSG", "eperiod",		&st,	eperiod );		eperiod = st;
-	Ini->GetInt( "PSG", "ncount",		&st,	ncount );		ncount  = st;
-	Ini->GetInt( "PSG", "nperiod",		&st,	nperiod );		nperiod = st;
-	Ini->GetInt( "PSG", "tperiodbase",	&st,	tperiodbase );	tperiodbase = st;
-	Ini->GetInt( "PSG", "eperiodbase",	&st,	eperiodbase );	eperiodbase = st;
-	Ini->GetInt( "PSG", "nperiodbase",	&st,	nperiodbase );	nperiodbase = st;
-	
-	Ini->GetInt( "PSG", "mask",			&mask,	mask );
-*/
-#else
-	for( int i=0; i<16; i++ ){
-		char stren[16];
-		sprintf( stren, "Regs_%02d", i );
-		Ini->GetInt( "PSG", stren, &st, Regs[i] );	Regs[i] = st;
-	}
-	Ini->GetInt( "PSG", "PeriodA",		&PeriodA,		PeriodA );
-	Ini->GetInt( "PSG", "PeriodB",		&PeriodB,		PeriodB );
-	Ini->GetInt( "PSG", "PeriodC",		&PeriodC,		PeriodC );
-	Ini->GetInt( "PSG", "PeriodN",		&PeriodN,		PeriodN );
-	Ini->GetInt( "PSG", "PeriodE",		&PeriodE,		PeriodE );
-	Ini->GetInt( "PSG", "CountA",		&CountA,		CountA );
-	Ini->GetInt( "PSG", "CountB",		&CountB,		CountB );
-	Ini->GetInt( "PSG", "CountC",		&CountC,		CountC );
-	Ini->GetInt( "PSG", "CountN",		&CountN,		CountN );
-	Ini->GetInt( "PSG", "CountE",		&CountE,		CountE );
-	Ini->GetInt( "PSG", "VolA",			&VolA,			VolA );
-	Ini->GetInt( "PSG", "VolB",			&VolB,			VolB );
-	Ini->GetInt( "PSG", "VolC",			&VolC,			VolC );
-	Ini->GetInt( "PSG", "VolE",			&VolE,			VolE );
-	Ini->GetInt( "PSG", "EnvelopeA",	&st,			EnvelopeA );	EnvelopeA = st;
-	Ini->GetInt( "PSG", "EnvelopeB",	&st,			EnvelopeB );	EnvelopeB = st;
-	Ini->GetInt( "PSG", "EnvelopeC",	&st,			EnvelopeC );	EnvelopeC = st;
-	Ini->GetInt( "PSG", "OutputA",		&st,			OutputA );		OutputA = st;
-	Ini->GetInt( "PSG", "OutputB",		&st,			OutputB );		OutputB = st;
-	Ini->GetInt( "PSG", "OutputC",		&st,			OutputC );		OutputC = st;
-	Ini->GetInt( "PSG", "OutputN",		&st,			OutputN );		OutputN = st;
-	Ini->GetInt( "PSG", "CountEnv",		&st,			CountEnv );		CountEnv = st;
-	Ini->GetInt( "PSG", "Hold",			&st,			Hold );			Hold = st;
-	Ini->GetInt( "PSG", "Alternate",	&st,			Alternate );	Alternate = st;
-	Ini->GetInt( "PSG", "Attack",		&st,			Attack );		Attack = st;
-	Ini->GetInt( "PSG", "Holding",		&st,			Holding );		Holding = st;
-	Ini->GetInt( "PSG", "RNG",			&RNG,			RNG );
-#endif
-	
-	return true;
-}

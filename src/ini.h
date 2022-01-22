@@ -1,74 +1,100 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef INI_H_INCLUDED
 #define INI_H_INCLUDED
 
+#include <string>
+#include <list>
+
 #include "typedef.h"
+#include "common.h"
+#include "osd.h"
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class cNode {
 public:
 	enum NodeType{ NODE_NONE, NODE_COMMENT, NODE_SECTION, NODE_ENTRY };
 	
-private:
-	cNode *PrevNode, *NextNode;
-	
 public:
-	cNode( cNode * );			// コンストラクタ
-	~cNode();					// デストラクタ
+	cNode();
+	~cNode();
 	
-	cNode *AddNode();			// ノードを追加
+	void SetMember( NodeType, const std::string& );
 	
-	void SetMember( NodeType, const char * );
-	
-	NodeType NodeID;	// Node ID
-	char *Comment;		// Comments
-	char *Section;		// Sections
-	char *Entry;		// Entries
-	char *Value;
-	
-	cNode *GetPrevNode(){ return PrevNode; }
-	cNode *GetNextNode(){ return NextNode; }
-	void SetPrevNode( cNode *node ){ PrevNode = node; }
-	void SetNextNode( cNode *node ){ NextNode = node; }
-	
+	NodeType NodeID;		// Node ID
+	std::string Comment;	// Comments
+	std::string Section;	// Sections
+	std::string Entry;		// Entries
+	std::string Value;
 };
 
 class cIni {
 protected:
-	cNode *IniNode;				// 先頭ノードへのポインタ
-	char FileName[PATH_MAX];	// ファイル名
+	std::list<cNode> IniNode;
+	P6VPATH IniPath;		// ファイルパス
 	
-	bool Ready;
+	std::list<cNode>::iterator FindNode( const std::string&, const std::string& );							// ノード検索
 	
 public:
-	cIni();						// コンストラクタ
-	virtual ~cIni();			// デストラクタ
+	cIni();
+	virtual ~cIni();
 	
-	bool Init( const char * );	// 初期化
+	void Init();																							// 初期化
+	bool Read( const P6VPATH& );																			// INIファイル読込み
+	bool Write();																							// INIファイル書込み
 	
-	bool IsReady(){ return Ready; }
+	bool GetEntry( const std::string&, const std::string&, std::string& );									// エントリ読込み(文字列)
+	bool SetEntry( const std::string&, const std::string&, const std::string&, const std::string&, ... );	// エントリ書込み(文字列)
 	
-	bool Write();															// 書込み
-	bool GetString( const char *, const char *, char *, const char * );		// 文字列読込み
-	bool GetInt( const char *, const char *, int *, const int );			// 数値読込み
-	bool GetTruth( const char *, const char *, bool *, const bool );		// YesNo読込み
-	bool GetPath( const char *, const char *, char *, const char * );		// パス読込み
-	bool PutEntry( const char *, const char *, const char *, const char *, ... );	// エントリ追加
-	bool DeleteBefore( const char *, const char * );						// エントリ削除(前)
-	bool DeleteAfter( const char *, const char * );							// エントリ削除(後)
-	const char *GetFileName();												// ファイル名取得
+	// エントリ読込み
+	template <typename T> bool GetVal( const std::string& section, const std::string& entry, T& val )
+	{
+		try{
+			std::string str;
+			if( GetEntry( section, entry, str ) ){	// エントリを探す
+				val = std::stoul( str, nullptr, 0 );
+				return true;
+			}
+		}
+		catch( std::logic_error& ){}
+		return false;
+	}
 	
+	// エントリ書込み
+	template <typename T> bool SetVal( const std::string& section, const std::string& entry, const std::string& comment, const T& val ){
+		return SetEntry( section, entry, comment, "%d", val );
+	}
+	
+	// エントリ書込み(書式付き)
+	template <typename T, typename ... A> bool SetVal( const std::string& section, const std::string& entry, const std::string& comment, const std::string& format, const T& val, A const & ... args )
+	{
+		return SetEntry( section, entry, comment, format, val, args ... );
+	}
+	
+	bool DeleteBefore( const std::string&, const std::string& );											// エントリ削除(前)
+	bool DeleteAfter( const std::string&, const std::string& );												// エントリ削除(後)
+	const P6VPATH& GetFilePath() const;																		// ファイルパス取得
 };
+
+// テンプレート特殊化
+template <> bool cIni::GetVal<bool>   ( const std::string&, const std::string&, bool&    );
+template <> bool cIni::GetVal<P6VPATH>( const std::string&, const std::string&, P6VPATH& );
+template <> bool cIni::SetVal<bool>   ( const std::string&, const std::string&, const std::string&, const bool&    );
+template <> bool cIni::SetVal<P6VPATH>( const std::string&, const std::string&, const std::string&, const P6VPATH& );
+
 
 
 
 // どこでもSAVE用インターフェイス
 struct IDoko
 {
-	virtual bool DokoLoad( cIni * ) = 0;
-	virtual bool DokoSave( cIni * ) = 0;
+	virtual bool DokoLoad( cIni* ) = 0;
+	virtual bool DokoSave( cIni* ) = 0;
 };
 
 #endif	// INI_H_INCLUDED

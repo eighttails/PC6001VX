@@ -1,91 +1,86 @@
-#include <new>
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
+#include <stdexcept>
 
 #include "error.h"
 #include "io.h"
 #include "log.h"
 
 
-// ---------------------------------------------------------------------------
+// ポート数マスク(必ず右詰め)
+#define BANKMASK	0xff
+
+
+// --------------------------------------------------------------------------
 //	IOBus : I/O空間を提供するクラス
 //	  Original     : cisc
 //	  Modification : Yumitaro
-// ---------------------------------------------------------------------------
-IOBus::DummyIO IOBus::dummyio;
-
-IOBus::IOBus() : ins(NULL), outs(NULL), flags(NULL), devlist(NULL), banksize(0) {}
-
-IOBus::~IOBus()
+// --------------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+IOBus::IOBus()
 {
-	if( ins ) delete [] ins;
-	if( outs ) delete [] outs;
-	if( flags ) delete [] flags;
 }
 
-////////////////////////////////////////////////////////////////
-// 初期化
-////////////////////////////////////////////////////////////////
-bool IOBus::Init( DeviceList* dl, int bs )
+
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+IOBus::~IOBus()
 {
-	devlist  = dl;
-	banksize = bs;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 初期化
+/////////////////////////////////////////////////////////////////////////////
+bool IOBus::Init( int banksize )
+{
+	// INポート初期化(ダミーデバイス割当)
+	InBank idummy;
+	idummy.device = &dummyio;
+	idummy.func   = STATIC_CAST( InFuncPtr, &DummyIO::dummyin );
+	ins.assign( banksize, std::vector<InBank>( 1, idummy ) );
 	
-	// ご破算で願いましては
-	if( ins ){   delete [] ins;   ins   = NULL; }
-	if( outs ){  delete [] outs;  outs  = NULL; }
-	if( flags ){ delete [] flags; flags = NULL; }
-	
-	// メモリ確保
-	try{
-		ins   = new InBank[banksize];
-		outs  = new OutBank[banksize];
-		flags = new BYTE[banksize];
-	}
-	catch( std::bad_alloc ){	// new に失敗した場合
-		Error::SetError( Error::MemAllocFailed );
-		if( ins ){   delete [] ins;   ins   = NULL; }
-		if( outs ){  delete [] outs;  outs  = NULL; }
-		return false;
-	}
-	
-	ZeroMemory( flags, banksize );
-	
-	// とりあえず全てのポートにダミーデバイスを割り当てる
-	for( int i=0; i<banksize; i++ ){
-		ins[i].device  = &dummyio;
-		ins[i].func    = STATIC_CAST( InFuncPtr, &DummyIO::dummyin );
-		ins[i].next    = 0;
-		outs[i].device = &dummyio;
-		outs[i].func   = STATIC_CAST( OutFuncPtr, &DummyIO::dummyout );
-		outs[i].next   = 0;
-	}
+	// OUTポート初期化(ダミーデバイス割当)
+	OutBank odummy;
+	odummy.device = &dummyio;
+	odummy.func   = STATIC_CAST( OutFuncPtr, &DummyIO::dummyout );
+	outs.assign( banksize, std::vector<OutBank>( 1, odummy ) );
 	
 	return true;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // デバイス接続
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // IN/OUT -----------
-bool IOBus::Connect( IDevice* device, const Connector* connector )
+bool IOBus::Connect( const std::shared_ptr<IDevice>& device, const std::vector<Connector>& connector )
 {
-	if( !device || !connector ) return false;
+	devlist.Add( device );
 	
-	if( devlist ) devlist->Add(device);
+	const IDevice::Descriptor& desc = device->GetDescriptors();
 	
-	const IDevice::Descriptor* desc = device->GetDesc();
-	
-	for( ; connector->rule; connector++ ){
-		switch( connector->rule & 3 ){
-		case portin:
-			if( !ConnectIn(connector->bank, device, desc->indef[connector->id]) )
-				return false;
-			break;
-			
-		case portout:
-			if( !ConnectOut(connector->bank, device, desc->outdef[connector->id]) )
-				return false;
-			break;
+	for( auto &i : connector ){
+		try{
+			switch( i.rule ){
+			case portin:
+				if( !ConnectIn( i.bank, device, desc.indef.at( i.id ) ) )
+					return false;
+				break;
+				
+			case portout:
+				if( !ConnectOut( i.bank, device, desc.outdef.at( i.id ) ) )
+					return false;
+				break;
+			}
+		}
+		catch( std::out_of_range& ){
+			return false;
 		}
 	}
 	return true;
@@ -93,304 +88,293 @@ bool IOBus::Connect( IDevice* device, const Connector* connector )
 
 
 // IN -----------
-bool IOBus::ConnectIn( int bank, IDevice* device, InFuncPtr func )
+bool IOBus::ConnectIn( int bank, const std::shared_ptr<IDevice>& device, InFuncPtr func )
 {
-	PRINTD( IO_LOG, "[IO][ConnectIn] %02XH -> ", bank&0xff );
+	PRINTD( IO_LOG, "[IO][ConnectIn] %02XH -> ", bank );
 	
-	InBank* i = &ins[bank];
-	if( i->func == STATIC_CAST( InFuncPtr, &DummyIO::dummyin ) ){
-		// 最初の接続
-		i->device = device;
-		i->func   = func;
-	}else{
-		// 2回目以降の接続
-		InBank *j;
-		try{
-			j = new InBank;
-		}
-		catch( std::bad_alloc ){	// new に失敗した場合
-			Error::SetError( Error::MemAllocFailed );
-			PRINTD( IO_LOG, "Failed\n" );
-			return false;
-		}
-		j->device = device;
-		j->func   = func;
-		j->next   = i->next;
-		i->next   = j;
+	try{
+		InBank ib;
+		
+		ib.device = device.get();
+		ib.func   = func;
+		ins.at( bank ).emplace_back( ib );
 	}
+	catch( std::out_of_range& ){
+		PRINTD( IO_LOG, "Out of range\n" );
+		return false;
+	}
+	
 	PRINTD( IO_LOG, "OK\n" );
 	return true;
 }
 
 
 // OUT -----------
-bool IOBus::ConnectOut( int bank, IDevice* device, OutFuncPtr func )
+bool IOBus::ConnectOut( int bank, const std::shared_ptr<IDevice>& device, OutFuncPtr func )
 {
-	PRINTD( IO_LOG, "[IO][ConnectOut] %02XH -> ", bank&0xff );
+	PRINTD( IO_LOG, "[IO][ConnectOut] %02XH -> ", bank );
 	
-	OutBank* i = &outs[bank];
-	if( i->func == STATIC_CAST( OutFuncPtr, &DummyIO::dummyout ) ){
-		// 最初の接続
-		i->device = device;
-		i->func   = func;
-	}else{
-		// 2回目以降の接続
-		OutBank *j;
-		try{
-			j = new OutBank;
-		}
-		catch( std::bad_alloc ){	// new に失敗した場合
-			Error::SetError( Error::MemAllocFailed );
-			PRINTD( IO_LOG, "Failed\n" );
-			return false;
-		}
-		j->device = device;
-		j->func   = func;
-		j->next   = i->next;
-		i->next   = j;
+	try{
+		OutBank ob;
+		
+		ob.device = device.get();
+		ob.func   = func;
+		outs.at( bank ).emplace_back( ob );
 	}
+	catch( std::out_of_range& ){
+		PRINTD( IO_LOG, "Out of range\n" );
+		return false;
+	}
+	
 	PRINTD( IO_LOG, "OK\n" );
 	return true;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // デバイス切断
-////////////////////////////////////////////////////////////////
-bool IOBus::Disconnect( IDevice* device )
+/////////////////////////////////////////////////////////////////////////////
+bool IOBus::Disconnect( const DeviceList::ID id )
 {
-	if( devlist ) devlist->Del(device);
-	
 	// IN
-  	for( int i=0; i<banksize; i++ ){
-		InBank* current = &ins[i];
-		InBank* referer = 0;
-		while( current ){
-			InBank* next = current->next;
-			if( current->device == device ){
-				if( referer ){
-					referer->next = next;
-					delete current;
-				}else{
-					// 削除するべきアイテムが最初にあった場合
-					if( next ){
-						// 次のアイテムの内容を複写して削除
-						*current = *next;
-						referer = 0;
-						delete next;
-						continue;
-					}else{
-						// このアイテムが唯一のアイテムだった場合
-						current->func = STATIC_CAST( InFuncPtr, &DummyIO::dummyin );
-					}
-				}
-			}
-			current = next;
+	for( auto &i : ins ){
+		for( auto p = i.end()-1; p != i.begin(); p-- ){
+			if( p->device->GetID() == id ) i.erase( p );
 		}
 	}
 	
 	// OUT
-	for( int i=0; i<banksize; i++ ){
-		OutBank* current = &outs[i];
-		OutBank* referer = 0;
-		while( current ){
-			OutBank* next = current->next;
-			if( current->device == device ){
-				if( referer ){
-					referer->next = next;
-					delete current;
-				}else{
-					// 削除するべきアイテムが最初にあった場合
-					if( next ){
-						// 次のアイテムの内容を複写して削除
-						*current = *next;
-						referer = 0;
-						delete next;
-						continue;
-					}else{
-						// このアイテムが唯一のアイテムだった場合
-						current->func = STATIC_CAST( OutFuncPtr, &DummyIO::dummyout );
-					}
-				}
-			}
-			current = next;
+	for( auto &i : outs ){
+		for( auto p = i.end()-1; p != i.begin(); p-- ){
+			if( p->device->GetID() == id ) i.erase( p );
 		}
 	}
+	
+	devlist.Del( id );
 	return true;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // IN関数
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 BYTE IOBus::In( int port )
 {
-	InBank* list = &ins[port&0xff];
-	
 	BYTE data = 0xff;
-	do{
-		data &= (list->device->*list->func)( port );
-		list = list->next;
-	} while ( list );
+	
+	for( auto &i : ins.at( port & 0xff ) ) try{
+		data &= (i.device->*i.func)( port );
+	}
+	catch( std::out_of_range& ){}
+	
 	return data;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // OUT関数
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IOBus::Out( int port, BYTE data )
 {
-	OutBank* list = &outs[port&0xff];
-	do{
-		(list->device->*list->func)( port, data );
-		list = list->next;
-	} while ( list );
+	for( auto &i : outs.at( port & 0xff ) ) try{
+		(i.device->*i.func)( port, data );
+	}
+	catch( std::out_of_range& ){}
 }
 
 
-////////////////////////////////////////////////////////////////
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+/////////////////////////////////////////////////////////////////////////////
+// 登録済I/Oポートリスト取得
+/////////////////////////////////////////////////////////////////////////////
+void IOBus::GetPortList( std::vector<int>& inp, std::vector<int>& outp )
+{
+	inp.clear();
+	outp.clear();
+	
+	int i = 0;
+	for( auto &p : ins ){
+		if( p.size() > 1 ){ inp.emplace_back( i ); }
+		i++;
+	}
+	
+	i = 0;
+	for( auto &p : outs ){
+		if( p.size() > 1 ){ outp.emplace_back( i ); }
+		i++;
+	}
+}
+
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+// --------------------------------------------------------------------------
+//	DummyIO
+// --------------------------------------------------------------------------
+IOBus::DummyIO IOBus::dummyio;
+
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+IOBus::DummyIO::DummyIO( void ) : Device( nullptr, 0 )
+{
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+IOBus::DummyIO::~DummyIO()
+{
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // ダミーデバイス(IN)
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 BYTE IOBus::DummyIO::dummyin( int )
 {
 	return 0xff;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ダミーデバイス(OUT)
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IOBus::DummyIO::dummyout( int, BYTE )
 {
 	return;
 }
 
 
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-IO6::IO6( void ) : io(NULL), dl(NULL)
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+IO6::IO6( void )
 {
-	INITARRAY( Iwait, 0 );
-	INITARRAY( Owait, 0 );
 }
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
 IO6::~IO6( void )
 {
-	if( dl ) delete dl;
-	if( io ) delete io;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 初期化
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 bool IO6::Init( int banksize )
 {
 	PRINTD( IO_LOG, "[IO][Init]\n" );
 	
 	// オブジェクト確保
 	try{
-		dl = new DeviceList;	// デバイスリスト
-		io = new IOBus;			// I/O
+		if( !IOBus::Init( banksize ) ) throw Error::InitFailed;
 		
-		if( !io->Init( dl, banksize ) ) throw Error::InitFailed;
+		Iwait.assign( BANKMASK + 1, 0 );
+		Owait.assign( BANKMASK + 1, 0 );
+		Idata.assign( BANKMASK + 1, -1 );
+		Odata.assign( BANKMASK + 1, -1 );
 	}
-	catch( std::bad_alloc ){	// new に失敗した場合
-		Error::SetError( Error::MemAllocFailed );
-		if( dl ){ delete dl; dl = NULL; }
-		return false;
-	}
-	// 例外発生
-	catch( Error::Errno i ){
+	catch( Error::Errno i ){	// 例外発生
 		Error::SetError( i );
 		return false;
 	}
-	
-	for( int i=0; i<BANKSIZE; i++ ) Iwait[i] = Owait[i] = 0;
 	
 	return true;
 }
 
 
-////////////////////////////////////////////////////////////////
-// デバイス接続
-////////////////////////////////////////////////////////////////
-bool IO6::Connect( IDevice* device, const IOBus::Connector* connector )
-{
-	return io->Connect( device, connector );
-}
-
-
-////////////////////////////////////////////////////////////////
-// デバイス切断
-////////////////////////////////////////////////////////////////
-bool IO6::Disconnect( IDevice* device )
-{
-	return io->Disconnect( device );
-}
-
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // IN関数
-////////////////////////////////////////////////////////////////
-BYTE IO6::In( int port, int *wcnt )
+/////////////////////////////////////////////////////////////////////////////
+BYTE IO6::In( int port, int* wcnt )
 {
-	PRINTD( IO_LOG, "[IO][In] port : %02X\n", port&0xff );
+	PRINTD( IO_LOG, "[IO][In] port : %02X\n", port );
 	
-	if( wcnt ) (*wcnt) += Iwait[port&0xff];
-	return io->In( port );
+	if( wcnt ) (*wcnt) += Iwait[port & BANKMASK];
+	Idata[port & BANKMASK] = IOBus::In( port );
+	return Idata[port & BANKMASK];
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // OUT関数
-////////////////////////////////////////////////////////////////
-void IO6::Out( int port, BYTE data, int *wcnt )
+/////////////////////////////////////////////////////////////////////////////
+void IO6::Out( int port, BYTE data, int* wcnt )
 {
-	PRINTD( IO_LOG, "[IO][Out] port : %02X  data : %02X\n", port&0xff, data );
+	PRINTD( IO_LOG, "[IO][Out] port : %02X  data : %02X\n", port, data );
 	
-	if( wcnt ) (*wcnt) += Owait[port&0xff];
-	io->Out( port, data );
+	if( wcnt ) (*wcnt) += Owait[port & BANKMASK];
+	Odata[port & BANKMASK] = data;
+	IOBus::Out( port, data );
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // IN ウェイト設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IO6::SetInWait( int port, int wait )
 {
-	Iwait[port&0xff] = wait;
+	Iwait[port & BANKMASK] = wait;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // OUTウェイト設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IO6::SetOutWait( int port, int wait )
 {
-	Owait[port&0xff] = wait;
+	Owait[port & BANKMASK] = wait;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // IN ウェイト取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 int IO6::GetInWait( int port )
 {
-	return Iwait[port&0xff];
+	return Iwait[port & BANKMASK];
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // IN ウェイト取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 int IO6::GetOutWait( int port )
 {
-	return Owait[port&0xff];
+	return Owait[port & BANKMASK];
 }
+
+
+#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+/////////////////////////////////////////////////////////////////////////////
+// IN データ参照
+/////////////////////////////////////////////////////////////////////////////
+int IO6::PeepIn( int port )
+{
+	return Idata[port & BANKMASK];
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// OUTデータ参照
+/////////////////////////////////////////////////////////////////////////////
+int IO6::PeepOut( int port )
+{
+	return Odata[port & BANKMASK];
+}
+
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

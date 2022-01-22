@@ -2,8 +2,9 @@
 
 #include <QTimer>
 #include "../keyboard.h"
+#include "../p6vxcommon.h"
 
-KeyStateWatcher::KeyStateWatcher(KEY6 *key, QObject *parent)
+KeyStateWatcher::KeyStateWatcher(std::shared_ptr<KEY6> key, QObject *parent)
 	: QObject(parent)
 	, Key(key)
 	, ON_SHIFT(false)
@@ -13,7 +14,7 @@ KeyStateWatcher::KeyStateWatcher(KEY6 *key, QObject *parent)
 	, ON_CAPS(false)
 {
 	auto timer = new QTimer(this);
-	timer->setInterval(100);
+	timer->setInterval(1000 / 60);
 	connect(timer, SIGNAL(timeout()), this, SLOT(poll()));
 	timer->start();
 }
@@ -35,23 +36,34 @@ void KeyStateWatcher::poll()
 {
 	QMutexLocker lock(&mutex);
 	bool changed = false;
-	if(Key->ON_SHIFT != this->ON_SHIFT)	changed = true;
-	this->ON_SHIFT = Key->ON_SHIFT;
+	auto keyStatus = Key->GetKeyIndicator();
+	if(bool(keyStatus & KI_SHIFT) != this->ON_SHIFT)	changed = true;
+	this->ON_SHIFT = bool(keyStatus & KI_SHIFT);
 
-	if(Key->ON_CTRL != this->ON_CTRL)	changed = true;
-	this->ON_CTRL = Key->ON_CTRL;
+	if(bool(keyStatus & KI_CTRL) != this->ON_CTRL)		changed = true;
+	this->ON_CTRL = bool(keyStatus & KI_CTRL);
 
-	if(Key->ON_GRAPH != this->ON_GRAPH)	changed = true;
-	this->ON_GRAPH = Key->ON_GRAPH;
+	if(bool(keyStatus & KI_GRAPH) != this->ON_GRAPH)	changed = true;
+	this->ON_GRAPH = bool(keyStatus & KI_GRAPH);
 
-	if(Key->ON_KANA != this->ON_KANA)	changed = true;
-	this->ON_KANA = Key->ON_KANA;
+	if(bool(keyStatus & KI_KANA) != this->ON_KANA)		changed = true;
+	this->ON_KANA = bool(keyStatus & KI_KANA);
 
-	if(Key->ON_KKANA != this->ON_KKANA)	changed = true;
-	this->ON_KKANA = Key->ON_KKANA;
+	if(bool(keyStatus & KI_KKANA) != this->ON_KKANA)	changed = true;
+	this->ON_KKANA = bool(keyStatus & KI_KKANA);
 
-	if(Key->ON_CAPS != this->ON_CAPS)	changed = true;
-	this->ON_CAPS = Key->ON_CAPS;
+	if(bool(keyStatus & KI_CAPS) != this->ON_CAPS)		changed = true;
+	this->ON_CAPS = bool(keyStatus & KI_CAPS);
+
+	auto joyKeyStatus = Key->GetKeyJoy();
+	if (joyKeyStatus & 0b00100000){
+		TiltScreen(TiltDirection::LEFT);
+	} else if (joyKeyStatus & 0b00010000){
+		TiltScreen(TiltDirection::RIGHT);
+	} else {
+		TiltScreen(TiltDirection::NEWTRAL);
+	}
+	UpdateTilt();
 
 	if (changed){
 		emit stateChanged(

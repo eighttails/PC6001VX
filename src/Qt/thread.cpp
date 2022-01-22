@@ -83,18 +83,16 @@ bool cThread::Waiting( void )
 
 void cThread::Cancel()
 {
-	cCritical::Lock();
+	QMutexLocker lock(&m_Mutex);
 	m_bCancel = true;
-	cCritical::UnLock();
 }
 
 
 bool cThread::IsCancel()
 {
 	bool bCancel = false;
-	cCritical::Lock();
+	QMutexLocker lock(&m_Mutex);
 	bCancel = this->m_bCancel;
-	cCritical::UnLock();
 	return bCancel;
 }
 

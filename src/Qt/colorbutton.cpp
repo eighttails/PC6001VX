@@ -6,7 +6,7 @@
 ColorButton::ColorButton(QWidget *parent) :
 	QPushButton(parent),
 	colorId(0),
-	config(NULL)
+	config(nullptr)
 {
 	// ボタンをクリックしたら色選択ダイアログを開く
 	connect(this, SIGNAL(clicked()), this, SLOT(chooseColor()));
@@ -29,7 +29,7 @@ void ColorButton::initialize(int id, CFG6 *cfg)
 	colorId = id;
 
 	// 設定情報から自ボタンに対応する色を取得
-	config->GetColor(colorId, &color);
+	color = config->GetColor(colorId);
 	// 自身の色に反映
 	updateColor();
 }

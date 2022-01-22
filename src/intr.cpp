@@ -1,5 +1,10 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #include "pc6001v.h"
 
+#include "common.h"
 #include "cpus.h"
 #include "intr.h"
 #include "log.h"
@@ -8,54 +13,101 @@
 #include "p6el.h"
 #include "p6vm.h"
 
+
 // イベントID
 #define	EID_TIMER	(1)
 
 
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-IRQ6::IRQ6( VM6 *vm, const ID& id ) : Device(vm,id),
-	IntrFlag(0), TimerIntrEnable(false), TimerCntUp(0), Timer1st(50)
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+IRQ6::IRQ6( VM6* vm, const ID& id ) : Device( vm, id ),
+	IntrFlag( 0 ), TimerIntrEnable( false ), TimerCntUp( 0 ), Timer1st( 50 )
 {
 	INITARRAY( IntEnable, false );
 	INITARRAY( VecOutput, false );
 	INITARRAY( IntVector, 0 );
 }
 
-IRQ60::IRQ60( VM6 *vm, const ID& id ) : IRQ6(vm,id)
+IRQ60::IRQ60( VM6* vm, const ID& id ) : IRQ6( vm, id )
 {
 	TimerCntUp   = 3;
 	IntEnable[0] = true;
 	IntEnable[2] = true;
+	
+	// Device Description (Out)
+	descs.outdef.emplace( outB0H, STATIC_CAST( Device::OutFuncPtr, &IRQ60::OutB0H ) );
 }
 
-IRQ62::IRQ62( VM6 *vm, const ID& id ) : IRQ6(vm,id)
+IRQ62::IRQ62( VM6* vm, const ID& id ) : IRQ6( vm, id )
 {
 	Timer1st = 88;
+	
+	// Device Description (Out)
+	descs.outdef.emplace( outB0H, STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutB0H ) );
+	descs.outdef.emplace( outF3H, STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF3H ) );
+	descs.outdef.emplace( outF4H, STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF4H ) );
+	descs.outdef.emplace( outF5H, STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF5H ) );
+	descs.outdef.emplace( outF6H, STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF6H ) );
+	descs.outdef.emplace( outF7H, STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF7H ) );
+	
+	// Device Description (In)
+	descs.indef.emplace ( inF3H,  STATIC_CAST( Device::InFuncPtr,  &IRQ62::InF3H  ) );
+	descs.indef.emplace ( inF4H,  STATIC_CAST( Device::InFuncPtr,  &IRQ62::InF4H  ) );
+	descs.indef.emplace ( inF5H,  STATIC_CAST( Device::InFuncPtr,  &IRQ62::InF5H  ) );
+	descs.indef.emplace ( inF6H,  STATIC_CAST( Device::InFuncPtr,  &IRQ62::InF6H  ) );
+	descs.indef.emplace ( inF7H,  STATIC_CAST( Device::InFuncPtr,  &IRQ62::InF7H  ) );
 }
 
-IRQ64::IRQ64( VM6 *vm, const ID& id ) : IRQ6(vm,id)
+IRQ64::IRQ64( VM6* vm, const ID& id ) : IRQ6( vm, id )
 {
 	Timer1st = 88;
+	
+	// Device Description (Out)
+	descs.outdef.emplace( outB0H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutB0H ) );
+	descs.outdef.emplace( outBxH, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutBxH ) );
+	descs.outdef.emplace( outF3H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF3H ) );
+	descs.outdef.emplace( outF4H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF4H ) );
+	descs.outdef.emplace( outF5H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF5H ) );
+	descs.outdef.emplace( outF6H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF6H ) );
+	descs.outdef.emplace( outF7H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF7H ) );
+	descs.outdef.emplace( outFAH, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutFAH ) );
+	descs.outdef.emplace( outFBH, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutFBH ) );
+	
+	// Device Description (In)
+	descs.indef.emplace ( inF3H,  STATIC_CAST( Device::InFuncPtr,  &IRQ64::InF3H  ) );
+	descs.indef.emplace ( inF4H,  STATIC_CAST( Device::InFuncPtr,  &IRQ64::InF4H  ) );
+	descs.indef.emplace ( inF5H,  STATIC_CAST( Device::InFuncPtr,  &IRQ64::InF5H  ) );
+	descs.indef.emplace ( inF6H,  STATIC_CAST( Device::InFuncPtr,  &IRQ64::InF6H  ) );
+	descs.indef.emplace ( inF7H,  STATIC_CAST( Device::InFuncPtr,  &IRQ64::InF7H  ) );
+	descs.indef.emplace ( inFAH,  STATIC_CAST( Device::InFuncPtr,  &IRQ64::InFAH  ) );
+	descs.indef.emplace ( inFBH,  STATIC_CAST( Device::InFuncPtr,  &IRQ64::InFBH  ) );
 }
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
-IRQ6::~IRQ6( void ){}
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+IRQ6::~IRQ6( void )
+{
+}
 
-IRQ60::~IRQ60( void ){}
+IRQ60::~IRQ60( void )
+{
+}
 
-IRQ62::~IRQ62( void ){}
+IRQ62::~IRQ62( void )
+{
+}
 
-IRQ64::~IRQ64( void ){}
+IRQ64::~IRQ64( void )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // イベントコールバック関数
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IRQ6::EventCallback( int id, int clock )
 {
 	switch( id ){
@@ -67,9 +119,9 @@ void IRQ6::EventCallback( int id, int clock )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // タイマ割込みスイッチ設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IRQ6::SetTimerIntr( bool en )
 {
 	PRINTD( INTR_LOG, "[INTR][SetTimerIntr] %s->%s\n", TimerIntrEnable ? "ON" : "OFF", en ? "ON" : "OFF" );
@@ -88,34 +140,25 @@ void IRQ6::SetTimerIntr( bool en )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // タイマ割込みスイッチ取得
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 bool IRQ6::GetTimerIntr( void )
 {
 	return TimerIntrEnable;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // タイマ割込み周波数設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IRQ6::SetTimerIntrHz( BYTE data, BYTE first )
 {
 	TimerCntUp = data;
 	
 	// イベント追加
-//	vm->EventAdd( this, EID_TIMER, (double)(2048/(vm->VdgIsSRmode() ? 32 : 1))*(TimerCntUp+1), EV_LOOP|EV_STATE );
-
 	// 非SR系は 1[intr] : (2048*(TimerCntUp+1)) [clock]
-	// SR系は500Hzが基本?? ほんと??
-	if( vm->VdgIsSRmode() )
-		vm->EventAdd( this, EID_TIMER, (double)(CPUM_CLOCK64/2000 * ((TimerCntUp>>5)+1)), EV_LOOP|EV_STATE );
-	else
-		vm->EventAdd( this, EID_TIMER, (double)(2048*(TimerCntUp+1)), EV_LOOP|EV_STATE );
-
-
-
+	vm->EventAdd( Device::GetID(), EID_TIMER, (double)(2048 * (TimerCntUp + 1)), EV_LOOP|EV_STATE );
 	
 	// 初回周期の指定がある場合の処理
 	if( first ){
@@ -125,15 +168,43 @@ void IRQ6::SetTimerIntrHz( BYTE data, BYTE first )
 		e.id    = EID_TIMER;
 		
 		vm->EventGetInfo( &e );
-		e.Clock = (e.Clock*first)/100;
+		e.Clock = (e.Clock * first) / 100;
+		vm->EventSetInfo( &e );
+	}
+}
+
+void IRQ64::SetTimerIntrHz(BYTE data, BYTE first)
+{
+	TimerCntUp = data;
+	
+	// イベント追加
+	// 八尾さんの検証による推定値
+	if( vm->VdgIsSRmode() )
+		vm->EventAdd( Device::GetID(), EID_TIMER, (double)((8*7) * (TimerCntUp+1)), EV_LOOP|EV_STATE );
+	else
+		vm->EventAdd( Device::GetID(), EID_TIMER, (double)((256*7) * (TimerCntUp+1)), EV_LOOP|EV_STATE );
+	
+	// 初回周期の指定がある場合の処理
+	if( first ){
+		EVSC::evinfo e;
+		
+		e.devid = this->Device::GetID();
+		e.id    = EID_TIMER;
+		
+		vm->EventGetInfo( &e );
+		e.Clock = (e.Clock * first) / 100;
 		vm->EventSetInfo( &e );
 	}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // リセット
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+void IRQ6::Reset( void )
+{
+}
+
 void IRQ60::Reset( void )
 {
 	PRINTD( INTR_LOG, "[INTR][Reset]\n" );
@@ -144,7 +215,6 @@ void IRQ60::Reset( void )
 	
 	// タイマ割込み周波数初期化
 	SetTimerIntrHz(	TimerCntUp );
-
 }
 
 void IRQ62::Reset( void )
@@ -185,9 +255,9 @@ void IRQ64::Reset( void )
 	SetTimerIntrHz(	TimerCntUp );
 }
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 割込みチェック
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //   割込み発生源はタイマか8049で,タイマ優先か?
 //   と思ったけどSRの調査をしていたら違うような気がしてきた。
 //   mk2のINT1,INT2がずっと謎だったのだがこう考えればよいのか?
@@ -281,9 +351,9 @@ int IRQ6::IntrCheck( void )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 割込み要求
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IRQ6::ReqIntr( DWORD vec )
 {
 	IntrFlag |= vec;
@@ -292,9 +362,9 @@ void IRQ6::ReqIntr( DWORD vec )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 割込み撤回
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IRQ6::CancelIntr( DWORD vec )
 {
 	IntrFlag &= ~vec;
@@ -303,10 +373,12 @@ void IRQ6::CancelIntr( DWORD vec )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 割込み許可フラグ設定
-////////////////////////////////////////////////////////////////
-void IRQ6::SetIntrEnable( BYTE data ){}
+/////////////////////////////////////////////////////////////////////////////
+void IRQ6::SetIntrEnable( BYTE data )
+{
+}
 
 void IRQ62::SetIntrEnable( BYTE data )
 {
@@ -329,6 +401,7 @@ void IRQ64::SetIntrEnable( BYTE data )
 	
 	for( int i=0; i<8; i++ )
 		IntEnable[i] = (data>>i)&1 ? false : true;
+	
 	PRINTD( INTR_LOG, "\tINT1:SUB CPU  %s\n", IntEnable[0] ? "Enable" : "Disable" );
 	PRINTD( INTR_LOG, "\tINT2:JOYSTICK %s\n", IntEnable[1] ? "Enable" : "Disable" );
 	PRINTD( INTR_LOG, "\tINT3:TIMER    %s\n", IntEnable[2] ? "Enable" : "Disable" );
@@ -339,32 +412,10 @@ void IRQ64::SetIntrEnable( BYTE data )
 	PRINTD( INTR_LOG, "\tINT8:EXT INT  %s\n", IntEnable[7] ? "Enable" : "Disable" );
 }
 
-void IRQ64::SetTimerIntrHz(BYTE data, BYTE first)
-{
-	TimerCntUp = data;
 
-	if( vm->VdgIsSRmode() )
-		vm->EventAdd( this, EID_TIMER, (double)((8*7) * (TimerCntUp+1)), EV_LOOP|EV_STATE );
-	else
-		vm->EventAdd( this, EID_TIMER, (double)((256*7) * (TimerCntUp+1)), EV_LOOP|EV_STATE );
-
-	// 初回周期の指定がある場合の処理
-	if( first ){
-		EVSC::evinfo e;
-
-		e.devid = this->Device::GetID();
-		e.id    = EID_TIMER;
-
-		vm->EventGetInfo( &e );
-		e.Clock = (e.Clock*first)/100;
-		vm->EventSetInfo( &e );
-	}
-}
-
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 割込みベクタアドレス出力フラグ設定
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IRQ64::SetIntrVectorEnable( BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][SetIntrVectorEnable]\n" );
@@ -383,9 +434,9 @@ void IRQ64::SetIntrVectorEnable( BYTE data )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void IRQ6::OutB0H( int, BYTE data ){ SetTimerIntr( data&1 ? false : true ); }
 void IRQ6::OutF3H( int, BYTE data ){ SetIntrEnable( data ); }
 void IRQ6::OutF4H( int, BYTE data ){ IntVector[0] = data; }
@@ -424,124 +475,51 @@ BYTE IRQ64::InFBH( int )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // どこでもSAVE
-////////////////////////////////////////////////////////////////
-bool IRQ6::DokoSave( cIni *Ini )
+/////////////////////////////////////////////////////////////////////////////
+bool IRQ6::DokoSave( cIni* Ini )
 {
-	char stren[16];
-	
 	if( !Ini ) return false;
 	
-	Ini->PutEntry( "INTR", NULL, "IntrFlag",			"0x%08X",	IntrFlag );
-	Ini->PutEntry( "INTR", NULL, "TimerIntrEnable",		"%s",		TimerIntrEnable  ? "Yes" : "No" );
-	Ini->PutEntry( "INTR", NULL, "TimerCntUp",			"%d",		TimerCntUp );
+	Ini->SetVal( "INTR", "IntrFlag",		"", "0x%08X", IntrFlag );
+	Ini->SetVal( "INTR", "TimerIntrEnable",	"", TimerIntrEnable );
+	Ini->SetVal( "INTR", "TimerCntUp",		"", TimerCntUp );
 	
-	for( int i=0; i<8; i++ ){
-		sprintf( stren, "IntEnable%d", i );
-		Ini->PutEntry( "INTR", NULL, stren,		"%s",		IntEnable[i]  ? "Yes" : "No" );
-	}
-	for( int i=0; i<8; i++ ){
-		sprintf( stren, "VecOutput%d", i );
-		Ini->PutEntry( "INTR", NULL, stren,		"%s",		VecOutput[i]  ? "Yes" : "No" );
-	}
-	for( int i=0; i<8; i++ ){
-		sprintf( stren, "IntVector%d", i );
-		Ini->PutEntry( "INTR", NULL, stren,		"0x%02X",	IntVector[i] );
-	}
+	for( int i=0; i<8; i++ )
+		Ini->SetVal( "INTR", Stringf( "IntEnable%d", i ),	"", IntEnable[i] );
+	
+	for( int i=0; i<8; i++ )
+		Ini->SetVal( "INTR", Stringf( "VecOutput%d", i ),	"", VecOutput[i] );
+	
+	for( int i=0; i<8; i++ )
+		Ini->SetVal( "INTR", Stringf( "IntVector%d", i ),	"", "0x%02X", IntVector[i] );
 	
 	return true;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // どこでもLOAD
-////////////////////////////////////////////////////////////////
-bool IRQ6::DokoLoad( cIni *Ini )
+/////////////////////////////////////////////////////////////////////////////
+bool IRQ6::DokoLoad( cIni* Ini )
 {
-	int st;
-	
 	if( !Ini ) return false;
 	
-	Ini->GetInt(   "INTR", "IntrFlag",			&st,				IntrFlag );			IntrFlag = st;
-	Ini->GetTruth( "INTR", "TimerIntrEnable",	&TimerIntrEnable,	TimerIntrEnable );
-	Ini->GetInt(   "INTR", "TimerCntUp",		&st,				TimerCntUp );		TimerCntUp   = st;
+	Ini->GetVal( "INTR", "IntrFlag",		IntrFlag );
+	Ini->GetVal( "INTR", "TimerIntrEnable",	TimerIntrEnable );
+	Ini->GetVal( "INTR", "TimerCntUp",		TimerCntUp );
 	
-	char stren[16];
+	for( int i=0; i<8; i++ )
+		Ini->GetVal( "INTR", Stringf( "IntEnable%d", i ), IntEnable[i] );
+	
+	for( int i=0; i<8; i++ )
+		Ini->GetVal( "INTR", Stringf( "VecOutput%d", i ), VecOutput[i] );
 	
 	for( int i=0; i<8; i++ ){
-		sprintf( stren, "IntEnable%d", i );
-		Ini->GetTruth( "INTR", stren,		&IntEnable[i],	IntEnable[i] );
-	}
-	for( int i=0; i<8; i++ ){
-		sprintf( stren, "VecOutput%d", i );
-		Ini->GetTruth( "INTR", stren,		&VecOutput[i],	VecOutput[i] );
-	}
-	for( int i=0; i<8; i++ ){
-		sprintf( stren, "IntVector%d", i );
-		Ini->GetInt(   "INTR", stren,		&st,			IntVector[i] );		IntVector[i] = st;
+		Ini->GetVal( "INTR", Stringf( "IntVector%d", i ), IntVector[i] );
 	}
 	
 	return true;
 }
 
-
-////////////////////////////////////////////////////////////////
-//  device description
-////////////////////////////////////////////////////////////////
-const Device::Descriptor IRQ60::descriptor = {
-	IRQ60::indef, IRQ60::outdef
-};
-
-const Device::OutFuncPtr IRQ60::outdef[] = {
-	STATIC_CAST( Device::OutFuncPtr, &IRQ60::OutB0H )
-};
-
-const Device::InFuncPtr IRQ60::indef[] = { NULL };
-
-const Device::Descriptor IRQ62::descriptor = {
-	IRQ62::indef, IRQ62::outdef
-};
-
-const Device::OutFuncPtr IRQ62::outdef[] = {
-	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutB0H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF3H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF4H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF5H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF6H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ62::OutF7H )
-};
-
-const Device::InFuncPtr IRQ62::indef[] = {
-	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF3H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF4H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF5H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF6H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ62::InF7H )
-};
-
-const Device::Descriptor IRQ64::descriptor = {
-	IRQ64::indef, IRQ64::outdef
-};
-
-const Device::OutFuncPtr IRQ64::outdef[] = {
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutB0H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutBxH ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF3H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF4H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF5H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF6H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF7H ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutFAH ),
-	STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutFBH )
-};
-
-const Device::InFuncPtr IRQ64::indef[] = {
-	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF3H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF4H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF5H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF6H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ64::InF7H ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ64::InFAH ),
-	STATIC_CAST( Device::InFuncPtr, &IRQ64::InFBH )
-};

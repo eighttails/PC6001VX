@@ -8,13 +8,13 @@
 #define THREAD_H_INCLUDED
 
 #include "typedef.h"
-
 #include "semaphore.h"
+#include <QMutex>
 
-
-class cThread : public cCritical {
+class cThread {
     friend class InternalTherad;
 private:
+	QMutex m_Mutex;
 	bool m_bCancel;				// for Cancel().
 	HTHREAD m_hThread;			// for Thread Handle.
 	void *m_BeginTheadParam;

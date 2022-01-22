@@ -1,23 +1,20 @@
-#include <string.h>
-#include <memory.h>
-#include <stdlib.h>
-
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
+#include "common.h"
 #include "config.h"
 #include "log.h"
 #include "keyboard.h"
 #include "osd.h"
-#include "common.h"
-
 #include "p6vm.h"
 
-#define	NOM	( COUNTOF( P6Matrix ) / 2 )
+
+#define	NOM	( (int)P6Matrix.size() / 2 )
 
 
 // P6キーコード -> P6キーマトリクス定義
-static const struct {
-	P6KEYsym P6KEY;		// P6キーコード
-	BYTE Mat;			// P6のキーマトリクス(bit7-4:Y bit3-0:X)
-} P6KeyMx[] = {
+static const std::vector<P6KeyMatrix> P6KeyMx = {
 	
 	{ KP6_UNKNOWN,		0x00 },	// 不明キー
 	
@@ -91,7 +88,7 @@ static const struct {
 	{ KP6_U,			0x71 },	// u	U
 	{ KP6_J,			0x72 },	// j	J
 	{ KP6_M,			0x73 },	// m	M
-	{ KP6_YEN,			0x75 },	// ¥
+	{ KP6_YEN,			0x75 },	// ￥
 	{ KP6_F5,			0x76 },	// F5	F10
 	
 	// Y8
@@ -280,7 +277,7 @@ static const struct {
 		{ 0x6d, 0x4d, 0x0b, 0xf3, 0x00, 0xd3, 0x00, 0x0d },
 	//
 		{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
-	//	  ¥          円    ー          ー
+	//	  ￥          円    ー          ー
 		{ 0x5c, 0x00, 0x09, 0xb0, 0x00, 0xb0, 0x00, 0x00 },
 	//	        F10   F5
 		{ 0x00, 0xf9, 0xf4, 0x00, 0x00, 0x00, 0x00, 0x00 },
@@ -313,7 +310,7 @@ static const struct {
 	//	  INS   INS   ┳    INS   INS   INS   INS
 		{ 0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x12, 0x00 },
 	//	  DEL   DEL   ????  DEL   DEL   DEL   DEL
-		{ 0x08, 0x08, 0x7f, 0x08, 0x08, 0x08, 0x08, 0x00 },
+		{ 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x00 },
 	//	  PAGE  PAGE  PAGE  PAGE  PAGE  PAGE  PAGE
 		{ 0xfe, 0xfe, 0xfc, 0xfe, 0xfe, 0xfe, 0xfe, 0x00 },
 	//	  HOME  HOME  秒    HOME  HOME  HOME  HOME
@@ -368,8 +365,7 @@ static const struct {
 
 
 
-enum KeyGroup
-{
+enum KeyGroup{
 	KEYSTD = 0,
 	KEYSHIFT,
 	KEYGRAPH,
@@ -382,51 +378,82 @@ enum KeyGroup
 
 
 
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-KEY6::KEY6( VM6 *vm, const ID& id ) : Device(vm,id),
-	ON_SHIFT(false), ON_GRAPH(false), ON_KANA(false), ON_KKANA(false),
-    ON_CTRL(false), ON_STOP(false), ON_CAPS(false)
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+KEY6::KEY6( VM6* vm, const ID& id ) : Device( vm, id ),
+	ON_SHIFT( false ), ON_GRAPH( false ), ON_KANA( false ), ON_KKANA( false ),
+	ON_CTRL( false ), ON_STOP( false ), ON_CAPS( false )
 {
-
-	// 仮想キーコード -> P6キーコード 変換テーブル初期化
-	INITARRAY( K6Table, KP6_UNKNOWN );
-	
 	// P6キーコード -> マトリクス 変換テーブル初期化
-	INITARRAY( MatTable, 0 );
-	for( int i=0; i < COUNTOF(P6KeyMx); i++ ) MatTable[P6KeyMx[i].P6KEY] = P6KeyMx[i].Mat;
+	MatTable.clear();
+	for( auto &i : P6KeyMx )
+		MatTable.emplace( i.P6Key, i.Mat );
 	
 	// キーマトリクス初期化
-	INITARRAY( P6Matrix, 0xff );
-	INITARRAY( P6Mtrx,   0xff );
+	for( int i=0; i<16*2; i++ ){
+		P6Matrix.emplace_back( 0xff );
+		P6Mtrx.emplace_back( 0xff );
+	}
 }
 
-KEY60::KEY60( VM6 *vm, const ID& id ) : KEY6(vm,id)
+KEY60::KEY60( VM6* vm, const ID& id ) : KEY6( vm, id )
 {
 	// MODE と CAPS 無効化
-	MatTable[KP6_MODE] = 0;
-	MatTable[KP6_CAPS] = 0;
+	try{
+		MatTable.at( KP6_MODE ) = 0;
+		MatTable.at( KP6_CAPS ) = 0;
+	}
+	catch( std::out_of_range& ){}
+}
 
+KEY62::KEY62( VM6* vm, const ID& id ) : KEY6( vm, id )
+{
 }
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
-KEY6::~KEY6( void ){}
-KEY60::~KEY60( void ){}
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+KEY6::~KEY6( void )
+{
+}
+
+KEY60::~KEY60( void )
+{
+}
+
+KEY62::~KEY62( void )
+{
+}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 初期化
 //
-// 引数:	repeat	キーリピートの間隔(ms) 0で無効
+// 引数:	なし
 // 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool KEY6::Init( int repeat )
+/////////////////////////////////////////////////////////////////////////////
+bool KEY6::Init( void )
 {
 	PRINTD( KEY_LOG, "[KEY][Init]\n" );
+	
+	// 特殊キー フラグ初期化
+	Reset();
+	
+	return true;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// リセット
+//
+// 引数:	なし
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::Reset( void )
+{
+	PRINTD( KEY_LOG, "[KEY][Reset]\n" );
 	
 	// 特殊キー フラグ初期化
 	ON_SHIFT =
@@ -436,103 +463,76 @@ bool KEY6::Init( int repeat )
 	ON_CTRL  =
 	ON_STOP  =
 	ON_CAPS  = false;
-	
-	// キーリピート設定
-	if( repeat ) OSD_SetKeyRepeat( repeat );
-	
-	return true;
 }
 
 
-////////////////////////////////////////////////////////////////
-// カーソルキー状態取得
-//
-// 引数:	なし
-// 返値:	BYTE	カーソルキー等の状態 1:ON 0:OFF
-//				bit7: スペースキー
-//				bit6: 常に0
-//				bit5: 左
-//				bit4: 右
-//				bit3: 下
-//				bit2: 上
-//				bit1: STOP
-//				bit0: SHIFT
-////////////////////////////////////////////////////////////////
-BYTE KEY6::GetKeyJoy( void ) const
-{
-	PRINTD( KEY_LOG, "[KEY][GetKeyJoy]\n" );
-	
-	return	(~P6Mtrx[5]&0x80) | (~P6Mtrx[8]&0x20) | (~P6Mtrx[8]&0x10) | (~P6Mtrx[8]&0x08) |
-			(~P6Mtrx[8]&0x04) | (~P6Mtrx[8]&0x02) | (~P6Mtrx[0]&0x04)>>2;
-}
-
-
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // キーマトリクス更新(キー)
 //
 // 引数:	code	仮想キーコード
 //			pflag	押したフラグ true:押した false:離した
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void KEY6::UpdateMatrixKey( int code, bool pflag )
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::UpdateMatrixKey( PCKEYsym code, bool pflag )
 {
 	PRINTD( KEY_LOG, "[KEY][UpdateMatrixKey] %02X %s\n", code, pflag ? "PUSH" : "RELEASE" );
 	
-	// P6キーコードを取得
-	P6KEYsym P6Code = K6Table[code];
-	
-	// マトリクス更新(押したキーに対応するbitが0になる)
-	if( MatTable[P6Code] ){
-		BYTE matX = 1<<(MatTable[P6Code]&0x0f);
-		BYTE matY = (MatTable[P6Code]>>4)&0x0f;
+	try{
+		// P6キーコード->キーマトリクスを取得
+		BYTE mtx = MatTable.at( K6Table.at( code ) );
+		if( !mtx ) return;
+		
+		// マトリクス更新(押したキーに対応するbitが0になる)
+		BYTE matX = 1<<(mtx&0x0f);
+		BYTE matY = (mtx>>4)&0x0f;
 		
 		if( pflag ){
-			P6Matrix[matY] &= ~matX;
+			P6Matrix.at( matY ) &= ~matX;
 			
 			// 【キーリピート対応の暫定処置】
 			// リピート時はリリース情報が出力されないので
 			// 前回のマトリクスをリリースに書き換える。
 			// リピートをSDL任せにしている間の暫定処置で
 			// サブCPU側で処理するようになったら不要。
-			if( ~P6Matrix[matY+NOM]&matX ) P6Matrix[matY+NOM] |= matX;
+			if( ~P6Matrix.at( matY+NOM ) & matX ) P6Matrix.at( matY+NOM ) |= matX;
 		}else{
-			P6Matrix[matY] |=  matX;
+			P6Matrix.at( matY ) |=  matX;
 			//【キーを離した時の取りこぼし防止】
-			if( P6Matrix[matY+NOM]&matX ) P6Matrix[matY+NOM] &= ~matX;
+			if( P6Matrix.at( matY+NOM ) & matX ) P6Matrix.at( matY+NOM ) &= ~matX;
 		}
 	}
+	catch( std::out_of_range& ){}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // キーマトリクス更新(ジョイスティック)
 //
 // 引数:	joy1	ジョイスティック1の状態
 //			joy2	ジョイスティック2の状態
 // 返値:	なし
-////////////////////////////////////////////////////////////////
-void KEY6::UpdateMatrixJoy( BYTE joy1, BYTE joy2 )
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::UpdateMatrixJoy( const BYTE joy1, const BYTE joy2 )
 {
 	PRINTD( KEY_LOG, "[KEY][UpdateMatrixJoy] JOY1:%02X JOY2:%02X\n", joy1, joy2 );
 	
-	P6Matrix[NOM-2] = joy1;
-	P6Matrix[NOM-1] = joy2;
+	try{
+		P6Matrix.at( NOM-2 ) = joy1;
+		P6Matrix.at( NOM-1 ) = joy2;
+	}
+	catch( std::out_of_range& ){}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // キーマトリクススキャン
 //
 // 引数:	なし
 // 返値:	true:変化あり false:変化なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 bool KEY6::ScanMatrix( void )
 {
 	PRINTD( KEY_LOG, "[KEY][ScanMatrix] " );
-	
-	// キーマトリクスを保存
-	memcpy( P6Mtrx, P6Matrix, COUNTOF(P6Mtrx) );
 	
 	bool MatChg  = false;	// 前回のマトリクスと変化したかフラグ
 	bool KeyPUSH = false;	// キー押したフラグ
@@ -540,51 +540,45 @@ bool KEY6::ScanMatrix( void )
 	BYTE MatData = 0;		// P6のマトリクスコード(bit7-4:Y-1 bit3-0:X)
 	BYTE KeyData = 0;		// P6のキーコード
 	
-    static TiltDirection dir = NEWTRAL;
-
-	// 特殊キー判定(ON-OFF状態を判定)
-	ON_CTRL  = P6Mtrx[0] & 0x02 ? false : true;
-	ON_SHIFT = P6Mtrx[0] & 0x04 ? false : true;
-	ON_GRAPH = P6Mtrx[0] & 0x08 ? false : true;
-	// 前回のマトリクスと変化あり?
-    if( P6Mtrx[0] != P6Mtrx[0+NOM] ) MatChg = true;
+	// キーマトリクスを保存
+	P6Mtrx = P6Matrix;
 	
-	// 一般キー判定 キーマトリクスY1〜
-	for( int y=1; (y<(NOM-2))&&~KeyPUSH; y++ ){
+	try{
+		// 特殊キー判定(ON-OFF状態を判定) キーマトリクスY0
+		ON_CTRL  = P6Mtrx.at( 0 ) & 0x02 ? false : true;
+		ON_SHIFT = P6Mtrx.at( 0 ) & 0x04 ? false : true;
+		ON_GRAPH = P6Mtrx.at( 0 ) & 0x08 ? false : true;
 		// 前回のマトリクスと変化あり?
-		if( P6Mtrx[y] != P6Mtrx[y+NOM] ){
+		if( P6Mtrx.at( 0 ) != P6Mtrx.at( 0+NOM ) ) MatChg = true;
+	}
+	catch( std::out_of_range& ){}
+	
+	// 一般キー判定 キーマトリクスY1～
+	for( int y=1; (y<(NOM-2)) && !KeyPUSH; y++ ) try{
+		// 前回のマトリクスと変化あり?
+		if( P6Mtrx.at( y ) != P6Mtrx.at( y+NOM ) ){
 			MatChg = true;
 			// キー押した?
-			if( (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y+NOM] ){
+			if( (P6Mtrx.at( y ) ^ P6Mtrx.at( y+NOM )) & P6Mtrx.at( y+NOM ) ){
 				KeyPUSH = true;
-				for( int x=0; x<8; x++ ){
+				for( int x=0; x<8; x++ ) try{
 					// マトリクスコードセット bit7-4:Y-1 bit3-0:X
 					// 1->0 になったビットを検出
-					if( (~P6Mtrx[y]>>x)&1 && (P6Mtrx[y+NOM]>>x)&1 ){
+					if( (~P6Mtrx.at( y )>>x)&1 && (P6Mtrx.at( y+NOM )>>x)&1 ){
 						MatData = (y<<4) | (x&7);
 						break;
 					}
 				}
+				catch( std::out_of_range& ){}
 			}
 		}
 	}
-
-    // 左右カーソルキーを押した場合
-    if( (P6Mtrx[8] ^ P6Mtrx[8+NOM]) & P6Mtrx[8+NOM] & 0x10 ){
-        dir = RIGHT;
-    } else if( (P6Mtrx[8] ^ P6Mtrx[8+NOM]) & P6Mtrx[8+NOM] & 0x20 ){
-        dir = LEFT;
-    }
-    // 左右カーソルキーを離した場合
-    else if ((P6Mtrx[8] ^ P6Mtrx[8+NOM]) & P6Mtrx[NOM] & 0x10
-             || (P6Mtrx[8] ^ P6Mtrx[8+NOM]) & P6Mtrx[NOM] & 0x20 ){
-        dir = NEWTRAL;
-    }
-
+	catch( std::out_of_range& ){}
+	
 	if( KeyPUSH ){	// キー押した?
 		switch( MatData ){	// マトリクスコード
 		case 0x96:	// CAPS
-			ON_CAPS = ON_CAPS ? false : true;
+			ON_CAPS = !ON_CAPS;
 			ON_FUNC = true;
 			break;
 			
@@ -593,7 +587,7 @@ bool KEY6::ScanMatrix( void )
 			break;
 			
 		case 0x90:	// かな
-			ON_KANA = ON_KANA ? false : true;
+			ON_KANA = !ON_KANA;
 			ON_FUNC = true;
 			break;
 			
@@ -603,12 +597,12 @@ bool KEY6::ScanMatrix( void )
 			
 		case 0x93:	// PAGE or かな/カナ切り替え
 			if( ON_SHIFT ){
-				ON_KKANA = ON_KKANA ? false : true;
+				ON_KKANA = !ON_KKANA;
 				ON_FUNC  = true;
 			}
 			break;
 			
-		case 0x36:			// F01〜F05(ファンクションキー)
+		case 0x36:			// F01～F05(ファンクションキー)
 		case 0x46:
 		case 0x56:
 		case 0x66:
@@ -617,10 +611,10 @@ bool KEY6::ScanMatrix( void )
 			break;
 		}
 		
-		BYTE *KeyMap = (BYTE *)P6MxCode[MatData>>4].Keys[MatData&7];
+		BYTE* KeyMap = (BYTE*)P6MxCode[MatData>>4].Keys[MatData&7];
 		if( ON_FUNC ){
 			switch( MatData ){	// マトリクスコード
-			case 0x36:			// F01〜F05(ファンクションキー)
+			case 0x36:			// F01～F05(ファンクションキー)
 			case 0x46:
 			case 0x56:
 			case 0x66:
@@ -657,28 +651,18 @@ bool KEY6::ScanMatrix( void )
 	}
 	
 	// ジョイスティック判定
-	for( int y=NOM-2; y<NOM; y++ ){
+	for( int y=NOM-2; y<NOM; y++ ) try{
 		// 前回のマトリクスと変化あり?
-		if( P6Mtrx[y] != P6Mtrx[y+NOM] ) MatChg = true;
-
-        // 左右スティックを押した場合
-        if( (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y+NOM] & 0x08 ){
-            dir = RIGHT;
-        } else if( (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y+NOM] & 0x04 ){
-            dir = LEFT;
-        }
-        // 左右スティックを離した場合
-        else if( (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y] & 0x08
-                 || (P6Mtrx[y] ^ P6Mtrx[y+NOM]) & P6Mtrx[y] & 0x04){
-            dir = NEWTRAL;
-        }
-    }
+		if( P6Mtrx.at( y ) != P6Mtrx.at( y+NOM ) ) MatChg = true;
+	}
+	catch( std::out_of_range& ){}
 	
-    // TILTさせる
-    TiltScreen(dir);
-
-    // 変化があればキーマトリクス保存
-	if( MatChg ) memcpy( P6Matrix+NOM, P6Mtrx, NOM );
+	// 変化があればキーマトリクス保存
+	if( MatChg )
+		for( int i=0; i<NOM; i++ ) try{
+			P6Matrix.at( i+NOM ) = P6Mtrx.at( i );
+		}
+		catch( std::out_of_range& ){}
 	
 	PRINTD( KEY_LOG, "\n" );
 	
@@ -686,85 +670,59 @@ bool KEY6::ScanMatrix( void )
 }
 
 
-////////////////////////////////////////////////////////////////
-// キーマトリクスサイズ取得
+/////////////////////////////////////////////////////////////////////////////
+// キーマトリクス取得
 //
 // 引数:	なし
-// 返値:	int		キーマトリクスサイズ
-////////////////////////////////////////////////////////////////
-int KEY6::GetMatrixSize( void ) const
-{
-	return COUNTOF(P6Matrix);
-}
-
-
-////////////////////////////////////////////////////////////////
-// キーマトリクスポインタ取得
-//
-// 引数:	なし
-// 返値:	BYTE *	マトリクスデータへのポインタ
-////////////////////////////////////////////////////////////////
-BYTE *KEY6::GetMatrix( void )
+// 返値:	vector<BYTE>&	マトリクスデータ
+/////////////////////////////////////////////////////////////////////////////
+std::vector<BYTE>& KEY6::GetMatrix( void )
 {
 	return P6Matrix;
 }
 
 
-////////////////////////////////////////////////////////////////
-// キーマトリクスポインタ(保存用)取得
+/////////////////////////////////////////////////////////////////////////////
+// キーマトリクス(保存用)取得
 //
 // 引数:	なし
-// 返値:	BYTE *	マトリクスデータ(保存用)へのポインタ
-////////////////////////////////////////////////////////////////
-const BYTE *KEY6::GetMatrix2( void ) const
+// 返値:	vector<BYTE>&	マトリクスデータ(保存用)
+/////////////////////////////////////////////////////////////////////////////
+const std::vector<BYTE>& KEY6::GetMatrix2( void ) const
 {
 	return P6Mtrx;
 }
 
 
-////////////////////////////////////////////////////////////////
-// キーボードインジケータ状態取得
+/////////////////////////////////////////////////////////////////////////////
+// カーソルキー状態取得
 //
 // 引数:	なし
-// 返値:	BYTE	インジケータ状態
-//				KI_KANA:  かなモードON
-//				KI_KKANA: カタカナモードON
-//				KI_CAPS:  CAPS ON
-////////////////////////////////////////////////////////////////
-BYTE KEY6::GetKeyIndicator( void ) const
+// 返値:	BYTE	カーソルキー等の状態 1:ON 0:OFF
+//				bit7: スペースキー
+//				bit6: 常に0
+//				bit5: 左
+//				bit4: 右
+//				bit3: 下
+//				bit2: 上
+//				bit1: STOP
+//				bit0: SHIFT
+/////////////////////////////////////////////////////////////////////////////
+BYTE KEY6::GetKeyJoy( void ) const
 {
-	PRINTD( KEY_LOG, "[KEY][GetKeyIndicator] -> " );
+	PRINTD( KEY_LOG, "[KEY][GetKeyJoy]\n" );
 	
-	BYTE ret = 0;
-	
-	// かなキー
-	if( ON_KANA ) ret |= ON_KKANA ? KI_KKANA : KI_KANA;
-	
-	// CAPSキー
-	if( ON_CAPS ) ret |= KI_CAPS;
-	
-	PRINTD( KEY_LOG, "%d\n", ret );
-	
-	return ret;
-}
-
-
-////////////////////////////////////////////////////////////////
-// 仮想キーコード -> P6キーコード 設定
-//
-// 引数:	VKeyConv *	仮想キーコード -> P6キーコード定義構造体 先頭ポインタ
-// 返値:	なし
-////////////////////////////////////////////////////////////////
-void KEY6::SetVKeySymbols( VKeyConv *vcnv )
-{
-	while( vcnv->PCKey != KVC_LAST ){
-		K6Table[vcnv->PCKey] = vcnv->P6Key;
-		vcnv++;
+	try{
+		return	(~P6Mtrx.at( 5 )&0x80) | (~P6Mtrx.at( 8 )&0x20) | (~P6Mtrx.at( 8 )&0x10) | (~P6Mtrx.at( 8 )&0x08) |
+				(~P6Mtrx.at( 8 )&0x04) | (~P6Mtrx.at( 8 )&0x02) | (~P6Mtrx.at( 0 )&0x04)>>2;
+	}
+	catch( std::out_of_range& ){
+		return 0;
 	}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ジョイスティック状態取得
 //
 // 引数:	JoyNo	ジョイスティックの番号 ( 0 - 1 )
@@ -777,95 +735,142 @@ void KEY6::SetVKeySymbols( VKeyConv *vcnv )
 //				bit2: 左
 //				bit1: 上
 //				bit0: 下
-////////////////////////////////////////////////////////////////
-BYTE KEY6::GetJoy( int JoyNo ) const
+/////////////////////////////////////////////////////////////////////////////
+BYTE KEY6::GetJoy( const int JoyNo ) const
 {
-	return P6Mtrx[NOM-2+(JoyNo&1)] | 0xc0;
+	try{
+		return P6Mtrx.at( NOM-2+(JoyNo&1) ) | 0xc0;
+	}
+	catch( std::out_of_range& ){
+		return 0xff;
+	}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// キーボードインジケータ状態取得
+//
+// 引数:	なし
+// 返値:	BYTE	インジケータ状態
+//				KI_KANA		かなモードON
+//				KI_KKANA	カタカナモードON
+//				KI_CAPS		CAPS ON
+//				KI_SHIFT	SHIFT ON
+//				KI_GRAPH	GRAPH ON
+//				KI_CTRL		CTRL ON
+/////////////////////////////////////////////////////////////////////////////
+BYTE KEY6::GetKeyIndicator( void ) const
+{
+	PRINTD( KEY_LOG, "[KEY][GetKeyIndicator] -> " );
+	
+	BYTE ret = (ON_KANA  ? KI_KANA  : 0)
+			 | (ON_KKANA ? KI_KKANA : 0)
+			 | (ON_CAPS  ? KI_CAPS  : 0)
+			 | (ON_SHIFT ? KI_SHIFT : 0)
+			 | (ON_GRAPH ? KI_GRAPH : 0)
+			 | (ON_CTRL  ? KI_CTRL  : 0);
+	
+	PRINTD( KEY_LOG, "%d\n", ret );
+	
+	return ret;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 仮想キーコード -> P6キーコード 設定
+//
+// 引数:	vcnv	仮想キーコード -> P6キーコード定義構造体 先頭ポインタ
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::SetVKeySymbols( std::vector<VKeyConv>& vcnv )
+{
+	K6Table.clear();
+	for( auto &i : vcnv )
+		K6Table.emplace( i.PCKey, i.P6Key );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // 英字<->かな切換
 //
 // 引数:	なし
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void KEY6::ChangeKana( void )
 {
-	ON_KANA = ON_KANA ? false : true;
+	ON_KANA = !ON_KANA;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // かな<->カナ切換
 //
 // 引数:	なし
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void KEY6::ChangeKKana( void )
 {
-	ON_KKANA = ON_KKANA ? false : true;
+	ON_KKANA = !ON_KKANA;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
 // 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool KEY6::DokoSave( cIni *Ini )
+/////////////////////////////////////////////////////////////////////////////
+bool KEY6::DokoSave( cIni* Ini )
 {
-	char strva[256];
-	
 	if( !Ini ) return false;
 	
-	Ini->PutEntry( "KEY", NULL, "ON_KANA",		"%s",	ON_KANA  ? "Yes" : "No" );
-	Ini->PutEntry( "KEY", NULL, "ON_KKANA",		"%s",	ON_KKANA ? "Yes" : "No" );
-	Ini->PutEntry( "KEY", NULL, "ON_STOP",		"%s",	ON_STOP  ? "Yes" : "No" );
-	Ini->PutEntry( "KEY", NULL, "ON_CAPS",		"%s",	ON_CAPS  ? "Yes" : "No" );
+	Ini->SetVal( "KEY", "ON_KANA",	"", ON_KANA  );
+	Ini->SetVal( "KEY", "ON_KKANA",	"", ON_KKANA );
+	Ini->SetVal( "KEY", "ON_STOP",	"", ON_STOP  );
+	Ini->SetVal( "KEY", "ON_CAPS",	"", ON_CAPS  );
 	
-	for( int i=0; i<32; i++ ) sprintf( &strva[i*2], "%02X", P6Matrix[i] );
-	Ini->PutEntry( "KEY", NULL, "P6Matrix",		"%s",	strva );
-	for( int i=0; i<32; i++ ) sprintf( &strva[i*2], "%02X", P6Mtrx[i] );
-	Ini->PutEntry( "KEY", NULL, "P6Mtrx",		"%s",	strva );
+	std::string strva;
+	for( auto &i : P6Matrix )
+		strva += Stringf( "%02X", i );
+	Ini->SetEntry( "KEY", "P6Matrix",	"", strva.c_str() );
+	
+	strva.clear();
+	for( auto &i : P6Mtrx )
+		strva += Stringf( "%02X", i );
+	Ini->SetEntry( "KEY", "P6Mtrx",		"", strva.c_str() );
 	
 	return true;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // どこでもLOAD
 //
 // 引数:	Ini		INIオブジェクトポインタ
 // 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool KEY6::DokoLoad( cIni *Ini )
+/////////////////////////////////////////////////////////////////////////////
+bool KEY6::DokoLoad( cIni* Ini )
 {
-	char strva[256];
+	std::string strva;
 	
 	if( !Ini ) return false;
 	
-	Ini->GetTruth( "KEY", "ON_KANA",	&ON_KANA,	ON_KANA );
-	Ini->GetTruth( "KEY", "ON_KKANA",	&ON_KKANA,	ON_KKANA );
-	Ini->GetTruth( "KEY", "ON_STOP",	&ON_STOP,	ON_STOP );
-	Ini->GetTruth( "KEY", "ON_CAPS",	&ON_CAPS,	ON_CAPS );
+	Ini->GetVal( "KEY", "ON_KANA",	ON_KANA  );
+	Ini->GetVal( "KEY", "ON_KKANA",	ON_KKANA );
+	Ini->GetVal( "KEY", "ON_STOP",	ON_STOP  );
+	Ini->GetVal( "KEY", "ON_CAPS",	ON_CAPS  );
 	
-	memset( strva, 'F', 32*2 );
-	if( Ini->GetString( "KEY", "P6Matrix", strva, strva ) ){
-		for( int i=0; i<32; i++ ){
-			char dt[5] = "0x";
-			strncpy( &dt[2], &strva[i*2], 2 );
-			P6Matrix[i] = strtol( dt, NULL, 16 );
-		}
+	if( Ini->GetEntry( "KEY", "P6Matrix", strva ) ){
+		strva.resize( P6Matrix.size() * 2, 'F' );
+		int i = 0;
+		for( auto &m : P6Matrix )
+			m = std::stoul( strva.substr( i++ * 2, 2 ), nullptr, 16 );
 	}
-	memset( strva, 'F', 32*2 );
-	if( Ini->GetString( "KEY", "P6Mtrx", strva, strva ) ){
-		for( int i=0; i<32; i++ ){
-			char dt[5] = "0x";
-			strncpy( &dt[2], &strva[i*2], 2 );
-			P6Mtrx[i] = strtol( dt, NULL, 16 );
-		}
+	if( Ini->GetEntry( "KEY", "P6Mtrx", strva ) ){
+		strva.resize( P6Mtrx.size() * 2, 'F' );
+		int i = 0;
+		for( auto &m : P6Mtrx )
+			m = std::stoul( strva.substr( i++ * 2, 2 ), nullptr, 16 );
 	}
 	
 	return true;

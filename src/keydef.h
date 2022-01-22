@@ -1,6 +1,12 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef KEYDEF_H_INCLUDED
 #define KEYDEF_H_INCLUDED
 
+#include <string>
+#include "typedef.h"
 
 // P6キーコード定義
 typedef enum {
@@ -270,6 +276,7 @@ typedef enum {
 #define KVM_ALT		(KVM_LALT|KVM_RALT)
 #define KVM_META	(KVM_LMETA|KVM_RMETA)
 
+
 // 仮想キーコード -> P6キーコード定義
 typedef struct {
 	PCKEYsym PCKey;		// 仮想キーコード
@@ -279,25 +286,33 @@ typedef struct {
 
 // 仮想キーコード 名称定義
 typedef struct {
-	PCKEYsym PCKey;		// 仮想キーコード
-	const char *Name;	// キー名
+	PCKEYsym Key;		// 仮想キーコード
+	std::string Name;	// キー名
 } PCKeyName;
 
 
 // P6キーコード 名称定義
 typedef struct {
-	P6KEYsym P6Key;		// P6キーコード
-	const char *Name;	// キー名
+	P6KEYsym Key;		// P6キーコード
+	std::string Name;	// キー名
 } P6KeyName;
+
+
+// P6キーコード -> P6キーマトリクス定義
+typedef struct {
+	P6KEYsym P6Key;		// P6キーコード
+	BYTE Mat;			// P6のキーマトリクス(bit7-4:Y bit3-0:X)
+} P6KeyMatrix;
+
+
 // マウスボタン定義
 typedef enum {
 	MBT_NONE		= 0,
 	MBT_LEFT		= 1,
 	MBT_MIDDLE		= 2,
-	MBT_RIGHT		= 3,
-	MBT_WHEELUP		= 4,
-	MBT_WHEELDOWN	= 5
+	MBT_RIGHT		= 3
 } MouseButton;
+
 
 
 #endif	// KEYDEF_H_INCLUDED

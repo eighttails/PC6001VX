@@ -1,86 +1,129 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef OSD_H_INCLUDED
 #define OSD_H_INCLUDED
 
 // OS依存の汎用ルーチン(主にUI用)
 
+#include <fstream>
+#include <iostream>
+#include <string>
+
 #include "event.h"
-#include "typedef.h"
 #include "keydef.h"
+#include "typedef.h"
 #include "vsurface.h"
 
 
+// ピクセルフォーマット
+enum PixelFMT{ PX32ARGB, PX24RGB, PX24BGR, PX16RGB };
 
 // ファイル選択ダイアログ用
 enum FileMode{ FM_Load, FM_Save };
 enum FileDlg{ FD_TapeLoad, FD_TapeSave, FD_Disk, FD_ExtRom, FD_Printer, FD_FontZ, FD_FontH,
-			  FD_DokoLoad, FD_DokoSave, FD_RepLoad, FD_RepSave, FD_AVISave, FD_LoadAll, EndofFileDlg };
+			  FD_DokoLoad, FD_DokoSave, FD_RepLoad, FD_RepSave, FD_AVISave, FD_LoadAll };
 
-// --- 文字列操作関数 ---
-// 小文字による文字列比較
-//   stricmp 関数は not ANSI,not POSIXでした。MSの独自拡張かな?
-#ifndef stricmp
-int stricmp ( const char *, const char * );
-#endif
+// イベントState
+enum EventState{ EVS_QUERY, EVS_DISABLE, EVS_ENABLE };
 
-// --- プロセス管理関数 ---
+
+/////////////////////////////////////////////////////////////////////////////
+// プロセス管理関数
+/////////////////////////////////////////////////////////////////////////////
 // 初期化
 bool OSD_Init();
+// 初期化Sub(ライブラリ依存処理等)
+bool OSD_Init_Sub();
 // 終了処理
 void OSD_Quit();
+// 終了処理Sub(ライブラリ依存処理等)
+void OSD_Quit_Sub();
 // 多重起動チェック
 bool OSD_IsWorking();
+// OSDキーコード -> 仮想キーコード変換
+PCKEYsym OSD_ConvertKeyCode( int scode );
 
-// --- パス名処理関数 ---
+/////////////////////////////////////////////////////////////////////////////
+// パス名処理関数
+/////////////////////////////////////////////////////////////////////////////
+// 設定ファイルパス取得
+const P6VPATH& OSD_GetConfigPath();
 // パスの末尾にデリミタを追加
-void OSD_AddDelimiter( char * );
+void OSD_AddDelimiter( P6VPATH& );
 // パスの末尾のデリミタを削除
-void OSD_DelDelimiter( char * );
+void OSD_DelDelimiter( P6VPATH& );
 // 相対パス化
-void OSD_RelativePath( char * );
+void OSD_RelativePath( P6VPATH& );
 // 絶対パス化
-void OSD_AbsolutePath( char * );
+void OSD_AbsolutePath( P6VPATH& );
 // パス結合
-void OSD_AddPath( char *, const char *, const char * );
-
-// --- ファイル操作関数 ---
-// 設定ファイルパス作成
-bool OSD_CreateModulePath();
-// モジュールパス取得
-const char *OSD_GetModulePath();
-// ファイルの存在チェック
-bool OSD_FileExist( const char * );
-// ファイルの読取り専用チェック
-bool OSD_FileReadOnly( const char * );
-// パスからファイル名を取得
-const char *OSD_GetFileNamePart( const char * );
+void OSD_AddPath( P6VPATH&, const P6VPATH&, const P6VPATH& );
 // パスからフォルダ名を取得
-const char *OSD_GetFolderNamePart( const char * );
-// フルパスから拡張子名を取得
-const char *OSD_GetFileNameExt( const char * );
+const std::string OSD_GetFolderNamePart( const P6VPATH& );
+// パスからファイル名を取得
+const std::string OSD_GetFileNamePart( const P6VPATH& );
+// パスから拡張子名を取得
+const std::string OSD_GetFileNameExt( const P6VPATH& );
+// 拡張子名を変更
+bool OSD_ChangeFileNameExt( P6VPATH&, const std::string& );
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ファイル操作関数
+/////////////////////////////////////////////////////////////////////////////
+// ファイルを開く
+FILE* OSD_Fopen( const P6VPATH&, const std::string& );
+// ファイルストリームを開く
+bool OSD_FSopen( std::fstream&, const P6VPATH&, const std::ios_base::openmode );
+// フォルダを作成
+bool OSD_CreateFolder( const P6VPATH& );
+// ファイルの存在チェック
+bool OSD_FileExist( const P6VPATH& );
+// ファイルサイズ取得
+DWORD OSD_GetFileSize( const P6VPATH& );
+// ファイルの読取り専用チェック
+bool OSD_FileReadOnly( const P6VPATH& );
+// ファイル名を変更
+bool OSD_FileRename( const P6VPATH&, const P6VPATH& );
+// ファイルを削除
+bool OSD_FileDelete( const P6VPATH& );
+// ファイルを探す
+bool OSD_FindFile( const P6VPATH&, const P6VPATH&, std::vector<P6VPATH>&, size_t = 0 );
 // フォルダの参照
-const char *OSD_FolderDiaog( HWINDOW, char * );
-// ファイルの参照
-const char *OSD_FileDiaog( HWINDOW, FileMode, const char *, const char *, char *, char *, const char * );
+bool OSD_FolderDiaog( HWINDOW, P6VPATH& );
 // 各種ファイル選択
-const char *OSD_FileSelect( HWINDOW, FileDlg, char *, char * );
+bool OSD_FileSelect( HWINDOW, FileDlg, P6VPATH&, P6VPATH& );
 
-// --- メッセージ表示関数 ---
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// メッセージ表示関数
+/////////////////////////////////////////////////////////////////////////////
 // メッセージ表示
-int OSD_Message( const char *, const char *, int );
+int OSD_Message( HWINDOW, const std::string&, const std::string&, int );
 
-// --- キー入力処理関数 ---
+
+/////////////////////////////////////////////////////////////////////////////
+// キー入力処理関数
+/////////////////////////////////////////////////////////////////////////////
 // キーリピート設定
 void OSD_SetKeyRepeat( int );
-// OSDキーコード -> 仮想キーコード変換
-PCKEYsym OSD_ConvertKeyCode( int );
 
-// --- ジョイスティック処理関数 ---
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティック処理関数
+/////////////////////////////////////////////////////////////////////////////
 // 利用可能なジョイスティック数取得
 int OSD_GetJoyNum();
 // ジョイスティック名取得
-const char *OSD_GetJoyName( int );
+const std::string OSD_GetJoyName( int );
 // ジョイスティックオープンされてる？
-bool OSD_OpenedJoy( int );
+bool OSD_OpenedJoy( HJOYINFO );
 // ジョイスティックオープン
 HJOYINFO OSD_OpenJoy( int );
 // ジョイスティッククローズ
@@ -89,94 +132,114 @@ void OSD_CloseJoy( HJOYINFO );
 int OSD_GetJoyNumAxes( HJOYINFO );
 // ジョイスティックのボタンの数取得
 int OSD_GetJoyNumButtons( HJOYINFO );
-// ジョイスティックの状態を更新
-void OSD_UpdateJoy();
 // ジョイスティックの軸の状態取得
 int OSD_GetJoyAxis( HJOYINFO, int );
 // ジョイスティックのボタンの状態取得
 bool OSD_GetJoyButton( HJOYINFO, int );
 
-// --- サウンド関連関数 ---
+
+/////////////////////////////////////////////////////////////////////////////
+// サウンド関連関数
+/////////////////////////////////////////////////////////////////////////////
 // オーディオデバイスオープン
-bool OSD_OpenAudio( void *, CBF_SND, int, int );
+bool OSD_OpenAudio( void*, CBF_SND, int, int );
 // オーディオデバイスクローズ
 void OSD_CloseAudio();
 // 再生開始
 void OSD_StartAudio();
 // 再生停止
 void OSD_StopAudio();
-// オーディオストリーム書き込み
-void OSD_WriteAudioStream(BYTE *stream, int samples);
 // 再生状態取得
 bool OSD_AudioPlaying();
 // Waveファイル読込み
-bool OSD_LoadWAV( const char *, BYTE **, DWORD *, int * );
+bool OSD_LoadWAV( const P6VPATH&, BYTE**, DWORD*, int* );
 // Waveファイル開放
-void OSD_FreeWAV( BYTE * );
+void OSD_FreeWAV( BYTE* );
 // オーディオをロックする
 void OSD_LockAudio();
 // オーディオをアンロックする
 void OSD_UnlockAudio();
 
-// --- タイマ関連関数 ---
+
+/////////////////////////////////////////////////////////////////////////////
+// タイマ関連関数
+/////////////////////////////////////////////////////////////////////////////
 // 指定時間待機
 void OSD_Delay( DWORD );
 // プロセス開始からの経過時間取得
 DWORD OSD_GetTicks();
 // タイマ追加
-HTIMERID OSD_AddTimer( DWORD, CBF_TMR, void * );
+TIMERID OSD_AddTimer( DWORD, CBF_TMR, void * );
 // タイマ削除
-bool OSD_DelTimer( HTIMERID );
+bool OSD_DelTimer( TIMERID );
 
-// --- ウィンドウ関連関数 ---
-// キャプション設定
-void OSD_SetWindowCaption( HWINDOW, const char * );
-// マウスカーソル表示/非表示
-void OSD_ShowCursor( bool );
+
+/////////////////////////////////////////////////////////////////////////////
+// ウィンドウ関連関数
+/////////////////////////////////////////////////////////////////////////////
 // ウィンドウ作成
-bool OSD_CreateWindow( HWINDOW *, int, int, bool );
+bool OSD_CreateWindow( HWINDOW*, const int, const int, const int, const int, const bool, const bool, const int );
 // ウィンドウ破棄
 void OSD_DestroyWindow( HWINDOW );
 // ウィンドウの幅を取得
 int OSD_GetWindowWidth( HWINDOW );
 // ウィンドウの高さを取得
 int OSD_GetWindowHeight( HWINDOW );
+// フルスクリーン?
+bool OSD_IsFullScreen( HWINDOW );
+// フィルタリング有効?
+bool OSD_IsFiltering( HWINDOW );
+// ウィンドウのサイズ変更可否設定
+void OSD_SetWindowResizable( HWINDOW, bool );
 // ウィンドウクリア
 void OSD_ClearWindow( HWINDOW );
-// パレット設定
-bool OSD_SetPalette( HWINDOW, VPalette * );
 // ウィンドウ反映
 void OSD_RenderWindow( HWINDOW );
 // ウィンドウに転送(等倍)
-void OSD_BlitToWindow( HWINDOW, VSurface *, const int, const int );
+void OSD_BlitToWindow( HWINDOW, VSurface*, const int, const int );
 // ウィンドウに転送(拡大等)
-void OSD_BlitToWindowEx( HWINDOW, VSurface *, const int, const int, const int, const bool, const bool, const int );
+void OSD_BlitToWindowEx( HWINDOW, VSurface*,  const VRect*, const bool );
 // ウィンドウのイメージデータ取得
-bool OSD_GetWindowImage( HWINDOW, void **, VRect * );
+bool OSD_GetWindowImage( HWINDOW, std::vector<BYTE>&, VRect*, PixelFMT );
 // アイコン設定
 void OSD_SetIcon( HWINDOW, int );
+// キャプション設定
+void OSD_SetWindowCaption( HWINDOW, const std::string& );
+// マウスカーソル表示/非表示
+void OSD_ShowCursor( bool );
 // OS依存のウィンドウハンドルを取得
-void *OSD_GetWindowHandle( HWINDOW );
-
+void* OSD_GetWindowHandle( HWINDOW );
 // 環境設定ダイアログ表示
 int OSD_ConfigDialog( HWINDOW hwnd );
 // バージョン情報表示
 void OSD_VersionDialog( HWINDOW, int );
 
-// --- イベント処理関連関数 ---
+
+/////////////////////////////////////////////////////////////////////////////
+// イベント処理関連関数
+/////////////////////////////////////////////////////////////////////////////
+// イベントキュークリア
+void OSD_FlushEvents();
 // イベント取得(イベントが発生するまで待つ)
-bool OSD_GetEvent( Event * );
+bool OSD_GetEvent( Event* );
 // イベントをキューにプッシュする
 bool OSD_PushEvent( EventType, ... );
 bool OSD_PushEvent(const Event& ev);
+// キューに指定のイベントが存在するか調査する
+bool OSD_HasEvent( EventType );
+// イベント処理の状態を種類ごとに設定する
+bool OSD_EventState( EventType, EventState );
 
-// --- その他の雑関数 ---
-// 色の名前取得
-const char *OSD_ColorName( int );
-// キーの名前取得
-const char *OSD_KeyName( PCKEYsym );
+
+/////////////////////////////////////////////////////////////////////////////
+// その他の雑関数
+/////////////////////////////////////////////////////////////////////////////
 // フォントファイル作成
-bool OSD_CreateFont( const char *, const char *, int );
+bool OSD_CreateFont( const P6VPATH&, const P6VPATH&, int );
+// ShiftJIS -> UTF-8
+bool OSD_SJIStoUTF8( std::string& );
+// UTF-8 -> ShiftJIS
+bool OSD_UTF8toSJIS( std::string& );
 
 
 // メッセージボックスのタイプ
@@ -196,126 +259,6 @@ bool OSD_CreateFont( const char *, const char *, int );
 #define	OSDR_CANCEL			0x01
 #define	OSDR_YES			0x02
 #define	OSDR_NO				0x03
-
-
-// --- メッセージ配列 ---
-// 一般メッセージ
-extern const char *MsgStr[];
-#define	MSG_QUIT			MsgStr[0]	// "終了してよろしいですか?"
-#define	MSG_QUITC			MsgStr[1]	// "終了確認"
-#define	MSG_RESTART0		MsgStr[2]	// "再起動してよろしいですか?"
-#define	MSG_RESTART			MsgStr[3]	// "変更は再起動後に有効となります。\n今すぐ再起動しますか?"
-#define	MSG_RESTARTC		MsgStr[4]	// "再起動確認"
-#define	MSG_RESETI			MsgStr[5]	// "拡張ROMを挿入してリセットします。"
-#define	MSG_RESETE			MsgStr[6]	// "拡張ROMを排出してリセットします。"
-#define	MSG_RESETC			MsgStr[7]	// "リセット確認"
-
-
-// メニュー用メッセージ ------
-extern const char *MsgMen[];
-// [システム]
-#define	MSMEN_AVI0			MsgMen[0]	// "ビデオキャプチャ..."
-#define	MSMEN_AVI1			MsgMen[1]	// "ビデオキャプチャ停止"
-#define	MSMEN_REP0			MsgMen[2]	// "記録..."  (リプレイ)
-#define	MSMEN_REP1			MsgMen[3]	// "記録停止" (リプレイ)
-#define	MSMEN_REP2			MsgMen[4]	// "再生..."  (リプレイ)
-#define	MSMEN_REP3			MsgMen[5]	// "再生停止" (リプレイ)
-
-
-// INIファイル用メッセージ ------
-extern const char *MsgIni[];
-// [CONFIG]
-#define	MSINI_TITLE			MsgIni[0]	// "; === PC6001V 初期設定ファイル ===\n\n"
-#define	MSINI_Model			MsgIni[1]	// " 機種 60:PC-6001 61:PC-6001A 62:PC-6001mk2 66:PC-6601 64:PC-6001mk2SR 68:PC-6601SR"
-#define	MSINI_FDD			MsgIni[2]	// " FDD接続台数 (0-2)"
-#define	MSINI_ExtRam		MsgIni[3]	// " 拡張RAM使用"
-#define	MSINI_TurboTAPE		MsgIni[4]	// " Turbo TAPE Yes:有効 No:無効"
-#define	MSINI_BoostUp		MsgIni[5]	// " BoostUp Yes:有効 No:無効"
-#define	MSINI_MaxBoost60	MsgIni[6]	// " BoostUp 最大倍率(N60モード)
-#define	MSINI_MaxBoost62	MsgIni[7]	// " BoostUp 最大倍率(N60m/N66モード)
-#define	MSINI_OverClock		MsgIni[8]	// " オーバークロック率 (1-1000)%"
-#define	MSINI_CheckCRC		MsgIni[9]	// " CRCチェック Yes:有効 No:無効"
-#define	MSINI_RomPatch		MsgIni[10]	// " ROMパッチ Yes:あてる No:あてない"
-#define	MSINI_FDDWait		MsgIni[11]	// " FDDウェイト Yes:有効 No:無効"
-// [DISPLAY]
-#define	MSINI_Mode4Color	MsgIni[12]	// " MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク"
-#define	MSINI_ScanLine		MsgIni[13]	// " スキャンライン Yes:あり No:なし"
-#define	MSINI_ScanLineBr	MsgIni[14]	// " スキャンライン輝度 (0-100)%"
-#define	MSINI_DispNTSC		MsgIni[15]	// " 4:3表示 Yes:有効 No:無効"
-#define	MSINI_FullScreen	MsgIni[16]	// " フルスクリーンモード Yes:有効 No:無効"
-#define	MSINI_DispStatus	MsgIni[17]	// " ステータスバー Yes:表示 No:非表示"
-#define	MSINI_FrameSkip		MsgIni[18]	// " フレームスキップ"
-// [SOUND]
-#define	MSINI_SampleRate	MsgIni[19]	// " サンプリングレート (44100/22050/11025)Hz"
-#define	MSINI_SoundBuffer	MsgIni[20]	// " サウンドバッファサイズ"
-#define	MSINI_MasterVolume	MsgIni[21]	// " マスター音量 (0-100)"
-#define	MSINI_PsgVolume		MsgIni[22]	// " PSG音量 (0-100)"
-#define	MSINI_VoiceVolume	MsgIni[23]	// " 音声合成音量 (0-100)"
-#define	MSINI_TapeVolume	MsgIni[24]	// " TAPEモニタ音量 (0-100)"
-#define	MSINI_PsgLPF		MsgIni[25]	// " PSG LPFカットオフ周波数(0で無効)"
-// [MOVIE]
-#define	MSINI_AviBpp		MsgIni[26]	// " ビデオキャプチャ色深度 (16,24,32)"
-// [FILES]
-#define	MSINI_ExtRom		MsgIni[27]	// " 拡張ROMファイル名"
-#define	MSINI_tape			MsgIni[28]	// " TAPE(LODE)ファイル名(起動時に自動マウント)"
-#define	MSINI_save			MsgIni[29]	// " TAPE(SAVE)ファイル名(SAVE時に自動マウント)"
-#define	MSINI_disk1			MsgIni[30]	// " DISK1ファイル名(起動時に自動マウント)"
-#define	MSINI_disk2			MsgIni[31]	// " DISK2ファイル名(起動時に自動マウント)"
-#define	MSINI_printer		MsgIni[32]	// " プリンタ出力ファイル名"
-#define	MSINI_fontz			MsgIni[33]	// " 全角フォントファイル名"
-#define	MSINI_fonth			MsgIni[34]	// " 半角フォントファイル名"
-// [PATH]
-#define	MSINI_RomPath		MsgIni[35]	// " ROMイメージ格納パス"
-#define	MSINI_TapePath		MsgIni[36]	// " TAPEイメージ格納パス"
-#define	MSINI_DiskPath		MsgIni[37]	// " DISKイメージ格納パス"
-#define	MSINI_ExtRomPath	MsgIni[38]	// " 拡張ROMイメージ格納パス"
-#define	MSINI_ImgPath		MsgIni[39]	// " スナップショット格納パス"
-#define	MSINI_WavePath		MsgIni[40]	// " WAVEファイル格納パス"
-#define	MSINI_FontPath		MsgIni[41]	// " FONT格納パス"
-#define	MSINI_DokoSavePath	MsgIni[42]	// " どこでもSAVE格納パス"
-// [CHECK]
-#define	MSINI_CkQuit		MsgIni[43]	// " 終了時確認 Yes:する No:しない"
-#define	MSINI_SaveQuit		MsgIni[44]	// " 終了時INIファイルを保存 Yes:する No:しない"
-// [KEY]
-#define	MSINI_KeyRepeat		MsgIni[45]	// " キーリピートの間隔(単位:ms 0で無効)"
-// [OPTION]
-#define	MSINI_UseSoldier	MsgIni[46]	// " 戦士のカートリッジ Yes:有効 No:無効"
-
-
-// どこでもSAVE用メッセージ ------
-extern const char *MsgDok[];
-#define	MSDOKO_TITLE		MsgDok[0]	// "; === PC6001V どこでもSAVEファイル ===\n\n"
-
-
-// Error用メッセージ ------
-extern const char *MsgErr[];
-#define	MSERR_ERROR				MsgErr[0]	// "Error"
-#define	MSERR_NoError			MsgErr[1]	// "エラーはありません"
-#define	MSERR_Unknown			MsgErr[2]	// "原因不明のエラーが発生しました"
-#define	MSERR_MemAllocFailed	MsgErr[3]	// "メモリの確保に失敗しました"
-#define	MSERR_RomChange			MsgErr[4]	// "指定された機種のROMイメージが見つからないため機種を変更しました\n設定を確認してください"
-#define	MSERR_NoRom				MsgErr[5]	// "ROMイメージが見つかりません\n設定とファイル名を確認してください"
-#define	MSERR_RomSizeNG			MsgErr[6]	// "ROMイメージのサイズが不正です"
-#define	MSERR_RomCrcNG			MsgErr[7]	// "ROMイメージのCRCが不正です"
-#define	MSERR_LibInitFailed		MsgErr[8]	// "ライブラリの初期化に失敗しました"
-#define	MSERR_InitFailed		MsgErr[9]	// "初期化に失敗しました\n設定を確認してください"
-#define	MSERR_FontLoadFailed	MsgErr[10]	// "フォントの読込みに失敗しました"
-#define	MSERR_FontCreateFailed	MsgErr[11]	// "フォントファイルの作成に失敗しました"
-#define	MSERR_IniDefault		MsgErr[12]	// "INIファイルの読込みに失敗しました\nデフォルト設定で起動します"
-#define	MSERR_IniReadFailed		MsgErr[13]	// "INIファイルの読込みに失敗しました"
-#define	MSERR_IniWriteFailed	MsgErr[14]	// "INIファイルの保存に失敗しました"
-#define	MSERR_TapeMountFailed	MsgErr[15]	// "TAPEイメージのマウントに失敗しました"
-#define	MSERR_DiskMountFailed	MsgErr[16]	// "DISKイメージのマウントに失敗しました"
-#define	MSERR_ExtRomMountFailed	MsgErr[17]	// "拡張ROMイメージのマウントに失敗しました"
-#define	MSERR_DokoReadFailed	MsgErr[18]	// "どこでもLOADに失敗しました"
-#define	MSERR_DokoWriteFailed	MsgErr[19]	// "どこでもSAVEに失敗しました"
-#define	MSERR_DokoDiffVersion	MsgErr[20]	// "どこでもLOADに失敗しました\n保存時とPC6001Vのバージョンが異なります"
-#define	MSERR_ReplayPlayError	MsgErr[21]	// "リプレイ再生に失敗しました"
-#define	MSERR_ReplayRecError	MsgErr[22]	// "リプレイ記録に失敗しました"
-#define	MSERR_NoReplayData		MsgErr[23]	// "リプレイデータがありません"
-
-
-
 
 
 #endif	// OSD_H_INCLUDED

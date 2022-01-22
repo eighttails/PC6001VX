@@ -1,61 +1,58 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef SOUND_H_INCLUDED
 #define SOUND_H_INCLUDED
+
+#include <memory>
+#include <deque>
 
 #include "semaphore.h"
 
 
-// ストリームの最大数
-// PSG/OPN
-// TAPE
-// VOICE
-// FMカートリッジ
-#define	MAXSTREAM	(4)
-
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // リングバッファオブジェクト
-class cRing : public cCritical {
+class cRing {
 private:
-	int *Buffer;			// バッファへのポインタ
-	
-	int Size;				// バッファサイズ(データ数)
-	int Wpt;				// 書込みポインタ
-	int Rpt;				// 読込みポインタ
-	int Num;				// 未読データ数
+	std::deque<int32_t> Buffer;	// バッファ
+	int Size;					// バッファサイズ(データ数)
+	mutable cMutex Mutex;
 	
 public:
-	cRing();								// コンストラクタ
-	virtual ~cRing();						// デストラクタ
+	cRing();
+	virtual ~cRing();
 	
 	bool InitBuffer( int );					// バッファ初期化
 	
 	virtual int Get();						// 読込み
-	virtual bool Put( int );				// 書込み
+	virtual void Put( int );				// 書込み
 	
-	int ReadySize();						// 未読データ数取得
-	int FreeSize();							// 残りバッファ取得
-	int GetSize();							// バッファサイズ取得
+	int ReadySize() const;					// 未読データ数取得
+	int FreeSize( bool = false ) const;		// 残りバッファ取得
+	int GetSize() const;					// バッファサイズ取得
 };
 
 
 // サウンドデバイスオブジェクト
 class SndDev : public cRing {
 protected:
-	int SampleRate;			// サンプルレート
-	int Volume;				// 音量
-	int LPF_Mem;			// ローパスフィルタ用ワーク
-	int LPF_fc;				// ローパスフィルタカットオフ周波数
+	int SampleRate;				// サンプルレート
+	int Volume;					// 音量
+	int LPF_Mem;				// ローパスフィルタ用ワーク
+	int LPF_fc;					// ローパスフィルタカットオフ周波数
 	
 	int LPF( int );							// ローパスフィルタ
 	
 public:
-	SndDev();								// コンストラクタ
-	virtual ~SndDev();						// デストラクタ
+	SndDev();
+	virtual ~SndDev();
 	
 	virtual bool Init( int );				// 初期化
 	
-	int Get();								// 読込み
+	int Get() override;						// 読込み
 	
 	void SetLPF( int );						// ローパスフィルタ カットオフ周波数設定
 	virtual bool SetSampleRate( int, int );	// サンプリングレート設定
@@ -67,32 +64,33 @@ public:
 // サウンドオブジェクト
 class SND6 : public cRing {
 private:
-	SndDev *RB[MAXSTREAM];	// ストリームポインタ配列
-	int Volume;				// マスター音量
-	int SampleRate;			// サンプリングレート
-	int BSize;				// バッファサイズ(倍率)
-	CBF_SND CbFunc;			// コールバック関数へのポインタ
-	void *CbData;			// コールバック関数に渡すデータ
+	std::vector<std::shared_ptr<SndDev>> sdev;	// ストリームポインタ配列
+	int Volume;					// マスター音量
+	int SampleRate;				// サンプリングレート
+	int BSize;					// バッファサイズ(倍率)
+	CBF_SND CbFunc;				// コールバック関数へのポインタ
+	void* CbData;				// コールバック関数に渡すデータ
 	
 public:
-	SND6();									// コンストラクタ
-	~SND6();								// デストラクタ
+	SND6();
+	~SND6();
 	
-	bool Init( void *, CBF_SND, int, int );	// 初期化
+	bool Init( void*, CBF_SND, int, int );	// 初期化
 	
-	bool ConnectStream( SndDev * );			// ストリーム接続
+	bool ConnectStream( const std::shared_ptr<SndDev>& );	// ストリーム接続
 	
 	void Play();							// 再生
 	void Pause();							// 停止
 	
-	bool SetSampleRate( int );				// サンプリングレート設定
+	bool SetSampleRate( int, int = 0 );		// サンプリングレート設定
 	int GetSampleRate();					// サンプリングレート取得
-	void SetVolume( int );					// マスター音量設定
 	
 	int GetBufferSize();					// バッファサイズ(倍率)取得
 	
-	int PreUpdate( int, cRing * = NULL );	// サウンド事前更新関数
-    void Update();				// サウンド更新関数
+	void SetVolume( int );					// マスター音量設定
+	
+	int PreUpdate( int, cRing* = nullptr );	// サウンド事前更新関数
+	void Update( BYTE*, int );				// サウンド更新関数
 };
 
 #endif	// SOUND_H_INCLUDED

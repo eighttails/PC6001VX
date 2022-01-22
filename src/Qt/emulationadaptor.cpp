@@ -3,13 +3,13 @@
 
 EmulationAdaptor::EmulationAdaptor(QObject *parent)
 	: QObject(parent)
-	, P6Core(NULL)
+	, P6Core(nullptr)
 	, RetCode(EL6::Quit)
 {
 }
 
-void EmulationAdaptor::doEventLoop()
+void EmulationAdaptor::doEventLoop(EL6::ReturnCode rc)
 {
-	RetCode = P6Core->EventLoop();
+    RetCode = P6Core->EventLoop(rc);
 	emit finished();
 }

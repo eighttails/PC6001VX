@@ -1,8 +1,15 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
+#include <fstream>
+
 #include "config.h"
-#include "pio.h"
 #include "intr.h"
+#include "osd.h"
 #include "p6vm.h"
-#include "common.h"
+#include "pio.h"
+
 
 /*
 BASIC ROM内ルーチン
@@ -79,96 +86,113 @@ bit6 WIE		CPUに対するデータ書込み要求割り込みの許可フラグ�
 
 
 // ハンドシェイク用制御ビット
-//#define	HS_INT	(0x08)	/* bit3 */
-//#define	HS_STB	(0x10)	/* bit4 */
-//#define	HS_IBF	(0x20)	/* bit5 */
-//#define	HS_DAK	(0x40)	/* bit6 */
-//#define	HS_OBF	(0x80)	/* bit7 */
+//#define	HS_INT	(0x08)	// bit3
+//#define	HS_STB	(0x10)	// bit4
+//#define	HS_IBF	(0x20)	// bit5
+//#define	HS_DAK	(0x40)	// bit6
+//#define	HS_OBF	(0x80)	// bit7
 
-//#define	HS_RIE	(0x10)	/* bit4 */
-//#define	HS_WIE	(0x40)	/* bit6 */
+//#define	HS_RIE	(0x10)	// bit4
+//#define	HS_WIE	(0x40)	// bit6
 
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-cPRT::cPRT() : fp(NULL), pdata(0), strb(false)
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+cPRT::cPRT() : FilePath( "" ), pdata( 0 ), strb( false )
 {
-	INITARRAY( FilePath, '\0' );
 }
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
 cPRT::~cPRT()
 {
-	if( fp ) fclose( fp );
 }
 
 
-////////////////////////////////////////////////////////////////
-// 初期化
-////////////////////////////////////////////////////////////////
-void cPRT::Init( const char *filename )
+/////////////////////////////////////////////////////////////////////////////
+// プリンタ出力ファイル名設定
+//
+// 引数:	filepath	出力ファイルパス
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void cPRT::SetFile( const P6VPATH& filepath )
 {
-	if( filename && *filename ){
+	if( !filepath.empty() ){
 		// ファイルパス保存
-		strncpy( FilePath, filename, PATH_MAX );
+		FilePath = filepath;
 	}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // 印刷するデータを受付
 //
 // 引数:	data	印刷するデータデータ
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cPRT::SetData( BYTE data )
 {
 	pdata = ~data;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // ストローブ受付
 //
 // 引数:	st		ストローブ信号 true:有効 false:無効
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void cPRT::Strobe( bool st )
 {
-	if( !strb && st ){
-		if( fp || (fp = FOPENEN( FilePath, "ab" )) ){
-			fputc( pdata, fp );
-		}
-	}else{
-		if( fp && strb && !st ){
-			fclose( fp );
-			fp = NULL;
-		}
-		strb = st;
+	std::fstream fs;
+	
+	if( !strb && st && OSD_FSopen( fs, FilePath, std::ios_base::out|std::ios_base::binary|std::ios_base::app ) ){
+		FSPUTBYTE( pdata, fs );
+		fs.close();
 	}
+	
+	strb = st;
 }
 
-////////////////////////////////////////////////////////////////
-// コンストラクタ
-////////////////////////////////////////////////////////////////
-PIO6::PIO6( VM6 *vm, const ID& id ) : Device(vm,id) {}
+
+/////////////////////////////////////////////////////////////////////////////
+// Constructor
+/////////////////////////////////////////////////////////////////////////////
+PIO6::PIO6( VM6* vm, const ID& id ) : Device( vm, id )
+{
+	// Device Description (Out)
+	descs.outdef.emplace( out90H, STATIC_CAST( Device::OutFuncPtr, &PIO6::Out90H ) );
+	descs.outdef.emplace( out91H, STATIC_CAST( Device::OutFuncPtr, &PIO6::Out91H ) );
+	descs.outdef.emplace( out92H, STATIC_CAST( Device::OutFuncPtr, &PIO6::Out92H ) );
+	descs.outdef.emplace( out93H, STATIC_CAST( Device::OutFuncPtr, &PIO6::Out93H ) );
+	descs.outdef.emplace( outPBH, STATIC_CAST( Device::OutFuncPtr, &PIO6::OutPBH ) );
+	
+	// Device Description (In)
+	descs.indef.emplace ( in90H,  STATIC_CAST( Device::InFuncPtr,  &PIO6::In90H  ) );
+	descs.indef.emplace ( in92H,  STATIC_CAST( Device::InFuncPtr,  &PIO6::In92H  ) );
+	descs.indef.emplace ( in93H,  STATIC_CAST( Device::InFuncPtr,  &PIO6::In93H  ) );
+	descs.indef.emplace ( inPBH,  STATIC_CAST( Device::InFuncPtr,  &PIO6::InPBH  ) );
+	descs.indef.emplace ( inIBF,  STATIC_CAST( Device::InFuncPtr,  &PIO6::InIBF  ) );
+	descs.indef.emplace ( inOBF,  STATIC_CAST( Device::InFuncPtr,  &PIO6::InOBF  ) );
+}
 
 
-////////////////////////////////////////////////////////////////
-// デストラクタ
-////////////////////////////////////////////////////////////////
-PIO6::~PIO6(){}
+/////////////////////////////////////////////////////////////////////////////
+// Destructor
+/////////////////////////////////////////////////////////////////////////////
+PIO6::~PIO6()
+{
+}
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // PartA ライト
 //
 // 引数:	data	書き込むデータ
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PIO6::JobWriteA( BYTE data )
 {
 	// モード2で DAK=H,OBF=L(つまりWR0立上り) なら8049に対して割込み要求
@@ -177,12 +201,12 @@ void PIO6::JobWriteA( BYTE data )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // PartB ライト
 //
 // 引数:	data	書き込むデータ
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PIO6::JobWriteB( BYTE data )
 {
 	// プリンタにデータ出力
@@ -190,12 +214,12 @@ void PIO6::JobWriteB( BYTE data )
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // PartC ライト
 //
 // 引数:	data	書き込むデータ
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PIO6::JobWriteC1( BYTE data )
 {
 	// プリンタストローブ
@@ -204,17 +228,17 @@ void PIO6::JobWriteC1( BYTE data )
 	// CRT表示状態設定
 	vm->VdgSetCrtDisp( data&2 ? true : false );
 	
-	// CG ROM BANK 切替
+	// CG ROM BANK 選択
 	vm->MemSetCGBank( data&4 ? false : true );
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // PartD ライト(コントロールポート)
 //
 // 引数:	data	書き込むデータ
 // 返値:	なし
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PIO6::JobWriteD( BYTE data )
 {
 	// bit毎の対応
@@ -227,16 +251,16 @@ void PIO6::JobWriteD( BYTE data )
 		vm->VdgSetCrtDisp( data&1 ? true : false );
 		break;
 		
-	case 2: // CG ROM BANK 切替
+	case 2: // CG ROM BANK 選択
 		vm->MemSetCGBank( data&1 ? false : true );
 		break;
 	}
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void PIO6::Out90H( int, BYTE data ){ WriteA( data ); }
 void PIO6::Out91H( int, BYTE data ){ WriteB( data ); }
 void PIO6::Out92H( int, BYTE data ){ WriteC( data ); }
@@ -251,96 +275,70 @@ BYTE PIO6::InIBF( int ){ return GetIBF() ? 1 : 0; }
 BYTE PIO6::InOBF( int ){ return GetOBF() ? 1 : 0; }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
 // 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool PIO6::DokoSave( cIni *Ini )
+/////////////////////////////////////////////////////////////////////////////
+bool PIO6::DokoSave( cIni* Ini )
 {
 	if( !Ini ) return false;
 	
-	Ini->PutEntry( "8255", NULL, "PortA",		"0x%02X",	PortA );
-	Ini->PutEntry( "8255", NULL, "PortB",		"0x%02X",	PortB );
-	Ini->PutEntry( "8255", NULL, "PortC",		"0x%02X",	PortC );
-	Ini->PutEntry( "8255", NULL, "PortAbuf",	"0x%02X",	PortAbuf );
-	Ini->PutEntry( "8255", NULL, "ModeA",		"%d",		ModeA );
-	Ini->PutEntry( "8255", NULL, "ModeB",		"%d",		ModeB );
-	Ini->PutEntry( "8255", NULL, "PortAdir",	"%s",		PortAdir ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "PortBdir",	"%s",		PortBdir ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "PortC1dir",	"%s",		PortC1dir ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "PortC2dir",	"%s",		PortC2dir ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "HSINT0",		"%s",		HSINT0 ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "HSWINT0",		"%s",		HSWINT0 ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "HSRINT0",		"%s",		HSRINT0 ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "HSSTB0",		"%s",		HSSTB0 ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "HSIBF0",		"%s",		HSIBF0 ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "HSDAK0",		"%s",		HSDAK0 ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "HSOBF0",		"%s",		HSOBF0 ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "RIE0",		"%s",		RIE0 ? "Yes" : "No" );
-	Ini->PutEntry( "8255", NULL, "WIE0",		"%s",		WIE0 ? "Yes" : "No" );
+	Ini->SetVal( "8255", "PortA",		"", "0x%02X", PortA    );
+	Ini->SetVal( "8255", "PortB",		"", "0x%02X", PortB    );
+	Ini->SetVal( "8255", "PortC",		"", "0x%02X", PortC    );
+	Ini->SetVal( "8255", "PortAbuf",	"", "0x%02X", PortAbuf );
+	Ini->SetVal( "8255", "ModeA",		"", ModeA     );
+	Ini->SetVal( "8255", "ModeB",		"", ModeB     );
+	Ini->SetVal( "8255", "PortAdir",	"", PortAdir  );
+	Ini->SetVal( "8255", "PortBdir",	"", PortBdir  );
+	Ini->SetVal( "8255", "PortC1dir",	"", PortC1dir );
+	Ini->SetVal( "8255", "PortC2dir",	"", PortC2dir );
+	Ini->SetVal( "8255", "HSINT0",		"", HSINT0    );
+	Ini->SetVal( "8255", "HSWINT0",		"", HSWINT0   );
+	Ini->SetVal( "8255", "HSRINT0",		"", HSRINT0   );
+	Ini->SetVal( "8255", "HSSTB0",		"", HSSTB0    );
+	Ini->SetVal( "8255", "HSIBF0",		"", HSIBF0    );
+	Ini->SetVal( "8255", "HSDAK0",		"", HSDAK0    );
+	Ini->SetVal( "8255", "HSOBF0",		"", HSOBF0    );
+	Ini->SetVal( "8255", "RIE0",		"", RIE0      );
+	Ini->SetVal( "8255", "WIE0",		"", WIE0      );
 	
 	return true;
 }
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // どこでもLOAD
 //
 // 引数:	Ini		INIオブジェクトポインタ
 // 返値:	bool	true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool PIO6::DokoLoad( cIni *Ini )
+/////////////////////////////////////////////////////////////////////////////
+bool PIO6::DokoLoad( cIni* Ini )
 {
-	int st;
-	
 	if( !Ini ) return false;
 	
-	Ini->GetInt(   "8255", "PortA",		&st,		PortA );	PortA = st;
-	Ini->GetInt(   "8255", "PortB",		&st,		PortB );	PortB = st;
-	Ini->GetInt(   "8255", "PortC",		&st,		PortC );	PortC = st;
-	Ini->GetInt(   "8255", "PortAbuf",	&st,		PortAbuf );	PortAbuf = st;
-	Ini->GetInt(   "8255", "ModeA",		&ModeA,		ModeA );
-	Ini->GetInt(   "8255", "ModeB",		&ModeB,		ModeB );
-	Ini->GetTruth( "8255", "PortAdir",	&PortAdir,	PortAdir );
-	Ini->GetTruth( "8255", "PortBdir",	&PortBdir,	PortBdir );
-	Ini->GetTruth( "8255", "PortC1dir",	&PortC1dir,	PortC1dir );
-	Ini->GetTruth( "8255", "PortC2dir",	&PortC2dir,	PortC2dir );
-	Ini->GetTruth( "8255", "HSINT0",	&HSINT0,	HSINT0 );
-	Ini->GetTruth( "8255", "HSWINT0",	&HSWINT0,	HSWINT0 );
-	Ini->GetTruth( "8255", "HSRINT0",	&HSRINT0,	HSRINT0 );
-	Ini->GetTruth( "8255", "HSSTB0",	&HSSTB0,	HSSTB0 );
-	Ini->GetTruth( "8255", "HSIBF0",	&HSIBF0,	HSIBF0 );
-	Ini->GetTruth( "8255", "HSDAK0",	&HSDAK0,	HSDAK0 );
-	Ini->GetTruth( "8255", "HSOBF0",	&HSOBF0,	HSOBF0 );
-	Ini->GetTruth( "8255", "RIE0",		&RIE0,	RIE0 );
-	Ini->GetTruth( "8255", "WIE0",		&WIE0,	WIE0 );
+	Ini->GetVal( "8255", "PortA",		PortA     );
+	Ini->GetVal( "8255", "PortB",		PortB     );
+	Ini->GetVal( "8255", "PortC",		PortC     );
+	Ini->GetVal( "8255", "PortAbuf",	PortAbuf  );
+	Ini->GetVal( "8255", "ModeA",		ModeA     );
+	Ini->GetVal( "8255", "ModeB",		ModeB     );
+	Ini->GetVal( "8255", "PortAdir",	PortAdir  );
+	Ini->GetVal( "8255", "PortBdir",	PortBdir  );
+	Ini->GetVal( "8255", "PortC1dir",	PortC1dir );
+	Ini->GetVal( "8255", "PortC2dir",	PortC2dir );
+	Ini->GetVal( "8255", "HSINT0",		HSINT0    );
+	Ini->GetVal( "8255", "HSWINT0",		HSWINT0   );
+	Ini->GetVal( "8255", "HSRINT0",		HSRINT0   );
+	Ini->GetVal( "8255", "HSSTB0",		HSSTB0    );
+	Ini->GetVal( "8255", "HSIBF0",		HSIBF0    );
+	Ini->GetVal( "8255", "HSDAK0",		HSDAK0    );
+	Ini->GetVal( "8255", "HSOBF0",		HSOBF0    );
+	Ini->GetVal( "8255", "RIE0",		RIE0      );
+	Ini->GetVal( "8255", "WIE0",		WIE0      );
 	
 	return true;
 }
 
-
-////////////////////////////////////////////////////////////////
-//  device description
-////////////////////////////////////////////////////////////////
-const Device::Descriptor PIO6::descriptor = {
-	PIO6::indef, PIO6::outdef
-};
-
-const Device::OutFuncPtr PIO6::outdef[] = {
-	STATIC_CAST( Device::OutFuncPtr, &PIO6::Out90H ),
-	STATIC_CAST( Device::OutFuncPtr, &PIO6::Out91H ),
-	STATIC_CAST( Device::OutFuncPtr, &PIO6::Out92H ),
-	STATIC_CAST( Device::OutFuncPtr, &PIO6::Out93H ),
-	STATIC_CAST( Device::OutFuncPtr, &PIO6::OutPBH )
-};
-
-const Device::InFuncPtr PIO6::indef[] = {
-	STATIC_CAST( Device::InFuncPtr, &PIO6::In90H ),
-	STATIC_CAST( Device::InFuncPtr, &PIO6::In92H ),
-	STATIC_CAST( Device::InFuncPtr, &PIO6::In93H ),
-	STATIC_CAST( Device::InFuncPtr, &PIO6::InPBH ),
-	STATIC_CAST( Device::InFuncPtr, &PIO6::InIBF ),
-	STATIC_CAST( Device::InFuncPtr, &PIO6::InOBF )
-};

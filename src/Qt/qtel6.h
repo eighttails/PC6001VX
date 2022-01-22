@@ -2,6 +2,7 @@
 #define EL6EX_H
 
 #include <QObject>
+#include <QRgb>
 #include "../p6el.h"
 class KEY6;
 
@@ -14,7 +15,9 @@ public:
 	void ShowPopupImpl(int x, int y);
 	bool GetPauseEnable();
 	void SetPauseEnable(bool en);
-	KEY6* GetKeyboard();
+	std::shared_ptr<KEY6> GetKeyboard();
+	bool IsMonitor();
+	void SetPaletteTable(QVector<QRgb>& palette, int scanbr);
 public slots:
 	void UpdateFPS();
 };

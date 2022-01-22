@@ -28,7 +28,7 @@ fi
 echo $FULLVER > $SCRIPT_DIR/VERSION 
 
 #ヘッダーファイル
-perl -pi -e "s/(#define\tVERSION)(.*)/\$1\t\t\"$FULLVER\"/" $SCRIPT_DIR/src/pc6001v.h 	
+perl -pi -e "s/(#define\tVERSION)(.*)/\$1\t\t\t\t\t\"$FULLVER\"/" $SCRIPT_DIR/src/pc6001v.h 	
 
 #Androidマニフェストファイル
 perl -pi -e "s/(android:versionName=)\"([^\"]+)\"/\$1\"$FULLVER\"/" $SCRIPT_DIR/android/AndroidManifest.xml

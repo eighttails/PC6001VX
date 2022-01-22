@@ -1,5 +1,13 @@
+/////////////////////////////////////////////////////////////////////////////
+//  P C 6 0 0 1 V
+//  Copyright 1999,2021 Yumitaro
+/////////////////////////////////////////////////////////////////////////////
 #ifndef VOICE_H_INCLUDED
 #define VOICE_H_INCLUDED
+
+#include <memory>
+#include <queue>
+#include <string>
 
 #include "typedef.h"
 #include "device.h"
@@ -49,12 +57,12 @@
 // ・発声から次フレームのパラメータ入力完了まで1フレーム時間以内
 
 
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // クラス定義
-////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 class VCE6 : public Device, public cD7752, public SndDev, public IDoko {
 protected:
-	char FilePath[PATH_MAX];		// WAVEファイル格納パス
+	P6VPATH FilePath;				// WAVEファイル格納パス
 	
 	BYTE io_E0H;
 	BYTE io_E2H;
@@ -63,9 +71,7 @@ protected:
 	int VStat;						// ステータス
 	
 	// 内部句関係
-	int IVLen;						// サンプル数
-	int *IVBuf;						// データバッファ
-	int IVPos;						// 読込みポインタ
+	std::queue<int32_t> IVBuf;		// データバッファ
 	
 	// パラメータバッファ(1フレームのパラメータ数は7個)
 	BYTE ParaBuf[7];				// パラメータバッファ
@@ -73,7 +79,7 @@ protected:
 	int Fnum;						// 繰り返しフレーム数
 	bool PReady;					// パラメータセット完了
 	
-	D7752_SAMPLE *Fbuf;				// フレームバッファポインタ(10kHz 1フレーム)
+	std::queue<D7752_SAMPLE> Fbuf;	// フレームバッファポインタ(10kHz 1フレーム)
 	
 	void VSetMode( BYTE );			// モードセット
 	void VSetCommand( BYTE );		// コマンドセット
@@ -85,12 +91,39 @@ protected:
 	void FreeVoice();				// 内部句WAV開放
 	virtual void ReqIntr();			// 音声合成割込み要求
 	
-	// デバイス定義
-	static const Descriptor descriptor;
-	static const InFuncPtr  indef[];
-	static const OutFuncPtr outdef[];
-	const Descriptor* GetDesc() const { return &descriptor; }
+public:
+	VCE6( VM6*, const ID& );
+	virtual ~VCE6();
 	
+	void EventCallback( int, int ) override;		// イベントコールバック関数
+	
+	bool Init( int ) override;						// 初期化
+	void Reset( void );								// リセット
+	
+	void SetPath( const P6VPATH& );					// WAVEファイル格納パス設定
+	
+	int SoundUpdate( int ) override;				// ストリーム更新
+	
+	// デバイスID
+	enum IDOut{ outE0H=0, outE2H, outE3H };
+	enum IDIn {  inE0H=0,  inE2H,  inE3H };
+	
+	// ----------------------------------------------------------------------
+	bool DokoSave( cIni* ) override;	// どこでもSAVE
+	bool DokoLoad( cIni* ) override;	// どこでもLOAD
+	// ----------------------------------------------------------------------
+};
+
+class VCE60 : public VCE6 {
+protected:
+	
+public:
+	VCE60( VM6*, const ID& );
+	virtual ~VCE60();
+};
+
+class VCE62 : public VCE6 {
+protected:
 	// I/Oアクセス関数
 	void OutE0H( int, BYTE );
 	void OutE2H( int, BYTE );
@@ -100,33 +133,17 @@ protected:
 	BYTE InE3H( int );
 	
 public:
-	VCE6( VM6 *, const ID& );		// コンストラクタ
-	virtual ~VCE6();				// デストラクタ
-	
-	void EventCallback( int, int );	// イベントコールバック関数
-	
-	bool Init( int, const char * );	// 初期化
-	void Reset( void );				// リセット
-	
-	int SoundUpdate( int );			// ストリーム更新
-	
-	// デバイスID
-	enum IDOut{ outE0H=0, outE2H, outE3H };
-	enum IDIn {  inE0H=0,  inE2H,  inE3H };
-	
-	// ------------------------------------------
-	bool DokoSave( cIni * );	// どこでもSAVE
-	bool DokoLoad( cIni * );	// どこでもLOAD
-	// ------------------------------------------
+	VCE62( VM6*, const ID& );
+	virtual ~VCE62();
 };
 
-class VCE64 : public VCE6 {
+class VCE64 : public VCE62 {
 protected:
-	void ReqIntr();					// 音声合成割込み要求
+	void ReqIntr() override;			// 音声合成割込み要求
 	
 public:
-	VCE64( VM6 *, const ID& );		// コンストラクタ
-	virtual ~VCE64();				// デストラクタ
+	VCE64( VM6*, const ID& );
+	virtual ~VCE64();
 };
 
 #endif	// VOICE_H_INCLUDED

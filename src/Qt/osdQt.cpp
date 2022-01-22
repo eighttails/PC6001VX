@@ -532,11 +532,7 @@ bool OSD_ChangeFileNameExt( P6VPATH& path, const std::string& ext )
 
 	QString qPath = P6VPATH2QSTR(path);
 	QFileInfo info(qPath);
-	if (!info.exists()) {
-		return false;
-	}
 	QString newPath = info.path() + QDir::separator() + info.completeBaseName() + "." + QString::fromStdString(ext);
-	QFile::rename(qPath, newPath);
 	path = QSTR2P6VPATH(newPath);
 	return true;
 }

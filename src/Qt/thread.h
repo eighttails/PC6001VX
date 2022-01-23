@@ -12,12 +12,12 @@
 #include <QMutex>
 
 class cThread {
-    friend class InternalTherad;
+	friend class InternalThread;
 private:
 	QMutex m_Mutex;
 	bool m_bCancel;				// for Cancel().
 	HTHREAD m_hThread;			// for Thread Handle.
-	void *m_BeginTheadParam;
+	void *m_BeginThreadParam;
 	
 	static void ThreadProc( void * );	// Default thread procedure. Don't call this method in direct!
 	

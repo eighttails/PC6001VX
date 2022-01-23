@@ -9,11 +9,11 @@
 #include <QThread>
 #include <QApplication>
 
-//QThreadをcTheradのインターフェースで使えるようにするためのラッパ
-class InternalTherad : public QThread
+//QThreadをcThreadのインターフェースで使えるようにするためのラッパ
+class InternalThread : public QThread
 {
 public:
-	InternalTherad(cThread* thread, void* param)
+	InternalThread(cThread* thread, void* param)
 		: thread_(thread)
 		, param_(param){};
 protected:
@@ -31,7 +31,7 @@ cThread::cThread( void )
 {
 	this->m_bCancel			= true;
 	this->m_hThread			= nullptr;
-	this->m_BeginTheadParam	= nullptr;
+	this->m_BeginThreadParam	= nullptr;
 }
 
 
@@ -48,11 +48,11 @@ bool cThread::BeginThread ( void *lpVoid )
 	bool bSuccess = false;
 	
 	if( this->m_hThread == nullptr ){
-		this->m_BeginTheadParam = lpVoid;
+		this->m_BeginThreadParam = lpVoid;
 		this->m_bCancel			= false;
 		
-		this->m_hThread = new InternalTherad(this, lpVoid);
-		((InternalTherad*)m_hThread)->start();
+		this->m_hThread = new InternalThread(this, lpVoid);
+		((InternalThread*)m_hThread)->start();
 		bSuccess = true;
 	}
 	
@@ -67,11 +67,11 @@ bool cThread::Waiting( void )
 	bool bSuccess = false;
 	
 	if( m_hThread != nullptr ){
-		while(!(bSuccess = ((InternalTherad*)m_hThread)->wait(100))){
+		while(!(bSuccess = ((InternalThread*)m_hThread)->wait(100))){
 			// Qtのイベントを処理しないとデッドロックで終われないスレッドがあるためその対策
 			qApp->processEvents();
 		}
-		((InternalTherad*)m_hThread)->deleteLater();
+		((InternalThread*)m_hThread)->deleteLater();
 		m_hThread = nullptr;
 	}else{
 		bSuccess = true;
@@ -100,5 +100,5 @@ bool cThread::IsCancel()
 // Default thread procedure. Don't call this method in direct!
 void cThread::ThreadProc(void *lpVoid)
 {
-	// 何もしない(InternalTherad::run()で代替)
+	// 何もしない(InternalThread::run()で代替)
 }

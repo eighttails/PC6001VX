@@ -1,6 +1,7 @@
 #include "audiooutputwrapper.h"
 #include "p6vxapp.h"
 
+#ifndef NOSOUND
 AudioOutputWrapper::AudioOutputWrapper(const QAudioDeviceInfo &info,
 									   const QAudioFormat &format,
 									   CBF_SND cbFunc,
@@ -73,3 +74,4 @@ void AudioOutputWrapper::pullAudioData()
 		}
 	}
 }
+#endif

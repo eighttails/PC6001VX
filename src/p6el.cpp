@@ -158,10 +158,30 @@ void EL6::OnThread( void* inst )
 				// リプレイ記録中
 				if( REPLAY::GetStatus() == ST_REPLAYREC ){
 					REPLAY::ReplayWriteFrame( p6->vm->key->GetMatrix2(), matchg );
+#ifdef REPLAYDEBUG_FRAME
+					// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
+					P6VPATH fullPath;
+					P6VPATH fileName;
+					char str[PATH_MAX];
+					sprintf(str, "record/%06d.dds", REPLAY::RepFrm);
+					fileName = str;
+					OSD_AddPath(fullPath, OSD_GetConfigPath(), fileName);
+					DokoDemoSave(fullPath);
+#endif
 				}
 				
 				// リプレイ再生中
 				if( REPLAY::GetStatus() == ST_REPLAYPLAY ){
+#ifdef REPLAYDEBUG_FRAME
+					// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
+					P6VPATH fullPath;
+					P6VPATH fileName;
+					char str[PATH_MAX];
+					sprintf(str, "replay/%06d.dds", REPLAY::RepFrm);
+					fileName = str;
+					OSD_AddPath(fullPath, OSD_GetConfigPath(), fileName);
+					DokoDemoSave(fullPath);
+#endif
 					REPLAY::ReplayReadFrame( p6->vm->key->GetMatrix() );
 					// リプレイ終了時にビデオキャプチャ中だったらキャプチャを停止する
 					if( REPLAY::GetStatus() == ST_IDLE && AVI6::IsAVI() ){
@@ -254,6 +274,30 @@ int EL6::EmuVSYNC( void )
 		vm->evsc->Update( st );	// イベント更新
 		sche->Update( st );
 		state += st;
+#ifdef REPLAYDEBUG_INST
+		// リプレイ記録中
+		if( REPLAY::GetStatus() == ST_REPLAYREC ){
+			// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
+			P6VPATH fullPath;
+			P6VPATH fileName;
+			char str[PATH_MAX];
+			sprintf(str, "record/%06d_%08d.dds", REPLAY::RepFrm, state);
+			fileName = str;
+			OSD_AddPath(fullPath, OSD_GetConfigPath(), fileName);
+			DokoDemoSave(fullPath);
+		}
+		// リプレイ再生中
+		if( REPLAY::GetStatus() == ST_REPLAYPLAY ){
+			// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
+			P6VPATH fullPath;
+			P6VPATH fileName;
+			char str[PATH_MAX];
+			sprintf(str, "replay/%06d_%08d.dds", REPLAY::RepFrm, state);
+			fileName = str;
+			OSD_AddPath(fullPath, OSD_GetConfigPath(), fileName);
+			DokoDemoSave(fullPath);
+		}
+#endif
 	}
 	
 	return state;

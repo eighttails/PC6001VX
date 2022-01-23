@@ -30,8 +30,8 @@ private:
 cThread::cThread( void )
 {
 	this->m_bCancel			= true;
-	this->m_hThread			= NULL;
-	this->m_BeginTheadParam	= NULL;
+	this->m_hThread			= nullptr;
+	this->m_BeginTheadParam	= nullptr;
 }
 
 
@@ -47,7 +47,7 @@ bool cThread::BeginThread ( void *lpVoid )
 {
 	bool bSuccess = false;
 	
-	if( this->m_hThread == NULL ){
+	if( this->m_hThread == nullptr ){
 		this->m_BeginTheadParam = lpVoid;
 		this->m_bCancel			= false;
 		
@@ -66,13 +66,13 @@ bool cThread::Waiting( void )
 {
 	bool bSuccess = false;
 	
-	if( m_hThread != NULL ){
+	if( m_hThread != nullptr ){
 		while(!(bSuccess = ((InternalTherad*)m_hThread)->wait(100))){
 			// Qtのイベントを処理しないとデッドロックで終われないスレッドがあるためその対策
 			qApp->processEvents();
 		}
 		((InternalTherad*)m_hThread)->deleteLater();
-		m_hThread = NULL;
+		m_hThread = nullptr;
 	}else{
 		bSuccess = true;
 	}

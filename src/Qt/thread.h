@@ -28,7 +28,7 @@ public:
 	cThread();
 	virtual ~cThread();
 	
-	bool BeginThread( void * = NULL );	// Start Thread. 
+	bool BeginThread( void * = nullptr );	// Start Thread.
 	bool Waiting();						// Wait for created thread end.
 	
 	void Cancel();						// Method for cancel.

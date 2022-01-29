@@ -102,7 +102,7 @@ bool SaveImg( const P6VPATH& filename, VSurface *sur, VRect *pos )
 ////////////////////////////////////////////////////////////////
 VSurface *LoadImg( const P6VPATH& filepath )
 {
-	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filename );
+	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filepath );
 
 	// 画像を読み込む
 	QImage loadImage(P6VPATH2QSTR(filepath));

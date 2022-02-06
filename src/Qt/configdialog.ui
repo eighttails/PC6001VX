@@ -48,7 +48,7 @@
          <item>
           <widget class="QLabel" name="labelModel">
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;機種(&amp;amp;M):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>機種(&amp;M):</string>
            </property>
            <property name="buddy">
             <cstring>comboBoxModel</cstring>

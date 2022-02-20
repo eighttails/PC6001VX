@@ -23,9 +23,9 @@ static const QList<int> modelIds {
 // 設定ファイル内の拡張カートリッジIDとコンボボックスのインデックスの対応
 static const QList<WORD> extCartIds {
 	0,
-	EXC6001,
 	EXC6005,
 	EXC6006,
+	EXC6001,
 	EXC660101,
 	EXC6006SR,
 	EXC6007SR,

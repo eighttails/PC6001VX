@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui widgets network
+QT += core gui widgets openglwidgets network core5compat
 
 TARGET = PC6001VX
 TEMPLATE = app
@@ -45,7 +45,10 @@ DEFINES += QTP6VX
 
 debug:DEFINES += DEBUG
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-INCLUDEPATH += src src/Qt src/Qt/qtsingleapplication
+INCLUDEPATH += src src/Qt
+
+include(src/Qt/SingleApplication/singleapplication.pri)
+DEFINES += QAPPLICATION_CLASS=QApplication
 
 #Configuration for UNIX variants
 unix:!macx {
@@ -79,7 +82,6 @@ unix:!macx {
     !android:!ios {
         #Configuration for X11(XCB)
         DEFINES += USE_X11
-        QT += x11extras
         PKGCONFIG += x11
     }
 }
@@ -125,8 +127,7 @@ contains(DEFINES, SDLJOYSTICK) {
 !contains(DEFINES, NOSOUND) {
     QT += multimedia
     SOURCES += \
-        src/Qt/wavfile.cpp \
-        src/Qt/utils.cpp
+        src/Qt/wavfile.cpp
 }
 
 !contains(DEFINES, NOAVI) {
@@ -157,12 +158,6 @@ SOURCES += \
     src/Qt/p6vxcommon.cpp \
     src/Qt/pc6001v.cpp \
     src/Qt/qtel6.cpp \
-    src/Qt/qtsingleapplication/qtlocalpeer.cpp \
-    src/Qt/qtsingleapplication/qtlockedfile.cpp \
-    src/Qt/qtsingleapplication/qtlockedfile_unix.cpp \
-    src/Qt/qtsingleapplication/qtlockedfile_win.cpp \
-    src/Qt/qtsingleapplication/qtsingleapplication.cpp \
-    src/Qt/qtsingleapplication/qtsinglecoreapplication.cpp \
     src/Qt/renderview.cpp \
     src/Qt/simplevirtualkeyboardscene.cpp \
     src/Qt/systeminfodialog.cpp \
@@ -231,18 +226,11 @@ HEADERS  += \
     src/Qt/normalvirtualkeyboardscene.h \
     src/Qt/p6vxapp.h \
     src/Qt/qtel6.h \
-    src/Qt/qtsingleapplication/QtLockedFile \
-    src/Qt/qtsingleapplication/QtSingleApplication \
-    src/Qt/qtsingleapplication/qtlocalpeer.h \
-    src/Qt/qtsingleapplication/qtlockedfile.h \
-    src/Qt/qtsingleapplication/qtsingleapplication.h \
-    src/Qt/qtsingleapplication/qtsinglecoreapplication.h \
     src/Qt/qtutil.h \
     src/Qt/renderview.h \
     src/Qt/simplevirtualkeyboardscene.h \
     src/Qt/systeminfodialog.h \
     src/Qt/thread.h \
-    src/Qt/utils.h \
     src/Qt/virtualkeyboardscene.h \
     src/Qt/virtualkeyboardview.h \
     src/Qt/virtualkeyitem.h \

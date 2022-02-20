@@ -1,16 +1,9 @@
 #!/bin/bash
 
 function prerequisite(){
-#他スクリプト依存関係
-if [ $((NO_DEPENDENCY)) == 0 ]; then
-pacman "${PACMAN_INSTALL_OPTS[@]}" \
-$MINGW_PACKAGE_PREFIX-qt5 \
-2>/dev/null
-exitOnError
-fi
-
 #必要ライブラリ
 pacman "${PACMAN_INSTALL_OPTS[@]}" \
+$MINGW_PACKAGE_PREFIX-qt5 \
 $MINGW_PACKAGE_PREFIX-enchant \
 2>/dev/null
 

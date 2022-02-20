@@ -41,7 +41,6 @@
 #include <qendian.h>
 #include <QVector>
 #include <QDebug>
-#include "utils.h"
 #include "wavfile.h"
 
 struct chunk
@@ -131,17 +130,10 @@ bool WavFile::readHeader()
 				return false;
 
 			// Establish format
-			if (memcmp(&header.riff.descriptor.id, "RIFF", 4) == 0)
-				m_fileFormat.setByteOrder(QAudioFormat::LittleEndian);
-			else
-				m_fileFormat.setByteOrder(QAudioFormat::BigEndian);
-
 			int bps = qFromLittleEndian<quint16>(header.wave.bitsPerSample);
 			m_fileFormat.setChannelCount(qFromLittleEndian<quint16>(header.wave.numChannels));
-			m_fileFormat.setCodec("audio/pcm");
 			m_fileFormat.setSampleRate(qFromLittleEndian<quint32>(header.wave.sampleRate));
-			m_fileFormat.setSampleSize(qFromLittleEndian<quint16>(header.wave.bitsPerSample));
-			m_fileFormat.setSampleType(bps == 8 ? QAudioFormat::UnSignedInt : QAudioFormat::SignedInt);
+			m_fileFormat.setSampleFormat(bps == 8 ? QAudioFormat::UInt8 : QAudioFormat::Int16);
 		} else {
 			result = false;
 		}

@@ -4,8 +4,11 @@
 #include <QObject>
 #include <QPointer>
 #include <QTimer>
-#include <QAudioOutput>
+#include <QAudioDevice>
+#include <QAudioFormat>
 #include "typedef.h"
+
+class QAudioSink;
 
 // QAudioOutputのラッパークラス。
 // P6Vのコードではサウンド制御が複数のスレッドから呼ばれるが、
@@ -15,7 +18,7 @@ class AudioOutputWrapper : public QObject
 {
 	Q_OBJECT
 public:
-	explicit AudioOutputWrapper(const QAudioDeviceInfo& info,
+	explicit AudioOutputWrapper(const QAudioDevice& device,
 								const QAudioFormat& format,
 								CBF_SND cbFunc,
 								void* cbData,
@@ -33,14 +36,10 @@ public slots:
 public:
 	QAudio::State state() const;
 
-protected slots:
-	void pullAudioData();
 private:
-	QAudioOutput* AudioOutput;
+	QAudioSink* AudioSink;
 	QPointer<QIODevice> AudioBuffer;
-	CBF_SND CbFunc;
-	void* CbData;
-	QTimer PollingTimer;
+
 };
 #endif // NOSOUND
 #endif // AUDIOOUTPUTWRAPPER_H

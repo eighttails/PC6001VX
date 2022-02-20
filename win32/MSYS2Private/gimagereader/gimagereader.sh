@@ -41,14 +41,16 @@ if [ "$GIMAGEREADER_GIT" != "" ]; then
     # git pull
     GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR
 else
-    GIMAGEREADER_VERSION=master
-    if [ "$GIMAGEREADER_VERSION" == "master" ]; then
-        GIMAGEREADER_TAG=$GIMAGEREADER_VERSION
-        GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
-        rm $GIMAGEREADER_ARCHIVE 2> /dev/null
-    else
+    GIMAGEREADER_VERSION=5c04281d3b660308bcf3638c6e6a9da75675e432 #3.4.0+バグ修正
+    if [ "$GIMAGEREADER_VERSION" == "*.*" ]; then
         GIMAGEREADER_TAG=v$GIMAGEREADER_VERSION
         GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
+    else
+        GIMAGEREADER_TAG=$GIMAGEREADER_VERSION
+        GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
+        if [ "$GIMAGEREADER_VERSION" == "master" ]; then
+            rm $GIMAGEREADER_ARCHIVE 2> /dev/null
+        fi
     fi
     GIMAGEREADER_SRC_DIR=gImageReader-$GIMAGEREADER_VERSION
     GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR-$BIT
@@ -74,6 +76,7 @@ if [ "$GIMAGEREADER_DEBUG" != "" ]; then
 else
     BUILD_TYPE=Release
 fi
+
 CMAKE_PREFIX_PATH=$PREFIX/qt5-shared:$CMAKE_PREFIX_PATH \
 cmake .. \
 -G"MSYS Makefiles" \

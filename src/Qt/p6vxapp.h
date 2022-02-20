@@ -1,7 +1,6 @@
 #ifndef p6vxapp_H
 #define p6vxapp_H
 
-#include <QtSingleApplication>
 #include <QImage>
 #include <QMutex>
 #include <QPointer>
@@ -17,11 +16,12 @@
 #include "../p6vxcommon.h"
 #include "qtel6.h"
 #include "emulationadaptor.h"
+#include "singleapplication.h"
 
 #ifdef NOSINGLEAPP
 typedef QApplication ParentAppClass;
 #else
-typedef QtSingleApplication ParentAppClass;
+typedef SingleApplication ParentAppClass;
 #endif
 
 class QKeyEvent;

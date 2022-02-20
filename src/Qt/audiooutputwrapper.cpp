@@ -2,76 +2,90 @@
 #include "p6vxapp.h"
 
 #ifndef NOSOUND
-AudioOutputWrapper::AudioOutputWrapper(const QAudioDeviceInfo &info,
+#include <QAudioSink>
+#include <QBuffer>
+
+
+class AudioBufferWrapper : public QIODevice
+{
+public:
+	AudioBufferWrapper(CBF_SND cbFunc,
+					   void *cbData,
+					   QObject* parent)
+		: QIODevice(parent)
+		, CbFunc(cbFunc)
+		, CbData(cbData)
+	{}
+
+	virtual ~AudioBufferWrapper(){
+		close();
+	}
+
+	qint64 bytesAvailable() const override
+	{
+		return 1024;
+	}
+
+protected:
+	qint64 readData(char *data, qint64 maxlen) override
+	{
+		// オーディオコールバックを呼んでバッファにデータを取り込み
+		CbFunc(CbData, reinterpret_cast<BYTE*>(data), maxlen);
+		return maxlen;
+	}
+	qint64 writeData(const char *data, qint64 len) override
+	{
+		// 読み取り専用なので常にエラーを返す
+		return -1;
+	}
+
+private:
+	CBF_SND CbFunc;
+	void* CbData;
+};
+
+
+AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
 									   const QAudioFormat &format,
 									   CBF_SND cbFunc,
 									   void *cbData,
 									   int samples,
 									   QObject *parent)
 	: QObject(parent)
-	, AudioOutput(new QAudioOutput(info, format, this))
-	, CbFunc(cbFunc)
-	, CbData(cbData)
+	, AudioSink(new QAudioSink(device, format, this))
 {
-	// サンプルサイズに関わらず0.5秒分のバッファを確保
-	// バッファが大きすぎると遅延が大きくなる
-	AudioOutput->setBufferSize(44100 * 0.5 * sizeof(uint16_t));
-	// 1フレーム(16.6ms)より短い間隔でポーリング
-	// ポーリング間隔が短すぎると処理が重くなり、
-	// 長すぎるとエミュレータ側のバッファが滞留して音飛びの原因になる。
-	PollingTimer.setInterval(10);
-	connect(&PollingTimer, SIGNAL(timeout()), this, SLOT(pullAudioData()));
-	PollingTimer.start();
+	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, this);
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()
 {
-	PollingTimer.stop();
 }
 
 void AudioOutputWrapper::start()
 {
-	AudioBuffer	= AudioOutput->start();
-	PollingTimer.start();
+	AudioBuffer->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
+	AudioSink->start(AudioBuffer);
 }
 
 void AudioOutputWrapper::suspend()
 {
-	AudioOutput->suspend();
-	PollingTimer.stop();
+	AudioSink->suspend();
 }
 
 void AudioOutputWrapper::resume()
 {
-	PollingTimer.start();
-	AudioOutput->resume();
+	AudioSink->resume();
 }
 
 void AudioOutputWrapper::stop()
 {
-	AudioOutput->stop();
-	PollingTimer.stop();
+	AudioSink->stop();
+	AudioBuffer->close();
 }
 
 QAudio::State AudioOutputWrapper::state() const
 {
-	return AudioOutput->state();
+	return AudioSink->state();
 }
 
-void AudioOutputWrapper::pullAudioData()
-{
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	// テンポラリバッファを確保
-	size_t bufSize = AudioOutput->bytesFree();
-	BYTE stream[bufSize];
-	// オーディオコールバックを呼んでバッファにデータを取り込み
-	CbFunc(CbData, stream, bufSize);
-
-	// 実際のオーディオバッファに書き込み(発音)
-	if(!app->isAVI()){
-		if(AudioBuffer){
-			AudioBuffer->write(reinterpret_cast<const char*>(stream), bufSize);
-		}
-	}
-}
 #endif

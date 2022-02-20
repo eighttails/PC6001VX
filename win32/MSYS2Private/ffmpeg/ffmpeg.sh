@@ -17,7 +17,7 @@ echo "FFMpeg is already installed."
 exit 0
 fi
 
-FFMPEG_VERSION=4.4
+FFMPEG_VERSION=4.4.1
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 FFMPEG_BUILD_DIR=$FFMPEG_SRC_DIR-$BIT
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz

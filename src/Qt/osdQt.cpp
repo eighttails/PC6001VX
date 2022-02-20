@@ -5,6 +5,7 @@
 
 #include <QtCore>
 #include <QtWidgets>
+#include <QTextCodec>
 #ifndef NOSOUND
 #include <QtMultimedia>
 #endif
@@ -321,7 +322,7 @@ void OSD_Quit_Sub( void )
 bool OSD_IsWorking( void )
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	return app->isRunning();
+	return app->isSecondary();
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1277,24 +1278,21 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 	qRegisterMetaType<QAudio::State>();
 
 	QAudioFormat format;
-	format.setCodec("audio/pcm");
-	format.setChannelCount(1);
+	format.setChannelConfig(QAudioFormat::ChannelConfigMono);
 	format.setSampleRate(rate);
-	format.setSampleSize(16);
-	format.setByteOrder(QAudioFormat::LittleEndian);
-	format.setSampleType(QAudioFormat::SignedInt);
+	format.setSampleFormat(QAudioFormat::Int16);
 
 	if(audioOutput){
 		audioOutput->deleteLater();
 	}
 
-	QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
-	if (!info.isFormatSupported(format)) {
+	QAudioDevice device = QMediaDevices::defaultAudioOutput();
+	if (!device.isFormatSupported(format)) {
 		qWarning()<<"raw audio format not supported by backend, cannot play audio.";
-		format = info.nearestFormat(format);
+		format = device.preferredFormat();
 	}
 
-	audioOutput = new AudioOutputWrapper(info, format, callback, obj, samples);
+	audioOutput = new AudioOutputWrapper(device, format, callback, obj, samples);
 	// #TODO これではグローバルボリュームを変えてしまう？
 	// audioOutput->setVolume(0.5);
 
@@ -2044,6 +2042,7 @@ bool OSD_SJIStoUTF8( std::string& str )
 	QTextCodec *codec = QTextCodec::codecForName("Shift-JIS");
 	if (!codec) return false;
 	str = codec->toUnicode(encodedString).toUtf8().data();
+
 	return true;
 }
 

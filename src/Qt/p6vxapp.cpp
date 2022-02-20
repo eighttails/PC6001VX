@@ -313,7 +313,8 @@ bool P6VXApp::folderDialog(void *hwnd, char *Result)
 {
 	QSharedPointer<QFileDialog> dialog(createFileDialog(hwnd));
 	dialog->setDirectory(strcmp(Result, "/") ? Result : QDir::homePath());
-	dialog->setFileMode(QFileDialog::DirectoryOnly);
+	dialog->setFileMode(QFileDialog::Directory);
+	dialog->setOption(QFileDialog::ShowDirsOnly);
 
 	QByteArray result;
 	OSD_ShowCursor(true);
@@ -1045,11 +1046,10 @@ QFileDialog *P6VXApp::createFileDialog(void *hwnd)
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
 	// Androidのネイティブファイルダイアログが動かないための暫定措置
 	// https://bugreports.qt.io/browse/QTBUG-77214
-	QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
 	if (isPlatform("xcb") || isPlatform("android")){
-		opt |= QFileDialog::DontUseNativeDialog;
+		dialog->setOptions(QFileDialog::DontUseNativeDialog);
 	}
-	dialog->setOptions(opt);
+
 #ifdef ALWAYSFULLSCREEN
 	dialog->setWindowState(dialog->windowState() | Qt::WindowFullScreen);
 #endif
@@ -1201,14 +1201,15 @@ void P6VXApp::setDefaultSetting(const QString &key, const QVariant &value)
 }
 
 #ifdef USE_X11
-#include <QX11Info>
 #include <X11/Xlib.h>
 #endif
 void P6VXApp::inhibitScreenSaver()
 {
 #if defined USE_X11
 	if(MWidget && MWidget->isFullScreen()){
-		XResetScreenSaver(QX11Info::display());
+		if (auto *x11App = qApp->nativeInterface<QNativeInterface::QX11Application>()){
+			XResetScreenSaver(x11App->display());
+		}
 	}
 #elif defined Q_OS_WIN
 	if(MWidget && MWidget->isFullScreen()){

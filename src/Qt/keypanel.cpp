@@ -15,7 +15,7 @@ KeyPanel::KeyPanel(QWidget *parent)
 
 	QVBoxLayout* l = new QVBoxLayout();
 	setLayout(l);
-	l->setMargin(0);
+	l->setContentsMargins(0, 0, 0, 0 );
 	l->setSpacing(0);
 	l->addWidget(new KeyPanelButton(this, tr("F1"), KVC_F1));
 	l->addWidget(new KeyPanelButton(this, tr("F2"), KVC_F2));

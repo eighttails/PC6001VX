@@ -1293,9 +1293,6 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 	}
 
 	audioOutput = new AudioOutputWrapper(device, format, callback, obj, samples);
-	// #TODO これではグローバルボリュームを変えてしまう？
-	// audioOutput->setVolume(0.5);
-
 #endif
 	return true;
 }

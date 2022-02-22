@@ -11,19 +11,31 @@ class AudioBufferWrapper : public QIODevice
 public:
 	AudioBufferWrapper(CBF_SND cbFunc,
 					   void *cbData,
+					   int samples,
 					   QObject* parent)
 		: QIODevice(parent)
 		, CbFunc(cbFunc)
 		, CbData(cbData)
+		, Samples(samples)
 	{}
 
 	virtual ~AudioBufferWrapper(){
 		close();
 	}
 
-	qint64 bytesAvailable() const override
+	bool isSequential() const override{
+		return true;
+	}
+
+	qint64 size() const override
 	{
-		return 1024;
+		return Samples;
+	}
+
+	qint64 bytesAvailable() const override{
+		// 実際にエミュレータ側に溜まっているサンプル数を知る術はないが、
+		// 適当な値を返しておかないとreadData()が呼ばれない。
+		return Samples * sizeof(uint16_t);
 	}
 
 protected:
@@ -33,6 +45,7 @@ protected:
 		CbFunc(CbData, reinterpret_cast<BYTE*>(data), maxlen);
 		return maxlen;
 	}
+
 	qint64 writeData(const char *data, qint64 len) override
 	{
 		// 読み取り専用なので常にエラーを返す
@@ -42,6 +55,7 @@ protected:
 private:
 	CBF_SND CbFunc;
 	void* CbData;
+	int Samples;
 };
 
 
@@ -54,7 +68,7 @@ AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
 	: QObject(parent)
 	, AudioSink(new QAudioSink(device, format, this))
 {
-	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, this);
+	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, samples, this);
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()

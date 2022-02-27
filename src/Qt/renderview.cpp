@@ -162,14 +162,15 @@ void RenderView::mouseReleaseEvent(QMouseEvent *event)
 	ev.type = EV_MOUSEBUTTONUP;
 	auto button = event->button();
 	switch (button) {
-	case Qt::LeftButton:
-		ev.mousebt.button = MBT_LEFT;	break;
 	case Qt::RightButton:
 		return;
 		// contextMenuEventと重複するため無視する
 		// ev.mousebt.button = MBT_RIGHT;	break;
-	case Qt::MiddleButton:
+	// P6Vの左クリック→動作を等速に戻すの操作を中クリックにするためにボタンを交換
+	case Qt::LeftButton:
 		ev.mousebt.button = MBT_MIDDLE;	break;
+	case Qt::MiddleButton:
+		ev.mousebt.button = MBT_LEFT;	break;
 	default:
 		return;
 	}

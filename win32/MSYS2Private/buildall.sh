@@ -21,7 +21,7 @@ exitOnError
 ./gimagereader/gimagereader.sh
 exitOnError
 
-./qt5-static-angle/qt.sh
+./qt6-static-private/qt.sh
 exitOnError
 
 pacman "${PACMAN_INSTALL_OPTS[@]}" \

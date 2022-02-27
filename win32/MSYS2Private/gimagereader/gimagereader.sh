@@ -34,14 +34,14 @@ echo "gImageReader is already installed."
 exit 0
 fi
 
+    GIMAGEREADER_VERSION=460c84cee09ba2380e4b082e5da963a6abe58534 #3.4.0+バグ修正
 if [ "$GIMAGEREADER_GIT" != "" ]; then
     GIMAGEREADER_SRC_DIR=gImageReader-git
     git clone https://github.com/manisandro/gImageReader.git $GIMAGEREADER_SRC_DIR 2> /dev/null
     pushd $GIMAGEREADER_SRC_DIR
-    # git pull
+    git checkout $GIMAGEREADER_VERSION
     GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR
 else
-    GIMAGEREADER_VERSION=5c04281d3b660308bcf3638c6e6a9da75675e432 #3.4.0+バグ修正
     if [ "$GIMAGEREADER_VERSION" == "*.*" ]; then
         GIMAGEREADER_TAG=v$GIMAGEREADER_VERSION
         GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz

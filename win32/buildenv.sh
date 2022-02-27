@@ -20,4 +20,8 @@ bash $SCRIPT_DIR/MSYS2Private/ffmpeg/ffmpeg.sh
 exitOnError
 
 
+#Qt6をビルド
+#3DにDirectXを有効化したビルド
+bash $SCRIPT_DIR/MSYS2Private/qt6-static-private/qt.sh
+exitOnError
 

@@ -500,12 +500,12 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	settingsMenu->addSeparator();
 	QActionGroup* fpsGroup = new QActionGroup(&menu);
 	QStringList fpsList = (QStringList()
-						   << "0 (60fps)"
-						   << "1 (30fps)"
-						   << "2 (20fps)"
-						   << "3 (15fps)"
-						   << "4 (12fps)"
-						   << "5 (10fps)");
+						   << "0 (59.92fps)"
+						   << "1 (29.96fps)"
+						   << "2 (19.97fps)"
+						   << "3 (14.98fps)"
+						   << "4 (11.98fps)"
+						   << "5 (9.99fps)");
 	for( int i = 0; i < fpsList.size(); i++ ){
 		QAction* fps = addCommand(fpsMenu, fpsList[i], MenuCommand(ID_FSKP0 + i), true);
 		if (cfg->GetValue(CV_FrameSkip) == i) fps->setChecked(true);

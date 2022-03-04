@@ -18,10 +18,11 @@ QMAKE_TARGET_PRODUCT = PC6001VX
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 TR_EXCLUDE += /usr/include/*
 
-CONFIG += link_prl link_pkgconfig c++14
+CONFIG += link_prl link_pkgconfig c++17
 
 #Define for Qt dependent code
 DEFINES += QTP6VX
+DEFINES += USEFILESYSTEM
 
 #Use FMGEN for PSG(For non commercial only)
 #DEFINES += USEFMGEN

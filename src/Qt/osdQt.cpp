@@ -427,7 +427,7 @@ void OSD_RelativePath( P6VPATH& path )
 #ifdef Q_OS_WIN
 	if( QDir( P6VPATH2QSTR(path) ).isRelative()
 			|| QDir( P6VPATH2QSTR(path) ).path().startsWith(":")
-			|| ! path.length() ) return;
+			|| path == "" ) return;
 	QDir dir(P6VPATH2QSTR(OSD_GetConfigPath()));
 	QString relPath = dir.relativeFilePath(P6VPATH2QSTR(path));
 	path = QSTR2P6VPATH(relPath);

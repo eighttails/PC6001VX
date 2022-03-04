@@ -612,7 +612,7 @@ void ConfigDialog::selectFile(QWidget *widget)
 
 		folder = QSTR2P6VPATH(edit->text());
 		OSD_FileSelect(nullptr, dlg, folder, path);
-		if(folder.size() > 0){
+		if(folder != ""){
 			edit->setText(P6VPATH2QSTR(folder));
 			warnFileOrFolderNotExist(edit);
 		}
@@ -629,7 +629,7 @@ void ConfigDialog::selectFolder(QWidget *widget)
 		OSD_AddDelimiter(folder);
 		OSD_FolderDiaog(this, folder);
 		OSD_DelDelimiter(folder);
-		if(folder.size() > 0){
+		if(folder != ""){
 			edit->setText(P6VPATH2QSTR(folder));
 			warnFileOrFolderNotExist(edit);
 		}

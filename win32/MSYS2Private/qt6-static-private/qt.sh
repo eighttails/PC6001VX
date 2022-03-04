@@ -140,8 +140,9 @@ pushd $QT6_STATIC_BUILD
 
 MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=;-DCMAKE_CONFIGURATION_TYPES=;-DCMAKE_FIND_LIBRARY_SUFFIXES=" \
 cmake \
-    -G "Ninja Multi-Config" \
-    -DCMAKE_CONFIGURATION_TYPES="Release" \
+    -G "Ninja" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DFEATURE_optimize_size=ON \
     -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a;.dll.a" \
     -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} -static -static-libgcc -static-libstdc++" \
     -DBUILD_SHARED_LIBS=OFF \

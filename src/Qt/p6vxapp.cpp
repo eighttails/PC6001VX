@@ -617,10 +617,10 @@ void P6VXApp::enableCompatibleRomMode(std::shared_ptr<CFG6>& config, bool enable
 			config->SetValue(CV_Model, 60);
 		}
 		config->SetValue(CB_CheckCRC, false);
-		config->SetValue(CF_RomPath, STR2P6VPATH(":/res/rom"));
+		config->SetValue(CF_RomPath, STR2P6VPATH(std::string(":/res/rom")));
 	} else {
 		config->SetValue(CB_CheckCRC, true);
-		config->SetValue(CF_RomPath, STR2P6VPATH(""));
+		config->SetValue(CF_RomPath, STR2P6VPATH(std::string("")));
 	}
 }
 

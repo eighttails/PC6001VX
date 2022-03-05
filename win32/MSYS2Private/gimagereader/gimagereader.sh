@@ -5,6 +5,8 @@ function prerequisite(){
 if [ $((NO_DEPENDENCY)) == 0 ]; then
 $SCRIPT_DIR/../qtspell/qtspell.sh
 exitOnError
+$SCRIPT_DIR/../quazip/quazip.sh
+exitOnError
 $SCRIPT_DIR/../twaindsm/twaindsm.sh
 exitOnError
 $SCRIPT_DIR/../tesseract/tesseract.sh
@@ -13,9 +15,8 @@ fi
 
 #必要ライブラリ
 pacman "${PACMAN_INSTALL_OPTS[@]}" \
-$MINGW_PACKAGE_PREFIX-qt5 \
-$MINGW_PACKAGE_PREFIX-poppler \
-$MINGW_PACKAGE_PREFIX-quazip \
+$MINGW_PACKAGE_PREFIX-qt6-base \
+$MINGW_PACKAGE_PREFIX-poppler-qt6 \
 $MINGW_PACKAGE_PREFIX-djvulibre \
 $MINGW_PACKAGE_PREFIX-podofo \
 $MINGW_PACKAGE_PREFIX-dlfcn \
@@ -29,12 +30,12 @@ if [ "$GIMAGEREADER_PREFIX" == "" ]; then
 GIMAGEREADER_PREFIX=$PREFIX
 fi
 
-if [ -e $GIMAGEREADER_PREFIX/bin/gImageReader-qt5 -a $((FORCE_INSTALL)) == 0 ]; then
+if [ -e $GIMAGEREADER_PREFIX/bin/gImageReader-qt6 -a $((FORCE_INSTALL)) == 0 ]; then
 echo "gImageReader is already installed."
 exit 0
 fi
 
-    GIMAGEREADER_VERSION=460c84cee09ba2380e4b082e5da963a6abe58534 #3.4.0+バグ修正
+    GIMAGEREADER_VERSION=b0b4f286d502d3cb09342df1eee9ab4c82c5b91a #3.4.0+バグ修正
 if [ "$GIMAGEREADER_GIT" != "" ]; then
     GIMAGEREADER_SRC_DIR=gImageReader-git
     git clone https://github.com/manisandro/gImageReader.git $GIMAGEREADER_SRC_DIR 2> /dev/null
@@ -77,14 +78,13 @@ else
     BUILD_TYPE=Release
 fi
 
-CMAKE_PREFIX_PATH=$PREFIX/qt5-shared:$CMAKE_PREFIX_PATH \
 cmake .. \
 -G"MSYS Makefiles" \
 -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
 -DCMAKE_INSTALL_PREFIX=$GIMAGEREADER_PREFIX \
 -DCMAKE_CXX_FLAGS="-I$PREFIX/include" \
 -DCMAKE_VERBOSE_MAKEFILE:BOOL=FALSE \
--DINTERFACE_TYPE=qt5
+-DINTERFACE_TYPE=qt6
 
 makeParallel && make install
 exitOnError

@@ -95,30 +95,17 @@ win32 {
     LIBS_PRIVATE= -lpthread -lsetupapi
     PKG_CONFIG = 'pkg-config --static'
     RC_ICONS += src/win32/PC6001VX.ico
-
-    #Workaround to this bug
-    #https://bugreports.qt.io/browse/QTBUG-61553
-    DEFINES += SDLJOYSTICK
 } else {
     DEFINES += __stdcall=
 }
 
 #Find library to handle joysticks.
 !contains(DEFINES, NOJOYSTICK) {
-!contains(DEFINES, SDLJOYSTICK) {
-    qtHaveModule(gamepad) {
-        QT += gamepad
+    packagesExist(sdl2) {
+        PKGCONFIG += sdl2
     } else {
-        packagesExist(sdl2) {
-            DEFINES += SDLJOYSTICK
-        } else {
-            DEFINES += NOJOYSTICK
-        }
+        DEFINES += NOJOYSTICK
     }
-}
-}
-contains(DEFINES, SDLJOYSTICK) {
-    PKGCONFIG += sdl2
 }
 
 !contains(DEFINES, NOOPENGL) {

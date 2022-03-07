@@ -1147,6 +1147,12 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		finishKeyEvent(ev);
 		break;
 	}
+	case QEvent::UpdateRequest:
+	{
+		// 画面更新に合わせてジョイスティックをポーリングするための疑似イベントを発行
+		OSD_PushEvent(EV_JOYAXISMOTION);
+		break;
+	}
 #ifdef ALWAYSFULLSCREEN
 	case QEvent::ApplicationStateChange:
 		if(P6Core){

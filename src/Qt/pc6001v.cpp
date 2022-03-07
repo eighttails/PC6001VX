@@ -5,10 +5,8 @@
 #include "p6vxapp.h"
 
 #ifndef NOJOYSTICK
-#ifdef SDLJOYSTICK
 //SDL使用時にビルドを通すのに必要
 #undef main
-#endif
 #endif // NOJOYSTICK
 
 ///////////////////////////////////////////////////////////

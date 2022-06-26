@@ -1,6 +1,6 @@
 			  Z80 ASSEMBLER - ZASM VER 1.6
                       	;Compatible BASIC for PC-6001
-                      	; by AKIKAWA, Hisashi  2013-2021
+                      	; by AKIKAWA, Hisashi  2013-2022
                       	
                       	;This software is redistributable under the LGPLv2.1 or any later version.
                       	
@@ -75,9 +75,11 @@
   1BCD                	BELL	equ	1bcdh
   1CA6                	JOYSTK	equ	1ca6h
   1CB4                	PATCH2	equ	1cb4h
+  1D52                	CNSMAIN	equ	1d52h
   1D73                	SETCNSL	equ	1d73h
   1DBB                	SETC3	equ	1dbbh
   1DFB                	CLS	equ	1dfbh
+  1E39                	SCRMAIN	equ	1e39h
   1EB3                	PLAY	equ	1eb3h
   2030                	SCALE2	equ	2030h		;for mkII
   204B                	SCALE	equ	204bh
@@ -206,6 +208,7 @@
   FD9F                	M4COLOR	equ	0fd9fh		;screen mode 4 color parameters, fd9f-fda1
   FDA2                	CONSOL1	equ	0fda2h		;console 1st line number+1
   FDA3                	CONSOL2	equ	0fda3h		;console last line number+1
+  FDA4                	FSTLIN	equ	0fda4h		;=(CONSOL1)
   FDA5                	LASTLIN	equ	0fda5h		;sc12:(CONSOL2)-(CONSOL3) sc34:(CONSOLE2)
   FDA6                	CONSOL3	equ	0fda6h		;console 3rd parameter
   FDA7                	FKEYSFT	equ	0fda7h		;shift key status for function key display
@@ -336,7 +339,7 @@
   0010                	_ANADAT:ds	ANADAT-_ANADAT
   0010                		org	ANADAT
                       	
-  0010  CD573F        		call	SKIPSPINC
+  0010  CD583F        		call	SKIPSPINC
   0013  C3C00B        		jp	CHKFIG
                       	
                       	
@@ -470,7 +473,7 @@
   00B2  CDBC35        		call	CLRMAIN
                       	
                       	;print start message
-  00B5  CDD43F        		call	CHK6001A
+  00B5  CDD53F        		call	CHK6001A
   00B8  212701        		ld	hl,SYSNAME
   00BB  2003          		jr	nz,PC6001
   00BD  212C01        		ld	hl,SYSNAME2
@@ -553,7 +556,7 @@
   012C                	SYSNAME2:
   012C  436F6D70617469		db	"Compatible ", 00h
   0138                	BASICVER:
-  0138  42415349432056		db	"BASIC Ver.0.7.4", 0dh, 0ah, 00h
+  0138  42415349432056		db	"BASIC Ver.0.7.5", 0dh, 0ah, 00h
                       	
   014A                	PAGEDATA:
   014A  C0            		db	0c0h		;fd91	VRAM address
@@ -567,7 +570,7 @@
   0158  030000        		db	03h, 00h, 00h	;fd9f	screen mode 4 color parameters
   015B  01            		db	01h		;fda2	console 1st line number+1
   015C  10            		db	10h		;fda3	console last line number+1
-  015D  00            		db	00h		;fda4
+  015D  01            		db	01h		;fda4	=(fda2)
   015E  0F            		db	0fh		;fda5	sc12:(fda3)-(fda6) sc34:(fda3)
   015F  01            		db	01h		;fda6	console 3rd parameter
   0160  00            		db	00h		;fda7	shift key status for function key disp
@@ -625,7 +628,7 @@
   0206  753D883D533EEE		dw	F_COS,	F_SIN,	F_TAN,	F_PEEK,	F_LEN,	F_HEX,	F_STR,	F_VAL
   0216  AC31B631C031C7		dw	F_ASC,	F_CHR,	F_LEFT,	F_RGT,	F_MID,	F_POIN,	F_CSRL,	F_STCK
                       	;f0-f1
-  0226  2E226F1E      		dw	F_STRG,	F_TIME
+  0226  2E226C1E      		dw	F_STRG,	F_TIME
                       	
                       	
   022A                	CMDNAME:
@@ -1171,17 +1174,17 @@
   05C3                	C_LIST:
   05C3  F1            		pop	af		;cancel return address
   05C4  110000        		ld	de,0000h
-  05C7  CD5F3F        		call	CHKCLN
+  05C7  CD603F        		call	CHKCLN
   05CA  2814          		jr	z,LISTTOEND
                       	
   05CC  CD6B07        		call	GETLN
   05CF  D5            		push	de		;start line number
-  05D0  CD5F3F        		call	CHKCLN
+  05D0  CD603F        		call	CHKCLN
   05D3  281D          		jr	z,LISTSTRT
                       	
   05D5  FECB          		cp	MINUS_
   05D7  C2DC03        		jp	nz,SNERR
-  05DA  CD5E3F        		call	CHKCLNINC
+  05DA  CD5F3F        		call	CHKCLNINC
   05DD  2007          		jr	nz,LISTNZ
   05DF  D1            		pop	de
   05E0                	LISTTOEND:
@@ -1191,7 +1194,7 @@
                       	
   05E6                	LISTNZ:
   05E6  CD6B07        		call	GETLN
-  05E9  CD5F3F        		call	CHKCLN
+  05E9  CD603F        		call	CHKCLN
   05EC  C2DC03        		jp	nz,SNERR
                       	
   05EF  E1            		pop	hl
@@ -1325,7 +1328,7 @@
   0684  EB            		ex	de,hl
   0685  CD1F39        		call	PUSHF1		;TO value
   0688  EB            		ex	de,hl
-  0689  CD5F3F        		call	CHKCLN		;a=(hl)
+  0689  CD603F        		call	CHKCLN		;a=(hl)
   068C  224EFF        		ld	(PROGAD),hl
   068F  CC4122        		call	z,SETPLS1	;no change in z-flag
   0692  2809          		jr	z,STEP1
@@ -1524,7 +1527,7 @@
   0781                		org	C_RUN
                       	
   0781  CDF934        		call	RESSTK
-  0784  CD5F3F        		call	CHKCLN
+  0784  CD603F        		call	CHKCLN
   0787  EB            		ex	de,hl
   0788  2A5FFA        		ld	hl,(STARTAD)
   078B  C3F206        		jp	RUN2
@@ -1535,7 +1538,7 @@
   078E  CDA607        		call	C_GOTO
   0791  2B            		dec	hl
   0792                	GSUBLP:
-  0792  CD5E3F        		call	CHKCLNINC
+  0792  CD5F3F        		call	CHKCLNINC
   0795  20FB          		jr	nz,GSUBLP
                       	
   0797  44            		ld	b,h
@@ -1722,7 +1725,7 @@
   0885  DCA825        		call	c,PRTOPN
                       	
   0888                	PRTLP1:
-  0888  CD5F3F        		call	CHKCLN		;a=(hl)
+  0888  CD603F        		call	CHKCLN		;a=(hl)
   088B  284B          		jr	z,PRTEOL
   088D                	PRTLP2:
   088D  FE3B          		cp	';'
@@ -1780,7 +1783,7 @@
   08E0                	PRTNEXT:
   08E0  23            		inc	hl
   08E1                	PRTNEXT2:
-  08E1  CD5F3F        		call	CHKCLN
+  08E1  CD603F        		call	CHKCLN
   08E4  20A7          		jr	nz,PRTLP2
   08E6                	PRTEND:
   08E6  224EFF        		ld	(PROGAD),hl
@@ -1923,7 +1926,7 @@
   0992  CD7510        		call	PRTC
   0995  18F1          		jr	PROMPT
   0997                	PROMPTEND:
-  0997  CD573F        		call	SKIPSPINC
+  0997  CD583F        		call	SKIPSPINC
   099A  FE3B          		cp	';'
   099C  C2DC03        		jp	nz,SNERR
   099F  23            		inc	hl
@@ -2164,7 +2167,7 @@
                       	
   0AE8                	READDATA:
   0AE8  ED5345FF      		ld	(DATALN),de
-  0AEC  CD573F        		call	SKIPSPINC
+  0AEC  CD583F        		call	SKIPSPINC
                       	
   0AEF  D1            		pop	de		;variable address
   0AF0  C1            		pop	bc		;variable name
@@ -2217,7 +2220,7 @@
   0B30  2816          		jr	z,RDSCHK
   0B32  FE22          		cp	22h		;double quotation mark
   0B34  201A          		jr	nz,RDSNEXT
-  0B36  CD5E3F        		call	CHKCLNINC
+  0B36  CD5F3F        		call	CHKCLNINC
   0B39  281C          		jr	z,RDSEND
   0B3B  FE2C          		cp	','
   0B3D  2818          		jr	z,RDSEND
@@ -2270,7 +2273,7 @@
                       	;output: FAC1, hl=next address
                       	;destroy: af,bc,de,FAC2
   0B72                	NUMARGMO:
-  0B72  CD5F3F        		call	CHKCLN
+  0B72  CD603F        		call	CHKCLN
   0B75  CA1204        		jp	z,MOERR
                       	;	call	NUMARG
                       	;	ret
@@ -2320,10 +2323,10 @@
                       	;output: hl=next address
                       	;destroy: af
   0B95                	CHKLPAR:
-  0B95  CD583F        		call	SKIPSP
+  0B95  CD593F        		call	SKIPSP
   0B98  FE28          		cp	'('
   0B9A  C2DC03        		jp	nz,SNERR
-  0B9D  CD5E3F        		call	CHKCLNINC
+  0B9D  CD5F3F        		call	CHKCLNINC
   0BA0  C0            		ret	nz
   0BA1  C31204        		jp	MOERR
                       	
@@ -2409,7 +2412,7 @@
                       	
                       	;convert lowercase letter to uppercase letter
                       	;input: hl=data address
-                      	;output: a, c-flag(1=not converted)
+                      	;output: a
                       	;destroy: f
   0BE1                	_TOUPHL:ds	TOUPHL-_TOUPHL
   0BEE  7E            		ld	a,(hl)
@@ -2780,7 +2783,7 @@
   0D5C  A3            		and	e
   0D5D  3C            		inc	a
   0D5E  CAFA03        		jp	z,IDERR
-  0D61  CD583F        		call	SKIPSP
+  0D61  CD593F        		call	SKIPSP
   0D64  FEC4          		cp	FN_
   0D66  C2DC03        		jp	nz,SNERR
   0D69  23            		inc	hl
@@ -2797,10 +2800,10 @@
   0D82  CB79          		bit	7,c
   0D84  C2FD03        		jp	nz,TMERR
   0D87  CDA40B        		call	CHKRPAR
-  0D8A  CD583F        		call	SKIPSP
+  0D8A  CD593F        		call	SKIPSP
   0D8D  FED2          		cp	EQ_
   0D8F  C2DC03        		jp	nz,SNERR
-  0D92  CD573F        		call	SKIPSPINC
+  0D92  CD583F        		call	SKIPSPINC
                       	
   0D95  EB            		ex	de,hl
   0D96  73            		ld	(hl),e
@@ -2816,7 +2819,7 @@
                       	
   0D9E  2B            		dec	hl
   0D9F                	DEFLP:
-  0D9F  CD5E3F        		call	CHKCLNINC
+  0D9F  CD5F3F        		call	CHKCLNINC
   0DA2  20FB          		jr	nz,DEFLP
                       	
   0DA4  224EFF        		ld	(PROGAD),hl
@@ -2856,7 +2859,7 @@
                       	;get a 1-byte integer argument (0~255)
                       	;input: hl=program address
                       	;output: FAC1,a,de=integer, hl=next address
-                      	;destroy: FAC2, f, bc
+                      	;destroy: FAC2,f,bc
   0DE4                	_INT1ARG:ds	INT1ARG-_INT1ARG
   0DE4                		org	INT1ARG
                       	
@@ -3397,18 +3400,18 @@
                       	
                       	
                       	;clear key buffer pointer
-                      	;destroy: a,(f,bc,de,hl)
+                      	;destroy: hl,(af,bc,de)
   1054                	_CLRKBF:ds	CLRKBF-_CLRKBF
   1058                		org	CLRKBF
                       	
-  1058  3A8FFB        		ld	a,(KYBFIN)
-  105B  3290FB        		ld	(KYBFOUT),a
+  1058  210000        		ld	hl,0000h
+  105B  228FFB        		ld	(KYBFIN),hl	;(KYBFIN),(KYBFOUT)=0
   105E  C9            		ret
                       	
                       	
                       	;send key-query to sub CPU and get reply
                       	;output: a (space-0-left-right-down-up-stop-shift)
-                      	;destroy: f
+                      	;destroy: f (no change in c-flag)
   105F                	_STICK:	ds	STICK-_STICK
   1061                		org	STICK
                       	
@@ -3420,8 +3423,9 @@
   106C  FB            		ei
   106D                	STICKLP:
   106D  3ACAFE        		ld	a,(GMKYBUF)
-  1070  FEFF          		cp	0ffh		;bit6=0?
-  1072  28F9          		jr	z,STICKLP
+  1070  3C            		inc	a
+  1071  28FA          		jr	z,STICKLP	;wait for bit6=0
+  1073  3D            		dec	a
   1074  C9            		ret
                       	
                       	
@@ -3790,7 +3794,7 @@
   1224  2B            		dec	hl
                       	
   1225                	SCRLATT:
-  1225  CDAA3F        		call	LDIDR
+  1225  CDAB3F        		call	LDIDR
   1228  C1            		pop	bc
   1229  D1            		pop	de
   122A  E1            		pop	hl
@@ -3889,7 +3893,7 @@
   1283  E1            		pop	hl
   1284  F20E12        		jp	p,SCRLG		;screen mode 3,4
                       	
-  1287  CD9F3F        		call	MUL32
+  1287  CDA03F        		call	MUL32
   128A  CDB811        		call	Y2AD
   128D  212000        		ld	hl,COLUMNS
   1290  19            		add	hl,de
@@ -3904,7 +3908,7 @@
   1298  E5            		push	hl
   1299  D5            		push	de
   129A  C5            		push	bc
-  129B  CDAA3F        		call	LDIDR
+  129B  CDAB3F        		call	LDIDR
   129E  C1            		pop	bc
   129F  D1            		pop	de
   12A0  E1            		pop	hl
@@ -4015,7 +4019,7 @@
   131B  20D8          		jr	nz,FKEYLP1
                       	
   131D                	PFKEND2:
-  131D  CD771D        		call	SETCNSL2
+  131D  CD6F1D        		call	SETCNSL2
   1320                	PFKEND:
   1320  C1            		pop	bc
   1321  D1            		pop	de
@@ -4180,7 +4184,7 @@
   13D5  0D            		dec	c		;bc=1ffh
   13D6  EDB0          		ldir
                       	
-  13D8  CD771D        		call	SETCNSL2
+  13D8  CD6F1D        		call	SETCNSL2
   13DB  2E01          		ld	l,01h
   13DD  3A20FA        		ld	a,(HEIGHT)
   13E0  CD3916        		call	CLSMAIN
@@ -5032,7 +5036,7 @@
   178F  C3BA18        		jp	OPR
                       	
   1792                	PARL:
-  1792  CD5F3F        		call	CHKCLN
+  1792  CD603F        		call	CHKCLN
   1795  CA1204        		jp	z,MOERR
   1798  CD4317        		call	ARG
   179B  3A25FF        		ld	a,(ARGTYP)
@@ -5457,7 +5461,7 @@
   1A2A  F5            		push	af
   1A2B  FE14          		cp	14h
   1A2D  28F5          		jr	z,SETGRP
-  1A2F  CDC43F        		call	CNVKANA2
+  1A2F  CDC53F        		call	CNVKANA2
   1A32  CD371A        		call	PRINTER
   1A35  F1            		pop	af
   1A36  C9            		ret
@@ -6060,7 +6064,7 @@
   1CC9  57            		ld	d,a		;;
                       	
   1CCA  3E07          		ld	a,07h
-  1CCC  CD931E        		call	SETPSGEI
+  1CCC  CD901E        		call	SETPSGEI
                       	
   1CCF  7A            		ld	a,d		;;
   1CD0  D1            		pop	de
@@ -6099,7 +6103,7 @@
   1CF6  ED4BA2FD      		ld	bc,(CONSOL1)	;c=(CONSOL1),b=(CONSOL2)
   1CFA  C5            		push	bc
                       	
-  1CFB  CD6A3F        		call	CHKCMM
+  1CFB  CD6B3F        		call	CHKCMM
   1CFE  2814          		jr	z,CNSLPAR2
                       	
   1D00  CDE40D        		call	INT1ARG
@@ -6114,11 +6118,11 @@
   1D0D  4F            		ld	c,a
   1D0E  C5            		push	bc
                       	
-  1D0F  CD7A3F        		call	CHKCLCM
+  1D0F  CD7B3F        		call	CHKCLCM
   1D12  2838          		jr	z,CNSLEND
                       	
   1D14                	CNSLPAR2:
-  1D14  CD6A3F        		call	CHKCMM
+  1D14  CD6B3F        		call	CHKCMM
   1D17  2810          		jr	z,CNSLPAR3
                       	
   1D19  CDE40D        		call	INT1ARG
@@ -6130,11 +6134,11 @@
   1D22  47            		ld	b,a
   1D23  C5            		push	bc
                       	
-  1D24  CD7A3F        		call	CHKCLCM
+  1D24  CD7B3F        		call	CHKCLCM
   1D27  2823          		jr	z,CNSLEND
                       	
   1D29                	CNSLPAR3:
-  1D29  CD6A3F        		call	CHKCMM
+  1D29  CD6B3F        		call	CHKCMM
   1D2C  2813          		jr	z,CNSLPAR4
                       	
   1D2E  CDE40D        		call	INT1ARG
@@ -6143,7 +6147,7 @@
   1D36  32A6FD        		ld	(CONSOL3),a
                       	
   1D39  CDB312        		call	PRTFKEY2
-  1D3C  CD7A3F        		call	CHKCLCM
+  1D3C  CD7B3F        		call	CHKCLCM
   1D3F  280B          		jr	z,CNSLEND
                       	
   1D41                	CNSLPAR4:
@@ -6157,6 +6161,14 @@
   1D4D  7A            		ld	a,d
   1D4E  BB            		cp	e
   1D4F  DAE503        		jp	c,FCERR
+                      	;	jr	CNSMAIN
+                      	
+                      	
+                      	;CONSOLE command main part
+                      	;used by EXAS BASIC compiler
+                      	;destroy: af,de,hl
+  1D52                	_CNSMAIN:ds	CNSMAIN-_CNSMAIN
+  1D52                		org	CNSMAIN
                       	
   1D52  CD731D        		call	SETCNSL
                       	
@@ -6173,53 +6185,58 @@
                       	
                       	
                       	;set console parameter
+                      	;destroy: af,de,hl
+  1D68                	_SETCNSL2:ds	SETCNSL-4-_SETCNSL2
+  1D6F                		org	SETCNSL-4
+  1D6F                	SETCNSL2:
+  1D6F  ED5BA2FD      		ld	de,(CONSOL1)
+                      	
+                      	;set console parameter
                       	;input: d=last line+1, e=first line+1
-                      	;destroy: af,bc,hl
-  1D68                	_SETCNSL:ds	SETCNSL-_SETCNSL
+                      	;destroy: af,de,hl
+  1D73                	_SETCNSL:ds	SETCNSL-_SETCNSL
   1D73                		org	SETCNSL
-                      	
-  1D73  ED53A2FD      		ld	(CONSOL1),de
-                      	
-  1D77                	SETCNSL2:
+                      	;2nd parameter
+  1D73  3AA6FD        		ld	a,(CONSOL3)
+  1D76  67            		ld	h,a
   1D77  3A20FA        		ld	a,(HEIGHT)
-  1D7A  21A3FD        		ld	hl,CONSOL2
-  1D7D  BE            		cp	(hl)
-  1D7E  3001          		jr	nc,CNSLNC
-  1D80  77            		ld	(hl),a
-  1D81                	CNSLNC:
-  1D81  4E            		ld	c,(hl)		;c=(CONSOL2)
+  1D7A  BA            		cp	d
+  1D7B  3001          		jr	nc,CNSLNC1
+  1D7D  57            		ld	d,a
+  1D7E                	CNSLNC1:
                       	
-  1D82  21A6FD        		ld	hl,CONSOL3
-  1D85  96            		sub	(hl)
-  1D86  47            		ld	b,a		;b=(HEIGHT)-(CONSOL3)
+                      	;1st parameter
+  1D7E  94            		sub	h
+  1D7F  BB            		cp	e
+  1D80  3001          		jr	nc,CNSLNC2
+  1D82  5F            		ld	e,a
+  1D83                	CNSLNC2:
+  1D83  6B            		ld	l,e
                       	
-  1D87  2B            		dec	hl		;LASTLIN
-  1D88  B9            		cp	c
-  1D89  3F            		ccf
-  1D8A  3A92FD        		ld	a,(SCREEN1)
-  1D8D  1F            		rra
-  1D8E  B7            		or	a
-  1D8F  2001          		jr	nz,CNSLNZ
-  1D91  48            		ld	c,b		;if screen mode 1,2 and (CONSOL2)>(HEIGHT)-(CONSOL3)
-  1D92                	CNSLNZ:
-  1D92  71            		ld	(hl),c
+                      	;last line
+  1D84  67            		ld	h,a		;h=(HEIGHT)-(CONSOL3)
+  1D85  BA            		cp	d
+  1D86  3F            		ccf
+  1D87  3A92FD        		ld	a,(SCREEN1)
+  1D8A  1F            		rra
+  1D8B  B7            		or	a
+  1D8C  2801          		jr	z,CNSLZ
+  1D8E  62            		ld	h,d		;if screen mode 3,4 or 2nd<height-3rd
+  1D8F                	CNSLZ:
                       	
-  1D93  21A2FD        		ld	hl,CONSOL1
-  1D96  7E            		ld	a,(hl)
-  1D97  B8            		cp	b
-  1D98  D8            		ret	c
-  1D99  70            		ld	(hl),b
-  1D9A  C9            		ret
+  1D8F  ED53A2FD      		ld	(CONSOL1),de
+  1D93  22A4FD        		ld	(FSTLIN),hl
+  1D96  C9            		ret
                       	
                       	
                       	;COLOR command
-  1D9B                	_C_COLR:ds	C_COLR-_C_COLR
+  1D97                	_C_COLR:ds	C_COLR-_C_COLR
   1D9B                		org	C_COLR
                       	
   1D9B  1193FD        		ld	de,COLOR1
   1D9E  0602          		ld	b,02h
   1DA0                	COLRLP:
-  1DA0  CD6A3F        		call	CHKCMM
+  1DA0  CD6B3F        		call	CHKCMM
   1DA3  2810          		jr	z,COLRZ
   1DA5  C5            		push	bc
   1DA6  D5            		push	de
@@ -6227,7 +6244,7 @@
   1DAA  D1            		pop	de
   1DAB  C1            		pop	bc
   1DAC  12            		ld	(de),a
-  1DAD  CD5F3F        		call	CHKCLN		;a=(hl)
+  1DAD  CD603F        		call	CHKCLN		;a=(hl)
   1DB0  C8            		ret	z
   1DB1  FE2C          		cp	','
   1DB3  C0            		ret	nz
@@ -6291,124 +6308,132 @@
   1E03                	_C_SCRN:ds	C_SCRN-_C_SCRN
   1E04                		org	C_SCRN
                       	
-  1E04  3A92FD        		ld	a,(SCREEN1)
-  1E07  5F            		ld	e,a
-  1E08  1601          		ld	d,01h		;d>0: no 1st parameter
-  1E0A  D5            		push	de
-  1E0B  ED5B8FFD      		ld	de,(SCREEN2)	;e=(SCREEN2),d=(SCREEN3)
-  1E0F  D5            		push	de
+  1E04  AF            		xor	a		;1st parmeter=none
+  1E05  F5            		push	af
+  1E06  ED4B8FFD      		ld	bc,(SCREEN2)
+  1E0A  51            		ld	d,c		;2nd parameter-1
+  1E0B  58            		ld	e,b		;3rd parameter-1
                       	
-  1E10  CD6A3F        		call	CHKCMM
-  1E13  280E          		jr	z,SCRPAR2
-  1E15  CDE40D        		call	INT1ARG
-  1E18  1D            		dec	e
-  1E19  C1            		pop	bc		;c=2nd,b=3rd parameter
-  1E1A  EB            		ex	de,hl
-  1E1B  E3            		ex	(sp),hl		;cancel 1st parameter, l=1st parameter, h=0
-  1E1C  EB            		ex	de,hl
-  1E1D  C5            		push	bc		;c=2nd,b=3rd parameter
+  1E0C  CD6B3F        		call	CHKCMM
+  1E0F  280C          		jr	z,SCRPAR2
                       	
-  1E1E  CD7A3F        		call	CHKCLCM
-  1E21  2818          		jr	z,SCRMAIN
+  1E11  D5            		push	de
+  1E12  CDE40D        		call	INT1ARG
+  1E15  D1            		pop	de
+  1E16  C1            		pop	bc
+  1E17  F5            		push	af		;1st parameter
                       	
-  1E23                	SCRPAR2:
-  1E23  CD6A3F        		call	CHKCMM
-  1E26  280C          		jr	z,SCRPAR3
-  1E28  CDE40D        		call	INT1ARG
-  1E2B  3D            		dec	a
+  1E18  CD7B3F        		call	CHKCLCM
+  1E1B  2818          		jr	z,GOSCRMAIN
                       	
-  1E2C  D1            		pop	de		;e=2nd,d=3rd parameter
-  1E2D  5F            		ld	e,a
+  1E1D                	SCRPAR2:
+  1E1D  CD6B3F        		call	CHKCMM
+  1E20  280C          		jr	z,SCRPAR3
+                      	
+  1E22  D5            		push	de
+  1E23  CDE40D        		call	INT1ARG
+  1E26  D1            		pop	de
+  1E27  3D            		dec	a
+  1E28  57            		ld	d,a		;2nd parameter-1
+                      	
+  1E29  CD7B3F        		call	CHKCLCM
+  1E2C  2807          		jr	z,GOSCRMAIN
+                      	
+  1E2E                	SCRPAR3:
   1E2E  D5            		push	de
+  1E2F  CDE40D        		call	INT1ARG
+  1E32  D1            		pop	de
+  1E33  3D            		dec	a
+  1E34  5F            		ld	e,a		;3rd parameter-1
                       	
-  1E2F  CD7A3F        		call	CHKCLCM
-  1E32  2807          		jr	z,SCRMAIN
+  1E35                	GOSCRMAIN:
+  1E35  F1            		pop	af
+  1E36  3D            		dec	a
+  1E37  4F            		ld	c,a		;1st parameter-1
+                      	;	jr	SCRMAIN
                       	
-  1E34                	SCRPAR3:
-  1E34  CDE40D        		call	INT1ARG
-  1E37  3D            		dec	a
                       	
-  1E38  D1            		pop	de		;e=2nd,d=3rd parameter
-  1E39  57            		ld	d,a
-  1E3A  D5            		push	de
+                      	;SCREEN command main part
+                      	;used by EXAS BASIC compiler
+                      	;input: c=1st paraeter-1(ff=none), d=2nd parameter-1, e=3rd parameter-1
+                      	;destroy: af,de
+  1E38                	_SCRMAIN:ds	SCRMAIN-_SCRMAIN
+  1E39                		org	SCRMAIN
                       	
-  1E3B                	SCRMAIN:
-  1E3B  D1            		pop	de		;e=2nd,d=3rd parameter
-  1E3C  C1            		pop	bc		;c=1st parameter
-                      	
-  1E3D  3A8CFD        		ld	a,(PAGES)
-  1E40  3D            		dec	a
-  1E41  BA            		cp	d
+  1E39  3A8CFD        		ld	a,(PAGES)
+  1E3C  3D            		dec	a
+  1E3D  BA            		cp	d
+  1E3E  DAE503        		jp	c,FCERR
+  1E41  BB            		cp	e
   1E42  DAE503        		jp	c,FCERR
-  1E45  BB            		cp	e
-  1E46  DAE503        		jp	c,FCERR
                       	
-  1E49  79            		ld	a,c
-  1E4A  FE02          		cp	02h
-  1E4C  380D          		jr	c,SCROK
-  1E4E  FE04          		cp	04h
-  1E50  D2E503        		jp	nc,FCERR
-  1E53  7B            		ld	a,e
-  1E54  B7            		or	a
-  1E55  2004          		jr	nz,SCROK
-  1E57  B0            		or	b		;b>0: no 1st parameter
-  1E58  CAE503        		jp	z,FCERR		;if 1st>=2 and 2nd=0
-  1E5B                	SCROK:
-  1E5B  D5            		push	de		;e=2nd,d=3rd parameter
-  1E5C  7B            		ld	a,e
-  1E5D  CD0C14        		call	CHGACT
+  1E45  79            		ld	a,c
+  1E46  3C            		inc	a
+  1E47  FE03          		cp	03h
+  1E49  380A          		jr	c,SCROK
+  1E4B  FE05          		cp	05h
+  1E4D  D2E503        		jp	nc,FCERR
+  1E50  7A            		ld	a,d
+  1E51  B7            		or	a
+  1E52  CAE503        		jp	z,FCERR
                       	
-  1E60  F1            		pop	af		;a=3rd parameter
-  1E61  2190FD        		ld	hl,SCREEN3
-  1E64  BE            		cp	(hl)
-  1E65  C4ED13        		call	nz,CHGDSP
+  1E55                	SCROK:
+  1E55  7A            		ld	a,d
+  1E56  CD0C14        		call	CHGACT
                       	
-  1E68  78            		ld	a,b
-  1E69  B7            		or	a
-  1E6A  79            		ld	a,c
-  1E6B  CA9013        		jp	z,CHGMOD	;b>0: no 1st parameter
-  1E6E  C9            		ret
+  1E59  3A90FD        		ld	a,(SCREEN3)
+  1E5C  BB            		cp	e
+  1E5D  7B            		ld	a,e
+  1E5E  C4ED13        		call	nz,CHGDSP
+                      	
+  1E61  3A92FD        		ld	a,(SCREEN1)
+  1E64  B9            		cp	c
+  1E65  C8            		ret	z
+  1E66  79            		ld	a,c
+  1E67  0C            		inc	c
+  1E68  C8            		ret	z		;1st parameter=none
+  1E69  C39013        		jp	CHGMOD
                       	
                       	
                       	;TIME function
-  1E6F                	F_TIME:
-  1E6F  2A28FA        		ld	hl,(TMCNT)
-  1E72  ED5B2AFA      		ld	de,(TMCNT+2)
-  1E76  C3A60C        		jp	I4TOF
+  1E6C                	F_TIME:
+  1E6C  2A28FA        		ld	hl,(TMCNT)
+  1E6F  ED5B2AFA      		ld	de,(TMCNT+2)
+  1E73  C3A60C        		jp	I4TOF
                       	
                       	
                       	;SOUND command
-  1E79                	C_SOUN:
-  1E79  CD5F3F        		call	CHKCLN
-  1E7C  CADC03        		jp	z,SNERR
-  1E7F  CDE40D        		call	INT1ARG
-  1E82  FE10          		cp	10h
-  1E84  D2E503        		jp	nc,FCERR
-  1E87  F5            		push	af
-  1E88  7E            		ld	a,(hl)
-  1E89  FE2C          		cp	','
-  1E8B  C2DC03        		jp	nz,SNERR
-  1E8E  CDE30D        		call	INT1INC
-  1E91  F1            		pop	af
-  1E92  F3            		di
-  1E93                	SETPSGEI:
-  1E93  CDC51B        		call	SETPSG
-  1E96  FB            		ei
-  1E97  C9            		ret
+  1E76                	C_SOUN:
+  1E76  CD603F        		call	CHKCLN
+  1E79  CADC03        		jp	z,SNERR
+  1E7C  CDE40D        		call	INT1ARG
+  1E7F  FE10          		cp	10h
+  1E81  D2E503        		jp	nc,FCERR
+  1E84  F5            		push	af
+  1E85  7E            		ld	a,(hl)
+  1E86  FE2C          		cp	','
+  1E88  C2DC03        		jp	nz,SNERR
+  1E8B  CDE30D        		call	INT1INC
+  1E8E  F1            		pop	af
+  1E8F  F3            		di
+  1E90                	SETPSGEI:
+  1E90  CDC51B        		call	SETPSG
+  1E93  FB            		ei
+  1E94  C9            		ret
                       	
                       	
                       	;PLAY command
-  1E98                	C_PLAY:
-  1E98  CDB31E        		call	PLAY
-  1E9B  224EFF        		ld	(PROGAD),hl
-  1E9E  C9            		ret
+  1E95                	C_PLAY:
+  1E95  CDB31E        		call	PLAY
+  1E98  224EFF        		ld	(PROGAD),hl
+  1E9B  C9            		ret
                       	
                       	
                       	;play routine
                       	;input: hl=data address, (z=0)
                       	;output: hl=next address
                       	;destroy: af,bc,de
-  1E9F                	_PLAY:	ds	PLAY-_PLAY
+  1E9C                	_PLAY:	ds	PLAY-_PLAY
   1EB3                		org	PLAY
                       	
   1EB3  DDE5          		push	ix
@@ -6430,7 +6455,7 @@
   1ED4  012500        		ld	bc,PLWKB-PLWKA
   1ED7  DD09          		add	ix,bc
   1ED9  C1            		pop	bc
-  1EDA  CD7A3F        		call	CHKCLCM
+  1EDA  CD7B3F        		call	CHKCLCM
   1EDD  2802          		jr	z,PLSTR0
   1EDF  10E6          		djnz	PLAYLP1
                       	
@@ -7240,7 +7265,7 @@
                       	;CLOAD command
   235A                	C_CLD:
   235A  F1            		pop	af		;cancel return address
-  235B  CD583F        		call	SKIPSP
+  235B  CD593F        		call	SKIPSP
   235E  FE95          		cp	PRINT_
   2360  0E00          		ld	c,00h		;file name length
   2362  79            		ld	a,c
@@ -7250,7 +7275,7 @@
   2367                	CLDNZ1:
   2367  32D8FE        		ld	(VERIFY),a
   236A  F5            		push	af		;verify?
-  236B  CD5F3F        		call	CHKCLN
+  236B  CD603F        		call	CHKCLN
   236E  2808          		jr	z,NOTARGET
   2370  CD8A26        		call	STRARG
   2373  B7            		or	a
@@ -7871,7 +7896,7 @@
                       	;output: a=length, de=string address, hl=next address, z-flag(1=ok)
                       	;destroy: f,bc,FAC1,FAC2
   268A                	STRARG:
-  268A  CD5F3F        		call	CHKCLN
+  268A  CD603F        		call	CHKCLN
   268D  CA1204        		jp	z,MOERR
   2690  CD4317        		call	ARG
   2693                	STRARG2:
@@ -8074,7 +8099,7 @@
                       	;output: a, hl,(PROGAD)=next address
                       	;destroy: f,bc,de
   2773                	DEVNUM:
-  2773  CD583F        		call	SKIPSP
+  2773  CD593F        		call	SKIPSP
   2776  FE23          		cp	'#'
   2778  3E00          		ld	a,00h
   277A  C0            		ret	nz
@@ -8095,7 +8120,7 @@
   2791                	DEVNUMC:
   2791  E1            		pop	hl
   2792  F5            		push	af
-  2793  CD6A3F        		call	CHKCMM
+  2793  CD6B3F        		call	CHKCMM
   2796  C2DC03        		jp	nz,SNERR
   2799  224EFF        		ld	(PROGAD),hl
   279C  F1            		pop	af
@@ -8983,7 +9008,7 @@
                       	
                       	;round off y for screen mode 1
   2C00                	ROUNDY1:
-  2C00  CDB23F        		call	DIV12
+  2C00  CDB33F        		call	DIV12
   2C03  7B            		ld	a,e
   2C04  87            		add	a,a		;*2
   2C05  83            		add	a,e		;*3
@@ -9014,7 +9039,7 @@
                       	;screen mode 2
   2C18                	PSET2:
   2C18  C5            		push	bc		;X
-  2C19  CD863F        		call	GXY2AD
+  2C19  CD873F        		call	GXY2AD
                       	
   2C1C  3AACFE        		ld	a,(ATTDAT)
   2C1F  5E            		ld	e,(hl)		;
@@ -9198,7 +9223,7 @@
                       	;	 a=next data, hl=next data address, z(, or not)
                       	;destroy: f
   2CDC                	GETGXY:
-  2CDC  CD583F        		call	SKIPSP
+  2CDC  CD593F        		call	SKIPSP
   2CDF  FEC9          		cp	STEP_
   2CE1  F5            		push	af		;STEP?
   2CE2  2001          		jr	nz,GETGXYNZ
@@ -9209,7 +9234,7 @@
   2CEB  CDA40B        		call	CHKRPAR
   2CEE  F1            		pop	af		;STEP?
   2CEF  CD132D        		call	SETGXY
-  2CF2  CD583F        		call	SKIPSP
+  2CF2  CD593F        		call	SKIPSP
   2CF5  FE2C          		cp	','
   2CF7  C9            		ret
                       	
@@ -9270,7 +9295,7 @@
                       	
                       	;screen mode 1
   2D52                	PSET1:
-  2D52  CD863F        		call	GXY2AD
+  2D52  CD873F        		call	GXY2AD
   2D55  3AACFE        		ld	a,(ATTDAT)
   2D58  1809          		jr	PSETEND
                       	
@@ -9306,7 +9331,7 @@
                       	
                       	;LINE command
   2D79                	C_LINE:
-  2D79  CD583F        		call	SKIPSP
+  2D79  CD593F        		call	SKIPSP
   2D7C  FECB          		cp	MINUS_
   2D7E  ED4BAEFD      		ld	bc,(GRPX1)
   2D82  ED5BB0FD      		ld	de,(GRPY1)
@@ -9328,7 +9353,7 @@
   2D9E  3A93FD        		ld	a,(COLOR1)
   2DA1  2011          		jr	nz,NOTBOX
   2DA3  5F            		ld	e,a
-  2DA4  CD573F        		call	SKIPSPINC
+  2DA4  CD583F        		call	SKIPSPINC
   2DA7  FE2C          		cp	','
   2DA9  2810          		jr	z,CHKBF
                       	
@@ -9347,14 +9372,14 @@
                       	
                       	;check 'B' and 'F'
   2DBB                	CHKBF:
-  2DBB  CD573F        		call	SKIPSPINC
+  2DBB  CD583F        		call	SKIPSPINC
   2DBE  FE42          		cp	'B'
   2DC0  C2DC03        		jp	nz,SNERR
                       	
   2DC3  7B            		ld	a,e
   2DC4  CDC015        		call	SETATT
                       	
-  2DC7  CD573F        		call	SKIPSPINC
+  2DC7  CD583F        		call	SKIPSPINC
   2DCA  FE46          		cp	'F'
   2DCC  2001          		jr	nz,BOX
   2DCE  23            		inc	hl		;for box fill
@@ -9611,7 +9636,7 @@
   2F0A  C9            		ret
                       	
   2F0B                	PAINT1:
-  2F0B  CD863F        		call	GXY2AD
+  2F0B  CD873F        		call	GXY2AD
   2F0E  16FF          		ld	d,0ffh
   2F10  18F4          		jr	PAMAIN
                       	
@@ -10825,7 +10850,7 @@
                       	;output: hl=next program address
                       	;destroy: FAC1,FAC2,af,bc,de
   349B                	VARIN:
-  349B  CD583F        		call	SKIPSP
+  349B  CD593F        		call	SKIPSP
   349E  FED2          		cp	EQ_		;0d2h
   34A0  C2DC03        		jp	nz,SNERR
                       	
@@ -10859,7 +10884,7 @@
                       	
                       	;NEW command
   34CD                	C_NEW:
-  34CD  CD5F3F        		call	CHKCLN
+  34CD  CD603F        		call	CHKCLN
   34D0  C2DC03        		jp	nz,SNERR
   34D3  214204        		ld	hl,EDIT
   34D6  E5            		push	hl
@@ -10928,7 +10953,7 @@
                       	
                       	;RESTORE command
   3516                	C_RSTR:
-  3516  CD5F3F        		call	CHKCLN
+  3516  CD603F        		call	CHKCLN
   3519  224EFF        		ld	(PROGAD),hl
   351C  28F0          		jr	z,RSTRZ
   351E  CD6B07        		call	GETLN
@@ -10941,7 +10966,7 @@
                       	
                       	;STOP command
   352F                	C_STOP:
-  352F  CD5F3F        		call	CHKCLN
+  352F  CD603F        		call	CHKCLN
   3532  C2DC03        		jp	nz,SNERR
   3535  F1            		pop	af		;cancel return address
                       	
@@ -11008,7 +11033,7 @@
                       	
                       	;CLEAR command
   3593                	C_CLR:
-  3593  CD5F3F        		call	CHKCLN
+  3593  CD603F        		call	CHKCLN
   3596  CAF934        		jp	z,RESSTK
   3599  CD1A0E        		call	INT2ARG
   359C  CB7A          		bit	7,d
@@ -11057,7 +11082,7 @@
   35DC  F1            		pop	af		;cancel return address
   35DD  0600          		ld	b,00h
   35DF                	NEXTLP:
-  35DF  CD5F3F        		call	CHKCLN
+  35DF  CD603F        		call	CHKCLN
   35E2  C47A33        		call	nz,CHKVAR
   35E5  224EFF        		ld	(PROGAD),hl
                       	
@@ -11730,7 +11755,7 @@
                       	
                       	;FAC1<FAC2
   38FA                	DIVF1LT2:
-  38FA  F22A0C        		jp	p,SETZERO
+  38FA  F23338        		jp	p,MULFZERO
   38FD  C681          		add	a,81h
   38FF  C33C38        		jp	MULEXP
                       	
@@ -12744,7 +12769,7 @@
                       	
                       	;screen mode 1
   3E77                	POINT1:
-  3E77  CD863F        		call	GXY2AD
+  3E77  CD873F        		call	GXY2AD
   3E7A  7E            		ld	a,(hl)
   3E7B  D61F          		sub	1fh
   3E7D  C9            		ret
@@ -12768,7 +12793,7 @@
                       	;screen mode 2
   3E8E                	POINT2:
   3E8E  C5            		push	bc		;x
-  3E8F  CD863F        		call	GXY2AD
+  3E8F  CD873F        		call	GXY2AD
   3E92  C1            		pop	bc		;x
   3E93  CD542C        		call	MASK2
   3E96  46            		ld	b,(hl)		;
@@ -12931,8 +12956,8 @@
                       	
                       	;jump subroutine in table
                       	;input: de=table address, a=data(00h-7fh or 80h-ffh)
-                      	;output: de=jump address
-                      	;destroy: af
+                      	;output: de=jump address, a=(hl)
+                      	;destroy: f
   3F49                	JPTBL:
   3F49  EB            		ex	de,hl
   3F4A  87            		add	a,a
@@ -12947,67 +12972,68 @@
   3F53  6F            		ld	l,a
                       	
   3F54  EB            		ex	de,hl
-  3F55  D5            		push	de
-  3F56  C9            		ret
+  3F55  7E            		ld	a,(hl)
+  3F56  D5            		push	de
+  3F57  C9            		ret
                       	
                       	
                       	;skip space
                       	;input: hl=program address-1
                       	;output: a=data, hl=next address
                       	;destroy: f
-  3F57                	SKIPSPINC:
-  3F57  23            		inc	hl
-  3F58                	SKIPSP:
-  3F58  7E            		ld	a,(hl)
-  3F59  FE20          		cp	' '
-  3F5B  C0            		ret	nz
-  3F5C  18F9          		jr	SKIPSPINC
+  3F58                	SKIPSPINC:
+  3F58  23            		inc	hl
+  3F59                	SKIPSP:
+  3F59  7E            		ld	a,(hl)
+  3F5A  FE20          		cp	' '
+  3F5C  C0            		ret	nz
+  3F5D  18F9          		jr	SKIPSPINC
                       	
                       	
                       	;check colon and line end
                       	;input: hl=program address
                       	;output: a=(hl), z-flag(1= 00h or ":")
                       	;destroy: af
-  3F5E                	CHKCLNINC:
-  3F5E  23            		inc	hl
-  3F5F                	CHKCLN:
-  3F5F  7E            		ld	a,(hl)
-  3F60  B7            		or	a
-  3F61  C8            		ret	z
-  3F62  FE3A          		cp	':'
-  3F64  C8            		ret	z
-  3F65  FE20          		cp	' '
-  3F67  C0            		ret	nz
-  3F68  18F4          		jr	CHKCLNINC
+  3F5F                	CHKCLNINC:
+  3F5F  23            		inc	hl
+  3F60                	CHKCLN:
+  3F60  7E            		ld	a,(hl)
+  3F61  B7            		or	a
+  3F62  C8            		ret	z
+  3F63  FE3A          		cp	':'
+  3F65  C8            		ret	z
+  3F66  FE20          		cp	' '
+  3F68  C0            		ret	nz
+  3F69  18F4          		jr	CHKCLNINC
                       	
                       	
                       	;check comma or argument
                       	;input: hl=program address
                       	;output: a=(hl), f(z=1:comma), hl=next address
-  3F6A                	CHKCMM:
-  3F6A  CD5F3F        		call	CHKCLN		;a=(hl)
-  3F6D  CA1204        		jp	z,MOERR
-  3F70  23            		inc	hl
-  3F71  FE20          		cp	' '
-  3F73  28F5          		jr	z,CHKCMM
-  3F75  FE2C          		cp	','
-  3F77  C8            		ret	z
-  3F78  2B            		dec	hl
-  3F79  C9            		ret
+  3F6B                	CHKCMM:
+  3F6B  CD603F        		call	CHKCLN		;a=(hl)
+  3F6E  CA1204        		jp	z,MOERR
+  3F71  23            		inc	hl
+  3F72  FE20          		cp	' '
+  3F74  28F5          		jr	z,CHKCMM
+  3F76  FE2C          		cp	','
+  3F78  C8            		ret	z
+  3F79  2B            		dec	hl
+  3F7A  C9            		ret
                       	
                       	
                       	;check colon and comma
                       	;input: hl=program address
                       	;output: a=(hl), z-flag(1= 00h or ":" ), hl=hl+1(comma)
                       	;destroy: af
-  3F7A                	CHKCLCM:
-  3F7A  CD5F3F        		call	CHKCLN
-  3F7D  C8            		ret	z
-  3F7E  FE2C          		cp	','
-  3F80  C2DC03        		jp	nz,SNERR
-  3F83  23            		inc	hl
-  3F84  B7            		or	a		;reset z-flag
-  3F85  C9            		ret
+  3F7B                	CHKCLCM:
+  3F7B  CD603F        		call	CHKCLN
+  3F7E  C8            		ret	z
+  3F7F  FE2C          		cp	','
+  3F81  C2DC03        		jp	nz,SNERR
+  3F84  23            		inc	hl
+  3F85  B7            		or	a		;reset z-flag
+  3F86  C9            		ret
                       	
                       	
                       	;get VRAM attirbute address (screen mode 1,2)
@@ -13015,112 +13041,112 @@
                       	;input: bc=graphic X, de=graphic Y
                       	;output: hl=VRAM address, d=Y mod 12
                       	;destroy: af,bc,e
-  3F86                	GXY2AD:
-  3F86  CDD82B        		call	CHKGXY
-  3F89  CDB23F        		call	DIV12
-  3F8C  EB            		ex	de,hl
-  3F8D  57            		ld	d,a
-  3F8E  29            		add	hl,hl		;*2
-  3F8F  29            		add	hl,hl		;*4
-  3F90  29            		add	hl,hl		;*8
-  3F91  29            		add	hl,hl		;*16
-  3F92  29            		add	hl,hl		;*32
-  3F93  3A91FD        		ld	a,(VRAM)
-  3F96  47            		ld	b,a
-  3F97  CB39          		srl	c
-  3F99  CB39          		srl	c
-  3F9B  CB39          		srl	c
-  3F9D  09            		add	hl,bc
-  3F9E  C9            		ret
+  3F87                	GXY2AD:
+  3F87  CDD82B        		call	CHKGXY
+  3F8A  CDB33F        		call	DIV12
+  3F8D  EB            		ex	de,hl
+  3F8E  57            		ld	d,a
+  3F8F  29            		add	hl,hl		;*2
+  3F90  29            		add	hl,hl		;*4
+  3F91  29            		add	hl,hl		;*8
+  3F92  29            		add	hl,hl		;*16
+  3F93  29            		add	hl,hl		;*32
+  3F94  3A91FD        		ld	a,(VRAM)
+  3F97  47            		ld	b,a
+  3F98  CB39          		srl	c
+  3F9A  CB39          		srl	c
+  3F9C  CB39          		srl	c
+  3F9E  09            		add	hl,bc
+  3F9F  C9            		ret
                       	
                       	
                       	;bc=a*32
                       	;input: a(<=16), b=0
                       	;output: bc
                       	;destroy: f
-  3F9F                	MUL32:
-  3F9F  87            		add	a,a		;*2
-  3FA0  87            		add	a,a		;*4
-  3FA1  87            		add	a,a		;*8
-  3FA2  87            		add	a,a		;*16
-  3FA3  CB10          		rl	b
-  3FA5  87            		add	a,a		;*32
-  3FA6  CB10          		rl	b
-  3FA8  4F            		ld	c,a
-  3FA9  C9            		ret
+  3FA0                	MUL32:
+  3FA0  87            		add	a,a		;*2
+  3FA1  87            		add	a,a		;*4
+  3FA2  87            		add	a,a		;*8
+  3FA3  87            		add	a,a		;*16
+  3FA4  CB10          		rl	b
+  3FA6  87            		add	a,a		;*32
+  3FA7  CB10          		rl	b
+  3FA9  4F            		ld	c,a
+  3FAA  C9            		ret
                       	
                       	
                       	;ldir or lddr
                       	;input: bc,de,hl,z(0=ldir,1=lddr)
                       	;output: bc=0,de,hl
                       	;destroy: f
-  3FAA                	LDIDR:
-  3FAA  2803          		jr	z,LDIDRZ
-  3FAC  EDB0          		ldir
-  3FAE  C9            		ret
-  3FAF                	LDIDRZ:
-  3FAF  EDB8          		lddr
-  3FB1  C9            		ret
+  3FAB                	LDIDR:
+  3FAB  2803          		jr	z,LDIDRZ
+  3FAD  EDB0          		ldir
+  3FAF  C9            		ret
+  3FB0                	LDIDRZ:
+  3FB0  EDB8          		lddr
+  3FB2  C9            		ret
                       	
                       	
                       	;de=de/12
                       	;input: de<192
                       	;output: de=int(de/12), a=de mod 12
                       	;destroy: f,b=0,l
-  3FB2                	DIV12:
-  3FB2  7B            		ld	a,e
-  3FB3  5A            		ld	e,d		;d=0
-  3FB4  2E60          		ld	l,01100000b
-  3FB6  0604          		ld	b,04h
-  3FB8                	DIV12LP:
-  3FB8  BD            		cp	l
-  3FB9  3801          		jr	c,DIV12C
-  3FBB  95            		sub	l
-  3FBC                	DIV12C:
-  3FBC  3F            		ccf
-  3FBD  CB13          		rl	e
-  3FBF  CB3D          		srl	l
-  3FC1  10F5          		djnz	DIV12LP
-  3FC3  C9            		ret
+  3FB3                	DIV12:
+  3FB3  7B            		ld	a,e
+  3FB4  5A            		ld	e,d		;d=0
+  3FB5  2E60          		ld	l,01100000b
+  3FB7  0604          		ld	b,04h
+  3FB9                	DIV12LP:
+  3FB9  BD            		cp	l
+  3FBA  3801          		jr	c,DIV12C
+  3FBC  95            		sub	l
+  3FBD                	DIV12C:
+  3FBD  3F            		ccf
+  3FBE  CB13          		rl	e
+  3FC0  CB3D          		srl	l
+  3FC2  10F5          		djnz	DIV12LP
+  3FC4  C9            		ret
                       	
                       	
                       	;convert hiragana -> katakana (PC-6001)
                       	;convert kana -> 00h (PC-6001A)
-  3FC4                	CNVKANA2
-  3FC4  B7            		or	a
-  3FC5  F0            		ret	p
-  3FC6  E5            		push	hl
-  3FC7  C5            		push	bc
-  3FC8  4F            		ld	c,a
-  3FC9  CDD43F        		call	CHK6001A
-  3FCC  79            		ld	a,c
-  3FCD  C1            		pop	bc
-  3FCE  E1            		pop	hl
-  3FCF  C24F1A        		jp	nz,CNVKANA
-  3FD2  AF            		xor	a
-  3FD3  C9            		ret
+  3FC5                	CNVKANA2
+  3FC5  B7            		or	a
+  3FC6  F0            		ret	p
+  3FC7  E5            		push	hl
+  3FC8  C5            		push	bc
+  3FC9  4F            		ld	c,a
+  3FCA  CDD53F        		call	CHK6001A
+  3FCD  79            		ld	a,c
+  3FCE  C1            		pop	bc
+  3FCF  E1            		pop	hl
+  3FD0  C24F1A        		jp	nz,CNVKANA
+  3FD3  AF            		xor	a
+  3FD4  C9            		ret
                       	
                       	
                       	;check if PC-6001A
                       	;output: z-flag(1=PC-6001A)
                       	;destroy: af,b,hl
-  3FD4                	CHK6001A:
-  3FD4  3E04          		ld	a,04h
-  3FD6  D393          		out	(93h),a		;CGROM ON
-  3FD8  21D06F        		ld	hl,6fd0h	;nn
-  3FDB  060C          		ld	b,0ch
-  3FDD  AF            		xor	a
-  3FDE                	CHK6001ALP:
-  3FDE  B6            		or	(hl)
-  3FDF  23            		inc	hl
-  3FE0  10FC          		djnz	CHK6001ALP
-  3FE2  3E05          		ld	a,05h
-  3FE4  D393          		out	(93h),a		;CGROM OFF
-  3FE6  C9            		ret
+  3FD5                	CHK6001A:
+  3FD5  3E04          		ld	a,04h
+  3FD7  D393          		out	(93h),a		;CGROM ON
+  3FD9  21D06F        		ld	hl,6fd0h	;nn
+  3FDC  060C          		ld	b,0ch
+  3FDE  AF            		xor	a
+  3FDF                	CHK6001ALP:
+  3FDF  B6            		or	(hl)
+  3FE0  23            		inc	hl
+  3FE1  10FC          		djnz	CHK6001ALP
+  3FE3  3E05          		ld	a,05h
+  3FE5  D393          		out	(93h),a		;CGROM OFF
+  3FE7  C9            		ret
                       	
                       	
                       	;ROM end
-  3FE7                	_4000H:	ds	4000h-_4000H
+  3FE8                	_4000H:	ds	4000h-_4000H
                       	
   4000                		end
 

@@ -3,12 +3,42 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
 <meta name="author" content="AKIKAWA, Hisashi">
-<title>PC-6601用互換BASIC変更履歴</title>
+<title>PC-6001mkII/6601用互換BASIC変更履歴</title>
 <link rev="made" href="mailto:icb49250&#64;nifty.ne.jp">
 </head>
 
 <body>
 <h1>PC-6001mkII/6601用互換BASIC変更履歴</h1>
+
+<hr>
+<h2>2022.6.26</h2>
+<p>Ver.0.4公開。</p>
+<ul>
+<li>OPEN、CLOSE、GET、PUT、FIELD、RSET、LSET、DSKO$()、EOF()、LOC()、LOF()、PAD()及び、フロッピーディスクに対するPRINT#、INPUT#、GET@、PUT@を実装。
+<li>対応ROM内ルーチンが増えました。(0BEEh,1D52h,1E39h,272Dh,2905h)
+<li>同梱のbdf2cgrom66/bdf2kanjirom/bdf2exkanji/bdf2extkanjiでの文字割り当てと変換アルゴリズムを一部変更。また、新しいオプションとして-ascentを追加。
+<li>1061h (ゲームキー入力ルーチン) でCフラグが変化しないように変更。
+
+<li>バグを修正。
+<ul>
+<li>bdf2exkanjiが動作しない (windyさん、ありがとうございます)
+<li>bdf2exkanji/bdf2extkanjiで、元フォントのサイズが小さい場合8x16文字と8x8文字が異常に小さくなる
+<li>LIST命令のESC状態が、N6X-BASICでは無効となるキー入力で解除されることがある (じゃんめろ。さん、ありがとうございます)
+<li>PRINT#-1とPRINT#-2で,を使った時、初代機と同じく空白が出力されてしまう (じゃんめろ。さん、ありがとうございます)
+<li>SCREEN2でCLSした時のアトリビュートの値がおかしい (eighttailsさん、ありがとうございます)
+<li>NEWの後に不要な文字を加えてもエラーにならない (川俣さん、ありがとうございます)
+<li>0/0がエラーにならない
+<li>ファンクションキーの文字列中にCHR$(0)があっても、続く文字が入力されてしまう
+<li>CSAVEやPRINT#-1での無音時間が少し短くなっていた (Ver.0.2から)
+<li>モード5でCOLOR第3パラメータをチェックしていない (Tsutsuiさん、ありがとうございます)
+<li>割り算の結果が小さい時に暴走する (川俣さん、ありがとうございます)
+<li>MERGE命令使用時に、元々ある行番号と読み込むファイルにある行番号が重なると正常に動作しない (eikhussiineokさん、ありがとうございます)
+<li>INPUT命令で文字列変数を使用する場合、何も入力しないと、変数が空文字列で上書きされてしまう
+<li>RUN命令のファイル名指定に文字列変数を使用できない
+<li>GET@、PUT@命令で@が省略できない
+<li>絶対値の大きい負の数に対するEXP()やべき乗が正しく計算できない
+</ul>
+</ul>
 
 <hr>
 

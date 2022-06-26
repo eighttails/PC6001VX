@@ -1,5 +1,5 @@
 /*
-  bdf2kanjirom.c  2019.9.17 version
+  bdf2kanjirom.c  2021.4.4 version
     convert .bdf font file to KANJIROM format for PC-6001 series
     by AKIKAWA, Hisashi
     This software is redistributable under the LGPLv2.1 or any later version.
@@ -16,11 +16,14 @@
 int main(int argc, char *argv[])
 {
   int i, j;
+  int opt;
+  int use_ascent = 0;
   int count = 0;
   int code = 0, chr;
   int x, y;
   int ascent = -1, descent = -1, pixel_x, pixel_y;
-  int x1, x2, xmin = 999, xmax = -1;
+  int xmin = 999, xmax = -1;
+  int ymax;
   int size_x_out = SIZEX_DEFAULT, size_y_out = SIZEY_DEFAULT;
   int size_x, size_y;
   int offset_x, offset_y;
@@ -29,9 +32,9 @@ int main(int argc, char *argv[])
   char charset[100] = "";
   char outfile[] = "KANJIROM.66";
   unsigned char bmpbdf[64][64];
-  unsigned char bmp60_left[NCHR][16];
-  unsigned char bmp60_right[NCHR][16];
-  long long data;
+  unsigned char bmp60_left[NCHR][16] = {0};
+  unsigned char bmp60_right[NCHR][16] = {0};
+  unsigned long long data;
   FILE *fp;
 
   int *tbl;
@@ -296,33 +299,46 @@ int main(int argc, char *argv[])
     0x52b4, 0x6717, 0x8001, 0x516d, 0x9332, 0x8ad6, 0x548c, 0x8a71
   };
 
-  if (argc < 2) {
-    printf("usage: bdf2kanjirom fontfile.bdf\n");
-    exit(1);
-  }
-
-  if (strcmp(argv[1], "-") == 0) {
-    fp = stdin;
-  } else {
-    fp = fopen(argv[1], "rb");
-    if (fp == NULL) {
-      printf("cannot open %s\n", argv[1]);
+  for (opt = 1; argc > opt && argv[opt][0] == '-'; opt++) {
+    if (strcmp(argv[opt], "-ascent") == 0) {
+      use_ascent = 1;
+    } else {
+      printf("usage: bdf2kanjirom [-ascent] fontfile.bdf\n");
       exit(1);
     }
   }
 
-  memset(bmp60_left, 0, sizeof(bmp60_left));
-  memset(bmp60_right, 0, sizeof(bmp60_right));
+  if (argc < opt + 1) {
+    printf("usage: bdf2kanjirom [-ascent] fontfile.bdf\n");
+    exit(1);
+  }
+
+
+  if (strcmp(argv[opt], "-") == 0) {
+    fp = stdin;
+  } else {
+    fp = fopen(argv[opt], "rb");
+    if (fp == NULL) {
+      printf("cannot open %s\n", argv[opt]);
+      exit(1);
+    }
+  }
+
   while (fgets(line, sizeof(line), fp)) {
     sscanf(line, "ENCODING %d", &code);
-    x1 = x2 = 0;
-    if (sscanf(line, "BBX %d %d %d %d", &x1, &i, &x2, &i)) {
+    if (sscanf(line, "BBX %d %d %d %d", &size_x, &size_y, &offset_x, &offset_y) == 4) {
+      /* except for two- or three- em dash */
       if (tbl != unitbl || (code != 0x2e3a && code != 0x2e3b)) {
-	if (x1 < xmin) xmin = x1;
-	if (x2 < xmin) xmin = x2;
-	if (x1 > xmax) xmax = x1;
-	if (x2 > xmax) xmax = x2;
+	if (offset_x < xmin) {
+	  xmin = offset_x;
+	}
+	if (offset_x + size_x > xmax) {
+	  xmax = offset_x + size_x;
+	}
       }
+    }
+    if (sscanf(line, "FONTBOUNDINGBOX %d %d %d %d", &pixel_x, &pixel_y, &offset_x, &offset_y) == 4) {
+      ymax = pixel_y + offset_y;
     }
     sscanf(line, "FONT_ASCENT %d", &ascent);
     sscanf(line, "FONT_DESCENT %d", &descent);
@@ -339,7 +355,11 @@ int main(int argc, char *argv[])
     }
   }
   pixel_x = xmax - xmin;
-  pixel_y = ascent + descent;
+  if (use_ascent) {
+    pixel_y = ascent + descent;
+  }
+  printf("xmin=%d, xmax=%d\n", xmin, xmax);
+  printf("pixel=%d x %d\n", pixel_x, pixel_y);
   if (ascent < 0 || descent < 0 || pixel_x < 0 || strlen(charset) == 0) {
     printf("illegal bdf\n");
     exit(1);
@@ -351,7 +371,7 @@ int main(int argc, char *argv[])
       break;
     }
     chr = -1;
-    if (sscanf(line, "ENCODING %d", &code) == 1) {
+    if (sscanf(line, "ENCODING %d", &code) == 1 && code) {
       for (i = 0; i < NCHR; i++) {
 	if (code == tbl[i]) {
 	  chr = i;
@@ -389,16 +409,16 @@ int main(int argc, char *argv[])
 
       for (i = 0; i < size_y; i++) {
 	fgets(line, sizeof(line), fp);
-#ifdef WIN32
-	while (sscanf(line, "%I64x", &data) != 1) {
-#else
 	while (sscanf(line, "%llx", &data) != 1) {
-#endif
 	  ;
 	}
 	for (j = 0; j < size_x; j++) {
 	  x = j + offset_x;
-	  y = i + ascent - size_y - offset_y;
+	  if (use_ascent) {
+	    y = i + ascent - size_y - offset_y;
+	  } else {
+	    y = i + ymax - size_y - offset_y;
+	  }
 	  bmpbdf[x][y] = (data >> ((64 - size_x) % 8 + size_x - j - 1)) & 1;
 	}
       }
@@ -413,9 +433,9 @@ int main(int argc, char *argv[])
 	  }
 	  if ((double)data / (x - (int)(j * ratio_x)) * (y - (int)(i * ratio_y)) > 0) {
 	    if (j < size_x_out / 2) {
-	      bmp60_left[chr][i] += 1 << (size_x_out / 2 - j - 1);
+	      bmp60_left[chr][i] |= 1 << (size_x_out / 2 - j - 1);
 	    } else {
-	      bmp60_right[chr][i] += 1 << (size_x_out - j - 1);
+	      bmp60_right[chr][i] |= 1 << (size_x_out - j - 1);
 	    }
 	  }
 	}
@@ -426,7 +446,7 @@ int main(int argc, char *argv[])
 
   fp = fopen(outfile, "wb");
   if (fp == NULL) {
-    printf("cannot open %s\n", argv[2]);
+    printf("cannot open %s\n", outfile);
     exit(1);
   }
   for (i = 0; i < NCHR; i++) {

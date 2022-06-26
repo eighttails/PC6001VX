@@ -87,7 +87,13 @@ unix:!macx {
 #Configuration for Windows
 win32 {
     #On Windows, link libraries statically as long as possible.
-    QMAKE_LFLAGS_WINDOWS += -Wl,--stack,100000000
+    contains(QT_ARCH, i386) {
+        message("x86 build")
+        QMAKE_LFLAGS_WINDOWS += -Wl,--stack,10000000
+    } else {
+        message("x86_64 build")
+        QMAKE_LFLAGS_WINDOWS += -Wl,--stack,100000000
+    }
     QMAKE_LFLAGS += -static
     LIBS_PRIVATE= -lpthread -lsetupapi
     PKG_CONFIG = 'pkg-config --static'

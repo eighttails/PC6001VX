@@ -707,11 +707,11 @@ Qt5の音量制御周りはまだあまり枯れていないようです。 +
 * PC-6001互換BASICを0.7.5に更新
 * PC-6001mkII/6601用互換BASICを0.4に更新
 * mk2/6601用互換CGROMがセミグラフィックキャラクタを網羅
-* (Windows)長時間のリプレイファイルが読み込めなくなるのを修正
+* (Windows,64bit)長時間のリプレイファイルが読み込めなくなるのを修正
 * Updated PC-6001 compatible basic ROMs to 0.7.5.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.
 * PC-6001mk2/6601 compatible CGROM now covers semi-graphic characters.
-* (Windows)Fixed issue in opening long replay file.
+* (Windows,64bit)Fixed issue in opening long replay file.
 
 .3.8.2 2021/10/10
 * (Windows)OpenGLの代わりにDirectX(ANGLE)版Qtでビルド。Intel GPUにおけるメモリリークを解消。

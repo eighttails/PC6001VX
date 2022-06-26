@@ -27,7 +27,7 @@ QT_MINOR_VERSION=.2
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 QT_ARCHIVE_DIR=qt-everywhere-src-$QT_VERSION
 QT_ARCHIVE=$QT_ARCHIVE_DIR.tar.xz
-QT_SOURCE_DIR=qt-src-$QT_VERSION-$1
+QT_SOURCE_DIR=qt5-src-$1
 #QT_RELEASE=development_releases
 QT_RELEASE=official_releases
 
@@ -50,20 +50,14 @@ else
     fi
 
     #MSYSで引数のパス変換が勝手に走ってビルドが通らない問題への対策パッチ
-    for F in qtbase/src/angle/src/common/gles_common.pri qtdeclarative/features/hlsl_bytecode_header.prf
-    do
-        sed -i -e "s|/nologo |//nologo |g" $F
-        sed -i -e "s|/E |//E |g" $F
-        sed -i -e "s|/T |//T |g" $F
-        sed -i -e "s|/Fh |//Fh |g" $F
-    done
     sed -i -e "s|load(qt_tool)|msysargconv.name = MSYS2_ARG_CONV_EXCL\nmsysargconv.value = *\nQT_TOOL_ENV += msysargconv\nload(qt_tool)|" qtdeclarative/src/qmltyperegistrar/qmltyperegistrar.pro
 
     #64bit環境で生成されるオブジェクトファイルが巨大すぎでビルドが通らない問題へのパッチ
     sed -i -e "s|QMAKE_CFLAGS           = |QMAKE_CFLAGS         = -Wa,-mbig-obj |g" qtbase/mkspecs/win32-g++/qmake.conf
 
-    #プリコンパイル済みヘッダーが巨大すぎでビルドが通らない問題へのパッチ
-    sed -i -e "s| precompile_header||g" qtbase/mkspecs/win32-g++/qmake.conf
+    #gcc11対応パッチ
+    GCC_CXXFLAGS="-include $(cygpath -am $MINGW_PREFIX/include/c++/*/limits)"
+    sed -i -e "s|QMAKE_CXXFLAGS         += |QMAKE_CXXFLAGS         += $GCC_CXXFLAGS |g" qtbase/mkspecs/win32-g++/qmake.conf
 
     popd
 fi
@@ -76,7 +70,6 @@ QT_COMMON_CONF_OPTS+=("-silent")
 QT_COMMON_CONF_OPTS+=("-platform" "win32-g++")
 QT_COMMON_CONF_OPTS+=("-optimize-size")
 QT_COMMON_CONF_OPTS+=("-pkg-config")
-QT_COMMON_CONF_OPTS+=("-no-pch")
 QT_COMMON_CONF_OPTS+=("QMAKE_CXXFLAGS+=-Wno-deprecated-declarations")
 QT_COMMON_CONF_OPTS+=("-no-direct2d")
 QT_COMMON_CONF_OPTS+=("-no-wmf")
@@ -114,7 +107,7 @@ mkdir $QT5_STATIC_BUILD
 pushd $QT5_STATIC_BUILD
 
 QT_STATIC_CONF_OPTS=()
-QT_STATIC_CONF_OPTS+=("-v")
+# QT_STATIC_CONF_OPTS+=("-verbose")
 QT_STATIC_CONF_OPTS+=("-prefix" "$(cygpath -am $QT5_STATIC_PREFIX)")
 QT_STATIC_CONF_OPTS+=("-angle")
 QT_STATIC_CONF_OPTS+=("-static")
@@ -147,18 +140,18 @@ SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 source $SCRIPT_DIR/../common/common.sh
 commonSetup
 
+#必要ライブラリ
+prerequisite
+
 #ANGLEをビルドするために必要なfxc.exeにパスを通す
 export WindowsSdkVerBinPath=$(cygpath -am "C:/Program Files (x86)/Windows Kits/10/bin/10.0.22000.0")
 export PATH=$(cygpath "$WindowsSdkVerBinPath/$ARCH"):$PATH
 
 export PKG_CONFIG="$(cygpath -am $MINGW_PREFIX/bin/pkg-config.exe)"
-export LLVM_INSTALL_DIR=$(cygpath -am ${MINGW_PREFIX})
+export LLVM_INSTALL_DIR=$(cygpath -am $MINGW_PREFIX)
 
 #Qtのインストール場所
 QT5_STATIC_PREFIX=$PREFIX/qt5-static-angle
-
-#必要ライブラリ
-prerequisite
 
 cd $EXTLIB
 

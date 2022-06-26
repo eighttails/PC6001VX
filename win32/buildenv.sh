@@ -13,6 +13,11 @@ $MINGW_PACKAGE_PREFIX-SDL2 \
 $MINGW_PACKAGE_PREFIX-asciidoctor \
 2>/dev/null
 
+#Qtをビルド
+#OpenGLにAngleを使用、バイナリサイズ抑制最適化
+bash $SCRIPT_DIR/MSYS2Private/qt5-static-angle/qt.sh
+exitOnError
+
 #FFmpegをビルド
 #P6VX用に必要最低限のCODECのみ有効化しサイズを削減したビルド
 bash $SCRIPT_DIR/MSYS2Private/ffmpeg/ffmpeg.sh

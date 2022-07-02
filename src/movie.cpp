@@ -119,7 +119,12 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 	if( oc->oformat->flags & AVFMT_GLOBALHEADER ){
 		c->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 	}
-	
+	if ( avcodec_open2(c, codec, nullptr) < 0 ){
+		return false;
+	}
+	if ( avcodec_parameters_from_context( ost.st->codecpar, c ) < 0 ){
+		return false;
+	}
 	return true;
 }
 
@@ -274,6 +279,10 @@ static bool OpenVideo( AVFormatContext* oc, const AVCodec* codec, OutputStream& 
 	AVDictionary* opt = nullptr;
 	av_dict_copy( &opt, opt_arg, 0 );
 
+	ret = avcodec_open2( c, codec, &opt );
+	av_dict_free( &opt );
+	if (ret < 0) { return false; }
+
 	// マルチスレッドエンコード設定
 	c->thread_count = av_cpu_count();
 	av_dict_set(&opt, "row-mt", "1", AV_OPT_SEARCH_CHILDREN);
@@ -281,10 +290,6 @@ static bool OpenVideo( AVFormatContext* oc, const AVCodec* codec, OutputStream& 
 	av_dict_set(&opt, "quality", "realtime", AV_OPT_SEARCH_CHILDREN);
 	av_dict_set(&opt, "cpu-used", "8", AV_OPT_SEARCH_CHILDREN);
 
-	ret = avcodec_open2( c, codec, &opt );
-	av_dict_free( &opt );
-	if (ret < 0) { return false; }
-	
 	// フレームを初期化
 	ost.frame = AllocPicture( c->pix_fmt, c->width, c->height );
 	if( !ost.frame ){ return false; }

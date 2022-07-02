@@ -13,14 +13,17 @@
 
 struct AVFormatContext;
 struct AVCodec;
+struct AVCodecContext;
 struct AVStream;
 struct AVFrame;
+struct AVDictionary;
 
 // FFMpegのサンプルmuxing.cより抜粋
 // a wrapper around a single output AVStream
 typedef struct OutputStream {
 	AVStream* st;
-	
+	AVCodecContext *enc;
+
 	/* pts of the next frame that will be generated */
 	int64_t next_pts;
 	int samples_count;
@@ -41,11 +44,12 @@ protected:
 	bool isAVI;
 	
 	AVFormatContext* oc;
-	AVCodec* audio_codec;
-	AVCodec* video_codec;
+	const AVCodec* audio_codec;
+	const AVCodec* video_codec;
 	OutputStream video_st;
 	OutputStream audio_st;
-	
+	AVDictionary *opt;
+
 	std::vector<BYTE> Sbuf;		// イメージデータバッファ
 	cRing ABuf;					// オーディオバッファ
 	

@@ -10,13 +10,12 @@ extern "C"{
 #include <libavcodec/avcodec.h>
 #include <libavutil/avassert.h>
 #include <libavutil/opt.h>
+#include <libavutil/cpu.h>
+#include <libavutil/imgutils.h>
 #include <libavutil/timestamp.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
-
-
-#include <libavutil/imgutils.h>
 }
 #define SCALE_FLAGS SWS_BICUBIC
 #endif // NOAVI
@@ -43,21 +42,6 @@ AVPixelFormat GetPixelFormat( const PixelFMT pf )
 }
 
 
-// libavcodecのutil.cより抜粋,改変
-// ---------------------------------------------------
-AVHWAccel* ff_find_hwaccel( enum AVCodecID codec_id, enum AVPixelFormat pix_fmt )
-{
-	AVHWAccel* hwaccel = nullptr;
-	
-	while( (hwaccel = av_hwaccel_next( hwaccel )) ){
-		if(    hwaccel->id      == codec_id
-			&& hwaccel->pix_fmt == pix_fmt )
-			return hwaccel;
-	}
-	return nullptr;
-}
-
-
 // ---------------------------------------------------
 
 // FFMpegのサンプルmuxing.cより抜粋,改変
@@ -75,7 +59,7 @@ static int WriteFrame( AVFormatContext* fmt_ctx, const AVRational* time_base, AV
 
 /////////////////////////////////////////////////////////////////////////////
 /* Add an output stream. */
-static bool AddStream( OutputStream& ost, AVFormatContext* oc, AVCodec*& codec,
+static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& codec,
 					   enum AVCodecID codec_id, int source_width, int source_height, double rate )
 {
 	// エンコーダーを探索
@@ -86,8 +70,9 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, AVCodec*& codec,
 	if( !ost.st ){ return false; }
 	
 	ost.st->id        = oc->nb_streams-1;
-	AVCodecContext* c = ost.st->codec;
-	
+	AVCodecContext* c = avcodec_alloc_context3(codec);
+	ost.enc = c;
+
 	switch( codec->type ){
 	case AVMEDIA_TYPE_AUDIO:
 		c->sample_fmt  = codec->sample_fmts ? codec->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
@@ -124,7 +109,7 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, AVCodec*& codec,
 		c->time_base      = ost.st->time_base;
 		c->gop_size       = 12;
 		c->pix_fmt        = AV_PIX_FMT_YUV420P;
-		c->hwaccel        = ff_find_hwaccel( c->codec->id, c->pix_fmt );
+		c->hwaccel        = nullptr;
 		break;
 		
 	default:
@@ -160,19 +145,17 @@ static AVFrame* AllocAudioFrame( enum AVSampleFormat sample_fmt, uint64_t channe
 
 
 /////////////////////////////////////////////////////////////////////////////
-static bool OpenAudio( AVFormatContext* oc, AVCodec* codec, OutputStream& ost, AVDictionary* opt_arg, int sample_rate )
+static bool OpenAudio( AVFormatContext* oc, const AVCodec* codec, OutputStream& ost, AVDictionary* opt_arg, int sample_rate )
 {
-	int nb_samples = 0;
-	AVCodecContext* c = ost.st->codec;
-	
 	// コーデックを初期化
-//	int ret = 0;
-//	AVDictionary* opt = nullptr;
-//	av_dict_copy( &opt, opt_arg, 0 );
-//	ret = avcodec_open2( c, codec, &opt );
-//	av_dict_free( &opt );
-//	if( ret < 0 ){ return; }
-	if( avcodec_open2( c, codec, &opt_arg ) < 0 ){ return false; }
+	int ret = 0;
+	int nb_samples = 0;
+	AVCodecContext* c = ost.enc;
+	AVDictionary* opt = nullptr;
+	av_dict_copy( &opt, opt_arg, 0 );
+	ret = avcodec_open2( c, codec, &opt );
+	av_dict_free( &opt );
+	if (ret < 0) { return false; }
 	
 	nb_samples = (c->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) ? 10000 : c->frame_size;
 	
@@ -206,7 +189,7 @@ static bool OpenAudio( AVFormatContext* oc, AVCodec* codec, OutputStream& ost, A
 /////////////////////////////////////////////////////////////////////////////
 static AVFrame* GetAudioFrame( OutputStream& ost, AVI6* avi )
 {
-	AVCodecContext* c = ost.st->codec;
+	AVCodecContext* c = ost.enc;
 	AVFrame* frame    = ost.tmp_frame;
 	int16_t* q        = (int16_t*)frame->data[0];
 	
@@ -217,7 +200,7 @@ static AVFrame* GetAudioFrame( OutputStream& ost, AVI6* avi )
 	// オーディオ出力
 	for( int j = 0; j <frame->nb_samples; j++ ){
 		short dat = avi->GetAudioBuffer()->Get();
-		for( int i = 0; i < ost.st->codec->channels; i++ ){
+		for( int i = 0; i < ost.enc->channels; i++ ){
 			*q++ = dat;
 		}
 	}
@@ -245,7 +228,7 @@ static AVFrame* GetAudioFrame( OutputStream& ost, AVI6* avi )
 static int WriteAudioFrame( AVFormatContext* oc, OutputStream& ost, AVI6* avi )
 {
 	AVPacket pkt;
-	AVCodecContext* c = ost.st->codec;
+	AVCodecContext* c = ost.enc;
 	AVFrame* frame    = GetAudioFrame( ost, avi );
 	
 	if( !frame || !frame->pts ){ return 1; }
@@ -283,18 +266,24 @@ static AVFrame* AllocPicture( enum AVPixelFormat pix_fmt, int width, int height 
 
 
 /////////////////////////////////////////////////////////////////////////////
-static bool OpenVideo( AVFormatContext* oc, AVCodec* codec, OutputStream& ost, AVDictionary* opt_arg, enum AVPixelFormat pix_fmt )
+static bool OpenVideo( AVFormatContext* oc, const AVCodec* codec, OutputStream& ost, AVDictionary* opt_arg, enum AVPixelFormat pix_fmt )
 {
-	AVCodecContext* c = ost.st->codec;
-	
 	// コーデックを初期化
-//	int ret = 0;
-//	AVDictionary* opt = nullptr;
-//	av_dict_copy( &opt, opt_arg, 0 );
-//	ret = avcodec_open2( c, codec, &opt );
-//	av_dict_free( &opt );
-//	if( ret < 0 ){ return; }
-	if( avcodec_open2( c, codec, &opt_arg ) < 0 ){ return false; }
+	int ret = 0;
+	AVCodecContext* c = ost.enc;
+	AVDictionary* opt = nullptr;
+	av_dict_copy( &opt, opt_arg, 0 );
+
+	// マルチスレッドエンコード設定
+	c->thread_count = av_cpu_count();
+	av_dict_set(&opt, "row-mt", "1", AV_OPT_SEARCH_CHILDREN);
+	av_dict_set(&opt, "frame-parallel", "1", AV_OPT_SEARCH_CHILDREN);
+	av_dict_set(&opt, "quality", "realtime", AV_OPT_SEARCH_CHILDREN);
+	av_dict_set(&opt, "cpu-used", "8", AV_OPT_SEARCH_CHILDREN);
+
+	ret = avcodec_open2( c, codec, &opt );
+	av_dict_free( &opt );
+	if (ret < 0) { return false; }
 	
 	// フレームを初期化
 	ost.frame = AllocPicture( c->pix_fmt, c->width, c->height );
@@ -321,7 +310,7 @@ static bool OpenVideo( AVFormatContext* oc, AVCodec* codec, OutputStream& ost, A
 /////////////////////////////////////////////////////////////////////////////
 static AVFrame* GetVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, enum AVPixelFormat pix_fmt )
 {
-	AVCodecContext* c = ost.st->codec;
+	AVCodecContext* c = ost.enc;
 	
 	// ウィンドウから画像をコピー
 	// 変換元(OSD_GetWindowImage)の画像データは4byte aligned
@@ -341,7 +330,7 @@ static AVFrame* GetVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, en
 static int WriteVideoFrame( AVFormatContext* oc, OutputStream& ost, std::vector<BYTE>& src_img, enum AVPixelFormat pix_fmt )
 {
 	AVPacket pkt;
-	AVCodecContext* c = ost.st->codec;
+	AVCodecContext* c = ost.enc;
 	AVFrame* frame    = GetVideoFrame( ost, src_img, pix_fmt );
 	
 	if( !frame ){ return 0; }
@@ -360,7 +349,7 @@ static int WriteVideoFrame( AVFormatContext* oc, OutputStream& ost, std::vector<
 /////////////////////////////////////////////////////////////////////////////
 static void CloseStream( OutputStream& ost )
 {
-	avcodec_close( ost.st->codec );
+	avcodec_close( ost.enc );
 	av_frame_free( &ost.frame );
 	av_frame_free( &ost.tmp_frame );
 	sws_freeContext( ost.sws_ctx );
@@ -378,7 +367,8 @@ static void CloseStream( OutputStream& ost )
 // Constructor
 /////////////////////////////////////////////////////////////////////////////
 AVI6::AVI6( void ) : isAVI(false), oc(nullptr),
-	audio_codec(nullptr), video_codec(nullptr), video_st(), audio_st(), pixfmt(PX32ARGB), req(0)
+	audio_codec(nullptr), video_codec(nullptr),
+	video_st(), audio_st(), opt(nullptr), pixfmt(PX32ARGB), req(0)
 {}
 
 
@@ -407,11 +397,6 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
 	
-	AVDictionary* opt = nullptr;;
-	
-	// FFMpegの初期化
-//	av_register_all();	// 必要なくなったらしい
-	
 	// キャプチャフレーム設定
 	ss.x = 0;
 	ss.y = 0;
@@ -436,20 +421,18 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 	avformat_alloc_output_context2( &oc, nullptr, nullptr, P6VPATH2STR( filepath ).c_str() );
 	if( !oc ){ return false; }
 	
-	AVOutputFormat* fmt = oc->oformat;
+	const AVOutputFormat* fmt = oc->oformat;
 	
 	// 音声、ビデオストリームを作成
 	if( fmt->video_codec != AV_CODEC_ID_NONE ){
 		// ビデオコーデックにはVP9を選択。
-		fmt->video_codec = AV_CODEC_ID_VP9;
-		if( !AddStream( video_st, oc, video_codec, fmt->video_codec, sw, sh, vrate ) ){
+		if( !AddStream( video_st, oc, video_codec, AV_CODEC_ID_VP9, sw, sh, vrate ) ){
 			return false;
 		}
 	}
 	if( fmt->audio_codec != AV_CODEC_ID_NONE ){
 		// FFmpegのOpusは48KHzしか扱えないため、強制的にVORBISにする。
-		fmt->audio_codec = AV_CODEC_ID_VORBIS;
-		if( !AddStream( audio_st, oc, audio_codec, fmt->audio_codec, sw, sh, arate ) ){
+		if( !AddStream( audio_st, oc, audio_codec, AV_CODEC_ID_VORBIS, sw, sh, arate ) ){
 			return false;
 		}
 	}
@@ -498,8 +481,9 @@ void AVI6::StopAVI( void )
 		av_write_trailer( oc );
 		
 		CloseStream( video_st );
+		video_st = {};
 		CloseStream( audio_st );
-		
+		audio_st = {};
 		avio_closep( &oc->pb );
 		avformat_free_context( oc );
 		
@@ -569,8 +553,8 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	while (encode_video || encode_audio) {
 		/* select the stream to encode */
 		if (encode_video &&
-				(!encode_audio || av_compare_ts( video_st.next_pts, video_st.st->codec->time_base,
-												 audio_st.next_pts, audio_st.st->codec->time_base ) <= 0)) {
+				(!encode_audio || av_compare_ts( video_st.next_pts, video_st.enc->time_base,
+												 audio_st.next_pts, audio_st.enc->time_base ) <= 0)) {
 			WriteVideoFrame( oc, video_st, Sbuf, GetPixelFormat( pixfmt ) );
 			encode_video = 0;
 		} else {

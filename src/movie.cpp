@@ -369,7 +369,9 @@ static void CloseStream( OutputStream& ost )
 AVI6::AVI6( void ) : isAVI(false), oc(nullptr),
 	audio_codec(nullptr), video_codec(nullptr),
 	video_st(), audio_st(), opt(nullptr), pixfmt(PX32ARGB), req(0)
-{}
+{
+	av_log_set_level(AV_LOG_DEBUG);
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -396,7 +398,7 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 {
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
-	
+
 	// キャプチャフレーム設定
 	ss.x = 0;
 	ss.y = 0;

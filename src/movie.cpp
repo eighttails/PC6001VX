@@ -375,7 +375,7 @@ AVI6::AVI6( void ) : isAVI(false), oc(nullptr),
 	audio_codec(nullptr), video_codec(nullptr),
 	video_st(), audio_st(), opt(nullptr), pixfmt(PX32ARGB), req(0)
 {
-	av_log_set_level(AV_LOG_DEBUG);
+	//av_log_set_level(AV_LOG_DEBUG);
 }
 
 

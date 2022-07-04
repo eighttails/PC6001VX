@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "osd.h"
+#include "thread.h"
 #include "sound.h"
 #include "vsurface.h"
 
@@ -17,6 +18,8 @@ struct AVCodecContext;
 struct AVStream;
 struct AVFrame;
 struct AVDictionary;
+
+class MovieEncodeThread;
 
 // FFMpegのサンプルmuxing.cより抜粋
 // a wrapper around a single output AVStream
@@ -39,7 +42,8 @@ typedef struct OutputStream {
 /////////////////////////////////////////////////////////////////////////////
 // クラス定義
 /////////////////////////////////////////////////////////////////////////////
-class AVI6 : public cSemaphore {
+class AVI6 {
+friend class MovieEncodeThread;
 protected:
 	bool isAVI;
 	
@@ -58,6 +62,8 @@ protected:
 	int req;					// フレーム出力リクエスト数
 	
 	mutable cMutex Mutex;
+
+	std::unique_ptr<MovieEncodeThread> EncodeThread;
 
 public:
 	AVI6();

@@ -5,11 +5,14 @@
 #ifndef NOAVI
 
 #include <string>
+#include <queue>
+#include <chrono>
 
 extern "C"{
 #include <libavcodec/avcodec.h>
 #include <libavutil/avassert.h>
 #include <libavutil/opt.h>
+#include <libavutil/cpu.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/timestamp.h>
 #include <libavformat/avformat.h>
@@ -24,6 +27,45 @@ extern "C"{
 #include "movie.h"
 
 #ifndef NOAVI
+
+// 要素数制限付きQueue
+// https://cpprefjp.github.io/article/lib/how_to_use_cv.html
+// (CC BY 3.0)
+template<typename T, size_t N>
+class bounded_queue {
+	std::queue<T> queue_;
+	std::mutex guard_;
+	std::condition_variable not_empty_;
+	std::condition_variable not_full_;
+public:
+	size_t size() {
+		std::unique_lock<std::mutex> lk(guard_);
+		return queue_.size();
+	}
+	// 値の挿入
+	void push(T val) {
+		std::unique_lock<std::mutex> lk(guard_);
+		not_full_.wait(lk, [this]{
+			return queue_.size() < N;
+		});
+		queue_.push(std::move(val));
+		not_empty_.notify_all();
+	}
+	// 値の取り出し
+	T pop() {
+		std::unique_lock<std::mutex> lk(guard_);
+		not_empty_.wait(lk, [this]{
+			return !queue_.empty();
+		});
+		T ret = std::move(queue_.front());
+		queue_.pop();
+		not_full_.notify_all();
+		return ret;
+	}
+};
+
+// キューが無尽蔵にメモリを消費するのを防ぐため、貯められるフレーム数を制限する。
+bounded_queue<std::tuple<OutputStream*, AVFrame*>, 1000> frameQueue;
 
 
 // AV_PIX_FMT_RGB555LE	packed RGB 5:5:5, 16bpp, (msb)1A 5R 5G 5B(lsb), little-endian, most significant bit to 0
@@ -42,7 +84,6 @@ AVPixelFormat GetPixelFormat( const PixelFMT pf )
 
 
 // ---------------------------------------------------
-
 // FFMpegのサンプルmuxing.cより抜粋,改変
 // ---------------------------------------------------
 static int WriteFrame( AVFormatContext* fmt_ctx, const AVRational* time_base, AVStream* st, AVPacket* pkt )
@@ -55,6 +96,41 @@ static int WriteFrame( AVFormatContext* fmt_ctx, const AVRational* time_base, AV
 	return av_interleaved_write_frame( fmt_ctx, pkt );
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// 動画エンコードスレッド
+//
+// 引数:	なし
+// 返値:	cRing *		バッファオブジェクトへのポインタ
+/////////////////////////////////////////////////////////////////////////////
+class MovieEncodeThread : public cThread
+{
+protected:
+	void OnThread(void* inst) override
+	{
+		AVI6* avi = STATIC_CAST( AVI6*, inst );
+		AVFormatContext* oc = avi->oc;
+
+		while( !IsCancel() ) {
+			if (frameQueue.size() == 0) {
+				OSD_Delay(5);
+				continue;
+			}
+			auto frameData = frameQueue.pop();
+			OutputStream* ost = std::get<0>(frameData);
+			AVFrame* frame = std::get<1>(frameData);
+			AVCodecContext* c = ost->enc;
+
+			avcodec_send_frame( c, frame );
+
+			AVPacket* pkt = av_packet_alloc();
+			avcodec_receive_packet( c, pkt );
+			WriteFrame( oc, &c->time_base, ost->st, pkt );
+
+			av_frame_free(&frame);
+			av_packet_free(&pkt);
+		}
+	}
+};
 
 /////////////////////////////////////////////////////////////////////////////
 /* Add an output stream. */
@@ -72,6 +148,7 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 	AVDictionary* opt = nullptr;
 	ost.st->id        = oc->nb_streams-1;
 	ost.enc = c;
+	c->thread_count   = av_cpu_count();
 
 	switch( codec->type ){
 	case AVMEDIA_TYPE_AUDIO:
@@ -180,7 +257,7 @@ static bool OpenAudio( OutputStream& ost, int sample_rate )
 	av_opt_set_int       ( ost.swr_ctx, "out_channel_count", c->channels,       0 );
 	av_opt_set_int       ( ost.swr_ctx, "out_sample_rate",   c->sample_rate,    0 );
 	av_opt_set_sample_fmt( ost.swr_ctx, "out_sample_fmt",    c->sample_fmt,     0 );
-	
+
 	// サンプル変換部を初期化
 	if( swr_init( ost.swr_ctx ) < 0 ){ return false; }
 	
@@ -229,20 +306,16 @@ static AVFrame* GetAudioFrame( OutputStream& ost, AVI6* avi )
 /////////////////////////////////////////////////////////////////////////////
 static int WriteAudioFrame( AVFormatContext* oc, OutputStream& ost, AVI6* avi )
 {
-	AVCodecContext* c = ost.enc;
 	AVFrame* frame    = GetAudioFrame( ost, avi );
-	
 	if( !frame || !frame->pts ){ return 1; }
-	
-	if( avcodec_send_frame( c, frame ) < 0 ){ return 0; }
-	
-	AVPacket* pkt = av_packet_alloc();
-	if( (avcodec_receive_packet( c, pkt ) < 0) || (WriteFrame( oc, &c->time_base, ost.st, pkt ) < 0) ){
-		av_packet_free(&pkt);
-		return 0;
-	}
-	
-	av_packet_free(&pkt);
+
+	// フレームデータのコピーを作成(make_writableをすると内部バッファのコピーまで作られる)
+	AVFrame* queue_frame = av_frame_clone(frame);
+	av_frame_copy(queue_frame, frame);
+	av_frame_copy_props(queue_frame, frame);
+	av_frame_make_writable(queue_frame);
+
+	frameQueue.push(std::make_tuple(&ost, queue_frame));
 	return 0;
 }
 
@@ -319,18 +392,15 @@ static int WriteVideoFrame( AVFormatContext* oc, OutputStream& ost, std::vector<
 {
 	AVCodecContext* c = ost.enc;
 	AVFrame* frame    = GetVideoFrame( ost, src_img, pix_fmt );
-	
-	if( !frame ){ return 0; }
-	
-	if( avcodec_send_frame( c, frame ) < 0 ){ return 0; }
-	
-	AVPacket* pkt = av_packet_alloc();
-	if( (avcodec_receive_packet( c, pkt ) < 0) || (WriteFrame( oc, &c->time_base, ost.st, pkt ) < 0) ){
-		av_packet_free(&pkt);
-		return 0;
-	}
-	
-	av_packet_free(&pkt);
+	if( !frame ){ return 1; }
+
+	// フレームデータのコピーを作成(make_writableをすると内部バッファのコピーまで作られる)
+	AVFrame* queue_frame = av_frame_clone(frame);
+	av_frame_copy(queue_frame, frame);
+	av_frame_copy_props(queue_frame, frame);
+	av_frame_make_writable(queue_frame);
+
+	frameQueue.push(std::make_tuple(&ost, queue_frame));
 	return 0;
 }
 
@@ -360,6 +430,7 @@ AVI6::AVI6( void ) : isAVI(false), oc(nullptr),
 	video_st(), audio_st(), opt(nullptr), pixfmt(PX32ARGB), req(0)
 {
 	//av_log_set_level(AV_LOG_DEBUG);
+	EncodeThread.reset(new MovieEncodeThread());
 }
 
 
@@ -447,7 +518,9 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 	if( avformat_write_header( oc, &opt ) < 0 ){
 		return false;
 	}
-	
+
+	EncodeThread->BeginThread(this);
+
 	isAVI = true;
 	return true;
 #else
@@ -466,7 +539,10 @@ void AVI6::StopAVI( void )
 {
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
-	
+
+	EncodeThread->Cancel();
+	EncodeThread->Waiting();
+
 	if( oc ){
 		// ストリームトレイラ書込み
 		av_write_trailer( oc );
@@ -558,6 +634,7 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	return false;
 #endif
 }
+
 
 
 /////////////////////////////////////////////////////////////////////////////

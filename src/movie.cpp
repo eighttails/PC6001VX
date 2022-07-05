@@ -197,7 +197,7 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 		av_dict_set_int(&opt, "cpu-used", 8, AV_OPT_SEARCH_CHILDREN);
 		av_dict_set(&opt, "quality", "realtime", AV_OPT_SEARCH_CHILDREN);
 		break;
-		
+
 	default:
 		break;
 	}
@@ -307,7 +307,7 @@ static AVFrame* GetAudioFrame( OutputStream& ost, AVI6* avi )
 
 
 /////////////////////////////////////////////////////////////////////////////
-static int WriteAudioFrame( AVFormatContext* oc, OutputStream& ost, AVI6* avi )
+static int WriteAudioFrame( OutputStream& ost, AVI6* avi )
 {
 	AVFrame* frame    = GetAudioFrame( ost, avi );
 	if( !frame || !frame->pts ){ return 1; }
@@ -391,9 +391,8 @@ static AVFrame* GetVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, en
 
 
 /////////////////////////////////////////////////////////////////////////////
-static int WriteVideoFrame( AVFormatContext* oc, OutputStream& ost, std::vector<BYTE>& src_img, enum AVPixelFormat pix_fmt )
+static int WriteVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, enum AVPixelFormat pix_fmt )
 {
-	AVCodecContext* c = ost.enc;
 	AVFrame* frame    = GetVideoFrame( ost, src_img, pix_fmt );
 	if( !frame ){ return 1; }
 
@@ -625,10 +624,10 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 		if (encode_video &&
 				(!encode_audio || av_compare_ts( video_st.next_pts, video_st.enc->time_base,
 												 audio_st.next_pts, audio_st.enc->time_base ) <= 0)) {
-			WriteVideoFrame( oc, video_st, Sbuf, GetPixelFormat( pixfmt ) );
+			WriteVideoFrame( video_st, Sbuf, GetPixelFormat( pixfmt ) );
 			encode_video = 0;
 		} else {
-			encode_audio = !WriteAudioFrame( oc, audio_st, this );
+			encode_audio = !WriteAudioFrame( audio_st, this );
 		}
 	}
 	

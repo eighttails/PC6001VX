@@ -110,7 +110,7 @@ protected:
 		AVI6* avi = STATIC_CAST( AVI6*, inst );
 		AVFormatContext* oc = avi->oc;
 
-		while( !IsCancel() ) {
+		while( !IsCancel() || frameQueue.size() > 0) {
 			if (frameQueue.size() == 0) {
 				OSD_Delay(5);
 				continue;
@@ -123,8 +123,9 @@ protected:
 			avcodec_send_frame( c, frame );
 
 			AVPacket* pkt = av_packet_alloc();
-			avcodec_receive_packet( c, pkt );
-			WriteFrame( oc, &c->time_base, ost->st, pkt );
+				if (avcodec_receive_packet( c, pkt ) == 0){
+				WriteFrame( oc, &c->time_base, ost->st, pkt );
+			}
 
 			av_frame_free(&frame);
 			av_packet_free(&pkt);

@@ -180,7 +180,6 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 		
 	case AVMEDIA_TYPE_VIDEO:
 		c->codec_id       = codec_id;
-		c->bit_rate       = 4000000;
 		c->width          = source_width;
 		c->height         = source_height;
 		ost.st->time_base = (AVRational){ 1000000, (int)(rate * 1000000.0) };
@@ -189,6 +188,9 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 		c->pix_fmt        = AV_PIX_FMT_YUV420P;
 		c->hwaccel        = nullptr;
 
+		// エンコード品質設定
+		// -1から63まで。値を上げるほど画質が下がり容量が小さくなるが、32より小さくしてもあまり変わらない。
+		av_dict_set_int(&opt, "crf", 32, AV_OPT_SEARCH_CHILDREN);
 		// マルチスレッドエンコード設定
 		av_dict_set_int(&opt, "row-mt", 1, AV_OPT_SEARCH_CHILDREN);
 		av_dict_set_int(&opt, "frame-parallel", 1, AV_OPT_SEARCH_CHILDREN);

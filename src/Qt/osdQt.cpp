@@ -952,10 +952,6 @@ void OSD_SetKeyRepeat( int repeat )
 }
 
 
-#ifndef NOJOYSTICK
-std::map<int, HJOYINFO> joyMap;
-#endif // NOJOYSTICK
-
 /////////////////////////////////////////////////////////////////////////////
 // 利用可能なジョイスティック数取得
 //
@@ -1017,8 +1013,7 @@ HJOYINFO OSD_OpenJoy( int index )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	joyMap[index] = (HJOYINFO)SDL_JoystickOpen( index );
-	return joyMap[index];
+	return (HJOYINFO)SDL_JoystickOpen( index );
 #else
 	return (HJOYINFO)nullptr;
 #endif // NOJOYSTICK
@@ -1035,7 +1030,7 @@ void OSD_CloseJoy( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	SDL_JoystickClose( static_cast<SDL_Joystick*>(jinfo) );
+	SDL_JoystickClose( reinterpret_cast<SDL_Joystick*>(jinfo) );
 #endif // NOJOYSTICK
 }
 
@@ -1049,7 +1044,7 @@ int OSD_GetJoyNumAxes( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickNumAxes( static_cast<SDL_Joystick*>(jinfo) );
+	return SDL_JoystickNumAxes( reinterpret_cast<SDL_Joystick*>(jinfo) );
 #else
 	return 1;
 #endif // NOJOYSTICK
@@ -1066,7 +1061,7 @@ int OSD_GetJoyNumButtons( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickNumButtons( static_cast<SDL_Joystick*>(jinfo) );
+	return SDL_JoystickNumButtons( reinterpret_cast<SDL_Joystick*>(jinfo) );
 #else
 	return 0;
 #endif // NOJOYSTICK
@@ -1085,7 +1080,8 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
 	// HAT(デジタルスティック)から値を取得
-	auto hat = SDL_JoystickGetHat( static_cast<SDL_Joystick*>(jinfo), 0 );
+	SDL_JoystickUpdate();
+	auto hat = SDL_JoystickGetHat( reinterpret_cast<SDL_Joystick*>(jinfo), 0 );
 	int hatVal = 0;
 	switch (num){
 	case 0:
@@ -1100,7 +1096,7 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 	}
 
 	// アナログスティックから値を取得
-	int axisVal = SDL_JoystickGetAxis( static_cast<SDL_Joystick*>(jinfo), num );
+	int axisVal = SDL_JoystickGetAxis( reinterpret_cast<SDL_Joystick*>(jinfo), num );
 
 	// 出力値はHAT優先
 	return hatVal ? hatVal : axisVal;
@@ -1121,7 +1117,8 @@ bool OSD_GetJoyButton( HJOYINFO jinfo, int num )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickGetButton( static_cast<SDL_Joystick*>(jinfo), num ) ? true : false;
+	SDL_JoystickUpdate();
+	return SDL_JoystickGetButton( reinterpret_cast<SDL_Joystick*>(jinfo), num ) ? true : false;
 #else
 	return false;
 #endif // NOJOYSTICK
@@ -1765,11 +1762,14 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 {
 	QWidget* parent = static_cast<QWidget*>(hwnd);
-	QMessageBox::about(parent, "About PC6001VX",
-					   APPNAME " Version " VERSION "\n"
-					  "https://eighttails.seesaa.net\n"
-					  "©2012-2022, Tadahito Yao (@eighttails)\n"
-					  "Based on PC6001V by Yumitaro.");
+	QMessageBox::about(
+				parent, "About PC6001VX",
+				APPNAME " Version " VERSION
+				"\n"
+				"https://eighttails.seesaa.net\n"
+				"©2012-2022, Tadahito Yao (@eighttails)\n"
+				"Based on PC6001V by Yumitaro."
+				);
 }
 
 

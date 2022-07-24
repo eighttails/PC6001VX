@@ -229,8 +229,7 @@ void EL6::ExecMenu( int id )
 		}
 		break;
 	case ID_FILTERING:
-		app->setSetting(P6VXApp::keyFiltering,
-						!app->getSetting(P6VXApp::keyFiltering).toBool());
+		cfg->SetValue(CB_Filtering,  cfg->GetValue(CB_Filtering) ? false : true );
 		graph->ResizeScreen();
 		break;
 	default:
@@ -478,7 +477,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (app->getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
 #endif
 	QAction* filtering = addCommand(settingsMenu, tr("フィルタリング"), ID_FILTERING, true);
-	if (app->getSetting(P6VXApp::keyFiltering).toBool()) filtering->setChecked(true);
+	if (cfg->GetValue(CB_Filtering)) filtering->setChecked(true);
 
 	QAction* tiltMode = addCommand(settingsMenu, tr("TILTモード"), ID_TILT, true);
 	if (app->isTiltEnabled()) tiltMode->setChecked(true);

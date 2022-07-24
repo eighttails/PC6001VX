@@ -1462,8 +1462,16 @@ bool OSD_IsFullScreen( HWINDOW hwnd )
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_IsFiltering( HWINDOW hwnd )
 {
-	//#TODO 後で実装
-	return false;
+	RenderView* view = reinterpret_cast<RenderView*>(hwnd);
+	// シーングラフの中のメイン画面(原点に配置)オブジェクトに
+	// フィルタリングがかかっているかどうかで判断
+	QGraphicsPixmapItem* item =
+			dynamic_cast<QGraphicsPixmapItem*>(view->scene()->itemAt(0, 0, QTransform()));
+	if (!item) {
+		return false;
+	}
+	auto mode = item->transformationMode();
+	return mode == Qt::SmoothTransformation;
 }
 
 /////////////////////////////////////////////////////////////////////////////

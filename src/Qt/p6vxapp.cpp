@@ -32,7 +32,6 @@
 const QString P6VXApp::keyGeometry				= "window/geometry";
 const QString P6VXApp::keyMaximized				= "window/maximized";
 const QString P6VXApp::keyHwAccel				= "graph/hwAccel";
-const QString P6VXApp::keyFiltering				= "graph/filtering";
 const QString P6VXApp::keyFixMagnification		= "graph/fixMagnification";
 const QString P6VXApp::keyMagnification			= "graph/magnification";
 const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
@@ -197,7 +196,6 @@ void P6VXApp::startup()
 #ifndef NOOPENGL
 	setDefaultSetting(keyHwAccel, true);
 #endif
-	setDefaultSetting(keyFiltering, true);
 	setDefaultSetting(keyFixMagnification, false);
 	setDefaultSetting(keyMagnification, 1.0);
 	setDefaultSetting(keyKeyPanelVisible, false);
@@ -391,7 +389,7 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 	if(pItem == nullptr){
 		pItem = new QGraphicsPixmapItem(nullptr);
 		// フィルタリング
-		if(getSetting(keyFiltering).toBool()){
+		if(Cfg->GetValue( CB_Filtering )){
 			pItem->setTransformationMode(Qt::SmoothTransformation);
 		}
 	}

@@ -218,7 +218,7 @@ void ConfigDialog::readConfig()
 	ui->checkBoxHwAccel->setVisible(false);
 #endif
 	// フィルタリング
-	ui->checkBoxFiltering->setChecked(app->getSetting(P6VXApp::keyFiltering).toBool());
+	ui->checkBoxFiltering->setChecked(config->GetValue(CB_Filtering));
 
 	//// ビデオキャプチャ時の設定
 	// フレームスキップ
@@ -453,7 +453,7 @@ void ConfigDialog::writeConfig()
 	app->setSetting(P6VXApp::keyHwAccel, ui->checkBoxHwAccel->isChecked());
 
 	// フィルタリング
-	app->setSetting(P6VXApp::keyFiltering, ui->checkBoxFiltering->isChecked());
+	config->SetValue(CB_Filtering, ui->checkBoxFiltering->isChecked());
 
 
 	//// ビデオキャプチャ時の設定

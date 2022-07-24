@@ -41,7 +41,6 @@ public:
 	static const QString keyGeometry;			// ウィンドウ表示位置
 	static const QString keyMaximized;			// ウィンドウ最大化フラグ
 	static const QString keyHwAccel;			// ハードウェアアクセラレーション(OpenGL/DirectX)有効化フラグ
-	static const QString keyFiltering;			// 画面拡大縮小時のフィルタリング有効化フラグ
 	static const QString keyFixMagnification;	// 表示倍率固定フラグ
 	static const QString keyMagnification;		// 表示倍率
 	static const QString keyKeyPanelVisible;		// キーパレット表示有効化

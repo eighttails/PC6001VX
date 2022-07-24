@@ -342,7 +342,7 @@ PCKEYsym OSD_ConvertKeyCode( int scode )
 ////////////////////////////////////////////////////////////////
 void OSD_SetWindowCaption( HWINDOW hwnd, const char *str )
 {
-	QGraphicsView* view = static_cast<QGraphicsView*>(hwnd);
+	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
 	if(view == nullptr) return;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
@@ -1405,7 +1405,7 @@ void OSD_DestroyWindow( HWINDOW hwnd )
 int OSD_GetWindowWidth( HWINDOW hwnd )
 {
 	// QtではSceneRectの幅を返す
-	QGraphicsView* view = static_cast<QGraphicsView*>(hwnd);
+	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
 	Q_ASSERT(view);
 
 	return view->scene()->width();
@@ -1421,7 +1421,7 @@ int OSD_GetWindowWidth( HWINDOW hwnd )
 int OSD_GetWindowHeight( HWINDOW hwnd )
 {
 	// QtではSceneRectの高さを返す
-	QGraphicsView* view = static_cast<QGraphicsView*>(hwnd);
+	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
 	Q_ASSERT(view);
 
 	return view->scene()->height();
@@ -1685,7 +1685,7 @@ void OSD_SetIcon( HWINDOW hwnd, int model )
 /////////////////////////////////////////////////////////////////////////////
 void OSD_SetWindowCaption( HWINDOW hwnd, const std::string& str )
 {
-	QGraphicsView* view = static_cast<QGraphicsView*>(hwnd);
+	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
 	if(view == nullptr) return;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
@@ -1761,7 +1761,7 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 /////////////////////////////////////////////////////////////////////////////
 void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 {
-	QWidget* parent = static_cast<QWidget*>(hwnd);
+	QWidget* parent = reinterpret_cast<QWidget*>(hwnd);
 	QMessageBox::about(
 				parent, "About PC6001VX",
 				APPNAME " Version " VERSION

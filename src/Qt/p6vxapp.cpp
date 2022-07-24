@@ -232,7 +232,7 @@ void P6VXApp::startup()
 
 int P6VXApp::showMessageBox(void *hwnd, const char *mes, const char *cap, int type)
 {
-	QWidget* parent = static_cast<QWidget*>(hwnd);
+	QWidget* parent = reinterpret_cast<QWidget*>(hwnd);
 	QMessageBox::StandardButtons Type = QMessageBox::Ok;
 	QMessageBox::Icon IconType = QMessageBox::Information;
 
@@ -330,7 +330,7 @@ bool P6VXApp::folderDialog(void *hwnd, char *Result)
 
 void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 {
-	RenderView* view = static_cast<RenderView*>(Wh);
+	RenderView* view = reinterpret_cast<RenderView*>(Wh);
 	Q_ASSERT(view);
 	QGraphicsScene* scene = view->scene();
 
@@ -368,7 +368,7 @@ void P6VXApp::setWindowIcon(const QIcon &icon)
 void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image)
 {
 	// QtではSceneRectの幅を返す
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
 	QGraphicsScene* scene = view->scene();
 
@@ -409,7 +409,7 @@ void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scale
 
 void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void *pixels)
 {
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
 	QGraphicsScene* scene = view->scene();
 	QImage image(pos.width(), pos.height(), QImage::Format_RGB888);
@@ -425,7 +425,7 @@ void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void *pixels)
 
 void P6VXApp::clearLayout(HWINDOW Wh)
 {
-	QGraphicsView* view = static_cast<QGraphicsView*>(Wh);
+	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(Wh);
 	Q_ASSERT(view);
 	Q_ASSERT(view->scene());
 	QGraphicsScene* scene = view->scene();
@@ -1041,7 +1041,7 @@ void P6VXApp::overrideSettings(std::shared_ptr<CFG6>& cfg)
 
 QFileDialog *P6VXApp::createFileDialog(void *hwnd)
 {
-	QWidget* parent = static_cast<QWidget*>(hwnd);
+	QWidget* parent = reinterpret_cast<QWidget*>(hwnd);
 	auto dialog = new QFileDialog(parent);
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
 	// Androidのネイティブファイルダイアログが動かないための暫定措置
@@ -1156,7 +1156,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 #ifdef ALWAYSFULLSCREEN
 	case QEvent::ApplicationStateChange:
 		if(P6Core){
-			if(static_cast<QApplicationStateChangeEvent*>(event)->applicationState()){
+			if(reinterpret_cast<QApplicationStateChangeEvent*>(event)->applicationState()){
 				P6Core->Start();
 			}else{
 				P6Core->Stop();

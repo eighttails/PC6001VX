@@ -177,11 +177,11 @@ void EL6::ExecMenu( int id )
 		break;
 #endif
 	case ID_VERSION:		OSD_VersionDialog( graph->GetWindowHandle(), cfg->GetValue(CV_Model) );	break;	// バージョン情報
-	case ID_ABOUTQT:		QMessageBox::aboutQt(static_cast<RenderView*>(graph->GetWindowHandle()));
+	case ID_ABOUTQT:		QMessageBox::aboutQt(reinterpret_cast<RenderView*>(graph->GetWindowHandle()));
 		break;
 	case ID_SYSINFO:														// システム情報ダイアログ
 	{
-		auto&& dialog = SystemInfoDialog(static_cast<RenderView*>(graph->GetWindowHandle()));
+		auto&& dialog = SystemInfoDialog(reinterpret_cast<RenderView*>(graph->GetWindowHandle()));
 #ifdef ALWAYSFULLSCREEN
 		dialog.setWindowState(Qt::WindowFullScreen);
 #endif
@@ -194,27 +194,27 @@ void EL6::ExecMenu( int id )
 	case ID_MONITOR:		UI_Monitor();						break;	// モニターモード
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	case ID_SIZE50:
-		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(50);
+		reinterpret_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(50);
 		break;
 	case ID_SIZE100:
-		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(100);
+		reinterpret_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(100);
 		break;
 	case ID_SIZE150:
-		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(150);
+		reinterpret_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(150);
 		break;
 	case ID_SIZE200:
-		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(200);
+		reinterpret_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(200);
 		break;
 	case ID_SIZE250:
-		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(250);
+		reinterpret_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(250);
 		break;
 	case ID_SIZE300:
-		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(300);
+		reinterpret_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(300);
 		break;
 	case ID_SIZEMANUAL:
 	{
 		const int magnification = QInputDialog::getInt(nullptr, QtEL6::tr("表示サイズ"), QtEL6::tr("表示サイズ(%)を入力してください。(50-1000)"), 100, 50, 1000);
-		static_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(magnification);
+		reinterpret_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(magnification);
 		break;
 	}
 	case ID_FIXMAGNIFICATION:

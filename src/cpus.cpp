@@ -264,14 +264,12 @@ void SUB6::ExtIntr( void )
 		}
 		break;
 		
-	case SS_IDLE:	// ヒマなら新たな外部割込み受付
+	default:	// ヒマなら新たな外部割込み受付
+		// P6V2.0.2の実装ではゲームキー入力でフリーズすることがあるため
+		// 暫定的に2.0.1の実装に戻す
 		PRINTD( SUB_LOG, "Command %02X\n", comm );
 		
 		ExtIntrExec( comm );
-		break;
-		
-	default:		// 何らか処理中
-		PRINTD( SUB_LOG, " %02X << Cancel >> (%d)\n", comm, CpuStatus );
 	}
 }
 

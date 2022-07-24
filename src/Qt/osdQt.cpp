@@ -701,7 +701,7 @@ bool OSD_FindFile( const P6VPATH& path, const P6VPATH& file, std::vector<P6VPATH
 
 		// ファイル名比較。
 		if (sfile == tfile){
-			// #TODO ファイル名一致＆サイズ一致してたら結果に登録
+			// ファイル名一致＆サイズ一致してたら結果に登録
 			QFileInfo info(it.filePath());
 			if (size_t(info.size()) == size){
 				files.push_back(QSTR2P6VPATH(it.filePath()));
@@ -1448,8 +1448,9 @@ bool OSD_SetPalette( VSurface* sur )
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_IsFullScreen( HWINDOW hwnd )
 {
-	//#TODO 後で実装
-	return false;
+	RenderView* view = reinterpret_cast<RenderView*>(hwnd);
+	auto MainWidget = view ->parentWidget();
+	return MainWidget->isFullScreen();
 }
 
 

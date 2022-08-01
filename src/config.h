@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
@@ -55,6 +55,7 @@ typedef enum {
 	CB_AviScanLine,
 	CB_AviDispNTSC,
 	CB_AviFiltering,
+	CB_CkDokoLoad,
 	CB_CkQuit,
 	CB_SaveQuit
 } TCBool;

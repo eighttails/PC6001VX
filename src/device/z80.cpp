@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 //***************************************************************************
 // QUASI88 --- PC-8801 emulator
@@ -164,51 +164,51 @@ void cZ80::Reset( void )
 //				 ⇔ ⇔ 0  Ｐ 0  ⇔
 //				(↑ ↑    ↑        テーブル参照)
 //---------------------------------------------------------------------------
-#define M_RLC(reg)	do{						\
-					FLAG = reg>>7;			\
-					reg = (reg<<1)|FLAG;	\
-					FLAG |= SZP_table[reg];	\
+#define M_RLC(reg)	do{							\
+					FLAG = reg >> 7;			\
+					reg = (reg << 1) | FLAG;	\
+					FLAG |= SZP_table[reg];		\
 				}while(0)
-#define M_RL(reg)	do{								\
-				if( reg&0x80 ){						\
-					reg = (reg<<1)|(FLAG&C_FLAG);	\
-					FLAG = SZP_table[reg]|C_FLAG;	\
-				}else{								\
-					reg = (reg<<1)|(FLAG&C_FLAG);	\
-					FLAG = SZP_table[reg];			\
-				}									\
+#define M_RL(reg)	do{									\
+				if( reg & 0x80 ){						\
+					reg = (reg << 1) | (FLAG & C_FLAG);	\
+					FLAG = SZP_table[reg] | C_FLAG;		\
+				}else{									\
+					reg = (reg << 1) | (FLAG & C_FLAG);	\
+					FLAG = SZP_table[reg];				\
+				}										\
 			}while(0)
-#define M_RRC(reg)	do{						\
-				FLAG = reg&0x01;			\
-				reg = (reg>>1)|(FLAG<<7);	\
-				FLAG |= SZP_table[reg];		\
+#define M_RRC(reg)	do{							\
+				FLAG = reg & 0x01;				\
+				reg = (reg >> 1) | (FLAG << 7);	\
+				FLAG |= SZP_table[reg];			\
 			}while(0)
-#define M_RR(reg)	do{					\
-				if( reg&0x01 ){						\
-					reg = (reg>>1)|(FLAG<<7);		\
-					FLAG = SZP_table[reg]|C_FLAG;	\
+#define M_RR(reg)	do{								\
+				if( reg & 0x01 ){					\
+					reg = (reg >> 1) | (FLAG << 7);	\
+					FLAG = SZP_table[reg] | C_FLAG;	\
 				}else{								\
-					reg = (reg>>1)|(FLAG<<7);		\
+					reg = (reg >> 1) | (FLAG << 7);	\
 					FLAG = SZP_table[reg];			\
 				}									\
 			}while(0)
 #define M_SLA(reg)	do{					\
-				FLAG = reg>>7;			\
+				FLAG = reg >> 7;		\
 				reg <<= 1;				\
 				FLAG |= SZP_table[reg];	\
 			}while(0)
-#define M_SRA(reg)	do{						\
-				FLAG = reg&C_FLAG;			\
-				reg = (reg>>1)|(reg&0x80);	\
+#define M_SRA(reg)	do{								\
+				FLAG = reg & C_FLAG;				\
+				reg = (reg >> 1) | (reg & 0x80);	\
+				FLAG |= SZP_table[reg];				\
+			}while(0)
+#define M_SLL(reg)	do{						\
+				FLAG = reg >> 7;			\
+				reg = (reg << 1) | 0x01;	\
 				FLAG |= SZP_table[reg];		\
 			}while(0)
-#define M_SLL(reg)	do{					\
-				FLAG = reg>>7;			\
-				reg = (reg<<1)|0x01;	\
-				FLAG |= SZP_table[reg];	\
-			}while(0)
 #define M_SRL(reg)	do{					\
-				FLAG = reg&0x01;		\
+				FLAG = reg & 0x01;		\
 				reg >>= 1;				\
 				FLAG |= SZP_table[reg];	\
 			}while(0)
@@ -222,12 +222,12 @@ void cZ80::Reset( void )
 //
 //	BIT 7,reg では、サインフラグが変化する。
 //---------------------------------------------------------------------------
-#define M_BIT(bit,reg)	do{												\
-				FLAG = (FLAG&~(Z_FLAG|N_FLAG|S_FLAG)) | H_FLAG |		\
-						((reg&(1<<bit))?((bit==7)?S_FLAG:0):Z_FLAG);	\
+#define M_BIT(bit,reg)	do{															\
+				FLAG = (FLAG & ~(Z_FLAG | N_FLAG | S_FLAG)) | H_FLAG |				\
+						((reg & (1 << bit)) ? ((bit == 7) ? S_FLAG : 0) : Z_FLAG);	\
 			}while(0)
-#define M_SET(bit,reg)	do{ reg |=   1<<bit;  }while(0)
-#define M_RES(bit,reg)	do{ reg &= ~(1<<bit); }while(0)
+#define M_SET(bit,reg)	do{ reg |=   1 << bit;  } while(0)
+#define M_RES(bit,reg)	do{ reg &= ~(1 << bit); } while(0)
 
 //---------------------------------------------------------------------------
 // PUSH/POP/分岐命令のマクロ
@@ -269,10 +269,10 @@ void cZ80::Reset( void )
 				WriteMem( --SP.W, PC.B.l );	\
 				PC.W = addr;				\
 			}while(0)
-#define M_CALL_SKIP()	do{ PC.W += 2; }while(0)
-#define M_JP_SKIP()     do{ PC.W += 2; }while(0)
-#define M_JR_SKIP()     do{ PC.W++;   }while(0)
-#define M_RET_SKIP()    do{            }while(0)
+#define M_CALL_SKIP()	do{ PC.W += 2; } while(0)
+#define M_JP_SKIP()     do{ PC.W += 2; } while(0)
+#define M_JR_SKIP()     do{ PC.W++;    } while(0)
+#define M_RET_SKIP()    do{            } while(0)
 
 //---------------------------------------------------------------------------
 // 16ビットロード命令のマクロ
@@ -290,56 +290,56 @@ void cZ80::Reset( void )
 //		     ⇔ ⇔ ⇔ Ｖ ⇔ ⇔
 //	            (↑ ↑              テーブル参照)
 //---------------------------------------------------------------------------
-#define M_ADD_A(reg)	do{									\
-			  J.W = ACC+reg;								\
-			  FLAG =										\
-			   SZ_table[J.B.l] | ((ACC^reg^J.B.l)&H_FLAG) |	\
-			   (~(ACC^reg)&(reg^J.B.l)&0x80? V_FLAG:0) |	\
-			   J.B.h;										\
-			  ACC = J.B.l;									\
+#define M_ADD_A(reg)	do{											\
+			  J.W = ACC+reg;										\
+			  FLAG =												\
+			   SZ_table[J.B.l] | ((ACC ^ reg ^ J.B.l) & H_FLAG) |	\
+			   (~(ACC ^ reg) & (reg ^ J.B.l) & 0x80 ? V_FLAG : 0) |	\
+			   J.B.h;												\
+			  ACC = J.B.l;											\
 			}while(0)
-#define M_ADC_A(reg)	do{									\
-			  J.W = ACC +reg +(FLAG&C_FLAG);				\
-			  FLAG =										\
-			   SZ_table[J.B.l] | ((ACC^reg^J.B.l)&H_FLAG) |	\
-			   (~(ACC^reg)&(reg^J.B.l)&0x80? V_FLAG:0) |	\
-			   J.B.h;										\
-			  ACC = J.B.l;									\
+#define M_ADC_A(reg)	do{											\
+			  J.W = ACC + reg +(FLAG & C_FLAG);						\
+			  FLAG =												\
+			   SZ_table[J.B.l] | ((ACC ^ reg ^ J.B.l) & H_FLAG) |	\
+			   (~(ACC ^ reg) & (reg ^ J.B.l) & 0x80 ? V_FLAG : 0) |	\
+			   J.B.h;												\
+			  ACC = J.B.l;											\
 			}while(0)
-#define M_SUB(reg)	do{										\
-			  J.W = ACC-reg;								\
-			  FLAG =										\
-			   SZ_table[J.B.l] | ((ACC^reg^J.B.l)&H_FLAG) |	\
-			   ((ACC^reg)&(ACC^J.B.l)&0x80? V_FLAG:0)|		\
-			   N_FLAG | -J.B.h;								\
-			  ACC = J.B.l;									\
+#define M_SUB(reg)	do{												\
+			  J.W = ACC - reg;										\
+			  FLAG =												\
+			   SZ_table[J.B.l] | ((ACC ^ reg ^ J.B.l) & H_FLAG) |	\
+			   ((ACC ^ reg) & (ACC ^ J.B.l) & 0x80 ? V_FLAG : 0) |	\
+			   N_FLAG | -J.B.h;										\
+			  ACC = J.B.l;											\
 			}while(0)
-#define M_SBC_A(reg)	do{									\
-			  J.W = ACC-reg-(FLAG&C_FLAG);					\
-			  FLAG =										\
-			   SZ_table[J.B.l] | ((ACC^reg^J.B.l)&H_FLAG) |	\
-			   ((ACC^reg)&(ACC^J.B.l)&0x80? V_FLAG:0)|		\
-			   N_FLAG | -J.B.h;								\
-			  ACC = J.B.l;									\
+#define M_SBC_A(reg)	do{											\
+			  J.W = ACC - reg - (FLAG & C_FLAG);					\
+			  FLAG =												\
+			   SZ_table[J.B.l] | ((ACC ^ reg ^ J.B.l) & H_FLAG) |	\
+			   ((ACC ^ reg) & (ACC ^ J.B.l) & 0x80 ? V_FLAG : 0) |	\
+			   N_FLAG | -J.B.h;										\
+			  ACC = J.B.l;											\
 			}while(0)
-#define M_CP(reg)	do{										\
-			  J.W = ACC-reg;								\
-			  FLAG =										\
-			   SZ_table[J.B.l] | ((ACC^reg^J.B.l)&H_FLAG) |	\
-			   ((ACC^reg)&(ACC^J.B.l)&0x80? V_FLAG:0)|		\
-			   N_FLAG | -J.B.h;								\
+#define M_CP(reg)	do{												\
+			  J.W = ACC - reg;										\
+			  FLAG =												\
+			   SZ_table[J.B.l] | ((ACC ^ reg ^ J.B.l) & H_FLAG) |	\
+			   ((ACC ^ reg) & (ACC ^ J.B.l) & 0x80 ? V_FLAG : 0) |	\
+			   N_FLAG | -J.B.h;										\
 			}while(0)
-#define M_INC(reg)	do{										\
-			  reg++;										\
-			  FLAG =										\
-			   SZ_table[reg] | (reg&0x0f? 0:H_FLAG) |		\
-			   (reg==0x80? V_FLAG:0) | (FLAG&C_FLAG);		\
-			}while(0)
-#define M_DEC(reg)	do{											\
-			  reg--;											\
+#define M_INC(reg)	do{											\
+			  reg++;											\
 			  FLAG =											\
-			   SZ_table[reg] | ((reg&0x0f)==0x0f? H_FLAG:0) |	\
-			   (reg==0x7f? V_FLAG:0)| N_FLAG |(FLAG&C_FLAG);	\
+			   SZ_table[reg] | (reg & 0x0f ?  0 : H_FLAG) |		\
+			   (reg == 0x80 ? V_FLAG : 0) | (FLAG & C_FLAG);	\
+			}while(0)
+#define M_DEC(reg)	do{													\
+			  reg--;													\
+			  FLAG =													\
+			   SZ_table[reg] | ((reg & 0x0f) == 0x0f ? H_FLAG : 0) |	\
+			   (reg == 0x7f ? V_FLAG : 0)| N_FLAG |(FLAG & C_FLAG);		\
 			}while(0)
 
 //---------------------------------------------------------------------------
@@ -351,9 +351,9 @@ void cZ80::Reset( void )
 //	(OR/XOR)     ⇔ ⇔ 0  Ｐ 0  0
 //	            (↑ ↑    ↑        テーブル参照)
 //---------------------------------------------------------------------------
-#define M_AND(reg)	do{						\
-			  ACC &= reg;					\
-			  FLAG = SZP_table[ACC]|H_FLAG;	\
+#define M_AND(reg)	do{							\
+			  ACC &= reg;						\
+			  FLAG = SZP_table[ACC] | H_FLAG;	\
 			}while(0)
 #define M_OR(reg)	do{						\
 			  ACC |= reg;					\
@@ -372,10 +372,10 @@ void cZ80::Reset( void )
 //	フラグ変化 : S  Z  H  PV N  C
 //	(OUT)	     ・ ・ ・ ・ ・ ・
 //---------------------------------------------------------------------------
-#define M_IN_C(reg)	do{									\
-				i = ReadIO( BC.W );						\
-				reg = i;								\
-				FLAG = SZP_table[reg]|(FLAG&C_FLAG);	\
+#define M_IN_C(reg)	do{										\
+				i = ReadIO( BC.W );							\
+				reg = i;									\
+				FLAG = SZP_table[reg] | (FLAG & C_FLAG);	\
 			}while(0)
 #define M_OUT_C(reg)	do{				\
 				WriteIO( BC.W, reg );	\
@@ -389,33 +389,33 @@ void cZ80::Reset( void )
 //	フラグ変化 : S  Z  H  PV N  C
 //	(ADC/SBC)    ⇔ ⇔ × Ｖ ⇔ ⇔
 //---------------------------------------------------------------------------
-#define M_ADDW(reg1,reg2)	do{									\
-				  J.W = (reg1+reg2)&0xffff;						\
-				  FLAG =										\
-				   (FLAG&~(H_FLAG|N_FLAG|C_FLAG))|				\
-				   ((reg1^reg2^J.W)&0x1000? H_FLAG:0) |			\
-				   (((long)reg1+(long)reg2)&0x10000?C_FLAG:0);	\
-				  reg1 = J.W;									\
+#define M_ADDW(reg1,reg2)	do{											\
+				  J.W = (reg1 + reg2) & 0xffff;							\
+				  FLAG =												\
+				   (FLAG & ~(H_FLAG | N_FLAG | C_FLAG))|				\
+				   ((reg1 ^ reg2 ^ J.W) & 0x1000 ? H_FLAG : 0) |		\
+				   (((long)reg1 + (long)reg2) & 0x10000 ? C_FLAG : 0);	\
+				  reg1 = J.W;											\
 				}while(0)
-#define M_ADCW(reg)  do{											\
-		       i = FLAG&C_FLAG;										\
-		       J.W = (HL.W+reg+i)&0xffff;							\
-		       FLAG =												\
-		       (J.B.h&S_FLAG) | (J.W? 0:Z_FLAG) |					\
-		       ((HL.W^reg^J.W)&0x1000? H_FLAG:0)        |			\
-		       (~(HL.W^reg)&(reg^J.W)&0x8000? V_FLAG:0) |			\
-		       (((long)HL.W+(long)reg+(long)i)&0x10000?C_FLAG:0);	\
-		       HL.W = J.W;											\
+#define M_ADCW(reg)  do{													\
+		       i = FLAG & C_FLAG;											\
+		       J.W = (HL.W + reg + i) & 0xffff;								\
+		       FLAG =														\
+		       (J.B.h & S_FLAG) | (J.W ? 0 : Z_FLAG) |						\
+		       ((HL.W ^ reg ^ J.W) & 0x1000 ? H_FLAG : 0)        |			\
+		       (~(HL.W ^ reg) & (reg ^ J.W) & 0x8000 ? V_FLAG : 0) |		\
+		       (((long)HL.W + (long)reg + (long)i) & 0x10000 ? C_FLAG : 0);	\
+		       HL.W = J.W;													\
 		     }while(0)
-#define M_SBCW(reg)  do{											\
-		       i = FLAG&C_FLAG;										\
-		       J.W = (HL.W-reg-i)&0xffff;							\
-		       FLAG =												\
-		       (J.B.h&S_FLAG) | (J.W? 0:Z_FLAG) |					\
-		       ((HL.W^reg^J.W)&0x1000? H_FLAG:0) |					\
-		       ((HL.W^reg)&(HL.W^J.W)&0x8000? V_FLAG:0) | N_FLAG |	\
-		       (((long)HL.W-(long)reg-(long)i)&0x10000?C_FLAG:0);	\
-		       HL.W = J.W;											\
+#define M_SBCW(reg)  do{														\
+		       i = FLAG & C_FLAG;												\
+		       J.W = (HL.W - reg - i) & 0xffff;									\
+		       FLAG =															\
+		       (J.B.h & S_FLAG) | (J.W ? 0 : Z_FLAG) |							\
+		       ((HL.W ^ reg ^ J.W) & 0x1000 ? H_FLAG : 0) |						\
+		       ((HL.W ^ reg) & (HL.W ^ J.W) & 0x8000 ? V_FLAG : 0) | N_FLAG |	\
+		       (((long)HL.W - (long)reg - (long)i) & 0x10000 ? C_FLAG : 0);		\
+		       HL.W = J.W;														\
 		     }while(0)
 
 
@@ -541,14 +541,16 @@ enum CodesED
 int cZ80::Exec( void )
 {
 	BYTE opcode;
-	int state=0, istate=0;
+	int state = 0, istate = 0;
 	bool NotIntrCheck = false;
 	BYTE i;
 	PAIR J;
 	
 	
 	// バスリクエストチェック
-	if( IsBUSREQ() ) return 0;
+	if( IsBUSREQ() ){
+		return 0;
+	}
 	
 	//-------- Z80 ニモニックのデコード --------
 	#if (CPU_LOG)
@@ -572,7 +574,7 @@ int cZ80::Exec( void )
 		#include "z80-cdCB.h"		// CB XX
 		default:					// CB ??
 			printf("!! Internal Error in Z80-Emulator !!\n");
-			printf("  PC = %04X : code = CB %02X\n", PC.W-2, opcode );
+			printf("  PC = %04X : code = CB %02X\n", PC.W - 2, opcode );
 		}
 		break;
 		
@@ -583,7 +585,7 @@ int cZ80::Exec( void )
 		switch( opcode ){
 		#include "z80-cdED.h"		// ED XX
 		default:					// ED ??
-			printf( "Unrecognized instruction: ED %02X at PC=%04X\n", ReadMemNW(PC.W-1), PC.W-2 );
+			printf( "Unrecognized instruction: ED %02X at PC=%04X\n", ReadMemNW(PC.W - 1), PC.W - 2 );
 			state += 8;				// right ???
 		}
 		break;
@@ -603,12 +605,12 @@ int cZ80::Exec( void )
 			#include "z80-cdXC.h"	// DD CB XX XX
 			default:				// DD CB ?? ??
 				printf("!! Internal Error in Z80-Emulator !!\n");
-				printf("  PC = %04x : code = DD CB %02X %02X\n", PC.W-4, ReadMemNW(PC.W-2), ReadMemNW(PC.W-1) );
+				printf("  PC = %04x : code = DD CB %02X %02X\n", PC.W - 4, ReadMemNW(PC.W - 2), ReadMemNW(PC.W - 1) );
 				state += 8;			// right ???
 			}
 			break;
 		default:					// DD ??
-			printf( "Unrecognized instruction: DD %02X at PC=%04X\n", ReadMemNW(PC.W-1), PC.W-2 );
+			printf( "Unrecognized instruction: DD %02X at PC=%04X\n", ReadMemNW(PC.W - 1), PC.W - 2 );
 			PC.W --;
 			R --;					// ?? の位置にPCを戻す
 			state += 4;				// right ???
@@ -633,12 +635,12 @@ int cZ80::Exec( void )
 			#include "z80-cdXC.h"	// FD CB XX XX
 			default:				// FD CB ?? ??
 				printf("!! Internal Error in Z80-Emulator !!\n");
-				printf("  PC = %04x : code = FD CB %02X %02X\n", PC.W-4, ReadMemNW(PC.W-2), ReadMemNW(PC.W-1) );
+				printf("  PC = %04x : code = FD CB %02X %02X\n", PC.W - 4, ReadMemNW(PC.W - 2), ReadMemNW(PC.W - 1) );
 				state += 8;			// right ???
 			}
 			break;
 		default:					// FD ??
-			printf( "Unrecognized instruction: FD %02X at PC=%04X\n", ReadMemNW(PC.W-1), PC.W-2 );
+			printf( "Unrecognized instruction: FD %02X at PC=%04X\n", ReadMemNW(PC.W - 1), PC.W - 2 );
 			PC.W --;
 			R --;					// ?? の位置にPCを戻す
 			state += 4;				// right ???
@@ -650,7 +652,7 @@ int cZ80::Exec( void )
 		
 	default:
 		printf("!! Internal Error in Z80-Emulator !!\n");
-		printf("  PC = %04X : code = %02X\n", PC.W-1, opcode );
+		printf("  PC = %04X : code = %02X\n", PC.W - 1, opcode );
 		break;
 	}
 	
@@ -686,16 +688,16 @@ int cZ80::Exec( void )
 						BC.B.h = ReadMem( PC.W++ );
 						break;
 					case INTR_LEVEL_4:					// EX AF,AF'
-						J.W=AF.W; AF.W=AF1.W; AF1.W=J.W;
+						J.W = AF.W; AF.W = AF1.W; AF1.W = J.W;
 						break;
 					case INTR_LEVEL_5:					// LD A,(BC)
-						ACC=ReadMem( BC.W );
+						ACC = ReadMem( BC.W );
 						break;
 					case INTR_LEVEL_6:					// INC C
 						M_INC( BC.B.l );
 						break;
 					case INTR_LEVEL_7:					// LD C,n
-						BC.B.l=ReadMem( PC.W++ ); 
+						BC.B.l = ReadMem( PC.W++ ); 
 						break;
 					default:
 						break;

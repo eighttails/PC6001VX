@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "pc6001v.h"
 
@@ -572,16 +572,19 @@ WORD VDG6::SRGVramAddr( WORD addr ) const
 /////////////////////////////////////////////////////////////////////////////
 WORD VDG60::GetVramAddr( void ) const
 {
-	return ( 0x8000 | AddrOff ) + 0x0200;	//	[00]C200H  [01]E200H  [10]8200H  [11]A200H
+	return ( 0x8000 | AddrOff ) + 0x0200;	//	  [00]C200H [01]E200H [10]8200H [11]A200H
 }
 
 WORD VDG62::GetVramAddr( void ) const
 {
-	if( N60Win ){			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
+	if( N60Win ){	// N60                        [00]C200H [01]E200H [10]8200H [11]A200H
 		return ( 0x8000 | AddrOff ) + 0x0200;
-	}else{					// N60m
-		if( CharMode ){ return (AddrOff << 1) + 0x0400; }	// キャラクタモード   [00]8400H  [01]C400H  [10]0400H  [11]4400H
-		else		  { return (AddrOff << 1) + 0x2000; }	// グラフィックモード [00]A000H  [01]E000H  [10]2000H  [11]6000H
+	}else{			// N60m
+		if( CharMode ){		// キャラクタモード   [00]8400H [01]C400H [10]0400H [11]4400H
+			return (AddrOff << 1) + 0x0400;
+		}else{				// グラフィックモード [00]A000H [01]E000H [10]2000H [11]6000H
+			return (AddrOff << 1) + 0x2000;
+		}
 	}
 }
 
@@ -590,11 +593,14 @@ WORD VDG64::GetVramAddr( void ) const
 	if( SRmode ){	// SRモード
 		return	(WORD)(SRTextAddr & (CharMode ? 0x0f : 0x08)) << 12;
 	}else{			// 旧モード
-		if( N60Win ){			// N60  [00]C200H  [01]E200H  [10]8200H  [11]A200H
+		if( N60Win ){		// N60                [00]C200H [01]E200H [10]8200H [11]A200H
 			return AddrOff + 0x0200;
-		}else{					// N60m
-			if( CharMode ){ return AddrOff + 0x0400; }		// キャラクタモード   [00]8400H  [01]C400H  [10]0400H  [11]4400H
-			else		  { return AddrOff + 0x2000; }		// グラフィックモード [00]A000H  [01]E000H  [10]2000H  [11]6000H
+		}else{				// N60m
+			if( CharMode ){	// キャラクタモード   [00]8400H [01]C400H [10]0400H [11]4400H
+				return AddrOff + 0x0400;
+			}else{			// グラフィックモード [00]A000H [01]E000H [10]2000H [11]6000H
+				return AddrOff + 0x2000;
+			}
 		}
 	}
 }
@@ -605,19 +611,25 @@ WORD VDG64::GetVramAddr( void ) const
 /////////////////////////////////////////////////////////////////////////////
 WORD VDG60::GerAttrAddr( void ) const
 {
-	return 0x8000 | AddrOff;					// [00]C000H  [01]E000H  [10]8000H  [11]A000H
+	return 0x8000 | AddrOff;	//  [00]C000H [01]E000H [10]8000H [11]A000H
 }
 
 WORD VDG62::GerAttrAddr( void ) const
 {
-	if( N60Win ){ return 0x8000 | AddrOff; }	// N60  [00]C000H  [01]E000H  [10]8000H  [11]A000H
-	else		{ return AddrOff << 1; }		// N60m [00]8000H  [01]C000H  [10]0000H  [11]4000H
+	if( N60Win ){			// N60  [00]C000H [01]E000H [10]8000H [11]A000H
+		return 0x8000 | AddrOff;
+	}else{					// N60m [00]8000H [01]C000H [10]0000H [11]4000H
+		return AddrOff << 1;
+	}
 }
 
 WORD VDG64::GerAttrAddr( void ) const
 {
-	if( SRmode ){ return GetVramAddr() + 1; }	// SRモード(テキストモードアクセスのみ)
-	else		{ return AddrOff; }				// 旧モード
+	if( SRmode ){	// SRモード(テキストモードアクセスのみ)
+		return GetVramAddr() + 1;
+	}else{			// 旧モード
+		return AddrOff;
+	}
 }
 
 
@@ -720,7 +732,7 @@ bool VDG6::DokoSave( cIni* Ini )
 	Ini->SetVal( "VDG", "HSYNC",		"",	HSYNC );
 	Ini->SetVal( "VDG", "VLcnt",		"",	VLcnt );
 	
-	for( int i=0; i<16; i++ ){
+	for( int i = 0; i < 16; i++ ){
 		Ini->SetVal( "VDG", Stringf( "COL_AN2_%02d", i ),	"",	COL_AN2[i] );
 		Ini->SetVal( "VDG", Stringf( "COL_CG2_0_%02d", i ),	"",	COL_CG2[0][i] );
 		Ini->SetVal( "VDG", Stringf( "COL_CG2_1_%02d", i ),	"",	COL_CG2[1][i] );
@@ -787,7 +799,7 @@ bool VDG6::DokoLoad( cIni* Ini )
 	Ini->GetVal( "VDG", "HSYNC",		HSYNC   );
 	Ini->GetVal( "VDG", "VLcnt",		VLcnt   );
 	
-	for( int i=0; i<16; i++ ){
+	for( int i = 0; i < 16; i++ ){
 		Ini->GetVal( "VDG", Stringf( "COL_AN2_%02d",   i ),	COL_AN2[i]    );
 		Ini->GetVal( "VDG", Stringf( "COL_CG2_0_%02d", i ),	COL_CG2[0][i] );
 		Ini->GetVal( "VDG", Stringf( "COL_CG2_1_%02d", i ),	COL_CG2[1][i] );

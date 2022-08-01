@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <vector>
 
@@ -225,7 +225,7 @@ void DSP6::DrawScreen( void )
 		pos.h = P6WINH;
 		
 		// モニタウィンドウ描画
-		OSD_BlitToWindow( Wh, el->monw.get(), 0, el->regw->Height()+el->memw->Height()-el->monw->Height() );
+		OSD_BlitToWindow( Wh, el->monw.get(), 0, el->regw->Height() + el->memw->Height() - el->monw->Height() );
 		
 		// レジスタウィンドウ描画
 		OSD_BlitToWindow( Wh, el->regw.get(), max( P6WINW+P6WINMGN * 2, el->monw->Width() ), 0 );

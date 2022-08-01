@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <cstring>
 
@@ -82,7 +82,7 @@ const P6TBLKINFO& cP6DATA::GetInfo( void )
 int cP6DATA::SetName( const std::string& name )
 {
 	ZeroMemory( Info.Name, sizeof(Info.Name) );
-	std::strncpy( Info.Name, name.c_str(), sizeof(Info.Name)-1 );
+	std::strncpy( Info.Name, name.c_str(), sizeof(Info.Name) - 1 );
 	
 	return std::strlen( Info.Name );
 }
@@ -286,8 +286,8 @@ void cP6T::Rewind( void )
 		i.Rewind();
 	
 	const P6TBLKINFO& binfo = Data.front().GetInfo();
-	swait = ( binfo.STime * DEFAULT_BAUD )/1000;	// 無音部の待ちbit数
-	pwait = ( binfo.PTime * DEFAULT_BAUD )/1000;	// ぴー音の待ちbit数
+	swait = ( binfo.STime * DEFAULT_BAUD ) / 1000;	// 無音部の待ちbit数
+	pwait = ( binfo.PTime * DEFAULT_BAUD ) / 1000;	// ぴー音の待ちbit数
 }
 
 
@@ -416,8 +416,8 @@ BYTE cP6T::ReadOne( void )
 		
 		// ブロック情報取得
 		const P6TBLKINFO& binfo = rd->GetInfo();
-		swait = ( binfo.STime * DEFAULT_BAUD )/1000;	// 無音部の待ちbit数
-		pwait = ( binfo.PTime * DEFAULT_BAUD )/1000;	// ぴー音の待ちbit数
+		swait = ( binfo.STime * DEFAULT_BAUD ) / 1000;	// 無音部の待ちbit数
+		pwait = ( binfo.PTime * DEFAULT_BAUD ) / 1000;	// ぴー音の待ちbit数
 	}
 	
 	return dat;
@@ -449,7 +449,7 @@ bool cP6T::Writef( const P6VPATH& filepath )
 	
 	std::fstream fs;
 	
-	if( !OSD_FSopen( fs, filepath, std::ios_base::out|std::ios_base::binary ) ) return false;
+	if( !OSD_FSopen( fs, filepath, std::ios_base::out | std::ios_base::binary ) ) return false;
 	
 	// ベタイメージ書込み&サイズ取得
 	DWORD beta = 0;
@@ -493,7 +493,7 @@ bool cP6T::ReadP6T( const P6VPATH& filepath )
 	
 	std::fstream fs;
 	
-	if( !OSD_FSopen( fs, filepath, std::ios_base::in|std::ios_base::binary ) ) return false;
+	if( !OSD_FSopen( fs, filepath, std::ios_base::in | std::ios_base::binary ) ) return false;
 	
 	// ベタイメージサイズ取得
 	fs.seekg( -4, std::ios_base::end );
@@ -587,7 +587,7 @@ bool cP6T::ConvP6T( const P6VPATH& filepath )
 	b.SetPeriod( 3400, 6800 );				// 無音部(3400ms),ぴー音(6800ms)時間セット
 	b.SetSize( OSD_GetFileSize( filepath ) );	// データサイズ = ベタイメージサイズ
 	
-	if( !OSD_FSopen( fs, filepath, std::ios_base::in|std::ios_base::binary ) ){
+	if( !OSD_FSopen( fs, filepath, std::ios_base::in | std::ios_base::binary ) ){
 		SetName( "" );
 		Data.clear();
 		return false;

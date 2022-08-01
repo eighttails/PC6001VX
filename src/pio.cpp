@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <fstream>
 
@@ -148,7 +148,7 @@ void cPRT::Strobe( bool st )
 {
 	std::fstream fs;
 	
-	if( !strb && st && OSD_FSopen( fs, FilePath, std::ios_base::out|std::ios_base::binary|std::ios_base::app ) ){
+	if( !strb && st && OSD_FSopen( fs, FilePath, std::ios_base::out | std::ios_base::binary | std::ios_base::app ) ){
 		FSPUTBYTE( pdata, fs );
 		fs.close();
 	}
@@ -223,13 +223,13 @@ void PIO6::JobWriteB( BYTE data )
 void PIO6::JobWriteC1( BYTE data )
 {
 	// プリンタストローブ
-	cPRT::Strobe( data&1 ? false : true );
+	cPRT::Strobe( data & 1 ? false : true );
 	
 	// CRT表示状態設定
-	vm->VdgSetCrtDisp( data&2 ? true : false );
+	vm->VdgSetCrtDisp( data & 2 ? true : false );
 	
 	// CG ROM BANK 選択
-	vm->MemSetCGBank( data&4 ? false : true );
+	vm->MemSetCGBank( data & 4 ? false : true );
 }
 
 
@@ -242,17 +242,17 @@ void PIO6::JobWriteC1( BYTE data )
 void PIO6::JobWriteD( BYTE data )
 {
 	// bit毎の対応
-	switch( (data>>1)&0x07 ){
+	switch( (data >> 1) & 0x07 ){
 	case 0: // プリンタストローブ
-		cPRT::Strobe( data&1 ? false : true );
+		cPRT::Strobe( data & 1 ? false : true );
 		break;
 		
 	case 1: // CRT表示状態設定
-		vm->VdgSetCrtDisp( data&1 ? true : false );
+		vm->VdgSetCrtDisp( data & 1 ? true : false );
 		break;
 		
 	case 2: // CG ROM BANK 選択
-		vm->MemSetCGBank( data&1 ? false : true );
+		vm->MemSetCGBank( data & 1 ? false : true );
 		break;
 	}
 }

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "pc6001v.h"
 
@@ -89,7 +89,7 @@ void VCE6::EventCallback( int id, int clock )
 			PRINTD( VOI_LOG, "(EXT)\n" );
 			if( PReady ){	// パラメータセット完了してる?
 				// フレーム数=0ならば終了処理
-				if( !(ParaBuf[0]>>3) )
+				if( !(ParaBuf[0] >> 3) )
 					AbortVoice();
 				else{
 					// 1フレーム分のサンプル生成
@@ -130,8 +130,8 @@ void VCE6::EventCallback( int id, int clock )
 /////////////////////////////////////////////////////////////////////////////
 void VCE6::VSetMode( BYTE mode )
 {
-	PRINTD( VOI_LOG, "[VOICE][VSetMode]    %02X %dms", mode, (((mode>>2)&1)+1)*10 );
-	PRINTD( VOI_LOG, " %s\n", mode&1 && mode&2 ? "X" : mode&1 ? "SLOW" : mode&2 ? "FAST" : "NORMAL" );
+	PRINTD( VOI_LOG, "[VOICE][VSetMode]    %02X %dms", mode, (((mode >> 2) & 1) + 1) * 10 );
+	PRINTD( VOI_LOG, " %s\n", mode & 1 && mode & 2 ? "X" : mode & 1 ? "SLOW" : mode & 2 ? "FAST" : "NORMAL" );
 	
 	// 音声合成開始
 	cD7752::Start( mode );
@@ -164,7 +164,7 @@ void VCE6::VSetCommand( BYTE comm )
 		VStat = D7752E_BSY;
 		
 		// フレームイベントをセットする
-		vm->EventAdd( Device::GetID(), EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
+		vm->EventAdd( Device::GetID(), EID_FRAME, 10000.0 / (double)cD7752::GetFrameSize(), EV_LOOP | EV_HZ );
 		
 		break;
 		
@@ -173,7 +173,7 @@ void VCE6::VSetCommand( BYTE comm )
 		std::queue<D7752_SAMPLE>().swap( Fbuf );
 		
 		// フレームイベントをセットする
-		vm->EventAdd( Device::GetID(), EID_FRAME, 10000.0/(double)cD7752::GetFrameSize(), EV_LOOP|EV_HZ );
+		vm->EventAdd( Device::GetID(), EID_FRAME, 10000.0 / (double)cD7752::GetFrameSize(), EV_LOOP | EV_HZ );
 		
 		// ステータスを外部句再生モードにセット，パラメータ受付開始
 		VStat = D7752E_BSY | D7752E_EXT | D7752E_REQ;
@@ -199,10 +199,10 @@ void VCE6::VSetData( BYTE data )
 	PRINTD( VOI_LOG, "[VOICE][VSetData]    %02X\n", data );
 	
 	// 再生時のみデータを受け付ける
-	if(	(VStat & D7752E_BSY)&&(VStat & D7752E_REQ) ){
+	if(	(VStat & D7752E_BSY) && (VStat & D7752E_REQ) ){
 		if( Fnum == 0 || Pnum ){	// 最初のフレーム?
 			// 最初のパラメータだったら繰り返し数を設定
-			if( Pnum == 0 ) Fnum = data>>3;
+			if( Pnum == 0 ) Fnum = data >> 3;
 			// パラメータバッファに保存
 			ParaBuf[Pnum++] = data;
 			// もし1フレーム分のパラメータが溜まったら発声準備完了
@@ -216,7 +216,7 @@ void VCE6::VSetData( BYTE data )
 		}else{						// 繰り返しフレーム?
 			// パラメータバッファに保存
 			// PD7752の仕様に合わせる
-			for( int i=1; i<6; i++ ) ParaBuf[i] = 0;
+			for( int i = 1; i < 6; i++ ) ParaBuf[i] = 0;
 			ParaBuf[6] = data;
 			VStat &= ~D7752E_REQ;
 			Pnum = 0;
@@ -267,7 +267,7 @@ void VCE6::UpConvert( void )
 	
 	int pos = -1;
 	int dat = 0;
-	for( int i=0; i<samples; i++ ){
+	for( int i = 0; i < samples; i++ ){
 		int npos;
 		if( (npos = i * cD7752::GetFrameSize() / samples) != pos ){
 			pos = npos;
@@ -308,7 +308,7 @@ bool VCE6::LoadVoice( int index )
 	
 	// 発声速度変換後のサイズを計算してバッファを確保
 	// 発声速度4の時,1フレームのサンプル数は160
-	int IVLen = (int)( (double)SndDev::SampleRate * (double)(len/2) / (double)freq
+	int IVLen = (int)( (double)SndDev::SampleRate * (double)(len / 2) / (double)freq
 					* (double)cD7752::GetFrameSize() / (double)160 );
 	
 	PRINTD( VOI_LOG, "Len:%d/%d ->", IVLen, (int)len );
@@ -318,8 +318,8 @@ bool VCE6::LoadVoice( int index )
 	// 発声速度変換
 	// 単なる間引きなのでピッチが変わってしまうのが問題
 	// FFTを使うか?
-	for( int i=0; i<IVLen; i++ )
-		IVBuf.emplace( ((signed short*)buf)[(int)(( (double)i * (double)(len/2) ) / (double)IVLen)] );
+	for( int i = 0; i < IVLen; i++ )
+		IVBuf.emplace( ((signed short*)buf)[(int)(( (double)i * (double)(len / 2) ) / (double)IVLen)] );
 	
 	// WAV開放
 	OSD_FreeWAV( buf );
@@ -398,7 +398,7 @@ int VCE6::SoundUpdate( int samples )
 	
 	PRINTD( VOI_LOG, "[VOICE][SoundUpdate] Samples: %d -> %d\n", samples, length );
 	
-	for( int i=0; i<length; i++ ){
+	for( int i = 0; i < length; i++ ){
 		// バッファに書込み
 		SndDev::cRing::Put( 0 );	// 手抜き
 	}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <algorithm>
 
@@ -84,7 +84,7 @@ bool EVSC::Entry( std::vector<std::shared_ptr<IDevice>> dev )
 /////////////////////////////////////////////////////////////////////////////
 bool EVSC::Add( Device::ID did, int eid, double hz, int flag )
 {
-	PRINTD( TIC_LOG, "[SCHE][Add] :%c%c%c%c ID:%d\n", (char)(did&0xff), (char)(did>>8)&0xff, (char)(did>>16)&0xff, (char)(did>>24), eid );
+	PRINTD( TIC_LOG, "[SCHE][Add] :%c%c%c%c ID:%d\n", (char)(did & 0xff), (char)(did >> 8) & 0xff, (char)(did >> 16) & 0xff, (char)(did >> 24), eid );
 	
 	// 登録済みの場合は一旦削除して再登録
 	const evinfo* e = Find( did, eid );
@@ -95,7 +95,7 @@ bool EVSC::Add( Device::ID did, int eid, double hz, int flag )
 	event.id    = eid;
 	
 	// イベント発生周波数の設定
-	switch( flag&(EV_US|EV_MS|EV_STATE) ){
+	switch( flag & (EV_US | EV_MS | EV_STATE) ){
 	case EV_US:		// usで指示
 		event.nps   = (double)1000000 / hz;
 		event.Clock = (int)((double)MasterClock / event.nps);
@@ -114,7 +114,7 @@ bool EVSC::Add( Device::ID did, int eid, double hz, int flag )
 	}
 	
 	// 周期の設定
-	if( flag&EV_LOOP ){	// ループイベント
+	if( flag & EV_LOOP ){	// ループイベント
 		event.Period = event.Clock;
 		if( event.Period < 1 ) event.Period = 1;
 	}else				// ワンタイムイベント
@@ -139,7 +139,7 @@ bool EVSC::Add( Device::ID did, int eid, double hz, int flag )
 /////////////////////////////////////////////////////////////////////////////
 bool EVSC::Del( Device::ID did, int eid )
 {
-	PRINTD( TIC_LOG, "[SCHE][Del] DevID:%c%c%c%c ID:%d\n", (char)(did&0xff), (char)(did>>8)&0xff, (char)(did>>16)&0xff, (char)(did>>24), eid );
+	PRINTD( TIC_LOG, "[SCHE][Del] DevID:%c%c%c%c ID:%d\n", (char)(did & 0xff), (char)(did >> 8) & 0xff, (char)(did >> 16) & 0xff, (char)(did >> 24), eid );
 	
 	evinfo* e = (evinfo*)Find( did, eid );
 	if( !e ) return false;
@@ -177,7 +177,7 @@ void EVSC::Update( int clk )
 		cnt = 0;
 		num = ev.size();
 		auto p = ev.begin();
-		for( int i=0; i<num; i++ ){
+		for( int i = 0; i < num; i++ ){
 			// 有効なイベント?
 			if( (*p).devid && (*p).id ){
 				(*p).Clock -= SaveClock;
@@ -229,7 +229,7 @@ void EVSC::Update( int clk )
 /////////////////////////////////////////////////////////////////////////////
 void EVSC::Reset( Device::ID devid, int eid, double ini )
 {
-	PRINTD( TIC_LOG, "[SCHE][Reset] DevID:%c%c%c%c ID:%d %3f%%", (char)(devid&0xff), (char)(devid>>8)&0xff, (char)(devid>>16)&0xff, (char)(devid>>24), eid, ini );
+	PRINTD( TIC_LOG, "[SCHE][Reset] DevID:%c%c%c%c ID:%d %3f%%", (char)(devid & 0xff), (char)(devid >> 8) & 0xff, (char)(devid >> 16) & 0xff, (char)(devid >> 24), eid, ini );
 	
 	evinfo* e = (evinfo*)Find( devid, eid );
 	if( !e ){
@@ -266,7 +266,7 @@ int EVSC::Rest( Device::ID devid, int eid ) const
 /////////////////////////////////////////////////////////////////////////////
 double EVSC::GetProgress( Device::ID devid, int eid ) const
 {
-	PRINTD( TIC_LOG, "[SCHE][GetProgress] DevID:%c%c%c%c ID:%d", (char)(devid&0xff), (char)(devid>>8)&0xff, (char)(devid>>16)&0xff, (char)(devid>>24), eid );
+	PRINTD( TIC_LOG, "[SCHE][GetProgress] DevID:%c%c%c%c ID:%d", (char)(devid & 0xff), (char)(devid >> 8) & 0xff, (char)(devid >> 16) & 0xff, (char)(devid >> 24), eid );
 	
 	const evinfo* e = Find( devid, eid );
 	// イベントが存在し1周期のクロック数が設定されている?
@@ -441,7 +441,7 @@ bool EVSC::DokoLoad( cIni* Ini )
 	
 	
 	// イベント
-	for( int i=0; ; i++ ){
+	for( int i = 0; ; i++ ){
 		std::string str;
 		evinfo e;
 		BYTE id1,id2,id3,id4;
@@ -520,7 +520,7 @@ void SCH6::OnThread( void* inst )
 		}
 		
 		// 画面更新タイミング更新
-		if( now >= (DWORD)(fnext+0.5) ){
+		if( now >= (DWORD)(fnext + 0.5) ){
 			fnext += FRMTICK;
 			
 			// FPS更新
@@ -734,7 +734,7 @@ double SCH6::GetFPS( void ) const
 	if( FPSClk.size() > 1 ){
 		DWORD sum  = 0;
 		for( auto p = FPSClk.begin() + 1; p != FPSClk.end(); ++p )
-			sum += *(p-1) - *p;
+			sum += *(p - 1) - *p;
  		return (((double)FPSClk.size() - 1.0) * 1000.0) / (double)sum;
 	}
 	return 0;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef MEMBLK_H_INCLUDED
 #define MEMBLK_H_INCLUDED
@@ -55,8 +55,8 @@ public:
 	bool SetData( const P6VPATH& );					// ROMデータをファイルから読込み
 	size_t Size() const;							// サイズ(メモリセル数)取得
 	
-	BYTE Read( WORD ) const;						// メモリリード
-	void Write( WORD, BYTE );						// メモリライト
+	BYTE Read( DWORD ) const;						// メモリリード
+	void Write( DWORD, BYTE );						// メモリライト
 	
 	MemCell& operator()( const int );				// メモリセル取得 - operator ()
 };

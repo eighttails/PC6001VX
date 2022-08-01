@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "log.h"
 #include "pd8255.h"
@@ -64,12 +64,12 @@ void cD8255::Reset( void )
 /////////////////////////////////////////////////////////////////////////////
 void cD8255::SetMode( BYTE data )
 {
-	ModeA     = (data>>6)&1 ? 2    : (data>>5)&1;
-	ModeB     = (data>>2)&1;
-	PortAdir  = (data>>4)&1 ? true : false;
-	PortC2dir = (data>>3)&1 ? true : false;
-	PortBdir  = (data>>1)&1 ? true : false;
-	PortC1dir = (data   )&1 ? true : false;
+	ModeA     = (data >> 6) & 1 ? 2    : (data >> 5) & 1;
+	ModeB     = (data >> 2) & 1;
+	PortAdir  = (data >> 4) & 1 ? true : false;
+	PortC2dir = (data >> 3) & 1 ? true : false;
+	PortBdir  = (data >> 1) & 1 ? true : false;
+	PortC1dir = (data     ) & 1 ? true : false;
 	
 	PortA = PortB = PortC = 0;
 	if( ModeA == 2 ) PortC |= HS_OBF;
@@ -249,7 +249,7 @@ void cD8255::WriteD( BYTE data )
 {
 	PRINTD( PPI_LOG, "[8255][WriteD] %02X", data );
 	
-	if( data&0x80 ){	// 最上位ビットが1なら
+	if( data & 0x80 ){	// 最上位ビットが1なら
 		// モード選択
 		SetMode( data );
 	}else{				// 最上位ビットが0なら
@@ -258,13 +258,13 @@ void cD8255::WriteD( BYTE data )
 		// 他のモードはノーケア
 		if( ModeA == 2 ){
 			// bit毎の対応
-			switch( (data>>1)&0x07 ){
+			switch( (data >> 1) & 0x07 ){
 			case 4: // RIE0
-				RIE0 = ( data&1 ) ? true : false;
+				RIE0 = ( data & 1 ) ? true : false;
 				break;
 			
 			case 6: // WIE0
-				WIE0 = ( data&1 ) ? true : false;
+				WIE0 = ( data & 1 ) ? true : false;
 				break;
 			
 			case 3: // INT0
@@ -273,12 +273,12 @@ void cD8255::WriteD( BYTE data )
 				break;
 			
 			default:	// つまりbit0-2
-				if( data&1 ) PortC |=   1<<((data>>1)&0x07);
-				else         PortC &= ~(1<<((data>>1)&0x07));
+				if( data & 1 ) PortC |=   1 << ((data >> 1) & 0x07);
+				else           PortC &= ~(1 << ((data >> 1) & 0x07));
 			}
 		}else{
-			if( data&1 ) PortC |=   1<<((data>>1)&0x07);
-			else         PortC &= ~(1<<((data>>1)&0x07));
+			if( data & 1 ) PortC |=   1 << ((data >> 1) & 0x07);
+			else           PortC &= ~(1 << ((data >> 1) & 0x07));
 		}
 		JobWriteD( data );
 	}

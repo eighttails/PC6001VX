@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <ctime>
 
@@ -126,7 +126,7 @@ void SUB6::EventCallback( int id, int clock )
 			else if( IntrFlag & IR_DATE ) { CpuStatus = SS_DATE;  }
 			
 			if( CpuStatus != SS_IDLE ){
-				vm->EventAdd( Device::GetID(), EID_VECTOR, wt, EV_LOOP|EV_STATE );
+				vm->EventAdd( Device::GetID(), EID_VECTOR, wt, EV_LOOP | EV_STATE );
 			}
 			
 			PRINTD( SUB_LOG, "%02X\n", CpuStatus );
@@ -135,7 +135,9 @@ void SUB6::EventCallback( int id, int clock )
 		
 	case EID_VECTOR:	// 割込みベクタ出力
 		// T0=IBF=H つまり8255のバッファが空いていなければリトライ
-		if( GetT0() ){ break; }
+		if( GetT0() ){
+			break;
+		}
 		
 		vm->EventDel( Device::GetID(), EID_VECTOR );
 		
@@ -143,13 +145,15 @@ void SUB6::EventCallback( int id, int clock )
 		
 		// 続いてデータ出力
 		if( CpuStatus != SS_IDLE ){
-			vm->EventAdd( Device::GetID(), EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
+			vm->EventAdd( Device::GetID(), EID_DATA, WAIT_DATA, EV_LOOP | EV_STATE );
 		}
 		break;
 		
 	case EID_DATA:		// 割込みデータ出力
 		// T0=IBF=H つまり8255のバッファが空いていなければリトライ
-		if( GetT0() ){ break; }
+		if( GetT0() ){
+			break;
+		}
 		
 		vm->EventDel( Device::GetID(), EID_DATA );
 		
@@ -173,7 +177,7 @@ void SUB6::Reset( void )
 	CmtData   = 0;
 	SioData   = 0;
 	
-	vm->EventAdd( Device::GetID(), EID_INTCHK, WAIT_INTCHK, EV_LOOP|EV_US );
+	vm->EventAdd( Device::GetID(), EID_INTCHK, WAIT_INTCHK, EV_LOOP | EV_US );
 }
 
 
@@ -268,7 +272,6 @@ void SUB6::ExtIntr( void )
 		// P6V2.0.2の実装ではゲームキー入力でフリーズすることがあるため
 		// 暫定的に2.0.1の実装に戻す
 		PRINTD( SUB_LOG, "Command %02X\n", comm );
-		
 		ExtIntrExec( comm );
 	}
 }
@@ -392,7 +395,9 @@ void SUB6::ReqKeyIntr( int flag, BYTE data )
 	// bit 2 : ON_FUNC
 	
 	// 前回のキー割込みが未処理だったら無視
-	if( IntrFlag & ( IR_KEY1 | IR_KEY12 | IR_KEY2 | IR_KEY3 ) ){ return; }
+	if( IntrFlag & ( IR_KEY1 | IR_KEY12 | IR_KEY2 | IR_KEY3 ) ){
+		return;
+	}
 	
 	if( flag & 1 ){	// STOP ?
 		// CMT OPEN ?
@@ -430,7 +435,9 @@ void SUB6::ReqCmtIntr( BYTE data )
 	// LOADOPENならCMT割込み発生
 	if( CmtStatus == LOADOPEN ){
 		// 前回のCMT READ割込みが未処理だったら無視
-		if( IntrFlag & IR_CMTR ){ return; }
+		if( IntrFlag & IR_CMTR ){
+			return;
+		}
 		
 		IntrFlag |= IR_CMTR;
 		CmtData   = data;
@@ -446,7 +453,9 @@ void SUB6::ReqJoyIntr( void )
 	PRINTD( SUB_LOG, "[8049][ReqJoyIntr]\n" );
 	
 	// 前回のゲーム用キー割込みが未処理だったら無視
-	if( IntrFlag & IR_JOY ){ return; }
+	if( IntrFlag & IR_JOY ){
+		return;
+	}
 	
 	IntrFlag |= IR_JOY;
 	JoyCode   = vm->KeyGetKeyJoy();
@@ -461,7 +470,9 @@ void SUB68::ReqTVRReadIntr( void )
 	PRINTD( SUB_LOG, "[8049][ReqTVRReadIntr]\n" );
 	
 	// 前回のTV予約読込み割込みが未処理だったら無視
-	if( IntrFlag & IR_TVR ){ return; }
+	if( IntrFlag & IR_TVR ){
+		return;
+	}
 	
 	IntrFlag |= IR_TVR;
 	TVRCnt    = 0;
@@ -476,7 +487,9 @@ void SUB68::ReqDateIntr( void )
 	PRINTD( SUB_LOG, "[8049][ReqDateIntr]\n" );
 	
 	// 前回のDATE割込みが未処理だったら無視
-	if( IntrFlag & IR_DATE ){ return; }
+	if( IntrFlag & IR_DATE ){
+		return;
+	}
 	
 	IntrFlag |= IR_DATE;
 	DateCnt   = 0;
@@ -489,14 +502,14 @@ void SUB68::ReqDateIntr( void )
 	if( !t_st->tm_wday ){	// 曜日補正
 		t_st->tm_wday = 7;
 	}
-	PRINTD( SUB_LOG, "Localtime : %d/%d/%d(%d) %d:%d:%d\n",t_st->tm_year+1900,t_st->tm_mon+1,t_st->tm_mday,t_st->tm_wday-1,t_st->tm_hour,t_st->tm_min,t_st->tm_sec );
+	PRINTD( SUB_LOG, "Localtime : %d/%d/%d(%d) %d:%d:%d\n", t_st->tm_year+1900, t_st->tm_mon+1, t_st->tm_mday, t_st->tm_wday - 1, t_st->tm_hour, t_st->tm_min, t_st->tm_sec );
 	
 	try{
-		DateData.at( 0 ) = ((t_st->tm_mon  +  1)<<4) | (t_st->tm_wday -  1);
-		DateData.at( 1 ) = ((t_st->tm_mday / 10)<<4) | (t_st->tm_mday % 10);
-		DateData.at( 2 ) = ((t_st->tm_hour / 10)<<4) | (t_st->tm_hour % 10);
-		DateData.at( 3 ) = ((t_st->tm_min  / 10)<<4) | (t_st->tm_min  % 10);
-		DateData.at( 4 ) = ((t_st->tm_sec  / 10)<<4) | (t_st->tm_sec  % 10);
+		DateData.at( 0 ) = ((t_st->tm_mon  +  1) << 4) | (t_st->tm_wday -  1);
+		DateData.at( 1 ) = ((t_st->tm_mday / 10) << 4) | (t_st->tm_mday % 10);
+		DateData.at( 2 ) = ((t_st->tm_hour / 10) << 4) | (t_st->tm_hour % 10);
+		DateData.at( 3 ) = ((t_st->tm_min  / 10) << 4) | (t_st->tm_min  % 10);
+		DateData.at( 4 ) = ((t_st->tm_sec  / 10) << 4) | (t_st->tm_sec  % 10);
 	}
 	catch( std::out_of_range& ){}
 }
@@ -626,7 +639,7 @@ void SUB6::OutData( void )
 		if( dat == 0xff ){	// FFHなら終了
 			IntrFlag &= ~IR_TVR;
 		}else{				// FFH以外なら残りのデータ出力
-			vm->EventAdd( Device::GetID(), EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
+			vm->EventAdd( Device::GetID(), EID_DATA, WAIT_DATA, EV_LOOP | EV_STATE );
 			return;
 		}
 		break;
@@ -644,7 +657,7 @@ void SUB6::OutData( void )
 		if( DateCnt > 4 ){	// 5回出力したら終了
 			IntrFlag &= ~IR_DATE;
 		}else{				// 5回未満なら残りのデータ出力
-			vm->EventAdd( Device::GetID(), EID_DATA, WAIT_DATA, EV_LOOP|EV_STATE );
+			vm->EventAdd( Device::GetID(), EID_DATA, WAIT_DATA, EV_LOOP | EV_STATE );
 			return;
 		}
 		break;
@@ -696,7 +709,9 @@ int SUB6::GetStatus( void ) const
 /////////////////////////////////////////////////////////////////////////////
 bool SUB6::DokoSave( cIni* Ini )
 {
-	if( !Ini ){ return false; }
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "8049", "CmtStatus",	"", CmtStatus  );
 	Ini->SetVal( "8049", "CpuStatus",	"", CpuStatus );
@@ -717,7 +732,9 @@ bool SUB6::DokoSave( cIni* Ini )
 /////////////////////////////////////////////////////////////////////////////
 bool SUB6::DokoLoad( cIni* Ini )
 {
-	if( !Ini ){ return false; }
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->GetVal( "8049", "CmtStatus",	CmtStatus  );
 	Ini->GetVal( "8049", "CpuStatus",	CpuStatus );

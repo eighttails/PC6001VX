@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "common.h"
 #include "d88.h"
@@ -94,12 +94,12 @@ void cD88::ReadHeader88( void )
 	d88.table.fill( 0 );
 	
 	// 1DDドライブで1Dディスクを使う時は2トラック飛びで読込む
-	if( DDDrv && !(GetType()&FD_DOUBLETRACK) ){
+	if( DDDrv && !(GetType() & FD_DOUBLETRACK) ){
 		PRINTD( D88_LOG, " (1D disk on 1DD drive)\n" )
-		for( int i=0; i<164; i+=2 )
+		for( int i = 0; i < 164; i += 2 )
 			d88.table[i] = FSGETDWORD( fs );
 	}else
-		for( int i=0; i<164; i++ )
+		for( int i = 0; i < 164; i++ )
 			d88.table[i] = FSGETDWORD( fs );
 		
 	// アクセス中のトラックNo
@@ -147,7 +147,7 @@ void cD88::ReadSector88( void )
 		(((trkno < 163) && (d88.table[trkno+1] >= secinfo.data+256)) ||
 		 (d88.size >= secinfo.data+256)	) ){
 		
-		for( int i=0; i<256; i++ ){
+		for( int i = 0; i < 256; i++ ){
 			if( FSGETBYTE( fs ) != 0 ){
 				fs.seekg( secinfo.data, std::ios_base::beg );
 				break;
@@ -160,8 +160,8 @@ void cD88::ReadSector88( void )
 	PRINTD( D88_LOG, " R      : %d\n", secinfo.r )
 	PRINTD( D88_LOG, " N      : %d\n", secinfo.n )
 	PRINTD( D88_LOG, " SectNum: %d/%d\n", secinfo.secno, secinfo.sec_nr )
-	PRINTD( D88_LOG, " Density: %s\n", secinfo.density&0x40 ? "S" : "D" )
-	PRINTD( D88_LOG, " Del    : %s\n", secinfo.deleted&0x10 ? "DELETED" : "NORMAL" )
+	PRINTD( D88_LOG, " Density: %s\n", secinfo.density & 0x40 ? "S" : "D" )
+	PRINTD( D88_LOG, " Del    : %s\n", secinfo.deleted & 0x10 ? "DELETED" : "NORMAL" )
 	PRINTD( D88_LOG, " Stat   : %02X\n", secinfo.status )
 	PRINTD( D88_LOG, " Size   : %d\n", secinfo.size )
 	PRINTD( D88_LOG, " Offset : %d\n", (int)secinfo.data )

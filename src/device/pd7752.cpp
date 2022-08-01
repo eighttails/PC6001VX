@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 /* $Id:	d7752.c,v 1.3 2004/02/25 12:25:58 cisc Exp $ */
 
@@ -76,7 +76,7 @@ const int cD7752::iir2[64]	= {
 /////////////////////////////////////////////////////////////////////////////
 cD7752::cD7752( void ) : PitchCount( 0 ), FrameSize( 0 )
 {
-	for( int i=0; i < COUNTOF(Y); i++ ){
+	for( int i = 0; i < COUNTOF(Y); i++ ){
 		INITARRAY( Y[i], 0 );
 	}
 }
@@ -120,7 +120,7 @@ int	cD7752::Start( int mode )
 	// パラメータ変数の初期化
 	FrameSize =	frame_size[mode	& 7];
 	
-	for( int i=0; i<5; i++ ){
+	for( int i = 0; i < 5; i++ ){
 		Y[i][0]	  =	0;
 		Y[i][1]	  =	0;
 		Coef.f[i] =	I2F( f_default[i] );
@@ -166,7 +166,7 @@ int	cD7752::Synth( BYTE* param, std::queue<D7752_SAMPLE>& frame )
 	// まず、パラメータを係数に展開する
 	qmag = (param[0] & 4) != 0 ? 1 : 0;
 	
-	for( int i=0; i<5; i++ ){
+	for( int i = 0; i < 5; i++ ){
 		int	f =	(param[i+1]	>> 3) &	31;
 		if(	f &	16 ) f -= 32;
 		next.f[i] =	curr->f[i] + I2F( f	<< qmag	);
@@ -185,7 +185,7 @@ int	cD7752::Synth( BYTE* param, std::queue<D7752_SAMPLE>& frame )
 	// 線形補完用の増分値の計算
 	incr.amp   = ( next.amp	  -	curr->amp )	  /	FrameSize;
 	incr.pitch = ( next.pitch -	curr->pitch	) /	FrameSize;
-	for( int i=0; i<5; i++ ){
+	for( int i = 0; i < 5; i++ ){
 		incr.b[i] =	( next.b[i]	- curr->b[i] ) / FrameSize;
 		incr.f[i] =	( next.f[i]	- curr->f[i] ) / FrameSize;
 	}
@@ -195,7 +195,7 @@ int	cD7752::Synth( BYTE* param, std::queue<D7752_SAMPLE>& frame )
 	vu |= param[6] & 4 ? 3 : 0;
 	
 	// 合成する
-	for( int i=0; i<FrameSize; i++ ){
+	for( int i = 0; i < FrameSize; i++ ){
 		int	y =	0;
 		
 		// インパルス発生
@@ -211,7 +211,7 @@ int	cD7752::Synth( BYTE* param, std::queue<D7752_SAMPLE>& frame )
 			if(	rand() & 1 ) y += amp_table[F2I(curr->amp)]	* 4	- 1;	 //	XXX	ノイズ詳細不明
 		
 		// 謎のディジタルフィルタ
-		for( int j=0; j<5; j++ ){
+		for( int j = 0; j < 5; j++ ){
 			int	t;
 			t  = Y[j][0] * iir1[ F2I( curr->f[j] ) & 0x7f		  ]	/ 8192;
 			y += t		 * iir1[(F2I( curr->b[j] ) * 2 + 1)	& 0x7f]	/ 8192;
@@ -229,7 +229,7 @@ int	cD7752::Synth( BYTE* param, std::queue<D7752_SAMPLE>& frame )
 		// パラメータを増分
 		curr->amp	+= incr.amp;
 		curr->pitch	+= incr.pitch;
-		for( int j=0; j<5; j++ ){
+		for( int j = 0; j < 5; j++ ){
 			curr->b[j] += incr.b[j];
 			curr->f[j] += incr.f[j];
 		}

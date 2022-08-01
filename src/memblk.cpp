@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <fstream>
 
@@ -163,14 +163,18 @@ bool MemCells::SetData( const P6VPATH& filepath )
 	try{
 		// ファイルサイズに合わせてメモリセル再設定(端数考慮&2のべき乗)
 		size_t szc = ((OSD_GetFileSize( filepath ) + MemCell::PAGEMASK) >> MemCell::PAGEBITS);
-		if( szc == 0 ){ throw Error::NoRom; }
+		if( szc == 0 ){
+			throw Error::NoRom;
+		}
 		
 		size_t szn = 1;
 		while( szn < szc ){ szn <<= 1; }
 		Cells.resize( szn );
 		
 		std::fstream fs;
-		if( !OSD_FSopen( fs, filepath, std::ios_base::in|std::ios_base::binary ) ){ throw Error::NoRom; }
+		if( !OSD_FSopen( fs, filepath, std::ios_base::in | std::ios_base::binary ) ){
+			throw Error::NoRom;
+		}
 		
 		for( auto &mc : Cells ){
 			mc.SetData( fs );
@@ -205,10 +209,10 @@ size_t MemCells::Size( void ) const
 // 引数:	addr	アドレス
 // 返値:	BYTE	データ
 /////////////////////////////////////////////////////////////////////////////
-BYTE MemCells::Read( WORD addr ) const
+BYTE MemCells::Read( DWORD addr ) const
 {
 	try{
-		return Cells.at( (addr >> MemCell::PAGEBITS) & (Cells.size() - 1) ).Read( addr );
+		return Cells.at( (addr >> MemCell::PAGEBITS) & (Cells.size() - 1) ).Read( addr & 0xffff );
 	}
 	catch( std::out_of_range& ){}
 	
@@ -223,10 +227,10 @@ BYTE MemCells::Read( WORD addr ) const
 //			data	データ
 // 返値:	なし
 /////////////////////////////////////////////////////////////////////////////
-void MemCells::Write( WORD addr, BYTE data )
+void MemCells::Write( DWORD addr, BYTE data )
 {
 	try{
-		Cells.at( (addr >> MemCell::PAGEBITS) & (Cells.size() - 1) ).Write( addr, data );
+		Cells.at( (addr >> MemCell::PAGEBITS) & (Cells.size() - 1) ).Write( addr & 0xffff, data );
 	}
 	catch( std::out_of_range& ){}
 }

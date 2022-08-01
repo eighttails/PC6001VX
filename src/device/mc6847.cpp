@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "log.h"
 #include "mc6847.h"
@@ -234,9 +234,9 @@ PCZ80_12::~PCZ80_12( void ){}
 /////////////////////////////////////////////////////////////////////////////
 BYTE MC6847core::GetSemi4( BYTE data ) const
 {
-	BYTE bdat = (data<<(4+(RowCntA/6)*2)&0x80) | (data<<(1+(RowCntA/6)*2)&0x08);
-	bdat |= bdat>>1;
-	bdat |= bdat>>2;
+	BYTE bdat = (data << (4 + (RowCntA / 6) * 2) & 0x80) | (data << (1 + (RowCntA / 6) * 2) & 0x08);
+	bdat |= bdat >> 1;
+	bdat |= bdat >> 2;
 	return bdat;
 }
 
@@ -246,13 +246,13 @@ BYTE MC6847core::GetSemi4( BYTE data ) const
 /////////////////////////////////////////////////////////////////////////////
 BYTE MC6847core::GetSemi6( BYTE data ) const
 {
-	BYTE bdat = ((data<<(2+(RowCntA/4)*2))&0x80) | (((data<<(3+(RowCntA/4)*2))>>4)&0x08);
-	return bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
+	BYTE bdat = ((data << (2 + (RowCntA / 4) * 2)) & 0x80) | (((data << (3 + (RowCntA / 4) * 2)) >> 4) & 0x08);
+	return bdat | (bdat >> 1) | (bdat >> 2) | (bdat >> 3);
 }
 
 BYTE PCZ80_07::GetSemi6( BYTE data ) const
 {
-	return GetFont1( 0x1000 + (data&0x3f)*16 + RowCntA );	// セミグラフォントは 1000H-13FFH
+	return GetFont1( 0x1000 + (data & 0x3f) * 16 + RowCntA );	// セミグラフォントは 1000H-13FFH
 }
 
 BYTE PCZ80_12::GetSemi6( BYTE data ) const
@@ -266,8 +266,8 @@ BYTE PCZ80_12::GetSemi6( BYTE data ) const
 /////////////////////////////////////////////////////////////////////////////
 BYTE PCZ80_12::GetSemi8( BYTE data ) const
 {
-	BYTE bdat = ((data<<(RowCntA&0xe))&0x80) | (((data<<(RowCntA&0xe))>>3)&0x08);
-	return bdat | (bdat>>1) | (bdat>>2) | (bdat>>3);
+	BYTE bdat = ((data << (RowCntA & 0xe)) & 0x80) | (((data << (RowCntA & 0xe)) >> 3) & 0x08);
+	return bdat | (bdat >> 1) | (bdat >> 2) | (bdat >> 3);
 }
 
 
@@ -366,9 +366,9 @@ void MC6847core::SetCss( BYTE data )
 {
 	PRINTD( VDG_LOG, "[VDG][SetCss] -> %02X : ", data );
 	
-	Css1 =  data    &1;
-	Css2 = (data>>1)&1;
-	Css3 = (data>>2)&1;
+	Css1 =  data       & 1;
+	Css2 = (data >> 1) & 1;
+	Css3 = (data >> 2) & 1;
 	
 	PRINTD( VDG_LOG, "1:%d 2:%d 3:%d\n", Css1, Css2, Css3 );
 }
@@ -381,9 +381,9 @@ void MC6847core::SetCrtControler( BYTE data )
 {
 	PRINTD( VDG_LOG, "[VDG][62][SetCrtControler] -> %02X\n", data );
 	
-	N60Win    = data&2 ? true : false;	// ウィンドウサイズ		true:N60		false:N60m
-	CharMode  = data&4 ? true : false;	// 表示モード			true:キャラクタ	false:グラフィック
-	GraphMode = data&8 ? true : false;	// グラフィック解像度	true:160*200	false:320*200
+	N60Win    = data & 2 ? true : false;	// ウィンドウサイズ		true:N60		false:N60m
+	CharMode  = data & 4 ? true : false;	// 表示モード			true:キャラクタ	false:グラフィック
+	GraphMode = data & 8 ? true : false;	// グラフィック解像度	true:160*200	false:320*200
 	
 	PRINTD( VDG_LOG, " DATA      :%02X\n", data );
 	PRINTD( VDG_LOG, " N60Win    :%s\n", N60Win    ? "N60"  : "N60m" );
@@ -398,10 +398,10 @@ void PCZ80_12::SetCrtControler( BYTE data )
 	if( SRmode ){	// SRモード
 		PRINTD( VDG_LOG, "[SRmode] -> %02X\n", data );
 		
-		SRLine204   = data&1 ? false : true;	// グラフィックライン数	true:204ライン	false:200ライン
-		SRCharWidth = data&2 ? true : false;	// テキスト文字数		true:40文字		false:80文字
-		CharMode    = data&4 ? true : false;	// テキスト表示モード	true:キャラクタ	false:グラフィック
-		GraphMode   = data&8 ? true : false;	// グラフィック解像度	true:320*200	false:640*200
+		SRLine204   = data & 1 ? false : true;	// グラフィックライン数	true:204ライン	false:200ライン
+		SRCharWidth = data & 2 ? true : false;	// テキスト文字数		true:40文字		false:80文字
+		CharMode    = data & 4 ? true : false;	// テキスト表示モード	true:キャラクタ	false:グラフィック
+		GraphMode   = data & 8 ? true : false;	// グラフィック解像度	true:320*200	false:640*200
 		
 		PRINTD( VDG_LOG, " Lines       :%d\n", SRLine204   ? 204    : 200 );
 		PRINTD( VDG_LOG, " SRTextWidth :%d\n", SRCharWidth ? 40     : 80 );
@@ -410,9 +410,9 @@ void PCZ80_12::SetCrtControler( BYTE data )
 	}else{			// 旧モード
 		PRINTD( VDG_LOG, "[66mode] -> %02X\n", data );
 		
-		N60Win    = data&2 ? true : false;	// ウィンドウサイズ		true:N60		false:N60m
-		CharMode  = data&4 ? true : false;	// テキスト表示モード	true:キャラクタ	false:グラフィック
-		GraphMode = data&8 ? true : false;	// グラフィック解像度	true:160*200	false:320*200
+		N60Win    = data & 2 ? true : false;	// ウィンドウサイズ		true:N60		false:N60m
+		CharMode  = data & 4 ? true : false;	// テキスト表示モード	true:キャラクタ	false:グラフィック
+		GraphMode = data & 8 ? true : false;	// グラフィック解像度	true:160*200	false:320*200
 		
 		PRINTD( VDG_LOG, " N60Win    :%s\n", N60Win    ? "N60"  : "N60m" );
 		PRINTD( VDG_LOG, " CharMode  :%s\n", CharMode  ? "Char" : "Graph" );
@@ -428,11 +428,11 @@ void PCZ80_12::SetCrtCtrlType( BYTE data )
 {
 	PRINTD( VDG_LOG, "[VDG][64][SetCrtCtrlType] -> %02X\n", data );
 	
-	SRmode     = data&0x01 ? false : true;	// SRモードフラグ 		true:SR-BASIC	false:旧BASIC
-	SRBusReq   = data&0x02 ? false : true;	// バスリクエスト		true:ON			false:OFF
-	SRCharLine = data&0x04 ? true  : false;	// SRテキスト行数		true:20行		false:25行
-	SRBitmap   = data&0x08 ? false : true;	// SRビットマップフラグ	true:有効		false:無効
-	SRBMPage   = data&0x10 ? true  : false;	// SRビットマップページ	true:上位32KB	false:下位32KB
+	SRmode     = data & 0x01 ? false : true;	// SRモードフラグ 		true:SR-BASIC	false:旧BASIC
+	SRBusReq   = data & 0x02 ? false : true;	// バスリクエスト		true:ON			false:OFF
+	SRCharLine = data & 0x04 ? true  : false;	// SRテキスト行数		true:20行		false:25行
+	SRBitmap   = data & 0x08 ? false : true;	// SRビットマップフラグ	true:有効		false:無効
+	SRBMPage   = data & 0x10 ? true  : false;	// SRビットマップページ	true:上位32KB	false:下位32KB
 	
 	PRINTD( VDG_LOG, " BasicMode    :%s\n",   SRmode     ? "SR"     : "66" );
 	PRINTD( VDG_LOG, " SRBusReqest  :%s\n",   SRBusReq   ? "ON"     : "OFF" );
@@ -469,15 +469,15 @@ void MC6847::UpdateBackBuf( void )
 	
 	// 上側ボーダ描画
 	bcol = GetBcol();
-	for( int i=0; i<tbline; i++ ) *doff++ = bcol;
+	for( int i = 0; i < tbline; i++ ) *doff++ = bcol;
 	
 	// 表示エリア描画
-	for( int i=0; i<P60H; i++ ) Draw1line1( i );
+	for( int i = 0; i < P60H; i++ ) Draw1line1( i );
 	
 	// 下側ボーダ描画
 	doff += P60H * pt;
 	bcol = GetBcol();
-	for( int i=0; i<bbline; i++ ) *doff++ = bcol;
+	for( int i = 0; i < bbline; i++ ) *doff++ = bcol;
 }
 
 void PCZ80_07::UpdateBackBuf( void )
@@ -502,29 +502,29 @@ void PCZ80_07::UpdateBackBuf( void )
 		const int bbline = BB60 * pt;
 		
 		// 上側ボーダ描画
-		for( int i=0; i<tbline; i++ ) *doff++ = bcol;
+		for( int i = 0; i < tbline; i++ ) *doff++ = bcol;
 		
 		// 表示エリア描画
-		for( int i=0; i<P60H; i++ ) Draw1line1( i );
+		for( int i = 0; i < P60H; i++ ) Draw1line1( i );
 		
 		// 下側ボーダ描画
 		doff += P60H * pt;
 		bcol = GetBcol();
-		for( int i=0; i<bbline; i++ ) *doff++ = bcol;
+		for( int i = 0; i < bbline; i++ ) *doff++ = bcol;
 	}else{			// N60m
 		const int tbline = TB62 * pt;
 		const int bbline = BB62 * pt;
 		
 		// 上側ボーダ描画
-		for( int i=0; i<tbline; i++ ) *doff++ = bcol;
+		for( int i = 0; i < tbline; i++ ) *doff++ = bcol;
 		
 		// 表示エリア描画
-		for( int i=0; i<P62H; i++ ) Draw1line2( i );
+		for( int i = 0; i < P62H; i++ ) Draw1line2( i );
 		
 		// 下側ボーダ描画
 		doff += P62H * pt;
 		bcol = GetBcol();
-		for( int i=0; i<bbline; i++ ) *doff++ = bcol;
+		for( int i = 0; i < bbline; i++ ) *doff++ = bcol;
 	}
 }
 
@@ -550,44 +550,44 @@ void PCZ80_12::UpdateBackBuf( void )
 		const int bbline = BB64 * pt;
 		
 		// 上側ボーダ描画
-		for( int i=0; i<tbline; i++ ) *doff++ = bcol;
+		for( int i = 0; i < tbline; i++ ) *doff++ = bcol;
 		
 		// 表示エリア描画
-		for( int i=0; i<P64H; i++ ) Draw1line3( i );
+		for( int i = 0; i < P64H; i++ ) Draw1line3( i );
 		
 		// 下側ボーダ描画
 		doff += P64H * pt;
 		bcol = GetBcol();
-		for( int i=0; i<bbline; i++ ) *doff++ = bcol;
+		for( int i = 0; i < bbline; i++ ) *doff++ = bcol;
 	}else{			// 旧モード
 		if( N60Win ){	// N60
 			const int tbline  = TB60 * pt;
 			const int bbline  = BB60 * pt;
 			
 			// 上側ボーダ描画
-			for( int i=0; i<tbline; i++ ) *doff++ = bcol;
+			for( int i = 0; i < tbline; i++ ) *doff++ = bcol;
 			
 			// 表示エリア描画
-			for( int i=0; i<P60H; i++ ) Draw1line1( i );
+			for( int i = 0; i < P60H; i++ ) Draw1line1( i );
 			
 			// 下側ボーダ描画
 			doff += P60H * pt;
 			bcol = GetBcol();
-			for( int i=0; i<bbline; i++ ) *doff++ = bcol;
+			for( int i = 0; i < bbline; i++ ) *doff++ = bcol;
 		}else{			// N60m
 			const int tbline  = TB62 * pt;
 			const int bbline  = BB62 * pt;
 			
 			// 上側ボーダ描画
-			for( int i=0; i<tbline; i++ ) *doff++ = bcol;
+			for( int i = 0; i < tbline; i++ ) *doff++ = bcol;
 			
 			// 表示エリア描画
-			for( int i=0; i<P62H; i++ ) Draw1line2( i );
+			for( int i = 0; i < P62H; i++ ) Draw1line2( i );
 			
 			// 下側ボーダ描画
 			doff += P62H * pt;
 			bcol = GetBcol();
-			for( int i=0; i<bbline; i++ ) *doff++ = bcol;
+			for( int i = 0; i < bbline; i++ ) *doff++ = bcol;
 		}
 	}
 }
@@ -603,23 +603,23 @@ void MC6847::Draw1line1( int line )
 {
 	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line ); }
 	
-	BYTE data=0xff, prevdata=0, nextdata=0, bdat=0;
-	BYTE LAT_AG=0, LAT_GM=0;
+	BYTE data = 0xff, prevdata = 0, nextdata = 0, bdat = 0;
+	BYTE LAT_AG = 0, LAT_GM = 0;
 	
 	#if INBPP == 8	// 8bit
-	BYTE wdat, fg=0, bg=0;
+	BYTE wdat, fg = 0, bg = 0;
 	BYTE* doff  = (BYTE*)GetBufAddr().data()  + ( TB60 + line ) * GetBufPitch();
 	#else			// 32bit
-	DWORD wdat, fg=0, bg=0;
+	DWORD wdat, fg = 0, bg = 0;
 	DWORD* doff = (DWORD*)GetBufAddr().data() + ( TB60 + line ) * GetBufPitch() / sizeof(DWORD);
 	#endif
 	
 	// 左側ボーダー描画
 	wdat = GetBcol();
-	for( int i=0; i<LB60; i++ ) *doff++ = wdat;
+	for( int i = 0; i < LB60; i++ ) *doff++ = wdat;
 	
 	// 表示エリア描画
-	for( int x=0; x<( P60W / 8 ); x++ ){
+	for( int x = 0; x < ( P60W / 8 ); x++ ){
 		if( !CrtDisp ){
 			data = AT_AG ? rand() : 0;	// ホント？ 後でどうにかする
 		}else{
@@ -629,7 +629,7 @@ void MC6847::Draw1line1( int line )
 			data = GetVram();
 			HAddr++;
 			// 1バイト後のデータ(色にじみ算出に使用)
-			nextdata = ( x < (P60W/8-1) ) ? GetVram() : 0xff;
+			nextdata = ( x < (P60W / 8 - 1) ) ? GetVram() : 0xff;
 			LAT_AG |= AT_AG;				// とりあえず
 			if( x == 2 ) LAT_GM = AT_GM;	// とりあえず
 			
@@ -645,13 +645,13 @@ void MC6847::Draw1line1( int line )
 		if( AT_AG ){	// グラフィック
 			switch( AT_GM ){
 			case GM_CG1:	//  64x 64 カラー   (CG1)
-				for( int i=3; i>=0; i-- ){
+				for( int i = 3; i >= 0; i-- ){
 					#if INBPP == 8	// 8bit
-					wdat = COL_CG[AT_CSS][(data>>(i*2))&3];
+					wdat = COL_CG[AT_CSS][(data >> (i * 2)) & 3];
 					#else			// 32bit
-					wdat = VSurface::GetColor( COL_CG[AT_CSS][(data>>(i*2))&3] );
+					wdat = VSurface::GetColor( COL_CG[AT_CSS][(data >> (i * 2)) & 3] );
 					#endif
-					for( int j=0; j<4; j++ ) *doff++ = wdat;
+					for( int j = 0; j < 4; j++ ) *doff++ = wdat;
 				}
 				x++;
 				break;
@@ -659,11 +659,11 @@ void MC6847::Draw1line1( int line )
 			case GM_CG2:	// 128x 64 カラー   (CG2)
 			case GM_CG3:	// 128x 96 カラー   (CG3)
 			case GM_CG6:	// 128x192 カラー   (CG6)
-				for( int i=6; i>=0; i-=2 ){
+				for( int i = 6; i >= 0; i -= 2 ){
 					#if INBPP == 8	// 8bit
-					wdat = COL_CG[AT_CSS][(data>>i)&3];
+					wdat = COL_CG[AT_CSS][(data >> i) & 3];
 					#else			// 32bit
-					wdat = VSurface::GetColor( COL_CG[AT_CSS][(data>>i)&3] );
+					wdat = VSurface::GetColor( COL_CG[AT_CSS][(data >> i) & 3] );
 					#endif
 					*doff++ = wdat;
 					*doff++ = wdat;
@@ -673,11 +673,11 @@ void MC6847::Draw1line1( int line )
 			case GM_RG1:	// 128x 64 モノクロ (RG1)
 			case GM_RG2:	// 128x 96 モノクロ (RG2)
 			case GM_RG3:	// 128x192 モノクロ (RG3)
-				for( int i=7; i>=0; i-- ){
+				for( int i = 7; i >= 0; i-- ){
 					#if INBPP == 8	// 8bit
-					wdat = COL_RG[AT_CSS][(data>>i)&1];
+					wdat = COL_RG[AT_CSS][(data >> i) & 1];
 					#else			// 32bit
-					wdat = VSurface::GetColor( COL_RG[AT_CSS][(data>>i)&1] );
+					wdat = VSurface::GetColor( COL_RG[AT_CSS][(data >> i) & 1] );
 					#endif
 					*doff++ = wdat;
 					*doff++ = wdat;
@@ -688,9 +688,9 @@ void MC6847::Draw1line1( int line )
 			case GM_RG6:	// 256x192 モノクロ (RG6)
 				if( Mode4Col ){	// 128x192 カラー(にじみ)
 					// VRAM上の連続した3バイト
-					DWORD data3 = prevdata << 16 | data << 8 | nextdata;
-					int CsC = AT_CSS + Mode4Col*2;
-					for( int i=6; i>=0; i-=2 ){
+					DWORD data3 = (prevdata << 16) | (data << 8) | nextdata;
+					int CsC = AT_CSS + Mode4Col * 2;
+					for( int i = 6; i >= 0; i -= 2 ){
 						// にじみテーブル上のインデックス
 						DWORD nijimiIdx = (data3 & (0x0000003f << (i + 6))) >> (i + 6);
 						#if INBPP == 8	// 8bit
@@ -702,11 +702,11 @@ void MC6847::Draw1line1( int line )
 						#endif
 					}
 				}else{			// 256x192 モノクロ
-					for( int i=7; i>=0; i-- )
+					for( int i = 7; i >= 0; i-- )
 						#if INBPP == 8	// 8bit
-						*doff++ = COL_RG[AT_CSS][(data>>i)&1];
+						*doff++ = COL_RG[AT_CSS][(data >> i) & 1];
 						#else			// 32bit
-						*doff++ = VSurface::GetColor( COL_RG[AT_CSS][(data>>i)&1] );
+						*doff++ = VSurface::GetColor( COL_RG[AT_CSS][(data >> i) & 1] );
 						#endif
 				}
 			}
@@ -715,32 +715,32 @@ void MC6847::Draw1line1( int line )
 			switch( ANMODE ){
 			case AM_AN0:		// アルファニューメリック(内部フォント)
 				#if INBPP == 8	// 8bit
-				fg   = COL_AN[(AT_CSS<<1) |   AT_INV];
-				bg   = COL_AN[(AT_CSS<<1) | (~AT_INV&1)];
+				fg   = COL_AN[(AT_CSS << 1) |   AT_INV];
+				bg   = COL_AN[(AT_CSS << 1) | (~AT_INV & 1)];
 				#else			// 32bit
-				fg   = VSurface::GetColor( COL_AN[(AT_CSS<<1) |   AT_INV] );
-				bg   = VSurface::GetColor( COL_AN[(AT_CSS<<1) | (~AT_INV&1)] );
+				fg   = VSurface::GetColor( COL_AN[(AT_CSS << 1) |   AT_INV] );
+				bg   = VSurface::GetColor( COL_AN[(AT_CSS << 1) | (~AT_INV & 1)] );
 				#endif
-				bdat = VDGfont[ (data&0x3f)*16 + RowCntA ];
+				bdat = VDGfont[ (data & 0x3f) * 16 + RowCntA ];
 				break;
 				
 			case AM_AN1:		// アルファニューメリック(外部フォント)
 				#if INBPP == 8	// 8bit
-				fg   = COL_AN[(AT_CSS<<1) |   AT_INV];
-				bg   = COL_AN[(AT_CSS<<1) | (~AT_INV&1)];
+				fg   = COL_AN[(AT_CSS << 1) |   AT_INV];
+				bg   = COL_AN[(AT_CSS << 1) | (~AT_INV & 1)];
 				#else			// 32bit
-				fg   = VSurface::GetColor( COL_AN[(AT_CSS<<1) |   AT_INV] );
-				bg   = VSurface::GetColor( COL_AN[(AT_CSS<<1) | (~AT_INV&1)] );
+				fg   = VSurface::GetColor( COL_AN[(AT_CSS << 1) |   AT_INV] );
+				bg   = VSurface::GetColor( COL_AN[(AT_CSS << 1) | (~AT_INV & 1)] );
 				#endif
-				bdat = GetFont1( data*16 + RowCntA );
+				bdat = GetFont1( data * 16 + RowCntA );
 				break;
 				
 			case AM_SG4:		// セミグラフィック4
 				#if INBPP == 8	// 8bit
-				fg   = COL_SG[(data>>4)&7];
+				fg   = COL_SG[(data >> 4) & 7];
 				bg   = COL_SG[8];
 				#else			// 32bit
-				fg   = VSurface::GetColor( COL_SG[(data>>4)&7] );
+				fg   = VSurface::GetColor( COL_SG[(data >> 4) & 7] );
 				bg   = VSurface::GetColor( COL_SG[8] );
 				#endif
 				bdat = GetSemi4( data );
@@ -748,16 +748,16 @@ void MC6847::Draw1line1( int line )
 				
 			case AM_SG6:		// セミグラフィック6
 				#if INBPP == 8	// 8bit
-				fg   = COL_SG[(AT_CSS<<2) | ((data>>6)&3)];
+				fg   = COL_SG[(AT_CSS << 2) | ((data >> 6) & 3)];
 				bg   = COL_SG[8];
 				#else			// 32bit
-				fg   = VSurface::GetColor( COL_SG[(AT_CSS<<2) | ((data>>6)&3)] );
+				fg   = VSurface::GetColor( COL_SG[(AT_CSS << 2) | ((data >> 6) & 3)] );
 				bg   = VSurface::GetColor( COL_SG[8] );
 				#endif
 				bdat = GetSemi6( data );
 			}
-			for( int i=7; i>=0; i-- )
-				*doff++ = (bdat>>i)&1 ? fg : bg;
+			for( int i = 7; i >= 0; i-- )
+				*doff++ = (bdat >> i) & 1 ? fg : bg;
 		};
 	}
 	
@@ -799,30 +799,30 @@ void MC6847::Draw1line1( int line )
 	
 	// 右側ボーダー描画
 	wdat = GetBcol();
-	for( int i=0; i<RB60; i++ ) *doff++ = wdat;
+	for( int i = 0; i < RB60; i++ ) *doff++ = wdat;
 }
 
 void PCZ80_07::Draw1line1( int line )
 {
 	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line1] %d\n", line ) };
 	
-	BYTE data=0, prevdata=0, nextdata=0, bdat=0;
-	BYTE LAT_AG=0;
+	BYTE data = 0, prevdata = 0, nextdata = 0, bdat = 0;
+	BYTE LAT_AG = 0;
 	
 	#if INBPP == 8	// 8bit
-	BYTE wdat, fg=0, bg=0;
+	BYTE wdat, fg = 0, bg = 0;
 	BYTE* doff  = (BYTE*)GetBufAddr().data()  + ( TB60 + line ) * GetBufPitch();
 	#else			// 32bit
-	DWORD wdat, fg=0, bg=0;
+	DWORD wdat, fg = 0, bg = 0;
 	DWORD* doff = (DWORD*)GetBufAddr().data() + ( TB60 + line ) * GetBufPitch() / sizeof(DWORD);
 	#endif
 	
 	// 左側ボーダー描画
 	wdat = GetBcol();
-	for( int i=0; i<LB60; i++ ) *doff++ = wdat;
+	for( int i = 0; i < LB60; i++ ) *doff++ = wdat;
 	
 	// 表示エリア描画
-	for( int x=0; x<( P60W / 8 ); x++ ){
+	for( int x = 0; x < ( P60W / 8 ); x++ ){
 		if( !CrtDisp ){
 			data = 0;	// ホント？RGB出力とビデオ出力で異なるはず
 		}else{
@@ -832,7 +832,7 @@ void PCZ80_07::Draw1line1( int line )
 			data = GetVram();
 			HAddr++;
 			// 1バイト後のデータ(色にじみ算出に使用)
-			nextdata = ( x < (P60W/8-1) ) ? GetVram() : 0;
+			nextdata = ( x < (P60W / 8 - 1) ) ? GetVram() : 0;
 			LAT_AG |= AT_AG;				// とりあえず
 		}
 		
@@ -842,11 +842,11 @@ void PCZ80_07::Draw1line1( int line )
 			case GM_CG2:	// 128x 64 カラー   (CG2)(無効)
 			case GM_CG3:	// 128x 96 カラー   (CG3)(無効)
 			case GM_CG6:	// 128x192 カラー   (CG6)
-				for( int i=6; i>=0; i-=2 ){
+				for( int i = 6; i >= 0; i -= 2 ){
 					#if INBPP == 8	// 8bit
-					wdat = COL_CG[AT_CSS][(data>>i)&3];
+					wdat = COL_CG[AT_CSS][(data >> i) & 3];
 					#else			// 32bit
-					wdat = VSurface::GetColor( COL_CG[AT_CSS][(data>>i)&3] );
+					wdat = VSurface::GetColor( COL_CG[AT_CSS][(data >> i) & 3] );
 					#endif
 					*doff++ = wdat;
 					*doff++ = wdat;
@@ -859,9 +859,9 @@ void PCZ80_07::Draw1line1( int line )
 			case GM_RG6:	// 256x192 モノクロ (RG6)
 				if( Mode4Col ){	// 128x192 カラー(にじみ)
 					// VRAM上の連続した3バイト
-					DWORD data3 = prevdata << 16 | data << 8 | nextdata;
-					int CsC = AT_CSS + Mode4Col*2;
-					for( int i=6; i>=0; i-=2 ){
+					DWORD data3 = (prevdata << 16) | (data << 8) | nextdata;
+					int CsC = AT_CSS + Mode4Col * 2;
+					for( int i = 6; i >= 0; i -= 2 ){
 						// にじみテーブル上のインデックス
 						DWORD nijimiIdx = (data3 & (0x0000003f << (i + 6))) >> (i + 6);
 						#if INBPP == 8	// 8bit
@@ -873,11 +873,11 @@ void PCZ80_07::Draw1line1( int line )
 						#endif
 					}
 				}else{			// 256x192 モノクロ
-					for( int i=7; i>=0; i-- )
+					for( int i = 7; i >= 0; i-- )
 						#if INBPP == 8	// 8bit
-						*doff++ = COL_RG[AT_CSS][(data>>i)&1];
+						*doff++ = COL_RG[AT_CSS][(data >> i) & 1];
 						#else			// 32bit
-						*doff++ = VSurface::GetColor( COL_RG[AT_CSS][(data>>i)&1] );
+						*doff++ = VSurface::GetColor( COL_RG[AT_CSS][(data >> i) & 1] );
 						#endif
 				}
 			}
@@ -886,28 +886,28 @@ void PCZ80_07::Draw1line1( int line )
 			case AM_AN0:		// アルファニューメリック(内部フォント)(無効)
 			case AM_AN1:		// アルファニューメリック(外部フォント)
 				#if INBPP == 8	// 8bit
-				fg   = COL_AN[(AT_CSS<<1) |   AT_INV];
-				bg   = COL_AN[(AT_CSS<<1) | (~AT_INV&1)];
+				fg   = COL_AN[(AT_CSS << 1) |   AT_INV];
+				bg   = COL_AN[(AT_CSS << 1) | (~AT_INV & 1)];
 				#else			// 32bit
-				fg   = VSurface::GetColor( COL_AN[(AT_CSS<<1) |   AT_INV] );
-				bg   = VSurface::GetColor( COL_AN[(AT_CSS<<1) | (~AT_INV&1)] );
+				fg   = VSurface::GetColor( COL_AN[(AT_CSS << 1) |   AT_INV] );
+				bg   = VSurface::GetColor( COL_AN[(AT_CSS << 1) | (~AT_INV & 1)] );
 				#endif
-				bdat = GetFont1( data*16 + RowCntA );
+				bdat = GetFont1( data * 16 + RowCntA );
 				break;
 				
 			case AM_SG4:		// セミグラフィック4(無効)
 			case AM_SG6:		// セミグラフィック6
 				#if INBPP == 8	// 8bit
-				fg   = COL_SG[(AT_CSS<<2) | ((data>>6)&3)];
+				fg   = COL_SG[(AT_CSS << 2) | ((data >> 6) & 3)];
 				bg   = COL_SG[8];
 				#else			// 32bit
-				fg   = VSurface::GetColor( COL_SG[(AT_CSS<<2) | ((data>>6)&3)] );
+				fg   = VSurface::GetColor( COL_SG[(AT_CSS << 2) | ((data >> 6) & 3)] );
 				bg   = VSurface::GetColor( COL_SG[8] );
 				#endif
 				bdat = GetSemi6( data );
 			}
-			for( int i=7; i>=0; i-- )
-				*doff++ = (bdat>>i)&1 ? fg : bg;
+			for( int i = 7; i >= 0; i-- )
+				*doff++ = (bdat >> i) & 1 ? fg : bg;
 		};
 	}
 	
@@ -929,7 +929,7 @@ void PCZ80_07::Draw1line1( int line )
 	
 	// 右側ボーダー描画
 	wdat = GetBcol();
-	for( int i=0; i<RB60; i++ ) *doff++ = wdat;
+	for( int i = 0; i < RB60; i++ ) *doff++ = wdat;
 }
 
 
@@ -955,10 +955,10 @@ void PCZ80_07::Draw1line2( int line )
 	
 	// 左側ボーダー描画
 	wdat = GetBcol();
-	for( int i=0; i<LB62; i++ ) *doff++ = wdat;
+	for( int i = 0; i < LB62; i++ ) *doff++ = wdat;
 	
 	// 表示エリア描画
-	for( int x=0; x<( P62W / 8 ); x++){
+	for( int x = 0; x < ( P62W / 8 ); x++){
 		if( !CrtDisp ){
 			attr = 0;	// ホント？
 			data = 0;	// ホント？
@@ -970,33 +970,33 @@ void PCZ80_07::Draw1line2( int line )
 		
 		if( CharMode ){	// キャラクタモード
 			#if INBPP == 8	// 8bit
-			fg   = COL_AN2[attr&0x0f];
-			bg   = COL_AN2[((attr>>4)&0x07)|((Css2&1)<<3)];
+			fg   = COL_AN2[attr & 0x0f];
+			bg   = COL_AN2[((attr >> 4) & 0x07) | ((Css2 & 1) << 3)];
 			#else			// 32bit
-			fg   = VSurface::GetColor( COL_AN2[attr&0x0f] );
-			bg   = VSurface::GetColor( COL_AN2[((attr>>4)&0x07)|((Css2&1)<<3)] );
+			fg   = VSurface::GetColor( COL_AN2[attr & 0x0f] );
+			bg   = VSurface::GetColor( COL_AN2[((attr >> 4) & 0x07) | ((Css2 & 1) << 3)] );
 			#endif
-			bdat = GetFont2( (data+((attr&0x80)?256:0))*16 + RowCntA );
-			for( int i=7; i>=0; i-- )
-				*doff++ = (bdat>>i)&1 ? fg : bg;
+			bdat = GetFont2( (data+((attr & 0x80) ? 256 : 0)) * 16 + RowCntA );
+			for( int i = 7; i >= 0; i-- )
+				*doff++ = (bdat >> i) & 1 ? fg : bg;
 		}else{				// グラフィックモード
 			if( GraphMode ){	// グラフィック モード3
-				for( int i=6; i>=0; i-=2 ){
+				for( int i = 6; i >= 0; i -= 2 ){
 					#if INBPP == 8	// 8bit
-					wdat = COL_CG2[Css3][(((data<<2)>>i)&0x0c)|((attr>>i)&3)];
+					wdat = COL_CG2[Css3][(((data << 2) >> i) & 0x0c) | ((attr >> i) & 3)];
 					#else			// 32bit
-					wdat = VSurface::GetColor( COL_CG2[Css3][(((data<<2)>>i)&0x0c)|((attr>>i)&3)] );
+					wdat = VSurface::GetColor( COL_CG2[Css3][(((data << 2) >> i) & 0x0c) | ((attr >> i) & 3)] );
 					#endif
 					*doff++ = wdat;
 					*doff++ = wdat;
 				}
 			}else{				// グラフィック モード4
-				BYTE c = (Css2<<3)|(Css1<<2);
-				for( int i=7; i>=0; i-- )
+				BYTE c = (Css2 << 3) | (Css1 << 2);
+				for( int i = 7; i >= 0; i-- )
 					#if INBPP == 8	// 8bit
-					*doff++ = COL_CG2[Css3][c|(((data<<1)>>i)&2)|((attr>>i)&1)];
+					*doff++ = COL_CG2[Css3][c | (((data << 1) >> i) & 2) | ((attr >> i) & 1)];
 					#else			// 32bit
-					*doff++ = VSurface::GetColor( COL_CG2[Css3][c|(((data<<1)>>i)&2)|((attr>>i)&1)] );
+					*doff++ = VSurface::GetColor( COL_CG2[Css3][c | (((data << 1) >> i) & 2) | ((attr >> i) & 1)] );
 					#endif
 			}
 		}
@@ -1017,7 +1017,7 @@ void PCZ80_07::Draw1line2( int line )
 	
 	// 右側ボーダー描画
 	wdat = GetBcol();
-	for( int i=0; i<RB62; i++ ) *doff++ = wdat;
+	for( int i = 0; i < RB62; i++ ) *doff++ = wdat;
 }
 
 
@@ -1032,7 +1032,7 @@ void PCZ80_12::Draw1line3( int line )
 	if( !line ){ PRINTD( VDG_LOG, "[VDG][Draw1line3] %d %s\n", line, CharMode ? "Char" : GraphMode ? "Graph2" : "Graph3" ); }
 	
 	BYTE attr, data, bdat;
-	BYTE attr1=0, data1=0, scrl1=0, scrl2=0;
+	BYTE attr1 = 0, data1 = 0, scrl1 = 0, scrl2 = 0;
 	
 	#if INBPP == 8	// 8bit
 	BYTE wdat, fg, bg;
@@ -1046,10 +1046,10 @@ void PCZ80_12::Draw1line3( int line )
 	
 	// 左側ボーダー描画
 	wdat = GetBcol();
-	for( int i=0; i<(LB64*xsc); i++ ) *doff++ = wdat;
+	for( int i = 0; i < (LB64 * xsc); i++ ) *doff++ = wdat;
 	
 	// 表示エリア描画
-	for( int x=0; x<( P64W / 8 * xsc ); x++){
+	for( int x = 0; x < ( P64W / 8 * xsc ); x++){
 		if( CharMode ){	// テキストモード
 			if( !CrtDisp ){
 				attr = 0;	// ホント？
@@ -1062,40 +1062,40 @@ void PCZ80_12::Draw1line3( int line )
 			}
 			
 			#if INBPP == 8	// 8bit
-			fg   = COL_AN2[attr&0x0f];
-			bg   = COL_AN2[((attr>>4)&0x07)|((Css2&1)<<3)];
+			fg   = COL_AN2[attr & 0x0f];
+			bg   = COL_AN2[((attr >> 4) & 0x07) | ((Css2 & 1) << 3)];
 			#else			// 32bit
-			fg   = VSurface::GetColor( COL_AN2[attr&0x0f] );
-			bg   = VSurface::GetColor( COL_AN2[((attr>>4)&0x07)|((Css2&1)<<3)] );
+			fg   = VSurface::GetColor( COL_AN2[attr & 0x0f] );
+			bg   = VSurface::GetColor( COL_AN2[((attr >> 4) & 0x07) | ((Css2 & 1) << 3)] );
 			#endif
-			bdat = SRCharLine  ? GetFont2( (data+((attr&0x80)?256:0))*16 + RowCntA ) :	// 20行
-				   attr & 0x80 ? GetSemi8( data ) :										// 25行 セミグラモード
-								 GetFont3( (data+((attr&0x80)?256:0))*16 + RowCntA );	// 25行 キャラクタモード
+			bdat = SRCharLine  ? GetFont2( (data + ((attr & 0x80) ? 256 : 0)) * 16 + RowCntA ) :	// 20行
+				   attr & 0x80 ? GetSemi8(  data ) :												// 25行 セミグラモード
+								 GetFont3( (data + ((attr & 0x80) ? 256 : 0)) * 16 + RowCntA );		// 25行 キャラクタモード
 			
-			for( int i=7; i>=0; i-- )
-				*doff++ = (bdat>>i)&1 ? fg : bg;
+			for( int i = 7; i >= 0; i-- )
+				*doff++ = (bdat >> i) & 1 ? fg : bg;
 			
 		}else{			// ビットマップモード
 			if( GraphMode ){	// グラフィック モード2
 				BYTE d1;
-				if( (SRRollX&1) && (x == 0) ){
+				if( (SRRollX & 1) && (x == 0) ){
 					data1 = GetVram();
 					HAddr += 2;
 					
-					scrl1 = data1<<4;
+					scrl1 = data1 << 4;
 					data1 >>= 4;
 				}
 				
-				for( int i=0; i<4; i++ ){
+				for( int i = 0; i < 4; i++ ){
 					if( !CrtDisp ){
 						data = 0;	// ホント？
-					}else if( SRRollX&1 ){
+					}else if( SRRollX & 1 ){
 						if( HAddr < 320 ){
 							d1 = GetVram();
 							HAddr += 2;
 							
-							data  = data1 | (d1<<4);
-							data1 = d1>>4;
+							data  = data1 | (d1 << 4);
+							data1 = d1 >> 4;
 						}else{
 							data = data1 | scrl1;
 						}
@@ -1104,38 +1104,38 @@ void PCZ80_12::Draw1line3( int line )
 						HAddr += 2;
 					}
 					#if INBPP == 8	// 8bit
-					*doff++ = COL_CG2[Css3][ data    &0x0f];
-					*doff++ = COL_CG2[Css3][(data>>4)&0x0f];
+					*doff++ = COL_CG2[Css3][ data       & 0x0f];
+					*doff++ = COL_CG2[Css3][(data >> 4) & 0x0f];
 					#else			// 32bit
-					*doff++ = VSurface::GetColor( COL_CG2[Css3][ data    &0x0f] );
-					*doff++ = VSurface::GetColor( COL_CG2[Css3][(data>>4)&0x0f] );
+					*doff++ = VSurface::GetColor( COL_CG2[Css3][ data       & 0x0f] );
+					*doff++ = VSurface::GetColor( COL_CG2[Css3][(data >> 4) & 0x0f] );
 					#endif
 				}
 			}else{				// グラフィック モード3
 				if( !CrtDisp ){
 					attr = 0;	// ホント？
 					data = 0;	// ホント？
-				}else if( SRRollX&3 ){	// スクロールあり
+				}else if( SRRollX & 3 ){	// スクロールあり
 					BYTE d1, d2;
 					if( x == 0 ){
 						data1 = GetVram(); HAddr += 2;
 						attr1 = GetVram(); HAddr += 2;
 						
-						scrl1 = data1 >> (8-((SRRollX&3)<<1));
-						scrl2 = attr1 >> (8-((SRRollX&3)<<1));
+						scrl1 = data1 >> (8 - ((SRRollX & 3) << 1));
+						scrl2 = attr1 >> (8 - ((SRRollX & 3) << 1));
 						
-						data1 <<= ((SRRollX&3)<<1);
-						attr1 <<= ((SRRollX&3)<<1);
+						data1 <<= ((SRRollX & 3) << 1);
+						attr1 <<= ((SRRollX & 3) << 1);
 					}
 					if( HAddr < 320 ){
 						d1 = GetVram(); HAddr += 2;
 						d2 = GetVram(); HAddr += 2;
 						
-						data = data1 | (d1>>(8-((SRRollX&3)<<1)));
-						attr = attr1 | (d2>>(8-((SRRollX&3)<<1)));
+						data = data1 | (d1 >> (8 - ((SRRollX & 3) << 1)));
+						attr = attr1 | (d2 >> (8 - ((SRRollX & 3) << 1)));
 						
-						data1 = d1 << ((SRRollX&3)<<1);
-						attr1 = d2 << ((SRRollX&3)<<1);
+						data1 = d1 << ((SRRollX & 3) << 1);
+						attr1 = d2 << ((SRRollX & 3) << 1);
 					}else{
 						data = data1 | scrl1;
 						attr = attr1 | scrl2;
@@ -1145,11 +1145,11 @@ void PCZ80_12::Draw1line3( int line )
 					attr = GetVram(); HAddr += 2;
 				}
 				
-				for( int i=0; i<8; i++ ){
+				for( int i = 0; i < 8; i++ ){
 					#if INBPP == 8	// 8bit
-					*doff++ =                     COL_CG2[Css3][((Css2&1)<<3)|((Css1&1)<<2)|(((attr>>(7-i))<<1)&2)|((data>>(7-i))&1)];
+					*doff++ =                     COL_CG2[Css3][((Css2 & 1) << 3) | ((Css1 & 1) << 2) | (((attr >> (7 - i)) << 1) & 2) | ((data >> (7 - i)) & 1)];
 					#else			// 32bit
-					*doff++ = VSurface::GetColor( COL_CG2[Css3][((Css2&1)<<3)|((Css1&1)<<2)|(((attr>>(7-i))<<1)&2)|((data>>(7-i))&1)] );
+					*doff++ = VSurface::GetColor( COL_CG2[Css3][((Css2 & 1) << 3) | ((Css1 & 1) << 2) | (((attr >> (7 - i)) << 1) & 2) | ((data >> (7 - i)) & 1)] );
 					#endif
 				}
 			}
@@ -1170,7 +1170,7 @@ void PCZ80_12::Draw1line3( int line )
 	
 	// 右側ボーダー描画
 	wdat = GetBcol();
-	for( int i=0; i<(RB64*xsc); i++ ) *doff++ = wdat;
+	for( int i = 0; i < (RB64 * xsc); i++ ) *doff++ = wdat;
 }
 
 
@@ -1258,8 +1258,8 @@ void PCZ80_12::SetPalette( int col, BYTE dat )
 {
 	PRINTD( VDG_LOG, "[VDG][SetPalette] %d ->%d\n", col, dat );
 	
-	int tpal  =   (col&8) | ((col&4)>>1) | ((col&2)>>1) | ((col&1)<<2);
-	BYTE pdat = ( (dat&8) | ((dat&4)>>1) | ((dat&2)>>1) | ((dat&1)<<2) ) + COL_AN2[0];
+	int tpal  =   (col & 8) | ((col & 4) >> 1) | ((col & 2) >> 1) | ((col & 1) << 2);
+	BYTE pdat = ( (dat & 8) | ((dat & 4) >> 1) | ((dat & 2) >> 1) | ((dat & 1) << 2) ) + COL_AN2[0];
 	
 	COL_AN2[tpal]   = pdat;
 	COL_CG2[0][col] = pdat;

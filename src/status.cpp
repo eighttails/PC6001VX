@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "common.h"
 #include "cpus.h"
@@ -65,7 +65,7 @@ void cWndStat::Update( EL6* el )
 	
 	// 拡張カートリッジ
 	if( ExCart ){
-		std::string str = el->vm->mem->GetExtCartName();
+		std::string str = GetExtCartName( el->vm->mem->GetCartridge() );
 		if( (el->vm->mem->GetCartridge() & (EXCFIX | EXCROM)) == EXCROM && P6VPATH2STR( el->vm->mem->GetFile() ).length() ){
 			str += " (" + OSD_GetFileNamePart( el->vm->mem->GetFile() ) + ")";
 		}
@@ -141,7 +141,7 @@ void cWndStat::Update( EL6* el )
 		ZCons::PrintfR( "◎" );
 		break;
 		
-	case ST_REPLAYPLAY|ST_CAPTUREREC:	// リプレイ再生中＆ビデオキャプチャ中
+	case ST_REPLAYPLAY | ST_CAPTUREREC:	// リプレイ再生中＆ビデオキャプチャ中
 		ZCons::SetColor( FC_RED4 );
 		ZCons::PrintfR( "◆" );
 		break;

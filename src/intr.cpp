@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "pc6001v.h"
 
@@ -432,7 +432,9 @@ void IRQ64::SetIntrEnable( BYTE data )
 {
 	PRINTD( INTR_LOG, "[INTR][SetIntrEnable]\n" );
 	
-	if( vm->VdgIsSRmode() ){ return; }	// SRモード時無効
+	if( vm->VdgIsSRmode() ){	// SRモード時無効
+		return;
+	}
 	
 	IntEnable[0] = (data & 0x01 ? false : true);
 	IntEnable[1] = (data & 0x02 ? false : true);

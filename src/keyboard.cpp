@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "common.h"
 #include "config.h"
@@ -391,7 +391,7 @@ KEY6::KEY6( VM6* vm, const ID& id ) : Device( vm, id ),
 		MatTable.emplace( i.P6Key, i.Mat );
 	
 	// キーマトリクス初期化
-	for( int i=0; i<16*2; i++ ){
+	for( int i = 0; i < 16 * 2; i++ ){
 		P6Matrix.emplace_back( 0xff );
 		P6Mtrx.emplace_back( 0xff );
 	}
@@ -483,8 +483,8 @@ void KEY6::UpdateMatrixKey( PCKEYsym code, bool pflag )
 		if( !mtx ) return;
 		
 		// マトリクス更新(押したキーに対応するbitが0になる)
-		BYTE matX = 1<<(mtx&0x0f);
-		BYTE matY = (mtx>>4)&0x0f;
+		BYTE matX = 1 << (mtx & 0x0f);
+		BYTE matY = (mtx >> 4) & 0x0f;
 		
 		if( pflag ){
 			P6Matrix.at( matY ) &= ~matX;
@@ -517,8 +517,8 @@ void KEY6::UpdateMatrixJoy( const BYTE joy1, const BYTE joy2 )
 	PRINTD( KEY_LOG, "[KEY][UpdateMatrixJoy] JOY1:%02X JOY2:%02X\n", joy1, joy2 );
 	
 	try{
-		P6Matrix.at( NOM-2 ) = joy1;
-		P6Matrix.at( NOM-1 ) = joy2;
+		P6Matrix.at( NOM - 2 ) = joy1;
+		P6Matrix.at( NOM - 1 ) = joy2;
 	}
 	catch( std::out_of_range& ){}
 }
@@ -549,23 +549,23 @@ bool KEY6::ScanMatrix( void )
 		ON_SHIFT = P6Mtrx.at( 0 ) & 0x04 ? false : true;
 		ON_GRAPH = P6Mtrx.at( 0 ) & 0x08 ? false : true;
 		// 前回のマトリクスと変化あり?
-		if( P6Mtrx.at( 0 ) != P6Mtrx.at( 0+NOM ) ) MatChg = true;
+		if( P6Mtrx.at( 0 ) != P6Mtrx.at( 0 + NOM ) ) MatChg = true;
 	}
 	catch( std::out_of_range& ){}
 	
 	// 一般キー判定 キーマトリクスY1～
-	for( int y=1; (y<(NOM-2)) && !KeyPUSH; y++ ) try{
+	for( int y = 1; (y < (NOM - 2)) && !KeyPUSH; y++ ) try{
 		// 前回のマトリクスと変化あり?
-		if( P6Mtrx.at( y ) != P6Mtrx.at( y+NOM ) ){
+		if( P6Mtrx.at( y ) != P6Mtrx.at( y + NOM ) ){
 			MatChg = true;
 			// キー押した?
-			if( (P6Mtrx.at( y ) ^ P6Mtrx.at( y+NOM )) & P6Mtrx.at( y+NOM ) ){
+			if( (P6Mtrx.at( y ) ^ P6Mtrx.at( y + NOM )) & P6Mtrx.at( y + NOM ) ){
 				KeyPUSH = true;
-				for( int x=0; x<8; x++ ) try{
+				for( int x = 0; x < 8; x++ ) try{
 					// マトリクスコードセット bit7-4:Y-1 bit3-0:X
 					// 1->0 になったビットを検出
-					if( (~P6Mtrx.at( y )>>x)&1 && (P6Mtrx.at( y+NOM )>>x)&1 ){
-						MatData = (y<<4) | (x&7);
+					if( (~P6Mtrx.at( y ) >> x) & 1 && (P6Mtrx.at( y + NOM ) >> x) & 1 ){
+						MatData = (y << 4) | (x & 7);
 						break;
 					}
 				}
@@ -611,7 +611,7 @@ bool KEY6::ScanMatrix( void )
 			break;
 		}
 		
-		BYTE* KeyMap = (BYTE*)P6MxCode[MatData>>4].Keys[MatData&7];
+		BYTE* KeyMap = (BYTE*)P6MxCode[MatData >> 4].Keys[MatData & 7];
 		if( ON_FUNC ){
 			switch( MatData ){	// マトリクスコード
 			case 0x36:			// F01～F05(ファンクションキー)
@@ -651,16 +651,16 @@ bool KEY6::ScanMatrix( void )
 	}
 	
 	// ジョイスティック判定
-	for( int y=NOM-2; y<NOM; y++ ) try{
+	for( int y = NOM - 2; y < NOM; y++ ) try{
 		// 前回のマトリクスと変化あり?
-		if( P6Mtrx.at( y ) != P6Mtrx.at( y+NOM ) ) MatChg = true;
+		if( P6Mtrx.at( y ) != P6Mtrx.at( y + NOM ) ) MatChg = true;
 	}
 	catch( std::out_of_range& ){}
 	
 	// 変化があればキーマトリクス保存
 	if( MatChg )
-		for( int i=0; i<NOM; i++ ) try{
-			P6Matrix.at( i+NOM ) = P6Mtrx.at( i );
+		for( int i = 0; i < NOM; i++ ) try{
+			P6Matrix.at( i + NOM ) = P6Mtrx.at( i );
 		}
 		catch( std::out_of_range& ){}
 	
@@ -713,8 +713,8 @@ BYTE KEY6::GetKeyJoy( void ) const
 	PRINTD( KEY_LOG, "[KEY][GetKeyJoy]\n" );
 	
 	try{
-		return	(~P6Mtrx.at( 5 )&0x80) | (~P6Mtrx.at( 8 )&0x20) | (~P6Mtrx.at( 8 )&0x10) | (~P6Mtrx.at( 8 )&0x08) |
-				(~P6Mtrx.at( 8 )&0x04) | (~P6Mtrx.at( 8 )&0x02) | (~P6Mtrx.at( 0 )&0x04)>>2;
+		return	(~P6Mtrx.at( 5 ) & 0x80) | (~P6Mtrx.at( 8 ) & 0x20) | (~P6Mtrx.at( 8 ) & 0x10) | (~P6Mtrx.at( 8 ) & 0x08) |
+				(~P6Mtrx.at( 8 ) & 0x04) | (~P6Mtrx.at( 8 ) & 0x02) | (~P6Mtrx.at( 0 ) & 0x04) >> 2;
 	}
 	catch( std::out_of_range& ){
 		return 0;
@@ -739,7 +739,7 @@ BYTE KEY6::GetKeyJoy( void ) const
 BYTE KEY6::GetJoy( const int JoyNo ) const
 {
 	try{
-		return P6Mtrx.at( NOM-2+(JoyNo&1) ) | 0xc0;
+		return P6Mtrx.at( NOM - 2 + (JoyNo & 1) ) | 0xc0;
 	}
 	catch( std::out_of_range& ){
 		return 0xff;

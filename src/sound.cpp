@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <mutex>
 
@@ -439,7 +439,7 @@ int SND6::PreUpdate( int samples, cRing* exbuf )
 //	exsam = min( exsam, this->cRing::FreeSize( true ) );
 	exsam = min( exsam, exbuf ? exbuf->cRing::FreeSize( true ) : this->cRing::FreeSize( true ) );
 	
-	for( int i=0; i<exsam; i++ ){
+	for( int i = 0; i < exsam; i++ ){
 		int dat = 0;
 		
 		for( auto p = sdev.begin(); p != sdev.end(); ++p ){
@@ -473,7 +473,7 @@ void SND6::Update( BYTE* stream, int samples )
 	
 	PRINTD( SND_LOG, "[SND6][Update] Stream:%p Samples:%d / %d\n", stream, samples, this->cRing::ReadySize() );
 	
-	for( int i=0; i<samples; i++ ){
+	for( int i = 0; i < samples; i++ ){
 		*(str++) = (int16_t)this->cRing::Get();
 	}
 }

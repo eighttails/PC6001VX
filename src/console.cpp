@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <cctype>
 //#include <cstdarg>
@@ -39,11 +39,11 @@ JFont::JFont( void )
 		
 		HFont.InitSurface( hWidth * 192, hHeight * 2 );
 		HFont.Fill( FC_BLACK );
-		ff.w = hWidth -1;
-		ff.h = hHeight-1;
-		for( int y=0; y<2; y++ ){
+		ff.w = hWidth  - 1;
+		ff.h = hHeight - 1;
+		for( int y = 0; y < 2; y++ ){
 			ff.y = hHeight * y + 1;
-			for( int x=0; x<192; x++ ){
+			for( int x = 0; x < 192; x++ ){
 				ff.x = hWidth * x + 1;
 				HFont.Fill( FC_WHITE4, &ff );
 			}
@@ -57,11 +57,11 @@ JFont::JFont( void )
 		
 		ZFont.InitSurface( zWidth * 192, zHeight * 48 );
 		ZFont.Fill( FC_BLACK );
-		ff.w = zWidth-1;
-		ff.h = zHeight-1;
-		for( int y=0; y<48; y++ ){
+		ff.w = zWidth  - 1;
+		ff.h = zHeight - 1;
+		for( int y = 0; y < 48; y++ ){
 			ff.y = zHeight * y + 1;
-			for( int x=0; x<192; x++ ){
+			for( int x = 0; x < 192; x++ ){
 				ff.x = zWidth * x + 1;
 				ZFont.Fill( FC_WHITE4, &ff );
 			}
@@ -180,11 +180,11 @@ void ZCons::Locate( int xx, int yy )
 {
 	// 右端，下端チェック
 	// 負だったら右端，下端から
-	if( ( xx >= 0 )&&( xx < Xmax ) )       { x = xx; }
-	else if( ( xx < 0 )&&( (Xmax-xx)>=0 ) ){ x = Xmax + xx; }
+	if( ( xx >= 0 ) && ( xx < Xmax ) )           { x = xx; }
+	else if( ( xx < 0 ) && ( (Xmax - xx) >= 0 ) ){ x = Xmax + xx; }
 	
-	if( ( yy >= 0 )&&( yy < Ymax ) )       { y = yy; }
-	else if( ( yy < 0 )&&( (Ymax-yy)>=0 ) ){ y = Ymax + yy; }
+	if( ( yy >= 0 ) && ( yy < Ymax ) )           { y = yy; }
+	else if( ( yy < 0 ) && ( (Ymax - yy) >= 0 ) ){ y = Ymax + yy; }
 }
 
 
@@ -204,8 +204,12 @@ void ZCons::LocateR( int xx, int yy )
 	}
 	
 	y += yy;
-	if( y < 0 )   { y = 0; }
-	if( y > Ymax ){ y = Ymax; }
+	if( y < 0 ){
+		y = 0;
+	}
+	if( y > Ymax ){
+		y = Ymax;
+	}
 }
 
 
@@ -268,7 +272,7 @@ void ZCons::sprintc( const std::string& text )
 	std::string str = text;
 	OSD_UTF8toSJIS( str );
 	
-	for( size_t i=0; i<str.length(); i++ ){
+	for( size_t i = 0; i < str.length(); i++ ){
 		switch( str[i] ){
 		case '\n':	// 改行
 			x = 0;
@@ -285,7 +289,7 @@ void ZCons::sprintc( const std::string& text )
 			if( std::isprint( str[i] ) ){
 				PutCharH( str[i] );
 			}else{
-				PutCharZ( ((BYTE)str[i]<<8) | (BYTE)str[i+1] );
+				PutCharZ( ((BYTE)str[i] << 8) | (BYTE)str[i+1] );
 				i++;
 			}
 			
@@ -321,7 +325,7 @@ void ZCons::sprintr( const std::string& text )
 		if( std::isprint( str[i] ) ){
 			PutCharH( str[i] );
 		}else{
-			PutCharZ( ((BYTE)str[i]<<8) | (BYTE)str[i+1] );
+			PutCharZ( ((BYTE)str[i] << 8) | (BYTE)str[i+1] );
 			i++;
 		}
 	}
@@ -422,8 +426,8 @@ void ZCons::PutCharh( int dx, int dy, BYTE txt, BYTE fg, BYTE bg )
 	sr.h = dr.h = JFont::FontHeight();
 	
 	// 転送
-	for( int y=0; y<sr.h; y++ ){
-		for( int x=0; x<sr.w; x++ ){
+	for( int y = 0; y < sr.h; y++ ){
+		for( int x = 0; x < sr.w; x++ ){
 			VSurface::PSet( dr.x + x, dr.y + y, JFont::HFont.PGet( sr.x + x, sr.y + y ) ? fg : bg );
 		}
 	}
@@ -437,12 +441,12 @@ void ZCons::PutCharz( int dx, int dy, WORD txt, BYTE fg, BYTE bg )
 {
 	PRINTD( GRP_LOG, "[ZCons][PutCharz]\n" );
 	
-	BYTE th = (txt>>8) & 0xff;
-	BYTE tl =  txt     & 0xff;
+	BYTE th = (txt >> 8) & 0xff;
+	BYTE tl =  txt       & 0xff;
 	
-	// 上位 0x81-0x9f, 0xe0-0xef
-	// 下位 0x40-0x7e, 0x80-0xfc
-	int index = ( th - (th<0xe0 ? 0x80 : 0xc0) ) * 192 + tl - 0x40;
+	// 上位 0x81 - 0x9f, 0xe0 - 0xef
+	// 下位 0x40 - 0x7e, 0x80 - 0xfc
+	int index = ( th - (th < 0xe0 ? 0x80 : 0xc0) ) * 192 + tl - 0x40;
 	
 	// クリッピング
 	VRect sr,dr;
@@ -454,8 +458,8 @@ void ZCons::PutCharz( int dx, int dy, WORD txt, BYTE fg, BYTE bg )
 	sr.h = dr.h = JFont::FontHeight();
 	
 	// 転送
-	for( int y=0; y<sr.h; y++ ){
-		for( int x=0; x<sr.w; x++ ){
+	for( int y = 0; y < sr.h; y++ ){
+		for( int x = 0; x < sr.w; x++ ){
 			VSurface::PSet( dr.x + x, dr.y + y, JFont::ZFont.PGet( sr.x + x, sr.y + y ) ? fg : bg );
 		}
 	}

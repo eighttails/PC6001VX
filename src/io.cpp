@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <stdexcept>
 
@@ -138,14 +138,14 @@ bool IOBus::Disconnect( const DeviceList::ID id )
 {
 	// IN
 	for( auto &i : ins ){
-		for( auto p = i.end()-1; p != i.begin(); p-- ){
+		for( auto p = i.end() - 1; p != i.begin(); p-- ){
 			if( p->device->GetID() == id ) i.erase( p );
 		}
 	}
 	
 	// OUT
 	for( auto &i : outs ){
-		for( auto p = i.end()-1; p != i.begin(); p-- ){
+		for( auto p = i.end() - 1; p != i.begin(); p-- ){
 			if( p->device->GetID() == id ) i.erase( p );
 		}
 	}
@@ -195,13 +195,17 @@ void IOBus::GetPortList( std::vector<int>& inp, std::vector<int>& outp )
 	
 	int i = 0;
 	for( auto &p : ins ){
-		if( p.size() > 1 ){ inp.emplace_back( i ); }
+		if( p.size() > 1 ){
+			inp.emplace_back( i );
+		}
 		i++;
 	}
 	
 	i = 0;
 	for( auto &p : outs ){
-		if( p.size() > 1 ){ outp.emplace_back( i ); }
+		if( p.size() > 1 ){
+			outp.emplace_back( i );
+		}
 		i++;
 	}
 }

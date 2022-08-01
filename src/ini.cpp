@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <algorithm>
 #include <cstdarg>
@@ -283,12 +283,12 @@ bool cIni::Write( void )
 			
 		case cNode::NODE_ENTRY:	// Entry
 			fs << node.Entry;
-			for( int i=TABN*TABW-(int)node.Entry.length(); i>0; i-=TABW )
+			for( int i = TABN * TABW - (int)node.Entry.length(); i > 0; i -= TABW )
 				fs << "\t";
 			fs << "= " << node.Value;
 			
 			if( !node.Comment.empty() ){
-				for( int i=TABN*TABW-((int)node.Value.length()+2); i>0; i-=TABW )
+				for( int i = TABN * TABW - ((int)node.Value.length() + 2); i > 0; i -= TABW )
 					fs << "\t";
 				fs << "\t;" << node.Comment;
 			}

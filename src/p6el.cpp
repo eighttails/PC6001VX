@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <algorithm>
 #include <cctype>
@@ -537,7 +537,7 @@ EL6::ReturnCode EL6::EventLoop( ReturnCode rc )
 			else{
 				str += Stringf( " (%4d%%  %5.2f/%5.2f fps)", sche->GetRatio(), sche->GetFPS(), FRAMERATE );
 				if( sche->GetSpeedRatio() != 100 )
-					str += Stringf( " [x%3.1f]", (double)sche->GetSpeedRatio()/100 );
+					str += Stringf( " [x%3.1f]", (double)sche->GetSpeedRatio() / 100 );
 			}
 			OSD_SetWindowCaption( GetWindowHandle(), str );
 			
@@ -665,7 +665,7 @@ EL6::ReturnCode EL6::EventLoop( ReturnCode rc )
 				double ry = (double)(event.window.h - staw->Height()) / (double)graph->ScreenY();
 				
 				// 倍率を逆算
-				int zoom = cfg->GetValue( CV_WindowZoom ) * (((rx < 1 ? 1/rx : rx) > (ry < 1 ? 1/ry : ry)) ? rx : ry);
+				int zoom = cfg->GetValue( CV_WindowZoom ) * (((rx < 1 ? 1 / rx : rx) > (ry < 1 ? 1 / ry : ry)) ? rx : ry);
 				
 				Stop();
 				cfg->SetValue( CV_WindowZoom, zoom );	// ウィンドウサイズに合わせて倍率再設定
@@ -816,7 +816,7 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT )
 	case KVC_F10:			// Wait変更 or どこでもLOAD(スロット使用)
 		if( OnALT ){
 			Stop();
-			UI_DokoLoad( 1, true );
+			UI_DokoLoad( 1, cfg->GetValue( CB_CkDokoLoad ) );
 			Start();
 		}else{
 			UI_NoWait();
@@ -854,7 +854,7 @@ bool EL6::CheckFuncKey( int kcode, bool OnALT )
 		
 	case KVC_HENKAN:		// どこでもLOAD(スロット使用)
 		Stop();
-		UI_DokoLoad( 1, true );
+		UI_DokoLoad( 1, cfg->GetValue( CB_CkDokoLoad ) );
 		Start();
 		break;
 		
@@ -900,10 +900,14 @@ void EL6::CheckMonKey( int kcode, int ccode, bool OnSHIFT )
 bool EL6::ScreenUpdate( void )
 {
 	// 画面更新時期を迎えた?(ビデオキャプチャ中は無視)
-	if( !AVI6::IsAVI() && !sche->IsScreenUpdate() ){ return false; }
+	if( !AVI6::IsAVI() && !sche->IsScreenUpdate() ){
+		return false;
+	}
 	
 	// フレームスキップチェック
-	if( FSkipCount++ < cfg->GetValue( CV_FrameSkip ) ){ return false; }
+	if( FSkipCount++ < cfg->GetValue( CV_FrameSkip ) ){
+		return false;
+	}
 	
 	
 	// ここではバックバッファの更新のみ
@@ -973,7 +977,7 @@ void EL6::StreamUpdate( void* userdata, BYTE* stream, int len )
 	// サウンドバッファ更新
 	//  もしサンプル数が足りなければここで追加
 	//  ただしビデオキャプチャ中,ポーズ中,モニタモードの場合は無視
-	int addsam = len/sizeof(int16_t) - p6->snd->cRing::ReadySize();
+	int addsam = len / sizeof(int16_t) - p6->snd->cRing::ReadySize();
 	
 	if( addsam > 0 && !p6->AVI6::IsAVI() && !p6->sche->GetPauseEnable()
 		#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -982,7 +986,7 @@ void EL6::StreamUpdate( void* userdata, BYTE* stream, int len )
 																		){
 		p6->SoundUpdate( addsam );
 	}
-	p6->snd->Update( stream, len/sizeof(int16_t) );
+	p6->snd->Update( stream, len / sizeof(int16_t) );
 }
 
 
@@ -1244,7 +1248,7 @@ void EL6::SetPalette( void )
 {
 	if( !cfg ) return;
 	
-	for( int i=0; i<256; i++ )
+	for( int i = 0; i < 256; i++ )
 		VSurface::SetColor( i, COL2DW( cfg->GetColor( i ) ) );
 }
 
@@ -1332,11 +1336,11 @@ bool EL6::DokoDemoSave( const P6VPATH& path )
 		ini.SetVal( "KEY", "AK_RelayOn",	"", ak.RelayOn );
 		
 		std::string strva;
-		int nn=0;
+		int nn = 0;
 		
-		for( size_t i=0; i<ak.Buffer.length(); i++ ){
+		for( size_t i = 0; i < ak.Buffer.length(); i++ ){
 			strva += Stringf( "%02X", ak.Buffer[i] );
-			if( !((i+1)&63) ){
+			if( !((i+1) & 63) ){
 				ini.SetEntry( "KEY", Stringf( "AKBuf_%02X", nn++ ), "", strva.c_str() );
 				strva.clear();
 			}
@@ -1400,7 +1404,7 @@ bool EL6::DokoDemoLoad( const P6VPATH& path )
 		ini.GetVal( "KEY", "AK_RelayOn",	ak.RelayOn );
 		
 		std::string strva;
-		int nn=0;
+		int nn = 0;
 		
 		ak.Buffer.clear();
 		while( ini.GetEntry( "KEY", Stringf( "AKBuf_%02X", nn++ ), strva ) ){
@@ -1541,16 +1545,22 @@ bool EL6::ReplayRecResume( const P6VPATH& path )
 	P6VPATH fpath = path;
 	OSD_ChangeFileNameExt( fpath, EXT_RES );	// 拡張子を差替え
 	
-	if( !OSD_FileExist( fpath ) ){ return false; }
+	if( !OSD_FileExist( fpath ) ){
+		return false;
+	}
 	
 	cIni save;
 	int frame = 0;
 	
 	save.Read( fpath );
 	save.GetVal( "REPLAY", "frame", frame );
-	if( frame == 0 ){ return false; }
+	if( frame == 0 ){
+		return false;
+	}
 	
-	if( !UI_CheckDokoVer( fpath ) ){ return false; }
+	if( !UI_CheckDokoVer( fpath ) ){
+		return false;
+	}
 	
 	cfg->SetDokoFile( fpath );
 	OSD_PushEvent( EV_REPLAYRESUME );
@@ -1693,12 +1703,16 @@ void EL6::UI_CartEject( void )
 /////////////////////////////////////////////////////////////////////////////
 bool EL6::UI_CheckDokoVer( const P6VPATH& path )
 {
-	if( CheckDokoVer( path ) ){ return true; }
+	if( CheckDokoVer( path ) ){
+		return true;
+	}
 	
 	if( Error::GetError() == Error::DokoDiffVersion ){
 		int ret = OSD_Message( nullptr, Error::GetErrorText(), GetText( TERR_WARNING ), OSDM_YESNO | OSDM_ICONWARNING );
 		Error::Clear();
-		if( ret == OSDR_YES ){ return true; }
+		if( ret == OSDR_YES ){
+			return true;
+		}
 	}
 	
 	return false;
@@ -1749,7 +1763,9 @@ void EL6::UI_DokoLoad( const P6VPATH& path )
 		}
 	}
 	
-	if( !UI_CheckDokoVer( fpath ) ){ return; }
+	if( !UI_CheckDokoVer( fpath ) ){
+		return;
+	}
 	
 	cfg->SetDokoFile( fpath );
 	OSD_PushEvent( EV_DOKOLOAD );
@@ -1852,7 +1868,9 @@ void EL6::UI_ReplayResumeSave( const P6VPATH& path )
 {
 	P6VPATH fpath = path;
 	
-	if( REPLAY::GetStatus() != ST_IDLE ){ return; }
+	if( REPLAY::GetStatus() != ST_IDLE ){
+		return;
+	}
 	
 	if( fpath.empty() ){
 		if( !OSD_FileExist( DokoPathUI ) ){
@@ -1877,7 +1895,9 @@ void EL6::UI_ReplayResumeSave( const P6VPATH& path )
 /////////////////////////////////////////////////////////////////////////////
 void EL6::UI_ReplayDokoSave( void )
 {
-	if( REPLAY::GetStatus() != ST_REPLAYREC ){ return; }
+	if( REPLAY::GetStatus() != ST_REPLAYREC ){
+		return;
+	}
 	
 	// 途中セーブファイルを保存
 	P6VPATH fpath = REPLAY::cIni::GetFilePath();
@@ -1890,7 +1910,9 @@ void EL6::UI_ReplayDokoSave( void )
 		OSD_ChangeFileNameExt( bpath, EXT_RES + ( i == 0 ? "" : std::to_string( i ) ) );
 		OSD_ChangeFileNameExt( apath, EXT_RES + std::to_string( i + 1 ) );
 		
-		if( !OSD_FileExist( bpath ) ){ continue; }
+		if( !OSD_FileExist( bpath ) ){
+			continue;
+		}
 		
 		OSD_FileDelete( apath );
 		OSD_FileRename( bpath, apath );
@@ -1923,7 +1945,9 @@ void EL6::UI_ReplayDokoSave( void )
 /////////////////////////////////////////////////////////////////////////////
 void EL6::UI_ReplayDokoLoad( void )
 {
-	if( REPLAY::GetStatus() != ST_REPLAYREC ){ return; }
+	if( REPLAY::GetStatus() != ST_REPLAYREC ){
+		return;
+	}
 	
 	P6VPATH fpath = REPLAY::cIni::GetFilePath();
 	
@@ -1940,7 +1964,9 @@ void EL6::UI_ReplayDokoLoad( void )
 /////////////////////////////////////////////////////////////////////////////
 void EL6::UI_ReplayRollback( void )
 {
-	if( REPLAY::GetStatus() != ST_REPLAYREC ){ return; }
+	if( REPLAY::GetStatus() != ST_REPLAYREC ){
+		return;
+	}
 	
 	P6VPATH fpath = REPLAY::cIni::GetFilePath();
 	P6VPATH bpath = fpath;
@@ -1953,7 +1979,9 @@ void EL6::UI_ReplayRollback( void )
 		OSD_ChangeFileNameExt( apath, EXT_RES + ( i == 0 ? "" : std::to_string( i ) ) );
 		
 		// これ以上履歴がなければ抜ける
-		if( !OSD_FileExist( bpath ) ){ break; }
+		if( !OSD_FileExist( bpath ) ){
+			break;
+		}
 		
 		OSD_FileDelete( apath );
 		OSD_FileRename( bpath, apath );
@@ -1985,10 +2013,14 @@ void EL6::UI_ReplayPlay( const P6VPATH& path )
 		}
 	}else if( REPLAY::GetStatus() == ST_REPLAYPLAY ){
 		REPLAY::StopReplay();
-		if( fpath.empty() ){ return; }
+		if( fpath.empty() ){
+			return;
+		}
 	}
 	
-	if( !UI_CheckDokoVer( fpath ) ){ return; }
+	if( !UI_CheckDokoVer( fpath ) ){
+		return;
+	}
 	
 	cfg->SetDokoFile( fpath );
 	OSD_PushEvent( EV_REPLAYPLAY );
@@ -2005,7 +2037,9 @@ void EL6::UI_ReplayMovie( void )
 {
 	P6VPATH fpath;
 	
-	if( REPLAY::GetStatus() != ST_IDLE ){ return; }
+	if( REPLAY::GetStatus() != ST_IDLE ){
+		return;
+	}
 	
 	if( !OSD_FileExist( DokoPathUI ) ){
 		DokoPathUI = cfg->GetValue( CF_DokoPath );
@@ -2014,7 +2048,9 @@ void EL6::UI_ReplayMovie( void )
 		return;
 	}
 	
-	if( !UI_CheckDokoVer( fpath ) ){ return; }
+	if( !UI_CheckDokoVer( fpath ) ){
+		return;
+	}
 	
 	cfg->SetDokoFile( fpath );
 	OSD_PushEvent( EV_REPLAYMOVIE );
@@ -2061,7 +2097,9 @@ void EL6::UI_AVISaveStart( void )
 /////////////////////////////////////////////////////////////////////////////
 void EL6::UI_AVISaveStop( void )
 {
-	if( !AVI6::IsAVI() ){ return; }
+	if( !AVI6::IsAVI() ){
+		return;
+	}
 	
 	AVI6::StopAVI();
 	
@@ -2139,7 +2177,9 @@ void EL6::UI_Reset( void )
 void EL6::UI_Restart( void )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	OSD_PushEvent( EV_RESTART );
 }
@@ -2215,7 +2255,9 @@ void EL6::UI_BoostUp( void )
 void EL6::UI_FullScreen( void )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	cfg->SetValue( CB_FullScreen, !cfg->GetValue( CB_FullScreen ) );
 	graph->ResizeScreen();	// スクリーンサイズ変更
@@ -2232,7 +2274,9 @@ void EL6::UI_FullScreen( void )
 void EL6::UI_WindowZoom( int zoom )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	cfg->SetValue( CV_WindowZoom, zoom );
 	graph->ResizeScreen();	// スクリーンサイズ変更
@@ -2249,7 +2293,9 @@ void EL6::UI_WindowZoom( int zoom )
 void EL6::UI_StatusBar( void )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	cfg->SetValue( CB_DispStatus, !cfg->GetValue( CB_DispStatus ) );
 	graph->ResizeScreen();	// スクリーンサイズ変更
@@ -2266,7 +2312,9 @@ void EL6::UI_StatusBar( void )
 void EL6::UI_Disp43( void )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	cfg->SetValue( CB_DispNTSC, !cfg->GetValue( CB_DispNTSC ) );
 	graph->ResizeScreen();	// スクリーンサイズ変更
@@ -2295,7 +2343,9 @@ void EL6::UI_ScanLine( void )
 void EL6::UI_Filtering( void )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	cfg->SetValue( CB_Filtering, !cfg->GetValue( CB_Filtering ) );
 	graph->ResizeScreen();	// スクリーンサイズ変更
@@ -2326,7 +2376,9 @@ void EL6::UI_Mode4Color( int col )
 void EL6::UI_FrameSkip( int sk )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	cfg->SetValue( CV_FrameSkip, sk );
 }
@@ -2341,7 +2393,9 @@ void EL6::UI_FrameSkip( int sk )
 void EL6::UI_SampleRate( int rate )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	cfg->SetValue( CV_SampleRate, rate );
 	snd->SetSampleRate( rate );
@@ -2355,7 +2409,9 @@ void EL6::UI_SampleRate( int rate )
 void EL6::UI_Monitor( void )
 {
 	// ビデオキャプチャ中は無効
-	if( AVI6::IsAVI() ){ return; }
+	if( AVI6::IsAVI() ){
+		return;
+	}
 	
 	vm->SetMonitor( !vm->IsMonitor() );
 	graph->ResizeScreen();
@@ -2440,107 +2496,107 @@ void EL6::ExecMenu( int id )
 {
 	// 項目ごとの処理
 	switch( id ){
-	case ID_TAPEINSERT:		UI_TapeInsert();						break;	// TAPE 挿入
-	case ID_TAPEEJECT:		TapeUnmount();							break;	// TAPE 排出
+	case ID_TAPEINSERT:		UI_TapeInsert();								break;	// TAPE 挿入
+	case ID_TAPEEJECT:		TapeUnmount();									break;	// TAPE 排出
 	
-	case ID_DISKINSERT1:													// DISK 挿入
-	case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );	break;
-	case ID_DISKEJECT1:														// DISK 排出
-	case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );		break;
+	case ID_DISKINSERT1:															// DISK 挿入
+	case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );			break;
+	case ID_DISKEJECT1:																// DISK 排出
+	case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );				break;
 	
-	case ID_C6005:			UI_CartInsert     ( EXC6005   );		break;	// 拡張カートリッジ 挿入			(PC-6005	ROMカートリッジ)
-	case ID_C6006:			UI_CartInsert     ( EXC6006   );		break;	// 拡張カートリッジ 挿入			(PC-6006	拡張ROM/RAMカートリッジ)
-	case ID_C6006NR:		UI_CartInsertNoRom( EXC6006   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(PC-6006	拡張ROM/RAMカートリッジ)
-	case ID_C6001:			UI_CartInsert     ( EXC6001   );		break;	// 拡張カートリッジ 挿入			(PCS-6001R	拡張BASIC)
-	case ID_C660101:		UI_CartInsert     ( EXC660101 );		break;	// 拡張カートリッジ 挿入			(PC-6601-01	拡張漢字ROMカートリッジ)
-	case ID_C6006SR:		UI_CartInsert     ( EXC6006SR );		break;	// 拡張カートリッジ 挿入			(PC-6006SR	拡張64KRAMカートリッジ)
-	case ID_C6007SR:		UI_CartInsert     ( EXC6007SR );		break;	// 拡張カートリッジ 挿入			(PC-6007SR	拡張漢字ROM&RAMカートリッジ)
-	case ID_C6053:			UI_CartInsert     ( EXC6053   );		break;	// 拡張カートリッジ 挿入			(PC-6053    ボイスシンセサイザー)
-	case ID_C60M55:			UI_CartInsert     ( EXC60M55  );		break;	// 拡張カートリッジ 挿入			(PC-60m55   FM音源カートリッジ)
-	case ID_CSOL1:			UI_CartInsert     ( EXCSOL1   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジ)
-	case ID_CSOL1NR:		UI_CartInsertNoRom( EXCSOL1   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジ)
-	case ID_CSOL2:			UI_CartInsert     ( EXCSOL2   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジmkⅡ)
-	case ID_CSOL2NR:		UI_CartInsertNoRom( EXCSOL2   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅡ)
-	case ID_CSOL3:			UI_CartInsert     ( EXCSOL3   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジmkⅢ)
-	case ID_CSOL3NR:		UI_CartInsertNoRom( EXCSOL3   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅢ)
-	case ID_CARTEJECT:		UI_CartEject();							break;	// 拡張カートリッジ 排出
+	case ID_C6005:			UI_CartInsert     ( EXC6005   );				break;	// 拡張カートリッジ 挿入			(PC-6005	ROMカートリッジ)
+	case ID_C6006:			UI_CartInsert     ( EXC6006   );				break;	// 拡張カートリッジ 挿入			(PC-6006	拡張ROM/RAMカートリッジ)
+	case ID_C6006NR:		UI_CartInsertNoRom( EXC6006   );				break;	// 拡張カートリッジ 挿入(ROMなし)	(PC-6006	拡張ROM/RAMカートリッジ)
+	case ID_C6001:			UI_CartInsert     ( EXC6001   );				break;	// 拡張カートリッジ 挿入			(PCS-6001R	拡張BASIC)
+	case ID_C660101:		UI_CartInsert     ( EXC660101 );				break;	// 拡張カートリッジ 挿入			(PC-6601-01	拡張漢字ROMカートリッジ)
+	case ID_C6006SR:		UI_CartInsert     ( EXC6006SR );				break;	// 拡張カートリッジ 挿入			(PC-6006SR	拡張64KRAMカートリッジ)
+	case ID_C6007SR:		UI_CartInsert     ( EXC6007SR );				break;	// 拡張カートリッジ 挿入			(PC-6007SR	拡張漢字ROM&RAMカートリッジ)
+	case ID_C6053:			UI_CartInsert     ( EXC6053   );				break;	// 拡張カートリッジ 挿入			(PC-6053    ボイスシンセサイザー)
+	case ID_C60M55:			UI_CartInsert     ( EXC60M55  );				break;	// 拡張カートリッジ 挿入			(PC-60m55   FM音源カートリッジ)
+	case ID_CSOL1:			UI_CartInsert     ( EXCSOL1   );				break;	// 拡張カートリッジ 挿入			(戦士のカートリッジ)
+	case ID_CSOL1NR:		UI_CartInsertNoRom( EXCSOL1   );				break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジ)
+	case ID_CSOL2:			UI_CartInsert     ( EXCSOL2   );				break;	// 拡張カートリッジ 挿入			(戦士のカートリッジmkⅡ)
+	case ID_CSOL2NR:		UI_CartInsertNoRom( EXCSOL2   );				break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅡ)
+	case ID_CSOL3:			UI_CartInsert     ( EXCSOL3   );				break;	// 拡張カートリッジ 挿入			(戦士のカートリッジmkⅢ)
+	case ID_CSOL3NR:		UI_CartInsertNoRom( EXCSOL3   );				break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅢ)
+	case ID_CARTEJECT:		UI_CartEject();									break;	// 拡張カートリッジ 排出
 	
-	case ID_JOY100:															// ジョイスティック1
+	case ID_JOY100:																	// ジョイスティック1
 	case ID_JOY101:
 	case ID_JOY102:
 	case ID_JOY103:
 	case ID_JOY104:
-	case ID_JOY105:			joy->Connect( 0, id - ID_JOY101 );		break;
-	case ID_JOY200:															// ジョイスティック2
+	case ID_JOY105:			joy->Connect( 0, id - ID_JOY101 );				break;
+	case ID_JOY200:																	// ジョイスティック2
 	case ID_JOY201:
 	case ID_JOY202:
 	case ID_JOY203:
 	case ID_JOY204:
-	case ID_JOY205:			joy->Connect( 1, id - ID_JOY201 );		break;
+	case ID_JOY205:			joy->Connect( 1, id - ID_JOY201 );				break;
 	
-	case ID_CONFIG:			UI_Config();							break;	// 環境設定
-	case ID_RESET:			UI_Reset();								break;	// リセット
-	case ID_RESTART:		UI_Restart();							break;	// 再起動
-	case ID_PAUSE:			UI_Pause();								break;	// ポーズ
-	case ID_NOWAIT:			UI_NoWait();							break;	// Wait変更
+	case ID_CONFIG:			UI_Config();									break;	// 環境設定
+	case ID_RESET:			UI_Reset();										break;	// リセット
+	case ID_RESTART:		UI_Restart();									break;	// 再起動
+	case ID_PAUSE:			UI_Pause();										break;	// ポーズ
+	case ID_NOWAIT:			UI_NoWait();									break;	// Wait変更
 	
-	case ID_SNAPSHOT:		UI_SnapShot();							break;	// スナップショット
+	case ID_SNAPSHOT:		UI_SnapShot();									break;	// スナップショット
 	
-	case ID_DOKOSAVE:		UI_DokoSave();							break;	// どこでもSAVE
-	case ID_DOKOSAVE1:														// どこでもSAVE1
-	case ID_DOKOSAVE2:														// どこでもSAVE2
-	case ID_DOKOSAVE3:		UI_DokoSave( id - ID_DOKOSAVE );		break;	// どこでもSAVE3
+	case ID_DOKOSAVE:		UI_DokoSave();									break;	// どこでもSAVE
+	case ID_DOKOSAVE1:																// どこでもSAVE1
+	case ID_DOKOSAVE2:																// どこでもSAVE2
+	case ID_DOKOSAVE3:		UI_DokoSave( id - ID_DOKOSAVE );				break;	// どこでもSAVE3
 	
-	case ID_DOKOLOAD:		UI_DokoLoad();							break;	// どこでもLOAD
-	case ID_DOKOLOAD1:														// どこでもLOAD1
-	case ID_DOKOLOAD2:														// どこでもLOAD2
-	case ID_DOKOLOAD3:		UI_DokoLoad( id - ID_DOKOLOAD );		break;	// どこでもLOAD3
+	case ID_DOKOLOAD:		UI_DokoLoad();									break;	// どこでもLOAD
+	case ID_DOKOLOAD1:																// どこでもLOAD1
+	case ID_DOKOLOAD2:																// どこでもLOAD2
+	case ID_DOKOLOAD3:		UI_DokoLoad( id - ID_DOKOLOAD );				break;	// どこでもLOAD3
 	
-	case ID_REPLAYSAVE:		UI_ReplaySave();						break;	// リプレイ保存/停止
-	case ID_REPLAYRESUME:	UI_ReplayResumeSave();					break;	// リプレイ保存再開
-	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
-	case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();					break;	// リプレイ中どこでもLOAD
-	case ID_REPLAYROLLBACK:	UI_ReplayRollback();					break;	// リプレイ中どこでもLOADを巻き戻す
-	case ID_REPLAYPLAY:		UI_ReplayPlay();						break;	// リプレイ再生/停止
-	case ID_REPLAYMOVIE:	UI_ReplayMovie();						break;	// リプレイを動画に変換
+	case ID_REPLAYSAVE:		UI_ReplaySave();								break;	// リプレイ保存/停止
+	case ID_REPLAYRESUME:	UI_ReplayResumeSave();							break;	// リプレイ保存再開
+	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();							break;	// リプレイ中どこでもSAVE
+	case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();							break;	// リプレイ中どこでもLOAD
+	case ID_REPLAYROLLBACK:	UI_ReplayRollback();							break;	// リプレイ中どこでもLOADを巻き戻す
+	case ID_REPLAYPLAY:		UI_ReplayPlay();								break;	// リプレイ再生/停止
+	case ID_REPLAYMOVIE:	UI_ReplayMovie();								break;	// リプレイを動画に変換
 	case ID_AVISAVE:		AVI6::IsAVI() ? UI_AVISaveStop()
-										  : UI_AVISaveStart();		break;	// ビデオキャプチャ
+										  : UI_AVISaveStart();				break;	// ビデオキャプチャ
 										  
-	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
-	case ID_QUIT:			UI_Quit();								break;	// 終了
-	case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
-	case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
-	case ID_FULLSCRN:		UI_FullScreen();						break;	// フルスクリーン変更
+	case ID_AUTOTYPE:		UI_AutoType();									break;	// 打込み代行
+	case ID_QUIT:			UI_Quit();										break;	// 終了
+	case ID_TURBO:			UI_TurboTape();									break;	// Turbo TAPE
+	case ID_BOOST:			UI_BoostUp();									break;	// Boost Up
+	case ID_FULLSCRN:		UI_FullScreen();								break;	// フルスクリーン変更
 	
-	case ID_ZOOM100:														// ウィンドウ表示倍率100%
-	case ID_ZOOM200:														// ウィンドウ表示倍率200%
-	case ID_ZOOM300:		UI_WindowZoom( (id-ID_ZOOM100+1)*100 );	break;	// ウィンドウ表示倍率300%
+	case ID_ZOOM100:																// ウィンドウ表示倍率100%
+	case ID_ZOOM200:																// ウィンドウ表示倍率200%
+	case ID_ZOOM300:		UI_WindowZoom( (id - ID_ZOOM100 + 1) * 100 );	break;	// ウィンドウ表示倍率300%
 	
-	case ID_STATUS:			UI_StatusBar();							break;	// ステータスバー表示状態変更
-	case ID_DISP43:			UI_Disp43();							break;	// 4:3表示変更
-	case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
-	case ID_FILTERING:		UI_Filtering();							break;	// フィルタリング変更
+	case ID_STATUS:			UI_StatusBar();									break;	// ステータスバー表示状態変更
+	case ID_DISP43:			UI_Disp43();									break;	// 4:3表示変更
+	case ID_SCANLINE:		UI_ScanLine();									break;	// スキャンラインモード変更
+	case ID_FILTERING:		UI_Filtering();									break;	// フィルタリング変更
 	
-	case ID_M4MONO:															// MODE4カラー モノクロ
-	case ID_M4RDBL:															// MODE4カラー 赤/青
-	case ID_M4BLRD:															// MODE4カラー 青/赤
-	case ID_M4PKGR:															// MODE4カラー ピンク/緑
-	case ID_M4GRPK:			UI_Mode4Color( id - ID_M4MONO );		break;	// MODE4カラー 緑/ピンク
+	case ID_M4MONO:																	// MODE4カラー モノクロ
+	case ID_M4RDBL:																	// MODE4カラー 赤/青
+	case ID_M4BLRD:																	// MODE4カラー 青/赤
+	case ID_M4PKGR:																	// MODE4カラー ピンク/緑
+	case ID_M4GRPK:			UI_Mode4Color( id - ID_M4MONO );				break;	// MODE4カラー 緑/ピンク
 	
-	case ID_FSKP0:															// フレームスキップ なし
-	case ID_FSKP1:															// フレームスキップ 1
-	case ID_FSKP2:															// フレームスキップ 2
-	case ID_FSKP3:															// フレームスキップ 3
-	case ID_FSKP4:															// フレームスキップ 4
-	case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );			break;	// フレームスキップ 5
+	case ID_FSKP0:																	// フレームスキップ なし
+	case ID_FSKP1:																	// フレームスキップ 1
+	case ID_FSKP2:																	// フレームスキップ 2
+	case ID_FSKP3:																	// フレームスキップ 3
+	case ID_FSKP4:																	// フレームスキップ 4
+	case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );					break;	// フレームスキップ 5
 	
-	case ID_SPR44:															// サンプリングレート 44100Hz
-	case ID_SPR22:															// サンプリングレート 22050Hz
-	case ID_SPR11:			UI_SampleRate( 44100 >> (id - ID_SPR44 ) );	break;	// サンプリングレート 11025Hz
+	case ID_SPR44:																	// サンプリングレート 44100Hz
+	case ID_SPR22:																	// サンプリングレート 22050Hz
+	case ID_SPR11:			UI_SampleRate( 44100 >> (id - ID_SPR44 ) );		break;	// サンプリングレート 11025Hz
 	
 	case ID_VERSION:		OSD_VersionDialog( GetWindowHandle(), cfg->GetValue( CV_Model ) );	break;	// バージョン情報
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	case ID_MONITOR:		UI_Monitor();							break;	// モニターモード
+	case ID_MONITOR:		UI_Monitor();									break;	// モニターモード
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	}
 }

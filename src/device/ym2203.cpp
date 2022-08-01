@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "log.h"
 #include "ym2203.h"
@@ -155,14 +155,14 @@ void cYM2203::_WriteReg( BYTE r, BYTE v )
 		RegTimerA1 = v;
 		if( RegTimerCtr & 0x01 )
 			// タイマ稼働中なら再設定
-			SetTimerA( (RegTimerA1<<2) | (RegTimerA2&0x03) );
+			SetTimerA( (RegTimerA1 << 2) | (RegTimerA2 & 0x03) );
 		break;
 		
 	case YM_TIMERA2:
 		RegTimerA2 = v;
 		if( RegTimerCtr & 0x01 )
 			// タイマ稼働中なら再設定
-			SetTimerA( (RegTimerA1<<2) | (RegTimerA2&0x03) );
+			SetTimerA( (RegTimerA1 << 2) | (RegTimerA2 & 0x03) );
 		break;
 		
 	case YM_TIMERB:
@@ -174,8 +174,8 @@ void cYM2203::_WriteReg( BYTE r, BYTE v )
 		
 	case YM_TIMERCTR:
 		RegTimerCtr = v;
-		SetTimerA( RegTimerCtr & 0x01 ? ((RegTimerA1<<2)|(RegTimerA2&0x03)) : 0 );
-		SetTimerB( RegTimerCtr & 0x02 ? RegTimerB                           : 0 );
+		SetTimerA( RegTimerCtr & 0x01 ? ((RegTimerA1 << 2) | (RegTimerA2 & 0x03)) : 0 );
+		SetTimerB( RegTimerCtr & 0x02 ? RegTimerB                                 : 0 );
 		break;
 	}
 }

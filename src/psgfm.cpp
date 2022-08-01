@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "pc6001v.h"
 
@@ -134,7 +134,7 @@ void OPN64::SetTimerA( int cnt )
 {
 	double ct = 72. * (1024. - (double)cnt) / (double)Clock * 1000000.;
 	
-	if( cnt ) vm->EventAdd( Device::GetID(), EID_TIMERA, ct, EV_LOOP|EV_US );
+	if( cnt ) vm->EventAdd( Device::GetID(), EID_TIMERA, ct, EV_LOOP | EV_US );
 	else	  vm->EventDel( Device::GetID(), EID_TIMERA );
 }
 
@@ -146,7 +146,7 @@ void OPN64::SetTimerB( int cnt )
 {
 	double ct = 1152. * (256. - (double)cnt) / (double)Clock * 1000000.;
 	
-	if( cnt ) vm->EventAdd( Device::GetID(), EID_TIMERB, ct, EV_LOOP|EV_US );
+	if( cnt ) vm->EventAdd( Device::GetID(), EID_TIMERB, ct, EV_LOOP | EV_US );
 	else	  vm->EventDel( Device::GetID(), EID_TIMERB );
 }
 
@@ -170,7 +170,7 @@ bool PSG60::Init( int clock, int srate )
 	cAY8910::Reset();
 	
 	// 少なくとも1秒に1回くらいは更新するだろうという前提
-	if( !vm->EventAdd( Device::GetID(), EID_PSG, 1000, EV_LOOP|EV_MS ) ) return false;
+	if( !vm->EventAdd( Device::GetID(), EID_PSG, 1000, EV_LOOP | EV_MS ) ) return false;
 	
 	return SndDev::Init( srate );
 }
@@ -192,7 +192,7 @@ bool OPN64::Init( int clock, int srate )
 	cYM2203::Reset();
 	
 	// 少なくとも1秒に1回くらいは更新するだろうという前提
-	if( !vm->EventAdd( Device::GetID(), EID_PSG, 1000, EV_LOOP|EV_MS ) ) return false;
+	if( !vm->EventAdd( Device::GetID(), EID_PSG, 1000, EV_LOOP | EV_MS ) ) return false;
 	
 	return SndDev::Init( srate );
 }
@@ -235,7 +235,7 @@ int PSG60::SoundUpdate( int samples )
 	PRINTD( PSG_LOG, "[PSG][SoundUpdate] Samples: %d -> %d\n", samples, length );
 	
 	// バッファに書込み
-	for( int i=0; i<length; i++ ){
+	for( int i = 0; i < length; i++ ){
 		SndDev::cRing::Put( ( this->Update1Sample() * SndDev::Volume ) / 100 );
 	}
 	
@@ -249,7 +249,7 @@ int OPN64::SoundUpdate( int samples )
 	PRINTD( PSG_LOG, "[OPN][SoundUpdate] Samples: %d -> %d\n", samples, length );
 	
 	// バッファに書込み
-	for( int i=0; i<length; i++ ){
+	for( int i = 0; i < length; i++ ){
 		SndDev::cRing::Put( ( this->Update1Sample() * SndDev::Volume ) / 100 );
 	}
 	
@@ -261,10 +261,10 @@ int OPN64::SoundUpdate( int samples )
 // ポートアクセス関数
 /////////////////////////////////////////////////////////////////////////////
 BYTE PSG60::PortAread( void ){ return vm->KeyGetJoy( JoyNo ); }
-void PSG60::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
+void PSG60::PortBwrite( BYTE data ){ JoyNo = (~data >> 6) & 1; }
 
 BYTE OPN64::PortAread( void ){ return vm->KeyGetJoy( JoyNo ); }
-void OPN64::PortBwrite( BYTE data ){ JoyNo = (~data>>6)&1; }
+void OPN64::PortBwrite( BYTE data ){ JoyNo = (~data >> 6) & 1; }
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -335,13 +335,13 @@ bool PSG60::DokoSave( cIni* Ini )
 	Ini->SetVal( "PSG", "LastEnable",		"", "0x%02X", LastEnable    );
 
 #ifdef USEFMGEN
-	for( int i=0; i<16; i++ ){
+	for( int i = 0; i < 16; i++ ){
 		Ini->SetVal( "PSG", Stringf( "Regs_%02d", i ), "", "0x%02X", reg[i] );
 	}
 	
-	Ini->SetVal( "PSG", "envelop", "", (BYTE)((envelop - (const uint*)enveloptable)/64) );
+	Ini->SetVal( "PSG", "envelop", "", (BYTE)((envelop - (const uint*)enveloptable) / 64) );
 	
-	for( int i=0; i<3; i++ ){
+	for( int i = 0; i < 3; i++ ){
 		Ini->SetVal( "PSG", Stringf( "olevel_%02d",  i ), "", "0x%02X", olevel[i]  );
 		Ini->SetVal( "PSG", Stringf( "scount_%02d",  i ), "", "0x%08X", scount[i]  );
 		Ini->SetVal( "PSG", Stringf( "speriod_%02d", i ), "", "0x%08X", speriod[i] );
@@ -356,7 +356,7 @@ bool PSG60::DokoSave( cIni* Ini )
 	Ini->SetVal( "PSG", "nperiodbase",	"", "0x%08X", nperiodbase );
 	Ini->SetVal( "PSG", "mask",			"",           mask        );
 #else
-	for( int i=0; i<16; i++ ){
+	for( int i = 0; i < 16; i++ ){
 		Ini->SetVal( "PSG", Stringf( "Regs_%02d", i ), "", "0x%02X", Regs[i] );
 	}
 	
@@ -417,11 +417,11 @@ bool OPN64::DokoSave( cIni* Ini )
 //		uint8	fnum2[6];
 //xx	Channel4 ch[3];				// 別途処理
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	for( int i=0; i<3; i++ ){
+	for( int i = 0; i < 3; i++ ){
 		Ini->SetVal( "FMGEN_OPN", Stringf( "fnum%02d",  i ), "", "0x%08X", opn.fnum[i]  );
 		Ini->SetVal( "FMGEN_OPN", Stringf( "fnum3%02d", i ), "", "0x%08X", opn.fnum3[i] );
 	}
-	for( int i=0; i<6; i++ ){
+	for( int i = 0; i < 6; i++ ){
 		Ini->SetVal( "FMGEN_OPN", Stringf( "fnum2%02d", i ), "", "0x%02X", opn.fnum2[i] );
 	}
 
@@ -446,7 +446,7 @@ bool OPN64::DokoSave( cIni* Ini )
 	Ini->SetVal( "FMGEN_OPNBase", "rate",		"", "0x%08X", opn.OPNBase::rate     );
 	Ini->SetVal( "FMGEN_OPNBase", "psgrate",	"", "0x%08X", opn.OPNBase::psgrate  );
 	Ini->SetVal( "FMGEN_OPNBase", "status",		"", "0x%08X", opn.OPNBase::status   );
-	for( int i=0; i<8; i++ ){
+	for( int i = 0; i < 8; i++ ){
 		Ini->SetVal( "FMGEN_OPNBase", Stringf( "lfotable%02d", i ), "", "0x%08X", opn.lfotable[i] );
 	}
 	Ini->SetVal( "FMGEN_OPNBase", "prescale",	"", "0x%02X", opn.OPNBase::prescale );
@@ -464,7 +464,7 @@ bool OPN64::DokoSave( cIni* Ini )
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	Ini->SetVal( "FMGEN_Timer", "status",		"", "0x%02X", opn.OPNBase::Timer::status );
 	Ini->SetVal( "FMGEN_Timer", "regtc",		"", "0x%02X", opn.OPNBase::Timer::regtc );
-	for( int i=0; i<2; i++ ){
+	for( int i = 0; i < 2; i++ ){
 		Ini->SetVal( "FMGEN_Timer", Stringf( "regta%02d", i ), "", "0x%02X", opn.OPNBase::Timer::regta[i] );
 	}
 	Ini->SetVal( "FMGEN_Timer", "timera",		"", "0x%08X", opn.OPNBase::Timer::timera       );
@@ -489,14 +489,14 @@ bool OPN64::DokoSave( cIni* Ini )
 //	public:
 //xx	Operator op[4];				// 別途処理
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	for( int i=0; i<3; i++ ){
+	for( int i = 0; i < 3; i++ ){
 		Ini->SetVal( "FMGEN_Channel4", Stringf( "fb%02d", i ),		"", "0x%08X", opn.ch[i].fb );
-		for( int j=0; j<4; j++ ){
+		for( int j = 0; j < 4; j++ ){
 			Ini->SetVal( "FMGEN_Channel4", Stringf( "buf%02d_%02d", i, j ),	"", opn.ch[i].buf[j] );
 		}
-		for( int j=0; j<3; j++ ){
-			Ini->SetVal( "FMGEN_Channel4", Stringf( "in%02d_%02d",  i, j ), "", (BYTE)((opn.ch[i].in[j]  - (const int*)opn.ch[i].buf)/sizeof(int*)) );
-			Ini->SetVal( "FMGEN_Channel4", Stringf( "out%02d_%02d", i, j ), "", (BYTE)((opn.ch[i].out[j] - (const int*)opn.ch[i].buf)/sizeof(int*)) );
+		for( int j = 0; j < 3; j++ ){
+			Ini->SetVal( "FMGEN_Channel4", Stringf( "in%02d_%02d",  i, j ), "", (BYTE)((opn.ch[i].in[j]  - (const int*)opn.ch[i].buf) / sizeof(int*)) );
+			Ini->SetVal( "FMGEN_Channel4", Stringf( "out%02d_%02d", i, j ), "", (BYTE)((opn.ch[i].out[j] - (const int*)opn.ch[i].buf) / sizeof(int*)) );
 		}
 		Ini->SetVal( "FMGEN_Channel4", Stringf( "algo_%02d", i ),	"",           opn.ch[i].algo_ );
 		
@@ -567,7 +567,7 @@ bool OPN64::DokoSave( cIni* Ini )
 		//		int		dbgopout_;
 		//		int		dbgpgout_;
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		for( int j=0; j<4; j++ ){
+		for( int j = 0; j < 4; j++ ){
 			Ini->SetVal( "FMGEN_Operator", Stringf( "out_%02d_%02d",                    i, j ),	"",           opn.ch[i].op[j].out_                    );
 			Ini->SetVal( "FMGEN_Operator", Stringf( "out2_%02d_%02d",                   i, j ),	"",           opn.ch[i].op[j].out2_                   );
 			Ini->SetVal( "FMGEN_Operator", Stringf( "in2_%02d_%02d",                    i, j ),	"",           opn.ch[i].op[j].in2_                    );
@@ -626,9 +626,9 @@ bool OPN64::DokoSave( cIni* Ini )
 	Ini->SetVal( "FMGEN_Chip", "aml_",		"", "0x%08X", opn.chip.aml_   );
 	Ini->SetVal( "FMGEN_Chip", "pml_",		"", "0x%08X", opn.chip.pml_   );
 	Ini->SetVal( "FMGEN_Chip", "pmv_",		"",           opn.chip.pmv_   );
-	for( int i=0; i<4; i++ ){
+	for( int i = 0; i < 4; i++ ){
 		std::string strva;
-		for( int j=0; j<16; j++ ){
+		for( int j = 0; j < 16; j++ ){
 			strva += Stringf( "%08X", opn.chip.multable_[i][j] );
 		}
 		Ini->SetEntry( "FMGEN_Chip", Stringf( "multable_%02X", i ), "", strva.c_str() );
@@ -651,13 +651,13 @@ bool OPN64::DokoSave( cIni* Ini )
 //xx	static uint noisetable[noisetablesize];	// コンストラクタで確定
 //xx	static int EmitTable[32];				// コンストラクタで確定
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	for( int i=0; i<16; i++ ){
+	for( int i = 0; i < 16; i++ ){
 		Ini->SetVal( "FMGEN_PSG", Stringf( "Regs_%02d", i ), "", "0x%02X", opn.psg.reg[i] );
 	}
 	
-	Ini->SetVal( "FMGEN_PSG", "envelop", "", (BYTE)((opn.psg.envelop - (const uint*)opn.psg.enveloptable)/64) );
+	Ini->SetVal( "FMGEN_PSG", "envelop", "", (BYTE)((opn.psg.envelop - (const uint*)opn.psg.enveloptable) / 64) );
 	
-	for( int i=0; i<3; i++ ){
+	for( int i = 0; i < 3; i++ ){
 		Ini->SetVal( "FMGEN_PSG", Stringf( "olevel_%02d",  i ), "", "0x%02X", opn.psg.olevel[i]  );
 		Ini->SetVal( "FMGEN_PSG", Stringf( "scount_%02d",  i ), "", "0x%08X", opn.psg.scount[i]  );
 		Ini->SetVal( "FMGEN_PSG", Stringf( "speriod_%02d", i ), "", "0x%08X", opn.psg.speriod[i] );
@@ -690,14 +690,14 @@ bool PSG60::DokoLoad( cIni* Ini )
 	Ini->GetVal( "PSG", "LastEnable",		LastEnable    );
 
 #ifdef USEFMGEN
-	for( int i=0; i<16; i++ ){
+	for( int i = 0; i < 16; i++ ){
 		Ini->GetVal( "PSG", Stringf( "Regs_%02d", i ), reg[i] );
 	}
 	
 	Ini->GetVal( "PSG", "envelop", st );
 	envelop = enveloptable[st];
 	
-	for( int i=0; i<3; i++ ){
+	for( int i = 0; i < 3; i++ ){
 		Ini->GetVal( "PSG", Stringf( "olevel_%02d",  i ), olevel[i]  );
 		Ini->GetVal( "PSG", Stringf( "scount_%02d",  i ), scount[i]  );
 		Ini->GetVal( "PSG", Stringf( "speriod_%02d", i ), speriod[i] );
@@ -712,7 +712,7 @@ bool PSG60::DokoLoad( cIni* Ini )
 	Ini->GetVal( "PSG", "nperiodbase",	nperiodbase );
 	Ini->GetVal( "PSG", "mask",			mask        );
 #else
-	for( int i=0; i<16; i++ ){
+	for( int i = 0; i < 16; i++ ){
 		Ini->GetVal( "PSG", Stringf( "Regs_%02d", i ), Regs[i] );
 	}
 	Ini->GetVal( "PSG", "PeriodA",		PeriodA   );
@@ -774,11 +774,11 @@ bool OPN64::DokoLoad( cIni* Ini )
 //		uint8	fnum2[6];
 //xx	Channel4 ch[3];				// 別途処理
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	for( int i=0; i<3; i++ ){
+	for( int i = 0; i < 3; i++ ){
 		Ini->GetVal( "FMGEN_OPN", Stringf( "fnum%02d",  i ), opn.fnum[i]  );
 		Ini->GetVal( "FMGEN_OPN", Stringf( "fnum3%02d", i ), opn.fnum3[i] );
 	}
-	for( int i=0; i<6; i++ ){
+	for( int i = 0; i < 6; i++ ){
 		Ini->GetVal( "FMGEN_OPN", Stringf( "fnum2%02d", i ), opn.fnum2[i] );
 	}
 
@@ -803,7 +803,7 @@ bool OPN64::DokoLoad( cIni* Ini )
 	Ini->GetVal( "FMGEN_OPNBase", "rate",		opn.OPNBase::rate     );
 	Ini->GetVal( "FMGEN_OPNBase", "psgrate",	opn.OPNBase::psgrate  );
 	Ini->GetVal( "FMGEN_OPNBase", "status",		opn.OPNBase::status   );
-	for( int i=0; i<8; i++ ){
+	for( int i = 0; i < 8; i++ ){
 		Ini->GetVal( "FMGEN_OPNBase", Stringf( "lfotable%02d", i ), opn.lfotable[i] );
 	}
 	Ini->GetVal( "FMGEN_OPNBase", "prescale",	opn.OPNBase::prescale );
@@ -821,7 +821,7 @@ bool OPN64::DokoLoad( cIni* Ini )
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	Ini->GetVal( "FMGEN_Timer", "status",		opn.OPNBase::Timer::status       );
 	Ini->GetVal( "FMGEN_Timer", "regtc",		opn.OPNBase::Timer::regtc        );
-	for( int i=0; i<2; i++ ){
+	for( int i = 0; i < 2; i++ ){
 		Ini->GetVal( "FMGEN_Timer", Stringf( "regta%02d", i ), opn.OPNBase::Timer::regta[i] );
 	}
 	Ini->GetVal( "FMGEN_Timer", "timera",		opn.OPNBase::Timer::timera       );
@@ -846,12 +846,12 @@ bool OPN64::DokoLoad( cIni* Ini )
 //	public:
 //xx	Operator op[4];				// 別途処理
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	for( int i=0; i<3; i++ ){
+	for( int i = 0; i < 3; i++ ){
 		Ini->GetVal( "FMGEN_Channel4", Stringf( "fb%02d", i ), opn.ch[i].fb );
-		for( int j=0; j<4; j++ ){
+		for( int j = 0; j < 4; j++ ){
 			Ini->GetVal( "FMGEN_Channel4", Stringf( "buf%02d_%02d", i, j ), opn.ch[i].buf[j] );
 		}
-		for( int j=0; j<3; j++ ){
+		for( int j = 0; j < 3; j++ ){
 			Ini->GetVal( "FMGEN_Channel4", Stringf( "in%02d_%02d",  i, j ), st );
 			opn.ch[i].in[j]  = &opn.ch[i].buf[st];
 			Ini->GetVal( "FMGEN_Channel4", Stringf( "out%02d_%02d", i, j ), st );
@@ -926,7 +926,7 @@ bool OPN64::DokoLoad( cIni* Ini )
 		//		int		dbgopout_;
 		//		int		dbgpgout_;
 		// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		for( int j=0; j<4; j++ ){
+		for( int j = 0; j < 4; j++ ){
 			Ini->GetVal( "FMGEN_Operator", Stringf( "out_%02d_%02d",                    i, j ), opn.ch[i].op[j].out_                    );
 			Ini->GetVal( "FMGEN_Operator", Stringf( "out2_%02d_%02d",                   i, j ), opn.ch[i].op[j].out2_                   );
 			Ini->GetVal( "FMGEN_Operator", Stringf( "in2_%02d_%02d",                    i, j ), opn.ch[i].op[j].in2_                    );
@@ -985,11 +985,11 @@ bool OPN64::DokoLoad( cIni* Ini )
 	Ini->GetVal( "FMGEN_Chip", "aml_",		opn.chip.aml_   );
 	Ini->GetVal( "FMGEN_Chip", "pml_",		opn.chip.pml_   );
 	Ini->GetVal( "FMGEN_Chip", "pmv_",		opn.chip.pmv_   );
-	for( int i=0; i<4; i++ ){
+	for( int i = 0; i < 4; i++ ){
 		std::string strva;
 		if( Ini->GetEntry( "FMGEN_Chip", Stringf( "multable_%02X", i ), strva ) ){
 			strva.resize( 16 * sizeof(DWORD) * 2, '0' );
-			for( int j=0; j<16; j++ ){
+			for( int j = 0; j < 16; j++ ){
 				opn.chip.multable_[i][j] = std::stoul( strva.substr( j * sizeof(DWORD) * 2, sizeof(DWORD) * 2 ), nullptr, 16 );
 			}
 		}
@@ -1012,14 +1012,14 @@ bool OPN64::DokoLoad( cIni* Ini )
 //xx	static uint noisetable[noisetablesize];	// コンストラクタで確定
 //xx	static int EmitTable[32];				// コンストラクタで確定
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	for( int i=0; i<16; i++ ){
+	for( int i = 0; i < 16; i++ ){
 		Ini->GetVal( "FMGEN_PSG", Stringf( "Regs_%02d", i ), opn.psg.reg[i] );
 	}
 	
 	Ini->GetVal( "FMGEN_PSG", "envelop", st );
 	opn.psg.envelop = opn.psg.enveloptable[st];
 	
-	for( int i=0; i<3; i++ ){
+	for( int i = 0; i < 3; i++ ){
 		Ini->GetVal( "FMGEN_PSG", Stringf( "olevel_%02d",  i ), opn.psg.olevel[i]  );
 		Ini->GetVal( "FMGEN_PSG", Stringf( "scount_%02d",  i ), opn.psg.scount[i]  );
 		Ini->GetVal( "FMGEN_PSG", Stringf( "speriod_%02d", i ), opn.psg.speriod[i] );

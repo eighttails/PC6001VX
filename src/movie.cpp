@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef NOAVI
 
@@ -140,14 +140,18 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 {
 	// エンコーダーを探索
 	codec = avcodec_find_encoder( codec_id );
-	if( !codec ){ return false; }
+	if( !codec ){
+		return false;
+	}
 	
 	ost.st = avformat_new_stream( oc, codec );
-	if( !ost.st ){ return false; }
+	if( !ost.st ){
+		return false;
+	}
 	
 	AVCodecContext* c = avcodec_alloc_context3(codec);
 	AVDictionary* opt = nullptr;
-	ost.st->id        = oc->nb_streams-1;
+	ost.st->id        = oc->nb_streams - 1;
 	ost.enc = c;
 	c->thread_count   = av_cpu_count();
 
@@ -220,7 +224,9 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 static AVFrame* AllocAudioFrame( enum AVSampleFormat sample_fmt, uint64_t channel_layout, int sample_rate, int nb_samples )
 {
 	AVFrame* frame = av_frame_alloc();
-	if( !frame ){ return nullptr; }
+	if( !frame ){
+		return nullptr;
+	}
 	
 	frame->format         = sample_fmt;
 	frame->channel_layout = channel_layout;
@@ -243,7 +249,7 @@ static bool OpenAudio( OutputStream& ost, int sample_rate )
 	
 	// フレームを初期化
 	ost.frame     = AllocAudioFrame( c->sample_fmt,     c->channel_layout, c->sample_rate, nb_samples );
-	ost.tmp_frame = AllocAudioFrame( AV_SAMPLE_FMT_S16, c->channel_layout, sample_rate,    nb_samples/(c->sample_rate/sample_rate) );
+	ost.tmp_frame = AllocAudioFrame( AV_SAMPLE_FMT_S16, c->channel_layout, sample_rate,    nb_samples / (c->sample_rate / sample_rate) );
 	
 	// フレームを書き込み可能にする
 	av_frame_make_writable( ost.frame );
@@ -251,7 +257,9 @@ static bool OpenAudio( OutputStream& ost, int sample_rate )
 	
 	// サンプル変換部
 	ost.swr_ctx = swr_alloc();
-	if( !ost.swr_ctx ){ return false; }
+	if( !ost.swr_ctx ){
+		return false;
+	}
 	
 	// 音声フォーマットの設定
 	av_opt_set_int       ( ost.swr_ctx, "in_channel_count",  c->channels,       0 );
@@ -262,7 +270,9 @@ static bool OpenAudio( OutputStream& ost, int sample_rate )
 	av_opt_set_sample_fmt( ost.swr_ctx, "out_sample_fmt",    c->sample_fmt,     0 );
 
 	// サンプル変換部を初期化
-	if( swr_init( ost.swr_ctx ) < 0 ){ return false; }
+	if( swr_init( ost.swr_ctx ) < 0 ){
+		return false;
+	}
 	
 	return true;
 }
@@ -310,14 +320,16 @@ static AVFrame* GetAudioFrame( OutputStream& ost, AVI6* avi )
 static int WriteAudioFrame( OutputStream& ost, AVI6* avi )
 {
 	AVFrame* frame    = GetAudioFrame( ost, avi );
-	if( !frame || !frame->pts ){ return 1; }
-
+	if( !frame || !frame->pts ){
+		return 1;
+	}
+	
 	// フレームデータのコピーを作成(make_writableをすると内部バッファのコピーまで作られる)
 	AVFrame* queue_frame = av_frame_clone(frame);
 	av_frame_copy(queue_frame, frame);
 	av_frame_copy_props(queue_frame, frame);
 	av_frame_make_writable(queue_frame);
-
+	
 	frameQueue.push(std::make_tuple(&ost, queue_frame));
 	return 0;
 }
@@ -329,7 +341,9 @@ static int WriteAudioFrame( OutputStream& ost, AVI6* avi )
 static AVFrame* AllocPicture( enum AVPixelFormat pix_fmt, int width, int height )
 {
 	AVFrame* picture = av_frame_alloc();
-	if( !picture ){ return nullptr; }
+	if( !picture ){
+		return nullptr;
+	}
 	
 	picture->format = pix_fmt;
 	picture->width  = width;
@@ -351,11 +365,15 @@ static bool OpenVideo( OutputStream& ost, enum AVPixelFormat pix_fmt )
 
 	// フレームを初期化
 	ost.frame = AllocPicture( c->pix_fmt, c->width, c->height );
-	if( !ost.frame ){ return false; }
+	if( !ost.frame ){
+		return false;
+	}
 	
 	// 画像フォーマットの変換元(OSD_GetWindowImage)のフォーマットに合わせて初期化
 	ost.tmp_frame = AllocPicture( pix_fmt, c->width, c->height );
-	if( !ost.tmp_frame ){ return false; }
+	if( !ost.tmp_frame ){
+		return false;
+	}
 	
 	av_frame_make_writable( ost.frame );
 	av_frame_make_writable( ost.tmp_frame );
@@ -364,7 +382,9 @@ static bool OpenVideo( OutputStream& ost, enum AVPixelFormat pix_fmt )
 	if( !ost.sws_ctx ){
 		ost.sws_ctx = sws_getContext( c->width, c->height, pix_fmt, c->width, c->height, c->pix_fmt,
 									   SCALE_FLAGS, nullptr, nullptr, nullptr);
-		if( !ost.sws_ctx ){ return false; }
+		if( !ost.sws_ctx ){
+			return false;
+		}
 	}
 	
 	return true;
@@ -394,14 +414,16 @@ static AVFrame* GetVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, en
 static int WriteVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, enum AVPixelFormat pix_fmt )
 {
 	AVFrame* frame    = GetVideoFrame( ost, src_img, pix_fmt );
-	if( !frame ){ return 1; }
-
+	if( !frame ){
+		return 1;
+	}
+	
 	// フレームデータのコピーを作成(make_writableをすると内部バッファのコピーまで作られる)
 	AVFrame* queue_frame = av_frame_clone(frame);
 	av_frame_copy(queue_frame, frame);
 	av_frame_copy_props(queue_frame, frame);
 	av_frame_make_writable(queue_frame);
-
+	
 	frameQueue.push(std::make_tuple(&ost, queue_frame));
 	return 0;
 }
@@ -460,7 +482,7 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 {
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
-
+	
 	// キャプチャフレーム設定
 	ss.x = 0;
 	ss.y = 0;
@@ -483,7 +505,9 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 	
 	// 出力コンテキスト作成
 	avformat_alloc_output_context2( &oc, nullptr, nullptr, P6VPATH2STR( filepath ).c_str() );
-	if( !oc ){ return false; }
+	if( !oc ){
+		return false;
+	}
 	
 	const AVOutputFormat* fmt = oc->oformat;
 	
@@ -520,9 +544,9 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 	if( avformat_write_header( oc, &opt ) < 0 ){
 		return false;
 	}
-
+	
 	EncodeThread->BeginThread(this);
-
+	
 	isAVI = true;
 	return true;
 #else
@@ -541,10 +565,10 @@ void AVI6::StopAVI( void )
 {
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
-
+	
 	EncodeThread->Cancel();
 	EncodeThread->Waiting();
-
+	
 	if( oc ){
 		// ストリームトレイラ書込み
 		av_write_trailer( oc );
@@ -612,7 +636,9 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
 	
-	if( !isAVI || !wh || !req ){ return false; }
+	if( !isAVI || !wh || !req ){
+		return false;
+	}
 	
 	req--;
 	

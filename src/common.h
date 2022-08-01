@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef COMMON_H_INCLUDED
 #define COMMON_H_INCLUDED
@@ -90,6 +90,7 @@ enum TextID{
 	TINI_FontPath,			// "FONTファイル格納パス"
 	TINI_DokoPath,			// "どこでもSAVE格納パス"
 	// [CHECK]
+	TINI_CkDokoLoad,		// "どこでもLOAD(SLOT)実行時確認 Yes:する No:しない"
 	TINI_CkQuit,			// "終了時確認 Yes:する No:しない"
 	TINI_SaveQuit,			// "終了時INIファイルを保存 Yes:する No:しない"
 	// [OPTION]
@@ -160,11 +161,13 @@ VSurface* LoadImg( const P6VPATH& );
 // 文字列取得関数等
 /////////////////////////////////////////////////////////////////////////////
 // メッセージ文字列取得
-const std::string& GetText( TextID );
+const std::string GetText( TextID );
 // 色の名前取得
-const std::string& GetColorName( int );
+const std::string GetColorName( int );
+// 拡張カートリッジの名前取得
+const std::string GetExtCartName( int );
 // キーの名前取得
-const std::string& GetKeyName( PCKEYsym );
+const std::string GetKeyName( PCKEYsym );
 // キーの文字コード取得
 BYTE GetKeyChar( PCKEYsym, bool );
 

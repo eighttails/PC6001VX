@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <algorithm>
 #include <cctype>
@@ -333,14 +333,14 @@ void cWndMem::Update( void )
 	
 	// Read メモリブロック名表示
 	ZCons::Printf( "READ  " );
-	for( i=0; i<8; i++ ){
+	for( i = 0; i < 8; i++ ){
 		ZCons::SetColor( TextCol[i] );
 		ZCons::Printf( "%-7s", el->vm->mem->GetReadMemBlk( i ).c_str() );
 	}
 	ZCons::Printf( "\nWRITE " );
 	
 	// Write メモリブロック名表示
-	for( i=0; i<8; i++ ){
+	for( i = 0; i < 8; i++ ){
 		ZCons::SetColor( TextCol[i] );
 		ZCons::Printf( "%-7s", el->vm->mem->GetWriteMemBlk( i ).c_str() );
 	}
@@ -355,14 +355,14 @@ void cWndMem::Update( void )
 	
 	for( i = 0; i < GetYline() - 4; i++ ){
 		ZCons::Printf( "\n" );
-		ZCons::SetColor( TextCol[ addr>>13 ] );
+		ZCons::SetColor( TextCol[ addr >> 13 ] );
 		ZCons::Printf( "%04X", addr );
 		ZCons::SetColor( FC_WHITE4, FC_BLACK );
 		ZCons::Printf( " " );
-		for( j=0; j<16; j++){
+		for( j = 0; j < 16; j++){
 			ZCons::Printf( "%02X ", el->vm->mem->Read(addr+j) );
 		}
-		for( j=0; j<16; j++){
+		for( j = 0; j < 16; j++){
 			ZCons::PutCharH( el->vm->mem->Read(addr+j) );
 		}
 		addr += 16;
@@ -526,7 +526,9 @@ void cWndReg::Update( void )
 			continue;
 			
 		case IO_SP:			// 空欄
-			if( ++yy < IOPORTH ){ continue; }
+			if( ++yy < IOPORTH ){
+				continue;
+			}
 			[[fallthrough]];
 			
 		case IO_CR:			// 改行
@@ -582,7 +584,9 @@ void cWndReg::Update( void )
 		}
 		
 		// 改行?
-		if( ++yy < IOPORTH ){ continue; }
+		if( ++yy < IOPORTH ){
+			continue;
+		}
 		
 		// 改行
 		xx += 9;
@@ -602,7 +606,9 @@ void cWndReg::Update( void )
 	for( int y = 0, i = 0; y < (imax + 3) / 4; y++ ){
 		ZCons::Locate( IVECX, IVECY + y + 1 );
 		for( int x = 0; x < 4; x++, i++ ){
-			if( i >= imax ){ break; }
+			if( i >= imax ){
+				break;
+			}
 			
 			DWORD flg = el->vm->intr->GetIntrFlag();
 			if( ((flg & IREQ_TIMER)  && i ==  3) ||	// INT3:タイマ割込み
@@ -859,7 +865,7 @@ void cWndMon::KeyIn( int kcode, int ccode )
 		
 		if( !KeyBuf.empty() ){	// キーバッファに文字列あり
 			// 末尾のスペースを削除
-			while( KeyBuf.substr( KeyBuf.length()-1, 1) == " " ){
+			while( KeyBuf.substr( KeyBuf.length() - 1, 1) == " " ){
 				KeyBuf.pop_back();
 			}
 			
@@ -923,7 +929,7 @@ void cWndMon::KeyIn( int kcode, int ccode )
 	default:
 		// 有効な文字コードかつバッファがあふれていなければ
 		if( ( ccode > 0x1f ) && ( ccode < 0x80 ) ){
-			if( KeyBuf.length() < (MAX_CHRS-1) ){
+			if( KeyBuf.length() < (MAX_CHRS - 1) ){
 				KeyBuf.push_back( ccode );
 				ZCons::Printf( "%c", ccode );
 			}
@@ -1211,8 +1217,8 @@ void cWndMon::Exec( int cmd )
 		code = el->vm->mem->Read( addr );
 		
 		if( call ){
-			if( code		== 0xcd ||	// CALL nn    = 11001101B
-			  ( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
+			if( code		  == 0xcd ||	// CALL nn    = 11001101B
+			  ( code & 0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
 				addr += 3;
 			}
 		}
@@ -1226,7 +1232,7 @@ void cWndMon::Exec( int cmd )
 	    if( rep ){
 			if( code == 0xed ){			// LDIR/LDDR/CPIR/CPDR etc
 				code = el->vm->mem->Read( addr+1 );
-				if( (code&0xf4) == 0xb0 ){
+				if( (code & 0xf4) == 0xb0 ){
 					addr += 2;
 				}
 			}
@@ -1261,8 +1267,8 @@ void cWndMon::Exec( int cmd )
 		addr = reg.PC.W;
 		code = el->vm->mem->Read( addr );
 		
-		if( code		== 0xcd ||	// CALL nn    = 11001101B
-		  ( code&0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
+		if( code		  == 0xcd ||	// CALL nn    = 11001101B
+		  ( code & 0xc7 ) == 0xc4 ){	// CALL cc,nn = 11ccc100B
 			addr += 3;
 		}
 		
@@ -1272,7 +1278,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( code == 0xed ){			// LDIR/LDDR/CPIR/CPDR etc
 			code = el->vm->mem->Read( addr+1 );
-			if( (code&0xf4) == 0xb0 ){
+			if( (code & 0xf4) == 0xb0 ){
 				addr += 2;
 			}
 		}
@@ -1341,7 +1347,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( show ){
 			if( el->vm->bp->GetNum() ){
-				for( int i=1; i<=el->vm->bp->GetNum(); i++ ){
+				for( int i = 1; i <= el->vm->bp->GetNum(); i++ ){
 					ZCons::Printf( "    #%02d  ", i );
 					addr = el->vm->bp->GetAddr( i );
 					switch( el->vm->bp->GetType( i ) ){
@@ -1415,7 +1421,7 @@ void cWndMon::Exec( int cmd )
 		
 		ZCons::Printf( "WRITE memory [ %04XH ] <- %02X  (= %d | %+d | ", addr, (BYTE)data, (BYTE)data, (int8_t)data );
 		int i,j;
-		for( i=0, j=0x80; i<8; i++, j>>=1 ){
+		for( i = 0, j = 0x80; i < 8; i++, j >>= 1 ){
 			ZCons::Printf( "%d", (data & j) ? 1 : 0 );
 		}
 		ZCons::Printf( "B )\n");
@@ -1452,7 +1458,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		for( int i=0; i<size; i++ ){
+		for( int i = 0; i < size; i++ ){
 			el->vm->mem->Write( start+i, value );
 		}
 		
@@ -1477,7 +1483,7 @@ void cWndMon::Exec( int cmd )
 		
 		// [<addr|#size>]
 		if     ( ArgvIs( ARGV_SIZE ) ){ size = argv.Val; }
-		else if( ArgvIs( ARGV_ADDR ) ){ size = argv.Val - start +1; }
+		else if( ArgvIs( ARGV_ADDR ) ){ size = argv.Val - start + 1; }
 		else                          { ErrorMes(); }
 		Shift();
 		
@@ -1489,14 +1495,14 @@ void cWndMon::Exec( int cmd )
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
 		// 転送元-転送先が 重ならない
-		if( start+size <= dist ){
-			for( int i=0; i<size; i++ ){
-				el->vm->mem->Write( dist+i, el->vm->mem->Read( start+i ) );
+		if( start + size <= dist ){
+			for( int i = 0; i < size; i++ ){
+				el->vm->mem->Write( dist+i, el->vm->mem->Read( start + i ) );
 			}
 		// 転送元-転送先が 重なる
 		}else{
-			for( int i=size-1; i>=0; i-- ){
-				el->vm->mem->Write( dist+i, el->vm->mem->Read( start+i ) );
+			for( int i = size - 1; i >= 0; i-- ){
+				el->vm->mem->Write( dist+i, el->vm->mem->Read( start + i ) );
 			}
 		}
 		break;
@@ -1534,7 +1540,7 @@ void cWndMon::Exec( int cmd )
 		
 		ZCons::Printf( "OUT port [ %02XH ] <- %02X  (= %d | %+d | ", port, (BYTE)data, (BYTE)data, (int8_t)data );
 		int i,j;
-		for( i=0, j=0x80; i<8; i++, j>>=1 ){
+		for( i = 0, j = 0x80; i < 8; i++, j >>= 1 ){
 			ZCons::Printf( "%d", (data & j) ? 1 : 0 );
 		}
 		ZCons::Printf( "B )\n");
@@ -1572,7 +1578,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		if( !OSD_FSopen( fs, fname, std::ios_base::in|std::ios_base::binary ) ){
+		if( !OSD_FSopen( fs, fname, std::ios_base::in | std::ios_base::binary ) ){
 			ZCons::SetColor( FC_RED4 );
 			ZCons::Printf( "Failed : File open error\n" );
 			ZCons::SetColor( FC_WHITE4 );
@@ -1580,12 +1586,12 @@ void cWndMon::Exec( int cmd )
 		}
 		
 		int addr = start;
-		for( int i=0; i<size; i++ ){
-			el->vm->mem->Write( (addr++)&0xffff, FSGETBYTE( fs ) );
+		for( int i = 0; i < size; i++ ){
+			el->vm->mem->Write( (addr++) & 0xffff, FSGETBYTE( fs ) );
 		}
 		fs.close();
 		
-		ZCons::Printf( " Loaded [%s] -> %d bytes\n", P6VPATH2STR( fname ).c_str(), addr-start );
+		ZCons::Printf( " Loaded [%s] -> %d bytes\n", P6VPATH2STR( fname ).c_str(), addr - start );
 		break;
 	}
 		
@@ -1619,7 +1625,7 @@ void cWndMon::Exec( int cmd )
 		
 		if( argv.Type != ARGV_END ) ErrorMes();
 		
-		if( !OSD_FSopen( fs, fname, std::ios_base::out|std::ios_base::binary|std::ios_base::trunc ) ){
+		if( !OSD_FSopen( fs, fname, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc ) ){
 			ZCons::SetColor( FC_RED4 );
 			ZCons::Printf( "Failed : File open error\n" );
 			ZCons::SetColor( FC_WHITE4 );
@@ -1627,12 +1633,12 @@ void cWndMon::Exec( int cmd )
 		}
 		
 		int addr = start;
-		for( int i=0; i<size; i++ ){
-			FSPUTBYTE( el->vm->mem->Read( (addr++)&0xffff ), fs );
+		for( int i = 0; i < size; i++ ){
+			FSPUTBYTE( el->vm->mem->Read( (addr++) & 0xffff ), fs );
 		}
 		fs.close();
 		
-		ZCons::Printf( " Saved [%s] -> %d bytes\n", P6VPATH2STR( fname ).c_str(), addr-start );
+		ZCons::Printf( " Saved [%s] -> %d bytes\n", P6VPATH2STR( fname ).c_str(), addr - start );
 		break;
 	}
 		
@@ -1651,7 +1657,7 @@ void cWndMon::Exec( int cmd )
 	//  reg <name> <value>
 	//  レジスタの内容を変更
 	//-----------------------------------------------------------------------
-	{	int re = -1, val=0;
+	{	int re = -1, val = 0;
 		std::string str = "XX";
 		cZ80::Register reg;
 		
@@ -1683,9 +1689,9 @@ void cWndMon::Exec( int cmd )
 		case ARG_HL1:	reg.HL1.W = val;		break;
 		case ARG_I:		val &= 0xff; reg.I = val;			break;
 		case ARG_R:		val &= 0xff; reg.R = val;			break;
-		case ARG_IFF:	if(val)  { val=1; reg.IFF  = val; }	break;
-		case ARG_IM:	if(val>3){ val=2; reg.IM   = val; }	break;
-		case ARG_HALT:	if(val)  { val=1; reg.Halt = val; }	break;
+		case ARG_IFF:	if(val)    { val = 1; reg.IFF  = val; }	break;
+		case ARG_IM:	if(val > 3){ val = 2; reg.IM   = val; }	break;
+		case ARG_HALT:	if(val)    { val = 1; reg.Halt = val; }	break;
 		}
 		
 		el->vm->cpum->SetRegister( reg );
@@ -1731,7 +1737,7 @@ void cWndMon::Exec( int cmd )
 		}
 		
 		pc = 0;
-		for( i=0; i<step; i++ ){
+		for( i = 0; i < step; i++ ){
 			pc += el->vm->cpum->Disasm( DisCode, (WORD)(addr+pc) );
 			ZCons::Printf( "%s\n", DisCode.c_str() );
 		}

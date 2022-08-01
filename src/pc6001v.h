@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef PC6001V_H_INCLUDED
 #define PC6001V_H_INCLUDED
@@ -66,6 +66,7 @@
 #define	DEFAULT_AVISCANLINEBR	(75)				// ビデオキャプチャ時スキャンライン輝度 (0-100)%
 #define	DEFAULT_AVIDISPNTSC		(true) 				// ビデオキャプチャ時4:3表示 true:有効 false:無効
 #define	DEFAULT_AVIFILTERING	(true) 				// ビデオキャプチャ時フィルタリング true:アンチエイリアシング false:ニアレストネイバー
+#define	DEFAULT_CKDOKOLOAD		(true) 				// どこでもLOAD(SLOT)実行時確認
 #define	DEFAULT_CKQUIT			(false) 			// 終了時確認
 #define	DEFAULT_SAVEQUIT		(true) 				// 終了時INI保存
 #define	DEFAULT_EXCARTRIDGE		(0) 				// 拡張カートリッジ

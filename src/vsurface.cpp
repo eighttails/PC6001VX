@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <stdexcept>
 
@@ -73,7 +73,7 @@ bool VSurface::InitSurface( int ww, int hh )
 	}
 	
 	// メモリ確保
-	pitch  = ((ww+3)>>2)<<2;	// 4の倍数
+	pitch  = ((ww + 3) >> 2) << 2;	// 4の倍数
 	pixels.resize( pitch * hh );
 	
 	w = ww;
@@ -227,8 +227,8 @@ void VSurface::Fill( BYTE col, VRect* rc )
 	}
 	
 	if( rr.w && rr.h ){
-		for( int i=0; i < rr.h; i++ ){
-			for( int j=0; j < rr.w; j++ ){
+		for( int i = 0; i < rr.h; i++ ){
+			for( int j = 0; j < rr.w; j++ ){
 				try{
 					pixels.at( (rr.y + i) * pitch + rr.x + j ) = col;
 				}
@@ -274,7 +274,7 @@ void VSurface::Blit( VRect* srect, VSurface* dst, VRect* drect )
 	
 	auto psrc = pixels.begin()           + src2.y * pitch        + src2.x;
 	auto pdst = dst->GetPixels().begin() + drc2.y * dst->Pitch() + drc2.x;
-	for( int i=0; i < src2.h; i++ ){
+	for( int i = 0; i < src2.h; i++ ){
 		std::copy( psrc, psrc + src2.w, pdst );
 		psrc += pitch;
 		pdst += dst->Pitch();

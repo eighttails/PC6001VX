@@ -1,18 +1,28 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <cctype>
 #include <cstring> 
 #include <algorithm>
 #include <new>
+#include <map>
 #include <unordered_map>
 #include <vector>
+
+#include "pc6001v.h"
 
 #include "common.h"
 #include "log.h"
 #include "osd.h"
-// #include "png.h"
+//#include "png.h"
+
+
+#include <locale.h>
+#include <libintl.h>
+#define	_(str)	gettext(str)
+#define N_(str)	gettext_noop(str)
+#define gettext_noop(str)	str
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -100,7 +110,7 @@ void Sjis2P6( std::string& dstr, const std::string& sstr )
 			
 			// for dakuon/han-dakuon 2000.05.25.
 			int opt = 0;
-			for( int j=0; j<COUNTOF(sjistbl2); j++ ){
+			for( int j = 0; j < COUNTOF(sjistbl2); j++ ){
 				if( sjistbl2[j] == c ){
 					if( j == 50 ){
 						// for "vu" (2001.01.06)
@@ -114,7 +124,7 @@ void Sjis2P6( std::string& dstr, const std::string& sstr )
 				}
 			}
 			
-			for( int j=0; j<256; j++ ){
+			for( int j = 0; j < 256; j++ ){
 				if( sjistbl[j] == c ){
 					if( j <= 0x1f ){
 						// if graphic character
@@ -230,7 +240,7 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 		png_destroy_write_struct( &PngPtr, &InfoPtr );
 		if( fp ) fclose( fp );
 		if( image ){
-			for( int i=0; i<rec.h; i++ )
+			for( int i = 0; i < rec.h; i++ )
 				if( image[i] ) delete [] image[i];
 			delete [] image;
 		}
@@ -254,10 +264,10 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 		// パレットを作る
 		png_colorp Palette = (png_colorp)png_malloc( PngPtr, 256 * sizeof(png_color) );
 		// サーフェスからパレットを取得
-		for( int i=0; i<256; i++ ){
-			Palette[i].red   = (VSurface::GetColor( i )>>RSHIFT32)&0xff;
-			Palette[i].green = (VSurface::GetColor( i )>>GSHIFT32)&0xff;
-			Palette[i].blue  = (VSurface::GetColor( i )>>BSHIFT32)&0xff;
+		for( int i = 0; i < 256; i++ ){
+			Palette[i].red   = (VSurface::GetColor( i ) >> RSHIFT32) & 0xff;
+			Palette[i].green = (VSurface::GetColor( i ) >> GSHIFT32) & 0xff;
+			Palette[i].blue  = (VSurface::GetColor( i ) >> BSHIFT32) & 0xff;
 		}
 		png_set_PLTE( PngPtr, InfoPtr, Palette, 256 );
 	}
@@ -266,7 +276,7 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 	image = (png_bytepp)png_malloc( PngPtr, sizeof(png_bytep) * rec.h );
 	ZeroMemory( image, sizeof(png_bytep) * rec.h );
 	BYTE* doff = pixels + rec.x + rec.y * spit;
-	for( int i=0; i<rec.h; i++ ){
+	for( int i = 0; i < rec.h; i++ ){
 		image[i] = (png_byte*)png_malloc( PngPtr, dpit );
 		std::memcpy( image[i], doff, dpit );
 		doff += spit;
@@ -277,7 +287,7 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 	
 	// 画像ファイルを開く
 	if( !(fp = OSD_Fopen( filepath, "wb" )) ){
-		for( int i=0; i<rec.h; i++ )
+		for( int i = 0; i < rec.h; i++ )
 			if( image[i] ) delete [] image[i];
 		delete [] image;
 		png_destroy_write_struct( &PngPtr, &InfoPtr );
@@ -294,7 +304,7 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 	fclose( fp );
 	
 	// イメージデータを開放する
-	for( int i=0; i<rec.h; i++ ) delete [] image[i];
+	for( int i = 0; i < rec.h; i++ ) delete [] image[i];
 	delete [] image;
 	
 	// 2つの構造体のメモリを解放する
@@ -403,10 +413,10 @@ VSurface* LoadImg( const P6VPATH& filepath )
 		if( ColorType == PNG_COLOR_TYPE_PALETTE )
 			png_get_PLTE( PngPtr, InfoPtr, &palette, &num_palette );
 		
-		for( int i=0; i<(int)height; i++){
+		for( int i = 0; i < (int)height; i++){
 			png_bytep rpt = RowPtrs[i];
-			for( int j=0; j<(int)width; j++ ){
-				doff[j] = BitDepth == 1 ? (rpt[j/8]&(0x80>>(j&7))) ? 15 : 0
+			for( int j = 0; j < (int)width; j++ ){
+				doff[j] = BitDepth == 1 ? (rpt[j / 8] & (0x80 >> (j & 7))) ? 15 : 0
 										: rpt[j];
 			}
 			doff += sur->Pitch();
@@ -414,7 +424,7 @@ VSurface* LoadImg( const P6VPATH& filepath )
 	}else if( Channels != 1 && ( ColorType == PNG_COLOR_TYPE_RGB_ALPHA || ColorType == PNG_COLOR_TYPE_RGB ) &&
 				BitDepth == 8 ){
 		// GRAY_ALPHA, RGB, RGB_ALPHA, RGB+x
-		for( int i=0; i<(int)height; i++ ){
+		for( int i = 0; i < (int)height; i++ ){
 //			png_bytep rpt = RowPtrs[i];
 			doff += sur->Pitch();	// このへん適当。あとで考える。
 		}
@@ -445,135 +455,157 @@ static const std::unordered_map<TextID, const std::string> MsgString =
 	{ T_EMPTY,					"???" },
 	
 	// 一般メッセージ
-	{ T_QUIT,					"終了してよろしいですか?" },
-	{ T_QUITC,					"終了確認" },
-	{ T_RESTART0,				"再起動してよろしいですか?" },
-	{ T_RESTART,				"変更は再起動後に有効となります。\n今すぐ再起動しますか?" },
-	{ T_RESTARTC,				"再起動確認" },
-	{ T_RESTARTI,				"拡張カートリッジを挿入して再起動します。" },
-	{ T_RESTARTE,				"拡張カートリッジを排出して再起動します。" },
-	{ T_RESETC,					"リセット確認" },
-	{ T_DOKOC,					"どこでもLOAD確認" },
-	{ T_DOKOSLOT,				"どこでもLOADを実行してよろしいですか？" },
-	{ T_REPLAYRES,				"リプレイを途中保存地点まで巻き戻します\nよろしいですか？" },
+	{ T_QUIT,					N_( "終了してよろしいですか?" ) },
+	{ T_QUITC,					N_( "終了確認" ) },
+	{ T_RESTART0,				N_( "再起動してよろしいですか?" ) },
+	{ T_RESTART,				N_( "変更は再起動後に有効となります。\n今すぐ再起動しますか?" ) },
+	{ T_RESTARTC,				N_( "再起動確認" ) },
+	{ T_RESTARTI,				N_( "拡張カートリッジを挿入して再起動します。" ) },
+	{ T_RESTARTE,				N_( "拡張カートリッジを排出して再起動します。" ) },
+	{ T_RESETC,					N_( "リセット確認" ) },
+	{ T_DOKOC,					N_( "どこでもLOAD確認" ) },
+	{ T_DOKOSLOT,				N_( "どこでもLOADを実行してよろしいですか？" ) },
+	{ T_REPLAYRES,				N_( "リプレイを途中保存地点まで巻き戻します\nよろしいですか？" ) },
 	
 	// INIファイル用メッセージ ------
-	{ TINI_TITLE,				"; === PC6001V 初期設定ファイル ===\n\n" },
+	{ TINI_TITLE,				N_( "; === PC6001V 初期設定ファイル ===\n\n" ) },
 	// [CONFIG]
-	{ TINI_Model,				"機種 60:PC-6001 61:PC-6001A 62:PC-6001mkⅡ 66:PC-6601 64:PC-6001mkⅡSR 68:PC-6601SR" },
-	{ TINI_OverClock,			"オーバークロック率 (1-1000)%" },
-	{ TINI_CheckCRC,			"CRCチェック Yes:有効 No:無効" },
+	{ TINI_Model,				N_( "機種 60:PC-6001 61:PC-6001A 62:PC-6001mkⅡ 66:PC-6601 64:PC-6001mkⅡSR 68:PC-6601SR" ) },
+	{ TINI_OverClock,			N_( "オーバークロック率 (1-1000)%" ) },
+	{ TINI_CheckCRC,			N_( "CRCチェック Yes:有効 No:無効" ) },
 	// [CMT]
-	{ TINI_TurboTAPE,			"Turbo TAPE Yes:有効 No:無効" },
-	{ TINI_BoostUp,				"BoostUp Yes:有効 No:無効" },
-	{ TINI_MaxBoost60,			"BoostUp 最大倍率(N60モード)" },
-	{ TINI_MaxBoost62,			"BoostUp 最大倍率(N60m/N66モード)" },
-	{ TINI_StopBit,				"ストップビット数 (2-10)bit" },
+	{ TINI_TurboTAPE,			N_( "Turbo TAPE Yes:有効 No:無効" ) },
+	{ TINI_BoostUp,				N_( "BoostUp Yes:有効 No:無効" ) },
+	{ TINI_MaxBoost60,			N_( "BoostUp 最大倍率(N60モード)" ) },
+	{ TINI_MaxBoost62,			N_( "BoostUp 最大倍率(N60m/N66モード)" ) },
+	{ TINI_StopBit,				N_( "ストップビット数 (2-10)bit" ) },
 	// [FDD]
-	{ TINI_FDDrive,				"ドライブ数 (0-2)" },
-	{ TINI_FDDWait,				"アクセスウェイト Yes:有効 No:無効" },
+	{ TINI_FDDrive,				N_( "ドライブ数 (0-2)" ) },
+	{ TINI_FDDWait,				N_( "アクセスウェイト Yes:有効 No:無効" ) },
 	// [DISPLAY]
-	{ TINI_Mode4Color,			"MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク" },
-	{ TINI_WindowZoom,			"ウィンドウ表示倍率(%)" },
-	{ TINI_FrameSkip,			"フレームスキップ" },
-	{ TINI_ScanLine,			"スキャンライン Yes:あり No:なし" },
-	{ TINI_ScanLineBr,			"スキャンライン輝度 (0-100)%" },
-	{ TINI_DispNTSC,			"4:3表示 Yes:有効 No:無効" },
-	{ TINI_Filtering,			"フィルタリング Yes:アンチエイリアシング No:ニアレストネイバー" },
-	{ TINI_FullScreen,			"フルスクリーンモード Yes:有効 No:無効" },
-	{ TINI_DispStatus,			"ステータスバー Yes:表示 No:非表示" },
+	{ TINI_Mode4Color,			N_( "MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク" ) },
+	{ TINI_WindowZoom,			N_( "ウィンドウ表示倍率(%)" ) },
+	{ TINI_FrameSkip,			N_( "フレームスキップ" ) },
+	{ TINI_ScanLine,			N_( "スキャンライン Yes:あり No:なし" ) },
+	{ TINI_ScanLineBr,			N_( "スキャンライン輝度 (0-100)%" ) },
+	{ TINI_DispNTSC,			N_( "4:3表示 Yes:有効 No:無効" ) },
+	{ TINI_Filtering,			N_( "フィルタリング Yes:アンチエイリアシング No:ニアレストネイバー" ) },
+	{ TINI_FullScreen,			N_( "フルスクリーンモード Yes:有効 No:無効" ) },
+	{ TINI_DispStatus,			N_( "ステータスバー Yes:表示 No:非表示" ) },
 	// [MOVIE]
-	{ TINI_AviBpp,				"ビデオキャプチャ色深度 (16,24,32)bit" },
-	{ TINI_AviZoom,				"ビデオキャプチャ時ウィンドウ表示倍率(%)" },
-	{ TINI_AviFrameSkip,		"ビデオキャプチャ時フレームスキップ" },
-	{ TINI_AviScanLine,			"ビデオキャプチャ時スキャンライン Yes:あり No:なし" },
-	{ TINI_AviScanLineBr,		"ビデオキャプチャ時スキャンライン輝度 (0-100)%" },
-	{ TINI_AviDispNTSC,			"ビデオキャプチャ時4:3表示 Yes:有効 No:無効" },
-	{ TINI_AviFiltering,		"ビデオキャプチャ時フィルタリング Yes:アンチエイリアシング No:ニアレストネイバー" },
+	{ TINI_AviBpp,				N_( "ビデオキャプチャ色深度 (16,24,32)bit" ) },
+	{ TINI_AviZoom,				N_( "ビデオキャプチャ時ウィンドウ表示倍率(%)" ) },
+	{ TINI_AviFrameSkip,		N_( "ビデオキャプチャ時フレームスキップ" ) },
+	{ TINI_AviScanLine,			N_( "ビデオキャプチャ時スキャンライン Yes:あり No:なし" ) },
+	{ TINI_AviScanLineBr,		N_( "ビデオキャプチャ時スキャンライン輝度 (0-100)%" ) },
+	{ TINI_AviDispNTSC,			N_( "ビデオキャプチャ時4:3表示 Yes:有効 No:無効" ) },
+	{ TINI_AviFiltering,		N_( "ビデオキャプチャ時フィルタリング Yes:アンチエイリアシング No:ニアレストネイバー" ) },
 	// [SOUND]
-	{ TINI_SampleRate,			"サンプリングレート (44100/22050/11025)Hz" },
-	{ TINI_SoundBuffer,			"サウンドバッファサイズ" },
-	{ TINI_MasterVolume,		"マスター音量 (0-100)" },
-	{ TINI_PsgVolume,			"PSG音量 (0-100)" },
-	{ TINI_PsgLPF,				"PSG LPFカットオフ周波数(0で無効)" },
-	{ TINI_VoiceVolume,			"音声合成音量 (0-100)" },
-	{ TINI_TapeVolume,			"TAPEモニタ音量 (0-100)" },
-	{ TINI_TapeLPF,				"TAPE LPFカットオフ周波数(0で無効)" },
+	{ TINI_SampleRate,			N_( "サンプリングレート (44100/22050/11025)Hz" ) },
+	{ TINI_SoundBuffer,			N_( "サウンドバッファサイズ" ) },
+	{ TINI_MasterVolume,		N_( "マスター音量 (0-100)" ) },
+	{ TINI_PsgVolume,			N_( "PSG音量 (0-100)" ) },
+	{ TINI_PsgLPF,				N_( "PSG LPFカットオフ周波数(0で無効)" ) },
+	{ TINI_VoiceVolume,			N_( "音声合成音量 (0-100)" ) },
+	{ TINI_TapeVolume,			N_( "TAPEモニタ音量 (0-100)" ) },
+	{ TINI_TapeLPF,				N_( "TAPE LPFカットオフ周波数(0で無効)" ) },
 	// [FILES]
-	{ TINI_ExtRom,				"拡張ROMファイル名" },
-	{ TINI_tape,				"TAPE(LODE)ファイル名(起動時に自動マウント)" },
-	{ TINI_save,				"TAPE(SAVE)ファイル名(SAVE時に自動マウント)" },
-	{ TINI_disk1,				"DISK1ファイル名(起動時に自動マウント)" },
-	{ TINI_disk2,				"DISK2ファイル名(起動時に自動マウント)" },
-	{ TINI_printer,				"プリンタ出力ファイル名" },
+	{ TINI_ExtRom,				N_( "拡張ROMファイル名" ) },
+	{ TINI_tape,				N_( "TAPE(LODE)ファイル名(起動時に自動マウント)" ) },
+	{ TINI_save,				N_( "TAPE(SAVE)ファイル名(SAVE時に自動マウント)" ) },
+	{ TINI_disk1,				N_( "DISK1ファイル名(起動時に自動マウント)" ) },
+	{ TINI_disk2,				N_( "DISK2ファイル名(起動時に自動マウント)" ) },
+	{ TINI_printer,				N_( "プリンタ出力ファイル名" ) },
 	// [PATH]
-	{ TINI_RomPath,				"ROMイメージ格納パス" },
-	{ TINI_TapePath,			"TAPEイメージ格納パス" },
-	{ TINI_DiskPath,			"DISKイメージ格納パス" },
-	{ TINI_ExtRomPath,			"拡張ROMイメージ格納パス" },
-	{ TINI_ImgPath,				"スナップショット格納パス" },
-	{ TINI_WavePath,			"WAVEファイル格納パス" },
-	{ TINI_FontPath,			"FONTファイル格納パス" },
-	{ TINI_DokoPath,			"どこでもSAVE格納パス" },
+	{ TINI_RomPath,				N_( "ROMイメージ格納パス" ) },
+	{ TINI_TapePath,			N_( "TAPEイメージ格納パス" ) },
+	{ TINI_DiskPath,			N_( "DISKイメージ格納パス" ) },
+	{ TINI_ExtRomPath,			N_( "拡張ROMイメージ格納パス" ) },
+	{ TINI_ImgPath,				N_( "スナップショット格納パス" ) },
+	{ TINI_WavePath,			N_( "WAVEファイル格納パス" ) },
+	{ TINI_FontPath,			N_( "FONTファイル格納パス" ) },
+	{ TINI_DokoPath,			N_( "どこでもSAVE格納パス" ) },
 	// [CHECK]
-	{ TINI_CkQuit,				"終了時確認 Yes:する No:しない" },
-	{ TINI_SaveQuit,			"終了時INIファイルを保存 Yes:する No:しない" },
+	{ TINI_CkDokoLoad,			N_( "どこでもLOAD(SLOT)実行時確認 Yes:する No:しない" ) },
+	{ TINI_CkQuit,				N_( "終了時確認 Yes:する No:しない" ) },
+	{ TINI_SaveQuit,			N_( "終了時INIファイルを保存 Yes:する No:しない" ) },
 	// [OPTION]
-	{ TINI_ExCartridge,			"拡張カートリッジ 0:なし" },
+	{ TINI_ExCartridge,			N_( "拡張カートリッジ 0:なし" ) },
 	
 	// どこでもSAVE用メッセージ ------
-	{ TDOK_TITLE,				"; === PC6001V どこでもSAVEファイル ===\n\n" },
+	{ TDOK_TITLE,				N_( "; === PC6001V どこでもSAVEファイル ===\n\n" ) },
 	
 	// Error用メッセージ ------
-	{ TERR_ERROR,				"Error" },
-	{ TERR_WARNING,				"Warning" },
-	{ TERR_NoError,				"エラーはありません" },
-	{ TERR_Unknown,				"原因不明のエラーが発生しました" },
-	{ TERR_MemAllocFailed,		"メモリの確保に失敗しました" },
-	{ TERR_RomChange,			"指定された機種のROMイメージが見つからないため機種を変更しました" },
-	{ TERR_NoRom,				"ROMイメージが見つかりません\n設定とファイル名を確認してください" },
-	{ TERR_NoRomChange,			"ROMイメージが見つかりません\n他の機種を検索しますか？" },
-	{ TERR_RomSizeNG,			"ROMイメージのサイズが不正です" },
-	{ TERR_RomCrcNG,			"ROMイメージのCRCが不正です\nCRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。\nそれでも起動しますか？" },
-	{ TERR_LibInitFailed,		"ライブラリの初期化に失敗しました" },
-	{ TERR_InitFailed,			"初期化に失敗しました\n設定を確認してください" },
-	{ TERR_FontLoadFailed,		"フォントの読込みに失敗しました" },
-	{ TERR_FontCreateFailed,	"フォントファイルの作成に失敗しました" },
-	{ TERR_IniDefault,			"INIファイルの読込みに失敗しました\nデフォルト設定で起動します" },
-	{ TERR_IniReadFailed,		"INIファイルの読込みに失敗しました" },
-	{ TERR_IniWriteFailed,		"INIファイルの保存に失敗しました" },
-	{ TERR_TapeMountFailed,		"TAPEイメージのマウントに失敗しました" },
-	{ TERR_DiskMountFailed,		"DISKイメージのマウントに失敗しました" },
-	{ TERR_ExtRomMountFailed,	"拡張ROMイメージのマウントに失敗しました" },
-	{ TERR_DokoReadFailed,		"どこでもLOADに失敗しました" },
-	{ TERR_DokoWriteFailed,		"どこでもSAVEに失敗しました" },
-	{ TERR_DokoDiffVersion,		"どこでもSAVEファイルのバージョンが異なるため\n正しく動作しない可能性があります\n続けますか？" },
-	{ TERR_ReplayPlayError,		"リプレイ再生に失敗しました" },
-	{ TERR_ReplayRecError,		"リプレイ記録に失敗しました" },
-	{ TERR_NoReplayData,		"リプレイデータがありません" },
-	{ TERR_CaptureFailed,		"ビデオキャプチャに失敗しました" }
+	{ TERR_ERROR,				N_( "Error" ) },
+	{ TERR_WARNING,				N_( "Warning" ) },
+	{ TERR_NoError,				N_( "エラーはありません" ) },
+	{ TERR_Unknown,				N_( "原因不明のエラーが発生しました" ) },
+	{ TERR_MemAllocFailed,		N_( "メモリの確保に失敗しました" ) },
+	{ TERR_RomChange,			N_( "指定された機種のROMイメージが見つからないため機種を変更しました" ) },
+	{ TERR_NoRom,				N_( "ROMイメージが見つかりません\n設定とファイル名を確認してください" ) },
+	{ TERR_NoRomChange,			N_( "ROMイメージが見つかりません\n他の機種を検索しますか？" ) },
+	{ TERR_RomSizeNG,			N_( "ROMイメージのサイズが不正です" ) },
+	{ TERR_RomCrcNG,			N_( "ROMイメージのCRCが不正です\nCRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。\nそれでも起動しますか？" ) },
+	{ TERR_LibInitFailed,		N_( "ライブラリの初期化に失敗しました" ) },
+	{ TERR_InitFailed,			N_( "初期化に失敗しました\n設定を確認してください" ) },
+	{ TERR_FontLoadFailed,		N_( "フォントの読込みに失敗しました" ) },
+	{ TERR_FontCreateFailed,	N_( "フォントファイルの作成に失敗しました" ) },
+	{ TERR_IniDefault,			N_( "INIファイルの読込みに失敗しました\nデフォルト設定で起動します" ) },
+	{ TERR_IniReadFailed,		N_( "INIファイルの読込みに失敗しました" ) },
+	{ TERR_IniWriteFailed,		N_( "INIファイルの保存に失敗しました" ) },
+	{ TERR_TapeMountFailed,		N_( "TAPEイメージのマウントに失敗しました" ) },
+	{ TERR_DiskMountFailed,		N_( "DISKイメージのマウントに失敗しました" ) },
+	{ TERR_ExtRomMountFailed,	N_( "拡張ROMイメージのマウントに失敗しました" ) },
+	{ TERR_DokoReadFailed,		N_( "どこでもLOADに失敗しました" ) },
+	{ TERR_DokoWriteFailed,		N_( "どこでもSAVEに失敗しました" ) },
+	{ TERR_DokoDiffVersion,		N_( "どこでもSAVEファイルのバージョンが異なるため\n正しく動作しない可能性があります\n続けますか？" ) },
+	{ TERR_ReplayPlayError,		N_( "リプレイ再生に失敗しました" ) },
+	{ TERR_ReplayRecError,		N_( "リプレイ記録に失敗しました" ) },
+	{ TERR_NoReplayData,		N_( "リプレイデータがありません" ) },
+	{ TERR_CaptureFailed,		N_( "ビデオキャプチャに失敗しました" ) }
 };
 
 
 /////////////////////////////////////////////////////////////////////////////
 // 色の名前テーブル
 /////////////////////////////////////////////////////////////////////////////
-static const std::vector<std::string> JColorName = {
-	"MODE1,2 黒(ボーダー)",
-	"MODE1 Set1 緑",			"MODE1 Set1 深緑",			"MODE1 Set2 橙",			"MODE1 Set2 深橙",
-	"MODE2/3 緑",				"MODE2/3 黄",				"MODE2/3 青",				"MODE2/3 赤",
-	"MODE2/3 白",				"MODE2/3 シアン",			"MODE2/3 マゼンタ",			"MODE2/3 橙",
-	"MODE4 Set1 深緑",			"MODE4 Set1 緑",			"MODE4 Set2 黒",			"MODE4 Set2 白",
-	"MODE4 Set1 にじみ 赤",		"MODE4 Set1 にじみ 青",		"MODE4 Set1 にじみ 桃",		"MODE4 Set1 にじみ 緑",
-	"MODE4 Set1 にじみ 明赤",	"MODE4 Set1 にじみ 暗赤",	"MODE4 Set1 にじみ 明青",	"MODE4 Set1 にじみ 暗青",
-	"MODE4 Set1 にじみ 明桃",	"MODE4 Set1 にじみ 暗桃",	"MODE4 Set1 にじみ 明緑",	"MODE4 Set1 にじみ 暗緑",
-	"MODE4 Set2 にじみ 赤",		"MODE4 Set2 にじみ 青",		"MODE4 Set2 にじみ 桃",		"MODE4 Set2 にじみ 緑",
-	"MODE4 Set2 にじみ 明赤",	"MODE4 Set2 にじみ 暗赤",	"MODE4 Set2 にじみ 明青",	"MODE4 Set2 にじみ 暗青",
-	"MODE4 Set2 にじみ 明桃",	"MODE4 Set2 にじみ 暗桃",	"MODE4 Set2 にじみ 明緑",	"MODE4 Set2 にじみ 暗緑",
-	"RGB 透明(黒)",				"RGB 橙",					"RGB 青緑",					"RGB 黄緑",
-	"RGB 青紫",					"RGB 赤紫",					"RGB 空色",					"RGB 灰色",
-	"RGB 黒",					"RGB 赤",					"RGB 緑",					"RGB 黄",
-	"RGB 青",					"RGB マゼンタ",				"RGB シアン",				"RGB 白"
+static const std::vector<std::string> JColorName =
+{
+	N_( "MODE1,2 黒(ボーダー)" ),
+	N_( "MODE1 Set1 緑" ),			N_( "MODE1 Set1 深緑" ),		N_( "MODE1 Set2 橙" ),			N_( "MODE1 Set2 深橙" ),
+	N_( "MODE2/3 緑" ),				N_( "MODE2/3 黄" ),				N_( "MODE2/3 青" ),				N_( "MODE2/3 赤" ),
+	N_( "MODE2/3 白" ),				N_( "MODE2/3 シアン" ),			N_( "MODE2/3 マゼンタ" ),		N_( "MODE2/3 橙" ),
+	N_( "MODE4 Set1 深緑" ),		N_( "MODE4 Set1 緑" ),			N_( "MODE4 Set2 黒" ),			N_( "MODE4 Set2 白" ),
+	N_( "MODE4 Set1 にじみ 赤" ),	N_( "MODE4 Set1 にじみ 青" ),	N_( "MODE4 Set1 にじみ 桃" ),	N_( "MODE4 Set1 にじみ 緑" ),
+	N_( "MODE4 Set1 にじみ 明赤" ),	N_( "MODE4 Set1 にじみ 暗赤" ),	N_( "MODE4 Set1 にじみ 明青" ),	N_( "MODE4 Set1 にじみ 暗青" ),
+	N_( "MODE4 Set1 にじみ 明桃" ),	N_( "MODE4 Set1 にじみ 暗桃" ),	N_( "MODE4 Set1 にじみ 明緑" ),	N_( "MODE4 Set1 にじみ 暗緑" ),
+	N_( "MODE4 Set2 にじみ 赤" ),	N_( "MODE4 Set2 にじみ 青" ),	N_( "MODE4 Set2 にじみ 桃" ),	N_( "MODE4 Set2 にじみ 緑" ),
+	N_( "MODE4 Set2 にじみ 明赤" ),	N_( "MODE4 Set2 にじみ 暗赤" ),	N_( "MODE4 Set2 にじみ 明青" ),	N_( "MODE4 Set2 にじみ 暗青" ),
+	N_( "MODE4 Set2 にじみ 明桃" ),	N_( "MODE4 Set2 にじみ 暗桃" ),	N_( "MODE4 Set2 にじみ 明緑" ),	N_( "MODE4 Set2 にじみ 暗緑" ),
+	N_( "RGB 透明(黒)" ),			N_( "RGB 橙" ),					N_( "RGB 青緑" ),				N_( "RGB 黄緑" ),
+	N_( "RGB 青紫" ),				N_( "RGB 赤紫" ),				N_( "RGB 空色" ),				N_( "RGB 灰色" ),
+	N_( "RGB 黒" ),					N_( "RGB 赤" ),					N_( "RGB 緑" ),					N_( "RGB 黄" ),
+	N_( "RGB 青" ),					N_( "RGB マゼンタ" ),			N_( "RGB シアン" ),				N_( "RGB 白" )
+};
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 拡張カートリッジ名テーブル
+/////////////////////////////////////////////////////////////////////////////
+static const std::map<WORD, const std::string> CartName =
+{
+	{ 0,			"" },
+	{ EXC6001,		N_( "PCS-6001R 拡張BASIC" ) },
+	{ EXC6005,		N_( "PC-6005 ROMカートリッジ" ) },
+	{ EXC6006,		N_( "PC-6006 拡張ROM/RAMカートリッジ" ) },
+	{ EXC660101,	N_( "PC-6601-01 拡張漢字ROMカートリッジ" ) },
+	{ EXC6006SR,	N_( "PC-6006SR 拡張64KRAMカートリッジ" ) },
+	{ EXC6007SR,	N_( "PC-6007SR 拡張漢字ROM&RAMカートリッジ" ) },
+	{ EXC6053,		N_( "PC-6053 ボイスシンセサイザー" ) },
+	{ EXC60M55,		N_( "PC-60m55 FM音源カートリッジ" ) },
+	{ EXCSOL1,		N_( "戦士のカートリッジ" ) },
+	{ EXCSOL2,		N_( "戦士のカートリッジmkⅡ" ) },
+	{ EXCSOL3,		N_( "戦士のカートリッジmkⅢ" ) }
 };
 
 
@@ -648,7 +680,7 @@ static const std::unordered_map<PCKEYsym, const std::string> VKname =
 	{ KVC_SPACE,		"Space" },
 	
 	{ KVC_ESC,			"ESC" },
-	{ KVC_HANZEN,		"半角/全角" },
+	{ KVC_HANZEN,		N_( "半角/全角" ) },
 	{ KVC_TAB,			"Tab" },
 	{ KVC_CAPSLOCK,		"CapsLock" },
 	{ KVC_ENTER,		"Enter" },
@@ -673,31 +705,31 @@ static const std::unordered_map<PCKEYsym, const std::string> VKname =
 	{ KVC_LEFT,			"←" },
 	{ KVC_RIGHT,		"→" },
 	
-	{ KVC_P0,			"0(テンキー)" },
-	{ KVC_P1,			"1(テンキー)" },
-	{ KVC_P2,			"2(テンキー)" },
-	{ KVC_P3,			"3(テンキー)" },
-	{ KVC_P4,			"4(テンキー)" },
-	{ KVC_P5,			"5(テンキー)" },
-	{ KVC_P6,			"6(テンキー)" },
-	{ KVC_P7,			"7(テンキー)" },
-	{ KVC_P8,			"8(テンキー)" },
-	{ KVC_P9,			"9(テンキー)" },
+	{ KVC_P0,			"0(Numeric key)" },
+	{ KVC_P1,			"1(Numeric key)" },
+	{ KVC_P2,			"2(Numeric key)" },
+	{ KVC_P3,			"3(Numeric key)" },
+	{ KVC_P4,			"4(Numeric key)" },
+	{ KVC_P5,			"5(Numeric key)" },
+	{ KVC_P6,			"6(Numeric key)" },
+	{ KVC_P7,			"7(Numeric key)" },
+	{ KVC_P8,			"8(Numeric key)" },
+	{ KVC_P9,			"9(Numeric key)" },
 	{ KVC_NUMLOCK,		"NumLock" },
-	{ KVC_P_PLUS,		"+(テンキー)" },
-	{ KVC_P_MINUS,		"-(テンキー)" },
-	{ KVC_P_MULTIPLY,	"*(テンキー)" },
-	{ KVC_P_DIVIDE,		"/(テンキー)" },
-	{ KVC_P_PERIOD,		".(テンキー)" },
-	{ KVC_P_ENTER,		"Enter(テンキー)" },
+	{ KVC_P_PLUS,		"+(Numeric key)" },
+	{ KVC_P_MINUS,		"-(Numeric key)" },
+	{ KVC_P_MULTIPLY,	"*(Numeric key)" },
+	{ KVC_P_DIVIDE,		"/(Numeric key)" },
+	{ KVC_P_PERIOD,		".(Numeric key)" },
+	{ KVC_P_ENTER,		"Enter(Numeric key)" },
 	
 	// 日本語キーボードのみ
 	{ KVC_YEN,			"\\" },
 	{ KVC_RBRACKET,		"]" },
 	{ KVC_UNDERSCORE,	"_" },
-	{ KVC_MUHENKAN,		"無変換" },
-	{ KVC_HENKAN,		"変換" },
-	{ KVC_HIRAGANA,		"カタカナ/ひらがな" },
+	{ KVC_MUHENKAN,		N_( "無変換" ) },
+	{ KVC_HENKAN,		N_( "変換" ) },
+	{ KVC_HIRAGANA,		N_( "カタカナ/ひらがな" ) },
 	
 	// 英語キーボードのみ
 	{ KVE_BACKSLASH,	"BackSlash" },
@@ -971,15 +1003,15 @@ static const std::unordered_map<PCKEYsym, const BYTE> VKChar1 =
 // メッセージ文字列取得
 //
 // 引数:	id				メッセージID
-// 返値:	std::string&	メッセージ文字列への参照
+// 返値:	std::string		メッセージ文字列
 /////////////////////////////////////////////////////////////////////////////
-const std::string& GetText( TextID id )
+const std::string GetText( TextID id )
 {
 	try{
-		return MsgString.at( id );
+		return _( MsgString.at( id ).c_str() );
 	}
 	catch( std::out_of_range& ){
-		return MsgString.at( T_EMPTY );	// "???"
+		return _( MsgString.at( T_EMPTY ).c_str() );	// "???"
 	}
 }
 
@@ -988,15 +1020,32 @@ const std::string& GetText( TextID id )
 // 色の名前取得
 //
 // 引数:	num				色コード
-// 返値:	std::string&	色の名前文字列への参照
+// 返値:	std::string		色の名前文字列
 /////////////////////////////////////////////////////////////////////////////
-const std::string& GetColorName( int num )
+const std::string GetColorName( int num )
 {
 	try{
-		return JColorName.at( num );
+		return _( JColorName.at( num ).c_str() );
 	}
 	catch( std::out_of_range& ){
-		return MsgString.at( T_EMPTY );	// "???"
+		return _( MsgString.at( T_EMPTY ).c_str() );	// "???"
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 拡張カートリッジの名前取得
+//
+// 引数:	num				カートリッジ番号
+// 返値:	std::string&	カートリッジ名への参照
+/////////////////////////////////////////////////////////////////////////////
+const std::string GetExtCartName( int num )
+{
+	try{
+		return _( CartName.at( num ).c_str() );
+	}
+	catch( std::out_of_range& ){
+		return _( CartName.at( 0 ).c_str() );
 	}
 }
 
@@ -1005,15 +1054,15 @@ const std::string& GetColorName( int num )
 // キーの名前取得
 //
 // 引数:	sym				仮想キーコード
-// 返値:	std::string&	キー名前文字列への参照
+// 返値:	std::string		キー名前文字列
 /////////////////////////////////////////////////////////////////////////////
-const std::string& GetKeyName( PCKEYsym sym )
+const std::string GetKeyName( PCKEYsym sym )
 {
 	try{
-		return VKname.at( sym );
+		return _( VKname.at( sym ).c_str() );
 	}
 	catch( std::out_of_range& ){
-		return VKname.at( KVC_UNKNOWN );
+		return _( VKname.at( KVC_UNKNOWN ).c_str() );
 	}
 }
 

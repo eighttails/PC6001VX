@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "ay8910.h"
 #include "log.h"
@@ -64,7 +64,7 @@ void cAY8910::SetClock( int clock, int rate )
 	PRINTD( PSG_LOG, "[PSG][SetClock] clock:%d SampleRate:%d\n", clock, rate );
 	
 #ifdef USEFMGEN
-	PSG::SetClock( clock/2, rate );
+	PSG::SetClock( clock / 2, rate );
 #else
 	// the step clock for the tone and noise generators is the chip clock
 	// divided by 8; for the envelope generator of the AY-3-8910, it is half
@@ -93,7 +93,7 @@ void cAY8910::SetVolumeTable( int vol )
 #else
 	double out = (MAX_OUTPUT * min( max( vol, 0 ), 100 ) ) / 100;
 	
-	for( int i=31; i>0; i-- ){
+	for( int i = 31; i > 0; i-- ){
 		VolTable[i] = (int)out;
 		out /= 1.188502227;	// = 10 ^ (1.5/20) = 1.5dB
 	}
@@ -132,7 +132,7 @@ void cAY8910::Reset( void )
 	OutputB = 0;
 	OutputC = 0;
 	OutputN = 0xff;
-	for( int i=0; i<AY_PORTA; i++ ) _WriteReg( i, 0 );
+	for( int i = 0; i < AY_PORTA; i++ ) _WriteReg( i, 0 );
 #endif
 }
 
@@ -228,17 +228,17 @@ void cAY8910::_WriteReg( BYTE r, BYTE v )
 	case AY_AVOL:
 		Regs[AY_AVOL] &= 0x1f;
 		EnvelopeA = Regs[AY_AVOL] & 0x10;
-		VolA = EnvelopeA ? VolE : VolTable[Regs[AY_AVOL] ? Regs[AY_AVOL]*2+1 : 0];
+		VolA = EnvelopeA ? VolE : VolTable[Regs[AY_AVOL] ? Regs[AY_AVOL] * 2 + 1 : 0];
 		break;
 	case AY_BVOL:
 		Regs[AY_BVOL] &= 0x1f;
 		EnvelopeB = Regs[AY_BVOL] & 0x10;
-		VolB = EnvelopeB ? VolE : VolTable[Regs[AY_BVOL] ? Regs[AY_BVOL]*2+1 : 0];
+		VolB = EnvelopeB ? VolE : VolTable[Regs[AY_BVOL] ? Regs[AY_BVOL] * 2 + 1 : 0];
 		break;
 	case AY_CVOL:
 		Regs[AY_CVOL] &= 0x1f;
 		EnvelopeC = Regs[AY_CVOL] & 0x10;
-		VolC = EnvelopeC ? VolE : VolTable[Regs[AY_CVOL] ? Regs[AY_CVOL]*2+1 : 0];
+		VolC = EnvelopeC ? VolE : VolTable[Regs[AY_CVOL] ? Regs[AY_CVOL] * 2 + 1 : 0];
 		break;
 	case AY_EFINE:
 	case AY_ECOARSE:

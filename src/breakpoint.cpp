@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <stdexcept>
 
@@ -111,7 +111,9 @@ int BPoint::GetReqNum( void ) const
 {
 	int num = 1;
 	for( auto &i : BP ){
-		if( i.Break ){ return num; }
+		if( i.Break ){
+			return num;
+		}
 		num++;
 	}
 	return 0;

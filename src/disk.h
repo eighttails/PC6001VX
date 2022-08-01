@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef DISK_H_INCLUDED
 #define DISK_H_INCLUDED
@@ -208,7 +208,7 @@ public:
 	virtual bool InAccess( int ) const;			// アクセス中?
 	
 	const P6VPATH& GetFile( int ) const;		// ファイルパス取得
-	const std::string& GetName( int ) const;	// DISK名取得
+	const std::string GetName( int ) const;		// DISK名取得
 	
 	void WaitEnable( bool );					// ウェイト有効フラグ設定
 	

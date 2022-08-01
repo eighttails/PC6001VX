@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 //***************************************************************************
 // QUASI88 --- PC-8801 emulator
@@ -1382,13 +1382,13 @@ int cZ80::Disasm( std::string& str, WORD pc )
 		return 2;
 		
 	case OP_NUM_16:
-		num = ReadMemNW( pc+1 ) + ReadMemNW( pc+2 )*256;
+		num = ReadMemNW( pc + 1 ) + ReadMemNW( pc + 2 ) * 256;
 		PrintfHead( str, pc, 3 );
 		str += Stringf( Inst->Str, num );
 		return 3;
 		
 	case OP_ADR_REL:
-		num = pc +2 + (offset)ReadMemNW( pc+1 );
+		num = pc + 2 + (offset)ReadMemNW( pc + 1 );
 		PrintfHead( str, pc, 2 );
 		str += Stringf( Inst->Str, num );
 		return 2;
@@ -1412,7 +1412,7 @@ int cZ80::Disasm( std::string& str, WORD pc )
 			
 		case OP_UNEXIST:
 			PrintfHead( str, pc, 2 );
-			str += Stringf( Inst->Str, ReadMemNW( pc ), ReadMemNW( pc+1 ) );
+			str += Stringf( Inst->Str, ReadMemNW( pc ), ReadMemNW( pc + 1 ) );
 			return 2;
 			
 		case OP_SKIP:
@@ -1421,32 +1421,32 @@ int cZ80::Disasm( std::string& str, WORD pc )
 			return 1;
 			
 		case OP_NUM_8:
-			num = ReadMemNW( pc+2 );
+			num = ReadMemNW( pc + 2 );
 			PrintfHead( str, pc, 3 );
 			str += Stringf( Inst->Str, num );
 			return 3;
 			
 		case OP_NUM_16:
-			num = ReadMemNW( pc+2 ) + ReadMemNW( pc+3 )*256;
+			num = ReadMemNW( pc + 2 ) + ReadMemNW( pc + 3 ) * 256;
 			PrintfHead( str, pc, 4 );
 			str += Stringf( Inst->Str, num );
 			return 4;
 		
 		case OP_INDEX:
 			PrintfHead( str, pc, 3 );
-			str += Stringf( Inst->Str, (offset)ReadMemNW( pc+2 ) );
+			str += Stringf( Inst->Str, (offset)ReadMemNW( pc + 2 ) );
 			return 3;
 		
 		case OP_IDX_NUM:
-			num = (int)ReadMemNW( pc+3 );
+			num = (int)ReadMemNW( pc + 3 );
 			PrintfHead( str, pc, 4 );
-			str += Stringf( Inst->Str, (int)ReadMemNW( pc+2 ), num );
+			str += Stringf( Inst->Str, (int)ReadMemNW( pc + 2 ), num );
 			return 4;
 			
 		case OP_PREFIX:
 			switch( ReadMemNW( pc ) ){
-			case 0xDD:   Inst = &Instruction_DD_CB[ ReadMemNW( pc+3 ) ];	break;
-			case 0xFD:   Inst = &Instruction_FD_CB[ ReadMemNW( pc+3 ) ];	break;
+			case 0xDD:   Inst = &Instruction_DD_CB[ ReadMemNW( pc + 3 ) ];	break;
+			case 0xFD:   Inst = &Instruction_FD_CB[ ReadMemNW( pc + 3 ) ];	break;
 			default:
 				str += " - Internal Error - ";
 				return 4;
@@ -1454,12 +1454,12 @@ int cZ80::Disasm( std::string& str, WORD pc )
 			switch( Inst->Type ){
 			case OP_INDEX:
 				PrintfHead( str, pc, 4 );
-				str += Stringf( Inst->Str, (offset)ReadMemNW( pc+2 ) );
+				str += Stringf( Inst->Str, (offset)ReadMemNW( pc + 2 ) );
 				return 4;
 				
 			case OP_UNEXIST:
 				PrintfHead( str, pc, 4 );
-				str += Stringf( Inst->Str, ReadMemNW( pc ),  ReadMemNW( pc+1 ), ReadMemNW( pc+2 ),ReadMemNW( pc+3 ));
+				str += Stringf( Inst->Str, ReadMemNW( pc ),  ReadMemNW( pc + 1 ), ReadMemNW( pc + 2 ),ReadMemNW( pc + 3 ));
 				return 4;
 			}
 			break;

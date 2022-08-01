@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2021 Yumitaro
+//  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include "pc6001v.h"
 
@@ -184,18 +184,18 @@ WORD CMTL::Update( void )
 		// ストップビット 2-10bits (default:3bits)
 		
 		// スタートビット
-		for( int i=0; i<bdata; i++ ){
+		for( int i = 0; i < bdata; i++ ){
 			SndDev::cRing::Put( GetSinCurve( PG_LO ) );
 		}
 		// データビット
-		for( int j=7; j>=0; j-- ){
-			int hilo = (rd>>j)&1 ? PG_HI : PG_LO;
-			for( int i=0; i<bdata; i++ ){
+		for( int j = 7; j >= 0; j-- ){
+			int hilo = (rd >> j) & 1 ? PG_HI : PG_LO;
+			for( int i = 0; i < bdata; i++ ){
 				SndDev::cRing::Put( GetSinCurve( hilo ) );
 			}
 		}
 		// ストップビット
-		for( length -= bdata*9; length > 0; length-- ){
+		for( length -= bdata * 9; length > 0; length-- ){
 			SndDev::cRing::Put( GetSinCurve( PG_HI ) );
 		}
 		break;
@@ -217,7 +217,7 @@ int CMTL::SoundUpdate( int samples )
 	
 	PRINTD( TAPE_LOG, "[TAPE][SoundUpdate] Samples: %d -> %d\n", samples, length );
 	
-	for( int i=0; i<length; i++ ){
+	for( int i = 0; i < length; i++ ){
 		// バッファに書込み
 		SndDev::cRing::Put( stron ? GetSinCurve( PG_HI ) : 0 );	// 手抜き
 	}
@@ -356,7 +356,7 @@ bool CMTL::Remote( bool relay )
 		// SRはmk2/66と同じにしてみる
 		int bst = Boost ? ( vm->VdgGetWinSize() ? MaxBoost60 : MaxBoost62 ) : 1;
 		
-		if( !vm->EventAdd( Device::GetID(), EID_TAPE, CMT_HZ() * bst, EV_LOOP|EV_HZ ) ) return false;
+		if( !vm->EventAdd( Device::GetID(), EID_TAPE, CMT_HZ() * bst, EV_LOOP | EV_HZ ) ) return false;
 	}else{			// OFF
 		if( !vm->EventDel( Device::GetID(), EID_TAPE ) ) return false;
 	}
@@ -375,7 +375,7 @@ int CMTL::GetSinCurve( int fq )
 		-32767, -32767, -32767, -32767, -32767, -32767, -32767, -32767, -32767,
 		-32767, -32767, -32767, -32767, -32767, -32767, -32767, -32767, -32767
  	};
-	static int n=0;
+	static int n = 0;
 	
 	// サンプリングレートと周波数で間引きの間隔を決める
 	// データテーブルは44100Hz,1200Hzの数値
@@ -430,7 +430,7 @@ bool CMTS::Mount( void )
 {
 	if( fs.is_open() ) fs.close();
 	
-	return OSD_FSopen( fs, FilePath, std::ios_base::out|std::ios_base::binary );
+	return OSD_FSopen( fs, FilePath, std::ios_base::out | std::ios_base::binary );
 }
 
 
@@ -462,7 +462,7 @@ void CMTS::Unmount( void )
 	FSPUTBYTE( 'T', fs );	// header (2byte) : "TI"
 	FSPUTBYTE( 'I', fs );
 	FSPUTBYTE( 0, fs );		// id     (1byte) : ID番号(DATAブロックを関連付ける)
-	for( int i=0; i<16; i++ ) FSPUTBYTE( 0, fs );	// name  (16byte) : データ名(15文字+'00H')
+	for( int i = 0; i < 16; i++ ) FSPUTBYTE( 0, fs );	// name  (16byte) : データ名(15文字+'00H')
 	FSPUTWORD( Baud, fs );	// baud   (2byte) : ボーレート(600/1200)
 	FSPUTBYTE( 0x48, fs );	// stime  (2byte) : 無音部の時間(ms)
 	FSPUTBYTE( 0x0d, fs );
@@ -504,7 +504,7 @@ void CMTS::WriteOne( BYTE data )
 /////////////////////////////////////////////////////////////////////////////
 // I/Oアクセス関数
 /////////////////////////////////////////////////////////////////////////////
-void CMTL::OutB0H( int, BYTE data ){ Remote( data&0x08 ? true : false ); }
+void CMTL::OutB0H( int, BYTE data ){ Remote( data & 0x08 ? true : false ); }
 
 
 /////////////////////////////////////////////////////////////////////////////

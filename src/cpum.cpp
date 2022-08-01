@@ -118,7 +118,7 @@ bool CPU6::DokoSave( cIni* Ini )
 	Ini->SetVal( "Z80", "IFF",		"",				IFF     );
 	Ini->SetVal( "Z80", "IFF2",		"",				IFF2    );
 	Ini->SetVal( "Z80", "IM",		"", "0x%02X",	IM      );
-	Ini->SetVal( "Z80", "Halt",		"", "0x%02X",	Halt    );
+	Ini->SetVal( "Z80", "Halt",		"",				Halt    );
 	
 	Ini->SetVal( "Z80", "mstate",	"", mstate );
 	

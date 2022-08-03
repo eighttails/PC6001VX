@@ -3231,7 +3231,7 @@ border-radius: 1;</string>
        <item>
         <widget class="QCheckBox" name="checkBoxCkDokoLoad">
          <property name="text">
-          <string>どこでもLOAD(SLOT)実行時に確認する</string>
+          <string>どこでもLOAD(SLOT)実行時に確認する(&amp;L)</string>
          </property>
         </widget>
        </item>

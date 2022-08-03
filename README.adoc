@@ -681,6 +681,9 @@ image::doc/setting_other.png[]
 CRCチェックが合わなかった場合、起動時に警告が出ます。 +
 何らかの原因によってCRCが一致しなかった場合、または互換ROM使用時はオフにしてください。 +
 
+** どこでもLOAD(SLOT)実行時に確認する +
+どこでもLOAD(SLOT)実行時に確認ダイアログが出るようになります。 +
+
 ** 終了時に確認する +
 終了時に確認ダイアログが出るようになります。 +
 
@@ -718,7 +721,7 @@ image::doc/qtsetting_envvar.png[]
 
 ==== Linux
 Debian系のディストリビューションについて解説します。 +
-ビルドにはQt6.2.0以上が必要です。 +
+ビルドにはQt6.2.0以上(6.4.0以上推奨)が必要です。 +
 [NOTE]
 ====
 ディストリビューションやそのバージョンによってはQt6がまだパッケージ化されていない場合があります。その場合はQtの公式インストーラーを利用してください。
@@ -744,17 +747,34 @@ Qt 6.2.0以上が必要です。
 
 現在は開発版のため、まだ多くの不具合等があります。
 
-* 動作中にフリーズすることがあります。
 * リプレイの再生が正確に行えません。
-* Linuxではサウンドの再生に大きな遅延があります。(Linux版QtMultimediaの問題)
+* Linuxではサウンドの再生に大きな遅延があります。(Qt6.4以降で解消します)
 
 
 == 更新履歴
+.4.0.0Beta2 2022/08/04
+* PC6001V 2.0.3ベースに更新。
+* ムービーを別スレッドでエンコードすることでビデオキャプチャのレスポンスが改善。
+* ジョイスティックが使えなかったのを修正
+* Merged upstream PC6001V version 2.0.3.
+* Endode movie in background thread. This makes better performance of video capturing. 
+* Fixed issue joystick did not work.
+
 .4.0.0Beta1 2022/02/28
 * PC6001V 2.0.2ベースに更新。
 * Qt5からQt6に移行。ビルドにはQt6.2以上が必要になります。
 * Merged upstream PC6001V version 2.0.2.
 * Migrated to Qt6 from Qt5. Now Qt6.2 or higher is required to build.
+
+.3.9.0 2022/06/27
+* PC-6001互換BASICを0.7.5に更新
+* PC-6001mkII/6601用互換BASICを0.4に更新
+* mk2/6601用互換CGROMがセミグラフィックキャラクタを網羅
+* (Windows,64bit)長時間のリプレイファイルが読み込めなくなるのを修正
+* Updated PC-6001 compatible basic ROMs to 0.7.5.
+* Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.
+* PC-6001mk2/6601 compatible CGROM now covers semi-graphic characters.
+* (Windows,64bit)Fixed issue in opening long replay file.
 
 .3.8.2 2021/10/10
 * (Windows)OpenGLの代わりにDirectX(ANGLE)版Qtでビルド。Intel GPUにおけるメモリリークを解消。

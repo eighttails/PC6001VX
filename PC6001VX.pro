@@ -92,7 +92,7 @@ win32 {
     #On Windows, link libraries statically as long as possible.
     QMAKE_LFLAGS_WINDOWS += -Wl,--stack,10000000
     QMAKE_LFLAGS += -static
-    LIBS_PRIVATE= -lpthread -lsetupapi
+    LIBS_PRIVATE= -lpthread -lsetupapi -lintl -liconv
     PKG_CONFIG = 'pkg-config --static'
     RC_ICONS += src/win32/PC6001VX.ico
 } else {

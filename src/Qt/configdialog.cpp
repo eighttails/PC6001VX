@@ -380,8 +380,8 @@ void ConfigDialog::readConfig()
 	// CRCチェック
 	ui->checkBoxRomCRC->setChecked(config->GetValue(CB_CheckCRC));
 
-	// 終了時 確認する
-	ui->checkBoxFDDWaitEnable->setChecked(config->GetValue(CB_FDDWait));
+	// どこでもLOAD(SLOT)実行時に確認する
+	ui->checkBoxCkDokoLoad->setChecked(config->GetValue(CB_CkDokoLoad));
 
 	// 終了時 確認する
 	ui->checkBoxCkQuit->setChecked(config->GetValue(CB_CkQuit));
@@ -407,9 +407,6 @@ void ConfigDialog::writeConfig()
 	config->SetValue(CB_FDDWait, ui->checkBoxFDDWaitEnable->isChecked());
 
 	//// CMT
-	// CRCチェック
-	config->SetValue(CB_CheckCRC, ui->checkBoxRomCRC->isChecked());
-
 	// Turbo TAPE
 	config->SetValue(CB_TurboTAPE, ui->checkBoxTurboTape->isChecked());
 
@@ -580,6 +577,12 @@ void ConfigDialog::writeConfig()
 	// その他--------------------------------------------------------------
 	// オーバークロック率
 	config->SetValue(CV_OverClock, ui->spinBoxClockRatio->value());
+
+	// CRCチェック
+	config->SetValue(CB_CheckCRC, ui->checkBoxRomCRC->isChecked());
+
+	// どこでもLOAD(SLOT)実行時に確認する
+	config->SetValue(CB_CkDokoLoad, ui->checkBoxCkDokoLoad->isChecked());
 
 	// 終了時 確認する
 	config->SetValue(CB_CkQuit, ui->checkBoxCkQuit->isChecked());

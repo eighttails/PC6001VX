@@ -179,7 +179,11 @@ void P6VXApp::startup()
 	// 各種フォルダの存在チェック&作成
 	std::vector<TCPath> paths = { CF_RomPath, CF_TapePath, CF_DiskPath, CF_ExtRomPath, CF_ImgPath, CF_WavePath, CF_FontPath, CF_DokoPath };
 	for( auto& cf : paths ){
-		if( !OSD_FileExist( Cfg->GetValue( cf ) ) ) OSD_CreateFolder( Cfg->GetValue( cf ) );
+		P6VPATH folderPath;
+		OSD_AddPath( folderPath, OSD_GetConfigPath(), Cfg->GetValue( cf ) );
+		if( !OSD_FileExist( folderPath ) ) {
+			OSD_CreateFolder( folderPath );
+		}
 	}
 
 	// コンソール用フォント読込み

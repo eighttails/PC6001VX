@@ -368,7 +368,7 @@ const P6VPATH& OSD_GetConfigPath()
 #else
 	QString confPath = QDir::homePath() + QDir::separator() + QString(".pc6001vx4");
 #endif
-	static P6VPATH cpath = QSTR2P6VPATH(confPath);
+	static P6VPATH cpath = QSTR2P6VPATH(QDir::toNativeSeparators(confPath));
 	OSD_AddDelimiter( cpath );	// 念のため
 	return cpath;
 }
@@ -385,7 +385,7 @@ void OSD_AddDelimiter( P6VPATH& path )
 	if (!qPath.endsWith('/') && !qPath.endsWith(QDir::separator())){
 		qPath += QDir::separator();
 	}
-	path = QSTR2P6VPATH(qPath);
+	path = QSTR2P6VPATH(QDir::toNativeSeparators(qPath));
 }
 
 
@@ -401,7 +401,7 @@ void OSD_DelDelimiter( P6VPATH& path )
 	if (qPath.endsWith('/') || qPath.endsWith(QDir::separator())){
 		qPath.truncate(qPath.length() - 1);
 	}
-	path = QSTR2P6VPATH(qPath);
+	path = QSTR2P6VPATH(QDir::toNativeSeparators(qPath));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -418,10 +418,10 @@ void OSD_RelativePath( P6VPATH& path )
 			|| path == "" ) return;
 	QDir dir(P6VPATH2QSTR(OSD_GetConfigPath()));
 	QString relPath = dir.relativeFilePath(P6VPATH2QSTR(path));
-	path = QSTR2P6VPATH(relPath);
+	path = QSTR2P6VPATH(QDir::toNativeSeparators(relPath));
 #else
 	// Windows以外では相対パスを使った運用はしない
-	OSD_AbsolutePath(path);
+	OSD_AbsolutePath(QDir::toNativeSeparators(path));
 #endif
 }
 
@@ -437,7 +437,7 @@ void OSD_AbsolutePath( P6VPATH& path )
 	QString qPath = P6VPATH2QSTR(path);
 	if( !QDir( qPath ).isRelative() || qPath.isEmpty() ) return;
 	QDir dir(P6VPATH2QSTR(OSD_GetConfigPath()));
-	path = QSTR2P6VPATH(QDir::cleanPath(dir.absoluteFilePath(qPath)));
+	path = QSTR2P6VPATH(QDir::toNativeSeparators(QDir::cleanPath(dir.absoluteFilePath(qPath))));
 }
 
 
@@ -596,7 +596,8 @@ bool OSD_CreateFolder( const P6VPATH& path )
 	PRINTD( OSD_LOG, "-> %s\n", P6VPATH2STR( tpath ).c_str() );
 
 	// 設定ファイルパスより外側には作成しない
-	if( P6VPATH2STR( tpath ).compare( 0, P6VPATH2STR( OSD_GetConfigPath() ).length(), P6VPATH2STR( OSD_GetConfigPath() ) ) ) return false;
+	auto configPath = P6VPATH2STR( OSD_GetConfigPath() );
+	if( P6VPATH2STR( tpath ).compare( 0, configPath.length(), configPath ) ) return false;
 
 	QDir dir;
 	return dir.mkpath(P6VPATH2QSTR(tpath));

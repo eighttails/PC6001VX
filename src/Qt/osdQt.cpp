@@ -421,7 +421,8 @@ void OSD_RelativePath( P6VPATH& path )
 	path = QSTR2P6VPATH(QDir::toNativeSeparators(relPath));
 #else
 	// Windows以外では相対パスを使った運用はしない
-	OSD_AbsolutePath(QDir::toNativeSeparators(path));
+	path = QSTR2P6VPATH(QDir::toNativeSeparators(P6VPATH2QSTR(path)));
+	OSD_AbsolutePath(path);
 #endif
 }
 

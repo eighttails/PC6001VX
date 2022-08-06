@@ -19,6 +19,8 @@ TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 TR_EXCLUDE += /usr/include/*
 
 CONFIG += link_prl link_pkgconfig c++17
+gcc:QMAKE_CXXFLAGS += -Wno-unused-parameter
+clang:QMAKE_CXXFLAGS += -Wno-unused-parameter
 
 #Define for Qt dependent code
 DEFINES += QTP6VX

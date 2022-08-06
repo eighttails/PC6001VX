@@ -90,9 +90,9 @@ bool RenderView::event(QEvent *event)
 	switch (event->type()) {
 	case QEvent::TouchBegin:
 		if(QTouchEvent* tEvent = dynamic_cast<QTouchEvent*>(event)){
-			auto state = tEvent->touchPoints()[0].state();
-			if (state == Qt::TouchPointPressed){
-				auto point = tEvent->touchPoints()[0].pos().toPoint();
+			auto state = tEvent->points()[0].state();
+			if (state == QEventPoint::Pressed){
+				auto point = tEvent->points()[0].position().toPoint();
 				QGraphicsItem* item = scene()->itemAt(mapToScene(point), transform());
 				// タップしたアイテムが原点にある場合、メイン画面とみなしてメニューを出す
 				if(item && item->pos() == QPoint(0, 0)){
@@ -175,7 +175,7 @@ void RenderView::mouseReleaseEvent(QMouseEvent *event)
 		return;
 	}
 
-	auto p = event->globalPos();
+	auto p = event->globalPosition();
 	ev.mousebt.x = p.x();
 	ev.mousebt.y = p.y();
 	ev.mousebt.state = false;

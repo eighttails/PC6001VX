@@ -72,7 +72,6 @@ void MainWidget::updateLayout()
 void MainWidget::adjustSizeToChild(QSize size)
 {
 #ifndef ALWAYSFULLSCREEN
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	setGeometry(x(), y(), size.width(), size.height() * (VKeyWidget->isVisible() ? 2 : 1));
 #endif
 }

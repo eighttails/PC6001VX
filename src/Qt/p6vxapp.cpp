@@ -7,11 +7,10 @@
 
 #include <map>
 
+#include "../pc6001v.h"
 #include "../event.h"
 #include "../osd.h"
 #include "../error.h"
-#include "../pc6001v.h"
-#include "../typedef.h"
 #include "../console.h"
 #include "../error.h"
 #include "../osd.h"
@@ -334,7 +333,6 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 {
 	RenderView* view = reinterpret_cast<RenderView*>(Wh);
 	Q_ASSERT(view);
-	QGraphicsScene* scene = view->scene();
 
 #ifdef ALWAYSFULLSCREEN
 	MWidget->showFullScreen();
@@ -716,7 +714,7 @@ void P6VXApp::executeEmulation()
 	}
 
 	// 機種別P6オブジェクト確保
-	QScopedPointer<QtEL6> P6CoreObj(new QtEL6(this));
+	std::unique_ptr<QtEL6> P6CoreObj(new QtEL6(this));
 	if( !P6CoreObj ){
 		exit();
 		return;
@@ -799,7 +797,7 @@ void P6VXApp::executeEmulation()
 	}
 
 	P6Core->deleteLater();
-	P6Core = P6CoreObj.take();
+	P6Core = P6CoreObj.release();
 
 	// パレット設定
 	P6Core->SetPaletteTable(PaletteTable, Cfg->GetValue( CV_ScanLineBr ));

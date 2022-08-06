@@ -43,14 +43,14 @@ bool VirtualStickItem::sceneEvent(QEvent *event)
 	case QEvent::TouchCancel:
 	{
 		auto touchEvent = dynamic_cast<QTouchEvent*>(event);
-		for(auto p : touchEvent->touchPoints()){
+		for(auto p : touchEvent->points()){
 			auto touchState = p.state();
 			switch(touchState){
-			case Qt::TouchPointPressed:
+			case QEventPoint::Pressed:
 			{
 				pressEffect->setEnabled(true);
 				// タッチした座標に対応するキーを押下する(同時押しによる斜め入力あり)
-				auto keyStatus = estimateStickInput(p.pos());
+				auto keyStatus = estimateStickInput(p.position());
 				for(size_t i = 0; i < keyStatus.size(); i++){
 					if(keyStatus[i]){
 						sendKeyEvent(EV_KEYDOWN, keySims[i], true);
@@ -59,7 +59,7 @@ bool VirtualStickItem::sceneEvent(QEvent *event)
 				currentKeyStatus = keyStatus;
 				break;
 			}
-			case Qt::TouchPointReleased:
+			case QEventPoint::Released:
 			{
 				pressEffect->setEnabled(false);
 				// それまで押されていたキーをリリースする
@@ -70,10 +70,10 @@ bool VirtualStickItem::sceneEvent(QEvent *event)
 				currentKeyStatus = {false,false,false,false};
 				break;
 			}
-			case Qt::TouchPointMoved:
-			case Qt::TouchPointStationary:
+			case QEventPoint::Updated:
+			case QEventPoint::Stationary:
 			{
-				auto keyStatus = estimateStickInput(touchEvent->touchPoints()[0].pos());
+				auto keyStatus = estimateStickInput(touchEvent->points()[0].position());
 				for(size_t i = 0; i < keyStatus.size(); i++){
 					// 前回と状態が変わったキーのイベントを送信
 					if (keyStatus[i] && !currentKeyStatus[i]){

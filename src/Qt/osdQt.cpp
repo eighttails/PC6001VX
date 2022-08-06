@@ -1429,18 +1429,6 @@ int OSD_GetWindowHeight( HWINDOW hwnd )
 }
 
 
-////////////////////////////////////////////////////////////////
-// パレット設定
-//
-// 引数:	hwnd			ウィンドウハンドル
-//		pal			パレットへのポインタ
-// 返値:	bool		true:成功 false:失敗
-////////////////////////////////////////////////////////////////
-bool OSD_SetPalette( VSurface* sur )
-{
-
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // フルスクリーン?
 //
@@ -1753,7 +1741,7 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 		return ret;
 	}
 	// new に失敗した場合
-	catch( std::bad_alloc ){
+	catch( std::bad_alloc& ){
 		return -1;
 	}
 	// 例外発生

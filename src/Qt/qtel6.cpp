@@ -6,9 +6,7 @@
 #include "../config.h"
 #include "../breakpoint.h"
 #include "../disk.h"
-#include "../error.h"
 #include "../graph.h"
-#include "../ini.h"
 #include "../memory.h"
 #include "../movie.h"
 #include "../osd.h"
@@ -18,7 +16,6 @@
 #include "../joystick.h"
 #include "../id_menu.h"
 
-#include "mainwidget.h"
 #include "renderview.h"
 #include "keypanel.h"
 #include "virtualkeytabwidget.h"
@@ -364,7 +361,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(tapeMenu, tr("挿入..."), ID_TAPEINSERT);
 	QAction* tapeEject = addCommand(tapeMenu, tr("取出"), ID_TAPEEJECT);
 	if(P6VPATH2QSTR(vm->cmtl->GetFile()).isEmpty()) tapeEject->setEnabled(false);
-	QAction* tapeExport = addCommand(tapeMenu, tr("TAPE(SAVE)をエクスポート..."), ID_TAPEEXPORT);
+	addCommand(tapeMenu, tr("TAPE(SAVE)をエクスポート..."), ID_TAPEEXPORT);
 
 	// DISKメニュー
 	if (vm->disk->GetDrives()){
@@ -483,7 +480,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (app->isTiltEnabled()) tiltMode->setChecked(true);
 
 	QMenu* colorMenu = settingsMenu->addMenu(tr("MODE4 カラー"));
-	QActionGroup* colorGroup = new QActionGroup(&menu);
 	QStringList colorList = (QStringList()
 							 << tr("モノクロ")
 							 << tr("赤/青")
@@ -497,7 +493,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	QMenu* fpsMenu = settingsMenu->addMenu(tr("フレームスキップ"));
 	settingsMenu->addSeparator();
-	QActionGroup* fpsGroup = new QActionGroup(&menu);
 	QStringList fpsList = (QStringList()
 						   << "0 (59.92fps)"
 						   << "1 (29.96fps)"
@@ -543,49 +538,12 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	}
 }
 
-
-
 void QtEL6::UpdateFPS()
 {
 	Event ev;
 	ev.type = EV_FPSUPDATE;
 	OSD_PushEvent( ev );
 }
-
-
-
-///////////////////////////////////////////////////////////
-// 環境設定プロパティシート表示
-///////////////////////////////////////////////////////////
-//static int ShowConfig()
-//{
-//    // INIファイルを開く
-//    try{
-//        ecfg = new CFG6();
-//        if( !ecfg->Init() ) throw Error::IniReadFailed;
-//    }
-//    // new に失敗した場合
-//    catch( std::bad_alloc ){
-//        return -1;
-//    }
-//    // 例外発生
-//    catch( Error::Errno i ){
-//        delete ecfg;
-//        ecfg = nullptr;
-//        return -1;
-//    }
-
-//    ConfigDialog dialog(ecfg);
-//    dialog.exec();
-//    int ret = dialog.result();
-//    // OKボタンが押されたならINIファイル書込み
-//    if( ret == QDialog::Accepted) ecfg->Write();
-
-//    delete ecfg;
-//    ecfg = nullptr;
-
-//    return ret;
-//}
 
 bool QtEL6::GetPauseEnable()
 {

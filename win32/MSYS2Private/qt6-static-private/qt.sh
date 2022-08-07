@@ -32,6 +32,8 @@ mkdir -p $QT6_STATIC_PREFIX/bin 2> /dev/null
 pushd $MINGW_PREFIX/bin
 cp -f $NEEDED_DLLS $QT6_STATIC_PREFIX/bin
 popd
+
+sed -e 's/-Dmain=SDL_main//g' $MINGW_PREFIX/lib/pkgconfig/sdl2.pc > $MINGW_PREFIX/lib/pkgconfig/sdl2_withqt.pc
 }
 
 # Use the right mkspecs file

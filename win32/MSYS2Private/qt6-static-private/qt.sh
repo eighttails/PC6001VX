@@ -147,6 +147,7 @@ cmake \
     -DFEATURE_optimize_size=ON \
     -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a;.dll.a" \
     -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} -static -static-libgcc -static-libstdc++" \
+    -DBUILD_WITH_PCH=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DQT_QMAKE_TARGET_MKSPEC=${_platform} \
     -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \

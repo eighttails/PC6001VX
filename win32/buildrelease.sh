@@ -23,5 +23,6 @@ mkdir $P6VX_DBUILD_DIR
 
 cd $P6VX_DBUILD_DIR
 $QTDIR/bin/qmake $SCRIPT_DIR/../PC6001VX.pro 
+sed -i -e 's/-Dmain=SDL_main//g' Makefile.release
 $MINGW32MAKE release
 

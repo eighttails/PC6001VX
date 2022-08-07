@@ -18,6 +18,7 @@ QMAKE_TARGET_PRODUCT = PC6001VX
 TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
 TR_EXCLUDE += /usr/include/*
 
+CONFIG += silent
 CONFIG += link_prl link_pkgconfig c++17
 gcc:QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-unused-variable
 clang:QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-unused-variable
@@ -92,7 +93,6 @@ unix:!macx {
 #Configuration for Windows
 win32 {
     #On Windows, link libraries statically as long as possible.
-    QMAKE_LFLAGS_WINDOWS += -Wl,--stack,10000000
     QMAKE_LFLAGS += -static
     LIBS_PRIVATE= -lpthread -lsetupapi -lintl -liconv
     PKG_CONFIG = 'pkg-config --static'

@@ -104,7 +104,8 @@ win32 {
 #Find library to handle joysticks.
 !contains(DEFINES, NOJOYSTICK) {
     packagesExist(sdl2) {
-        PKGCONFIG += sdl2
+        win32:PKGCONFIG += sdl2_withqt
+        else:PKGCONFIG += sdl2
     } else {
         DEFINES += NOJOYSTICK
     }

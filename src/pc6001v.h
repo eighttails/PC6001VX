@@ -33,7 +33,7 @@
 #define	DEFAULT_MODEL			(0)					// 機種 60:PC-6001 61:PC-6001A 62:PC-6001mkⅡ 66:PC-6601 64:PC-6001mkⅡSR 68:PC-6601SR (0:自動選定)
 #define	DEFAULT_USEEXTRAM		(1)					// 拡張RAM 0:なし 1:あり
 #define	DEFAULT_SAMPLERATE		(44100)				// サンプリングレート
-#define	DEFAULT_SOUNDBUF		(1)					// サウンドバッファ長倍率(基本長はVSYNC)
+#define	DEFAULT_SOUNDBUF		(2)					// サウンドバッファ長倍率(基本長はVSYNC)
 #define	DEFAULT_MASTERVOL		(70)				// マスター音量
 #define	DEFAULT_PSGVOL			(60)				// PSG音量
 #define	DEFAULT_PSGLPF			(0)					// PSG LPFカットオフ周波数(0で無効)
@@ -60,8 +60,8 @@
 #define	DEFAULT_FULLSCREEN		(false) 			// フルスクリーン
 #define	DEFAULT_DISPSTATUS		(true) 				// ステータスバー表示状態
 #define	DEFAULT_AVIBPP			(24) 				// ビデオキャプチャ色深度
-#define	DEFAULT_AVIZOOM			(100) 				// ビデオキャプチャ時ウィンドウ表示倍率
-#define	DEFAULT_AVIFRMSKIP		(1)					// ビデオキャプチャ時フレームスキップ
+#define	DEFAULT_AVIZOOM			(200) 				// ビデオキャプチャ時ウィンドウ表示倍率
+#define	DEFAULT_AVIFRMSKIP		(0)					// ビデオキャプチャ時フレームスキップ
 #define	DEFAULT_AVISCANLINE		(false)				// ビデオキャプチャ時スキャンライン true:あり false:なし
 #define	DEFAULT_AVISCANLINEBR	(75)				// ビデオキャプチャ時スキャンライン輝度 (0-100)%
 #define	DEFAULT_AVIDISPNTSC		(true) 				// ビデオキャプチャ時4:3表示 true:有効 false:無効

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>634</width>
-    <height>700</height>
+    <width>625</width>
+    <height>689</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -18,6 +18,9 @@
   </property>
   <property name="windowTitle">
    <string>環境設定</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="5" column="0">

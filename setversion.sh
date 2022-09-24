@@ -1,7 +1,14 @@
 #!/bin/bash
 
 #このスクリプトの置き場所
+if [ -z "$MINGW_PREFIX" ]; then
 SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+PERL=perl
+else
+SCRIPT_DIR=$(cygpath -m $(dirname $(readlink -f ${BASH_SOURCE:-$0})))
+PERL=/bin/perl
+fi
+echo $SCRIPT_DIR
 
 #バージョン番号
 MAJOR=$1
@@ -28,10 +35,11 @@ fi
 echo $FULLVER > $SCRIPT_DIR/VERSION.PC6001VX
 
 #ヘッダーファイル
-perl -pi -e "s/(#define\tVERSION)(.*)/\$1\t\t\t\t\t\"$FULLVER\"/" $SCRIPT_DIR/src/pc6001v.h 	
+$PERL -pi -e "s/(#define\tVERSION)(.*)/\$1\t\t\t\t\t\"$FULLVER\"/" "$SCRIPT_DIR/src/pc6001v.h" 	
 
 #Androidマニフェストファイル
-perl -pi -e "s/(android:versionName=)\"([^\"]+)\"/\$1\"$FULLVER\"/" $SCRIPT_DIR/android/AndroidManifest.xml
+$PERL -pi -e "s/(android:versionName=)\"([^\"]+)\"/\$1\"$FULLVER\"/" "$SCRIPT_DIR/android/AndroidManifest.xml"
 
 #proファイル
-perl -pi -e "s/(VERSION =)(.*)/\$1 $NUMVER/" $SCRIPT_DIR/PC6001VX.pro 	
+$PERL -pi -e "s/(VERSION =)(.*)/\$1 $NUMVER/" "$SCRIPT_DIR/PC6001VX.pro"
+

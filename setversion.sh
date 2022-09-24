@@ -25,7 +25,7 @@ else
 fi
 
 #バージョン番号ファイル(ビルドスクリプト用)
-echo $FULLVER > $SCRIPT_DIR/VERSION 
+echo $FULLVER > $SCRIPT_DIR/VERSION.PC6001VX
 
 #ヘッダーファイル
 perl -pi -e "s/(#define\tVERSION)(.*)/\$1\t\t\t\t\t\"$FULLVER\"/" $SCRIPT_DIR/src/pc6001v.h 	

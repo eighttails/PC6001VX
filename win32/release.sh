@@ -25,7 +25,7 @@ cd $SCRIPT_DIR
 
 #引数としてバージョンを指定すること
 if [ -z $1 ]; then
-    VERSION=$(cat $SCRIPT_DIR/../VERSION)
+    VERSION=$(cat $SCRIPT_DIR/../VERSION.PC6001VX)
 else
     VERSION=$1
 fi

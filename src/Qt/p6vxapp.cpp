@@ -897,6 +897,11 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 		else if(nativeKey == 123){
 			keyCode = Qt::Key_Muhenkan;
 		}
+	// Macの場合
+	}else if( isPlatform("cocoa")) {
+		if(keyCode == Qt::Key_yen) {		// Yen key
+			keyCode = Qt::Key_Backslash;
+		}
 	}
 }
 

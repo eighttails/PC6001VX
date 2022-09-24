@@ -90,6 +90,12 @@ unix:!macx {
     }
 }
 
+#Configuration for macOS
+macx {
+    LIBS_PRIVATE= -lintl
+}
+
+
 #Configuration for Windows
 win32 {
     #On Windows, link libraries statically as long as possible.

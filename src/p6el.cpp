@@ -173,7 +173,7 @@ void EL6::OnThread( void* inst )
 				// リプレイ再生中
 				if( REPLAY::GetStatus() == ST_REPLAYPLAY ){
 #ifdef REPLAYDEBUG_FRAME
-					// 設定ファイルと同じフォルダにrecordフォルダを予め作成しておくこと
+					// 設定ファイルと同じフォルダにreplayフォルダを予め作成しておくこと
 					P6VPATH fullPath;
 					P6VPATH fileName;
 					char str[PATH_MAX];

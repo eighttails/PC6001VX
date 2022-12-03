@@ -43,7 +43,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 		adjustSizeToChild(MainView->size());
 		layout->update();
 #ifndef ALWAYSFULLSCREEN
-		QRect availableGeometry(QApplication::screens()[0]->availableGeometry());
+		// 初回起動時は画面中心に表示
+		QRect availableGeometry(QApplication::primaryScreen()->availableGeometry());
 		move((availableGeometry.width() - width()) / 2,
 			 (availableGeometry.height() - height()) / 2);
 #endif

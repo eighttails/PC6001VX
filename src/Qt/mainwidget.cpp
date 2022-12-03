@@ -2,6 +2,7 @@
 
 #include <QVBoxLayout>
 #include <QResizeEvent>
+#include <QApplication>
 
 #include "p6vxapp.h"
 #include "renderview.h"
@@ -41,6 +42,11 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	} else {
 		adjustSizeToChild(MainView->size());
 		layout->update();
+#ifndef ALWAYSFULLSCREEN
+		QRect availableGeometry(QApplication::screens()[0]->availableGeometry());
+		move((availableGeometry.width() - width()) / 2,
+			 (availableGeometry.height() - height()) / 2);
+#endif
 	}
 
 	if(app->getSetting(P6VXApp::keyMaximized).toBool()){

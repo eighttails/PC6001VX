@@ -441,6 +441,14 @@ static void CloseStream( OutputStream& ost )
 	ost.swr_ctx = nullptr;
 }
 // ---------------------------------------------------
+#else
+class MovieEncodeThread
+{
+	// NOAVIの時はダミーのクラスを定義
+public:
+	MovieEncodeThread(){}
+	~MovieEncodeThread(){}
+};
 #endif // NOAVI
 
 
@@ -453,8 +461,10 @@ AVI6::AVI6( void ) : isAVI(false), oc(nullptr),
 	audio_codec(nullptr), video_codec(nullptr),
 	video_st(), audio_st(), opt(nullptr), pixfmt(PX32ARGB), req(0)
 {
+#ifndef NOAVI
 	//av_log_set_level(AV_LOG_DEBUG);
 	EncodeThread.reset(new MovieEncodeThread());
+#endif
 }
 
 

@@ -1,5 +1,5 @@
 /*
-  bdf2exkanji.c  2020.4.4 version
+  bdf2exkanji.c  2022.6.26 version
     convert .bdf font file to EXTKANJI format for PC-6001 series
     by AKIKAWA, Hisashi
     This software is redistributable under the LGPLv2.1 or any later version.
@@ -1151,7 +1151,7 @@ int main(int argc, char *argv[])
     if (charset == UNI) {
       chr = uni2jis(code);
       if (chr == -1) continue;
-    } else if (charset == JIS && chr < NCHR) {
+    } else if (charset == JIS && code < NCHR) {
       chr = code;
     }
     fpos = ftell(fp);

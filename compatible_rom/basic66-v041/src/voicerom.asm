@@ -1,5 +1,5 @@
-;Compatible BASIC for PC-6001mkII/6601
-; by AKIKAWA, Hisashi  2017-2020
+;Compatible BASIC voice ROM for PC-6001mkII/6601
+; by AKIKAWA, Hisashi  2017-2022
 
 ;This software is redistributable under the LGPLv2.1 or any later version.
 
@@ -30,7 +30,6 @@ REST	equ	0014h		;rest or not
 MMLPTCH	equ	0015h		;MML pitch
 MMLLEN	equ	0016h		;MML length
 MMLADR	equ	0017h		;MML address
-KEYFLG	equ	0fa5ah		;special key flags
 F1	equ	0020h		;f1,f1diff,b1,b1diff,...,b5diff(0033h)
 F1DIFF	equ	0021h
 STACK	equ	0040h
@@ -48,6 +47,9 @@ FRAMES2	equ	40h		;frmaes (sing)
 ;FRAMES2	equ	48h		;frmaes (sing)
 ;FRAMES2	equ	4ch		;frmaes (sing)
 
+;work area address
+KEYFLG	equ	0fa5ah		;special key flags
+PORTF0H	equ	0fe64h		;port f0h
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -59,6 +61,8 @@ _TALK:	ds	TALK-_TALK
 	org	TALK
 
 	ld	(STACK),sp
+	ld	a,11h		;0000-7fff: BASIC ROM
+	ld	(PORTF0H),a
 
 ;check male/female
 	ld	a,e
@@ -1688,10 +1692,10 @@ GETNUMLP2:
 	ld	(MMLLEN),a
 
 	ld	a,d
-	add	a,a		*2
-	add	a,a		*4
-	add	a,d		*5
-	add	a,a		*10
+	add	a,a		;*2
+	add	a,a		;*4
+	add	a,d		;*5
+	add	a,a		;*10
 	add	a,e
 
 	inc	hl
@@ -1889,7 +1893,8 @@ CHGRAM0:
 ;change 0000-3fff to BASIC ROM
 ;destroy: a
 CHGROM0:
-	ld	a,21h		;0000-3fff:BASIC ROM, 4000-7fff:VOICE ROM
+;	ld	a,21h		;0000-3fff:BASIC ROM, 4000-7fff:VOICE ROM
+	ld	a,51h		;0000-3fff,6000-7fff:BASIC ROM, 4000-5fff:VOICE ROM
 ;	ld	a,77h		;for test
 	out	(0f0h),a
 	ei

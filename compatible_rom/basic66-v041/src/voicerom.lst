@@ -1,0 +1,2564 @@
+			  Z80 ASSEMBLER - ZASM VER 1.6
+                      	;Compatible BASIC voice ROM for PC-6001mkII/6601
+                      	; by AKIKAWA, Hisashi  2017-2022
+                      	
+                      	;This software is redistributable under the LGPLv2.1 or any later version.
+                      	
+                      	
+  4000                	TALK	equ	4000h
+                      	
+  0000                	MF	equ	0000h		;male/female
+  0001                	SPEED	equ	0001h		;0-4
+  0002                	COMMAND	equ	0002h		;0-4,fe
+  0003                	QMAG	equ	0003h		;0 or 4
+  0004                	VOICED	equ	0004h		;0=unvoiced 1=voiced
+  0005                	TDIFF	equ	0005h		;time residual frames
+  0006                	PDIFF	equ	0006h		;pitch difference
+  0007                	APSTCNT	equ	0007h		;apostrophe counter
+  0008                	SYLBCNT	equ	0008h		;syllable counter
+  0009                	WORDCNT	equ	0009h		;word counter
+  000A                	TMPPTCH	equ	000ah		;temporary pitch (for ^ and +)
+  000B                	HATCNT	equ	000bh		;^ counter
+  000C                	PLUSCNT	equ	000ch		;+ counter
+  000E                	OUTADR	equ	000eh		;output address
+                      	
+                      	;sing
+  0010                	SHARP	equ	0010h		;#
+  0011                	VOLUME	equ	0011h		;V-value << 4
+  0012                	OCTAVE	equ	0012h		;O-value
+  0013                	LENGTH	equ	0013h		;L-value (by frames)
+  0014                	REST	equ	0014h		;rest or not
+  0015                	MMLPTCH	equ	0015h		;MML pitch
+  0016                	MMLLEN	equ	0016h		;MML length
+  0017                	MMLADR	equ	0017h		;MML address
+  0020                	F1	equ	0020h		;f1,f1diff,b1,b1diff,...,b5diff(0033h)
+  0021                	F1DIFF	equ	0021h
+  0040                	STACK	equ	0040h
+  0300                	WORK	equ	0300h
+                      	
+                      	;for subtitles in PC6001VW
+  00A6                	VWWK62	equ	00a6h		;work area for mkII
+  01D3                	VWWK66	equ	01d3h		;work area for 6601
+  4D59                	OUTE362	equ	4d59h		;out to port-e3h
+  52F2                	OUTE366	equ	52f2h		;out to port-e3h
+                      	;
+                      	
+  0010                	FRAMES	equ	10h		;frames for 1 syllable
+  0040                	FRAMES2	equ	40h		;frmaes (sing)
+                      	;FRAMES2	equ	48h		;frmaes (sing)
+                      	;FRAMES2	equ	4ch		;frmaes (sing)
+                      	
+                      	;work area address
+  FA5A                	KEYFLG	equ	0fa5ah		;special key flags
+  FE64                	PORTF0H	equ	0fe64h		;port f0h
+                      	
+                      	;;;;;;;;;;;;;;;;;;;;;;;;;
+                      	
+  4000                		org	4000h
+                      	
+                      	;input: hl=string address, e=length
+                      	;destroy: af,bc,de,hl,af',bc',d',hl'
+  4000                	_TALK:	ds	TALK-_TALK
+  4000                		org	TALK
+                      	
+  4000  ED734000      		ld	(STACK),sp
+  4004  3E11          		ld	a,11h		;0000-7fff: BASIC ROM
+  4006  3264FE        		ld	(PORTF0H),a
+                      	
+                      	;check male/female
+  4009  7B            		ld	a,e
+  400A  B7            		or	a
+  400B  CABF41        		jp	z,TALKERR
+                      	
+  400E  7E            		ld	a,(hl)
+  400F  F620          		or	20h
+  4011  FE66          		cp	'f'
+  4013  2805          		jr	z,MFOK
+  4015  FE6D          		cp	'm'
+  4017  C2BF41        		jp	nz,TALKERR
+  401A                	MFOK:
+  401A  320000        		ld	(MF),a
+  401D  57            		ld	d,a
+                      	
+  401E  1D            		dec	e
+  401F  CABF41        		jp	z,TALKERR
+  4022  23            		inc	hl
+                      	
+                      	
+                      	;check speed ((1)-6, space=2)
+  4023  7E            		ld	a,(hl)
+  4024  FE20          		cp	' '
+  4026  2002          		jr	nz,CHKSPD1
+  4028  3E32          		ld	a,'2'
+  402A                	CHKSPD1:
+  402A  D631          		sub	'1'
+  402C  2009          		jr	nz,CHKSPD2
+  402E  3A5AFA        		ld	a,(KEYFLG)
+  4031  E620          		and	20h
+  4033  CABF41        		jp	z,TALKERR
+  4036  AF            		xor	a
+  4037                	CHKSPD2:
+  4037  FE06          		cp	6-1+1
+  4039  D2BF41        		jp	nc,TALKERR
+  403C  320100        		ld	(SPEED),a
+                      	
+  403F  1D            		dec	e
+  4040  CABF41        		jp	z,TALKERR
+  4043  23            		inc	hl
+                      	
+                      	;for subtitles in PC6001VW
+  4044  E5            		push	hl
+  4045  210100        		ld	hl,0001h	;length+1
+  4048  22A600        		ld	(VWWK62),hl
+  404B  22D301        		ld	(VWWK66),hl
+  404E  E1            		pop	hl
+                      	;
+                      	
+                      	;check internal messages(0-4)/sing(#)/talk(others)
+  404F  7E            		ld	a,(hl)
+  4050  D630          		sub	'0'
+  4052  FE05          		cp	'4'-'0'+1
+  4054  DA5246        		jp	c,TALKOUT	;internal message
+                      	
+  4057  1D            		dec	e
+  4058  CABF41        		jp	z,TALKERR
+                      	
+                      	;clear work area
+  405B  D9            		exx
+  405C  212000        		ld	hl,F1
+  405F  0614          		ld	b,4*5
+  4061                	CLRLP:
+  4061  3600          		ld	(hl),00h
+  4063  23            		inc	hl
+  4064  10FB          		djnz	CLRLP
+  4066  210003        		ld	hl,WORK
+  4069  220E00        		ld	(OUTADR),hl
+  406C  70            		ld	(hl),b		;b=0
+  406D  211000        		ld	hl,SHARP
+  4070  70            		ld	(hl),b
+  4071  23            		inc	hl
+  4072  36A0          		ld	(hl),0a0h	;VOLUME
+  4074  D9            		exx
+                      	
+  4075  E5            		push	hl
+  4076  D5            		push	de
+                      	
+  4077  FEF3          		cp	'#'-'0'
+  4079  280E          		jr	z,PRESING
+                      	
+  407B  7A            		ld	a,d
+  407C  FE66          		cp	'f'
+  407E  3E06          		ld	a,06h
+  4080  2802          		jr	z,FEMALE
+  4082  3E27          		ld	a,27h
+  4084                	FEMALE:
+  4084  320600        		ld	(PDIFF),a
+  4087  1833          		jr	SETPITCH
+                      	
+                      	
+                      	;prepare for singing
+  4089                	PRESING:
+  4089  1D            		dec	e
+  408A  CABF41        		jp	z,TALKERR
+  408D  23            		inc	hl
+  408E  7E            		ld	a,(hl)
+  408F  FE3A          		cp	':'
+  4091  20F6          		jr	nz,PRESING
+  4093  23            		inc	hl
+  4094  221700        		ld	(MMLADR),hl
+  4097  7B            		ld	a,e
+  4098  321600        		ld	(MMLLEN),a
+                      	
+  409B  E5            		push	hl
+  409C  F5            		push	af
+                      	
+  409D  211000        		ld	hl,SHARP
+  40A0  3601          		ld	(hl),01h
+  40A2  23            		inc	hl
+  40A3  3680          		ld	(hl),080h	;VOLUME
+  40A5  23            		inc	hl
+  40A6  3604          		ld	(hl),04h	;OCTAVE
+  40A8  23            		inc	hl
+  40A9  3640          		ld	(hl),FRAMES2	;LENGTH
+  40AB  23            		inc	hl
+  40AC  3600          		ld	(hl),00h	;REST
+  40AE  23            		inc	hl
+  40AF  3600          		ld	(hl),00h	;MMLPTCH
+                      	
+  40B1  CD9347        		call	ANAMML
+  40B4  F1            		pop	af
+  40B5  E1            		pop	hl
+  40B6  221700        		ld	(MMLADR),hl
+  40B9  321600        		ld	(MMLLEN),a
+                      	
+  40BC                	SETPITCH:
+  40BC  210003        		ld	hl,WORK
+  40BF  CDB449        		call	CHGRAM0
+  40C2                	PRESINGLP:
+  40C2  3A0600        		ld	a,(PDIFF)
+  40C5  B7            		or	a		;
+  40C6  280A          		jr	z,PRESINGEND
+  40C8  3E01          		ld	a,1
+  40CA  320500        		ld	(TDIFF),a
+  40CD  CD4F49        		call	NOSOUND1
+  40D0  18F0          		jr	PRESINGLP
+                      	
+  40D2                	PRESINGEND:
+  40D2  CDBA49        		call	CHGROM0
+  40D5  220E00        		ld	(OUTADR),hl
+                      	
+  40D8  D1            		pop	de
+  40D9  E1            		pop	hl
+                      	;	jr	TALKEXT
+                      	
+                      	
+                      	;external message
+                      	;d=male/female, e=length, hl=string address
+  40DA                	TALKEXT:
+  40DA  23            		inc	hl
+  40DB  7E            		ld	a,(hl)
+  40DC  FE20          		cp	' '
+  40DE  2006          		jr	nz,EXTOK
+  40E0  1D            		dec	e
+  40E1  CABF41        		jp	z,TALKERR
+  40E4  18F4          		jr	TALKEXT
+                      	
+  40E6                	EXTOK:
+  40E6  AF            		xor	a
+  40E7  320800        		ld	(SYLBCNT),a
+  40EA  320900        		ld	(WORDCNT),a
+                      	
+  40ED                	EXTLP1:
+  40ED  CDB449        		call	CHGRAM0
+  40F0  3A0900        		ld	a,(WORDCNT)
+  40F3  3C            		inc	a
+  40F4  FE04          		cp	4
+  40F6  D2BF41        		jp	nc,TALKERR
+  40F9  320900        		ld	(WORDCNT),a
+  40FC  CDBA49        		call	CHGROM0
+  40FF  AF            		xor	a
+  4100  320A00        		ld	(TMPPTCH),a
+  4103  320B00        		ld	(HATCNT),a
+                      	
+                      	;word start
+  4106  AF            		xor	a
+  4107  320700        		ld	(APSTCNT),a
+  410A  320C00        		ld	(PLUSCNT),a
+  410D  320600        		ld	(PDIFF),a
+  4110                	EXTLP2:
+  4110  3E10          		ld	a,FRAMES
+  4112  320500        		ld	(TDIFF),a
+  4115  CD9347        		call	ANAMML
+  4118                	EXTLP3:
+  4118  7E            		ld	a,(hl)
+                      	;	cp	'.'
+                      	;	jp	z,EXTEND
+                      	;	cp	':'
+                      	;	jp	z,EXTEND
+                      	
+  4119  FE5E          		cp	'^'
+  411B  CACC41        		jp	z,HAT
+  411E  FE2B          		cp	'+'
+  4120  CA0842        		jp	z,PLUS
+                      	
+                      	;for subtitles in PC6001VW
+  4123  57            		ld	d,a		;
+  4124  CDB449        		call	CHGRAM0
+  4127  E5            		push	hl
+  4128  2AA600        		ld	hl,(VWWK62)
+  412B  2C            		inc	l		;h=0
+  412C  7D            		ld	a,l
+  412D  32A600        		ld	(VWWK62),a
+  4130  32D301        		ld	(VWWK66),a
+  4133  01A600        		ld	bc,VWWK62
+  4136  09            		add	hl,bc
+  4137  72            		ld	(hl),d		;
+  4138  012D01        		ld	bc,VWWK66-VWWK62
+  413B  09            		add	hl,bc
+  413C  72            		ld	(hl),d		;
+  413D  E1            		pop	hl
+  413E  CDBA49        		call	CHGROM0
+  4141  7A            		ld	a,d		;
+                      	;
+                      	
+  4142  F620          		or	20h		;lowercase
+  4144  CDEA48        		call	CHKVOW
+  4147  CA8544        		jp	z,VOWEL
+                      	
+                      	
+                      	;consonant
+  414A  1D            		dec	e
+  414B  CABF41        		jp	z,TALKERR
+                      	
+  414E  47            		ld	b,a		;
+  414F  23            		inc	hl
+                      	
+  4150  E5            		push	hl
+  4151  D5            		push	de
+                      	
+  4152  7E            		ld	a,(hl)
+  4153  5F            		ld	e,a
+                      	
+  4154  F620          		or	20h		;
+  4156  0E01          		ld	c,1
+  4158  FE79          		cp	'y'
+  415A  2806          		jr	z,EXTZ		;contracted sound
+  415C  CDEA48        		call	CHKVOW
+  415F  C2BF41        		jp	nz,TALKERR
+  4162                	EXTZ:
+                      	
+  4162  CDFF48        		call	GETOUTADR
+  4165  EB            		ex	de,hl
+                      	
+                      	
+                      	;voiced sound
+                      	;b=character, c=vowel(0-4), de=output address, h=male/female, l=next character
+  4166  3E01          		ld	a,01h
+  4168  320400        		ld	(VOICED),a
+                      	
+  416B  78            		ld	a,b		;
+  416C  FE62          		cp	'b'
+  416E  CACF43        		jp	z,CON_B
+  4171  FE64          		cp	'd'
+  4173  CA0B44        		jp	z,CON_D
+  4176  FE67          		cp	'g'
+  4178  CA1544        		jp	z,CON_G
+  417B  FE77          		cp	'w'
+  417D  CA1F44        		jp	z,CON_W
+  4180  FE79          		cp	'y'
+  4182  CA3144        		jp	z,CON_Y
+  4185  FE72          		cp	'r'
+  4187  CA4244        		jp	z,CON_R
+  418A  FE6D          		cp	'm'
+  418C  CA4844        		jp	z,CON_M
+  418F  FE6E          		cp	'n'
+  4191  CA4E44        		jp	z,CON_N
+  4194  FE7A          		cp	'z'
+  4196  CA5444        		jp	z,CON_Z
+                      	
+                      	;unvoiced sound
+  4199  AF            		xor	a
+  419A  320400        		ld	(VOICED),a
+  419D  78            		ld	a,b		;
+                      	
+  419E  FE70          		cp	'p'
+  41A0  CACB43        		jp	z,CON_P
+  41A3  FE6B          		cp	'k'
+  41A5  CA1544        		jp	z,CON_K
+  41A8  FE74          		cp	't'
+  41AA  CA0B44        		jp	z,CON_T
+  41AD  FE73          		cp	's'
+  41AF  CA5A44        		jp	z,CON_S
+  41B2  FE68          		cp	'h'
+  41B4  CA6044        		jp	z,CON_H
+  41B7  FE63          		cp	'c'
+  41B9  CA7A44        		jp	z,CON_C
+  41BC  C3BF41        		jp	TALKERR
+                      	
+                      	
+  41BF                	TALKERR:
+  41BF  CDB449        		call	CHGRAM0
+  41C2  2A4000        		ld	hl,(STACK)
+  41C5  CDBA49        		call	CHGROM0
+  41C8  F9            		ld	sp,hl
+  41C9  3E01          		ld	a,01h
+  41CB  C9            		ret
+                      	
+                      	
+  41CC                	HAT:
+  41CC  3E01          		ld	a,01h
+  41CE  320B00        		ld	(HATCNT),a
+  41D1  23            		inc	hl
+  41D2  7E            		ld	a,(hl)
+  41D3  FE5E          		cp	'^'
+  41D5  CABF41        		jp	z,TALKERR
+  41D8  FE2B          		cp	'+'
+  41DA  3EFA          		ld	a,0-6
+  41DC  200C          		jr	nz,HATNZ
+  41DE  3E01          		ld	a,01h
+  41E0  320C00        		ld	(PLUSCNT),a
+  41E3  23            		inc	hl
+  41E4  1D            		dec	e
+  41E5  CABF41        		jp	z,TALKERR
+  41E8  3EF1          		ld	a,0-15
+  41EA                	HATNZ:
+  41EA  320A00        		ld	(TMPPTCH),a
+  41ED  47            		ld	b,a
+  41EE  CDB449        		call	CHGRAM0
+                      	
+  41F1  3A1000        		ld	a,(SHARP)
+  41F4  B7            		or	a
+  41F5  200B          		jr	nz,HATEND
+                      	
+  41F7  3A0600        		ld	a,(PDIFF)
+  41FA  80            		add	a,b
+  41FB  320600        		ld	(PDIFF),a
+  41FE  1D            		dec	e
+  41FF  CABF41        		jp	z,TALKERR
+  4202                	HATEND:
+  4202  CDBA49        		call	CHGROM0
+  4205  C31841        		jp	EXTLP3
+                      	
+                      	
+  4208                	PLUS:
+  4208  23            		inc	hl
+  4209  7E            		ld	a,(hl)
+  420A  FE2B          		cp	'+'
+  420C  CABF41        		jp	z,TALKERR
+  420F  FE5E          		cp	'^'
+  4211  CABF41        		jp	z,TALKERR
+                      	
+  4214  CDB449        		call	CHGRAM0
+                      	
+  4217  3A1000        		ld	a,(SHARP)
+  421A  B7            		or	a
+  421B  2023          		jr	nz,PLUSEND
+                      	
+  421D  3A0600        		ld	a,(PDIFF)
+  4220  47            		ld	b,a
+  4221  3A0B00        		ld	a,(HATCNT)
+  4224  B7            		or	a
+  4225  2809          		jr	z,PLUSZ
+                      	;^+
+  4227  3EF1          		ld	a,0-15
+  4229  320A00        		ld	(TMPPTCH),a
+  422C  3EF7          		ld	a,0-9
+  422E  1805          		jr	PLUSPDIFF
+                      	
+  4230                	PLUSZ:
+  4230  3EFA          		ld	a,0-6
+  4232  320A00        		ld	(TMPPTCH),a
+  4235                	PLUSPDIFF:
+  4235  80            		add	a,b
+  4236  320600        		ld	(PDIFF),a
+  4239  CDBA49        		call	CHGROM0
+                      	
+  423C  1D            		dec	e
+  423D  CABF41        		jp	z,TALKERR
+                      	
+  4240                	PLUSEND:
+  4240  3E01          		ld	a,01h
+  4242  320C00        		ld	(PLUSCNT),a
+                      	
+  4245  C31841        		jp	EXTLP3
+                      	
+  4248                	APOST:
+  4248  CDB449        		call	CHGRAM0
+  424B  3A0700        		ld	a,(APSTCNT)
+  424E  B7            		or	a
+  424F  C2BF41        		jp	nz,TALKERR
+  4252  3C            		inc	a
+  4253  320700        		ld	(APSTCNT),a
+                      	
+  4256  3A1000        		ld	a,(SHARP)
+  4259  B7            		or	a
+  425A  CDBA49        		call	CHGROM0
+  425D  C2BC44        		jp	nz,VOWEND
+  4260  CDB449        		call	CHGRAM0
+                      	
+  4263  E5            		push	hl
+  4264  2A0E00        		ld	hl,(OUTADR)
+  4267  0196FF        		ld	bc,0-(FRAMES*7-6)
+  426A  09            		add	hl,bc
+  426B  010700        		ld	bc,7
+  426E                	APOSTLP:
+  426E  7E            		ld	a,(hl)
+  426F  E607          		and	07h
+  4271  2803          		jr	z,APOSTZ
+  4273  09            		add	hl,bc
+  4274  18F8          		jr	APOSTLP
+                      	
+  4276                	APOSTZ:
+  4276  3A1100        		ld	a,(VOLUME)
+  4279  F605          		or	05h
+  427B  77            		ld	(hl),a		;bit7-4=amp, bit3=FV, bit2-0=pitch=-3
+  427C  09            		add	hl,bc
+  427D  77            		ld	(hl),a
+  427E  CDBA49        		call	CHGROM0
+  4281  E1            		pop	hl
+  4282  1D            		dec	e
+  4283  CA4246        		jp	z,EXTEND
+  4286  3E0C          		ld	a,12		;PDIFF=+12
+  4288  320600        		ld	(PDIFF),a
+  428B  C3BC44        		jp	VOWEND
+                      	
+                      	
+  428E                	SPACELP:
+  428E  23            		inc	hl
+  428F                	SPACE:
+  428F  1D            		dec	e
+  4290  CA4246        		jp	z,EXTEND
+  4293  7E            		ld	a,(hl)
+  4294  FE20          		cp	' '
+  4296  28F6          		jr	z,SPACELP
+  4298  FE5E          		cp	'^'
+  429A  CABF41        		jp	z,TALKERR
+  429D  E5            		push	hl
+  429E  CDB449        		call	CHGRAM0
+                      	
+  42A1  3A1000        		ld	a,(SHARP)
+  42A4  B7            		or	a
+  42A5  2021          		jr	nz,NOPLUS
+                      	
+                      	
+                      	;	ld	hl,(OUTADR)
+                      	;	dec	hl
+                      	;	ld	(hl),0c3h	;pitch=+3
+                      	;	ld	hl,TMPPTCH
+                      	;	ld	a,(hl)
+                      	;	add	a,3
+                      	;	ld	(hl),a
+                      	
+  42A7  3A0C00        		ld	a,(PLUSCNT)
+  42AA  B7            		or	a
+  42AB  281B          		jr	z,NOPLUS
+                      	
+  42AD  210600        		ld	hl,PDIFF
+  42B0  3A0B00        		ld	a,(HATCNT)
+  42B3  B7            		or	a
+  42B4  7E            		ld	a,(hl)
+  42B5  280A          		jr	z,NOHAT
+                      	
+  42B7  C609          		add	a,9
+  42B9  77            		ld	(hl),a
+  42BA  3EFA          		ld	a,0-6
+  42BC  320A00        		ld	(TMPPTCH),a
+  42BF  1807          		jr	NOPLUS
+                      	
+  42C1                	NOHAT:
+  42C1  C606          		add	a,6
+  42C3  77            		ld	(hl),a
+  42C4  AF            		xor	a
+  42C5  320A00        		ld	(TMPPTCH),a
+                      	
+  42C8                	NOPLUS:
+  42C8  3A0700        		ld	a,(APSTCNT)
+  42CB  B7            		or	a
+  42CC  2807          		jr	z,NOAPST1
+  42CE  210600        		ld	hl,PDIFF
+  42D1  7E            		ld	a,(hl)
+  42D2  D606          		sub	6
+  42D4  77            		ld	(hl),a
+  42D5                	NOAPST1:
+                      	
+  42D5  AF            		xor	a
+  42D6  320C00        		ld	(PLUSCNT),a
+  42D9  320700        		ld	(APSTCNT),a
+                      	
+  42DC  CDBA49        		call	CHGROM0
+  42DF  E1            		pop	hl
+                      	
+  42E0  7E            		ld	a,(hl)
+  42E1  23            		inc	hl
+  42E2  FE3F          		cp	'?'
+  42E4  CA7843        		jp	z,QMARK
+  42E7  FE2F          		cp	'/'
+  42E9  CAF142        		jp	z,SLASH
+  42EC  2B            		dec	hl
+                      	
+  42ED  C31041        		jp	EXTLP2
+                      	
+                      	
+  42F0                	SLASHLP1:
+  42F0  23            		inc	hl
+  42F1                	SLASH:
+  42F1  1D            		dec	e
+  42F2  CABF41        		jp	z,TALKERR
+  42F5  7E            		ld	a,(hl)
+  42F6  FE20          		cp	' '
+  42F8  28F6          		jr	z,SLASHLP1
+  42FA  FE2E          		cp	'.'
+  42FC  CABF41        		jp	z,TALKERR
+  42FF  FE3A          		cp	':'
+  4301  CABF41        		jp	z,TALKERR
+                      	
+  4304  E5            		push	hl
+  4305  D5            		push	de
+                      	
+  4306  CDB449        		call	CHGRAM0
+                      	
+  4309  3A1000        		ld	a,(SHARP)
+  430C  B7            		or	a
+  430D  2038          		jr	nz,QSLSING
+                      	
+  430F  2A0E00        		ld	hl,(OUTADR)
+  4312  2B            		dec	hl
+  4313  3A1100        		ld	a,(VOLUME)
+  4316  F603          		or	03h
+  4318  77            		ld	(hl),a		;pitch=+3
+  4319  23            		inc	hl
+  431A  3A0600        		ld	a,(PDIFF)
+  431D  4F            		ld	c,a
+  431E  3A0A00        		ld	a,(TMPPTCH)
+  4321  91            		sub	c
+  4322  4F            		ld	c,a
+  4323  CDBA49        		call	CHGROM0	
+  4326  0C            		inc	c
+  4327  0C            		inc	c
+  4328  0C            		inc	c
+                      	
+                      	;? and /
+                      	;input: hl=output address, c=pdiff
+  4329                	QSLASH:
+  4329  CDB449        		call	CHGRAM0
+  432C  3A0700        		ld	a,(APSTCNT)
+  432F  B7            		or	a
+  4330  79            		ld	a,c
+  4331  2802          		jr	z,NOAPST2
+  4333  C606          		add	a,6
+  4335                	NOAPST2:
+  4335  ED44          		neg
+  4337  320600        		ld	(PDIFF),a
+  433A  3E20          		ld	a,FRAMES*2
+  433C  320500        		ld	(TDIFF),a
+  433F  CD4F49        		call	NOSOUND1
+  4342  D1            		pop	de
+  4343  E1            		pop	hl
+  4344  C3ED40        		jp	EXTLP1
+                      	
+                      	
+                      	;q and / for singing
+                      	;input: hl=string address
+  4347                	QSLSING:
+  4347  7E            		ld	a,(hl)
+  4348  FE3A          		cp	':'		;for ?
+  434A  287A          		jr	z,QMARKZ2
+  434C  3E01          		ld	a,1
+  434E  321400        		ld	(REST),a
+  4351  3E10          		ld	a,FRAMES
+  4353  320500        		ld	(TDIFF),a
+  4356  CD9347        		call	ANAMML
+  4359  CDB449        		call	CHGRAM0
+  435C  3A1400        		ld	a,(REST)
+  435F  B7            		or	a
+  4360  CABF41        		jp	z,TALKERR
+  4363  AF            		xor	a
+  4364  321400        		ld	(REST),a
+  4367  2A0E00        		ld	hl,(OUTADR)
+  436A  CD4F49        		call	NOSOUND1
+  436D  3600          		ld	(hl),0
+  436F  CDBA49        		call	CHGROM0
+  4372  D1            		pop	de
+  4373  E1            		pop	hl
+  4374  C3ED40        		jp	EXTLP1
+                      	
+                      	
+  4377                	QMARKLP1:
+  4377  23            		inc	hl
+  4378                	QMARK:
+  4378  1D            		dec	e
+  4379  280A          		jr	z,QMARKZ1
+  437B  7E            		ld	a,(hl)
+  437C  FE2E          		cp	'.'
+  437E  CABF41        		jp	z,TALKERR
+  4381  FE20          		cp	' '
+  4383  28F2          		jr	z,QMARKLP1
+  4385                	QMARKZ1:
+  4385  1C            		inc	e
+                      	
+  4386  E5            		push	hl
+  4387  D5            		push	de
+                      	
+  4388  CDB449        		call	CHGRAM0
+  438B  3A1000        		ld	a,(SHARP)
+  438E  B7            		or	a
+  438F  20B6          		jr	nz,QSLSING
+                      	
+  4391  3A0600        		ld	a,(PDIFF)
+  4394  4F            		ld	c,a
+  4395  210A00        		ld	hl,TMPPTCH
+  4398  7E            		ld	a,(hl)
+  4399  D615          		sub	21
+  439B  77            		ld	(hl),a
+  439C  91            		sub	c
+  439D  4F            		ld	c,a
+  439E  2A0E00        		ld	hl,(OUTADR)
+  43A1  2B            		dec	hl
+  43A2  11F9FF        		ld	de,0-7
+  43A5  0607          		ld	b,07h
+  43A7                	QMARKLP2:
+  43A7  7E            		ld	a,(hl)
+  43A8  F605          		or	05h
+  43AA  77            		ld	(hl),a
+  43AB  19            		add	hl,de
+  43AC  10F9          		djnz	QMARKLP2
+                      	
+                      	;	ld	hl,(OUTADR)
+                      	;	call	CHGROM0
+                      	;
+                      	;	pop	de
+                      	;	dec	e
+                      	;	push	de
+                      	;	jp	nz,QSLASH
+                      	;
+                      	;	pop	de
+                      	;	pop	hl
+                      	;	jp	EXTEND
+                      	
+                      	
+  43AE  D1            		pop	de
+  43AF  E1            		pop	hl
+  43B0  E5            		push	hl
+  43B1  1D            		dec	e
+  43B2  2813          		jr	z,QMARKZ3
+  43B4  7E            		ld	a,(hl)
+  43B5  FE3A          		cp	':'
+  43B7  280E          		jr	z,QMARKZ3
+  43B9  D5            		push	de
+  43BA  CDB449        		call	CHGRAM0
+  43BD  2A0E00        		ld	hl,(OUTADR)
+  43C0  CDBA49        		call	CHGROM0
+  43C3  C22943        		jp	nz,QSLASH
+  43C6                	QMARKZ2:
+  43C6  D1            		pop	de
+  43C7                	QMARKZ3:
+  43C7  E1            		pop	hl
+  43C8  C34246        		jp	EXTEND
+                      	
+                      	
+                      	;pa,pi,pu,pe,po
+  43CB                	CON_P:
+  43CB  3E02          		ld	a,02h
+  43CD  1802          		jr	BPCOMMON
+                      	
+                      	;ba,bi,bu,be,bo
+  43CF                	CON_B:
+  43CF  3E01          		ld	a,01h
+                      	
+  43D1                	BPCOMMON:
+  43D1  47            		ld	b,a
+  43D2  CD6C49        		call	NOSOUND2
+  43D5  210F53        		ld	hl,BTBL
+                      	
+                      	;consonant common routine
+                      	;input: c=vowel(0-4), de=output address, hl=table address
+  43D8                	CONCOMMON:
+  43D8  CDB449        		call	CHGRAM0
+  43DB  3A0000        		ld	a,(MF)
+  43DE  FE6D          		cp	'm'		;
+  43E0  CDBA49        		call	CHGROM0
+  43E3  79            		ld	a,c
+  43E4  2802          		jr	z,BMALE		;
+  43E6  C605          		add	a,05h
+  43E8                	BMALE:
+  43E8  87            		add	a,a
+  43E9  4F            		ld	c,a
+  43EA  0600          		ld	b,00h
+  43EC  09            		add	hl,bc
+  43ED  7E            		ld	a,(hl)
+  43EE  23            		inc	hl
+  43EF  66            		ld	h,(hl)
+  43F0  6F            		ld	l,a
+  43F1                	CONCOMMON2:
+  43F1  46            		ld	b,(hl)
+  43F2  23            		inc	hl
+  43F3  EB            		ex	de,hl
+                      	
+  43F4                	BLP:
+  43F4  C5            		push	bc
+  43F5  D5            		push	de
+  43F6  CD9D46        		call	PUT7
+  43F9  D1            		pop	de
+  43FA  EB            		ex	de,hl
+  43FB  010A00        		ld	bc,000ah
+  43FE  09            		add	hl,bc
+  43FF  EB            		ex	de,hl
+  4400  C1            		pop	bc
+  4401  10F1          		djnz	BLP
+  4403  220E00        		ld	(OUTADR),hl
+                      	
+  4406  D1            		pop	de
+  4407  E1            		pop	hl
+  4408  C31841        		jp	EXTLP3
+                      	
+                      	
+                      	;da,di,du,de,do
+  440B                	CON_D:
+  440B                	CON_T:
+  440B  0602          		ld	b,02h
+  440D  CD6C49        		call	NOSOUND2
+  4410  212353        		ld	hl,DTBL
+  4413  18C3          		jr	CONCOMMON
+                      	
+                      	;ga,gi,gu,ge,go
+  4415                	CON_G:
+  4415                	CON_K:
+  4415  0602          		ld	b,02h
+  4417  CD6C49        		call	NOSOUND2
+  441A  213753        		ld	hl,GTBL
+  441D  18B9          		jr	CONCOMMON
+                      	
+                      	
+                      	;c=0-4
+  441F                	CON_W:
+  441F  79            		ld	a,c
+  4420  B7            		or	a		;wa
+  4421  C2BF41        		jp	nz,TALKERR
+  4424  7C            		ld	a,h		;male/female
+  4425  FE6D          		cp	'm'
+  4427  217054        		ld	hl,M_WA
+  442A  28C5          		jr	z,CONCOMMON2
+  442C  218F54        		ld	hl,F_WA
+  442F  18C0          		jr	CONCOMMON2
+                      	
+                      	
+  4431                	CON_Y:
+  4431  7D            		ld	a,l		;next character
+  4432  FE79          		cp	'y'
+  4434  CABF41        		jp	z,TALKERR
+  4437  79            		ld	a,c
+  4438  3D            		dec	a
+  4439  CABF41        		jp	z,TALKERR	;yi
+  443C  214B53        		ld	hl,YTBL
+  443F  C3D843        		jp	CONCOMMON
+                      	
+                      	
+  4442                	CON_R:
+  4442  215F53        		ld	hl,RTBL
+  4445  C3D843        		jp	CONCOMMON
+                      	
+  4448                	CON_M:
+  4448  217353        		ld	hl,MTBL
+  444B  C3D843        		jp	CONCOMMON
+                      	
+  444E                	CON_N:
+  444E  218753        		ld	hl,NTBL
+  4451  C3D843        		jp	CONCOMMON
+                      	
+  4454                	CON_Z:
+                      	;	ld	b,01h
+                      	;	call	NOSOUND2
+  4454  219B53        		ld	hl,ZTBL
+  4457  C3D843        		jp	CONCOMMON
+                      	
+  445A                	CON_S:
+  445A  21AF53        		ld	hl,STBL
+  445D  C3D843        		jp	CONCOMMON
+                      	
+  4460                	CON_H:
+  4460  7D            		ld	a,l		;next character
+  4461  FE79          		cp	'y'
+  4463  2806          		jr	z,CON_HY
+  4465  21C353        		ld	hl,HTBL
+  4468  C3D843        		jp	CONCOMMON
+                      	
+  446B                	CON_HY:
+  446B  7C            		ld	a,h		;male/female
+  446C  FE6D          		cp	'm'
+  446E  21F258        		ld	hl,M_HY
+  4471  C3F143        		jp	CONCOMMON2
+  4474  21E859        		ld	hl,F_HY
+  4477  C3F143        		jp	CONCOMMON2
+                      	
+                      	
+  447A                	CON_C:
+  447A  0602          		ld	b,02h
+  447C  CD6C49        		call	NOSOUND2
+  447F  21D753        		ld	hl,CTBL
+  4482  C3D843        		jp	CONCOMMON
+                      	
+                      	
+                      	;c=0-4,d=male/female
+  4485                	VOWEL:
+  4485  E5            		push	hl
+  4486  D5            		push	de
+                      	
+  4487  3E01          		ld	a,01h
+  4489  320400        		ld	(VOICED),a
+  448C  23            		inc	hl
+  448D  7E            		ld	a,(hl)
+                      	
+  448E  D62A          		sub	'*'
+  4490  2007          		jr	nz,VOWNZ
+  4492  320400        		ld	(VOICED),a	;a=0
+                      	
+  4495  D1            		pop	de
+  4496  1D            		dec	e
+  4497  E3            		ex	(sp),hl
+  4498  D5            		push	de
+                      	
+  4499                	VOWNZ:
+  4499  21FB52        		ld	hl,VOWTBL
+  449C  7A            		ld	a,d		;male/female
+  449D  FE6D          		cp	'm'
+  449F  79            		ld	a,c
+  44A0  2802          		jr	z,VOWMALE
+  44A2  C605          		add	a,05h
+  44A4                	VOWMALE:
+  44A4  87            		add	a,a
+  44A5  4F            		ld	c,a
+  44A6  0600          		ld	b,00h
+  44A8  09            		add	hl,bc
+  44A9  5E            		ld	e,(hl)
+  44AA  23            		inc	hl
+  44AB  56            		ld	d,(hl)
+                      	
+  44AC  CDFF48        		call	GETOUTADR
+  44AF  CD9D46        		call	PUT7
+  44B2  CD2A45        		call	SYLLABLE
+                      	
+  44B5  D1            		pop	de
+  44B6  E1            		pop	hl
+  44B7  23            		inc	hl
+  44B8  1D            		dec	e
+  44B9  CA4246        		jp	z,EXTEND
+                      	
+                      	
+  44BC                	VOWEND:
+  44BC  7E            		ld	a,(hl)
+  44BD  23            		inc	hl
+  44BE  FE2E          		cp	'.'
+  44C0  CA4246        		jp	z,EXTEND
+  44C3  FE3A          		cp	':'
+  44C5  CA4246        		jp	z,EXTEND
+  44C8  FE27          		cp	27h		;apostrophe
+  44CA  CA4842        		jp	z,APOST
+  44CD  FE20          		cp	' '
+  44CF  CA8F42        		jp	z,SPACE
+  44D2  FE2F          		cp	'/'
+  44D4  CAF142        		jp	z,SLASH
+  44D7  FE3F          		cp	'?'
+  44D9  CA7843        		jp	z,QMARK
+  44DC  FE2D          		cp	'-'
+  44DE  281A          		jr	z,LONG
+  44E0  FE2B          		cp	'+'
+  44E2  CABF41        		jp	z,TALKERR
+  44E5  FE5E          		cp	'^'
+  44E7  CABF41        		jp	z,TALKERR
+  44EA  F620          		or	20h
+  44EC  FE71          		cp	'q'
+  44EE  CA6D45        		jp	z,GEMINATE
+  44F1  FE78          		cp	'x'
+  44F3  CAD945        		jp	z,CON_X
+                      	
+  44F6  2B            		dec	hl
+  44F7  C31041        		jp	EXTLP2
+                      	
+                      	
+                      	;long sound
+  44FA                	LONG:
+  44FA  7B            		ld	a,e
+  44FB  3D            		dec	a
+  44FC  280F          		jr	z,LONGZ
+  44FE  7E            		ld	a,(hl)
+  44FF  FE2D          		cp	'-'
+  4501  CABF41        		jp	z,TALKERR
+  4504  D62A          		sub	'*'
+  4506  2005          		jr	nz,LONGZ
+  4508  320400        		ld	(VOICED),a	;a=0
+  450B  23            		inc	hl
+  450C  1D            		dec	e
+  450D                	LONGZ:
+  450D  E5            		push	hl
+  450E  D5            		push	de
+  450F  CDFF48        		call	GETOUTADR
+  4512  3E10          		ld	a,FRAMES
+  4514  320500        		ld	(TDIFF),a
+  4517  CD9347        		call	ANAMML
+  451A  AF            		xor	a
+  451B  320600        		ld	(PDIFF),a
+  451E  CD2A45        		call	SYLLABLE
+  4521  D1            		pop	de
+  4522  E1            		pop	hl
+  4523  1D            		dec	e
+  4524  CA4246        		jp	z,EXTEND
+  4527  C3BC44        		jp	VOWEND
+                      	
+                      	
+                      	
+                      	;put a syllable
+                      	;hl=output address
+  452A                	SYLLABLE:
+  452A  CDB449        		call	CHGRAM0
+  452D  3A0800        		ld	a,(SYLBCNT)
+  4530  3C            		inc	a
+  4531  FE1F          		cp	1fh
+  4533  D2BF41        		jp	nc,TALKERR
+  4536  320800        		ld	(SYLBCNT),a
+                      	
+  4539  3A0400        		ld	a,(VOICED)
+  453C  F608          		or	08h
+  453E  57            		ld	d,a
+  453F  3A0500        		ld	a,(TDIFF)
+  4542  5F            		ld	e,a
+  4543  F608          		or	08h
+                      	
+  4545  3A1100        		ld	a,(VOLUME)
+  4548  4F            		ld	c,a
+                      	
+  4549                	SYLBLP1:
+  4549  72            		ld	(hl),d		;bit7-3=time=1, bit2=qmag=0, bit1=S.I=0, bit0=V/UV
+  454A  23            		inc	hl
+  454B  0605          		ld	b,05h
+  454D                	SYLBLP2:
+  454D  3600          		ld	(hl),0		;fn=bn=0
+  454F  23            		inc	hl
+  4550  10FB          		djnz	SYLBLP2
+  4552  CD2A49        		call	CHKPDIFF
+  4555  B1            		or	c		;volume
+  4556  77            		ld	(hl),a		;bit7-4=amp, bit3=FV=0, bit2-0=pitch=0
+                      	
+  4557  23            		inc	hl
+  4558  1D            		dec	e
+  4559  20EE          		jr	nz,SYLBLP1
+                      	
+  455B  3A0600        		ld	a,(PDIFF)
+  455E  B3            		or	e
+  455F  2803          		jr	z,SYLBEND
+  4561  1C            		inc	e
+                      	
+  4562  18E5          		jr	SYLBLP1
+                      	
+  4564                	SYLBEND:
+                      	
+  4564  CDBA49        		call	CHGROM0
+                      	
+  4567  220E00        		ld	(OUTADR),hl
+  456A  3600          		ld	(hl),0
+                      	;	ld	a,FRAMES
+                      	;	ld	(TDIFF),a
+  456C  C9            		ret
+                      	
+                      	
+                      	;geminated consonant
+  456D                	GEMINATE:
+  456D  E5            		push	hl
+  456E  D5            		push	de
+                      	
+  456F                	GEMLP1:
+  456F  1D            		dec	e
+  4570  CABF41        		jp	z,TALKERR
+  4573  7E            		ld	a,(hl)
+  4574  23            		inc	hl
+  4575  FE20          		cp	' '
+  4577  28F6          		jr	z,GEMLP1
+                      	
+  4579  FE2E          		cp	'.'
+  457B  CABF41        		jp	z,TALKERR
+  457E  FE3A          		cp	':'
+  4580  CABF41        		jp	z,TALKERR
+  4583  FE3F          		cp	'?'
+  4585  CABF41        		jp	z,TALKERR
+                      	
+  4588  D1            		pop	de
+  4589  E1            		pop	hl
+  458A  1D            		dec	e
+                      	
+  458B  D62A          		sub	'*'
+  458D  2005          		jr	nz,GEMNZ
+  458F  320400        		ld	(VOICED),a
+  4592  23            		inc	hl
+  4593  1D            		dec	e
+  4594                	GEMNZ:
+  4594  E5            		push	hl
+  4595  D5            		push	de
+  4596  CDFF48        		call	GETOUTADR
+  4599  3E10          		ld	a,FRAMES
+  459B  320500        		ld	(TDIFF),a
+  459E  CD9347        		call	ANAMML
+  45A1  CDB449        		call	CHGRAM0
+  45A4  CD4F49        		call	NOSOUND1
+  45A7  CDBA49        		call	CHGROM0
+                      	
+  45AA  220E00        		ld	(OUTADR),hl
+  45AD  3600          		ld	(hl),0
+                      	
+  45AF  CDB449        		call	CHGRAM0
+  45B2  3A0800        		ld	a,(SYLBCNT)
+  45B5  3C            		inc	a
+  45B6  FE1F          		cp	1fh
+  45B8  D2BF41        		jp	nc,TALKERR
+  45BB  320800        		ld	(SYLBCNT),a
+  45BE  CDBA49        		call	CHGROM0
+                      	
+  45C1  D1            		pop	de
+  45C2  E1            		pop	hl
+                      	
+  45C3  7E            		ld	a,(hl)
+  45C4  23            		inc	hl
+  45C5  FE27          		cp	27h		;apostrophe
+  45C7  CA4842        		jp	z,APOST
+  45CA  FE20          		cp	' '
+  45CC  CA8F42        		jp	z,SPACE
+  45CF  F620          		or	20h
+  45D1  FE78          		cp	'x'
+  45D3  2804          		jr	z,CON_X
+  45D5  2B            		dec	hl
+  45D6  C31041        		jp	EXTLP2
+                      	
+                      	
+  45D9                	CON_X:
+  45D9  3E01          		ld	a,01h
+  45DB  320400        		ld	(VOICED),a
+  45DE  7B            		ld	a,e
+  45DF  3D            		dec	a
+  45E0  2815          		jr	z,XZ
+  45E2  7E            		ld	a,(hl)
+  45E3  D62A          		sub	'*'
+  45E5  2004          		jr	nz,XNZ
+  45E7  320400        		ld	(VOICED),a	;a=0
+  45EA  23            		inc	hl
+  45EB                	XNZ:
+  45EB  7B            		ld	a,e
+  45EC  3D            		dec	a
+  45ED  2808          		jr	z,XZ
+  45EF  7E            		ld	a,(hl)
+  45F0  F620          		or	20h
+  45F2  FE78          		cp	'x'
+  45F4  CABF41        		jp	z,TALKERR
+  45F7                	XZ:
+  45F7  E5            		push	hl
+  45F8  D5            		push	de
+  45F9  CDFF48        		call	GETOUTADR
+  45FC  3E10          		ld	a,FRAMES
+  45FE  320500        		ld	(TDIFF),a
+  4601  CD9347        		call	ANAMML
+  4604  11BE57        		ld	de,M_MA+1
+  4607  CD9D46        		call	PUT7
+  460A  CD2A45        		call	SYLLABLE
+  460D  D1            		pop	de
+  460E  E1            		pop	hl
+  460F  1D            		dec	e
+  4610  CA4246        		jp	z,EXTEND
+                      	
+                      	;check xqx
+  4613  E5            		push	hl
+  4614  D5            		push	de
+  4615                	XLP1:
+  4615  1D            		dec	e
+  4616  2825          		jr	z,XEND
+  4618  7E            		ld	a,(hl)
+  4619  23            		inc	hl
+  461A  FE27          		cp	27h		;apostrophe
+  461C  28F7          		jr	z,XLP1
+  461E  FE2A          		cp	'*'
+  4620  28F3          		jr	z,XLP1
+  4622  F620          		or	20h
+  4624  FE71          		cp	'q'
+  4626  2015          		jr	nz,XEND
+                      	
+  4628  1C            		inc	e
+  4629                	XLP22:
+  4629  1D            		dec	e
+  462A  2811          		jr	z,XEND
+  462C  7E            		ld	a,(hl)
+  462D  23            		inc	hl
+  462E  FE27          		cp	27h		;apostrophe
+  4630  28F7          		jr	z,XLP22
+  4632  FE2A          		cp	'*'
+  4634  28F3          		jr	z,XLP22
+  4636  F620          		or	20h
+  4638  FE78          		cp	'x'
+  463A  CABF41        		jp	z,TALKERR
+                      	
+  463D                	XEND:
+  463D  D1            		pop	de
+  463E  E1            		pop	hl
+                      	
+                      	
+  463F  C3BC44        		jp	VOWEND
+                      	
+                      	
+  4642                	EXTEND:
+  4642  CDB449        		call	CHGRAM0
+  4645  2A0003        		ld	hl,(WORK)
+  4648  CDBA49        		call	CHGROM0
+  464B  7D            		ld	a,l
+  464C  B7            		or	a
+  464D  CABF41        		jp	z,TALKERR
+                      	
+  4650  3EFE          		ld	a,0feh
+                      	;	jr	TALKOUT
+                      	
+  4652                	TALKOUT:
+  4652  320200        		ld	(COMMAND),a	;0-4,fe
+                      	
+  4655                	TALKOUTLP:
+  4655  DBE0          		in	a,(0e0h)	;status register
+  4657  07            		rlca
+  4658  38FB          		jr	c,TALKOUTLP	;busy
+                      	
+                      	;mode selection data
+                      	;bit2: 0=10ms/frame, 1=20ms/frame
+                      	;bit10: 00=normal, 01=slow, 10=fast
+                      	;123456->012345->201645
+  465A  CDB449        		call	CHGRAM0
+  465D  3A0100        		ld	a,(SPEED)	;0-5
+  4660  21F552        		ld	hl,SPDTBL
+  4663  0600          		ld	b,00h
+  4665  4F            		ld	c,a
+  4666  09            		add	hl,bc
+  4667  7E            		ld	a,(hl)
+  4668  D3E2          		out	(0e2h),a	;mode selection
+                      	
+                      	;command data
+  466A  3A0200        		ld	a,(COMMAND)
+                      	;	out	(0e3h),a
+                      	
+                      	;for subtitles in PC6001VW
+  466D  CD594D        		call	OUTE362
+  4670  CDF252        		call	OUTE366
+                      	;
+                      	
+  4673  FEFE          		cp	0feh
+  4675  2012          		jr	nz,TALKEND	;internal message
+                      	
+                      	;external message
+  4677  210003        		ld	hl,WORK
+  467A                	EXTMESLP:
+  467A  CD8349        		call	OUT7
+  467D  7E            		ld	a,(hl)
+  467E  B7            		or	a
+  467F  20F9          		jr	nz,EXTMESLP
+                      	
+  4681  219746        		ld	hl,ENDDATA	;for yaPC-6201/yaPC-6601
+  4684  0606          		ld	b,06h
+  4686  CD8549        		call	OUT7LP1
+                      	
+  4689                	TALKEND:
+  4689  CDBA49        		call	CHGROM0
+  468C  3A5AFA        		ld	a,(KEYFLG)
+  468F  E6EF          		and	0efh
+  4691  325AFA        		ld	(KEYFLG),a
+  4694  3E20          		ld	a,20h
+  4696  C9            		ret
+                      	
+  4697                	ENDDATA:
+  4697  000000000000  		db	00h, 00h, 00h, 00h, 00h, 00h
+                      	
+                      	
+                      	;input: de=voice data address, hl=output address
+                      	;output: hl=output end+1
+                      	;destroy: af,bc,de,af',bc',d',hl'
+  469D                	PUT7:
+  469D  AF            		xor	a		;first data
+  469E  F5            		push	af
+                      	
+  469F                	PUT7LP1:
+  469F  D5            		push	de
+  46A0  E5            		push	hl
+  46A1  AF            		xor	a
+  46A2  320300        		ld	(QMAG),a
+                      	
+                      	;set qmag factor
+  46A5  212000        		ld	hl,F1
+  46A8  010005        		ld	bc,0500h	;c=no residual?
+                      	
+  46AB  CDB449        		call	CHGRAM0
+  46AE                	PUT7LP2:
+  46AE  1A            		ld	a,(de)
+  46AF  96            		sub	(hl)
+  46B0  23            		inc	hl
+  46B1  77            		ld	(hl),a
+  46B2  B1            		or	c
+  46B3  4F            		ld	c,a
+                      	
+  46B4  7E            		ld	a,(hl)
+  46B5  C610          		add	a,16
+  46B7  FE20          		cp	32
+  46B9  3805          		jr	c,NOQMAG1	;-16<=fdiff<=15
+  46BB  3E04          		ld	a,04h
+  46BD  320300        		ld	(QMAG),a
+  46C0                	NOQMAG1:
+  46C0  13            		inc	de
+  46C1  13            		inc	de
+  46C2  13            		inc	de
+  46C3  13            		inc	de
+  46C4  13            		inc	de
+  46C5  23            		inc	hl
+                      	
+  46C6  1A            		ld	a,(de)
+  46C7  96            		sub	(hl)
+  46C8  23            		inc	hl
+  46C9  77            		ld	(hl),a
+  46CA  B1            		or	c
+  46CB  4F            		ld	c,a
+                      	
+  46CC  7E            		ld	a,(hl)
+  46CD  C604          		add	a,4
+  46CF  FE08          		cp	8
+  46D1  3805          		jr	c,NOQMAG2	;-4<=bdiff<=3
+  46D3  3E04          		ld	a,04h
+  46D5  320300        		ld	(QMAG),a
+  46D8                	NOQMAG2:
+  46D8  1B            		dec	de
+  46D9  1B            		dec	de
+  46DA  1B            		dec	de
+  46DB  1B            		dec	de
+  46DC  23            		inc	hl
+  46DD  10CF          		djnz	PUT7LP2
+                      	
+  46DF  E1            		pop	hl
+  46E0  D1            		pop	de
+  46E1  F1            		pop	af
+  46E2  2805          		jr	z,PUT7Z		;first data?
+                      	
+                      	;	ld	a,(PDIFF)
+                      	;	or	c
+                      	
+  46E4  79            		ld	a,c
+  46E5  B7            		or	a
+                      	
+                      	
+  46E6  CA9247        		jp	z,PUT7END
+                      	
+  46E9                	PUT7Z:
+  46E9  3E01          		ld	a,01h
+  46EB  B7            		or	a
+  46EC  F5            		push	af		;z=0
+  46ED  D5            		push	de
+                      	
+  46EE  3A0300        		ld	a,(QMAG)
+  46F1  B7            		or	a
+  46F2  01F00F        		ld	bc,0ff0h	;-16<=f<=15
+  46F5  11FC03        		ld	de,03fch	;-4<=b<=3
+  46F8  2806          		jr	z,NOQMAG3
+  46FA  01E01E        		ld	bc,1ee0h	;-32<=f<=30
+  46FD  11F806        		ld	de,06f8h	;-8<=b<=6
+  4700                	NOQMAG3:
+  4700  D9            		exx
+                      	
+  4701  57            		ld	d,a		;qmag
+  4702  CDBA49        		call	CHGROM0
+                      	
+  4705  212100        		ld	hl,F1DIFF
+  4708  060A          		ld	b,0ah
+                      	
+  470A                	PUT7LP3:
+  470A  CDB449        		call	CHGRAM0
+  470D  4E            		ld	c,(hl)		;diff
+  470E  CDBA49        		call	CHGROM0
+  4711  79            		ld	a,c
+                      	
+  4712  D9            		exx
+  4713  B7            		or	a
+  4714  F21D47        		jp	p,PUT7PLS1
+                      	;diff<0
+  4717  B9            		cp	c
+  4718  3007          		jr	nc,DIFFEND
+  471A  79            		ld	a,c
+  471B  1804          		jr	DIFFEND
+                      	
+                      	;diff>=0
+  471D                	PUT7PLS1:
+  471D  B8            		cp	b
+  471E  3801          		jr	c,DIFFEND
+  4720  78            		ld	a,b
+  4721                	DIFFEND:
+  4721  D9            		exx
+                      	
+  4722  14            		inc	d
+  4723  15            		dec	d
+  4724  2807          		jr	z,NOQMAG4	;qmag=0?
+  4726  B7            		or	a
+  4727  F22B47        		jp	p,PUT7PLS2
+  472A  3C            		inc	a
+  472B                	PUT7PLS2:
+  472B  E6FE          		and	0feh
+  472D                	NOQMAG4:
+                      	
+  472D  2B            		dec	hl
+  472E  4F            		ld	c,a
+  472F  CDB449        		call	CHGRAM0
+  4732  7E            		ld	a,(hl)
+  4733  81            		add	a,c
+  4734  77            		ld	(hl),a
+  4735  CDBA49        		call	CHGROM0
+                      	
+  4738  7A            		ld	a,d		;qmag=0?
+  4739  B7            		or	a
+  473A  2802          		jr	z,NOQMAG5
+  473C  CB29          		sra	c
+  473E                	NOQMAG5:
+  473E  79            		ld	a,c
+                      	
+  473F  23            		inc	hl
+  4740  77            		ld	(hl),a
+  4741  23            		inc	hl
+  4742  23            		inc	hl
+  4743  D9            		exx
+                      	
+                      	;exchange bc and de
+  4744  C5            		push	bc
+  4745  D5            		push	de
+  4746  C1            		pop	bc
+  4747  D1            		pop	de
+  4748  D9            		exx
+                      	
+  4749  10BF          		djnz	PUT7LP3
+                      	
+  474B  CDB449        		call	CHGRAM0
+  474E  3A0400        		ld	a,(VOICED)	;bit0=V/UV
+  4751  B2            		or	d		;bit2=qmag
+  4752  F608          		or	08h		;bit7-3=time, bit1=S.I
+  4754  57            		ld	d,a
+  4755  CDBA49        		call	CHGROM0
+  4758  7A            		ld	a,d
+                      	
+  4759  D9            		exx
+  475A  77            		ld	(hl),a		;bit7-3=time, bit2=qmag, bit1=S.I, bit0=V/UV
+  475B  23            		inc	hl
+  475C  CDB449        		call	CHGRAM0
+  475F  112100        		ld	de,F1DIFF
+  4762  0605          		ld	b,05h
+  4764                	PUT7LP4:
+  4764  1A            		ld	a,(de)
+  4765  E61F          		and	1fh
+  4767  87            		add	a,a
+  4768  87            		add	a,a
+  4769  87            		add	a,a
+  476A  4F            		ld	c,a
+  476B  13            		inc	de
+  476C  13            		inc	de
+  476D  1A            		ld	a,(de)
+  476E  E607          		and	07h
+  4770  13            		inc	de
+  4771  13            		inc	de
+  4772  B1            		or	c
+  4773  77            		ld	(hl),a
+  4774  23            		inc	hl
+  4775  10ED          		djnz	PUT7LP4
+                      	
+  4777  CD2A49        		call	CHKPDIFF
+  477A  47            		ld	b,a
+  477B  3A1100        		ld	a,(VOLUME)
+  477E  B0            		or	b
+                      	
+                      	
+  477F  77            		ld	(hl),a		;bit7-4=amp, bit3=FV, bit2-0=pitch
+  4780  23            		inc	hl
+                      	
+  4781  3A0500        		ld	a,(TDIFF)
+  4784  3D            		dec	a
+  4785  2001          		jr	nz,PUT7NZ
+  4787  3C            		inc	a
+  4788                	PUT7NZ:
+  4788  320500        		ld	(TDIFF),a
+                      	
+  478B  CDBA49        		call	CHGROM0
+                      	
+  478E  D1            		pop	de
+  478F  C39F46        		jp	PUT7LP1
+                      	
+                      	
+  4792                	PUT7END:
+                      	;	dec	hl
+                      	;	ld	(hl),0c0h	;bit7-4=amp, bit3=FV, bit2-0=pitch
+                      	;	inc	hl
+  4792  C9            		ret
+                      	
+                      	
+                      	;analyze MML for singing
+                      	;destroy: af,bc
+  4793                	ANAMML:
+  4793  CDB449        		call	CHGRAM0
+  4796  3A1000        		ld	a,(SHARP)
+  4799  B7            		or	a
+  479A  CA3948        		jp	z,MMLEND
+                      	
+  479D  E5            		push	hl
+  479E  D5            		push	de
+                      	
+                      	
+  479F  2A1700        		ld	hl,(MMLADR)
+  47A2                	MMLLP1:
+  47A2  3A1600        		ld	a,(MMLLEN)
+  47A5  B7            		or	a
+  47A6  CABF41        		jp	z,TALKERR
+  47A9  3D            		dec	a
+  47AA  321600        		ld	(MMLLEN),a
+                      		
+  47AD  7E            		ld	a,(hl)
+  47AE  23            		inc	hl
+  47AF  221700        		ld	(MMLADR),hl
+                      	
+  47B2  FE20          		cp	' '
+  47B4  28EC          		jr	z,MMLLP1
+                      	
+  47B6  F620          		or	20h
+  47B8  FE72          		cp	'r'
+  47BA  CA7B48        		jp	z,SINGR
+                      	
+  47BD  47            		ld	b,a
+  47BE  AF            		xor	a
+  47BF  321400        		ld	(REST),a
+  47C2  78            		ld	a,b
+                      	
+  47C3  FE6F          		cp	'o'
+  47C5  CA3D48        		jp	z,SINGO
+  47C8  FE6C          		cp	'l'
+  47CA  CA6B48        		jp	z,SINGL
+  47CD  FE76          		cp	'v'
+  47CF  CA5548        		jp	z,SINGV
+                      	
+  47D2  D661          		sub	'a'
+  47D4  FE07          		cp	'g'-'a'+1
+  47D6  D2BF41        		jp	nc,TALKERR
+  47D9  21225A        		ld	hl,TONETBL
+  47DC  1600          		ld	d,0
+  47DE  5F            		ld	e,a
+  47DF  19            		add	hl,de
+  47E0  5E            		ld	e,(hl)
+                      	
+                      	;check +-
+  47E1  3A1600        		ld	a,(MMLLEN)
+  47E4  B7            		or	a
+  47E5  281F          		jr	z,MMLZ
+  47E7  2A1700        		ld	hl,(MMLADR)
+  47EA  7E            		ld	a,(hl)
+  47EB  FE2B          		cp	'+'
+  47ED  2003          		jr	nz,NOTPLUS
+  47EF  1C            		inc	e
+  47F0  1809          		jr	MMLP
+  47F2                	NOTPLUS:
+  47F2  FE2D          		cp	'-'
+  47F4  2010          		jr	nz,MMLZ
+  47F6  1D            		dec	e
+  47F7  F2FB47        		jp	p,MMLP
+  47FA  15            		dec	d
+  47FB                	MMLP:
+  47FB  23            		inc	hl
+  47FC  221700        		ld	(MMLADR),hl
+  47FF  3A1600        		ld	a,(MMLLEN)
+  4802  3D            		dec	a
+  4803  321600        		ld	(MMLLEN),a
+                      	
+  4806                	MMLZ:
+  4806  211E5A        		ld	hl,SCALE-12+1
+  4809  19            		add	hl,de
+  480A  3A1200        		ld	a,(OCTAVE)	;2~5
+  480D  3D            		dec	a
+  480E  110C00        		ld	de,000ch
+  4811                	MMLLP2:
+  4811  19            		add	hl,de
+  4812  3D            		dec	a
+  4813  20FC          		jr	nz,MMLLP2
+  4815  3A1500        		ld	a,(MMLPTCH)
+  4818  5F            		ld	e,a
+  4819  7E            		ld	a,(hl)
+  481A  93            		sub	e
+  481B  320600        		ld	(PDIFF),a
+                      	
+                      	;check number
+  481E  2A1700        		ld	hl,(MMLADR)
+  4821                	SETLEN:
+  4821  CDB148        		call	GETNUM
+  4824  221700        		ld	(MMLADR),hl
+  4827  ED5B1300      		ld	de,(LENGTH)	;e=(LENGTH)
+  482B  DC8548        		call	c,NUM2LEN
+                      	
+  482E  3A0500        		ld	a,(TDIFF)
+  4831  83            		add	a,e
+  4832  D610          		sub	FRAMES
+  4834  320500        		ld	(TDIFF),a
+                      	
+  4837  D1            		pop	de
+  4838  E1            		pop	hl
+  4839                	MMLEND:
+  4839  CDBA49        		call	CHGROM0
+  483C  C9            		ret
+                      	
+                      	;O command
+  483D                	SINGO:
+  483D  CDB148        		call	GETNUM
+  4840  D2BF41        		jp	nc,TALKERR
+  4843  FE02          		cp	2
+  4845  3002          		jr	nc,SINGONC
+  4847  3E02          		ld	a,2
+  4849                	SINGONC:
+  4849  FE06          		cp	5+1
+  484B  3802          		jr	c,SINGOC
+  484D  3E05          		ld	a,5
+  484F                	SINGOC:
+  484F  321200        		ld	(OCTAVE),a
+  4852  C3A247        		jp	MMLLP1
+                      	
+                      	;V command
+  4855                	SINGV:
+  4855  CDB148        		call	GETNUM
+  4858  D2BF41        		jp	nc,TALKERR
+  485B  FE10          		cp	0fh+1
+  485D  3802          		jr	c,SINGVEND
+  485F  3E0F          		ld	a,0fh
+  4861                	SINGVEND:
+  4861  87            		add	a,a		;*2
+  4862  87            		add	a,a		;*4
+  4863  87            		add	a,a		;*8
+  4864  87            		add	a,a		;*16
+  4865  321100        		ld	(VOLUME),a
+  4868  C3A247        		jp	MMLLP1
+                      	
+                      	;L command
+  486B                	SINGL:
+  486B  CDB148        		call	GETNUM
+  486E  D2BF41        		jp	nc,TALKERR
+  4871  CD8548        		call	NUM2LEN
+  4874  7B            		ld	a,e
+  4875  321300        		ld	(LENGTH),a
+  4878  C3A247        		jp	MMLLP1
+                      	
+  487B                	SINGR:
+  487B  3A1400        		ld	a,(REST)
+  487E  B7            		or	a
+  487F  CABF41        		jp	z,TALKERR
+  4882  C32148        		jp	SETLEN
+                      	
+                      	
+                      	;convert note-number to frames
+                      	;input: a=number, hl=MML address
+                      	;output: e=frames, hl=next MML address
+                      	;destroy: af,bc,de
+  4885                	NUM2LEN:
+  4885  B7            		or	a
+  4886  2001          		jr	nz,NUMGT0
+  4888  3C            		inc	a
+  4889                	NUMGT0:
+  4889  FE11          		cp	16+1
+  488B  3802          		jr	c,NUMLE16
+  488D  3E10          		ld	a,16
+  488F                	NUMLE16:
+  488F  E5            		push	hl
+  4890  210001        		ld	hl,FRAMES2*4
+  4893  CD0849        		call	DIVI		;de=FRAMES2*4/a<=0100h
+  4896  E1            		pop	hl
+                      	
+  4897  3A1600        		ld	a,(MMLLEN)
+  489A  47            		ld	b,a		;;
+  489B  B7            		or	a
+  489C  C8            		ret	z
+  489D  7E            		ld	a,(hl)
+  489E  FE2E          		cp	'.'
+  48A0  C0            		ret	nz
+  48A1  23            		inc	hl
+  48A2  05            		dec	b		;;
+  48A3  78            		ld	a,b
+  48A4  321600        		ld	(MMLLEN),a
+  48A7  7B            		ld	a,e		;
+  48A8  1F            		rra			;c-flag=0
+  48A9  83            		add	a,e		;*1.5
+  48AA  D8            		ret	c
+  48AB  5F            		ld	e,a
+  48AC  C9            		ret
+                      	
+                      	
+                      	;get 2-digit number
+                      	;input: hl=MML address
+                      	;output: hl=next MML address, a=data, c-flag(0=no data), (MMLLEN)
+                      	;destroy: f,de
+                      	
+  48AD                	GETNUMLP1:
+  48AD  EB            		ex	de,hl
+  48AE  35            		dec	(hl)
+  48AF  EB            		ex	de,hl
+  48B0  23            		inc	hl
+                      	
+  48B1                	GETNUM:
+  48B1  111600        		ld	de,MMLLEN
+  48B4  1A            		ld	a,(de)
+  48B5  B7            		or	a
+  48B6  C8            		ret	z
+                      	
+  48B7  7E            		ld	a,(hl)
+  48B8  FE20          		cp	' '
+  48BA  28F1          		jr	z,GETNUMLP1
+                      	
+  48BC  D630          		sub	'0'
+  48BE  FE0A          		cp	'9'-'0'+1
+  48C0  D0            		ret	nc
+                      	
+  48C1  57            		ld	d,a
+                      	
+  48C2                	GETNUMLP2:
+  48C2  23            		inc	hl
+  48C3  3A1600        		ld	a,(MMLLEN)
+  48C6  3D            		dec	a
+  48C7  321600        		ld	(MMLLEN),a
+  48CA  7A            		ld	a,d
+  48CB  C8            		ret	z		;c-flag=1
+                      	
+  48CC  7E            		ld	a,(hl)
+  48CD  FE20          		cp	' '
+  48CF  28F1          		jr	z,GETNUMLP2
+                      	
+  48D1  7E            		ld	a,(hl)
+  48D2  D630          		sub	'0'
+  48D4  FE0A          		cp	'9'-'0'+1
+  48D6  5F            		ld	e,a
+  48D7  7A            		ld	a,d
+  48D8  3F            		ccf
+  48D9  D8            		ret	c
+                      	
+  48DA  3A1600        		ld	a,(MMLLEN)
+  48DD  3D            		dec	a
+  48DE  321600        		ld	(MMLLEN),a
+                      	
+  48E1  7A            		ld	a,d
+  48E2  87            		add	a,a		;*2
+  48E3  87            		add	a,a		;*4
+  48E4  82            		add	a,d		;*5
+  48E5  87            		add	a,a		;*10
+  48E6  83            		add	a,e
+                      	
+  48E7  23            		inc	hl
+  48E8  37            		scf
+  48E9  C9            		ret
+                      	
+                      	
+                      	;check vowel
+                      	;input: a (aiueo)
+                      	;output: c (0-4), z-flag(1=ok)
+                      	;destroy: f
+  48EA                	CHKVOW:
+  48EA  0E00          		ld	c,0
+  48EC  FE61          		cp	'a'
+  48EE  C8            		ret	z
+  48EF  0C            		inc	c
+  48F0  FE69          		cp	'i'
+  48F2  C8            		ret	z
+  48F3  0C            		inc	c
+  48F4  FE75          		cp	'u'
+  48F6  C8            		ret	z
+  48F7  0C            		inc	c
+  48F8  FE65          		cp	'e'
+  48FA  C8            		ret	z
+  48FB  0C            		inc	c
+  48FC  FE6F          		cp	'o'
+  48FE  C9            		ret
+                      	
+                      	
+                      	;get (OUTADR)
+                      	;output: hl
+                      	;destroy: a
+  48FF                	GETOUTADR:
+  48FF  CDB449        		call	CHGRAM0
+  4902  2A0E00        		ld	hl,(OUTADR)
+  4905  C3BA49        		jp	CHGROM0
+                      	
+                      	
+                      	;de=hl/a, (a!=0)
+                      	;input: a, hl
+                      	;output: de
+                      	;destroy: af,bc
+  4908                	DIVI:
+  4908  110000        		ld	de,0000h
+  490B  0608          		ld	b,08h
+  490D                	DIVILP1:
+  490D  04            		inc	b
+  490E  87            		add	a,a
+  490F  30FC          		jr	nc,DIVILP1
+  4911  1F            		rra
+  4912  4F            		ld	c,a
+  4913                	DIVILP2:
+  4913  7C            		ld	a,h
+  4914  3004          		jr	nc,DIVINC1
+  4916  91            		sub	c
+  4917  B7            		or	a		;reset c-flag
+  4918  1804          		jr	DIVINC2
+  491A                	DIVINC1:
+  491A  91            		sub	c
+  491B  3001          		jr	nc,DIVINC2
+  491D  81            		add	a,c
+  491E                	DIVINC2:
+  491E  67            		ld	h,a
+  491F  3F            		ccf
+  4920  CB13          		rl	e
+  4922  CB12          		rl	d
+  4924  29            		add	hl,hl
+  4925  10EC          		djnz	DIVILP2
+                      	
+  4927  D0            		ret	nc
+  4928  13            		inc	de		;round up
+  4929  C9            		ret
+                      	
+                      	
+                      	;check (PDIFF) and get -4<=a<=3 (111...011)
+                      	;output: a=value, (PDIFF)=residual, (MMLPTCH)
+                      	;destroy: f,b
+  492A                	CHKPDIFF:
+  492A  3A0600        		ld	a,(PDIFF)
+  492D  47            		ld	b,a
+  492E  B7            		or	a
+  492F  FA3A49        		jp	m,DECPITCH2
+  4932  FE04          		cp	03h+1
+  4934  380A          		jr	c,PITCHEND2
+  4936  0603          		ld	b,03h
+  4938  1806          		jr	PITCHEND2
+  493A                	DECPITCH2:
+  493A  FEFC          		cp	0fch
+  493C  3002          		jr	nc,PITCHEND2
+  493E  06FC          		ld	b,0fch
+  4940                	PITCHEND2:
+  4940  90            		sub	b
+  4941  320600        		ld	(PDIFF),a
+  4944  3A1500        		ld	a,(MMLPTCH)
+  4947  80            		add	a,b
+  4948  321500        		ld	(MMLPTCH),a
+  494B  78            		ld	a,b
+  494C  E607          		and	07h
+  494E  C9            		ret
+                      	
+                      	
+                      	;make no sound with pitch after address
+                      	;input: hl=output address
+                      	;output: hl,(OUTADR)=next output address
+                      	;destroy: af,bc,de
+                      	;(RAM)
+  494F                	NOSOUND1:
+  494F  EB            		ex	de,hl
+                      	
+  4950  3A0500        		ld	a,(TDIFF)
+  4953  47            		ld	b,a
+  4954                	NSND1LP:
+  4954  C5            		push	bc
+  4955  211C5A        		ld	hl,NODATA
+  4958  010600        		ld	bc,0006h
+  495B  EDB0          		ldir
+  495D  CD2A49        		call	CHKPDIFF
+  4960  12            		ld	(de),a
+  4961  13            		inc	de
+  4962  C1            		pop	bc
+  4963  10EF          		djnz	NSND1LP
+                      	
+  4965  EB            		ex	de,hl
+  4966  3600          		ld	(hl),0
+  4968  220E00        		ld	(OUTADR),hl
+  496B  C9            		ret
+                      	
+                      	
+                      	;make no sound before address
+                      	;input: b=length, de=output address
+                      	;destroy: f,hl
+  496C                	NOSOUND2:
+  496C  D5            		push	de
+  496D  C5            		push	bc
+  496E  EB            		ex	de,hl
+  496F  2B            		dec	hl
+  4970  11F9FF        		ld	de,0-7
+  4973  CDB449        		call	CHGRAM0
+  4976                	NSND2LP:
+  4976  7E            		ld	a,(hl)
+  4977  E60F          		and	0fh
+  4979  77            		ld	(hl),a
+  497A  19            		add	hl,de
+  497B  10F9          		djnz	NSND2LP
+  497D  CDBA49        		call	CHGROM0
+  4980  C1            		pop	bc
+  4981  D1            		pop	de
+  4982  C9            		ret
+                      	
+                      	
+                      	;input: hl
+                      	;output: hl=hl+7
+                      	;destroy: af,bc
+  4983                	OUT7:
+  4983  0607          		ld	b,07h
+  4985                	OUT7LP1:
+  4985  0E00          		ld	c,00h
+  4987                	OUT7LP2:
+  4987  0C            		inc	c
+  4988  CAA249        		jp	z,OUT7ERR	;time out
+  498B  DBE0          		in	a,(0e0h)	;status register
+  498D  CB67          		bit	4,a
+  498F  2011          		jr	nz,OUT7ERR	;ERR=1
+  4991  E640          		and	40h
+  4993  CCBA49        		call	z,CHGROM0
+  4996  CCB449        		call	z,CHGRAM0
+  4999  28EC          		jr	z,OUT7LP2	;wait for REQ=1
+  499B  7E            		ld	a,(hl)
+  499C  D3E0          		out	(0e0h),a
+  499E  23            		inc	hl
+  499F  10E4          		djnz	OUT7LP1
+  49A1  C9            		ret
+                      	
+  49A2                	OUT7ERR:
+  49A2  3A5AFA        		ld	a,(KEYFLG)
+  49A5  F610          		or	10h
+  49A7  325AFA        		ld	(KEYFLG),a
+  49AA  2A4000        		ld	hl,(STACK)
+  49AD  CDBA49        		call	CHGROM0
+  49B0  F9            		ld	sp,hl
+  49B1  3E20          		ld	a,20h
+  49B3  C9            		ret
+                      	
+                      	
+                      	;change 0000-3fff to internal RAM
+                      	;destroy: a
+  49B4                	CHGRAM0:
+  49B4  F3            		di
+  49B5  3E2D          		ld	a,2dh		;0000-3fff:internal RAM, 4000-7fff:VOICE ROM
+                      	;	ld	a,7dh		;for test
+  49B7  D3F0          		out	(0f0h),a
+  49B9  C9            		ret
+                      	
+                      	
+                      	;change 0000-3fff to BASIC ROM
+                      	;destroy: a
+  49BA                	CHGROM0:
+                      	;	ld	a,21h		;0000-3fff:BASIC ROM, 4000-7fff:VOICE ROM
+  49BA  3E51          		ld	a,51h		;0000-3fff,6000-7fff:BASIC ROM, 4000-5fff:VOICE ROM
+                      	;	ld	a,77h		;for test
+  49BC  D3F0          		out	(0f0h),a
+  49BE  FB            		ei
+  49BF  C9            		ret
+                      	
+                      	
+                      	;for subtitles in PC6001VW
+                      	;output to port e3h (for mkII)
+  49C0                	_OUTE362:ds	OUTE362-_OUTE362
+  4D59                		org	OUTE362
+  4D59  D3E3          		out	(0e3h),a
+  4D5B  C9            		ret
+                      	
+                      	;output to port e3h (for 6601)
+  4D5C                	_OUTE366:ds	OUTE366-_OUTE366
+  52F2                		org	OUTE366
+  52F2  D3E3          		out	(0e3h),a
+  52F4  C9            		ret
+                      	;
+                      	
+                      	;;voice table
+                      	;speed
+  52F5                	SPDTBL:
+  52F5  020001060405  		db	02h, 00h, 01h, 06h, 04h, 05h
+                      	
+                      	;vowel
+  52FB                	VOWTBL:
+  52FB  EB53F553FF5309		dw	M_A, M_I, M_U, M_E, M_O
+  5305  1D54275431543B		dw	F_A, F_I, F_U, F_E, F_O
+                      	
+  530F                	BTBL:
+  530F  4F544F544F544F		dw	M_BA, M_BI, M_BU, M_BE, M_BO
+  5319  4F544F544F544F		dw	F_BA, F_BI, F_BU, F_BE, F_BO
+                      	
+  5323                	DTBL:
+  5323  5A545A545A545A		dw	M_DA, M_DI, M_DU, M_DE, M_DO
+  532D  5A545A545A545A		dw	F_DA, F_DI, F_DU, F_DE, F_DO
+                      	
+  5337                	GTBL:
+  5337  65546554655465		dw	M_GA, M_GI, M_GU, M_GE, M_GO
+  5341  65546554655465		dw	F_GA, F_GI, F_GU, F_GE, F_GO
+                      	
+  534B                	YTBL:
+  534B  AE54FF54FF5450		dw	M_YA, M_YI, M_YU, M_YE, M_YO
+  5355  CA551B561B566C		dw	F_YA, F_YI, F_YU, F_YE, F_YO
+                      	
+  535F                	RTBL:
+  535F  0E570E5719570E		dw	M_RA, M_RI, M_RU, M_RE, M_RO
+  5369  0E570E576B570E		dw	F_RA, F_RI, F_RU, F_RE, F_RO
+                      	
+  5373                	MTBL:
+  5373  BD57BD57BD57BD		dw	M_MA, M_MI, M_MU, M_ME, M_MO
+  537D  BD57BD57BD57BD		dw	F_MA, F_MI, F_MU, F_ME, F_MO
+                      	
+  5387                	NTBL:
+  5387  C857C857C857C8		dw	M_NA, M_NI, M_NU, M_NE, M_NO
+  5391  C857C857C857C8		dw	F_NA, F_NI, F_NU, F_NE, F_NO
+                      	
+  539B                	ZTBL:
+  539B  D357D357D357D3		dw	M_ZA, M_ZI, M_ZU, M_ZE, M_ZO
+  53A5  D357D357D357D3		dw	F_ZA, F_ZI, F_ZU, F_ZE, F_ZO
+                      	
+  53AF                	STBL:
+  53AF  F257F257F257F2		dw	M_SA, M_SI, M_SU, M_SE, M_SO
+  53B9  F257F257F257F2		dw	F_SA, F_SI, F_SU, F_SE, F_SO
+                      	
+  53C3                	HTBL:
+  53C3  11583A5863588C		dw	M_HA, M_HI, M_HU, M_HE, M_HO
+  53CD  1B5944596D5996		dw	F_HA, F_HI, F_HU, F_HE, F_HO
+                      	
+  53D7                	CTBL:
+  53D7  115A115A115A11		dw	M_CA, M_CI, M_CU, M_CE, M_CO
+  53E1  115A115A115A11		dw	F_CA, F_CI, F_CU, F_CE, F_CO
+                      	
+                      	
+                      	;voice data
+                      	
+                      	;648,1028,2560Hz
+  53EB                	M_A:
+  53EB  001C000605    		db	0, 28, 0, 6, 5
+  53F0  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;360,2226,2834Hz
+  53F5                	M_I:
+  53F5  0011000812    		db	0, 17, 0, 8, 18
+  53FA  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;322,1112,2215Hz
+  53FF                	M_U:
+  53FF  000F000306    		db	0, 15, 0, 3, 6
+  5404  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;524,1741,2340Hz
+  5409                	M_E:
+  5409  001800040E    		db	0, 24, 0, 4, 14
+  540E  06FD06FAF8    		db	6, 0-3, 6, 0-6, 0-8
+                      	
+                      	;447,781,2500Hz
+  5413                	M_O:
+  5413  0015000600    		db	0, 21, 0, 6, 0
+  5418  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;1057,1787,2962Hz
+  541D                	F_A:
+  541D  002500090F    		db	0, 37, 0, 9, 15
+  5422  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;355,2992,3906Hz
+  5427                	F_I:
+  5427  0011000E18    		db	0, 17, 0, 14, 24
+  542C  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;383,1719,2749Hz
+  5431                	F_U:
+  5431  001300070E    		db	0, 19, 0, 7, 14
+  5436  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;598,2724,3511Hz
+  543B                	F_E:
+  543B  001B000C16    		db	0, 27, 0, 12, 22
+  5440  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;561,851,3142Hz
+  5445                	F_O:
+  5445  0019000A01    		db	0, 25, 0, 10, 1
+  544A  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;150,800,1750Hz->
+  544F                	M_BA:
+  544F                	M_BI:
+  544F                	M_BU:
+  544F                	M_BE:
+  544F                	M_BO:
+  544F                	F_BA:
+  544F                	F_BI:
+  544F                	F_BU:
+  544F                	F_BE:
+  544F                	F_BO:
+  544F  01            		db	1
+  5450  000100FF00    		db	0, 1, 0, 0-1, 0
+  5455  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;150,1800,2600Hz->
+  545A                	M_DA:
+  545A                	M_DI:
+  545A                	M_DU:
+  545A                	M_DE:
+  545A                	M_DO:
+  545A                	F_DA:
+  545A                	F_DI:
+  545A                	F_DU:
+  545A                	F_DE:
+  545A                	F_DO:
+  545A  01            		db	1
+  545B  000100060F    		db	0, 1, 0, 6, 15
+  5460  000000F9F7    		db	0, 0, 0, 0-7, 0-9
+                      	
+                      	;150,2350,2750Hz->
+  5465                	M_GA:
+  5465                	M_GI:
+  5465                	M_GU:
+  5465                	M_GE:
+  5465                	M_GO:
+  5465                	F_GA:
+  5465                	F_GI:
+  5465                	F_GU:
+  5465                	F_GE:
+  5465                	F_GO:
+  5465  01            		db	1
+  5466  000100060A    		db	0, 1, 0, 6, 10
+  546B  060206FBF7    		db	6, 2, 6, 0-5, 0-9
+                      	
+                      	;300,600,2200Hz->
+  5470                	M_WA:
+  5470  03            		db	3
+  5471  000E0003FB    		db	0, 14, 0, 3, 0-5
+  5476  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  547B  00140004FF    		db	0, 20, 0, 4, 0-1
+  5480  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5485  0019000502    		db	0, 25, 0, 5, 2
+  548A  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  548F                	F_WA:
+  548F  03            		db	3
+  5490  000E0003FB    		db	0, 14, 0, 3, 0-5
+  5495  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  549A  0019000504    		db	0, 25, 0, 5, 4
+  549F  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  54A4  002000070A    		db	0, 32, 0, 7, 10
+  54A9  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	
+                      	;300,2200,3050Hz->
+  54AE                	M_YA:
+  54AE  08            		db	8
+  54AF  000E000912    		db	0, 14, 0, 9, 18
+  54B4  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  54B9  0010000911    		db	0, 16, 0, 9, 17
+  54BE  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  54C3  0012000910    		db	0, 18, 0, 9, 16
+  54C8  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  54CD  001400080E    		db	0, 20, 0, 8, 14
+  54D2  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  54D7  001600080D    		db	0, 22, 0, 8, 13
+  54DC  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  54E1  001800080B    		db	0, 24, 0, 8, 11
+  54E6  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  54EB  0019000709    		db	0, 25, 0, 7, 9
+  54F0  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  54F5  001A000707    		db	0, 26, 0, 7, 7
+  54FA  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  54FF                	M_YI:
+  54FF                	M_YU:
+  54FF  08            		db	8
+  5500  000E000912    		db	0, 14, 0, 9, 18
+  5505  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  550A  000E000911    		db	0, 14, 0, 9, 17
+  550F  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5514  000E000810    		db	0, 14, 0, 8, 16
+  5519  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  551E  000F00070F    		db	0, 15, 0, 7, 15
+  5523  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5528  000F00070D    		db	0, 15, 0, 7, 13
+  552D  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5532  000F00060C    		db	0, 15, 0, 6, 12
+  5537  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  553C  000F00050A    		db	0, 15, 0, 5, 10
+  5541  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5546  000F000408    		db	0, 15, 0, 4, 8
+  554B  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  5550                	M_YE:
+  5550  04            		db	4
+  5551  000E000912    		db	0, 14, 0, 9, 18
+  5556  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  555B  0011000811    		db	0, 17, 0, 8, 17
+  5560  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5565  0014000710    		db	0, 20, 0, 7, 16
+  556A  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  556F  001600060F    		db	0, 22, 0, 6, 15
+  5574  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  5579                	M_YO:
+  5579  08            		db	8
+  557A  000E000912    		db	0, 14, 0, 9, 18
+  557F  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5584  000F000911    		db	0, 15, 0, 9, 17
+  5589  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  558E  001000080F    		db	0, 16, 0, 8, 15
+  5593  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5598  001100080D    		db	0, 17, 0, 8, 13
+  559D  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55A2  001200080B    		db	0, 18, 0, 8, 11
+  55A7  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55AC  0013000709    		db	0, 19, 0, 7, 9
+  55B1  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55B6  0014000706    		db	0, 20, 0, 7, 6
+  55BB  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55C0  0015000603    		db	0, 21, 0, 6, 3
+  55C5  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	
+                      	;300,2200,3050Hz->
+  55CA                	F_YA:
+  55CA  08            		db	8
+  55CB  000E000912    		db	0, 14, 0, 9, 18
+  55D0  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55D5  0013000912    		db	0, 19, 0, 9, 18
+  55DA  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55DF  0017000911    		db	0, 23, 0, 9, 17
+  55E4  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55E9  001A000911    		db	0, 26, 0, 9, 17
+  55EE  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55F3  001D000911    		db	0, 29, 0, 9, 17
+  55F8  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  55FD  001F000910    		db	0, 31, 0, 9, 16
+  5602  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5607  0021000910    		db	0, 33, 0, 9, 16
+  560C  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5611  002300090F    		db	0, 35, 0, 9, 15
+  5616  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;300,2200,3050Hz->
+  561B                	F_YI:
+  561B                	F_YU:
+  561B  08            		db	8
+  561C  000E000912    		db	0, 14, 0, 9, 18
+  5621  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5626  000F000912    		db	0, 15, 0, 9, 18
+  562B  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5630  000F000911    		db	0, 15, 0, 9, 17
+  5635  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  563A  0010000911    		db	0, 16, 0, 9, 17
+  563F  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5644  0010000810    		db	0, 16, 0, 8, 16
+  5649  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  564E  0011000810    		db	0, 17, 0, 8, 16
+  5653  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5658  001200080F    		db	0, 18, 0, 8, 15
+  565D  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5662  001200080F    		db	0, 18, 0, 8, 15
+  5667  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	
+                      	;300,2200,3050Hz->
+  566C                	F_YE:
+  566C  08            		db	8
+  566D  000E000912    		db	0, 14, 0, 9, 18
+  5672  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5677  0010000A13    		db	0, 16, 0, 10, 19
+  567C  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5681  0012000A13    		db	0, 18, 0, 10, 19
+  5686  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  568B  0014000A14    		db	0, 20, 0, 10, 20
+  5690  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5695  0015000B14    		db	0, 21, 0, 11, 20
+  569A  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  569F  0017000B15    		db	0, 23, 0, 11, 21
+  56A4  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  56A9  0018000B15    		db	0, 24, 0, 11, 21
+  56AE  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  56B3  0019000C16    		db	0, 25, 0, 12, 22
+  56B8  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  56BD                	F_YO:
+  56BD  08            		db	8
+  56BE  000E000912    		db	0, 14, 0, 9, 18
+  56C3  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  56C8  0010000911    		db	0, 16, 0, 9, 17
+  56CD  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  56D2  001200090F    		db	0, 18, 0, 9, 15
+  56D7  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  56DC  0013000A0E    		db	0, 19, 0, 10, 14
+  56E1  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  56E6  0015000A0C    		db	0, 21, 0, 10, 12
+  56EB  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  56F0  0016000A0A    		db	0, 22, 0, 10, 10
+  56F5  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  56FA  0017000A07    		db	0, 23, 0, 10, 7
+  56FF  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5704  0018000A04    		db	0, 24, 0, 10, 4
+  5709  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;150,1800,2600Hz
+  570E                	M_RA:
+  570E                	F_RA:
+  570E                	M_RI:
+  570E                	M_RE:
+  570E                	F_RI:
+  570E                	F_RE:
+  570E  01            		db	1
+  570F  000100060E    		db	0, 1, 0, 6, 14
+  5714  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	
+  5719                	M_RU:
+  5719  04            		db	4
+  571A  001400FE09    		db	0, 20, 0, 0-2, 9
+  571F  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5724  001300FF08    		db	0, 19, 0, 0-1, 8
+  5729  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  572E  0012000107    		db	0, 18, 0, 1, 7
+  5733  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5738  0011000207    		db	0, 17, 0, 2, 7
+  573D  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  5742                	M_RO:
+  5742  04            		db	4
+  5743  001400FE09    		db	0, 20, 0, 0-2, 9
+  5748  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  574D  0015000007    		db	0, 21, 0, 0, 7
+  5752  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5757  0015000205    		db	0, 21, 0, 2, 5
+  575C  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5761  0015000402    		db	0, 21, 0, 4, 2
+  5766  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  576B                	F_RU:
+  576B  04            		db	4
+  576C  001400FE09    		db	0, 20, 0, 0-2, 9
+  5771  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5776  001400010A    		db	0, 20, 0, 1, 10
+  577B  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5780  001300030C    		db	0, 19, 0, 3, 12
+  5785  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  578A  001300050D    		db	0, 19, 0, 5, 13
+  578F  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;425,1300,1600Hz
+  5794                	F_RO:
+  5794  04            		db	4
+  5795  001400FE09    		db	0, 20, 0, 0-2, 9
+  579A  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  579F  0016000207    		db	0, 22, 0, 2, 7
+  57A4  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  57A9  0017000505    		db	0, 23, 0, 5, 5
+  57AE  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  57B3  0018000703    		db	0, 24, 0, 7, 3
+  57B8  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+                      	;275,900,2200Hz
+  57BD                	M_MA:
+  57BD                	M_MI:
+  57BD                	M_MU:
+  57BD                	M_ME:
+  57BD                	M_MO:
+  57BD                	F_MA:
+  57BD                	F_MI:
+  57BD                	F_MU:
+  57BD                	F_ME:
+  57BD                	F_MO:
+  57BD  01            		db	1
+  57BE  000C000302    		db	0, 12, 0, 3, 2
+  57C3  0600060000    		db	6, 0, 6, 0, 0
+                      	
+                      	;275,1700,2600Hz
+  57C8                	M_NA:
+  57C8                	M_NI:
+  57C8                	M_NU:
+  57C8                	M_NE:
+  57C8                	M_NO:
+  57C8                	F_NA:
+  57C8                	F_NI:
+  57C8                	F_NU:
+  57C8                	F_NE:
+  57C8                	F_NO:
+  57C8  01            		db	1
+  57C9  000C00060E    		db	0, 12, 0, 6, 14
+  57CE  0600060000    		db	6, 0, 6, 0, 0
+                      	
+  57D3                	M_ZA:
+  57D3                	M_ZI:
+  57D3                	M_ZU:
+  57D3                	M_ZE:
+  57D3                	M_ZO:
+  57D3                	F_ZA:
+  57D3                	F_ZI:
+  57D3                	F_ZU:
+  57D3                	F_ZE:
+  57D3                	F_ZO:
+                      	;d:150,1800,2600Hz->
+                      	;z:200,1800,2600Hz
+  57D3  03            		db	3
+  57D4  000100060F    		db	0, 1, 0, 6, 15
+  57D9  000000F9F7    		db	0, 0, 0, 0-7, 0-9
+  57DE  000106060F    		db	0, 1, 6, 6, 15
+  57E3  000200FEFC    		db	0, 2, 0, 0-2, 0-4
+  57E8  000706060F    		db	0, 7, 6, 6, 15
+  57ED  000200FEFC    		db	0, 2, 0, 0-2, 0-4
+                      	
+  57F2                	M_SA:
+  57F2                	M_SI:
+  57F2                	M_SU:
+  57F2                	M_SE:
+  57F2                	M_SO:
+  57F2                	F_SA:
+  57F2                	F_SI:
+  57F2                	F_SU:
+  57F2                	F_SE:
+  57F2                	F_SO:
+                      	;200,1800,2600Hz
+  57F2  03            		db	3
+  57F3  000706060F    		db	0, 7, 6, 6, 15
+  57F8  000200FEFC    		db	0, 2, 0, 0-2, 0-4
+  57FD  000706060F    		db	0, 7, 6, 6, 15
+  5802  000200FEFC    		db	0, 2, 0, 0-2, 0-4
+  5807  000706060F    		db	0, 7, 6, 6, 15
+  580C  000200FEFC    		db	0, 2, 0, 0-2, 0-4
+                      	
+                      	
+  5811                	M_HA:
+  5811  04            		db	4
+  5812  001C000605    		db	0, 28, 0, 6, 5
+  5817  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  581C  001C000605    		db	0, 28, 0, 6, 5
+  5821  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5826  001C000605    		db	0, 28, 0, 6, 5
+  582B  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5830  001C000605    		db	0, 28, 0, 6, 5
+  5835  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  583A                	M_HI:
+  583A  04            		db	4
+  583B  0011000812    		db	0, 17, 0, 8, 18
+  5840  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5845  0011000812    		db	0, 17, 0, 8, 18
+  584A  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  584F  0011000812    		db	0, 17, 0, 8, 18
+  5854  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5859  0011000812    		db	0, 17, 0, 8, 18
+  585E  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  5863                	M_HU:
+  5863  04            		db	4
+  5864  000F000306    		db	0, 15, 0, 3, 6
+  5869  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  586E  000F000306    		db	0, 15, 0, 3, 6
+  5873  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5878  000F000306    		db	0, 15, 0, 3, 6
+  587D  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5882  000F000306    		db	0, 15, 0, 3, 6
+  5887  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  588C                	M_HE:
+  588C  06            		db	6
+  588D  001800040E    		db	0, 24, 0, 4, 14
+  5892  06FD06FAF8    		db	6, 0-3, 6, 0-6, 0-8
+  5897  001800040E    		db	0, 24, 0, 4, 14
+  589C  06FD06FAF8    		db	6, 0-3, 6, 0-6, 0-8
+  58A1  001800040E    		db	0, 24, 0, 4, 14
+  58A6  06FD06FAF8    		db	6, 0-3, 6, 0-6, 0-8
+  58AB  001800040E    		db	0, 24, 0, 4, 14
+  58B0  06FD06FAF8    		db	6, 0-3, 6, 0-6, 0-8
+  58B5  001800040E    		db	0, 24, 0, 4, 14
+  58BA  06FD06FAF8    		db	6, 0-3, 6, 0-6, 0-8
+  58BF  001800040E    		db	0, 24, 0, 4, 14
+  58C4  06FD06FAF8    		db	6, 0-3, 6, 0-6, 0-8
+                      	
+  58C9                	M_HO:
+  58C9  04            		db	4
+  58CA  0015000600    		db	0, 21, 0, 6, 0
+  58CF  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  58D4  0015000600    		db	0, 21, 0, 6, 0
+  58D9  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  58DE  0015000600    		db	0, 21, 0, 6, 0
+  58E3  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  58E8  0015000600    		db	0, 21, 0, 6, 0
+  58ED  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  58F2                	M_HY:
+  58F2  04            		db	4
+  58F3  000E000912    		db	0, 14, 0, 9, 18
+  58F8  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  58FD  000E000912    		db	0, 14, 0, 9, 18
+  5902  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5907  000E000912    		db	0, 14, 0, 9, 18
+  590C  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5911  000E000912    		db	0, 14, 0, 9, 18
+  5916  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  591B                	F_HA:
+  591B  04            		db	4
+  591C  002500090F    		db	0, 37, 0, 9, 15
+  5921  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5926  002500090F    		db	0, 37, 0, 9, 15
+  592B  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5930  002500090F    		db	0, 37, 0, 9, 15
+  5935  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  593A  002500090F    		db	0, 37, 0, 9, 15
+  593F  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  5944                	F_HI:
+  5944  04            		db	4
+  5945  0011000E18    		db	0, 17, 0, 14, 24
+  594A  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  594F  0011000E18    		db	0, 17, 0, 14, 24
+  5954  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5959  0011000E18    		db	0, 17, 0, 14, 24
+  595E  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5963  0011000E18    		db	0, 17, 0, 14, 24
+  5968  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  596D                	F_HU:
+  596D  04            		db	4
+  596E  001300070E    		db	0, 19, 0, 7, 14
+  5973  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5978  001300070E    		db	0, 19, 0, 7, 14
+  597D  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5982  001300070E    		db	0, 19, 0, 7, 14
+  5987  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  598C  001300070E    		db	0, 19, 0, 7, 14
+  5991  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  5996                	F_HE:
+  5996  04            		db	4
+  5997  001B000C16    		db	0, 27, 0, 12, 22
+  599C  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  59A1  001B000C16    		db	0, 27, 0, 12, 22
+  59A6  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  59AB  001B000C16    		db	0, 27, 0, 12, 22
+  59B0  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  59B5  001B000C16    		db	0, 27, 0, 12, 22
+  59BA  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  59BF                	F_HO:
+  59BF  04            		db	4
+  59C0  0019000A01    		db	0, 25, 0, 10, 1
+  59C5  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  59CA  0019000A01    		db	0, 25, 0, 10, 1
+  59CF  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  59D4  0019000A01    		db	0, 25, 0, 10, 1
+  59D9  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  59DE  0019000A01    		db	0, 25, 0, 10, 1
+  59E3  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  59E8                	F_HY:
+  59E8  04            		db	4
+  59E9  000E000912    		db	0, 14, 0, 9, 18
+  59EE  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  59F3  000E000912    		db	0, 14, 0, 9, 18
+  59F8  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  59FD  000E000912    		db	0, 14, 0, 9, 18
+  5A02  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+  5A07  000E000912    		db	0, 14, 0, 9, 18
+  5A0C  060006FBF9    		db	6, 0, 6, 0-5, 0-7
+                      	
+  5A11                	M_CA:
+  5A11                	M_CI:
+  5A11                	M_CU:
+  5A11                	M_CE:
+  5A11                	M_CO:
+  5A11                	F_CA:
+  5A11                	F_CI:
+  5A11                	F_CU:
+  5A11                	F_CE:
+  5A11                	F_CO:
+                      	;d:150,1800,2600Hz->
+                      	;3:200,1300,2400Hz
+  5A11  01            		db	1
+  5A12  000106060F    		db	0, 1, 6, 6, 15
+  5A17  FC00FEFBF9    		db	0-4, 0, 0-2, 0-5, 0-7
+                      	
+                      	
+                      	;no sound
+  5A1C                	NODATA:
+  5A1C  090000000000  		db	09h, 00h, 00h, 00h, 00h, 00h
+                      	
+                      	
+  5A22                	TONETBL:
+                      	;		a  b   c  d  e  f  g
+  5A22  090B0002040507		db	9, 11, 0, 2, 4, 5, 7
+                      	
+                      	
+  5A29                	SCALE:
+                      	;		c-
+  5A29  62            		db	98
+                      	;o2		c/b+	c+/d-	d	d+/e-	e/f-	f/e+
+  5A2A  626262625B54  		db	98,	98,	98,	98,	91,	84
+                      	;		f+/g-	g	g+a/-	a	a+/b-	b/c-
+  5A30  4D47423C3733  		db	77,	71,	66,	60,	55,	51
+                      	
+                      	;o3		c/b+	c+/d-	d	d+/e-	e/f-	f/e+
+  5A36  2E2A26221E1B  		db	46,	42,	38,	34,	30,	27,
+                      	;		f+/g-	g	g+a/-	a	a+/b-	b/c-
+  5A3C  1815120F0D0A  		db	24,	21,	18,	15,	13,	10
+                      	
+                      	;o4		c/b+	c+/d-	d	d+/e-	e/f-	f/e+
+  5A42  0806040200FE  		db	8,	6,	4,	2,	0,	0-2,
+                      	;		f+/g-	g	g+a/-	a	a+/b-	b/c-
+  5A48  FDFBFAF9F7F6  		db	0-3,	0-5,	0-6,	0-7,	0-9,	0-10
+                      	
+                      	;o5		c/b+	c+/d-	d	d+/e-	e/f-	f/e+
+  5A4E  F5F4F3F2F1F0  		db	0-11,	0-12,	0-13,	0-14,	0-15,	0-16
+                      	;		f+/g-	g	g+a/-	a	a+/b-	b/c-
+  5A54  EFEFEEEDEDEC  		db	0-17,	0-17,	0-18,	0-19,	0-19,	0-20
+                      	;		b+
+  5A5A  EC            		db	0-20
+                      	
+                      	
+                      	
+                      	;VOICEROM end
+  5A5B                	_8000H:	ds	8000h-_8000H
+                      	
+  8000                		end
+

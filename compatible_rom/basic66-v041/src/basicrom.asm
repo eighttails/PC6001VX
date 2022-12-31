@@ -274,7 +274,7 @@ FAC1	equ	0ff66h		;floating accumlator 1, ff66-ff6a
 FAC2	equ	0ff6dh		;floating accumlator 2, ff6d-ff71
 FAC3	equ	0ff72h		;floating accumlator 3 (string conversion)
 HOOK	equ	0ff8ah		;hook area, ff8a-ffe3
-HOOKERR	equ	0ff8dh		;hook for print error
+HOOKERR	equ	0ff8dh		;hook for error
 HOOKEDT	equ	0ff93h		;hook for screen editor
 HOOKCLP	equ	0ff99h		;hook for changing link pointer
 HOOKPRT	equ	0ffaeh		;hook for PRINT# command
@@ -286,11 +286,12 @@ HOOK18H	equ	0ffdbh		;hook for 0018h
 HOOK38H	equ	0ffe1h		;hook for 0038h
 ASPECT	equ	0ffe6h		;aspect ratio for CIRCLE command
 
-;constant
-COLUMNS	equ	20h
-ROWS	equ	10h
-MAXCLST	equ	46h		;maximum cluster number (0-69)
 
+;constant
+COLUMNS	equ	32
+ROWS	equ	16
+TRACKS	equ	35		;track number=0-34 (1D)
+CLSTS	equ	TRACKS*2	;cluster number=0-69
 
 END_	equ	080h
 FOR_	equ	081h
@@ -327,7 +328,7 @@ FNC1ST	equ	0d4h
 USR_	equ	0d7h
 LEFT_	equ	0eah
 MID_	equ	0ech
-FNCLAST	equ	0f1h
+FNCLAST	equ	0f1h		;last function for 60
 
 
 ;extended basic subroutine entry address
@@ -336,7 +337,7 @@ INIDSK	equ	42b9h
 SETFATP	equ	51f2h
 DISK2	equ	5cfdh
 
-;6601 subroutine entry address
+;mkiI/6601 subroutine entry address
 CHGRAM	equ	016bh
 SCALE2	equ	2030h
 PUTI1	equ	397ah
@@ -354,7 +355,7 @@ PA66POP	equ	7161h
 PAINT66	equ	716ah
 LOADHEX	equ	7af9h
 
-;6601 work area
+;mkII/6601 work area
 REGF	equ	0fcf9h
 REGA	equ	0fcfah
 REGC	equ	0fcfbh
@@ -375,11 +376,11 @@ ATTDAT2	equ	0fe60h
 BORDERA2	equ	0fe61h
 PORTF0H	equ	0fe64h		;port f0h
 MODE	equ	0fe65h		;mode-1
-READRAM	equ	0fe8dh		;subroutine: read RAM data for PC-6601
+READRAM	equ	0fe8dh		;subroutine: read RAM data for mkII/6601
 OUTF0H	equ	0fea1h		;subroutine: output port f0h
-LDIRRAM	equ	0fe93h		;subroutine: LDIR in RAM for PC-6601
-CHGROM	equ	0fe98h		;subroutine: change 0000-7fff to BASIC ROM
-LDDRRAM	equ	0fea5h		;subroutine: LDDR in RAM for PC-6601
+LDIRRAM	equ	0fe93h		;subroutine: LDIR in RAM for mkII/6601
+CHGBANK	equ	0fe98h		;subroutine: change 0000-7fff to BASIC ROM
+LDDRRAM	equ	0fea5h		;subroutine: LDDR in RAM for mkII/6601
 PAWRK2	equ	0feb8h		;paint work, feb8-feb9
 FKEYLEN	equ	0fec7h
 
@@ -397,17 +398,16 @@ DRIVE	equ	0fe73h
 SECTOR	equ	0fe74h
 DRVBIT	equ	0fe75h		;bit4=drvieA,bit5=drvieB, bit6,7,0,1=external
 RETRY	equ	0fe77h
-NSECT	equ	0fe78h		;1-4
+NSECT	equ	0fe78h		;sectors to be read/written, 1-4
 STATBF	equ	0fe79h		;FDC status, fe79-fe7f
-ERRAD	equ	0ffe8h		;jump address in error of 10 counts
 FATPTBL	equ	0fffch		;FAT pointer table
 
 
-;6601 constant
+;mkII/6601 constant
 CLMN66	equ	40
 ROWS66	equ	20
-CLAST66	equ	0c1h
-FLAST66	equ	0f9h
+CLAST66	equ	0c1h		;last command for mkII/66
+FLAST66	equ	0f9h		;last function for mkII/66
 
 ;FD I/O port
 FDCNTL	equ	0b1h		;FD control
@@ -554,7 +554,8 @@ SETFKLP3:
 	out	(0f0h),a
 	call	CHKEXT6000	;check 6000h and select mode
 SKIPMENU:
-	push	af		;a=mode, z=mode 5?
+	push	af		;a=mode-1, z=mode 5?
+	call	CHGBANK
 
 ;How Many Pages?
 PAGELP:
@@ -588,11 +589,11 @@ CHKPAGE:
 	ld	h,(hl)
 	ld	l,0ffh
 	ld	(USREND),hl
-	pop	af		;a=mode, z=mode 5?
+	pop	af		;a=mode-1, z=mode 5?
 
 	jp	z,MODE5
 	cp	02h
-	jp	nc,MODE34
+	jp	nc,SETTBL
 
 MODE12:
 	ld	bc,50
@@ -620,7 +621,7 @@ IOTBL93:
 				;bit2: portB,portC-lower=mode 0
 				;bit3: portC-upper=output
 				;bit4: portA=output
-				;bit65:portA,portC-upper=mode 0
+				;bit65:portA,portC-upper=mode 2
 				;bit7: mode definition
 	db	0dh		;enable 8255 INT for writing
 	db	09h		;enable 8255 INT for reading
@@ -691,7 +692,7 @@ BFREE:
 ENDTBL:
 	db	0f9h, 0dfh, 0bfh, 9fh
 HOWMANY:
-	db	"How Many Pages",00h
+	db	"How Many Pages", 00h
 QMARK:
 	db	"? ", 00h
 SYSNAME:
@@ -915,8 +916,8 @@ FDERR:
 	ld	e,28h
 
 ERROR:
+	call	HOOKERR
 	ld	sp,(STACK)
-	call	CLRBUFP
 
 ;	xor	a
 ;	ld	(STRDSC2),a
@@ -1988,7 +1989,7 @@ PRTNEXT2:
 	jr	nz,PRTLP2
 PRTEND:
 	ld	(PROGAD),hl
-	call	CLRBUFP
+	call	HOOKERR
 	ld	hl,DEVICE
 	ld	a,(hl)
 	ld	(hl),00h
@@ -2145,8 +2146,6 @@ INPTMAIN:
 	or	a
 	jp	nz,INPTEXT
 
-	call	CUTLINE
-
 	call	INPT1
 
 	pop	de		;program address
@@ -2161,7 +2160,7 @@ INPTMAIN:
 ;analyze input buffer
 INPTANA:
 	ld	de,INPBUF
-INPTLP3:
+INPTLP:
 	ld	hl,(PROGAD)
 	call	CHKVAR
 	ld	(PROGAD),hl
@@ -2211,11 +2210,11 @@ INPTNEXT:
 
 	ld	a,(INPBUF)
 	or	a
-	jr	z,INPTLP3
+	jr	z,INPTLP
 	ld	a,(de)
 	inc	de
 	cp	','
-	jr	z,INPTLP3
+	jr	z,INPTLP
 	ld	a,(INPDEV)
 	or	a
 	jp	nz,ODERR
@@ -3637,7 +3636,7 @@ GETRSBF:
 
 ;get from PLAY command buffer
 ;input: b=channel+1 (1,2,3)
-;output: a,z
+;output: a,z-flag(1=no input)
 ;destroy: f,hl
 GETPLBF:
 	ld	hl,BUFAIN-6
@@ -4970,7 +4969,6 @@ _SETATT:ds	SETATT-_SETATT
 	push	af
 	call	CHKMOD
 	jp	z,SETATT66
-SETATT661:
 	pop	af
 	call	CNVATT
 	ld	(ATTDAT),a
@@ -4986,11 +4984,9 @@ SETATT661:
 CNVATT:
 	push	af		;color
 	ld	a,(SCREEN1)
-	dec	a
-	jr	z,ATT2
-	jp	m,ATT1
-	dec	a
-	jr	z,ATT3
+	srl	a
+	jr	z,ATT12		;screen mode 1 or 2
+	jr	nc,ATT3		;screen mode 3
 
 ATT4:
 	pop	af
@@ -5025,6 +5021,9 @@ ATT3LP:
 	pop	bc
 	ret
 
+ATT12:
+	jr	nc,ATT1
+
 ATT2:
 	pop	af
 	cp	09h
@@ -5041,7 +5040,7 @@ CNVATT1:
 	push	af
 ATT1:
 	call	CHKMOD
-	jp	z,ATT66
+	jp	z,ATT661
 	pop	af
 	or	a
 	jr	z,ATT1OK
@@ -5275,13 +5274,6 @@ COLDLP6:
 
 ;PLAY
 	call	PLSTOP		;ei
-
-;initilize using 4000h-
-;	call	COLD2
-
-;port f0h
-	ld	a,11h
-	ld	(PORTF0H),a
 
 ;for mode select
 	ld	a,0ffh
@@ -6009,7 +6001,7 @@ _CHK90H:ds	CHK90H-_CHK90H
 	in	a,(92h)
 	and	88h		;nobf=1,intr=1?
 	jp	pe,CHK90PE
-	xor	a		;set z-flag
+	cp	a		;set z-flag
 CHK90PE:
 	ld	a,09h
 	out	(93h),a		;enable 8255 INT for reading
@@ -6061,12 +6053,20 @@ _BLNKAST:ds	BLNKAST-_BLNKAST
 	xor	'*'-' '
 	ld	(hl),a
 
-	ld	hl,(WIDTH-1)	;h=(WIDTH)
-	dec	h
-	ld	l,01h
-	call	XY2AD
-	ld	(hl),a
+	call	CHKMOD
+	ld	a,(hl)
 
+;	ld	hl,(WIDTH-1)	;h=(WIDTH)
+;	dec	h
+;	ld	l,01h
+
+;for compatibility with N6X-BASIC
+	ld	hl,01h+(COLUMNS-1)*100h
+	jr	nz,BLNKASTNZ
+	ld	h,CLMN66-1
+BLNKASTNZ:
+
+	call	PRTCHXY
 	pop	hl
 	ret
 
@@ -6239,10 +6239,7 @@ _BELL:	ds	BELL-_BELL
 ;play subroutine called by time interrupt
 ;destroy: af,bc,de,hl
 PLAYINT:
-	ld	a,(CHANNEL)
-	inc	a
 	ld	a,(PLAYST)
-	jr	z,PLIZ
 	or	a
 	ret	z
 PLIZ:
@@ -6270,16 +6267,15 @@ PLILP:
 	jr	PLIGET
 
 PLINC:
-	ld	hl,PLAYST
-	ld	a,(CHANNEL)
-	inc	a
-	or	(hl)
-	jr	nz,PLINEXT	;if (PLAYST)<>0 or (CHANNEL)<>ff
+	ld	a,(PLAYST)
+	or	a
+	jr	nz,PLINEXT	;if (PLAYST)<>0
 
 PLIGET:
 ;length
 	call	GETPLBF
-	jr	z,PLINEXT
+;	jr	z,PLINEXT
+	jr	z,PLIRES
 	cp	0ffh
 	jr	z,PLIRES
 	pop	de
@@ -6348,13 +6344,12 @@ PLINEXT:
 	ld	hl,PLAYST
 	ld	a,(hl)
 	ld	(hl),c
-	inc	c
-	dec	c
+	or	a
+	ret	z		;old (PLAYST)=0
+	ld	a,c
+	or	a
 	ret	nz		;new (PLAYST)<>0
-	or	a		;old (PLAYST)
-	jp	nz,PLAYINT
-	ld	(CHANNEL),a	;=0
-	ret
+	jp	PLIZ		;old<>0 and new=0
 
 ;reset
 PLIRES:
@@ -6821,18 +6816,19 @@ PLSTR0:
 PLAYLP2:
 	ld	a,(hl)
 	or	a
-	jr	nz,PLAYNZ
+	jr	nz,PLAYNZ1
 	ld	a,b
 	dec	a
 	ld	(CHANNEL),a
 	ld	a,0ffh
 	push	hl
+	di
 	call	PUTPLBF
+	ei
 	pop	hl
-PLAYNZ:
+PLAYNZ1:
 	add	hl,de
 	djnz	PLAYLP2
-
 
 PLAYLP3:
 	ld	a,(STOPFLG)
@@ -6840,8 +6836,9 @@ PLAYLP3:
 	call	z,PLSTOP
 	jr	z,PLAYEND
 
+	di
 	ld	ix,PLWKC
-	ld	b,03h
+	ld	bc,0300h	;c=PLAYLEN check counter
 PLAYLP4:
 	ld	a,b
 	dec	a
@@ -6864,29 +6861,34 @@ PLAYLP4:
 	ld	(ix+PLADR),l
 	ld	(ix+PLADR+1),h
 
+	inc	c
 	or	a
 	jr	nz,PLAYNEXT
+	dec	c
 	dec	a
 	call	PUTPLBF		;a=ffh
-
 PLAYNEXT:
 	ld	de,PLWKB-PLWKC
 	add	ix,de
 	djnz	PLAYLP4
 
-	ld	a,0ffh
-	ld	(CHANNEL),a
+	ld	hl,PLAYST
+	ld	a,(hl)
+	or	a
+	jr	nz,PLAYNZ2
 
-	ld	a,(PLWKA+PLLEN)
-	ld	hl,PLWKB+PLLEN
-	or	(hl)
-	ld	hl,PLWKC+PLLEN
-	or	(hl)
-	jr	nz,PLAYLP3
+	inc	a		;=01h
+	ld	(PLWKA+REMAIN+1),a
+	ld	(PLWKB+REMAIN+1),a
+	ld	(PLWKC+REMAIN+1),a
+	ld	a,07h
+	ld	(hl),a
 
-	di
-	call	PLAYINT
+PLAYNZ2:
 	ei
+	ld	a,c		;c=PLAYLEN check counter
+	or	a
+	jr	nz,PLAYLP3
 
 PLAYEND:
 	pop	de
@@ -6928,35 +6930,52 @@ PLAYCMD:
 	sub	'A'
 	cp	'G'-'A'+1
 	jp	c,TONE
-	ld	hl,PLAYTBL
-	ld	b,08h
-PLCMDLP:
-	cp	(hl)
-	inc	hl
-	jp	z,JPTBLNC
-	inc	hl
-	inc	hl
-	djnz	PLCMDLP
-	jp	FCERR
+;	ld	hl,PLAYTBL
+;	ld	b,08h
+;PLCMDLP:
+;	cp	(hl)
+;	inc	hl
+;	jp	z,JPTBLNC
+;	inc	hl
+;	inc	hl
+;	djnz	PLCMDLP
+;	jp	FCERR
+;
+;
+;PLAYTBL:
+;	db	'V'-'A'
+;	dw	PLAYV
+;	db	'M'-'A'
+;	dw	PLAYM
+;	db	'S'-'A'
+;	dw	PLAYS
+;	db	'L'-'A'
+;	dw	PLAYL
+;	db	'T'-'A'
+;	dw	PLAYT
+;	db	'O'-'A'
+;	dw	PLAYO
+;	db	'R'-'A'
+;	dw	PLAYR
+;	db	'N'-'A'
+;	dw	PLAYN
 
-
-PLAYTBL:
-	db	'V'-'A'
-	dw	PLAYV
-	db	'M'-'A'
-	dw	PLAYM
-	db	'S'-'A'
-	dw	PLAYS
-	db	'L'-'A'
-	dw	PLAYL
-	db	'T'-'A'
-	dw	PLAYT
-	db	'O'-'A'
-	dw	PLAYO
-	db	'R'-'A'
-	dw	PLAYR
-	db	'N'-'A'
-	dw	PLAYN
+	cp	'M'-'A'
+	jr	z,PLAYM
+	cp	'S'-'A'
+	jr	z,PLAYS
+	cp	'L'-'A'
+	jr	z,PLAYL
+	cp	'T'-'A'
+	jr	z,PLAYT
+	cp	'O'-'A'
+	jr	z,PLAYO
+	cp	'R'-'A'
+	jp	z,PLAYR
+	cp	'N'-'A'
+	jp	z,PLAYN
+	cp	'V'-'A'
+	jp	nz,FCERR
 
 
 PLAYV:
@@ -7212,7 +7231,7 @@ DOTLP:
 	jr	DOTLP
 NOTDOT:
 
-	di
+;	di
 	ld	a,d		;length
 	call	PUTPLBF
 	ld	a,e
@@ -7231,7 +7250,7 @@ NOTDOT:
 	ld	a,(ix+PERIOD+1)
 	call	PUTPLBF
 PLCMDEND:
-	ei
+;	ei
 	ret
 
 
@@ -8879,6 +8898,7 @@ CPIBFLP2:
 ;output: hl=start position address, c-flag(1=stop)
 ;destroy: af,bc,de
 SCREDIT:
+	call	CUTLINE
 	ld	hl,(CSRY)
 	ld	(INPTX-1),hl	;h=end position for INPUT command
 	ld	(INPTXY),hl	;initial position for INPUT command
@@ -8950,7 +8970,7 @@ SEDCMDNZ:
 	ld	hl,(CSRAD)
 
 	cp	02h
-	jp	z,SEDCTLB
+	jr	z,SEDCTLB
 	cp	03h
 	jp	z,SEDSTOP
 	cp	05h
@@ -8968,7 +8988,7 @@ SEDCMDNZ:
 	cp	15h
 	jr	z,SEDCTLU
 	cp	12h
-	jr	nz,SEDPRTC		;14h,1ch,1dh,1eh,1fh
+	jr	nz,SEDPRTC	;14h,1ch,1dh,1eh,1fh
 
 SEDINS:
 	ld	hl,INSMODE
@@ -12885,7 +12905,7 @@ MULRNC:
 
 
 ;EXP() function
-;exp(x)=2^n*e^a, n=[x/log2], a=x-n*log2
+;exp(x)=2^n * e^a, n=[x/log2], a=x-n*log2
 F_EXP:
 	call	CHKNUM
 EXP:
@@ -12897,7 +12917,7 @@ EXP:
 	ld	hl,(FAC1+3)
 	ld	a,h		;(FAC1+4)
 	cp	89h
-	jr	nc,EXPLARGE
+	jr	nc,EXPLARGE	;|x/log2|>=256
 
 	call	INT		;n=[x/log2]
 	call	FTOI
@@ -12906,7 +12926,7 @@ EXP:
 	call	SETF2
 	call	MULF		;n*log2
 	pop	de		;n
-	call	POPF2
+	call	POPF2		;x
 	push	de		;n
 	call	SUBF21		;a=x-n*log2
 
@@ -12931,26 +12951,27 @@ EXPLP:
 	dec	c
 	jr	nz,EXPLP
 
-	pop	de		;n
+	pop	de		;-256<=n<=255
 ;	ld	a,(FAC1+4)	;=81h?
 	ld	a,81h
 	add	a,e
-	ld	(FAC1+4),a	;e^a*2^n
+	ld	(FAC1+4),a	;exponent
 	bit	7,d
 	jr	nz,EXPNZ
 	ret	nc		;0<=n<=126
+EXPOV:
 	jp	OVERR		;127<=n<=255
 EXPNZ:
 	dec	a
 	ret	p		;-128=<n<=-1
-	jr	EXPZERO		;-255=<n<=-129
+EXPZERO:
+	jp	SETZERO		;-256=<n<=-129
 
 EXPLARGE:
 	bit	7,l		;(FAC1+3)
-	jp	z,OVERR		;x>0
+	jr	z,EXPOV		;x/log2>=256
 	call	POPF1
-EXPZERO:
-	jp	SETZERO		;x<0
+	jr	EXPZERO		;x/log2<=-256
 
 ;log(2)
 LOG2:
@@ -13612,7 +13633,7 @@ CALCLLP2:
 
 ;check external ROM (4000=CD? 6000=CD?)
 ;input: hl=4003h or 6003h
-;output: a=mode, z-flag(0=found, 1=not found)
+;output: a=mode-1, z-flag(0=found, 1=not found)
 ;destroy: f,bc,de
 CHKEXTCD:
 	ld	d,'C'
@@ -13620,7 +13641,7 @@ CHKEXTCD:
 
 ;check external ROM (4000=AB? 6000=AB?)
 ;input: hl=4003h or 6003h
-;output: a=mode, z-flag(0=found, 1=not found)
+;output: a=mode-1, z-flag(0=found, 1=not found)
 ;destroy: f,bc,de
 CHKEXTAB:
 	ld	d,'A'
@@ -13643,7 +13664,7 @@ CHKEXTAB:
 	db	0f6h		;or afh, reset z-flag
 
 NOABCD:
-	xor	a		;set z-flag
+	cp	a		;set z-flag
 	ld	a,(MODE)
 	pop	hl
 	ret
@@ -13663,10 +13684,11 @@ CHKEXT6000:
 	call	CHKEXTAB
 	ret	nz		;AB found, skip menu
 	call	CHKEXTCD
-	call	CHGROM		;0000-7fff:BASIC ROM
+	ld	a,11h
+	ld	(PORTF0H),a
+	out	(0f0h),a	;0000-7fff:BASIC ROM
 	call	SELMOD
-
-	push	af		;a=mode, z=mode 5?
+	push	af		;a=mode-1, z=mode 5?
 	cp	02h
 	jr	c,CHKEXT6END	;mode1,2
 	ld	a,(DRIVES)
@@ -13694,17 +13716,13 @@ CHKFILE:
 	ld	(FILES),a
 
 CHKEXT6END:
-	pop	af		;a=mode, z=mode 5?
+	pop	af		;a=mode-1, z=mode 5?
 	ret
 
 
-MODE34:
-	ld	a,0a1h		;0000-5fff:BASIC ROM, 6000-7fff:external ROM
-	out	(0f0h),a
-;	jp	SETTBL
-
 ;set command/function table for mode3,4,5
 SETTBL:
+
 ;CLOAD(a3)
 	ld	hl,C_CLDEX
 	ld	(CMDTBL+(0a3h-80h)*2),hl
@@ -13752,9 +13770,6 @@ SETTBL:
 	ld	c,06h		;b=0
 	ldir
 
-	ld	hl,IOERR
-	ld	(ERRAD),hl
-
 SETTBLZ1:
 	ld	hl,(USREND)
 	ld	b,2eh
@@ -13769,6 +13784,62 @@ SETTBLLP1:
 ;	or	a
 	jr	z,SETTBLZ2
 
+
+;disk work
+;
+;----------------------	(ff3dh)
+;string area
+;			(fd8dh)
+;---------------------
+;buffer#m info		9bytes	m=files
+;---------------------
+;buffer#m data		256bytes
+;---------------------
+;...
+;---------------------	buffer pointer
+;buffer#0 info		9 bytes
+; +0: file open mode (01h=input, 02h=output, 04h=random, 08h=append, 10h=kill, 80h=binary save)
+; +1: first cluster
+; +2: cluster
+; +3: sector in cluster(0-8)
+; +4: drive-1
+; +5: end position
+; +6: position
+; +7: file status (bit1=to next sector, bit3=write)
+; +8: characters until line end
+;---------------------	(fb37h)
+;buffer#0 data		256bytes
+;---------------------	(fb35h)
+;buffer pointer table	2*(files+1)bytes
+;---------------------
+;FAT#n info		6bytes	n=drives
+;---------------------
+;FAT#n copy		70bytes
+;---------------------
+;empty?			1byte
+;---------------------
+;...
+;---------------------	FAT pointer-3
+;FAT#1 info		6bytes
+; -3: check sum
+; -2: need to over write FAT(ffh) or not(00h)
+; -1: drive attribute (=ID sector and 70h)
+; +0: last accessed track (ffh=removed)
+; +1: temporary
+; +2: unused clusters
+;---------------------
+;FAT#1 copy		70bytes
+;---------------------
+;empty?			1byte
+;---------------------	(fffch)
+;FAT pointer table	2*drives bytes
+;---------------------
+;IX area		46bytes
+;---------------------
+;BASIC work or VRAM
+;(fa00h, e000h, c000h, or a000h)
+
+
 ;set FAT pointer table
 ;	ld	a,(DRIVES)
 	ld	b,a
@@ -13779,11 +13850,10 @@ SETTBLLP1:
 	ld	(FATPTBL),hl	;=end-46-2*drives
 	ld	d,h
 	ld	e,l
-	inc	de
 
 SETTBLLP2:
 	ld	a,e
-	sub	4dh-2
+	sub	4dh-3
 	ld	e,a
 	jr	nc,SETTBLNC1
 	dec	d
@@ -13792,15 +13862,19 @@ SETTBLNC1:
 	inc	hl
 	ld	(hl),d
 	inc	hl
-	ld	a,0ffh
-	ld	(de),a		;last accessed track (ff=removed)
-	dec	de
-	dec	de
-	xor	a
-	ld	(de),a		;not need to overwrite FAT
+
+	ex	de,hl
+	ld	(hl),0ffh	;last accessed track (ff=no open files)
+	dec	hl
+	dec	hl
+	ld	(hl),00h	;not need to overwrite FAT
+	dec	hl
+	ld	(hl),'S'	;FAT check sum
+	ex	de,hl
+
 	djnz	SETTBLLP2
 
-	push	de
+	push	de		;
 
 	xor	a
 	call	SETFATP
@@ -13820,17 +13894,17 @@ SETTBLLP3:
 	ldi
 	jp	pe,SETTBLLP3
 
-	pop	de
+	pop	hl		;
 
 ;set buffer pointer table
 	ld	a,(FILES)
 	inc	a
 	ld	b,a
-	add	a,a
-	cpl
-	ld	l,a
-	ld	h,0ffh
-	add	hl,de
+	add	a,a		;c-flag=0
+	ld	e,a
+	ld	d,c		;=0
+;	or	a
+	sbc	hl,de
 	ld	(BUFPTBL),hl
 	ld	d,h
 	ld	e,l
@@ -13872,12 +13946,12 @@ SETTBLZ2:
 
 
 HOOKTBL:
-	dw	HOOKERR, CLRBUFP
+	dw	HOOKERR, ERRCLRB
 	dw	HOOKEDT, REMOVE
 	dw	HOOKPRT, FNUMPRT
 	dw	HOOKINP, FNUMINP
 	dw	HOOKPUT, PUTDSK
-	dw	HOOKRES, CHKCLOSE
+	dw	HOOKRES, CHKROPT
 HOOKTBLEND:
 
 
@@ -13996,8 +14070,9 @@ FWERR:
 ; c-flag=0,z-flag=0: read
 ; c-flag=0,z-flag=1: check
 ; c-flag=1: write
-;output: c-flag=1 if error, (de=de+data size)
-;destroy: (de)
+;output: c-flag(1=error), (de=de+data size)
+;destroy: f,(de)
+;destroy: af,(de),hl if error count>=10 (FAT error)
 _DISK:	ds	DISK-_DISK
 	org	DISK
 	jp	DSKMAIN
@@ -14032,8 +14107,8 @@ IL663:
 ;output: a(0-1=internal,2-5=external), c-flag(1=error)
 ;destroy: hl
 CHKDRV:
-	ld	hl,(DRIVES)
-	cp	l
+	ld	hl,DRIVES
+	cp	(hl)
 	ccf
 	ret	c
 	ld	hl,(DRVBIT)
@@ -14051,11 +14126,12 @@ CHKDRVNZ:
 
 ;initialize FDD (set DRVBIT)
 ;output: a=the number of drives, z-flag(1=no drive)
-;destroy: f,bc,hl,(de)
+;destroy: f,hl,(de)
 _INIDSK:ds	INIDSK-_INIDSK
 	org	INIDSK
 
 ;for no FDD
+	push	bc
 	ld	hl,DRVBIT
 	ld	(hl),00h	;bit4=drvieA,bit5=drvieB, bit6,7,0,1=external
 
@@ -14114,6 +14190,7 @@ INIDSKNC2:
 	jr	c,INIDSKC
 	ld	a,b
 INIDSKC:
+	pop	bc
 	or	a		;z-flag=1 if no drives
 	ret
 
@@ -14217,7 +14294,7 @@ DSKERR:
 	pop	de
 DSKERR2:
 	pop	hl
-	inc	(ix+1bh)
+	inc	(ix+1bh)	;error count
 	ld	a,(ix+1bh)
 	cp	0ah
 	jr	nc,ERRJMP
@@ -14227,12 +14304,25 @@ DSKERR2:
 
 ERRJMP:
 	pop	af
-	inc	sp		;return address
-	inc	sp		;return address
-	push	hl
-	ld	hl,(ERRAD)
-	ex	(sp),hl
+	pop	af		;cancel return address for DISK2
+	pop	af		;cancel stack for DISK2
+	pop	af		;cancel stack for DISK2
+
+	ld	a,b
+	cp	12h
+	jr	nz,ERRJMPNZ
+	ld	a,c
+	sub	0eh
+	cp	10h-0eh+1
+	jr	c,ERRFAT
+ERRJMPNZ:
+	jp	IOERR
+
+;FAT error
+ERRFAT:
+	scf
 	ret
+
 
 
 ;input: de
@@ -15717,6 +15807,11 @@ ASPLARGE:
 	call	CPYFAC
 	ld	hl,(XRAD)
 	ld	(YRAD),hl
+
+	ld	a,h
+	or	l
+	jp	z,CRCLMAIN2
+
 	call	I2TOF
 	call	PUSHF1		;y-radius(=r)
 	call	DIVF		;r/asp
@@ -16127,7 +16222,7 @@ PUTNC:
 	pop	af
 	ld	(hl),a		;+6: position
 	inc	hl
-	bit	3,(hl)		;+7: file status
+	bit	3,(hl)		;+7: file status, bit3=write
 	jr	z,PUTZ
 	ld	(hl),04h	;random file
 PUTZ:
@@ -16239,7 +16334,7 @@ PUTATNZ4:
 	ld	hl,PUTATAND
 	cp	AND_		;cfh
 	jr	z,PUTATIX
-	ld	h,PUTATOR
+	ld	hl,PUTATOR
 	cp	OR_		;d0h
 	jr	z,PUTATIX
 	ld	hl,PUTATPRESET
@@ -16538,7 +16633,7 @@ GETAT2:
 	ex	af,af'		;z-flag(0=string, 1=numeric)
 	call	SETFNAME
 	ld	h,01h		;attribute
-	call	SVCOMMON	;de=(BUF0)
+	call	SVCOMMON
 	ld	b,01h		;attribute=binary
 	ld	d,02h		;file open mode=output
 	call	FOPEN0
@@ -16836,8 +16931,7 @@ C_CLDEX:
 	call	INPOPN
 	pop	bc
 CLDEXLP:
-	call	GETCMT
-	jp	nz,TRERR
+	call	GETCMTTR
 	inc	hl
 	ld	(hl),a
 	dec	bc
@@ -17149,7 +17243,7 @@ RD1LP2:
 
 ;set drive number and FAT/drive pointer
 ;input: ix, a=drive-1(0-3)
-;output: (ix+00h)=drive-1, hl=(0fb33h)=FAT/drive pointer, z-flag(1=removed)
+;output: (ix+00h)=drive-1, hl=(0fb33h)=FAT/drive pointer, z-flag(1=no open files)
 ;destroy: af,de
 _SETFATP:ds	SETFATP-_SETFATP
 	org	SETFATP
@@ -17169,7 +17263,7 @@ _SETFATP:ds	SETFATP-_SETFATP
 	ld	l,a
 	ld	(FATP),hl
 	ld	a,(hl)
-	inc	a		;set z-flag if (hl)=ff (removed)
+	inc	a		;set z-flag if (hl)=ff (no open files)
 	ret
 
 
@@ -17188,7 +17282,7 @@ GETBUFP:
 	inc	hl
 	ld	h,(hl)
 	ld	l,a
-	ld	a,(hl)
+	ld	a,(hl)		;+0: file open mode
 	or	a
 	ret
 
@@ -17202,14 +17296,20 @@ FNCFNUM:
 ;	jr	CHKOPEN
 
 ;check file open
-;input: (FAC1)
+;input: (FAC1)=file number
 ;output: a=file open mode, hl=buffer pointer
 ;destroy: f,bc,de
 CHKOPEN:
 	call	FTOI1
 	call	GETBUFP		;a=file open mode
-	ret	nz
-	jp	CFERR		;not open
+	jp	z,CFERR		;not open
+	push	hl
+	ld	de,0004h
+	add	hl,de
+	ld	a,(hl)		;+4: drive-1
+	call	READFAT
+	pop	hl
+	ret
 
 
 ;set file pointer for PRINT# command
@@ -17547,9 +17647,8 @@ SAMECLST:
 	inc	c
 	ld	a,e		;cluster
 NXSCTWEND:
-	ld	hl,(FATP)
-	dec	hl
-	dec	hl
+	call	SETSUM
+	inc	hl
 	ld	(hl),0ffh	;need to overwrite FAT
 	pop	de
 	pop	hl
@@ -17570,29 +17669,33 @@ NEWCLST:
 
 ;read FAT to drive buffer
 ;input: a=drive-1(0-3)
-;output: ix=disk work, (ix+00h), (ix+ibh), ((FATP))=FAT pointer
+;output: ix=disk work, (ix+00h), (ix+ibh), ((FATP))=FAT pointer, z-flag(1=no open files)
 ;destroy: af,bc,de,hl
 READFAT:
 	call	SETIX
 	call	SETFATP
-	ret	nz		;not removed
+	push	af
+	call	CHKSUM
+	pop	af
+	ret	nz		;file open
 
 	ld	bc,120eh	;track 18, sector 14
 	call	READBUF0
-
-	ld	hl,(BUF0)
 	ld	de,(FATP)
 	inc	de
 	inc	de
 	inc	de
-	ld	bc,MAXCLST
+	ld	bc,CLSTS
 	ldir
+
+	call	SETSUM
+	cp	a		;set z-flag
 	ret
 
 
 ;check ID sector
 ;input: ix=work address, (ix+00h)=drive
-;destroy: af,de,hl
+;destroy: af,b,de,hl
 CHKID:
 	ld	bc,120dh	;b=track, c=sector
 	call	READBUF0
@@ -17601,27 +17704,43 @@ CHKID:
 	jp	FWERR
 
 
-;check FAT checksum
-;input: hl=FAT pointer
-;output: a=checksum value
-;destroy: f,b,hl
+;set FAT check sum
+;output: a=check sum value, hl=FAT pointer-3
+;destroy: f
+SETSUM:
+	push	bc
+	call	CALCSUM
+	pop	bc
+	ld	(hl),a
+	ret
+
+
+;check FAT check sum
+;output: a=check sum value, hl=FAT pointer-3
+;destroy: f,bc
 CHKSUM:
-	push	hl
-	inc	hl
-	inc	hl
-	ld	b,46h
-	ld	a,'S'
-CHKSUMLP:
-	inc	hl
-	xor	(hl)
-	djnz	CHKSUMLP
-	pop	hl
-	dec	hl
-	dec	hl
-	dec	hl
+	call	CALCSUM
 	cp	(hl)
 	ret	z
 	jp	IEERR
+
+
+;calculate FAT check sum
+;output: a=check sum value, hl=FAT pointer-3
+;destroy: f,bc
+CALCSUM:
+	ld	hl,(FATP)
+	inc	hl
+	inc	hl
+	ld	b,CLSTS
+	ld	a,'S'
+CALCSUMLP:
+	inc	hl
+	xor	(hl)
+	djnz	CALCSUMLP
+	ld	bc,0-CLSTS-5
+	add	hl,bc
+	ret
 
 
 ;get FAT value
@@ -17656,7 +17775,7 @@ GETFATNC:
 	jp	nc,ATERR
 	cp	0c0h
 	ret	nc
-	cp	MAXCLST
+	cp	CLSTS
 	ret	c
 	jp	ATERR
 
@@ -17673,7 +17792,6 @@ SRCHFLP1:
 	push	bc
 	ld	b,12h		;track 18
 	call	READBUF0
-
 	ld	(ix+01h),00h	;not found yet
 	ld	(ix+02h),c	;sector
 
@@ -17784,21 +17902,34 @@ SRCHFZ3:
 
 
 ;search unused cluster
-;23h->22h->26h->21h->27h->20h->...
+;(ex. 23h->22h->26h->21h->27h->20h->...)
+;input: a=last used cluster
 ;output: a=cluster, hl=(FATP)+3+cluster
-;destroy: f,bc
+;destroy: af,bc
 SRCHCLST:
-	ld	b,00h
 	ld	hl,(FATP)
-	ld	a,(hl)
-	add	a,a
-	ld	c,a
+	inc	hl
+	inc	hl
+	ld	b,CLSTS
 SRCHCLP1:
+	inc	hl
+	ld	c,(hl)
+	inc	c
+	jr	z,SRCHCZ1	;ff=unused
+	djnz	SRCHCLP1
+	jp	DFERR
+
+SRCHCZ1:
+	and	0feh		;track*2
+	ld	b,00h
+
+SRCHCLP2:
 	ld	hl,(FATP)
 	inc	hl
 	inc	hl
 	inc	hl
 
+	ld	c,a
 	ld	a,b
 	ld	b,00h
 	add	hl,bc
@@ -17808,19 +17939,18 @@ SRCHCLP1:
 	ld	a,c
 	ret	z		;found
 
-SRCHCLP2:
-	ld	a,b
-	cpl
-	cp	MAXCLST
-	jp	z,DFERR
-	jr	nc,SRCHCNC
-	add	a,02h
-SRCHCNC:
-	ld	b,a		;b=-1,+2,-3,+4,-5,...
-	add	a,c
-	ld	c,a
-	cp	MAXCLST
-	jr	c,SRCHCLP1
+;cluster+=-1,+2,-3,+4,-5,...
+SRCHCLP3:
+	inc	b
+	add	a,b
+	bit	0,b
+	jr	z,SRCHCZ2	;if b=even
+	sub	b
+	sub	b
+	jr	c,SRCHCLP3
+SRCHCZ2:
+	cp	CLSTS
+	jr	nc,SRCHCLP3
 	jr	SRCHCLP2
 
 
@@ -17848,6 +17978,7 @@ NAMELP1:
 	cp	b
 	jp	nz,RDERR
 	ld	(ix+00h),a	;drive-1
+	call	CHKSUM
 	call	SRCHFILE
 	jp	z,FEERR
 
@@ -17927,10 +18058,11 @@ OPENNZ2:
 	jr	nz,OPENNZ3
 	inc	hl
 OPENNZ3:
-	call	INT1ARG
-	ld	a,(FILES)
-	cp	e
-	jp	c,BNERR
+	call	INT1ARG		;a,e=file number
+	dec	a
+	ld	hl,FILES
+	cp	(hl)
+	jp	nc,BNERR
 
 ;de=file number
 	ld	hl,(BUFPTBL)
@@ -17979,6 +18111,8 @@ OPENOUT:
 
 ;a=cluster
 OPENEND:
+	ld	hl,(FATP)
+	ld	(hl),12h	;last accessed track
 	pop	de		;d=file open mode
 	pop	hl		;file buffer pointer
 
@@ -18034,12 +18168,10 @@ FOPEN0:
 FCLOSE:
 	call	GETBUFP
 	ret	z
-;	jr	FCLOSE2
 
-;close file
-;input: hl=file buffer pointer
-;destroy: af,bc,de,hl
-FCLOSE2:
+	push	hl
+	call	CHKSUM
+	pop	hl
 	push	hl
 	ld	(hl),00h	;+0: file open mode
 	ld	de,0004h
@@ -18051,7 +18183,7 @@ FCLOSE2:
 	inc	hl
 	bit	3,(hl)		;+7: file status, bit3=write
 	pop	hl
-	ret	z
+	jr	z,CHKCLOSE	;+7: file status, bit3=write
 
 	call	SETIX
 	push	hl
@@ -18063,18 +18195,18 @@ FCLOSE2:
 	ld	e,l
 	ld	a,b		;+6: position
 	or	a
-	jr	nz,FCLONZ
+	jr	nz,FCLNZ
 
 ;position=0
 	call	CHKLASTSECT
-	ret	nz
+	jr	nz,CHKCLOSE
 	ld	hl,0007h
 	add	hl,de		;+9
 	call	REVFAT
 	jr	WRTFATCHK
 
 ;position>0
-FCLONZ:
+FCLNZ:
 	call	CHKLASTSECT
 	push	de		;+2
 	ld	hl,0005h
@@ -18085,14 +18217,14 @@ FCLONZ:
 	inc	hl
 	ld	a,(hl)		;+3: sector in cluster
 	srl	b		;track=cluster/2
-	jr	nc,FCLONC	;even cluster: 1-8
+	jr	nc,FCLNC	;even cluster: 1-8
 	add	a,08h		;odd cluster: 9-16
-FCLONC:
+FCLNC:
 	ld	c,a		;sector
 
 	ld	de,0006h
 	add	hl,de		;+9
-	call	WRTBFMAIN
+	call	WRTBFMAIN1
 ;	jr	WRTFATCHK
 
 ;call WRTFAT if necessary
@@ -18103,19 +18235,18 @@ WRTFATCHK:
 	dec	hl
 	ld	a,(hl)
 	or	a
-	ret	z		;not need to overwrite FAT
-;	jr	WRTFAT
+	jr	z,CHKCLOSE	;not need to overwrite FAT
 
 ;write FAT
 ;destroy: af,bc,de,hl
 WRTFAT:
 	ld	hl,(FATP)
+	inc	hl
+	inc	hl
+	inc	hl
 	ld	bc,120eh	;track 18, sector 14-16
-	inc	hl
-	inc	hl
-	inc	hl		;(FATP)+3: FAT data
 WRTFATLP:
-	call	WRTBFMAIN
+	call	WRTBFMAIN1
 	inc	c
 	ld	a,c
 	cp	11h
@@ -18124,11 +18255,29 @@ WRTFATLP:
 	dec	hl
 	dec	hl
 	ld	(hl),00h	;not need to overwrite FAT
+;	jr	CHKCLOSE
+
+
+;check if all files closed
+;destroy: af,b,de,hl
+CHKCLOSE:
+	ld	a,(FILES)
+	or	a
+	jr	z,CHKCLZ
+	ld	b,a
+CHKCLLP:
+	ld	e,b
+	call	GETBUFP
+	ret	nz		;open
+	djnz	CHKCLLP
+CHKCLZ:
+	ld	hl,(FATP)
+	ld	(hl),0ffh	;last accessed track (ff=no open files)
 	ret
 
 
 ;input: a=first cluster
-;destroy: f,hl
+;destroy: af,hl
 RELEASEFAT:
 	call	GETFAT
 	ld	(hl),0ffh	;unused
@@ -18174,7 +18323,7 @@ REVFAT:
 	inc	hl
 	inc	hl
 
-	ld	b,MAXCLST
+	ld	b,CLSTS
 REVFATLP:
 	inc	hl
 	ld	a,(hl)
@@ -18194,18 +18343,25 @@ REMOVE:
 	ld	hl,(BUFP)
 	ld	a,h
 	or	l
-	jr	z,WRTFATCHK
+	jp	z,WRTFATCHK
 	bit	1,(hl)		;file open mode
 	jr	z,CLRBUFP	;not sequential save
 
 ;for ASCII save
 	call	PUTNL
-	call	FCLOSE2
+	call	CLOSALL
 
 CLRBUFP:
 	ld	hl,0000h
 	ld	(BUFP),hl
 	ret
+
+;from error hook
+ERRCLRB:
+	push	de
+	call	CHKCLOSE
+	pop	de
+	jr	CLRBUFP
 
 
 ;KILL command
@@ -18286,7 +18442,8 @@ LOADR:
 	call	SKIPSPINC
 	cp	'R'
 	jp	nz,SNERR
-	ld	(ix+03h),a	;R option
+	ld	(ix+03h),a	;R option (execution)
+	set	7,(ix+17h)	;R option (not close files)
 
 LOADMAIN:
 	ld	a,b		;drive-1
@@ -18330,8 +18487,7 @@ LOADNC2:
 	ex	de,hl
 	pop	af
 
-	ld	(ix+1bh),00h	;error count
-	call	RDBFLP
+	call	RDBFMAIN
 LOADZ:
 	add	a,h
 	ld	h,a
@@ -18344,7 +18500,8 @@ LOADEND:
 	inc	hl
 	ld	(VARAD),hl
 
-	call	RESSTK
+	call	RESSTK		;close all files (if without R option)
+	call	CHKCLOSE
 	call	CLRBUFP
 	ld	a,(ix+03h)	;R option?
 	or	a
@@ -18438,7 +18595,7 @@ SAVEMAIN:
 ;normal save
 	ld	hl,(VARAD)
 	ld	de,(STARTAD)
-;	or	a
+	or	a
 	sbc	hl,de
 	ex	de,hl		;hl <- start address
 	dec	de
@@ -18455,18 +18612,19 @@ SAVEC:
 	add	a,0c0h
 	ld	(hl),a
 	sub	0c0h
+	push	af
+	call	SETSUM
+	pop	af
 	pop	hl
 
-	ld	(ix+1bh),00h	;error count
-	scf			;set c-flag for writing
 	push	hl
 	push	de
-	call	WRTBFLP
+	call	WRTBFMAIN
 	pop	de
 	pop	hl
 
 	sub	d
-	jp	z,WRTFAT
+	jr	z,SAVEEND
 	neg			;d-a
 	ld	d,a
 
@@ -18480,6 +18638,10 @@ SAVEC:
 	call	NEXTSECTW
 	jr	SAVELP
 
+SAVEEND:
+	call	CLOSALL
+	jp	WRTFAT
+
 
 ;ASCII save
 SAVEASC:
@@ -18492,7 +18654,7 @@ SAVEASC:
 	jp	LISTTOEND
 
 
-;set file name in directory for save/bsave
+;set file name in directory for writing
 ;input: a=drive-1(0-3)
 ;output: a=cluster, de=directory+9(attribute address), ix=disk work, (FATP)
 ;destroy: f,bc,hl
@@ -18504,8 +18666,31 @@ SETDIR:
 	jr	nz,SETDNZ	;not found
 	bit	4,b		;can overwrite?
 	jp	nz,FWERR
+
+	push	af		;first cluster
+	ld	d,a
+	ld	a,(FILES)
+	or	a
+	jr	z,SETDZ2
+	ld	e,a
+SETDLP:
+	push	de
+	call	GETBUFP
+	pop	de
+	jr	z,SETDZ1	;close
+	inc	hl
+	ld	a,(hl)		;+1: first cluster
+	cp	d
+	jp	z,AOERR
+SETDZ1:
+	dec	e
+	jr	nz,SETDLP
+SETDZ2:
+	pop	af		;first cluster
+
 	call	RELEASEFAT
 SETDNZ:
+	ld	a,24h
 	call	SRCHCLST
 	pop	de		;directory address
 	db	0ddh		;ix prefix
@@ -18716,22 +18901,20 @@ CLOSNZ:
 	call	SKIPSPINC
 	jr	CLOSLP1
 
-CHKCLOSE:
-	bit	7,(ix+17h)
+CHKROPT:
+	bit	7,(ix+17h)	;close files?
 	res	7,(ix+17h)
 	ret	nz		;RUN with R option
 
 CLOSALL:
 	ld	a,(FILES)
-	or	a
-	ret	z
 	ld	e,a
 CLOSLP2:
 	push	de
 	call	FCLOSE
 	pop	de
 	dec	e
-	jr	nz,CLOSLP2
+	jp	p,CLOSLP2
 	ret
 
 
@@ -18748,6 +18931,7 @@ C_FLS:
 	call	nz,INT1ARG
 	dec	a
 	call	READFAT
+	jp	nz,AOERR
 
 ;read directory
 	ld	c,01h		;sector 1
@@ -18856,6 +19040,11 @@ FLSZ2:
 	cp	0ch
 	jp	c,FLSLP1
 FLSEND:
+	call	PUTNL
+
+	ld	hl,(FATP)
+	ld	(hl),0ffh	;last accessed track (ff=no open files)
+
 	xor	a
 	ld	(DEVICE),a
 	ret
@@ -18877,7 +19066,7 @@ CNTCLP:
 	jp	nc,ATERR
 	cp	0c0h
 	jr	nc,CNTCNC
-	cp	MAXCLST
+	cp	CLSTS
 	jp	nc,ATERR
 	djnz	CNTCLP
 CNTCNC:
@@ -19060,7 +19249,7 @@ GETDBIN:
 	ld	a,(hl)		;[+9,+264]: buffer
 	push	af
 
-	jr	nz,GETDNZ	;if position<>end
+	jr	nz,GETDNZ	;if binary file or position<>end
 
 ;position=end
 	ex	de,hl
@@ -19163,6 +19352,10 @@ NEXTSECTW4:
 	inc	c
 
 NXSCTWEND2:
+	call	SETSUM
+	inc	hl
+	ld	(hl),0ffh	;need to overwrite FAT
+
 	ld	hl,(BUFP)
 	inc	hl
 	inc	hl
@@ -19174,10 +19367,6 @@ NXSCTWEND2:
 	ld	(hl),00h	;+5: end position
 	inc	hl
 	ld	(hl),00h	;+6: position
-	ld	hl,(FATP)
-	dec	hl
-	dec	hl
-	ld	(hl),0ffh	;need to overwrite FAT
 	ret
 
 
@@ -19248,6 +19437,7 @@ RDNEXT2:
 
 ;DSKI$() function
 F_DSKI:
+	cp	a		;set z-flag
 	call	DSKIOSUB
 	call	READBUF0
 	ld	a,0ffh
@@ -19257,32 +19447,38 @@ F_DSKI:
 
 ;DSKO$ command
 C_DSKO:
+	xor	a
+	inc	a		;reset z-flag
 	call	DSKIOSUB
 	jp	WRTBUF0
 
 
 ;subroutine for DSKI$ and DSKO$
+;input: hl=program address, z-flag(1=DSKI$,0=DSKO$)
 DSKIOSUB:
-	call	CHKLPAR
+	push	af		;z-flag(1=DSKI$,0=DSKO$)
+	call	z,CHKLPAR
 	call	INT1ARG		;a,e=drive(1-4)
-	push	af
+	push	de
 	ld	a,(hl)
 	cp	','
 	jp	nz,SNERR
 	inc	hl
 	call	INT1ARG2	;c=track(0-34),e=sector(1-16)
-	call	CHKRPAR
 	ld	b,c		;b=track
 	ld	c,e		;c=sector
-	pop	af
+	pop	de		;e=drive(1-4)
+	pop	af		;z-flag(1=DSKI$,0=DSKO$)
+	call	z,CHKRPAR
+	ld	a,e		;drive(1-4)
 	dec	a
-	ld	hl,(DRIVES)
-	cp	l
+	ld	hl,DRIVES
+	cp	(hl)
 	jp	nc,DNERR
 
 	push	af		;drive-1(0-3)
 	ld	a,b
-	cp	23h		;track(0-34)
+	cp	TRACKS		;track(0-34)
 	jp	nc,TSERR
 	ld	a,c
 	dec	a
@@ -19321,7 +19517,7 @@ SET0BUFLP:
 ;destroy: af,bc,de
 WRTDIR:
 	ld	b,12h		;track
-	ld	c,(ix+02h)	;sector writed in SRCHFILE
+	ld	c,(ix+02h)	;sector written in SRCHFILE
 	call	WRTBUF0
 	jp	SET0BUF0	;hl=(BUF0)
 
@@ -19329,13 +19525,17 @@ WRTDIR:
 ;read 1 sector into buffer#0
 ;input: b=track, c=sector, ix, (ix+00h)=drive-1
 ;output: hl=(BUF0)
-;destroy: af,de
+;destroy: af,b,de
 READBUF0:
 	ld	hl,(BUF0)
-	jr	RDBFMAIN
+	push	hl
+	call	RDBFMAIN1
+	call	CHKCLOSE
+	pop	hl
+	ret
 
 
-;read 1 sector into filebuffer
+;read 1 sector into file buffer
 ;input: b=track, c=sector, ix, (ix+00h)=drive-1, (BUFP)=file buffer pointer
 ;output: hl=buffer pointer+9
 ;destroy: af,de
@@ -19346,23 +19546,25 @@ READBUF:
 READBUF2:
 	ld	de,0009h
 	add	hl,de
-RDBFMAIN:
-	xor	a
-	ld	(ix+1bh),a	;error count
-	inc	a		;1 sector
+
+;read 1 sector
+;input: b=track, c=sector, ix, (ix+00h)=drive-1, hl=address
+;destroy: af
+RDBFMAIN1:
+	ld	a,01h		;1 sector
 
 ;read disk with error check and change (FATP)
 ;input:
 ; a=the number of sector, b=track, c=sector, hl=address
-; ix=work address, (ix+00h)=drive-1, (ix+1bh)=error count
+; ix=work address, (ix+00h)=drive-1
 ;destroy: f,de
-RDBFLP:
+RDBFMAIN:
 	push	hl
 	ld	d,h
 	ld	e,l
 	or	a		;reset z- and c-flag for reading
-	call	DISK
-	jr	c,RDBFLP
+	call	DISK2
+	jp	c,ATERR
 	ld	hl,(FATP)
 	ld	(hl),b		;last accessed track
 	pop	hl
@@ -19375,7 +19577,9 @@ RDBFLP:
 ;destroy: af,de
 WRTBUF0:
 	ld	hl,(BUF0)
-	jr	WRTBFMAIN
+	call	WRTBFMAIN1
+	jp	CHKCLOSE
+
 
 ;write 1 sector in buffer into disk
 ;input: b=track, c=sector, ix, (ix+00h)=drive-1, (BUFP)=buffer pointer
@@ -19390,24 +19594,19 @@ WRTBUF:
 ;input: b=track, c=sector, ix, (ix+00h)=drive-1, hl=address
 ;output: hl=(FATP)
 ;destroy: af,de
-WRTBFMAIN:
-	xor	a
-	ld	(ix+1bh),a	;error count
-	inc	a		;1 sector
-	scf			;set c-flag for writing
+WRTBFMAIN1:
+	ld	a,01h
 
 ;write disk with error check and change (FATP)
 ;input:
 ; a=the number of sector, b=track, c=sector, hl=address
-; ix=work address, (ix+00h)=drive-1, (ix+1bh)=error count
-; c-flag=1
+; ix=work address, (ix+00h)=drive-1
 ;output: hl=(FATP)
 ;destroy: f,de
-WRTBFLP:
-	ld	d,h
-	ld	e,l
-	call	DISK
-	jr	c,WRTBFLP
+WRTBFMAIN:
+	scf			;set c-flag for writing
+	call	DISK2
+	jp	c,ATERR
 	ld	hl,(FATP)
 	ld	(hl),b		;last accessed track
 	ret
@@ -19427,7 +19626,7 @@ C2TRSECT:
 
 
 ;get ix for disk
-;output: ix=disk work
+;output: ix=disk work address
 ;destroy: none
 SETIX:
 	push	af
@@ -19437,12 +19636,10 @@ SETIX:
 	ld	a,(PAGES)
 	dec	a
 	jr	z,SETIXEND	;pages=1
-	rrca
+	rrca			;pages>1
 	rrca
 	rrca			;--,20,40,60
-	db	0ddh		;ix prefix
-	xor	h		;xor ixh
-	or	0fh		;--,df,bf,9f
+	cpl			;--,df,bf,9f
 	db	0ddh		;ix prefix
 	ld	h,a		;ld ixh,a
 SETIXEND:
@@ -19457,31 +19654,24 @@ SETIXEND:
 ; c-flag=0,z-flag=0: read
 ; c-flag=0,z-flag=1: check
 ; c-flag=1: write
-;output: c-flag(1=error)
-;destroy: f
+;output: c-flag(1=FAT error)
+;destroy: f,de
 _DISK2:	ds	DISK2-_DISK2
 	org	DISK2
 
-	push	af
 	ld	(ix+1bh),00h	;error count
+	push	af
+DISK2LP:
 	pop	af
+	ld	d,h
+	ld	e,l
 	push	af
 	push	hl
-	push	de
-	push	bc
-	ex	de,hl
 	call	DISK
-	pop	bc
-	pop	de
 	pop	hl
-	jr	c,DISK2ERR
+	jr	c,DISK2LP
 	pop	af
-	or	a		;reset c-flag: ok
-	ret
-
-DISK2ERR:
-	pop	af
-	scf			;set c-flag: error
+	or	a
 	ret
 
 
@@ -19497,7 +19687,7 @@ F_DSKF:
 	inc	hl
 	inc	hl
 
-	ld	bc,4600h
+	ld	bc,CLSTS*100h+00h
 DSKFLP:
 	ld	a,(hl)
 	inc	a
@@ -19561,12 +19751,6 @@ F_LOF:
 ;EOF() function
 F_EOF:
 	call	FNCFNUM
-	push	hl
-	ld	de,0004h
-	add	hl,de
-	ld	a,(hl)		;+4: drive-1
-	call	READFAT
-	pop	hl
 	call	CHKEOF
 	jp	nz,SETFALSE
 	jp	SETTRUE
@@ -19686,8 +19870,8 @@ C_BSV:
 	push	bc		;start address
 	ld	h,01h		;attribute
 	call	SVCOMMON
-	ex	de,hl		;hl<-(BUF0)
 	pop	de		;start address
+	ld	hl,(BUF0)
 	ld	(hl),e
 	inc	hl
 	ld	(hl),d
@@ -19761,7 +19945,7 @@ BSVZ1:
 	and	07h		;0-7
 	add	a,0c1h		;c1-c8
 	ld	(hl),a
-
+	call	SETSUM
 	call	SET0BUF0
 
 ;end?
@@ -19922,11 +20106,10 @@ BLDC1:
 	ld	a,b
 BLDC2:
 	pop	bc		;b=track, c=sector
-	ld	(ix+1bh),00h	;error count
 
 	ex	de,hl
 	push	de
-	call	RDBFLP
+	call	RDBFMAIN
 	pop	de
 	ex	de,hl
 
@@ -19987,8 +20170,8 @@ BLDEND5:
 ;save/bsave common subroutine
 ;set file name in directory, write directory, get track and sector
 ;input: a=drive-1(0-3), h=attribute
-;output: a=cluster, b=track, c=sector, de=(BUF0), (FATP)
-;destroy: f,hl
+;output: a=cluster, b=track, c=sector, (FATP)
+;destroy: f,de,hl
 SVCOMMON:
 	push	hl
 	call	SETDIR
@@ -19998,20 +20181,23 @@ SVCOMMON:
 	inc	hl
 	ld	(hl),a		;cluster
 	push	af		;cluster
-	call	WRTDIR		;hl=(BUF0)
+	call	WRTDIR
 	pop	af		;cluster
-	ex	de,hl
 
 	ld	hl,(FATP)
-	dec	hl
-	dec	hl
-	ld	(hl),0ffh	;need to overwrite FAT
 	ld	b,00h
 	ld	c,a
-	add	hl,bc
-	ld	c,05h		;b=0
+	inc	c
+	inc	c
+	inc	c
 	add	hl,bc
 	ld	(hl),0c0h	;(FATP)+3+cluster
+
+	push	af
+	call	SETSUM
+	call	WRTFAT
+	pop	af
+
 	jp	C2TRSECT
 
 
@@ -20039,9 +20225,8 @@ SETFNAME:
 	jr	nz,SETFC
 	ld	a,(de)
 	sub	'1'
-	ld	hl,(DRIVES)
-	cp	l
-	jp	nc,DNERR
+	cp	08h
+	jp	nc,DNERR	;1-8=ok
 	ld	b,a		;drive(0-3)
 	dec	c
 	dec	c
@@ -20052,6 +20237,11 @@ SETFNAME:
 	jp	z,NMERR
 
 SETFC:
+	ld	a,(DRIVES)
+	dec	a
+	jp	m,AOERR
+	cp	b
+	jp	c,DNERR
 	push	bc		;b=drive(0-3)
 	ld	hl,(FATPTBL)
 	ld	l,0d7h		;ix+5
@@ -20138,7 +20328,7 @@ _CALLINI:ds	CALLINI-_CALLINI
 READRAM_SRC:
 	call	CHGRAM
 	ld	a,(hl)
-	jr	CHGROM_SRC
+	jr	CHGBANK_SRC
 
 
 ;LDIR in RAM
@@ -20149,21 +20339,19 @@ READRAM_SRC:
 LDIRRAM_SRC:
 	call	CHGRAM
 	ldir
-;	jp	CHGROM
+;	jp	CHGBANK
 
 
-;change 0000-7fffh to BASIC ROM
+;change bank
 ;destroy: none
 ;fe98h: used by HURRY FOX
-CHGROM_SRC:
+CHGBANK_SRC:
 	push	af
-	ld	a,11h
-;	ld	a,(PORTF0H)
+	ld	a,(PORTF0H)
 	out	(0f0h),a
-	ei
 	pop	af
+	ei
 	ret
-	nop
 
 
 ;fea1h
@@ -20181,9 +20369,17 @@ OUTF0H_SRC:
 LDDRRAM_SRC:
 	call	CHGRAM
 	lddr
-	jr	CHGROM_SRC
+	jr	CHGBANK_SRC
 RAMEND:
 
+
+BOOTERR:
+	ld	a,0c9h		;ret
+	ld	(HOOKERR),a
+;	ld	sp,0e700h-2*2
+	pop	af		;cancel stack for "call HOOKERR"
+	pop	af		;cancel stack for "call DISK2"
+	jr	SKIPFD
 
 ;print menu and select mode
 ;output: z(1=mode 5), a=mode-1(if z=0)
@@ -20201,19 +20397,20 @@ SELMOD:
 	ld	(MODE),a
 	ld	(PAGES),a
 
-	ld	hl,SKIPFD
-	ld	(ERRAD),hl
+	ld	a,0c3h		;jp
+	ld	(HOOKERR),a
+	ld	hl,BOOTERR	;temporary for boot
+	ld	(HOOKERR+1),hl
+
 	ld	ix,0c400h
 	ld	bc,0001h	;track=0, sector=1
 	ld	(ix+00h),b	;drive-1=0
 	ld	(ix+1bh),b	;error count=0
-	ld	de,0f900h	;load address
+	ld	hl,0f900h	;load address
 	ld	a,c		;1 sector
 BOOTSECT:
 	or	a		;reset z- and c-flag for reading
-	call	DISK
-	jr	c,BOOTSECT
-
+	call	DISK2
 	ld	a,(0f900h)
 	ld	de,"SY"
 	cp	d		;'S'
@@ -20231,8 +20428,6 @@ BOOTSECT:
 
 ;select mode
 SKIPFD:
-	ld	hl,EDIT
-	ld	(ERRAD),hl
 	xor	a
 	ld	(MODE),a
 
@@ -20277,8 +20472,8 @@ SLMDLP4:
 
 SELECTED:
 	cp	04h
-	push	af		;mode 5?
-	jr	c,SETMOD
+	push	af		;a=mode-1, z=mode 5?
+	jr	nz,SETMOD
 	dec	a		;mode 5->4 for "How Many..."
 SETMOD:
 	ld	(MODE),a
@@ -20310,6 +20505,15 @@ SLMDLP5:
 	xor	a
 	call	CHGDSP
 
+	pop	af		;a=mode-1, z=mode 5?
+	ret	z		;mode5: (PORTF0H)=11h
+
+	push	af
+	cp	02h
+	sbc	a,a
+	and	0d0h
+	add	a,0a1h		;71h or a1h
+	ld	(PORTF0H),a
 	pop	af
 	ret
 
@@ -20357,7 +20561,7 @@ CHGMOD66:
 	ld	a,(SCREEN1)
 	dec	a
 	jr	nz,CHGMOD66NZ
-	call	CNVATT1
+;screen mode 2
 	or	80h
 	ld	(hl),a
 
@@ -20492,9 +20696,8 @@ MODE5LP3:
 	jp	SETTBL
 
 
-
 MENU:
-	db	"** PC-6001Mk2/6601 ",9ah, 0deh, 96h, 0fdh, "BASIC **",00h
+	db	"** PC-6001Mk2/6601 ",9ah,0deh,96h,0fdh,"BASIC **",00h
 	db	0ah,00h
 	db	"1:60 BASIC          (RAM-16K)",00h
 	db	"2:60 BASIC          (RAM-32K)",00h
@@ -20506,7 +20709,7 @@ MENU:
 
 
 SYSNAME66:
-	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.4", 0dh, 0ah, 00h
+	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.4.1", 0dh, 0ah, 00h
 
 
 ;PEEK() function
@@ -20850,23 +21053,32 @@ GETSP66:
 	jr	z,GETSP663
 
 ;screen mode 4
+GETSP664:
 	or	a
 	ret	z
-	dec	a
+	dec	a		;1,2,3,4,...->0,1,2,3,...
 	rrca
-	and	01h
-	jp	CNVATT
+	rrca
+	sbc	a,a		;0,1,2,3,...->00,00,ff,ff,00,ff,...
+	ret
 
 ;screen mode 3
 GETSP663:
 	or	a
 	ret	z
 	dec	a
+	and	0ch
+GETSP663BIT:
+	push	bc
+	ld	c,a
+	ld	b,03h
+GETSP663LP:
 	rrca
 	rrca
-	and	03h
-	inc	a
-	jp	CNVATT
+	or	c
+	djnz	GETSP663LP
+	pop	bc
+	ret
 
 
 ;continued from GETSPA for mode 5
@@ -20875,136 +21087,101 @@ GETSPA66:
 	jr	nz,GETSPA6634
 	ld	a,(COLOR1)
 	jr	nc,GETSPA661
-
-;screen mode 2
-;input: a=color
-GETSPA662:
-	call	GETSPA661
-	or	80h
-	ret
-
-;continued from CNVATT1
-ATT66:
-	pop	af
-
-;screen mode 1
-GETSPA661:
-	push	hl
-	or	a
-	jr	z,GETSPA661Z
-	dec	a
-	and	0fh
-GETSPA661Z:
-	ld	l,a
-	ld	a,(COLOR2)
-	dec	a
-	and	07h
-	rlca
-	rlca
-	rlca
-	rlca
-	or	l
-	pop	hl
-	ret
+	jr	GETSPA662
 
 GETSPA6634:
 	ld	a,(COLOR2)
 	jr	c,GETSPA664
+	jr	GETSPA663
+
+
+;continued from SETATT
+SETATT66:
+	pop	af
+	call	CNVATT66
+	ld	(ATTDAT),a
+	ret
+
+;convert to attribute data (screen mode 1,2)
+; or bit pattern (screen mode 3,4)
+;input: a=color code
+;output: a=attribute
+;destroy: f
+CNVATT66:
+	push	af
+	ld	a,(SCREEN1)
+	srl	a
+	jr	z,ATT6612	;screen mode 1 or 2
+	jr	nc,ATT663	;screen mode 3
+
+;screen mode 4
+ATT664:
+	pop	af
+	push	af
+	call	GETSP664
+	ld	(ATTDAT2),a
+	pop	af
+GETSPA664:
+	or	a
+	ret	z
+	dec	a
+	rrca
+	sbc	a,a		;0,1,2,3,...->00,ff,00,ff,00,ff,...
+	ret
 
 ;screen mode 3
+ATT663:
+	pop	af
+	push	af
+	call	GETSP663
+	ld	(ATTDAT2),a
+	pop	af
 GETSPA663:
 	or	a
 	ret	z
 	dec	a
 	and	03h
-	inc	a
-	jp	CNVATT
+	jr	GETSP663BIT
 
-;screen mode 4
-GETSPA664:
-	or	a
-	ret	z
-	dec	a
-	and	01h
-	jp	CNVATT
+;screen mode 1 or 2
+ATT6612:
+	jr	c,ATT662
 
-
-;continued from SETATT
-SETATT66:
-	ld	a,(SCREEN1)
-	dec	a
-	jr	z,SETATT662	;screen mode 2
-	jp	m,SETATT661	;screen mode 1
-	dec	a
-	jr	z,SETATT663	;screen mode 3
-
-;screen mode 4
+;screen mode 1
+ATT661:
 	pop	af
-	sub	01h
-	adc	a,00h		;if a<>0 then a=a-1
-	rrca
-	push	af
-	rrca
-	sbc	a,a		;bit1=0:00h, =1:ffh
-	ld	(ATTDAT2),a
+GETSPA661:
+	call	ATTTXT66
+	and	7fh		;bit7: semi-graphic flag
+	ret
+
+;screen mode 2
+ATT662:
 	pop	af
-	sbc	a,a		;bit0=0:00h, =1:ffh
-	ld	(ATTDAT),a
+GETSPA662:
+	call	ATTTXT66
+	or	80h		;bit7: semi-graphic flag
 	ret
 
 
-;screen mode 3
-SETATT663:
-	pop	af
-	sub	01h
-	adc	a,00h		;if a<>0 then a=a-1
-
-;	push	af
-;	rrca
-;	rrca
-;	and	03h
-;	inc	a
-;	call	CNVATT
-;	ld	(ATTDAT2),a
-;	pop	af
-;	and	03h
-;	inc	a
-;	call	CNVATT
-;	ld	(ATTDAT),a
-;	ret
-
-	push	bc
+;get text attribute for mode5
+;input: a=color code
+;output: a[6:0]=attribute
+;destroy: f
+ATTTXT66:
+	push	hl
+	sub	01h		;if a<>0 then a=a-1
+	adc	a,00h
 	and	0fh
-	ld	b,a
-	rrca
-	rrca
-	rrca
-	rrca
-	or	b
-	ld	b,a
-	and	33h
-	ld	c,a
-	xor	b
-	ld	b,a
-	rrca
-	rrca
-	or	b
-	ld	(ATTDAT2),a
-	ld	a,c
-	rrca
-	rrca
-	or	c
-	ld	(ATTDAT),a
-	pop	bc
-	ret
-
-
-SETATT662:
-	pop	af
-	dec	a
-	and	0fh
-	inc	a
-	ld	(ATTDAT),a
+	ld	h,a
+	ld	a,(COLOR2)
+	dec	a		;range is not checked, for compatibility with N60m/N66-BASIC
+	rlca
+	rlca
+	rlca
+	rlca
+	or	h		;bit6-4: background, bit3-0:foreground
+	pop	hl
 	ret
 
 
@@ -21402,27 +21579,11 @@ PSET662:
 
 	call	READRAM
 	ld	e,a		;
-	ld	a,(ATTDAT)
-	or	a
-	jr	nz,PS662NZ1
-	bit	7,e
-	jr	nz,PS662NZ2
-PS662NZ1:
-	call	GETSPA662
 
-	ld	b,a
-	ld	a,(COLOR2)
-	call	GETSPA662
-	and	07h
-	rlca
-	rlca
-	rlca
-	rlca
-	or	b
+	ld	a,(ATTDAT)
 	ld	(hl),a
-PS662NZ2:
 	set	2,h
-	bit	7,e
+	bit	7,e		;
 	jr	nz,PS662SEMI
 	call	GETSP
 	ld	(hl),a
@@ -21435,22 +21596,6 @@ PS662SEMI:
 	call	READRAM
 ;	and	0fh
 	or	b
-	ld	c,a
-
-	ld	a,(ATTDAT)
-	or	a
-	jr	z,PSET662C0
-	ld	(hl),c
-	pop	hl
-	ret
-
-
-PSET662C0:
-	ld	a,b
-	cpl
-	ld	b,a
-	call	READRAM
-	and	b
 	ld	(hl),a
 	pop	hl
 	ret
@@ -22797,10 +22942,8 @@ STRETCHLP:
 
 ;TALK command
 C_TALK:
-
-;for N66 voicerom
 	ld	a,0c9h
-	ld	(0fe66h),a
+	ld	(0fe66h),a	;for PC-6601 VOICEROM
 
 ;	call	STRARG
 
@@ -22808,32 +22951,27 @@ C_TALK:
 	ret	z
 	call	STRARG3
 
-	ld	hl,TALKRET
-	push	hl
-	ld	hl,CHGROM
-	push	hl
-	ld	hl,TALK
-	push	hl
 	ex	de,hl		;hl=string address
 	ld	e,a		;e=length
-	push	af		;dummy for OUTF0H
 
 	ld	a,03h
 	out	(0c3h),a	;port c2h direction: bit0,1=output
 	xor	a
 	out	(0c2h),a	;bit0=0:VOICE ROM
-	ld	a,21h		;0000-3fff:BASIC ROM, 4000-7fff:VOICE ROM
-
-;for N66 voicerom
+	ld	a,51h		;0000-3fff,6000-7fff:BASIC ROM, 4000-5fff:VOICE ROM
 	ld	(PORTF0H),a
+	out	(0f0h),a
+	call	TALK
 
-	jp	OUTF0H
+	push	af
+	ld	a,11h		;0000-7fff:BASIC ROM
+	ld	(PORTF0H),a
+	out	(0f0h),a
+	pop	af
 
-TALKRET:
 	cp	20h
-	jp	nz,FCERR
-
-	ret
+	ret	z
+	jp	FCERR
 
 
 C_MON:
@@ -23558,7 +23696,7 @@ SETREGLP:
 	ret
 
 SETREGM:
-SETREGP
+SETREGP:
 SETREGS:
 	ret
 

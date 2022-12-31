@@ -97,8 +97,9 @@ DSK6::DSK6( VM6* vm, const ID& id ) : Device( vm, id ), UType( PC6031 ), DrvNum(
 /////////////////////////////////////////////////////////////////////////////
 DSK6::~DSK6( void )
 {
-	for( int i = 0; i < DrvNum; i++ )
-		if( Dimg[i] ) Unmount( i );
+	for( int i = 0; i < DrvNum; i++ ){
+		if( Dimg[i] ){ Unmount( i ); }
+	}
 }
 
 
@@ -138,7 +139,7 @@ bool DSK6::SetWait( int eid, int cnt )
 	PRINTD( DISK_LOG, "[DISK][SetWait] " );
 	
 	if( waiten ){
-		if( cnt ) waitcnt = cnt;
+		if( cnt ){ waitcnt = cnt; }
 		
 		PRINTD( DISK_LOG, "%dus ->", waitcnt );
 		
@@ -182,15 +183,19 @@ bool DSK6::Mount( int drvno, const P6VPATH& filepath )
 {
 	PRINTD( DISK_LOG, "[DISK][Mount] Drive:%d Filename:%s\n", drvno, P6VPATH2STR( filepath ).c_str() );
 	
-	if( drvno >= DrvNum ) return false;
+	if( drvno >= DrvNum ){
+		return false;
+	}
 	
 	// もしマウント済みであればアンマウントする
-	if( Dimg[drvno] ) Unmount( drvno );
+	if( Dimg[drvno] ){ Unmount( drvno ); }
 	
 	// ディスクイメージオブジェクトを確保
 	try{
 		Dimg[drvno] = new cD88( DDDrv[drvno] );
-		if( !Dimg[drvno]->Init( filepath ) ) throw Error::DiskMountFailed;
+		if( !Dimg[drvno]->Init( filepath ) ){
+			throw Error::DiskMountFailed;
+		}
 	}
 	catch( std::bad_alloc& ){	// new に失敗した場合
 		Error::SetError( Error::MemAllocFailed );
@@ -236,7 +241,9 @@ void DSK6::Unmount( int drvno )
 {
 	PRINTD( DISK_LOG, "[DISK][Unmount] Drive : %d\n", drvno );
 	
-	if( drvno >= DrvNum ) return;
+	if( drvno >= DrvNum ){
+		return;
+	}
 	
 	if( Dimg[drvno] ){
 		// ディスクイメージオブジェクトを開放
@@ -262,8 +269,11 @@ int DSK6::GetDrives( void )
 /////////////////////////////////////////////////////////////////////////////
 bool DSK6::IsMount( int drvno ) const
 {
-	if( drvno < DrvNum ) return Dimg[drvno] ? true : false;
-	else                 return false;
+	if( drvno < DrvNum ){
+		return Dimg[drvno] ? true : false;
+	}else{
+		return false;
+	}
 }
 
 
@@ -281,7 +291,9 @@ bool DSK6::IsSystem( int drvno ) const
 /////////////////////////////////////////////////////////////////////////////
 bool DSK6::IsProtect( int drvno ) const
 {
-	if( !IsMount( drvno ) ) return false;
+	if( !IsMount( drvno ) ){
+		return false;
+	}
 	
 	return Dimg[drvno]->IsProtect();
 }
@@ -310,7 +322,9 @@ const P6VPATH& DSK6::GetFile( int drvno ) const
 /////////////////////////////////////////////////////////////////////////////
 const std::string DSK6::GetName( int drvno ) const
 {
-	if( !IsMount( drvno ) ) return GetText( T_EMPTY );
+	if( !IsMount( drvno ) ){
+		return GetText( T_EMPTY );
+	}
 	
 	return Dimg[drvno]->GetDiskImgName();
 }
@@ -891,8 +905,8 @@ void DSK60::FddOut( BYTE dat )
 			case 1:	// 01h:モード
 				PRINTD( DISK_LOG, "<SET_MODE P1> %s", dat & 0x0f ? "1DD" : "1D" );
 				// TO DO
-				if( dat & 0x0f ) mdisk.Type = FDD1DD;
-				else			 mdisk.Type = FDD1D;
+				if( dat & 0x0f ){ mdisk.Type = FDD1DD; }
+				else			{ mdisk.Type = FDD1D;  }
 				mdisk.step = 0;
 				break;
 				
@@ -907,7 +921,7 @@ void DSK60::FddOut( BYTE dat )
 	PRINTD( DISK_LOG, "\n" );
 	
 	// ウェイト設定
-	if( eid ) DSK6::SetWait( eid );
+	if( eid ){ DSK6::SetWait( eid ); }
 }
 
 
@@ -1250,7 +1264,7 @@ BYTE DSK66::PopStatus( void )
 {
 	PRINTD( FDC_LOG, "%02X\n", (BYTE)CmdOut.Data[CmdOut.Index - 1] );
 	
-	if( CmdOut.Index ) --CmdOut.Index;
+	if( CmdOut.Index ){ --CmdOut.Index; }
 	return CmdOut.Data[CmdOut.Index];
 }
 
@@ -1290,8 +1304,8 @@ BYTE DSK66::InFDC( void )
 	fdc.Intr = false;	// 読み書きするとキャンセルされるようだ?
 	
 	if( fdc.Status & FDC_FD2PC ){
-		if( CmdOut.Index == 1 ) fdc.Status = FDC_DATA_READY | ( fdc.Status & 0x0f );
-		else					fdc.Status = FDC_DATA_READY | FDC_FD2PC | FDC_BUSY | ( fdc.Status & 0x0f );
+		if( CmdOut.Index == 1 ){ fdc.Status = FDC_DATA_READY | ( fdc.Status & 0x0f ); }
+		else				   { fdc.Status = FDC_DATA_READY | FDC_FD2PC | FDC_BUSY | ( fdc.Status & 0x0f ); }
 		return PopStatus();
 	}else{
 		return 0xff;
@@ -1405,7 +1419,9 @@ bool DSK66::SearchSector( BYTE* sta )
 				PRINTD( FDC_LOG, "[Final]" );
 				Dimg[fdc.US]->GetID( &c0, &h0, &r0, &n0 );
 				DSK6::AddWait( WAIT_GAP4( n0 ) );
-				if( ++idxcnt == 2 ) break;
+				if( ++idxcnt == 2 ){
+					break;
+				}
 				DSK6::AddWait( WAIT_GAP0 );
 			}
 			
@@ -1425,7 +1441,7 @@ bool DSK66::SearchSector( BYTE* sta )
 					fdc.ST2 = 0;
 					if( fdc.C != fdc.PCN[fdc.US] ){
 						fdc.ST2 |= ST2_NO_CYLINDER;
-						if( fdc.C == 0xff ) fdc.ST2 |= ST2_BAD_CYLINDER;
+						if( fdc.C == 0xff ){ fdc.ST2 |= ST2_BAD_CYLINDER; }
 					}
 					break;
 					
@@ -1839,8 +1855,11 @@ void DSK66::SenseInterruptStatus( void )
 	
 	// Result phase
 	// シーク完了ドライブを探す
-	for( Drv = 0; Drv < 4; Drv++ )
-		if( fdc.SeekSta[Drv] == SK_END ) break;
+	for( Drv = 0; Drv < 4; Drv++ ){
+		if( fdc.SeekSta[Drv] == SK_END ){
+			break;
+		}
+	}
 	
 	if( Drv >= 4 ){	// シーク完了ドライブなし
 		PRINTD( FDC_LOG, "None\n" );
@@ -1873,10 +1892,10 @@ void DSK66::OutB1H( int, BYTE data ){ ExtDrv = data & 4 ? true : false; }	// FDC
 void DSK66::OutB3H( int, BYTE data ){ B2Dir  = data & 1 ? true : false; }	// PortB2hの入出力制御
 
 
-void DSK66::OutD0H( int port, BYTE data ){ if( !ExtDrv ) BufWrite( ((port & 0xff) << 8) | ((port >> 8) & 0xff), data ); }	// Buffer
-void DSK66::OutD1H( int port, BYTE data ){ if( !ExtDrv ) BufWrite( ((port & 0xff) << 8) | ((port >> 8) & 0xff), data ); }	// Buffer
-void DSK66::OutD2H( int port, BYTE data ){ if( !ExtDrv ) BufWrite( ((port & 0xff) << 8) | ((port >> 8) & 0xff), data ); }	// Buffer
-void DSK66::OutD3H( int port, BYTE data ){ if( !ExtDrv ) BufWrite( ((port & 0xff) << 8) | ((port >> 8) & 0xff), data ); }	// Buffer
+void DSK66::OutD0H( int port, BYTE data ){ if( !ExtDrv ){ BufWrite( ((port & 0xff) << 8) | ((port >> 8) & 0xff), data ); } }	// Buffer
+void DSK66::OutD1H( int port, BYTE data ){ if( !ExtDrv ){ BufWrite( ((port & 0xff) << 8) | ((port >> 8) & 0xff), data ); } }	// Buffer
+void DSK66::OutD2H( int port, BYTE data ){ if( !ExtDrv ){ BufWrite( ((port & 0xff) << 8) | ((port >> 8) & 0xff), data ); } }	// Buffer
+void DSK66::OutD3H( int port, BYTE data ){ if( !ExtDrv ){ BufWrite( ((port & 0xff) << 8) | ((port >> 8) & 0xff), data ); } }	// Buffer
 
 void DSK66::OutD6H( int, BYTE data ){}									// FDDモータ制御
 void DSK66::OutD8H( int, BYTE data ){}									// 書き込み補償制御 ???
@@ -1903,7 +1922,9 @@ BYTE DSK66::InDDH( int ){ return InFDC(); }								// FDC データレジスタ
 /////////////////////////////////////////////////////////////////////////////
 bool DSK6::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "DISK", "DrvNum",  "", DrvNum );
 	Ini->SetVal( "DISK", "WaitCnt", "", waitcnt );
@@ -1924,7 +1945,9 @@ bool DSK6::DokoSave( cIni* Ini )
 
 bool DSK60::DokoSave( cIni* Ini )
 {
-	if( !Ini || !DSK6::DokoSave( Ini ) ) return false;
+	if( !Ini || !DSK6::DokoSave( Ini ) ){
+		return false;
+	}
 	
 	// DSK60
 	Ini->SetVal( "P66DISK", "mdisk_PD_ATN",		"", mdisk.PD_ATN );
@@ -1968,7 +1991,9 @@ bool DSK60::DokoSave( cIni* Ini )
 
 bool DSK66::DokoSave( cIni* Ini )
 {
-	if( !Ini || !DSK6::DokoSave( Ini ) ) return false;
+	if( !Ini || !DSK6::DokoSave( Ini ) ){
+		return false;
+	}
 	
 	// DSK66
 	for( int i = 0; i < 10; i++ ){
@@ -2032,10 +2057,14 @@ bool DSK66::DokoSave( cIni* Ini )
 /////////////////////////////////////////////////////////////////////////////
 bool DSK6::DokoLoad( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	// とりあえず全部アンマウント
-	for( int i = 0; i < DrvNum; i++ ) if( Dimg[i] ) Unmount( i) ;
+	for( int i = 0; i < DrvNum; i++ ){
+		if( Dimg[i] ){ Unmount( i) ; }
+	}
 	
 	Ini->GetVal("DISK", "DrvNum",	DrvNum  );
 	Ini->GetVal("DISK", "WaitCnt",	waitcnt );
@@ -2056,7 +2085,9 @@ bool DSK6::DokoLoad( cIni* Ini )
 
 bool DSK60::DokoLoad( cIni* Ini )
 {
-	if( !Ini || !DSK6::DokoLoad( Ini ) ) return false;
+	if( !Ini || !DSK6::DokoLoad( Ini ) ){
+		return false;
+	}
 	
 	// DSK60
 	Ini->GetVal( "P66DISK", "mdisk_PD_ATN",		mdisk.PD_ATN );
@@ -2103,7 +2134,9 @@ bool DSK60::DokoLoad( cIni* Ini )
 
 bool DSK66::DokoLoad( cIni* Ini )
 {
-	if( !Ini || !DSK6::DokoLoad( Ini ) ) return false;
+	if( !Ini || !DSK6::DokoLoad( Ini ) ){
+		return false;
+	}
 	
 	// DSK66
 	for( int i = 0; i < 10; i++ ){

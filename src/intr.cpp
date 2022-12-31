@@ -534,7 +534,9 @@ BYTE IRQ64::InFBH( int )
 /////////////////////////////////////////////////////////////////////////////
 bool IRQ6::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "INTR", "IntrFlag",		"", "0x%08X", IntrFlag );
 	Ini->SetVal( "INTR", "TimerIntrEnable",	"", TimerIntrEnable );
@@ -561,7 +563,9 @@ bool IRQ6::DokoSave( cIni* Ini )
 /////////////////////////////////////////////////////////////////////////////
 bool IRQ6::DokoLoad( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->GetVal( "INTR", "IntrFlag",		IntrFlag );
 	Ini->GetVal( "INTR", "TimerIntrEnable",	TimerIntrEnable );

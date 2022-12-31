@@ -10,6 +10,7 @@
 #include "typedef.h"
 #include "device.h"
 #include "ini.h"
+#include "semaphore.h"
 #include "sound.h"
 #include "device/ay8910.h"
 #include "device/ym2203.h"
@@ -23,6 +24,8 @@ class PSGb : public Device, public SndDev, public IDoko {
 protected:
 	BYTE JoyNo;		// 読取るジョイスティックの番号(0-1)
 	int Clock;		// クロック
+	int Smpls;		// 生成サンプル数カウンタ
+	mutable cMutex Mutex;
 	
 	int GetUpdateSamples();						// 更新サンプル数取得
 	

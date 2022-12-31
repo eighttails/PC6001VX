@@ -28,6 +28,7 @@ int KeyStateWatcher::GetModifierStatus()
 	if (ON_KANA)	ret |= KANA;
 	if (ON_KKANA)	ret |= KKANA;
 	if (ON_CAPS)	ret |= CAPS;
+	if (ON_ROMAJI)	ret |= ROMAJI;
 
 	return ret;
 }
@@ -55,6 +56,9 @@ void KeyStateWatcher::poll()
 	if(bool(keyStatus & KI_CAPS) != this->ON_CAPS)		changed = true;
 	this->ON_CAPS = bool(keyStatus & KI_CAPS);
 
+	if(bool(keyStatus & KI_ROMAJI) != this->ON_ROMAJI)	changed = true;
+	this->ON_ROMAJI = bool(keyStatus & KI_ROMAJI);
+
 	auto joyKeyStatus = Key->GetKeyJoy();
 	if (joyKeyStatus & 0b00100000){
 		TiltScreen(TiltDirection::LEFT);
@@ -72,6 +76,7 @@ void KeyStateWatcher::poll()
 					ON_GRAPH,
 					ON_KANA,
 					ON_KKANA,
-					ON_CAPS);
+					ON_CAPS,
+					ON_ROMAJI);
 	}
 }

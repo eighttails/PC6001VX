@@ -563,8 +563,11 @@ void cWndReg::Update( void )
 			
 			if( min ){
 				ZCons::SetColor( FC_WHITE4 );
-				if( el->vm->iom->PeepIn ( p ) < 0 ){ ZCons::Printf( "??" ); }
-				else							   { ZCons::Printf( "%02X", el->vm->iom->PeepIn ( p ) ); }
+				if( el->vm->iom->PeepIn ( p ) < 0 ){
+					ZCons::Printf( "??" );
+				}else{
+					ZCons::Printf( "%02X", el->vm->iom->PeepIn ( p ) );
+				}
 			}else{
 				ZCons::SetColor( FC_WHITE1 );
 				ZCons::Printf( "--" );
@@ -575,8 +578,11 @@ void cWndReg::Update( void )
 			
 			if( mout ){
 				ZCons::SetColor( FC_WHITE4 );
-				if( el->vm->iom->PeepOut( p ) < 0 ){ ZCons::Printf( "??" ); }
-				else							   { ZCons::Printf( "%02X", el->vm->iom->PeepOut( p ) ); }
+				if( el->vm->iom->PeepOut( p ) < 0 ){
+					ZCons::Printf( "??" );
+				}else{
+					ZCons::Printf( "%02X", el->vm->iom->PeepOut( p ) );
+				}
 			}else{
 				ZCons::SetColor( FC_WHITE1 );
 				ZCons::Printf( "--" );
@@ -896,7 +902,9 @@ void cWndMon::KeyIn( int kcode, int ccode )
 		
 	case KVC_UP:			// 上矢印
 	case KVC_DOWN:			// 下矢印
-		if( !HisBuf.size() ) break;
+		if( !HisBuf.size() ){
+			break;
+		}
 		
 		if( LastKey == KVC_UP || LastKey == KVC_DOWN ){
 			if( kcode == KVC_UP   && HisLevel < (int)HisBuf.size() ){ HisLevel++; }
@@ -989,8 +997,9 @@ int cWndMon::GetArg( void )
 		}
 	}
 	
-	if( !Argv.size() )	// 空行?
+	if( !Argv.size() ){	// 空行?
 		return MONITOR_NONE;
+	}
 	
 	// 有効命令探す
 	for( auto &m : MonitorCmd ){
@@ -1131,7 +1140,7 @@ void cWndMon::Exec( int cmd )
 				}
 				i++;
 			}
-			if( i == MonitorCmd.size() ) ErrorMes();
+			if( i == MonitorCmd.size() ){ ErrorMes(); }
 		}
 		
 		break;
@@ -1142,7 +1151,7 @@ void cWndMon::Exec( int cmd )
 	//	 実行
 	//-----------------------------------------------------------------------
 	{
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		OSD_PushEvent( EV_DEBUGMODETOGGLE );
 		
@@ -1165,7 +1174,7 @@ void cWndMon::Exec( int cmd )
 			Shift();
 		}
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		
 		while( step-- ){
@@ -1176,8 +1185,8 @@ void cWndMon::Exec( int cmd )
 			}
 		}
 		
-//		if( CheckBreakPointPC() ) set_emumode( TRACE_BP );
-//		else                      set_emumode( M_TRACE );
+//		if( CheckBreakPointPC() ){ set_emumode( TRACE_BP ); }
+//		else                     { set_emumode( M_TRACE );  }
 		
 		break;
 	}
@@ -1209,7 +1218,7 @@ void cWndMon::Exec( int cmd )
 			}
 		}
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		el->vm->cpum->GetRegister( reg );
 		
@@ -1260,7 +1269,7 @@ void cWndMon::Exec( int cmd )
 		cZ80::Register reg;
 		int st = -1;
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		el->vm->cpum->GetRegister( reg );
 		
@@ -1317,7 +1326,7 @@ void cWndMon::Exec( int cmd )
 			switch( action ){
 			case ARG_IN:
 			case ARG_OUT:
-				if( !ArgvIs( ARGV_PORT ) ) ErrorMes();
+				if( !ArgvIs( ARGV_PORT ) ){ ErrorMes(); }
 				addr = argv.Val;
 				Shift();
 				break;
@@ -1325,7 +1334,7 @@ void cWndMon::Exec( int cmd )
 			case ARG_READ:
 			case ARG_WRITE:
 			case ARG_INTR:
-				if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
+				if( !ArgvIs( ARGV_ADDR ) ){ ErrorMes(); }
 				addr = argv.Val;
 				Shift();
 				break;
@@ -1333,8 +1342,8 @@ void cWndMon::Exec( int cmd )
 			
 			// [#<No>]
 			if( argv.Type != ARGV_END ){
-				if( !ArgvIs( ARGV_SIZE ) ) ErrorMes();
-				if( argv.Val < 1 || argv.Val > el->vm->bp->GetNum() ) ErrorMes();
+				if( !ArgvIs( ARGV_SIZE ) ){ ErrorMes(); }
+				if( argv.Val < 1 || argv.Val > el->vm->bp->GetNum() ){ ErrorMes(); }
 				number = argv.Val;
 				Shift();
 			}
@@ -1342,7 +1351,7 @@ void cWndMon::Exec( int cmd )
 			show = true;
 		}
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		
 		if( show ){
@@ -1403,19 +1412,19 @@ void cWndMon::Exec( int cmd )
 	//  特定のアドレスにライト
 	//-----------------------------------------------------------------------
 	{
-		if( argv.Type == ARGV_END ) ErrorMes();
+		if( argv.Type == ARGV_END ){ ErrorMes(); }
 		
 		// <addr>
-		if( !ArgvIs( ARGV_ADDR )) ErrorMes();
+		if( !ArgvIs( ARGV_ADDR )){ ErrorMes(); }
 		WORD addr = argv.Val;
 		Shift();
 		
 		// <data>
-		if( !ArgvIs( ARGV_INT )) ErrorMes();
+		if( !ArgvIs( ARGV_INT )){ ErrorMes(); }
 		BYTE data = argv.Val;
 		Shift();
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		el->vm->mem->Write( addr, data );
 		
@@ -1438,10 +1447,10 @@ void cWndMon::Exec( int cmd )
 	{
 		int start, size, value;
 		
-		if( argv.Type == ARGV_END ) ErrorMes();
+		if( argv.Type == ARGV_END ){ ErrorMes(); }
 		
 		// <addr>
-		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
+		if( !ArgvIs( ARGV_ADDR ) ){ ErrorMes(); }
 		start = argv.Val;
 		Shift();
 		
@@ -1452,11 +1461,11 @@ void cWndMon::Exec( int cmd )
 		Shift();
 		
 		// <data>
-		if( !ArgvIs( ARGV_INT )) ErrorMes();
+		if( !ArgvIs( ARGV_INT )){ ErrorMes(); }
 		value = argv.Val;
 		Shift();
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		for( int i = 0; i < size; i++ ){
 			el->vm->mem->Write( start+i, value );
@@ -1474,10 +1483,10 @@ void cWndMon::Exec( int cmd )
 	{
 		int start, size, dist;
 		
-		if( argv.Type == ARGV_END ) ErrorMes();
+		if( argv.Type == ARGV_END ){ ErrorMes(); }
 		
 		// <addr>
-		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
+		if( !ArgvIs( ARGV_ADDR ) ){ ErrorMes(); }
 		start = argv.Val;
 		Shift();
 		
@@ -1488,11 +1497,11 @@ void cWndMon::Exec( int cmd )
 		Shift();
 		
 		// <addr>
-		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
+		if( !ArgvIs( ARGV_ADDR ) ){ ErrorMes(); }
 		dist = argv.Val;
 		Shift();
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		// 転送元-転送先が 重ならない
 		if( start + size <= dist ){
@@ -1522,19 +1531,19 @@ void cWndMon::Exec( int cmd )
 	//  特定のポートに出力
 	//-----------------------------------------------------------------------
 	{
-		if( argv.Type == ARGV_END ) ErrorMes();
+		if( argv.Type == ARGV_END ){ ErrorMes(); }
 		
 		// <port>
-		if( !ArgvIs( ARGV_PORT )) ErrorMes();
+		if( !ArgvIs( ARGV_PORT )){ ErrorMes(); }
 		WORD port = argv.Val;
 		Shift();
 		
 		// <data>
-		if( !ArgvIs( ARGV_INT )) ErrorMes();
+		if( !ArgvIs( ARGV_INT )){ ErrorMes(); }
 		BYTE data = argv.Val;
 		Shift();
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		el->vm->iom->Out( port, data );
 		
@@ -1558,15 +1567,15 @@ void cWndMon::Exec( int cmd )
 		std::fstream fs;
 		int start,size;
 		
-		if( argv.Type == ARGV_END ) ErrorMes();
+		if( argv.Type == ARGV_END ){ ErrorMes(); }
 		
 		// <filename>
-		if( !ArgvIs( ARGV_STR ) ) ErrorMes();
+		if( !ArgvIs( ARGV_STR ) ){ ErrorMes(); }
 		P6VPATH fname = STR2P6VPATH( argv.Str );
 		Shift();
 		
 		// <addr>
-		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
+		if( !ArgvIs( ARGV_ADDR ) ){ ErrorMes(); }
 		start = argv.Val;
 		Shift();
 		
@@ -1576,7 +1585,7 @@ void cWndMon::Exec( int cmd )
 		else                          { ErrorMes(); }
 		Shift();
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		if( !OSD_FSopen( fs, fname, std::ios_base::in | std::ios_base::binary ) ){
 			ZCons::SetColor( FC_RED4 );
@@ -1605,15 +1614,15 @@ void cWndMon::Exec( int cmd )
 		std::fstream fs;
 		int start,size;
 		
-		if( argv.Type == ARGV_END ) ErrorMes();
+		if( argv.Type == ARGV_END ){ ErrorMes(); }
 		
 		// <filename>
-		if( !ArgvIs( ARGV_STR ) ) ErrorMes();
+		if( !ArgvIs( ARGV_STR ) ){ ErrorMes(); }
 		P6VPATH fname = STR2P6VPATH( argv.Str );
 		Shift();
 		
 		// <addr>
-		if( !ArgvIs( ARGV_ADDR ) ) ErrorMes();
+		if( !ArgvIs( ARGV_ADDR ) ){ ErrorMes(); }
 		start = argv.Val;
 		Shift();
 		
@@ -1623,7 +1632,7 @@ void cWndMon::Exec( int cmd )
 		else                          { ErrorMes(); }
 		Shift();
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		if( !OSD_FSopen( fs, fname, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc ) ){
 			ZCons::SetColor( FC_RED4 );
@@ -1647,7 +1656,7 @@ void cWndMon::Exec( int cmd )
 	//  reset
 	//	リセット
 	//-----------------------------------------------------------------------
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		el->vm->Reset();
 		
 		break;
@@ -1661,16 +1670,16 @@ void cWndMon::Exec( int cmd )
 		std::string str = "XX";
 		cZ80::Register reg;
 		
-		if( argv.Type == ARGV_END ) ErrorMes();
+		if( argv.Type == ARGV_END ){ ErrorMes(); }
 		
-		if( !ArgvIs( ARGV_REG ) ) ErrorMes();		// <name>
+		if( !ArgvIs( ARGV_REG ) ){ ErrorMes(); }	// <name>
 		re = argv.Val;
 		Shift();
-		if( !ArgvIs( ARGV_INT ) ) ErrorMes();		// <value>
+		if( !ArgvIs( ARGV_INT ) ){ ErrorMes(); }	// <value>
 		val = argv.Val;
 		Shift();
 		
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		el->vm->cpum->GetRegister( reg );
 		
@@ -1689,9 +1698,9 @@ void cWndMon::Exec( int cmd )
 		case ARG_HL1:	reg.HL1.W = val;		break;
 		case ARG_I:		val &= 0xff; reg.I = val;			break;
 		case ARG_R:		val &= 0xff; reg.R = val;			break;
-		case ARG_IFF:	if(val)    { val = 1; reg.IFF  = val; }	break;
-		case ARG_IM:	if(val > 3){ val = 2; reg.IM   = val; }	break;
-		case ARG_HALT:	if(val)    { val = 1; reg.Halt = val; }	break;
+		case ARG_IFF:	if( val )    { val = 1; reg.IFF  = val; }	break;
+		case ARG_IM:	if( val > 3 ){ val = 2; reg.IM   = val; }	break;
+		case ARG_HALT:	if( val )    { val = 1; reg.Halt = val; }	break;
 		}
 		
 		el->vm->cpum->SetRegister( reg );
@@ -1729,7 +1738,7 @@ void cWndMon::Exec( int cmd )
 				Shift();
 			}
 		}
-		if( argv.Type != ARGV_END ) ErrorMes();
+		if( argv.Type != ARGV_END ){ ErrorMes(); }
 		
 		el->vm->cpum->GetRegister( reg );
 		if( addr == -1 ){

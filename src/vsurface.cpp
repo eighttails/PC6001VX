@@ -36,7 +36,9 @@ VSurface::~VSurface( void )
 /////////////////////////////////////////////////////////////////////////////
 void VSurface::RectAdd( VRect* rr, VRect* r1, VRect* r2 )
 {
-	if( !rr || !r1 || !r2 ) return;
+	if( !rr || !r1 || !r2 ){
+		return;
+	}
 	
 	int x1 = max( r1->x, r2->x );
 	int y1 = max( r1->y, r2->y );
@@ -61,7 +63,9 @@ void VSurface::RectAdd( VRect* rr, VRect* r1, VRect* r2 )
 bool VSurface::InitSurface( int ww, int hh )
 {
 	// 作成済み かつ サイズ同じならそのまま戻る
-	if( w == ww && h == hh ) return true;
+	if( w == ww && h == hh ){
+		return true;
+	}
 	
 	// 作成済みならいったん開放
 	w = h = pitch = rect.x = rect.y = rect.w = rect.h = 0;
@@ -215,7 +219,9 @@ void VSurface::Fill( BYTE col, VRect* rc )
 {
 	VRect rr;
 	
-	if( pixels.empty() ) return;
+	if( pixels.empty() ){
+		return;
+	}
 	
 	if( rc ){
 		RectAdd( &rr, &rect, rc );
@@ -251,7 +257,9 @@ void VSurface::Blit( VRect* srect, VSurface* dst, VRect* drect )
 {
 	VRect src1,drc1,src2,drc2;
 	
-	if( pixels.empty() || !dst ) return;
+	if( pixels.empty() || !dst ){
+		return;
+	}
 	
 	// 転送元範囲設定
 	src1.x = srect ? srect->x : 0;
@@ -267,10 +275,12 @@ void VSurface::Blit( VRect* srect, VSurface* dst, VRect* drect )
 	drc1.h = src2.h;
 	RectAdd( &drc2, &drc1, dst->GetRect() );
 	
-	if( src2.w > drc2.w ) src2.w = drc2.w;
-	if( src2.h > drc2.h ) src2.h = drc2.h;
+	if( src2.w > drc2.w ){ src2.w = drc2.w; }
+	if( src2.h > drc2.h ){ src2.h = drc2.h; }
 	
-	if( !src2.w || !src2.h || !drc2.w || !drc2.h ) return;
+	if( !src2.w || !src2.h || !drc2.w || !drc2.h ){
+		return;
+	}
 	
 	auto psrc = pixels.begin()           + src2.y * pitch        + src2.x;
 	auto pdst = dst->GetPixels().begin() + drc2.y * dst->Pitch() + drc2.x;

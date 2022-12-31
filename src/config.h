@@ -44,6 +44,7 @@ typedef enum {
 // 設定項目(bool)
 typedef enum {
 	CB_CheckCRC = 0,
+	CB_Romaji,
 	CB_FDDWait,
 	CB_TurboTAPE,
 	CB_BoostUp,

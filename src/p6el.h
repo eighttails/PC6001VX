@@ -82,7 +82,9 @@ protected:
 	
 	bool ScreenUpdate();								// 画面更新
 	int SoundUpdate( int, cRing* = nullptr );			// サウンド更新
+	#ifndef NOCALLBACK	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	static void StreamUpdate( void*, BYTE*, int );		// ストリーム更新 コールバック関数
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	static DWORD UpDateFPS( DWORD, void* );				// FPS表示タイマ コールバック関数
 	bool StartFPSTimer();								// FPS表示タイマ開始
 	void StopFPSTimer();								// FPS表示タイマ停止
@@ -109,7 +111,7 @@ protected:
 	};
 	AKEY ak;					// 自動キー入力情報
 	
-	char GetAutoKey();									// 自動キー入力1文字取得
+	WORD GetAutoKey();									// 自動キー入力1文字取得
 	
 	
 	// UI関連
@@ -155,6 +157,7 @@ protected:
 	void UI_Mode4Color( int );										// UI:MODE4カラー変更
 	void UI_FrameSkip( int );										// UI:フレームスキップ変更
 	void UI_SampleRate( int );										// UI:サンプリングレート変更
+	void UI_Romaji();												// UI:ローマ字入力切換
 	#ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	void UI_Monitor();												// UI:モニタモード切替え
 	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -178,7 +181,7 @@ protected:
 	
 	bool IsAutoKey();										// 自動キー入力実行中?
 	bool SetAutoKeyFile( const P6VPATH& );					// 自動キー入力文字列設定(ファイルから)
-	bool SetAutoKey( const std::string& );					// 自動キー入力文字列設定
+	bool SetAutoKey( const std::string&, int = 60 );		// 自動キー入力文字列設定
 	void SetAutoStart();									// オートスタート文字列設定
 	
 	void SetPalette();										// パレット設定

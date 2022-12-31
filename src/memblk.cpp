@@ -101,7 +101,9 @@ BYTE MemCell::Read( WORD addr ) const
 /////////////////////////////////////////////////////////////////////////////
 void MemCell::Write( WORD addr, BYTE data )
 {
-	if( WPt ) return;
+	if( WPt ){
+		return;
+	}
 	
 	try{
 		Data.at( addr & PAGEMASK ) = data;

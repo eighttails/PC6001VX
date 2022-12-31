@@ -78,7 +78,9 @@ bool DeviceList::Add( const std::shared_ptr<IDevice>& t )
 	ID id;
 	Node n = { t, 0 };
 	
-	if( !n.entry || !(id = n.entry->GetID()) ) return false;
+	if( !n.entry || !(id = n.entry->GetID()) ){
+		return false;
+	}
 	
 	auto p = NodeMap.emplace( id, std::move( n ) );
 	// p.first  : 要素へのイテレータ
@@ -95,7 +97,7 @@ bool DeviceList::Del( const ID id )
 {
 	try{
 		Node& n = NodeMap.at( id );
-		if( !--n.count ) NodeMap.erase( id );
+		if( !--n.count ){ NodeMap.erase( id ); }
 		return true;
 	}
 	catch( std::out_of_range& ){

@@ -9,6 +9,7 @@
 
 #include "typedef.h"
 #include "ini.h"
+#include "semaphore.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -19,7 +20,8 @@ protected:
 	DWORD RepST;				// ステータス
 	DWORD RepFrm;				// フレームNo.カウンタ
 	DWORD EndFrm;				// リプレイ終了フレーム
-	
+	mutable cRecursiveMutex Mutex;
+
 public:
 	REPLAY();
 	~REPLAY();
@@ -29,14 +31,13 @@ public:
 	DWORD GetStatus() const;									// ステータス取得
 	
 	bool StartRecord( const P6VPATH& );							// リプレイ記録開始
-	bool ResumeRecord( const P6VPATH&, int );					// リプレイ記録再開
+	bool ResumeRecord( const P6VPATH&, DWORD );					// リプレイ記録再開
 	void StopRecord();											// リプレイ記録停止
-	bool ReplayWriteFrame( const std::vector<BYTE>&, bool );	// リプレイ1フレーム書出し
+	bool ReplayWriteFrame( const std::vector<BYTE>& );			// リプレイ1フレーム書出し
 	
 	bool StartReplay( const P6VPATH& );							// リプレイ再生開始
 	void StopReplay();											// リプレイ再生止
 	bool ReplayReadFrame( std::vector<BYTE>& );					// リプレイ1フレーム読込み
-	
 };
 
 

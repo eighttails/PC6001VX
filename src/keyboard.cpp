@@ -2,20 +2,294 @@
 //  P C 6 0 0 1 V
 //  Copyright 1999,2022 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
+#include <array>
+
 #include "common.h"
 #include "config.h"
 #include "log.h"
 #include "keyboard.h"
 #include "osd.h"
 #include "p6vm.h"
+#include "pc6001v.h"
 
 
-#define	NOM	( (int)P6Matrix.size() / 2 )
+#define	NOM	16
+
+
+// 文字コード -> P6キースキャンコード定義
+static const std::map<WORD, P6KeyScan> P6KeyScanTable =
+{
+	{ 0x09,		{ KP6_TAB,			KVM_NONE } }, 	// TAB
+	{ 0x0d,		{ KP6_RETURN,		KVM_NONE } }, 	// CR
+	{ 0x12,		{ KP6_KANA,			KVM_NONE } }, 	// かな
+	{ 0x13,		{ KP6_PAGE,			KVM_LSHIFT } }, // かなカナ
+	
+	{ 0x1401,	{ KP6_2,			KVM_LALT } }, 	// 月
+	{ 0x1402,	{ KP6_3,			KVM_LALT } }, 	// 火
+	{ 0x1403,	{ KP6_4,			KVM_LALT } }, 	// 水
+	{ 0x1404,	{ KP6_5,			KVM_LALT } }, 	// 木
+	{ 0x1405,	{ KP6_6,			KVM_LALT } }, 	// 金
+	{ 0x1406,	{ KP6_7,			KVM_LALT } }, 	// 土
+	{ 0x1407,	{ KP6_1,			KVM_LALT } }, 	// 日
+	{ 0x1408,	{ KP6_Y,			KVM_LALT } }, 	// 年
+	{ 0x1409,	{ KP6_YEN,			KVM_LALT } }, 	// 円
+	{ 0x140a,	{ KP6_H,			KVM_LALT } }, 	// 時
+	{ 0x140b,	{ KP6_M,			KVM_LALT } }, 	// 分
+	{ 0x140c,	{ KP6_HOME,			KVM_LALT } }, 	// 秒
+	{ 0x140d,	{ KP6_8,			KVM_LALT } }, 	// 百
+	{ 0x140e,	{ KP6_9,			KVM_LALT } }, 	// 千
+	{ 0x140f,	{ KP6_0,			KVM_LALT } }, 	// 万
+	
+	{ 0x1410,	{ KP6_P,			KVM_LALT } }, 	// π
+	{ 0x1411,	{ KP6_V,			KVM_LALT } }, 	// ┻
+	{ 0x1412,	{ KP6_R,			KVM_LALT } }, 	// ┳
+	{ 0x1413,	{ KP6_G,			KVM_LALT } }, 	// ┫
+	{ 0x1414,	{ KP6_D,			KVM_LALT } }, 	// ┣
+	{ 0x1415,	{ KP6_F,			KVM_LALT } }, 	// ╋
+	{ 0x1416,	{ KP6_I,			KVM_LALT } }, 	// ┃
+	{ 0x1417,	{ KP6_MINUS,		KVM_LALT } }, 	// ━
+	{ 0x1418,	{ KP6_E,			KVM_LALT } }, 	// ┏
+	{ 0x1419,	{ KP6_T,			KVM_LALT } }, 	// ┓
+	{ 0x141a,	{ KP6_C,			KVM_LALT } }, 	// ┗
+	{ 0x141b,	{ KP6_B,			KVM_LALT } }, 	// ┛
+	{ 0x141c,	{ KP6_X,			KVM_LALT } }, 	// ×
+	{ 0x141d,	{ KP6_PERIOD,		KVM_LALT } }, 	// 大
+	{ 0x141e,	{ KP6_L,			KVM_LALT } }, 	// 中
+	{ 0x141f,	{ KP6_COMMA,		KVM_LALT } }, 	// 小
+	
+	{ ' ',		{ KP6_SPACE,		KVM_LSHIFT } },
+	{ '!',		{ KP6_1,			KVM_LSHIFT } },
+	{ '"',		{ KP6_2,			KVM_LSHIFT } },
+	{ '#',		{ KP6_3,			KVM_LSHIFT } },
+	{ '$',		{ KP6_4,			KVM_LSHIFT } },
+	{ '%',		{ KP6_5,			KVM_LSHIFT } },
+	{ '&',		{ KP6_6,			KVM_LSHIFT } },
+	{ '\'',		{ KP6_7,			KVM_LSHIFT } },
+	{ '(',		{ KP6_8,			KVM_LSHIFT } },
+	{ ')',		{ KP6_9,			KVM_LSHIFT } },
+	{ '*',		{ KP6_COLON,		KVM_LSHIFT } },
+	{ '+',		{ KP6_SEMICOLON,	KVM_LSHIFT } },
+	{ ',',		{ KP6_COMMA,		KVM_NONE } },
+	{ '-',		{ KP6_MINUS,		KVM_NONE } },
+	{ '.',		{ KP6_PERIOD,		KVM_NONE } },
+	{ '/',		{ KP6_SLASH,		KVM_NONE } },
+	
+	{ '0',		{ KP6_0,			KVM_NONE } },
+	{ '1',		{ KP6_1,			KVM_NONE } },
+	{ '2',		{ KP6_2,			KVM_NONE } },
+	{ '3',		{ KP6_3,			KVM_NONE } },
+	{ '4',		{ KP6_4,			KVM_NONE } },
+	{ '5',		{ KP6_5,			KVM_NONE } },
+	{ '6',		{ KP6_6,			KVM_NONE } },
+	{ '7',		{ KP6_7,			KVM_NONE } },
+	{ '8',		{ KP6_8,			KVM_NONE } },
+	{ '9',		{ KP6_9,			KVM_NONE } },
+	{ ':',		{ KP6_COLON,		KVM_NONE } },
+	{ ';',		{ KP6_SEMICOLON,	KVM_NONE } },
+	{ '<',		{ KP6_COMMA,		KVM_LSHIFT } },
+	{ '=',		{ KP6_MINUS,		KVM_LSHIFT } },
+	{ '>',		{ KP6_PERIOD,		KVM_LSHIFT } },
+	{ '?',		{ KP6_SLASH,		KVM_LSHIFT } },
+	
+	{ '@',		{ KP6_AT,			KVM_NONE } },
+	{ 'A',		{ KP6_A,			KVM_LSHIFT } },
+	{ 'B',		{ KP6_B,			KVM_LSHIFT } },
+	{ 'C',		{ KP6_C,			KVM_LSHIFT } },
+	{ 'D',		{ KP6_D,			KVM_LSHIFT } },
+	{ 'E',		{ KP6_E,			KVM_LSHIFT } },
+	{ 'F',		{ KP6_F,			KVM_LSHIFT } },
+	{ 'G',		{ KP6_G,			KVM_LSHIFT } },
+	{ 'H',		{ KP6_H,			KVM_LSHIFT } },
+	{ 'I',		{ KP6_I,			KVM_LSHIFT } },
+	{ 'J',		{ KP6_J,			KVM_LSHIFT } },
+	{ 'K',		{ KP6_K,			KVM_LSHIFT } },
+	{ 'L',		{ KP6_L,			KVM_LSHIFT } },
+	{ 'M',		{ KP6_M,			KVM_LSHIFT } },
+	{ 'N',		{ KP6_N,			KVM_LSHIFT } },
+	{ 'O',		{ KP6_O,			KVM_LSHIFT } },
+	
+	{ 'P',		{ KP6_P,			KVM_LSHIFT } },
+	{ 'Q',		{ KP6_Q,			KVM_LSHIFT } },
+	{ 'R',		{ KP6_R,			KVM_LSHIFT } },
+	{ 'S',		{ KP6_S,			KVM_LSHIFT } },
+	{ 'T',		{ KP6_T,			KVM_LSHIFT } },
+	{ 'U',		{ KP6_U,			KVM_LSHIFT } },
+	{ 'V',		{ KP6_V,			KVM_LSHIFT } },
+	{ 'W',		{ KP6_W,			KVM_LSHIFT } },
+	{ 'X',		{ KP6_X,			KVM_LSHIFT } },
+	{ 'Y',		{ KP6_Y,			KVM_LSHIFT } },
+	{ 'Z',		{ KP6_Z,			KVM_LSHIFT } },
+	{ '[',		{ KP6_LBRACKET,		KVM_NONE } },
+	{ '\\',		{ KP6_YEN,			KVM_NONE } },
+	{ ']',		{ KP6_RBRACKET,		KVM_NONE } },
+	{ '^',		{ KP6_CARET,		KVM_NONE } },
+	{ '_',		{ KP6_UNDERSCORE,	KVM_LSHIFT } },
+	
+	{ 'a',		{ KP6_A,			KVM_NONE } },
+	{ 'b',		{ KP6_B,			KVM_NONE } },
+	{ 'c',		{ KP6_C,			KVM_NONE } },
+	{ 'd',		{ KP6_D,			KVM_NONE } },
+	{ 'e',		{ KP6_E,			KVM_NONE } },
+	{ 'f',		{ KP6_F,			KVM_NONE } },
+	{ 'g',		{ KP6_G,			KVM_NONE } },
+	{ 'h',		{ KP6_H,			KVM_NONE } },
+	{ 'i',		{ KP6_I,			KVM_NONE } },
+	{ 'j',		{ KP6_J,			KVM_NONE } },
+	{ 'k',		{ KP6_K,			KVM_NONE } },
+	{ 'l',		{ KP6_L,			KVM_NONE } },
+	{ 'm',		{ KP6_M,			KVM_NONE } },
+	{ 'n',		{ KP6_N,			KVM_NONE } },
+	{ 'o',		{ KP6_O,			KVM_NONE } },
+	
+	{ 'p',		{ KP6_P,			KVM_NONE } },
+	{ 'q',		{ KP6_Q,			KVM_NONE } },
+	{ 'r',		{ KP6_R,			KVM_NONE } },
+	{ 's',		{ KP6_S,			KVM_NONE } },
+	{ 't',		{ KP6_T,			KVM_NONE } },
+	{ 'u',		{ KP6_U,			KVM_NONE } },
+	{ 'v',		{ KP6_V,			KVM_NONE } },
+	{ 'w',		{ KP6_W,			KVM_NONE } },
+	{ 'x',		{ KP6_X,			KVM_NONE } },
+	{ 'y',		{ KP6_Y,			KVM_NONE } },
+	{ 'z',		{ KP6_Z,			KVM_NONE } },
+	
+	{ 0x80,		{ KP6_SLASH,		KVM_LALT } },	// ♠
+	{ 0x81,		{ KP6_COLON,		KVM_LALT } },	// ♥
+	{ 0x82,		{ KP6_SEMICOLON,	KVM_LALT } },	// ♣
+	{ 0x83,		{ KP6_UNDERSCORE,	KVM_LALT } },	// ♦
+	{ 0x84,		{ KP6_LBRACKET,		KVM_LALT } },	// ○
+	{ 0x85,		{ KP6_RBRACKET,		KVM_LALT } },	// ●
+	{ 0x86,		{ KP6_0,			KVM_LSHIFT } },	// を
+	{ 0x87,		{ KP6_3,			KVM_LSHIFT } },	// ぁ
+	{ 0x88,		{ KP6_E,			KVM_LSHIFT } },	// ぃ
+	{ 0x89,		{ KP6_4,			KVM_LSHIFT } },	// ぅ
+	{ 0x8a,		{ KP6_5,			KVM_LSHIFT } },	// ぇ
+	{ 0x8b,		{ KP6_6,			KVM_LSHIFT } },	// ぉ
+	{ 0x8c,		{ KP6_7,			KVM_LSHIFT } },	// ゃ
+	{ 0x8d,		{ KP6_8,			KVM_LSHIFT } },	// ゅ
+	{ 0x8e,		{ KP6_9,			KVM_LSHIFT } },	// ょ
+	{ 0x8f,		{ KP6_Z,			KVM_LSHIFT } },	// っ
+	
+	{ 0x91,		{ KP6_3,			KVM_NONE } },	// あ
+	{ 0x92,		{ KP6_E,			KVM_NONE } },	// い
+	{ 0x93,		{ KP6_4,			KVM_NONE } },	// う
+	{ 0x94,		{ KP6_5,			KVM_NONE } },	// え
+	{ 0x95,		{ KP6_6,			KVM_NONE } },	// お
+	{ 0x96,		{ KP6_T,			KVM_NONE } },	// か
+	{ 0x97,		{ KP6_G,			KVM_NONE } },	// き
+	{ 0x98,		{ KP6_H,			KVM_NONE } },	// く
+	{ 0x99,		{ KP6_COLON,		KVM_NONE } },	// け
+	{ 0x9a,		{ KP6_B,			KVM_NONE } },	// こ
+	{ 0x9b,		{ KP6_X,			KVM_NONE } },	// さ
+	{ 0x9c,		{ KP6_D,			KVM_NONE } },	// し
+	{ 0x9d,		{ KP6_R,			KVM_NONE } },	// す
+	{ 0x9e,		{ KP6_P,			KVM_NONE } },	// せ
+	{ 0x9f,		{ KP6_C,			KVM_NONE } },	// そ
+	
+	{ 0xa1,		{ KP6_PERIOD,		KVM_LSHIFT } },	// 。
+	{ 0xa2,		{ KP6_LBRACKET,		KVM_LSHIFT } },	// 「
+	{ 0xa3,		{ KP6_RBRACKET,		KVM_LSHIFT } },	// 」
+	{ 0xa4,		{ KP6_COMMA,		KVM_LSHIFT } },	// 、
+	{ 0xa5,		{ KP6_SLASH,		KVM_LSHIFT } },	// ・
+	{ 0xa6,		{ KP6_0,			KVM_LSHIFT } },	// ヲ
+	{ 0xa7,		{ KP6_3,			KVM_LSHIFT } },	// ァ
+	{ 0xa8,		{ KP6_E,			KVM_LSHIFT } },	// ィ
+	{ 0xa9,		{ KP6_4,			KVM_LSHIFT } },	// ゥ
+	{ 0xaa,		{ KP6_5,			KVM_LSHIFT } },	// ェ
+	{ 0xab,		{ KP6_6,			KVM_LSHIFT } },	// ォ
+	{ 0xac,		{ KP6_7,			KVM_LSHIFT } },	// ャ
+	{ 0xad,		{ KP6_8,			KVM_LSHIFT } },	// ュ
+	{ 0xae,		{ KP6_9,			KVM_LSHIFT } },	// ョ
+	{ 0xaf,		{ KP6_Z,			KVM_LSHIFT } },	// ッ
+	
+	{ 0xb0,		{ KP6_YEN,			KVM_NONE} },	// ー
+	{ 0xb1,		{ KP6_3,			KVM_NONE} },	// ア
+	{ 0xb2,		{ KP6_E,			KVM_NONE} },	// イ
+	{ 0xb3,		{ KP6_4,			KVM_NONE} },	// ウ
+	{ 0xb4,		{ KP6_5,			KVM_NONE} },	// エ
+	{ 0xb5,		{ KP6_6,			KVM_NONE} },	// オ
+	{ 0xb6,		{ KP6_T,			KVM_NONE} },	// カ
+	{ 0xb7,		{ KP6_G,			KVM_NONE} },	// キ
+	{ 0xb8,		{ KP6_H,			KVM_NONE} },	// ク
+	{ 0xb9,		{ KP6_COLON,		KVM_NONE} },	// ケ
+	{ 0xba,		{ KP6_B,			KVM_NONE} },	// コ
+	{ 0xbb,		{ KP6_X,			KVM_NONE} },	// サ
+	{ 0xbc,		{ KP6_D,			KVM_NONE} },	// シ
+	{ 0xbd,		{ KP6_R,			KVM_NONE} },	// ス
+	{ 0xbe,		{ KP6_P,			KVM_NONE} },	// セ
+	{ 0xbf,		{ KP6_C,			KVM_NONE} },	// ソ
+	
+	{ 0xc0,		{ KP6_Q,			KVM_NONE} },	// タ
+	{ 0xc1,		{ KP6_A,			KVM_NONE} },	// チ
+	{ 0xc2,		{ KP6_Z,			KVM_NONE} },	// ツ
+	{ 0xc3,		{ KP6_W,			KVM_NONE} },	// テ
+	{ 0xc4,		{ KP6_S,			KVM_NONE} },	// ト
+	{ 0xc5,		{ KP6_U,			KVM_NONE} },	// ナ
+	{ 0xc6,		{ KP6_I,			KVM_NONE} },	// ニ
+	{ 0xc7,		{ KP6_1,			KVM_NONE} },	// ヌ
+	{ 0xc8,		{ KP6_COMMA,		KVM_NONE} },	// ネ
+	{ 0xc9,		{ KP6_K,			KVM_NONE} },	// ノ
+	{ 0xca,		{ KP6_F,			KVM_NONE} },	// ハ
+	{ 0xcb,		{ KP6_V,			KVM_NONE} },	// ヒ
+	{ 0xcc,		{ KP6_2,			KVM_NONE} },	// フ
+	{ 0xcd,		{ KP6_CARET,		KVM_NONE} },	// ヘ
+	{ 0xce,		{ KP6_MINUS,		KVM_NONE} },	// ホ
+	{ 0xcf,		{ KP6_J,			KVM_NONE} },	// マ
+	
+	{ 0xd0,		{ KP6_N,			KVM_NONE} },	// ミ
+	{ 0xd1,		{ KP6_RBRACKET,		KVM_NONE} },	// ム
+	{ 0xd2,		{ KP6_SLASH,		KVM_NONE} },	// メ
+	{ 0xd3,		{ KP6_M,			KVM_NONE} },	// モ
+	{ 0xd4,		{ KP6_7,			KVM_NONE} },	// ヤ
+	{ 0xd5,		{ KP6_8,			KVM_NONE} },	// ユ
+	{ 0xd6,		{ KP6_9,			KVM_NONE} },	// ヨ
+	{ 0xd7,		{ KP6_O,			KVM_NONE} },	// ラ
+	{ 0xd8,		{ KP6_L,			KVM_NONE} },	// リ
+	{ 0xd9,		{ KP6_PERIOD,		KVM_NONE} },	// ル
+	{ 0xda,		{ KP6_SEMICOLON,	KVM_NONE} },	// レ
+	{ 0xdb,		{ KP6_UNDERSCORE,	KVM_NONE} },	// ロ
+	{ 0xdc,		{ KP6_0,			KVM_NONE} },	// ワ
+	{ 0xdd,		{ KP6_Y,			KVM_NONE} },	// ン
+	{ 0xde,		{ KP6_AT,			KVM_NONE} },	// ゛
+	{ 0xdf,		{ KP6_LBRACKET,		KVM_NONE} },	// ゜
+	
+	{ 0xe0,		{ KP6_Q,			KVM_NONE } },	// た
+	{ 0xe1,		{ KP6_A,			KVM_NONE } },	// ち
+	{ 0xe2,		{ KP6_Z,			KVM_NONE } },	// つ
+	{ 0xe3,		{ KP6_W,			KVM_NONE } },	// て
+	{ 0xe4,		{ KP6_S,			KVM_NONE } },	// と
+	{ 0xe5,		{ KP6_U,			KVM_NONE } },	// な
+	{ 0xe6,		{ KP6_I,			KVM_NONE } },	// に
+	{ 0xe7,		{ KP6_1,			KVM_NONE } },	// ぬ
+	{ 0xe8,		{ KP6_COMMA,		KVM_NONE } },	// ね
+	{ 0xe9,		{ KP6_K,			KVM_NONE } },	// の
+	{ 0xea,		{ KP6_F,			KVM_NONE } },	// は
+	{ 0xeb,		{ KP6_V,			KVM_NONE } },	// ひ
+	{ 0xec,		{ KP6_2,			KVM_NONE } },	// ふ
+	{ 0xed,		{ KP6_CARET,		KVM_NONE } },	// へ
+	{ 0xee,		{ KP6_MINUS,		KVM_NONE } },	// ほ
+	{ 0xef,		{ KP6_J,			KVM_NONE } },	// ま
+	
+	{ 0xf0,		{ KP6_N,			KVM_NONE } },	// み
+	{ 0xf1,		{ KP6_RBRACKET,		KVM_NONE } },	// む
+	{ 0xf2,		{ KP6_SLASH,		KVM_NONE } },	// め
+	{ 0xf3,		{ KP6_M,			KVM_NONE } },	// も
+	{ 0xf4,		{ KP6_7,			KVM_NONE } },	// や
+	{ 0xf5,		{ KP6_8,			KVM_NONE } },	// ゆ
+	{ 0xf6,		{ KP6_9,			KVM_NONE } },	// よ
+	{ 0xf7,		{ KP6_O,			KVM_NONE } },	// ら
+	{ 0xf8,		{ KP6_L,			KVM_NONE } },	// り
+	{ 0xf9,		{ KP6_PERIOD,		KVM_NONE } },	// る
+	{ 0xfa,		{ KP6_SEMICOLON,	KVM_NONE } },	// れ
+	{ 0xfb,		{ KP6_UNDERSCORE,	KVM_NONE } },	// ろ
+	{ 0xfc,		{ KP6_0,			KVM_NONE } },	// わ
+	{ 0xfd,		{ KP6_Y,			KVM_NONE } },	// ん
+};
 
 
 // P6キーコード -> P6キーマトリクス定義
-static const std::vector<P6KeyMatrix> P6KeyMx = {
-	
+static const std::vector<P6KeyMatrix> P6KeyMx =
+{
 	{ KP6_UNKNOWN,		0x00 },	// 不明キー
 	
 	// Y0
@@ -135,10 +409,8 @@ static const std::vector<P6KeyMatrix> P6KeyMx = {
 
 // P6キーマトリクスマップ定義
 // (日本語キーボードの場合)
-static const struct {
-	BYTE Keys[8][8];	// キーマトリクスマップ
-} P6MxCode[] = {
-	
+static const std::vector<std::array<std::array<BYTE,8>,8>> P6MxCode =
+{
 	//	  STD   STD+S GRAPH かな かな+S カナ カナ+S CTRL
 	//	--------------------------------------------------
 	// Y0
@@ -199,13 +471,13 @@ static const struct {
 		{ 0x64, 0x44, 0x14, 0x9c, 0x00, 0xbc, 0x00, 0x04 },
 	//	  c     C     ┗    そ          ソ          C
 		{ 0x63, 0x43, 0x1a, 0x9f, 0x00, 0xbf, 0x00, 0x03 },
-	//	  ;     +    クラブ れ          レ
+	//	  ;     +     ♣     れ          レ
 		{ 0x3b, 0x2b, 0x82, 0xfa, 0x00, 0xda, 0x00, 0x00 },
 	//	  p     P     π    せ          セ          P
 		{ 0x70, 0x50, 0x10, 0x9e, 0x00, 0xbe, 0x00, 0x10 },
 	//	        F6    F1
 		{ 0x00, 0xf5, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00 },
-	//	  /     ?   スペード め   ・    メ    ・
+	//	  /     ?     ♠     め   ・    メ    ・
 		{ 0x2f, 0x3f, 0x80, 0xf2, 0xa5, 0xd2, 0xa5, 0x00 }
 	} },
 	
@@ -218,13 +490,13 @@ static const struct {
 		{ 0x66, 0x46, 0x15, 0xea, 0x00, 0xca, 0x00, 0x06 },
 	//	  v     V     ┻    ひ          ヒ          V
 		{ 0x76, 0x56, 0x11, 0xeb, 0x00, 0xcb, 0x00, 0x16 },
-	//	  :     *    ハート け          ケ
+	//	  :     *     ♥     け          ケ
 		{ 0x3a, 0x2a, 0x81, 0x99, 0x00, 0xb9, 0x00, 0x00 },
 	//	  @                 ゛          ゛
 		{ 0x40, 0x00, 0x00, 0xde, 0x00, 0xde, 0x00, 0x00 },
 	//	        F7    F2
 		{ 0x00, 0xf6, 0xf1, 0x00, 0x00, 0x00, 0x00, 0x00 },
-	//	  _    ダイヤ       ろ          ロ
+	//	  _           ♦     ろ          ロ
 		{ 0x00, 0x5f, 0x83, 0xfb, 0x00, 0xdb, 0x00, 0x00 }
 	} },
 	
@@ -312,7 +584,7 @@ static const struct {
 	//	  DEL   DEL   ????  DEL   DEL   DEL   DEL
 		{ 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x00 },
 	//	  PAGE  PAGE  PAGE  PAGE  PAGE  PAGE  PAGE
-		{ 0xfe, 0xfe, 0xfc, 0xfe, 0xfe, 0xfe, 0xfe, 0x00 },
+		{ 0xfe, 0x00, 0x00, 0xfe, 0x00, 0xfe, 0x00, 0x00 },
 	//	  HOME  HOME  秒    HOME  HOME  HOME  HOME
 		{ 0x0c, 0x0b, 0x0c, 0x0c, 0x0b, 0x0c, 0x0b, 0x00 },
 	//	              MODE
@@ -364,7 +636,6 @@ static const struct {
 };
 
 
-
 enum KeyGroup{
 	KEYSTD = 0,
 	KEYSHIFT,
@@ -382,18 +653,20 @@ enum KeyGroup{
 // Constructor
 /////////////////////////////////////////////////////////////////////////////
 KEY6::KEY6( VM6* vm, const ID& id ) : Device( vm, id ),
-	ON_SHIFT( false ), ON_GRAPH( false ), ON_KANA( false ), ON_KKANA( false ),
-	ON_CTRL( false ), ON_STOP( false ), ON_CAPS( false )
+	ON_SHIFT( false ), ON_GRAPH( false ), ON_KANA( false ), ON_KKANA( false ), ON_ROMAJI( DEFAULT_ROMAJI ),
+	ON_CTRL( false ), ON_STOP( false ), ON_CAPS( false ), ak_KANA( false ), ak_KKANA( false )
+
 {
 	// P6キーコード -> マトリクス 変換テーブル初期化
 	MatTable.clear();
-	for( auto &i : P6KeyMx )
+	for( auto &i : P6KeyMx ){
 		MatTable.emplace( i.P6Key, i.Mat );
+	}
 	
 	// キーマトリクス初期化
-	for( int i = 0; i < 16 * 2; i++ ){
-		P6Matrix.emplace_back( 0xff );
-		P6Mtrx.emplace_back( 0xff );
+	for( int i = 0; i < NOM * 2; i++ ){
+		P6Matrix0.emplace_back( 0xff );
+		P6Matrix1.emplace_back( 0xff );
 	}
 }
 
@@ -456,52 +729,131 @@ void KEY6::Reset( void )
 	PRINTD( KEY_LOG, "[KEY][Reset]\n" );
 	
 	// 特殊キー フラグ初期化
-	ON_SHIFT =
-	ON_GRAPH =
-	ON_KANA  =
-	ON_KKANA =
-	ON_CTRL  =
-	ON_STOP  =
-	ON_CAPS  = false;
+	ON_SHIFT  =
+	ON_GRAPH  =
+	ON_KANA   =
+	ON_KKANA  =
+	ON_CTRL   =
+	ON_STOP   =
+	ON_CAPS   = false;
+	
+	iakey     = { KP6_RELEASED, KVM_NONE };
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
-// キーマトリクス更新(キー)
+// キーマトリクス更新(キー,P6キーコード)
 //
-// 引数:	code	仮想キーコード
+// 引数:	code	P6キーコード
 //			pflag	押したフラグ true:押した false:離した
 // 返値:	なし
 /////////////////////////////////////////////////////////////////////////////
-void KEY6::UpdateMatrixKey( PCKEYsym code, bool pflag )
+void KEY6::UpdateMatrixP6Key( const P6KEYsym code, const bool pflag )
 {
-	PRINTD( KEY_LOG, "[KEY][UpdateMatrixKey] %02X %s\n", code, pflag ? "PUSH" : "RELEASE" );
+	PRINTD( KEY_LOG, "[KEY][UpdateMatrixP6Key] %02X %s\n", code, pflag ? "PUSH" : "RELEASE" );
+	
+	BYTE mtx = 0;
 	
 	try{
 		// P6キーコード->キーマトリクスを取得
-		BYTE mtx = MatTable.at( K6Table.at( code ) );
-		if( !mtx ) return;
-		
-		// マトリクス更新(押したキーに対応するbitが0になる)
-		BYTE matX = 1 << (mtx & 0x0f);
-		BYTE matY = (mtx >> 4) & 0x0f;
+		mtx = MatTable.at( code );
+	}
+	catch( std::out_of_range& ){}
+	
+	if( !mtx ){
+		return;
+	}
+	
+	// マトリクス更新(押したキーに対応するbitが0になる)
+	BYTE matX = 1 << (mtx & 0x0f);
+	BYTE matY = (mtx >> 4) & 0x0f;
+	
+	try{
+		std::lock_guard<cMutex> lock( Mutex );
 		
 		if( pflag ){
-			P6Matrix.at( matY ) &= ~matX;
+			P6Matrix0.at( matY ) &= ~matX;
 			
 			// 【キーリピート対応の暫定処置】
 			// リピート時はリリース情報が出力されないので
 			// 前回のマトリクスをリリースに書き換える。
 			// リピートをSDL任せにしている間の暫定処置で
 			// サブCPU側で処理するようになったら不要。
-			if( ~P6Matrix.at( matY+NOM ) & matX ) P6Matrix.at( matY+NOM ) |= matX;
+			if( ~P6Matrix0.at( matY + NOM ) & matX ){ P6Matrix0.at( matY + NOM ) |= matX; }
 		}else{
-			P6Matrix.at( matY ) |=  matX;
+			P6Matrix0.at( matY ) |=  matX;
 			//【キーを離した時の取りこぼし防止】
-			if( P6Matrix.at( matY+NOM ) & matX ) P6Matrix.at( matY+NOM ) &= ~matX;
+			if( P6Matrix0.at( matY + NOM ) & matX ){ P6Matrix0.at( matY + NOM ) &= ~matX; }
 		}
 	}
 	catch( std::out_of_range& ){}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// キーマトリクス更新(キー,仮想キーコード)
+//
+// 引数:	code	仮想キーコード
+//			pflag	押したフラグ true:押した false:離した
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::UpdateMatrixKey( const PCKEYsym code, const bool pflag )
+{
+	PRINTD( KEY_LOG, "[KEY][UpdateMatrixKey] %02X %s\n", code, pflag ? "PUSH" : "RELEASE" );
+	
+	try{
+		// 仮想キーコード->P6キーコード->キーマトリクスを取得
+		UpdateMatrixP6Key( K6Table.at( code ), pflag );
+	}
+	catch( std::out_of_range& ){}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// キーマトリクス更新(キー,文字コード)自動キー入力用リリース
+//
+// 引数:	なし
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::UpdateMatrixKeyChrRelease( void )
+{
+	// 前回押したキーを離す
+	if( iakey.P6Key != KP6_RELEASED ){
+		UpdateMatrixP6Key( iakey.P6Key, false );
+		iakey.P6Key = KP6_RELEASED;
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// キーマトリクス更新(キー,文字コード)自動キー入力用
+//
+// 引数:	code	文字コード
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::UpdateMatrixKeyChr( const WORD code )
+{
+	PRINTD( KEY_LOG, "[KEY][UpdateMatrixKeyChr] %04X %s\n", code, pflag ? "PUSH" : "RELEASE" );
+	
+	// 文字コード -> P6キースキャンコード
+	auto scan = P6KeyScanTable.find( code );
+	if( scan != P6KeyScanTable.end() ){
+		iakey.P6Key = scan->second.P6Key;
+		UpdateMatrixP6Key( scan->second.P6Key, true );
+		
+		try{
+			std::lock_guard<cMutex> lock( Mutex );
+			
+			//モディファイア
+			PCKEYmod mod = scan->second.mod;
+			P6Matrix0.at( 0 ) |= 0b00001110;	// 一旦クリア
+			
+			if( mod & KVM_LCTRL  ){ P6Matrix0.at( 0 ) &= 0b11111101; }	// CTRL
+			if( mod & KVM_LSHIFT ){ P6Matrix0.at( 0 ) &= 0b11111011; }	// SHIFT
+			if( mod & KVM_LALT   ){ P6Matrix0.at( 0 ) &= 0b11110111; }	// GRAPH
+		}
+		catch( std::out_of_range& ){}
+	}
 }
 
 
@@ -517,8 +869,10 @@ void KEY6::UpdateMatrixJoy( const BYTE joy1, const BYTE joy2 )
 	PRINTD( KEY_LOG, "[KEY][UpdateMatrixJoy] JOY1:%02X JOY2:%02X\n", joy1, joy2 );
 	
 	try{
-		P6Matrix.at( NOM - 2 ) = joy1;
-		P6Matrix.at( NOM - 1 ) = joy2;
+		std::lock_guard<cMutex> lock( Mutex );
+		
+		P6Matrix0.at( NOM - 2 ) = joy1;
+		P6Matrix0.at( NOM - 1 ) = joy2;
 	}
 	catch( std::out_of_range& ){}
 }
@@ -528,43 +882,39 @@ void KEY6::UpdateMatrixJoy( const BYTE joy1, const BYTE joy2 )
 // キーマトリクススキャン
 //
 // 引数:	なし
-// 返値:	true:変化あり false:変化なし
+// 返値:	なし
 /////////////////////////////////////////////////////////////////////////////
-bool KEY6::ScanMatrix( void )
+void KEY6::ScanMatrix( void )
 {
 	PRINTD( KEY_LOG, "[KEY][ScanMatrix] " );
 	
-	bool MatChg  = false;	// 前回のマトリクスと変化したかフラグ
 	bool KeyPUSH = false;	// キー押したフラグ
-	bool ON_FUNC = false;	// ファンクションキーとかフラグ
 	BYTE MatData = 0;		// P6のマトリクスコード(bit7-4:Y-1 bit3-0:X)
-	BYTE KeyData = 0;		// P6のキーコード
 	
-	// キーマトリクスを保存
-	P6Mtrx = P6Matrix;
+	std::lock_guard<cMutex> lock( Mutex );
+	
+	// キーマトリクスを保存(後処理用)
+	P6Matrix1 = P6Matrix0;
 	
 	try{
 		// 特殊キー判定(ON-OFF状態を判定) キーマトリクスY0
-		ON_CTRL  = P6Mtrx.at( 0 ) & 0x02 ? false : true;
-		ON_SHIFT = P6Mtrx.at( 0 ) & 0x04 ? false : true;
-		ON_GRAPH = P6Mtrx.at( 0 ) & 0x08 ? false : true;
-		// 前回のマトリクスと変化あり?
-		if( P6Mtrx.at( 0 ) != P6Mtrx.at( 0 + NOM ) ) MatChg = true;
+		ON_CTRL  = P6Matrix0.at( 0 ) & 0x02 ? false : true;
+		ON_SHIFT = P6Matrix0.at( 0 ) & 0x04 ? false : true;
+		ON_GRAPH = P6Matrix0.at( 0 ) & 0x08 ? false : true;
 	}
 	catch( std::out_of_range& ){}
 	
 	// 一般キー判定 キーマトリクスY1～
 	for( int y = 1; (y < (NOM - 2)) && !KeyPUSH; y++ ) try{
 		// 前回のマトリクスと変化あり?
-		if( P6Mtrx.at( y ) != P6Mtrx.at( y + NOM ) ){
-			MatChg = true;
+		if( P6Matrix0.at( y ) != P6Matrix0.at( y + NOM ) ){
 			// キー押した?
-			if( (P6Mtrx.at( y ) ^ P6Mtrx.at( y + NOM )) & P6Mtrx.at( y + NOM ) ){
+			if( (P6Matrix0.at( y ) ^ P6Matrix0.at( y + NOM )) & P6Matrix0.at( y + NOM ) ){
 				KeyPUSH = true;
 				for( int x = 0; x < 8; x++ ) try{
 					// マトリクスコードセット bit7-4:Y-1 bit3-0:X
 					// 1->0 になったビットを検出
-					if( (~P6Mtrx.at( y ) >> x) & 1 && (P6Mtrx.at( y + NOM ) >> x) & 1 ){
+					if( (~P6Matrix0.at( y ) >> x) & 1 && (P6Matrix0.at( y + NOM ) >> x) & 1 ){
 						MatData = (y << 4) | (x & 7);
 						break;
 					}
@@ -575,7 +925,17 @@ bool KEY6::ScanMatrix( void )
 	}
 	catch( std::out_of_range& ){}
 	
+	// キーマトリクスの変化を保存
+	for( int i = 0; i < NOM; i++ ) try{
+		P6Matrix0.at( i + NOM ) = P6Matrix0.at( i );
+	}
+	catch( std::out_of_range& ){}
+	
+	
 	if( KeyPUSH ){	// キー押した?
+		bool ON_FUNC = false;	// ファンクションキーとかフラグ
+		BYTE KeyData = 0;		// P6のキーコード
+		
 		switch( MatData ){	// マトリクスコード
 		case 0x96:	// CAPS
 			ON_CAPS = !ON_CAPS;
@@ -611,7 +971,7 @@ bool KEY6::ScanMatrix( void )
 			break;
 		}
 		
-		BYTE* KeyMap = (BYTE*)P6MxCode[MatData >> 4].Keys[MatData & 7];
+		const std::array<BYTE,8>& KeyMap = P6MxCode[MatData >> 4][MatData & 7];
 		if( ON_FUNC ){
 			switch( MatData ){	// マトリクスコード
 			case 0x36:			// F01～F05(ファンクションキー)
@@ -626,14 +986,15 @@ bool KEY6::ScanMatrix( void )
 			}
 		}else{
 			if( ON_KANA ){
-				if( ON_KKANA ) KeyData = KeyMap[ON_SHIFT ? KEYKKANASHIFT : KEYKKANA];
-				else           KeyData = KeyMap[ON_SHIFT ? KEYKANASHIFT  : KEYKANA];
+				if( ON_KKANA ){ KeyData = KeyMap[ON_SHIFT ? KEYKKANASHIFT : KEYKKANA]; }
+				else          { KeyData = KeyMap[ON_SHIFT ? KEYKANASHIFT  : KEYKANA]; }
 			}else{
-				if( ON_GRAPH )
+				if( ON_GRAPH ){
 					KeyData = KeyMap[KEYGRAPH];
-				else
-					if( ON_CTRL ) KeyData = KeyMap[KEYCTRL];
-					else          KeyData = KeyMap[ON_SHIFT ? KEYSHIFT : KEYSTD];
+				}else{
+					if( ON_CTRL ){ KeyData = KeyMap[KEYCTRL]; }
+					else         { KeyData = KeyMap[ON_SHIFT ? KEYSHIFT : KEYSTD]; }
+				}
 			}
 		}
 		
@@ -650,23 +1011,7 @@ bool KEY6::ScanMatrix( void )
 		}
 	}
 	
-	// ジョイスティック判定
-	for( int y = NOM - 2; y < NOM; y++ ) try{
-		// 前回のマトリクスと変化あり?
-		if( P6Mtrx.at( y ) != P6Mtrx.at( y + NOM ) ) MatChg = true;
-	}
-	catch( std::out_of_range& ){}
-	
-	// 変化があればキーマトリクス保存
-	if( MatChg )
-		for( int i = 0; i < NOM; i++ ) try{
-			P6Matrix.at( i + NOM ) = P6Mtrx.at( i );
-		}
-		catch( std::out_of_range& ){}
-	
 	PRINTD( KEY_LOG, "\n" );
-	
-	return MatChg;
 }
 
 
@@ -676,9 +1021,9 @@ bool KEY6::ScanMatrix( void )
 // 引数:	なし
 // 返値:	vector<BYTE>&	マトリクスデータ
 /////////////////////////////////////////////////////////////////////////////
-std::vector<BYTE>& KEY6::GetMatrix( void )
+std::vector<BYTE>& KEY6::GetMatrix0( void )
 {
-	return P6Matrix;
+	return P6Matrix0;
 }
 
 
@@ -688,9 +1033,9 @@ std::vector<BYTE>& KEY6::GetMatrix( void )
 // 引数:	なし
 // 返値:	vector<BYTE>&	マトリクスデータ(保存用)
 /////////////////////////////////////////////////////////////////////////////
-const std::vector<BYTE>& KEY6::GetMatrix2( void ) const
+const std::vector<BYTE>& KEY6::GetMatrix1( void ) const
 {
-	return P6Mtrx;
+	return P6Matrix1;
 }
 
 
@@ -713,8 +1058,8 @@ BYTE KEY6::GetKeyJoy( void ) const
 	PRINTD( KEY_LOG, "[KEY][GetKeyJoy]\n" );
 	
 	try{
-		return	(~P6Mtrx.at( 5 ) & 0x80) | (~P6Mtrx.at( 8 ) & 0x20) | (~P6Mtrx.at( 8 ) & 0x10) | (~P6Mtrx.at( 8 ) & 0x08) |
-				(~P6Mtrx.at( 8 ) & 0x04) | (~P6Mtrx.at( 8 ) & 0x02) | (~P6Mtrx.at( 0 ) & 0x04) >> 2;
+		return	(~P6Matrix1.at( 5 ) & 0x80) | (~P6Matrix1.at( 8 ) & 0x20) | (~P6Matrix1.at( 8 ) & 0x10) | (~P6Matrix1.at( 8 ) & 0x08) |
+				(~P6Matrix1.at( 8 ) & 0x04) | (~P6Matrix1.at( 8 ) & 0x02) | (~P6Matrix1.at( 0 ) & 0x04) >> 2;
 	}
 	catch( std::out_of_range& ){
 		return 0;
@@ -739,7 +1084,7 @@ BYTE KEY6::GetKeyJoy( void ) const
 BYTE KEY6::GetJoy( const int JoyNo ) const
 {
 	try{
-		return P6Mtrx.at( NOM - 2 + (JoyNo & 1) ) | 0xc0;
+		return P6Matrix1.at( NOM - 2 + (JoyNo & 1) ) | 0xc0;
 	}
 	catch( std::out_of_range& ){
 		return 0xff;
@@ -763,12 +1108,13 @@ BYTE KEY6::GetKeyIndicator( void ) const
 {
 	PRINTD( KEY_LOG, "[KEY][GetKeyIndicator] -> " );
 	
-	BYTE ret = (ON_KANA  ? KI_KANA  : 0)
-			 | (ON_KKANA ? KI_KKANA : 0)
-			 | (ON_CAPS  ? KI_CAPS  : 0)
-			 | (ON_SHIFT ? KI_SHIFT : 0)
-			 | (ON_GRAPH ? KI_GRAPH : 0)
-			 | (ON_CTRL  ? KI_CTRL  : 0);
+	BYTE ret = (ON_KANA   ? KI_KANA   : 0)
+			 | (ON_KKANA  ? KI_KKANA  : 0)
+			 | (ON_ROMAJI ? KI_ROMAJI : 0)
+			 | (ON_CAPS   ? KI_CAPS   : 0)
+			 | (ON_SHIFT  ? KI_SHIFT  : 0)
+			 | (ON_GRAPH  ? KI_GRAPH  : 0)
+			 | (ON_CTRL   ? KI_CTRL   : 0);
 	
 	PRINTD( KEY_LOG, "%d\n", ret );
 	
@@ -815,6 +1161,92 @@ void KEY6::ChangeKKana( void )
 
 
 /////////////////////////////////////////////////////////////////////////////
+// ローマ字入力切換
+//
+// 引数:	なし
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::ChangeRomaji( void )
+{
+	ON_ROMAJI = !ON_ROMAJI;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 前回キーリリース済み？
+//
+// 引数:	なし
+// 返値:	true:離した false:離してない
+/////////////////////////////////////////////////////////////////////////////
+bool KEY6::GetLastKeyReleased( void )
+{
+	return iakey.P6Key == KP6_RELEASED;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// モディファイア保存
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::PushMod( void )
+{
+	try{
+		iakey.P6Key = KP6_RELEASED;
+		iakey.mod   = (P6Matrix0.at( 0 ) & 0x02) ? KVM_NONE : KVM_LSHIFT |	// SHIFT
+					  (P6Matrix0.at( 0 ) & 0x04) ? KVM_NONE : KVM_LALT   |	// GRAPH
+					  (P6Matrix0.at( 0 ) & 0x08) ? KVM_NONE : KVM_LCTRL;	// CTRL
+	}
+	catch( std::out_of_range& ){}
+	
+	ak_KANA   = ON_KANA;	// かな状態保存
+	ak_KKANA  = ON_KKANA;	// カタカナ状態保存
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// モディファイア復帰
+/////////////////////////////////////////////////////////////////////////////
+void KEY6::PopMod( void )
+{
+	try{
+		std::lock_guard<cMutex> lock( Mutex );
+		
+		P6Matrix0.at( 0 ) |= 0b00001110;	// 一旦クリア
+		if( iakey.mod & KVM_LCTRL  ){ P6Matrix0.at( 0 ) &= ~0x02; }	// CTRL
+		if( iakey.mod & KVM_LSHIFT ){ P6Matrix0.at( 0 ) &= ~0x04; }	// SHIFT
+		if( iakey.mod & KVM_LALT   ){ P6Matrix0.at( 0 ) &= ~0x08; }	// GRAPH
+	}
+	catch( std::out_of_range& ){}
+	
+	ON_KANA   = ak_KANA;	// かな状態保存
+	ON_KKANA  = ak_KKANA;	// カタカナ状態保存
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ローマ字かな変換
+/////////////////////////////////////////////////////////////////////////////
+int KEY6::RomajiConvert( const PCKEYsym code )
+{
+	try{
+		if( ON_KANA && ON_ROMAJI ){	// かなモードかつローマ字入力？
+			return Romaji::ConvertRomaji2kana( K6Table.at( code ) );
+		}
+	}
+	catch( std::out_of_range& ){}
+	return HENKAN_FAILED;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ローマ字かな変換結果取得
+/////////////////////////////////////////////////////////////////////////////
+const std::string& KEY6::RomajiGetResult( void )
+{
+	return Romaji::GetResult( ON_KKANA );
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // どこでもSAVE
 //
 // 引数:	Ini		INIオブジェクトポインタ
@@ -822,22 +1254,33 @@ void KEY6::ChangeKKana( void )
 /////////////////////////////////////////////////////////////////////////////
 bool KEY6::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
-	Ini->SetVal( "KEY", "ON_KANA",	"", ON_KANA  );
-	Ini->SetVal( "KEY", "ON_KKANA",	"", ON_KKANA );
-	Ini->SetVal( "KEY", "ON_STOP",	"", ON_STOP  );
-	Ini->SetVal( "KEY", "ON_CAPS",	"", ON_CAPS  );
+	Ini->SetVal( "KEY", "ON_KANA",		"", ON_KANA   );
+	Ini->SetVal( "KEY", "ON_KKANA",		"", ON_KKANA  );
+	Ini->SetVal( "KEY", "ON_ROMAJI",	"", ON_ROMAJI );
+	Ini->SetVal( "KEY", "ON_STOP",		"", ON_STOP   );
+	Ini->SetVal( "KEY", "ON_CAPS",		"", ON_CAPS   );
 	
 	std::string strva;
-	for( auto &i : P6Matrix )
+#if 0
+	// P6Matrix0は(前フレームの状態+物理キーの入力状態)を格納しており、
+	// リプレイの再現性検証の妨げになる。(リプレイにはP6Matrix1の方しか記録してない)
+	// リプレイやどこでもLoadの目的に対してはP6Matrix1の方だけ保存しておけば十分であり、
+	// P6Matrix0はどこでもSAVEには残さないことにする。
+	for( auto &i : P6Matrix0 ){
 		strva += Stringf( "%02X", i );
-	Ini->SetEntry( "KEY", "P6Matrix",	"", strva.c_str() );
+	}
+	Ini->SetEntry( "KEY", "P6Matrix0",	"", strva.c_str() );
 	
 	strva.clear();
-	for( auto &i : P6Mtrx )
+#endif
+	for( auto &i : P6Matrix1 ){
 		strva += Stringf( "%02X", i );
-	Ini->SetEntry( "KEY", "P6Mtrx",		"", strva.c_str() );
+	}
+	Ini->SetEntry( "KEY", "P6Matrix1",		"", strva.c_str() );
 	
 	return true;
 }
@@ -853,24 +1296,35 @@ bool KEY6::DokoLoad( cIni* Ini )
 {
 	std::string strva;
 	
-	if( !Ini ) return false;
-	
-	Ini->GetVal( "KEY", "ON_KANA",	ON_KANA  );
-	Ini->GetVal( "KEY", "ON_KKANA",	ON_KKANA );
-	Ini->GetVal( "KEY", "ON_STOP",	ON_STOP  );
-	Ini->GetVal( "KEY", "ON_CAPS",	ON_CAPS  );
-	
-	if( Ini->GetEntry( "KEY", "P6Matrix", strva ) ){
-		strva.resize( P6Matrix.size() * 2, 'F' );
-		int i = 0;
-		for( auto &m : P6Matrix )
-			m = std::stoul( strva.substr( i++ * 2, 2 ), nullptr, 16 );
+	if( !Ini ){
+		return false;
 	}
-	if( Ini->GetEntry( "KEY", "P6Mtrx", strva ) ){
-		strva.resize( P6Mtrx.size() * 2, 'F' );
+	
+	Ini->GetVal( "KEY", "ON_KANA",		ON_KANA   );
+	Ini->GetVal( "KEY", "ON_KKANA",		ON_KKANA  );
+	Ini->GetVal( "KEY", "ON_ROMAJI",	ON_ROMAJI );
+	Ini->GetVal( "KEY", "ON_STOP",		ON_STOP   );
+	Ini->GetVal( "KEY", "ON_CAPS",		ON_CAPS   );
+	
+#if 0
+	// P6Matrix0は(前フレームの状態+物理キーの入力状態)を格納しており、
+	// リプレイの再現性検証の妨げになる。(リプレイにはP6Matrix1の方しか記録してない)
+	// リプレイやどこでもLoadの目的に対してはP6Matrix1の方だけ保存しておけば十分であり、
+	// P6Matrix0はどこでもSAVEには残さないことにする。
+	if( Ini->GetEntry( "KEY", "P6Matrix0", strva ) ){
+		strva.resize( P6Matrix0.size() * 2, 'F' );
 		int i = 0;
-		for( auto &m : P6Mtrx )
+		for( auto &m : P6Matrix0 ){
 			m = std::stoul( strva.substr( i++ * 2, 2 ), nullptr, 16 );
+		}
+	}
+#endif
+	if( Ini->GetEntry( "KEY", "P6Matrix1", strva ) ){
+		strva.resize( P6Matrix1.size() * 2, 'F' );
+		int i = 0;
+		for( auto &m : P6Matrix1 ){
+			m = std::stoul( strva.substr( i++ * 2, 2 ), nullptr, 16 );
+		}
 	}
 	
 	return true;

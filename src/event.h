@@ -5,8 +5,6 @@
 #ifndef EVENT_H_INCLUDED
 #define EVENT_H_INCLUDED
 
-#include <string>
-
 #include "typedef.h"
 #include "keydef.h"
 
@@ -157,7 +155,7 @@ typedef struct {
 // Drag & Drop
 typedef struct {
 	EventType type;		// EV_DROPFILE
-	char *file;			// イベント処理後に必ずメモリを開放する
+	char* file;			// イベント処理後に必ずメモリを開放する
 } Event_Drop;
 
 // ウィンドウ

@@ -489,10 +489,18 @@ bool VDG6::Init( void )
 	PRINTD( VDG_LOG, "[VDG][Init]\n" );
 	
 	// イベント追加
-	if( !vm->EventAdd( Device::GetID(), EID_VSYNCS, VSYNC_HZ,          EV_LOOP | EV_HZ ) ) return false;
-	if( !vm->EventAdd( Device::GetID(), EID_VSYNCE, VSYNC_HZ,          EV_LOOP | EV_HZ ) ) return false;
-	if( !vm->EventAdd( Device::GetID(), EID_HDISPS, VSYNC_HZ * VSLINE, EV_LOOP | EV_HZ ) ) return false;
-	if( !vm->EventAdd( Device::GetID(), EID_HDISPE, VSYNC_HZ * VSLINE, EV_LOOP | EV_HZ ) ) return false;
+	if( !vm->EventAdd( Device::GetID(), EID_VSYNCS, VSYNC_HZ,          EV_LOOP | EV_HZ ) ){
+		return false;
+	}
+	if( !vm->EventAdd( Device::GetID(), EID_VSYNCE, VSYNC_HZ,          EV_LOOP | EV_HZ ) ){
+		return false;
+	}
+	if( !vm->EventAdd( Device::GetID(), EID_HDISPS, VSYNC_HZ * VSLINE, EV_LOOP | EV_HZ ) ){
+		return false;
+	}
+	if( !vm->EventAdd( Device::GetID(), EID_HDISPE, VSYNC_HZ * VSLINE, EV_LOOP | EV_HZ ) ){
+		return false;
+	}
 	
 	// VSYNC終了タイミングを合わせる
 	e.devid = this->Device::GetID();
@@ -689,7 +697,9 @@ BYTE VDG6::InA2H( int ){ return (VSYNC ? 0 : 0x80) | (HSYNC ? 0 : 0x40) | 0x3f; 
 /////////////////////////////////////////////////////////////////////////////
 bool VDG6::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	// Core
 	Ini->SetVal( "VDG", "CrtDisp",		"", CrtDisp );
@@ -756,7 +766,9 @@ bool VDG6::DokoSave( cIni* Ini )
 /////////////////////////////////////////////////////////////////////////////
 bool VDG6::DokoLoad( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	// Core
 	Ini->GetVal( "VDG", "CrtDisp",		CrtDisp );

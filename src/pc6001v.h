@@ -9,9 +9,10 @@
 /////////////////////////////////////////////////////////////////////////////
 // ビルドオプション (不要な項目はコメントアウトする)
 /////////////////////////////////////////////////////////////////////////////
-//#define	NOMONITOR	// モニタモードなし
-//#define	USEFMGEN	// PSGにfmgenを使う
-
+//#define	NOMONITOR			// モニタモードなし
+//#define	USEFMGEN			// PSGにfmgenを使う
+//#define	NOCALLBACK			// オーディオコールバックを無効にする
+//#define	REPLAYDEBUG_FRAME	// リプレイ記録、再生中1フレームごとにどこでもSAVEを保存
 
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報,機種名など
@@ -70,6 +71,7 @@
 #define	DEFAULT_CKQUIT			(false) 			// 終了時確認
 #define	DEFAULT_SAVEQUIT		(true) 				// 終了時INI保存
 #define	DEFAULT_EXCARTRIDGE		(0) 				// 拡張カートリッジ
+#define	DEFAULT_ROMAJI			(true) 				// ローマ字入力 Yes:有効 No:無効
 
 #define	MIN_MODEL				(60)				// 機種 最小値
 #define	MAX_MODEL				(68)				// 機種 最大値

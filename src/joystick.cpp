@@ -22,8 +22,9 @@ JOY6::JOY6( void )
 JOY6::~JOY6( void )
 {
 	// オープンされていたらクローズする
-	for( int i = 0; i < MAX_JOY; i++ )
-		if( OSD_OpenedJoy( Jinfo[i] ) ) OSD_CloseJoy( Jinfo[i] );
+	for( int i = 0; i < MAX_JOY; i++ ){
+		if( OSD_OpenedJoy( Jinfo[i] ) ){ OSD_CloseJoy( Jinfo[i] ); }
+	}
 }
 
 
@@ -36,8 +37,9 @@ JOY6::~JOY6( void )
 bool JOY6::Init( void )
 {
 	// オープンされていたらクローズする
-	for( int i = 0; i < MAX_JOY; i++ )
-		if( OSD_OpenedJoy( Jinfo[i] ) ) OSD_CloseJoy( Jinfo[i] );
+	for( int i = 0; i < MAX_JOY; i++ ){
+		if( OSD_OpenedJoy( Jinfo[i] ) ){ OSD_CloseJoy( Jinfo[i] ); }
+	}
 	
 	Connect( 0, 0 );
 	Connect( 1, 1 );

@@ -252,9 +252,10 @@ static DWORD CalcCrc32( MemCells& buf, int num )
 	
 	for( int i = 0; i < num; i++ ){
 		crc ^= buf.Read( i );
-		for( int j = 0; j < 8; j++ )
-			if( crc & 1 ) crc   = (crc >> 1) ^ 0xedb88320;
-			else		  crc >>= 1;
+		for( int j = 0; j < 8; j++ ){
+			if( crc & 1 ){ crc   = (crc >> 1) ^ 0xedb88320; }
+			else		 { crc >>= 1; }
+		}
 	}
 	return crc ^ 0xffffffff;
 }
@@ -300,7 +301,9 @@ bool MEMB::AllocMemory( MemCells& buf, const MEMINFO* info, const P6VPATH& path,
 		buf.Resize( info->Size, info->Init );
 		
 		// ROM情報なし ならばRAMまたはnullptr
-		if( info->Rinfo.empty() ) return true;
+		if( info->Rinfo.empty() ){
+			return true;
+		}
 		
 		// ファイル候補の数だけ繰り返し
 		do{
@@ -314,7 +317,9 @@ bool MEMB::AllocMemory( MemCells& buf, const MEMINFO* info, const P6VPATH& path,
 			OSD_FindFile( path, STR2P6VPATH( fpath ), ffiles, info->Size );
 			
 			// 見つからなければ次の候補を探す
-			if( ffiles.empty() ) continue;
+			if( ffiles.empty() ){
+				continue;
+			}
 			
 			// ROMデータをファイルから読込み
 			for( auto& ff : ffiles ){
@@ -333,9 +338,13 @@ bool MEMB::AllocMemory( MemCells& buf, const MEMINFO* info, const P6VPATH& path,
 			
 		}while( ++i < (int)info->Rinfo.size() );
 		
-		if     ( ErrCrc )  throw Error::RomCrcNG;
-		else if( ErrSize ) throw Error::RomSizeNG;
-		else               throw Error::NoRom;
+		if( ErrCrc ){
+			throw Error::RomCrcNG;
+		}else if( ErrSize ){
+			throw Error::RomSizeNG;
+		}else{
+			throw Error::NoRom;
+		}
 	}
 	catch( Error::Errno i ){	// 例外発生
 		PRINTD( MEM_LOG, "-> Failed\n" );
@@ -743,12 +752,20 @@ bool MEM6::AllocMemoryInt( const P6VPATH& path, bool crc )
 	PRINTD( MEM_LOG, "[MEM][AllocMemoryInt]\n" );
 	
 	// 共通
-	if( !AllocMemory( SysRom1, MemTable.System1, path, crc ) ) return false;
-	if( !AllocMemory( CGRom1,  MemTable.CGRom1,  path, crc ) ) return false;
-	if( !AllocMemory( IntRam,  MemTable.IntRam,  "",   crc ) ) return false;
+	if( !AllocMemory( SysRom1, MemTable.System1, path, crc ) ){
+		return false;
+	}
+	if( !AllocMemory( CGRom1,  MemTable.CGRom1,  path, crc ) ){
+		return false;
+	}
+	if( !AllocMemory( IntRam,  MemTable.IntRam,  "",   crc ) ){
+		return false;
+	}
 	
 	 // 内部メモリ確保とROMファイル読込み(機種別)
-	if( !AllocMemorySpec( path, crc ) ) return false;
+	if( !AllocMemorySpec( path, crc ) ){
+		return false;
+	}
 	
 	// 内部RAMの初期値を設定
 	SetRamValue();
@@ -773,9 +790,15 @@ bool MEM62::AllocMemorySpec( const P6VPATH& path, bool crc )
 {
 	PRINTD( MEM_LOG, "[MEM][AllocMemorySpec]\n" );
 	
-	if( !AllocMemory( CGRom2,   MemTable.CGRom2, path, crc ) ) return false;
-	if( !AllocMemory( KanjiRom, MemTable.Kanji,  path, crc ) ) return false;
-	if( !AllocMemory( VoiceRom, MemTable.Voice,  path, crc ) ) return false;
+	if( !AllocMemory( CGRom2,   MemTable.CGRom2, path, crc ) ){
+		return false;
+	}
+	if( !AllocMemory( KanjiRom, MemTable.Kanji,  path, crc ) ){
+		return false;
+	}
+	if( !AllocMemory( VoiceRom, MemTable.Voice,  path, crc ) ){
+		return false;
+	}
 	
 	return true;
 }
@@ -784,7 +807,9 @@ bool MEM64::AllocMemorySpec( const P6VPATH& path, bool crc )
 {
 	PRINTD( MEM_LOG, "[MEM][AllocMemorySpec]\n" );
 	
-	if( !AllocMemory( SysRom2,  MemTable.System2, path, crc ) ) return false;
+	if( !AllocMemory( SysRom2,  MemTable.System2, path, crc ) ){
+		return false;
+	}
 	
 	return true;
 }
@@ -863,7 +888,9 @@ bool MEM6::InitInt( void )
 	RBLK1[7] = WBLK1[7] = &IRom[RWCOMMON];
 	
 	// 内部メモリ初期化(機種別)
-	if( !InitIntSpec() ) return false;
+	if( !InitIntSpec() ){
+		return false;
+	}
 	
 	return true;
 }
@@ -1464,8 +1491,8 @@ void MEM64::SetMemBlockSR( BYTE port, BYTE data )
 	MemBlock** mb;
 	
 	RfSR[port & 0x0f] = data;
-	if( port & 0x08 ) mb = &WBLKSR[port & 0x07];	// 8-F : Write
-	else			  mb = &RBLKSR[port & 0x07];	// 0-7 : Read
+	if( port & 0x08 ){ mb = &WBLKSR[port & 0x07]; }	// 8-F : Write
+	else			 { mb = &RBLKSR[port & 0x07]; }	// 0-7 : Read
 	
 	switch( cs ){
 	case 0x00:	// System RAM (16KB単位でしか設定できない)
@@ -2087,24 +2114,34 @@ bool MEM6::AllocMemoryExt( const P6VPATH& path, bool crc )
 	// ROM確保&ファイル読込み
 	switch( ExCart ){
 	case EXC6001:	// 拡張BASIC
-		if( !AllocMemory( ExtRom, &IEXBASIC, path, crc ) ) return false;
+		if( !AllocMemory( ExtRom, &IEXBASIC, path, crc ) ){
+			return false;
+		}
 		break;
 		
 	case EXC660101:	// 拡張漢字ROMカートリッジ
 	case EXC6007SR:	// 拡張漢字ROM&RAMカートリッジ
-		if( !AllocMemory( ExtRom, &IEXKANJI, path, crc ) ) return false;
+		if( !AllocMemory( ExtRom, &IEXKANJI, path, crc ) ){
+			return false;
+		}
 		break;
 		
 	case EXC6053:	// ボイスシンセサイザー
-		if( !AllocMemory( ExtRom, &IEXVOICE, path, crc ) ) return false;
+		if( !AllocMemory( ExtRom, &IEXVOICE, path, crc ) ){
+			return false;
+		}
 		break;
 		
 	default:		// その他
-		if( !AllocMemory( ExtRom, MemTable.ExtRom, "", crc ) ) return false;
+		if( !AllocMemory( ExtRom, MemTable.ExtRom, "", crc ) ){
+			return false;
+		}
 	}
 	
 	// RAM確保
-	if( !AllocMemory( ExtRam, MemTable.ExtRam, "", crc ) ) return false;
+	if( !AllocMemory( ExtRam, MemTable.ExtRam, "", crc ) ){
+		return false;
+	}
 	
 	return true;
 }
@@ -2561,7 +2598,9 @@ bool MEM6::DokoSave( cIni* Ini )
 {
 	PRINTD( MEM_LOG, "[MEM][DokoSave]\n" );
 	
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "MEMORY", "CGBank",		"", CGBank );
 	Ini->SetVal( "MEMORY", "M1Wait",		"", M1Wait );
@@ -2639,7 +2678,9 @@ bool MEM6::DokoSave( cIni* Ini )
 
 bool MEM62::DokoSave( cIni* Ini )
 {
-	if( !MEM6::DokoSave( Ini ) ) return false;
+	if( !MEM6::DokoSave( Ini ) ){
+		return false;
+	}
 	
 	Ini->SetVal( "MEMORY", "cgrom",			"", cgrom    );
 	Ini->SetVal( "MEMORY", "kj_rom",		"", kj_rom   );
@@ -2656,7 +2697,9 @@ bool MEM62::DokoSave( cIni* Ini )
 
 bool MEM64::DokoSave( cIni* Ini )
 {
-	if( !MEM62::DokoSave( Ini ) ) return false;
+	if( !MEM62::DokoSave( Ini ) ){
+		return false;
+	}
 	
 	for( int i = 0; i < 16; i++ ){
 		Ini->SetVal( "MEMORY", Stringf( "RfSR_%02d", i ), "", "0x%02X", RfSR[i] );
@@ -2679,7 +2722,9 @@ bool MEM6::DokoLoad( cIni* Ini )
 	
 	PRINTD( MEM_LOG, "[MEM][DokoLoad]\n" );
 	
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->GetVal( "MEMORY", "CGBank",		CGBank   );
 	Ini->GetVal( "MEMORY", "M1Wait",		M1Wait   );
@@ -2721,8 +2766,9 @@ bool MEM6::DokoLoad( cIni* Ini )
 	InitExt();
 	
 	// 拡張ROM
-	if( Ini->GetVal( "MEMORY", "FilePath", tpath ) )
+	if( Ini->GetVal( "MEMORY", "FilePath", tpath ) ){
 		MountExtRom( tpath );
+	}
 	
 	// 外部RAM
 	if( ExCart & EXCRAM ){
@@ -2774,7 +2820,9 @@ bool MEM62::DokoLoad( cIni* Ini )
 {
 	int st;
 	
-	if( !MEM6::DokoLoad( Ini ) ) return false;
+	if( !MEM6::DokoLoad( Ini ) ){
+		return false;
+	}
 	
 	Ini->GetVal( "MEMORY", "cgrom",			cgrom    );
 	Ini->GetVal( "MEMORY", "kj_rom",		kj_rom   );
@@ -2794,7 +2842,9 @@ bool MEM62::DokoLoad( cIni* Ini )
 
 bool MEM64::DokoLoad( cIni* Ini )
 {
-	if( !MEM62::DokoLoad( Ini ) ) return false;
+	if( !MEM62::DokoLoad( Ini ) ){
+		return false;
+	}
 	
 	for( int i = 0; i < 16; i++ ){
 		Ini->GetVal( "MEMORY", Stringf( "RfSR_%02d", i ), RfSR[i] );
@@ -3258,24 +3308,34 @@ bool EXTCART::AllocMemoryExt( const P6VPATH& path, bool crc )
 	// ROM確保&ファイル読込み
 	switch( ExCart ){
 	case EXC6001:	// 拡張BASIC
-		if( !AllocMemory( ExtRom, &IEXBASIC, path, crc ) ) return false;
+		if( !AllocMemory( ExtRom, &IEXBASIC, path, crc ) ){
+			return false;
+		}
 		break;
 		
 	case EXC660101:	// 拡張漢字ROMカートリッジ
 	case EXC6007SR:	// 拡張漢字ROM&RAMカートリッジ
-		if( !AllocMemory( ExtRom, &IEXKANJI, path, crc ) ) return false;
+		if( !AllocMemory( ExtRom, &IEXKANJI, path, crc ) ){
+			return false;
+		}
 		break;
 		
 	case EXC6053:	// ボイスシンセサイザー
-		if( !AllocMemory( ExtRom, &IEXVOICE, path, crc ) ) return false;
+		if( !AllocMemory( ExtRom, &IEXVOICE, path, crc ) ){
+			return false;
+		}
 		break;
 		
 	default:		// その他
-		if( !AllocMemory( ExtRom, MemTable.ExtRom, "", crc ) ) return false;
+		if( !AllocMemory( ExtRom, MemTable.ExtRom, "", crc ) ){
+			return false;
+		}
 	}
 	
 	// RAM確保
-	if( !AllocMemory( ExtRam, MemTable.ExtRam, "", crc ) ) return false;
+	if( !AllocMemory( ExtRam, MemTable.ExtRam, "", crc ) ){
+		return false;
+	}
 	
 	return true;
 }

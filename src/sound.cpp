@@ -78,8 +78,9 @@ void cRing::Put( int data )
 {
 	std::lock_guard<cMutex> lock( Mutex );
 	
-	if( (int)Buffer.size() < (Size * MULTI) )
+	if( (int)Buffer.size() < (Size * (MULTI+1)) ){	// +1は保険
 		Buffer.emplace_back( data );
+	}
 }
 
 
@@ -94,22 +95,6 @@ int cRing::ReadySize( void ) const
 	std::lock_guard<cMutex> lock( Mutex );
 	
 	return Buffer.size();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-// 残りバッファ取得
-//
-// 引数:	ml			true:MULTI考慮 false:MULTI非考慮
-// 返値:	int			残りバッファサンプル数
-/////////////////////////////////////////////////////////////////////////////
-int cRing::FreeSize( bool ml ) const
-{
-	std::lock_guard<cMutex> lock( Mutex );
-	
-	int fsize = ml ? Size * MULTI - Buffer.size() : Size - min( Size, Buffer.size() );
-	
-	return fsize;
 }
 
 
@@ -140,19 +125,6 @@ SndDev::SndDev( void ) : SampleRate(DEFAULT_SAMPLERATE),
 // Destructor
 /////////////////////////////////////////////////////////////////////////////
 SndDev::~SndDev( void ){}
-
-
-/////////////////////////////////////////////////////////////////////////////
-// 初期化
-// 引数:	rate	サンプリングレート
-// 返値:	bool	true:成功 false:失敗
-/////////////////////////////////////////////////////////////////////////////
-bool SndDev::Init( int rate )
-{
-	SampleRate = rate;
-	
-	return true;
-}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -193,7 +165,7 @@ int SndDev::LPF( int src )
 /////////////////////////////////////////////////////////////////////////////
 int SndDev::Get( void )
 {
-	return LPF( this->cRing::Get() );
+	return LPF( (this->cRing::Get() * Volume) / 100 );
 }
 
 
@@ -208,7 +180,9 @@ bool SndDev::SetSampleRate( int rate, int size )
 {
 	SampleRate = rate;
 	
-	if( !this->cRing::InitBuffer( size ) ) return false;
+	if( !this->cRing::InitBuffer( size ) ){
+		return false;
+	}
 	
 	return true;
 }
@@ -279,10 +253,14 @@ bool SND6::Init( void* cbdata, void (*callback)(void*, BYTE*, int ), int rate, i
 	int samples = (rate / 11025) << (size - 1 + 8);
 	
 	// バッファ初期化
-	if( !this->cRing::InitBuffer( samples ) ) return false;
+	if( !this->cRing::InitBuffer( samples ) ){
+		return false;
+	}
 	
 	// オーディオデバイスを開く
-	if( !OSD_OpenAudio( cbdata, callback, rate, samples ) ) return false;
+	if( !OSD_OpenAudio( cbdata, callback, rate, samples ) ){
+		return false;
+	}
 	
 	CbData     = cbdata;
 	CbFunc     = callback;
@@ -306,7 +284,9 @@ bool SND6::ConnectStream( const std::shared_ptr<SndDev>& sd )
 {
 	PRINTD( SND_LOG, "[SND6][ConnectStream]\n" );
 	
-	if( !sd->InitBuffer( this->cRing::GetSize() ) ) return false;
+	if( !sd->SetSampleRate( SampleRate, this->cRing::GetSize() ) ){
+		return false;
+	}
 	sdev.emplace_back( sd );
 	return true;
 }
@@ -359,20 +339,27 @@ bool SND6::SetSampleRate( int rate, int size )
 	int samples = (rate / 11025) << ((size ? size : BSize) - 1 + 8);
 	
 	// バッファ初期化
-	if( !this->cRing::InitBuffer( samples ) ) return false;
+	if( !this->cRing::InitBuffer( samples ) ){
+		return false;
+	}
 	
 	// デバイス毎にサンプリングレートを設定
-	for( auto p = sdev.begin(); p != sdev.end(); ++p )
-		if( !(*p)->SetSampleRate( rate, samples ) ) return false;
+	for( auto &p : sdev ){
+		if( !p->SetSampleRate( rate, samples ) ){
+			return false;
+		}
+	}
 	
 	// オーディオデバイスを開く
-	if( !OSD_OpenAudio( CbData, CbFunc, rate, samples ) ) return false;
+	if( !OSD_OpenAudio( CbData, CbFunc, rate, samples ) ){
+		return false;
+	}
 	
 	SampleRate = rate;
 	BSize      = size ? size : BSize;
 	
 	// 再生中だったなら即再生開始
-	if( pflag ) Play();
+	if( pflag ){ Play(); }
 	
 	PRINTD( SND_LOG, " SampleRate : %d\n", SampleRate );
 	PRINTD( SND_LOG, " BufferSize : %d\n", samples );
@@ -430,20 +417,17 @@ int SND6::PreUpdate( int samples, cRing* exbuf )
 	
 	PRINTD( SND_LOG,"PreUpdate" );
 	
-	for( auto p = sdev.begin(); p != sdev.end(); ++p ){
-		PRINTD( SND_LOG," %d", (*p)->ReadySize() );
-		exsam = min( exsam, (*p)->ReadySize() );
+	for( auto &p : sdev ){
+		PRINTD( SND_LOG," %d", p->ReadySize() );
+		exsam = min( exsam, p->ReadySize() );
 	}
 	PRINTD( SND_LOG,"\n" );
-	
-//	exsam = min( exsam, this->cRing::FreeSize( true ) );
-	exsam = min( exsam, exbuf ? exbuf->cRing::FreeSize( true ) : this->cRing::FreeSize( true ) );
 	
 	for( int i = 0; i < exsam; i++ ){
 		int dat = 0;
 		
-		for( auto p = sdev.begin(); p != sdev.end(); ++p ){
-			dat += (*p)->Get();
+		for( auto &p : sdev ){
+			dat += p->Get();
 		}
 		
 		dat = ( dat * Volume ) / 100;
@@ -461,7 +445,24 @@ int SND6::PreUpdate( int samples, cRing* exbuf )
 
 
 /////////////////////////////////////////////////////////////////////////////
-// サウンド更新関数
+// バッファから溢れたサンプル数取得
+// 引数:	なし
+// 返値:	int			溢れたサンプル数 (溢れていなければ0)
+/////////////////////////////////////////////////////////////////////////////
+int SND6::OverflowSamples( void )
+{
+#ifndef NOCALLBACK	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	int size = cRing::ReadySize();
+#else				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	int size = OSD_GetQueuedAudioSamples();
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	return size > cRing::GetSize() * MULTI ? size - cRing::GetSize() : 0;
+}
+
+
+#ifndef NOCALLBACK	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+/////////////////////////////////////////////////////////////////////////////
+// サウンド更新関数(Callback)
 //
 // 引数:	stream		ストリーム書込みバッファへのポインタ
 //			samples		サンプル数
@@ -469,7 +470,7 @@ int SND6::PreUpdate( int samples, cRing* exbuf )
 /////////////////////////////////////////////////////////////////////////////
 void SND6::Update( BYTE* stream, int samples )
 {
-	int16_t *str = (int16_t*)stream;
+	int16_t* str = (int16_t*)stream;
 	
 	PRINTD( SND_LOG, "[SND6][Update] Stream:%p Samples:%d / %d\n", stream, samples, this->cRing::ReadySize() );
 	
@@ -477,3 +478,36 @@ void SND6::Update( BYTE* stream, int samples )
 		*(str++) = (int16_t)this->cRing::Get();
 	}
 }
+
+
+#else				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+/////////////////////////////////////////////////////////////////////////////
+// サウンド更新関数(Push)
+//
+// 引数:	なし
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void SND6::Update( void )
+{
+	PRINTD( SND_LOG, "[SND6][Update] " );
+	
+	// キューがいっぱいならスキップ
+	int ofsize = OverflowSamples();
+	if( ofsize > 0 ){
+		PRINTD( SND_LOG, "<Overflow> %d\n", ofsize );
+		return;
+	}
+	
+	int samples = this->cRing::ReadySize();
+	
+	PRINTD( SND_LOG, "Samples:%d\n", samples );
+	
+	std::vector<int16_t> stream;
+	stream.reserve( samples );
+	
+	for( int i = 0; i < samples; i++ ){
+		stream.push_back((int16_t)this->cRing::Get());
+	}
+	OSD_WriteAudioStream( reinterpret_cast<BYTE*>(stream.data()), stream.size() );
+}
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

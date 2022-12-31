@@ -1,22 +1,88 @@
 #include "audiooutputwrapper.h"
-#include "p6vxapp.h"
 
 #ifndef NOSOUND
 #include <QAudioSink>
 #include <QBuffer>
+#include <QMutex>
+#include <QDebug>
 
+#ifdef NOCALLBACK
+
+
+AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
+									   const QAudioFormat &format,
+									   CBF_SND cbFunc,
+									   void *cbData,
+									   int samples,
+									   QObject *parent)
+	: QObject(parent)
+	, AudioSink(new QAudioSink(device, format, this))
+{
+	AudioSink->setBufferSize(samples * bytesPerSample());
+}
+
+AudioOutputWrapper::~AudioOutputWrapper()
+{
+}
+
+void AudioOutputWrapper::start()
+{
+	AudioBuffer = AudioSink->start();
+}
+
+void AudioOutputWrapper::suspend()
+{
+	AudioSink->suspend();
+}
+
+void AudioOutputWrapper::resume()
+{
+	AudioSink->resume();
+}
+
+void AudioOutputWrapper::stop()
+{
+	AudioSink->stop();
+}
+
+void AudioOutputWrapper::writeAudioStream(BYTE *stream, int samples)
+{
+	if (AudioBuffer){
+		AudioBuffer->write(reinterpret_cast<const char*>(stream), samples * bytesPerSample());
+	}
+}
+
+int AudioOutputWrapper::queuedAudioSamples()
+{
+	qDebug() << AudioSink->state() << AudioSink->bytesFree();
+	if (AudioBuffer){
+		return AudioBuffer->bytesAvailable() / bytesPerSample();
+	}
+}
+
+int AudioOutputWrapper::bytesPerSample()
+{
+	return AudioSink->format().bytesPerSample();
+}
+
+QAudio::State AudioOutputWrapper::state() const
+{
+	return AudioSink->state();
+}
+
+#else
 
 class AudioBufferWrapper : public QIODevice
 {
 public:
 	AudioBufferWrapper(CBF_SND cbFunc,
 					   void *cbData,
-					   int samples,
+					   int sampleBytes,
 					   QObject* parent)
 		: QIODevice(parent)
 		, CbFunc(cbFunc)
 		, CbData(cbData)
-		, Samples(samples)
+		, SampleBytes(sampleBytes)
 	{}
 
 	virtual ~AudioBufferWrapper(){
@@ -29,13 +95,13 @@ public:
 
 	qint64 size() const override
 	{
-		return Samples;
+		return SampleBytes;
 	}
 
 	qint64 bytesAvailable() const override{
 		// 実際にエミュレータ側に溜まっているサンプル数を知る術はないが、
 		// 適当な値を返しておかないとreadData()が呼ばれない。
-		return Samples * sizeof(uint16_t);
+		return SampleBytes;
 	}
 
 protected:
@@ -55,7 +121,7 @@ protected:
 private:
 	CBF_SND CbFunc;
 	void* CbData;
-	int Samples;
+	int SampleBytes;
 };
 
 
@@ -68,7 +134,7 @@ AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
 	: QObject(parent)
 	, AudioSink(new QAudioSink(device, format, this))
 {
-	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, samples, this);
+	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, samples * format.bytesPerSample(), this);
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()
@@ -78,6 +144,8 @@ AudioOutputWrapper::~AudioOutputWrapper()
 void AudioOutputWrapper::start()
 {
 	AudioBuffer->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
+	// バックエンド側のバッファサイズ(適当かつ明示的に設定しておく)
+	AudioSink->setBufferSize(44100);
 	AudioSink->start(AudioBuffer);
 }
 
@@ -97,9 +165,14 @@ void AudioOutputWrapper::stop()
 	AudioBuffer->close();
 }
 
+int AudioOutputWrapper::bytesPerSample()
+{
+	return AudioSink->format().bytesPerSample();
+}
+
 QAudio::State AudioOutputWrapper::state() const
 {
 	return AudioSink->state();
 }
-
+#endif // NOCALLBACK
 #endif

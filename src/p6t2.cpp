@@ -150,7 +150,7 @@ DWORD cP6DATA::GetCount( void )
 /////////////////////////////////////////////////////////////////////////////
 void cP6DATA::SetCount( DWORD cnt )
 {
-	if( Data.size() > cnt ) rp = Data.cbegin() + cnt;
+	if( Data.size() > cnt ){ rp = Data.cbegin() + cnt; }
 }
 
 
@@ -178,7 +178,9 @@ BYTE cP6DATA::Read( void )
 bool cP6DATA::Readff( std::fstream& fs )
 {
 	// 識別子 "TI"(0x4954) ?
-	if( !(fs.is_open() && fs.good()) || FSGETWORD( fs ) != 0x4954 ) return false;
+	if( !(fs.is_open() && fs.good()) || FSGETWORD( fs ) != 0x4954 ){
+		return false;
+	}
 	
 	Info.ID = FSGETBYTE( fs );
 	fs.read( Info.Name, sizeof(Info.Name) );
@@ -197,7 +199,9 @@ bool cP6DATA::Readff( std::fstream& fs )
 /////////////////////////////////////////////////////////////////////////////
 bool cP6DATA::Readfd( std::fstream& fs )
 {
-	if( !(fs.is_open() && fs.good()) ) return false;
+	if( !(fs.is_open() && fs.good()) ){
+		return false;
+	}
 	
 	DWORD fps = fs.tellg();		// 現在位置保存
 	fs.seekg( Info.Offset, std::ios_base::beg );
@@ -316,7 +320,9 @@ const std::string& cP6T::GetName( void ) const
 /////////////////////////////////////////////////////////////////////////////
 bool cP6T::IsSWaiting( int bpb )
 {
-	if( swait <= 0 ) return false;
+	if( swait <= 0 ){
+		return false;
+	}
 	
 	swait -= bpb;
 	return true;
@@ -328,7 +334,9 @@ bool cP6T::IsSWaiting( int bpb )
 /////////////////////////////////////////////////////////////////////////////
 bool cP6T::IsPWaiting( int bpb )
 {
-	if( pwait <= 0 ) return false;
+	if( pwait <= 0 ){
+		return false;
+	}
 	
 	pwait -= bpb;
 	return true;
@@ -372,7 +380,9 @@ DWORD cP6T::GetBetaSize( void )
 /////////////////////////////////////////////////////////////////////////////
 int cP6T::GetCount( void ) const
 {
-	if( Data.empty() ) return 0;
+	if( Data.empty() ){
+		return 0;
+	}
 	
 	return rd->GetInfo().Offset + rd->GetCount();
 }
@@ -383,7 +393,9 @@ int cP6T::GetCount( void ) const
 /////////////////////////////////////////////////////////////////////////////
 void cP6T::SetCount( DWORD cnt )
 {
-	if( GetBetaSize() <= cnt ) return;
+	if( GetBetaSize() <= cnt ){
+		return;
+	}
 	
 	// 全DATAブロック巻戻し
 	for( auto &i : Data )
@@ -391,7 +403,9 @@ void cP6T::SetCount( DWORD cnt )
 	
 	rd = Data.begin();
 	for( auto& i : Data ){
-		if( i.GetInfo().Offset + i.GetSize() >= cnt ) break;
+		if( i.GetInfo().Offset + i.GetSize() >= cnt ){
+			break;
+		}
 		rd++;
 	}
 	
@@ -411,8 +425,9 @@ BYTE cP6T::ReadOne( void )
 		(rd++)->Rewind();
 		
 		// 最後のDATAブロックまで読んだら先頭へ
-		if( rd == Data.end() )
+		if( rd == Data.end() ){
 			rd = Data.begin();
+		}
 		
 		// ブロック情報取得
 		const P6TBLKINFO& binfo = rd->GetInfo();
@@ -432,7 +447,9 @@ bool cP6T::Readf( const P6VPATH& filepath )
 	PRINTD( P6T2_LOG, "[cP6T][Readf] [%s]\n", P6VPATH2STR( filepath ).c_str() );
 	
 	// P6T読込み→ベタ読込み
-	if( !ReadP6T( filepath ) && !ConvP6T( filepath ) ) return false;
+	if( !ReadP6T( filepath ) && !ConvP6T( filepath ) ){
+		return false;
+	}
 	
 	Rewind();
 	
@@ -449,12 +466,15 @@ bool cP6T::Writef( const P6VPATH& filepath )
 	
 	std::fstream fs;
 	
-	if( !OSD_FSopen( fs, filepath, std::ios_base::out | std::ios_base::binary ) ) return false;
+	if( !OSD_FSopen( fs, filepath, std::ios_base::out | std::ios_base::binary ) ){
+		return false;
+	}
 	
 	// ベタイメージ書込み&サイズ取得
 	DWORD beta = 0;
-	for( auto& i : Data )
+	for( auto& i : Data ){
 		beta += i.Writefd( fs );
+	}
 	
 	// P6T フッタ書込み
 	FSPUTBYTE( 'P', fs );
@@ -465,15 +485,18 @@ bool cP6T::Writef( const P6VPATH& filepath )
 	FSPUTBYTE( Ainfo.BASIC, fs );
 	FSPUTBYTE( Ainfo.Page, fs );
 	FSPUTWORD( Ainfo.ask.size(), fs );
-	if( !Ainfo.ask.empty() )
+	if( !Ainfo.ask.empty() ){
 		fs.write( Ainfo.ask.data(), Ainfo.ask.size() );
+	}
 	FSPUTWORD( exh.size(), fs );
-	if( !exh.empty() )
+	if( !exh.empty() ){
 		fs.write( (const char*)exh.data(), exh.size() );
+	}
 	
 	// 全DATAブロックフッタ書込み
-	for( auto& i : Data )
+	for( auto& i : Data ){
 		i.Writeff( fs );
+	}
 	
 	// ベタイメージサイズ書込み
 	FSPUTDWORD( beta, fs );
@@ -493,7 +516,9 @@ bool cP6T::ReadP6T( const P6VPATH& filepath )
 	
 	std::fstream fs;
 	
-	if( !OSD_FSopen( fs, filepath, std::ios_base::in | std::ios_base::binary ) ) return false;
+	if( !OSD_FSopen( fs, filepath, std::ios_base::in | std::ios_base::binary ) ){
+		return false;
+	}
 	
 	// ベタイメージサイズ取得
 	fs.seekg( -4, std::ios_base::end );
@@ -528,8 +553,9 @@ bool cP6T::ReadP6T( const P6VPATH& filepath )
 	
 	// 拡張情報
 	exh.resize( FSGETWORD( fs ) );
-	if( !exh.empty() )
+	if( !exh.empty() ){
 		fs.read( (char*)exh.data(), exh.size() );
+	}
 	
 	// DATAブロックを読込み
 	while( bk-- ){

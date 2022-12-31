@@ -652,7 +652,9 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 	
 	req--;
 	
-	if( !OSD_GetWindowImage( wh, Sbuf, &ss, pixfmt ) ) return false;
+	if( !OSD_GetWindowImage( wh, Sbuf, &ss, pixfmt ) ){
+		return false;
+	}
 	
 	int encode_video = 1, encode_audio = 1;
 	while (encode_video || encode_audio) {

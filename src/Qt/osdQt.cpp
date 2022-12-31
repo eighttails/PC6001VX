@@ -310,7 +310,11 @@ void OSD_Quit_Sub( void )
 bool OSD_IsWorking( void )
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+#ifdef NOSINGLEAPP
+	return false;
+#else
 	return app->isSecondary();
+#endif
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1236,6 +1240,30 @@ bool OSD_AudioPlaying( void )
 #endif
 }
 
+#ifdef NOCALLBACK	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+/////////////////////////////////////////////////////////////////////////////
+// オーディオキューサンプル数取得
+// 引数:	なし
+// 返値:	int				キューサンプル数
+/////////////////////////////////////////////////////////////////////////////
+int OSD_GetQueuedAudioSamples( void )
+{
+	return audioOutput->queuedAudioSamples();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// オーディオストリーム書き込み
+//
+// 引数:	stream			オーディオデータのストリーム
+//		samples			サンプル数
+// 返値:	なし
+/////////////////////////////////////////////////////////////////////////////
+void OSD_WriteAudioStream(BYTE *stream, int samples)
+{
+	audioOutput->writeAudioStream(stream, samples);
+}
+
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 /////////////////////////////////////////////////////////////////////////////
 // Waveファイル読込み

@@ -915,7 +915,8 @@ void P6VXApp::finishKeyEvent(Event &ev)
 		 mod & KeyStateWatcher::KKANA ||
 		 mod & KeyStateWatcher::GRAPH ||
 		 mod & KeyStateWatcher::CAPS ||
-		 mod & KeyStateWatcher::KANA) {
+		 mod & KeyStateWatcher::KANA ||
+		 mod & KeyStateWatcher::ROMAJI) {
 		OSD_PushEvent(ev);
 		return;
 	}

@@ -43,6 +43,7 @@ DEFINES += USEFILESYSTEM
 #DEFINES += NOSINGLEAPP
 #DEFINES += NOOPENGL
 #DEFINES += NOSOUND
+#DEFINES += NOCALLBACK
 #DEFINES += AUTOSUSPEND
 #DEFINES += REPLAYDEBUG_FRAME
 #DEFINES += REPLAYDEBUG_INST
@@ -202,6 +203,7 @@ SOURCES += \
     src/pio.cpp \
     src/psgfm.cpp \
     src/replay.cpp \
+    src/romaji.cpp \
     src/schedule.cpp \
     src/semaphore.cpp \
     src/sound.cpp \
@@ -290,6 +292,7 @@ HEADERS  += \
     src/pio.h \
     src/psgfm.h \
     src/replay.h \
+    src/romaji.h \
     src/schedule.h \
     src/semaphore.h \
     src/sound.h \

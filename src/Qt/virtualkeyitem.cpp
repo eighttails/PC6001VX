@@ -8,6 +8,7 @@
 #include "../osd.h"
 
 VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
+							   PCKEYmod mod,
 							   QString pixNormal,
 							   QString pixShift,
 							   QString pixGrph,
@@ -20,6 +21,7 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 							   QObject *parent)
 	: QObject(parent)
 	, Code(code)
+	, Mod(mod)
 	, PixNormal(QString(":/res/vkey/key_%1.png").arg(pixNormal))
 	, PixShift(QString(":/res/vkey/key_%1.png").arg(pixShift))
 	, PixGrph(QString(":/res/vkey/key_%1.png").arg(pixGrph))
@@ -43,7 +45,6 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	pressEffect->setColor(Qt::blue);
 	pressEffect->setEnabled(false);
 	setGraphicsEffect(pressEffect);
-
 }
 
 void VirtualKeyItem::changeStatus(
@@ -52,13 +53,14 @@ void VirtualKeyItem::changeStatus(
 		bool ON_GRAPH,
 		bool ON_KANA,
 		bool ON_KKANA,
-		bool ON_CAPS)
+		bool ON_CAPS,
+		bool ON_ROMAJI)
 {
-	if (ON_KANA) {
+	if (ON_KANA && !ON_ROMAJI) {
 		if (ON_KKANA){
 			if(ON_SHIFT)setPixmap(PixKKanaShift);
 			else		setPixmap(PixKKana);
-		} else{
+		} else {
 			if(ON_SHIFT)setPixmap(PixKanaShift);
 			else		setPixmap(PixKana);
 		}
@@ -111,7 +113,7 @@ void VirtualKeyItem::sendKeyEvent(EventType type, bool state)
 	ev.type			= type;
 	ev.key.state	= state;
 	ev.key.sym		= Code;
-	ev.key.mod		= KVM_NONE;
+	ev.key.mod		= Mod;
 	ev.key.unicode	= 0;
 
 	OSD_PushEvent(ev);

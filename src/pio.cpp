@@ -283,7 +283,9 @@ BYTE PIO6::InOBF( int ){ return GetOBF() ? 1 : 0; }
 /////////////////////////////////////////////////////////////////////////////
 bool PIO6::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "8255", "PortA",		"", "0x%02X", PortA    );
 	Ini->SetVal( "8255", "PortB",		"", "0x%02X", PortB    );
@@ -317,7 +319,9 @@ bool PIO6::DokoSave( cIni* Ini )
 /////////////////////////////////////////////////////////////////////////////
 bool PIO6::DokoLoad( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->GetVal( "8255", "PortA",		PortA     );
 	Ini->GetVal( "8255", "PortB",		PortB     );

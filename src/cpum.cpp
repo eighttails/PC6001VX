@@ -98,7 +98,9 @@ bool CPU6::IsBUSREQ( void )
 /////////////////////////////////////////////////////////////////////////////
 bool CPU6::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "Z80", "AF",		"", "0x%04X",	AF.W    );
 	Ini->SetVal( "Z80", "BC",		"", "0x%04X",	BC.W    );
@@ -115,10 +117,10 @@ bool CPU6::DokoSave( cIni* Ini )
 	Ini->SetVal( "Z80", "I",		"", "0x%02X",	I       );
 	Ini->SetVal( "Z80", "R",		"", "0x%02X",	R       );
 	Ini->SetVal( "Z80", "R_saved",	"", "0x%02X",	R_saved );
-	Ini->SetVal( "Z80", "IFF",		"",				IFF     );
-	Ini->SetVal( "Z80", "IFF2",		"",				IFF2    );
+	Ini->SetVal( "Z80", "IFF",		"", 			IFF     );
+	Ini->SetVal( "Z80", "IFF2",		"", 			IFF2    );
 	Ini->SetVal( "Z80", "IM",		"", "0x%02X",	IM      );
-	Ini->SetVal( "Z80", "Halt",		"",				Halt    );
+	Ini->SetVal( "Z80", "Halt",		"", 			Halt    );
 	
 	Ini->SetVal( "Z80", "mstate",	"", mstate );
 	
@@ -131,7 +133,9 @@ bool CPU6::DokoSave( cIni* Ini )
 /////////////////////////////////////////////////////////////////////////////
 bool CPU6::DokoLoad( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->GetVal( "Z80", "AF",		AF.W    );
 	Ini->GetVal( "Z80", "BC",		BC.W    );

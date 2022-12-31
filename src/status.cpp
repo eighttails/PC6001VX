@@ -101,14 +101,19 @@ void cWndStat::Update( EL6* el )
 		if( el->vm->cpus->IsCmtIntrReady() == SUB6::LOADOPEN ){ ZCons::SetColor( FC_WHITE4, FC_MAGENTA4 ); }
 		else												  { ZCons::SetColor( FC_WHITE4, FC_WHITE2   ); }
 	}
-	ZCons::Locate( yyy ? -1 : -7, yyy );
+	ZCons::Locate( yyy ? -2 : -8, yyy );
 	ZCons::PrintfR( "%06d/%06d", el->vm->cmtl->GetCount(), el->vm->cmtl->GetBetaSize() );
 	yyy++;
 	
 	
 	// かなキー
-	ZCons::Locate( -5, 0 );
+	ZCons::Locate( -6, 0 );
 	ZCons::SetColor( (el->vm->key->GetKeyIndicator() & KI_KANA) ? FC_WHITE4 : FC_WHITE3, FC_WHITE2 );
+	if( el->vm->key->GetKeyIndicator() & KI_ROMAJI ){	// ローマ字入力
+		ZCons::PutCharH( 'R' );
+	}else{												// かな入力
+		ZCons::PutCharH( ' ' );
+	}
 	if( el->vm->key->GetKeyIndicator() & KI_KKANA ){	// カナ
 		ZCons::PutCharH( KKana[0] );
 		ZCons::PutCharH( KKana[1] );

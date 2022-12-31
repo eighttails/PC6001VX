@@ -17,7 +17,7 @@ public:
 	explicit VirtualKeyboardScene(QObject* parent = nullptr);
 	void setKeyStateWatcher(KeyStateWatcher* watcher);
 protected:
-	VirtualKeyItem* createVirtualKeyItem(PCKEYsym code,
+	VirtualKeyItem* createVirtualKeyItem(PCKEYsym code, PCKEYmod mod,
 										 QString pixNormal,
 										 QString pixShift,
 										 QString pixGrph,

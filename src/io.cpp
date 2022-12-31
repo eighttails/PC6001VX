@@ -69,13 +69,15 @@ bool IOBus::Connect( const std::shared_ptr<IDevice>& device, const std::vector<C
 		try{
 			switch( i.rule ){
 			case portin:
-				if( !ConnectIn( i.bank, device, desc.indef.at( i.id ) ) )
+				if( !ConnectIn( i.bank, device, desc.indef.at( i.id ) ) ){
 					return false;
+				}
 				break;
 				
 			case portout:
-				if( !ConnectOut( i.bank, device, desc.outdef.at( i.id ) ) )
+				if( !ConnectOut( i.bank, device, desc.outdef.at( i.id ) ) ){
 					return false;
+				}
 				break;
 			}
 		}
@@ -139,14 +141,14 @@ bool IOBus::Disconnect( const DeviceList::ID id )
 	// IN
 	for( auto &i : ins ){
 		for( auto p = i.end() - 1; p != i.begin(); p-- ){
-			if( p->device->GetID() == id ) i.erase( p );
+			if( p->device->GetID() == id ){ i.erase( p ); }
 		}
 	}
 	
 	// OUT
 	for( auto &i : outs ){
 		for( auto p = i.end() - 1; p != i.begin(); p-- ){
-			if( p->device->GetID() == id ) i.erase( p );
+			if( p->device->GetID() == id ){ i.erase( p ); }
 		}
 	}
 	
@@ -284,7 +286,9 @@ bool IO6::Init( int banksize )
 	
 	// オブジェクト確保
 	try{
-		if( !IOBus::Init( banksize ) ) throw Error::InitFailed;
+		if( !IOBus::Init( banksize ) ){
+			throw Error::InitFailed;
+		}
 		
 		Iwait.assign( BANKMASK + 1, 0 );
 		Owait.assign( BANKMASK + 1, 0 );
@@ -307,7 +311,7 @@ BYTE IO6::In( int port, int* wcnt )
 {
 	PRINTD( IO_LOG, "[IO][In] port : %02X\n", port );
 	
-	if( wcnt ) (*wcnt) += Iwait[port & BANKMASK];
+	if( wcnt ){ (*wcnt) += Iwait[port & BANKMASK]; }
 	Idata[port & BANKMASK] = IOBus::In( port );
 	return Idata[port & BANKMASK];
 }
@@ -320,7 +324,7 @@ void IO6::Out( int port, BYTE data, int* wcnt )
 {
 	PRINTD( IO_LOG, "[IO][Out] port : %02X  data : %02X\n", port, data );
 	
-	if( wcnt ) (*wcnt) += Owait[port & BANKMASK];
+	if( wcnt ){ (*wcnt) += Owait[port & BANKMASK]; }
 	Odata[port & BANKMASK] = data;
 	IOBus::Out( port, data );
 }

@@ -56,16 +56,18 @@ void cNode::SetMember( NodeType id, const std::string& sstr )
 	switch( NodeID ){
 	case NODE_COMMENT:	// Comment
 		// ';'の次の文字がコメントの先頭
-		if( str.front() == ';' )
+		if( str.front() == ';' ){
 			str.erase( str.begin() );
+		}
 		
 		Comment = str;
 		break;
 		
 	case NODE_SECTION:	// Section
 		// '['の次の文字が先頭
-		if( str.front() == '[' )
+		if( str.front() == '[' ){
 			str.erase( str.begin() );
+		}
 		
 		// ']'のところを末尾にする
 		len = str.find_first_of( "] \t\n" );
@@ -79,7 +81,9 @@ void cNode::SetMember( NodeType id, const std::string& sstr )
 		// 値 ---
 		// '='がなければ戻る
 		len = str.find_first_of( "=" );
-		if( len == std::string::npos ) break;
+		if( len == std::string::npos ){
+			break;
+		}
 		
 		// '='の次の文字が値の先頭
 		// 先頭から'='まで削除
@@ -113,12 +117,14 @@ void cNode::SetMember( NodeType id, const std::string& sstr )
 		}
 		
 		// 値の先頭の'\"'を削除
-		if( val.front() == '\"' )
+		if( val.front() == '\"' ){
 			val.erase( val.front() );
+		}
 		
 		// 値の末尾の'\"'を削除
-		if( val.back() == '\"' )
+		if( val.back() == '\"' ){
 			val.erase( val.back() );
+		}
 		
 		Value = val;
 		
@@ -129,8 +135,9 @@ void cNode::SetMember( NodeType id, const std::string& sstr )
 		
 		// エントリの後の' 'と'\t'を削除
 		len = str.find_last_not_of( " \t" );
-		if( len != std::string::npos )
+		if( len != std::string::npos ){
 			str.erase( str.begin() + len + 1, str.end() );
+		}
 		
 		Entry = str;
 		break;
@@ -164,22 +171,27 @@ cIni::~cIni( void )
 /////////////////////////////////////////////////////////////////////////////
 std::list<cNode>::iterator cIni::FindNode( const std::string& section, const std::string& entry )
 {
-	if( IniNode.empty() ) return IniNode.end();
+	if( IniNode.empty() ){
+		return IniNode.end();
+	}
 	
 	// セクションを探す
 	auto node = std::find_if( IniNode.begin(), IniNode.end(), [&]( cNode& n ){
 				return( n.NodeID == cNode::NODE_SECTION && n.Section == section );
 			} );
 	// セクションが見つからなければエラー
-	if( node == IniNode.end() ) return node;
-	
+	if( node == IniNode.end() ){
+		return node;
+	}
 	
 	// エントリを探す
 	node = std::find_if( ++node, IniNode.end(), [&]( cNode& n ){
 				return( (n.NodeID == cNode::NODE_ENTRY && n.Entry == entry) || n.NodeID == cNode::NODE_SECTION );
 			} );
 	// セクション内にエントリが見つからなければエラー
-	if( node == IniNode.end() || node->NodeID == cNode::NODE_SECTION ) return IniNode.end();
+	if( node == IniNode.end() || node->NodeID == cNode::NODE_SECTION ){
+		return IniNode.end();
+	}
 	
 	return node;
 }
@@ -233,19 +245,20 @@ bool cIni::Read( const P6VPATH& path )
 			auto node = --IniNode.end();
 			
 			// 先頭が';'だったらコメント行
-			if( str.front() == ';' )
+			if( str.front() == ';' ){
 				node->SetMember( cNode::NODE_COMMENT, str );
-			else
+			}else
 			// 先頭が'['だったらセクション
-			if( str.front() == '[' )
+			if( str.front() == '[' ){
 				node->SetMember( cNode::NODE_SECTION, str );
-			else
+			}else
 			// '='を含むならエントリ
-			if( str.find( '=' ) != std::string::npos )
+			if( str.find( '=' ) != std::string::npos ){
 				node->SetMember( cNode::NODE_ENTRY, str );
-			else
+			}else{
 			// どれでもなければコメント
 				node->SetMember( cNode::NODE_COMMENT, str );
+			}
 		}
 		
 		// 次の1行読込む
@@ -266,14 +279,16 @@ bool cIni::Write( void )
 	std::fstream fs;
 	
 	// INIファイルを開く
-	if( !OSD_FSopen( fs, IniPath, std::ios_base::out ) )
+	if( !OSD_FSopen( fs, IniPath, std::ios_base::out ) ){
 		return false;
+	}
 	
 	for( auto &node : IniNode ){
 		switch( node.NodeID ){
 		case cNode::NODE_COMMENT:	// Comment
-			if( !node.Comment.empty() )
+			if( !node.Comment.empty() ){
 				fs << ";" << node.Comment;
+			}
 			fs << std::endl;
 			break;
 			
@@ -283,13 +298,15 @@ bool cIni::Write( void )
 			
 		case cNode::NODE_ENTRY:	// Entry
 			fs << node.Entry;
-			for( int i = TABN * TABW - (int)node.Entry.length(); i > 0; i -= TABW )
+			for( int i = TABN * TABW - (int)node.Entry.length(); i > 0; i -= TABW ){
 				fs << "\t";
+			}
 			fs << "= " << node.Value;
 			
 			if( !node.Comment.empty() ){
-				for( int i = TABN * TABW - ((int)node.Value.length() + 2); i > 0; i -= TABW )
+				for( int i = TABN * TABW - ((int)node.Value.length() + 2); i > 0; i -= TABW ){
 					fs << "\t";
+				}
 				fs << "\t;" << node.Comment;
 			}
 			fs << std::endl;
@@ -365,7 +382,7 @@ bool cIni::SetEntry( const std::string& section, const std::string& entry, const
 	}
 	
 	// エントリにコメントありなら追加
-	if( !comment.empty() ) node->SetMember( cNode::NODE_COMMENT, comment );
+	if( !comment.empty() ){ node->SetMember( cNode::NODE_COMMENT, comment ); }
 	
 	// エントリを保存
 	node->SetMember( cNode::NODE_ENTRY, entry + '=' + rstr );
@@ -389,8 +406,7 @@ template <> bool cIni::GetVal<bool>( const std::string& section, const std::stri
 	
 	if( !StriCmp( str, "1" ) || !StriCmp( str, "yes" ) || !StriCmp( str, "on" ) || !StriCmp( str, "true" ) ){
 		yn = true;
-	}else
-	if( !StriCmp( str, "0" ) || !StriCmp( str, "no" ) || !StriCmp( str, "off" ) || !StriCmp( str, "false" ) ){
+	}else if( !StriCmp( str, "0" ) || !StriCmp( str, "no" ) || !StriCmp( str, "off" ) || !StriCmp( str, "false" ) ){
 		yn = false;
 	}
 	
@@ -403,7 +419,9 @@ template <> bool cIni::GetVal<P6VPATH>( const std::string& section, const std::s
 	std::string tval = P6VPATH2STR( path );
 	
 	// エントリを探す
-	if( !GetEntry( section, entry, tval ) ) return false;
+	if( !GetEntry( section, entry, tval ) ){
+		return false;
+	}
 	
 	path = STR2P6VPATH( tval );
 	OSD_AbsolutePath( path );
@@ -435,7 +453,9 @@ bool cIni::DeleteBefore( const std::string& section, const std::string& entry )
 {
 	// エントリを探す
 	auto node = FindNode( section, entry );
-	if( node == IniNode.end() ) return false;
+	if( node == IniNode.end() ){
+		return false;
+	}
 	
 	// エントリが見つかった場合はそれより前を削除(指定されたエントリを含む)
 	IniNode.erase( IniNode.begin(), node );
@@ -451,7 +471,9 @@ bool cIni::DeleteAfter( const std::string& section, const std::string& entry )
 {
 	// エントリを探す
 	auto node = FindNode( section, entry );
-	if( node == IniNode.end() ) return false;
+	if( node == IniNode.end() ){
+		return false;
+	}
 	
 	// エントリが見つかった場合はそれより後を削除(指定されたエントリを含む)
 	IniNode.erase( node, IniNode.end() );

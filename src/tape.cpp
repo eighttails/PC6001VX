@@ -105,16 +105,6 @@ void CMTL::EventCallback( int id, int clock )
 
 
 /////////////////////////////////////////////////////////////////////////////
-// 初期化
-/////////////////////////////////////////////////////////////////////////////
-bool CMTL::Init( int srate )
-{
-	Unmount();
-	return SndDev::Init( srate );
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
 // TAPEマウント
 /////////////////////////////////////////////////////////////////////////////
 bool CMTL::Mount( const P6VPATH& filepath )
@@ -159,7 +149,9 @@ WORD CMTL::Update( void )
 	PRINTD( TAPE_LOG, "[TAPE][Update]\n" );
 	
 	// TAPEイメージがマウントされていなかったら無音
-	if( !IsMount() ) return PG_S;
+	if( !IsMount() ){
+		return PG_S;
+	}
 	
 	// 1byte分のデータを作る
 	int length = SndDev::SampleRate / CMT_HZ();
@@ -213,7 +205,7 @@ WORD CMTL::Update( void )
 /////////////////////////////////////////////////////////////////////////////
 int CMTL::SoundUpdate( int samples )
 {
-	int length = min( max( 0, samples - SndDev::cRing::ReadySize() ), SndDev::cRing::FreeSize() );
+	int length = max( 0, samples - SndDev::cRing::ReadySize() );
 	
 	PRINTD( TAPE_LOG, "[TAPE][SoundUpdate] Samples: %d -> %d\n", samples, length );
 	
@@ -274,8 +266,8 @@ void CMTL::SetBoost( bool boost )
 /////////////////////////////////////////////////////////////////////////////
 void CMTL::SetMaxBoost( int max60, int max62 )
 {
-	if( max60 > 0 ) MaxBoost60 = max60;
-	if( max62 > 0 ) MaxBoost62 = max62;
+	if( max60 > 0 ){ MaxBoost60 = max60; }
+	if( max62 > 0 ){ MaxBoost62 = max62; }
 }
 
 
@@ -316,7 +308,9 @@ WORD CMTL::CmtRead( void )
 	PRINTD( TAPE_LOG, "[TAPE][CmtRead] " );
 	
 	// TAPEがマウントされていなければ無音
-	if( FilePath.empty() ) return PG_S;
+	if( FilePath.empty() ){
+		return PG_S;
+	}
 	
 	// 無音部待ち?
 	if( cP6T::IsSWaiting( BitsPerByte() ) ){
@@ -356,9 +350,13 @@ bool CMTL::Remote( bool relay )
 		// SRはmk2/66と同じにしてみる
 		int bst = Boost ? ( vm->VdgGetWinSize() ? MaxBoost60 : MaxBoost62 ) : 1;
 		
-		if( !vm->EventAdd( Device::GetID(), EID_TAPE, CMT_HZ() * bst, EV_LOOP | EV_HZ ) ) return false;
+		if( !vm->EventAdd( Device::GetID(), EID_TAPE, CMT_HZ() * bst, EV_LOOP | EV_HZ ) ){
+			return false;
+		}
 	}else{			// OFF
-		if( !vm->EventDel( Device::GetID(), EID_TAPE ) ) return false;
+		if( !vm->EventDel( Device::GetID(), EID_TAPE ) ){
+			return false;
+		}
 	}
 	return true;
 }
@@ -382,11 +380,9 @@ int CMTL::GetSinCurve( int fq )
 	n += (fq == PG_HI ? 2:1 ) * 44100 / SndDev::SampleRate;
 	
 	// テーブルサイズは72(sizeof(sinc))
-	if( n >= COUNTOF(sinc) ) n -= COUNTOF(sinc);
+	if( n >= COUNTOF(sinc) ){ n -= COUNTOF(sinc); }
 	
-	int ret = ( sinc[n] * SndDev::Volume ) / 100;
-	
-	return ret;
+	return sinc[n];
 }
 
 
@@ -428,7 +424,7 @@ bool CMTS::Init( const P6VPATH& filepath )
 /////////////////////////////////////////////////////////////////////////////
 bool CMTS::Mount( void )
 {
-	if( fs.is_open() ) fs.close();
+	if( fs.is_open() ){ fs.close(); }
 	
 	return OSD_FSopen( fs, FilePath, std::ios_base::out | std::ios_base::binary );
 }
@@ -439,7 +435,9 @@ bool CMTS::Mount( void )
 /////////////////////////////////////////////////////////////////////////////
 void CMTS::Unmount( void )
 {
-	if( !fs.is_open() ) return;
+	if( !fs.is_open() ){
+		return;
+	}
 	
 	// フッタを付ける(とりあえずベタで)
 	fs.flush();
@@ -496,8 +494,9 @@ void CMTS::SetBaud( int b )
 /////////////////////////////////////////////////////////////////////////////
 void CMTS::WriteOne( BYTE data )
 {
-	if( fs.is_open() )
+	if( fs.is_open() ){
 		FSPUTBYTE( data, fs );
+	}
 }
 
 
@@ -512,14 +511,18 @@ void CMTL::OutB0H( int, BYTE data ){ Remote( data & 0x08 ? true : false ); }
 /////////////////////////////////////////////////////////////////////////////
 bool CMTL::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "TAPE", "Relay",	"",	Relay );
 	Ini->SetVal( "TAPE", "BoostUp",	"",	Boost );
 	Ini->SetVal( "TAPE", "StopBit",	"",	StopBit );
 	
 	// TAPEがマウントされてなければ何もしないで戻る
-	if( !IsMount() ) return true;
+	if( !IsMount() ){
+		return true;
+	}
 	
 	// マウントされていたらP6TオブジェクトをSAVE
 	P6VPATH tpath = FilePath;
@@ -543,7 +546,9 @@ bool CMTL::DokoLoad( cIni* Ini )
 	int st = 0;
 	P6VPATH fpath = "";
 	
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->GetVal( "TAPE", "Relay",		Relay );
 	Ini->GetVal( "TAPE", "BoostUp",		Boost );
@@ -551,7 +556,9 @@ bool CMTL::DokoLoad( cIni* Ini )
 	
 	Ini->GetVal( "TAPE", "FilePath",	fpath );
 	if( !fpath.empty() ){
-		if( !Mount( fpath ) ) return false;
+		if( !Mount( fpath ) ){
+			return false;
+		}
 		
 		// P6T
 		Ini->GetVal( "P6T",	"Counter",	st );

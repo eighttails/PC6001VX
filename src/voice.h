@@ -97,7 +97,6 @@ public:
 	
 	void EventCallback( int, int ) override;		// イベントコールバック関数
 	
-	bool Init( int ) override;						// 初期化
 	void Reset( void );								// リセット
 	
 	void SetPath( const P6VPATH& );					// WAVEファイル格納パス設定

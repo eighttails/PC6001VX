@@ -31,6 +31,19 @@ public:
 	void unlock();		// Unlock
 };
 
+// RecursiveMutex クラス
+class cRecursiveMutex {
+private:
+	std::recursive_mutex mtx;
+
+public:
+	cRecursiveMutex();
+	~cRecursiveMutex();
+
+	void lock();		// Lock
+	void unlock();		// Unlock
+};
+
 
 // Semaphore クラス
 class cSemaphore {

@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <new>
 #include <map>
-#include <unordered_map>
 #include <vector>
 
 #include "pc6001v.h"
@@ -29,7 +28,8 @@
 // 文字コード操作関数
 /////////////////////////////////////////////////////////////////////////////
 
-// isioさんの txt2bas から流用
+// isioさんの txt2bas をベースに大幅改変
+// http://retropc.net/isio/mysoft/#txt2bas
 /****************************************************/
 /* txt2bas                                          */
 /* sjis.h                                           */
@@ -37,124 +37,353 @@
 /* 2000.05.25., 2001.01.06.                         */
 /****************************************************/
 
-// sjis <-> p6 character set table
-const int sjistbl[] = {
-	0x0000, 0x8c8e, 0x89ce, 0x9085, 0x96d8, 0x8be0, 0x9379, 0x93fa, 
-	0x944e, 0x897e, 0x8e9e, 0x95aa, 0x9562, 0x9553, 0x90e7, 0x969c, 
-	0x83ce, 0x84b3, 0x84b1, 0x84b2, 0x84b0, 0x84b4, 0x84ab, 0x84aa, 
-	0x84ac, 0x84ad, 0x84af, 0x84ae, 0x817e, 0x91e5, 0x9286, 0x8fac, 
-	0x8140, 0x8149, 0x8168, 0x8194, 0x8190, 0x8193, 0x8195, 0x8166, 
-	0x8169, 0x816a, 0x8196, 0x817b, 0x8143, 0x817c, 0x8144, 0x815e, 
-	0x824f, 0x8250, 0x8251, 0x8252, 0x8253, 0x8254, 0x8255, 0x8256, 
-	0x8257, 0x8258, 0x8146, 0x8147, 0x8183, 0x8181, 0x8184, 0x8148, 
-	0x8197, 0x8260, 0x8261, 0x8262, 0x8263, 0x8264, 0x8265, 0x8266, 
-	0x8267, 0x8268, 0x8269, 0x826a, 0x826b, 0x826c, 0x826d, 0x826e, 
-	0x826f, 0x8270, 0x8271, 0x8272, 0x8273, 0x8274, 0x8275, 0x8276, 
-	0x8277, 0x8278, 0x8279, 0x816b, 0x818f, 0x816c, 0x814f, 0x8151, 
-	0x0000, 0x8281, 0x8282, 0x8283, 0x8284, 0x8285, 0x8286, 0x8287, 
-	0x8288, 0x8289, 0x828a, 0x828b, 0x828c, 0x828d, 0x828e, 0x828f, 
-	0x8290, 0x8291, 0x8292, 0x8293, 0x8294, 0x8295, 0x8296, 0x8297, 
-	0x8298, 0x8299, 0x829a, 0x816f, 0x8162, 0x8170, 0x8160, 0x8140, 
-	0x81a3, 0x81a5, 0x819a, 0x819f, 0x819b, 0x819c, 0x82f0, 0x829f, 
-	0x82a1, 0x82a3, 0x82a5, 0x82a7, 0x82e1, 0x82e3, 0x82e5, 0x82c1, 
-	0x0000, 0x82a0, 0x82a2, 0x82a4, 0x82a6, 0x82a8, 0x82a9, 0x82ab, 
-	0x82ad, 0x82af, 0x82b1, 0x82b3, 0x82b5, 0x82b7, 0x82b9, 0x82bb, 
-	0x0000, 0x8142, 0x8175, 0x8176, 0x8141, 0x8145, 0x8392, 0x8340, 
-	0x8342, 0x8344, 0x8346, 0x8348, 0x8383, 0x8385, 0x8387, 0x8362, 
-	0x815b, 0x8341, 0x8343, 0x8345, 0x8347, 0x8349, 0x834a, 0x834c, 
-	0x834e, 0x8350, 0x8352, 0x8354, 0x8356, 0x8358, 0x835a, 0x835c, 
-	0x835e, 0x8360, 0x8363, 0x8365, 0x8367, 0x8369, 0x836a, 0x836b, 
-	0x836c, 0x836d, 0x836e, 0x8371, 0x8374, 0x8377, 0x837a, 0x837d, 
-	0x837e, 0x8380, 0x8381, 0x8382, 0x8384, 0x8386, 0x8388, 0x8389, 
-	0x838a, 0x838b, 0x838c, 0x838d, 0x838f, 0x8393, 0x814a, 0x814b, 
-	0x82bd, 0x82bf, 0x82c2, 0x82c4, 0x82c6, 0x82c8, 0x82c9, 0x82ca, 
-	0x82cb, 0x82cc, 0x82cd, 0x82d0, 0x82d3, 0x82d6, 0x82d9, 0x82dc, 
-	0x82dd, 0x82de, 0x82df, 0x82e0, 0x82e2, 0x82e4, 0x82e6, 0x82e7, 
-	0x82e8, 0x82e9, 0x82ea, 0x82eb, 0x82ed, 0x82f1, 0x0000, 0x0000, 
+// SJIS -> P6 character set table
+static const std::map<WORD, std::vector<BYTE>> sjisp6tbl =
+{
+	{ 0x8140, { ' ' } },		// 　
+	{ 0x8149, { '!' } },		// ！
+	{ 0x8168, { '"' } },		// ”
+	{ 0x8194, { '#' } },		// ＃
+	{ 0x8190, { '$' } },		// ＄
+	{ 0x8193, { '%' } },		// ％
+	{ 0x8195, { '&' } },		// ＆
+	{ 0x8166, { '\'' } },		// ’
+	{ 0x8169, { '(' } },		// （
+	{ 0x816a, { ')' } },		// ）
+	{ 0x8196, { '*' } },		// ＊
+	{ 0x817b, { '+' } },		// ＋
+	{ 0x8143, { ',' } },		// ，
+	{ 0x817c, { '-' } },		// －
+	{ 0x815b, { '-' } },		// ー
+	{ 0x8144, { '.' } },		// ．
+	{ 0x815e, { '/' } },		// ／
+	{ 0x824f, { '0' } },		// ０
+	{ 0x8250, { '1' } },		// １
+	{ 0x8251, { '2' } },		// ２
+	{ 0x8252, { '3' } },		// ３
+	{ 0x8253, { '4' } },		// ４
+	{ 0x8254, { '5' } },		// ５
+	{ 0x8255, { '6' } },		// ６
+	{ 0x8256, { '7' } },		// ７
+	{ 0x8257, { '8' } },		// ８
+	{ 0x8258, { '9' } },		// ９
+	{ 0x8146, { ':' } },		// ：
+	{ 0x8147, { ';' } },		// ；
+	{ 0x8183, { '<' } },		// ＜
+	{ 0x8181, { '=' } },		// ＝
+	{ 0x8184, { '>' } },		// ＞
+	{ 0x8148, { '?' } },		// ？
+	{ 0x8197, { '@' } },		// ＠
+	{ 0x8260, { 'A' } },		// Ａ
+	{ 0x8261, { 'B' } },		// Ｂ
+	{ 0x8262, { 'C' } },		// Ｃ
+	{ 0x8263, { 'D' } },		// Ｄ
+	{ 0x8264, { 'E' } },		// Ｅ
+	{ 0x8265, { 'F' } },		// Ｆ
+	{ 0x8266, { 'G' } },		// Ｇ
+	{ 0x8267, { 'H' } },		// Ｈ
+	{ 0x8268, { 'I' } },		// Ｉ
+	{ 0x8269, { 'J' } },		// Ｊ
+	{ 0x826a, { 'K' } },		// Ｋ
+	{ 0x826b, { 'L' } },		// Ｌ
+	{ 0x826c, { 'M' } },		// Ｍ
+	{ 0x826d, { 'N' } },		// Ｎ
+	{ 0x826e, { 'O' } },		// Ｏ
+	{ 0x826f, { 'P' } },		// Ｐ
+	{ 0x8270, { 'Q' } },		// Ｑ
+	{ 0x8271, { 'R' } },		// Ｒ
+	{ 0x8272, { 'S' } },		// Ｓ
+	{ 0x8273, { 'T' } },		// Ｔ
+	{ 0x8274, { 'U' } },		// Ｕ
+	{ 0x8275, { 'V' } },		// Ｖ
+	{ 0x8276, { 'W' } },		// Ｗ
+	{ 0x8277, { 'X' } },		// Ｘ
+	{ 0x8278, { 'Y' } },		// Ｙ
+	{ 0x8279, { 'Z' } },		// Ｚ
+	{ 0x816d, { '[' } },		// ［
+	{ 0x818f, { '\\' } },		// ￥
+	{ 0x816e, { ']' } },		// ］
+	{ 0x814f, { '^' } },		// ＾
+	{ 0x8151, { '_' } },		// ＿
+	{ 0x8281, { 'a' } },		// ａ
+	{ 0x8282, { 'b' } },		// ｂ
+	{ 0x8283, { 'c' } },		// ｃ
+	{ 0x8284, { 'd' } },		// ｄ
+	{ 0x8285, { 'e' } },		// ｅ
+	{ 0x8286, { 'f' } },		// ｆ
+	{ 0x8287, { 'g' } },		// ｇ
+	{ 0x8288, { 'h' } },		// ｈ
+	{ 0x8289, { 'i' } },		// ｉ
+	{ 0x828a, { 'j' } },		// ｊ
+	{ 0x828b, { 'k' } },		// ｋ
+	{ 0x828c, { 'l' } },		// ｌ
+	{ 0x828d, { 'm' } },		// ｍ
+	{ 0x828e, { 'n' } },		// ｎ
+	{ 0x828f, { 'o' } },		// ｏ
+	{ 0x8290, { 'p' } },		// ｐ
+	{ 0x8291, { 'q' } },		// ｑ
+	{ 0x8292, { 'r' } },		// ｒ
+	{ 0x8293, { 's' } },		// ｓ
+	{ 0x8294, { 't' } },		// ｔ
+	{ 0x8295, { 'u' } },		// ｕ
+	{ 0x8296, { 'v' } },		// ｖ
+	{ 0x8297, { 'w' } },		// ｗ
+	{ 0x8298, { 'x' } },		// ｘ
+	{ 0x8299, { 'y' } },		// ｙ
+	{ 0x829a, { 'z' } },		// ｚ
+	{ 0x8c8e, { 0x14, 0x01 } },	// 月 +0x30
+	{ 0x89ce, { 0x14, 0x02 } },	// 火 +0x30
+	{ 0x9085, { 0x14, 0x03 } },	// 水 +0x30
+	{ 0x96d8, { 0x14, 0x04 } },	// 木 +0x30
+	{ 0x8be0, { 0x14, 0x05 } },	// 金 +0x30
+	{ 0x9379, { 0x14, 0x06 } },	// 土 +0x30
+	{ 0x93fa, { 0x14, 0x07 } },	// 日 +0x30
+	{ 0x944e, { 0x14, 0x08 } },	// 年 +0x30
+	{ 0x897e, { 0x14, 0x09 } },	// 円 +0x30
+	{ 0x8e9e, { 0x14, 0x0a } },	// 時 +0x30
+	{ 0x95aa, { 0x14, 0x0b } },	// 分 +0x30
+	{ 0x9562, { 0x14, 0x0c } },	// 秒 +0x30
+	{ 0x9553, { 0x14, 0x0d } },	// 百 +0x30
+	{ 0x90e7, { 0x14, 0x0e } },	// 千 +0x30
+	{ 0x969c, { 0x14, 0x0f } },	// 万 +0x30
+	{ 0x83ce, { 0x14, 0x10 } },	// π +0x30
+	{ 0x84a8, { 0x14, 0x11 } },	// ┴ +0x30
+	{ 0x84a6, { 0x14, 0x12 } },	// ┬ +0x30
+	{ 0x84a7, { 0x14, 0x13 } },	// ┤ +0x30
+	{ 0x84a5, { 0x14, 0x14 } },	// ├ +0x30
+	{ 0x84a9, { 0x14, 0x15 } },	// ┼ +0x30
+	{ 0x84a0, { 0x14, 0x16 } },	// │ +0x30
+	{ 0x849f, { 0x14, 0x17 } },	// ─ +0x30
+	{ 0x84a1, { 0x14, 0x18 } },	// ┌ +0x30
+	{ 0x84a2, { 0x14, 0x19 } },	// ┐ +0x30
+	{ 0x84a4, { 0x14, 0x1a } },	// └ +0x30
+	{ 0x84a3, { 0x14, 0x1b } },	// ┘ +0x30
+	{ 0x84b3, { 0x14, 0x11 } },	// ┻ +0x30
+	{ 0x84b1, { 0x14, 0x12 } },	// ┳ +0x30
+	{ 0x84b2, { 0x14, 0x13 } },	// ┫ +0x30
+	{ 0x84b0, { 0x14, 0x14 } },	// ┣ +0x30
+	{ 0x84b4, { 0x14, 0x15 } },	// ╋ +0x30
+	{ 0x84ab, { 0x14, 0x16 } },	// ┃ +0x30
+	{ 0x84aa, { 0x14, 0x17 } },	// ━ +0x30
+	{ 0x84ac, { 0x14, 0x18 } },	// ┏ +0x30
+	{ 0x84ad, { 0x14, 0x19 } },	// ┓ +0x30
+	{ 0x84af, { 0x14, 0x1a } },	// ┗ +0x30
+	{ 0x84ae, { 0x14, 0x1b } },	// ┛ +0x30
+	{ 0x817e, { 0x14, 0x1c } },	// × +0x30
+	{ 0x91e5, { 0x14, 0x1d } },	// 大 +0x30
+	{ 0x9286, { 0x14, 0x1e } },	// 中 +0x30
+	{ 0x8fac, { 0x14, 0x1f } },	// 小 +0x30
+	{ 0x81a3, { 0x80 } },		// ▲
+	{ 0x81a5, { 0x81 } },		// ▼
+	{ 0x819a, { 0x82 } },		// ★
+	{ 0x819f, { 0x83 } },		// ◆
+	{ 0x819b, { 0x84 } },		// ○
+	{ 0x819c, { 0x85 } },		// ●
+	{ 0x82f0, { 0x86 } },		// を
+	{ 0x829f, { 0x87 } },		// ぁ
+	{ 0x82a1, { 0x88 } },		// ぃ
+	{ 0x82a3, { 0x89 } },		// ぅ
+	{ 0x82a5, { 0x8a } },		// ぇ
+	{ 0x82a7, { 0x8b } },		// ぉ
+	{ 0x82e1, { 0x8c } },		// ゃ
+	{ 0x82e3, { 0x8d } },		// ゅ
+	{ 0x82e5, { 0x8e } },		// ょ
+	{ 0x82c1, { 0x8f } },		// っ
+	{ 0x82a0, { 0x91 } },		// あ
+	{ 0x82a2, { 0x92 } },		// い
+	{ 0x82a4, { 0x93 } },		// う
+	{ 0x82a6, { 0x94 } },		// え
+	{ 0x82a8, { 0x95 } },		// お
+	{ 0x82a9, { 0x96 } },		// か
+	{ 0x82ab, { 0x97 } },		// き
+	{ 0x82ad, { 0x98 } },		// く
+	{ 0x82af, { 0x99 } },		// け
+	{ 0x82b1, { 0x9a } },		// こ
+	{ 0x82b3, { 0x9b } },		// さ
+	{ 0x82b5, { 0x9c } },		// し
+	{ 0x82b7, { 0x9d } },		// す
+	{ 0x82b9, { 0x9e } },		// せ
+	{ 0x82bb, { 0x9f } },		// そ
+	{ 0x8142, { 0xa1 } },		// 。
+	{ 0x8175, { 0xa2 } },		// 「
+	{ 0x8176, { 0xa3 } },		// 」
+	{ 0x8141, { 0xa4 } },		// 、
+	{ 0x8145, { 0xa5 } },		// ・
+	{ 0x8392, { 0xa6 } },		// ヲ
+	{ 0x8340, { 0xa7 } },		// ァ
+	{ 0x8342, { 0xa8 } },		// ィ
+	{ 0x8344, { 0xa9 } },		// ゥ
+	{ 0x8346, { 0xaa } },		// ェ
+	{ 0x8348, { 0xab } },		// ォ
+	{ 0x8383, { 0xac } },		// ャ
+	{ 0x8385, { 0xad } },		// ュ
+	{ 0x8387, { 0xae } },		// ョ
+	{ 0x8362, { 0xaf } },		// ッ
+	{ 0x8341, { 0xb1 } },		// ア
+	{ 0x8343, { 0xb2 } },		// イ
+	{ 0x8345, { 0xb3 } },		// ウ
+	{ 0x8347, { 0xb4 } },		// エ
+	{ 0x8349, { 0xb5 } },		// オ
+	{ 0x834a, { 0xb6 } },		// カ
+	{ 0x834c, { 0xb7 } },		// キ
+	{ 0x834e, { 0xb8 } },		// ク
+	{ 0x8350, { 0xb9 } },		// ケ
+	{ 0x8352, { 0xba } },		// コ
+	{ 0x8354, { 0xbb } },		// サ
+	{ 0x8356, { 0xbc } },		// シ
+	{ 0x8358, { 0xbd } },		// ス
+	{ 0x835a, { 0xbe } },		// セ
+	{ 0x835c, { 0xbf } },		// ソ
+	{ 0x835e, { 0xc0 } },		// タ
+	{ 0x8360, { 0xc1 } },		// チ
+	{ 0x8363, { 0xc2 } },		// ツ
+	{ 0x8365, { 0xc3 } },		// テ
+	{ 0x8367, { 0xc4 } },		// ト
+	{ 0x8369, { 0xc5 } },		// ナ
+	{ 0x836a, { 0xc6 } },		// ニ
+	{ 0x836b, { 0xc7 } },		// ヌ
+	{ 0x836c, { 0xc8 } },		// ネ
+	{ 0x836d, { 0xc9 } },		// ノ
+	{ 0x836e, { 0xca } },		// ハ
+	{ 0x8371, { 0xcb } },		// ヒ
+	{ 0x8374, { 0xcc } },		// フ
+	{ 0x8377, { 0xcd } },		// ヘ
+	{ 0x837a, { 0xce } },		// ホ
+	{ 0x837d, { 0xcf } },		// マ
+	{ 0x837e, { 0xd0 } },		// ミ
+	{ 0x8380, { 0xd1 } },		// ム
+	{ 0x8381, { 0xd2 } },		// メ
+	{ 0x8382, { 0xd3 } },		// モ
+	{ 0x8384, { 0xd4 } },		// ヤ
+	{ 0x8386, { 0xd5 } },		// ユ
+	{ 0x8388, { 0xd6 } },		// ヨ
+	{ 0x8389, { 0xd7 } },		// ラ
+	{ 0x838a, { 0xd8 } },		// リ
+	{ 0x838b, { 0xd9 } },		// ル
+	{ 0x838c, { 0xda } },		// レ
+	{ 0x838d, { 0xdb } },		// ロ
+	{ 0x838f, { 0xdc } },		// ワ
+	{ 0x8393, { 0xdd } },		// ン
+	{ 0x814a, { 0xde } },		// ゛
+	{ 0x814b, { 0xdf } },		// ゜
+	{ 0x82bd, { 0xe0 } },		// た
+	{ 0x82bf, { 0xe1 } },		// ち
+	{ 0x82c2, { 0xe2 } },		// つ
+	{ 0x82c4, { 0xe3 } },		// て
+	{ 0x82c6, { 0xe4 } },		// と
+	{ 0x82c8, { 0xe5 } },		// な
+	{ 0x82c9, { 0xe6 } },		// に
+	{ 0x82ca, { 0xe7 } },		// ぬ
+	{ 0x82cb, { 0xe8 } },		// ね
+	{ 0x82cc, { 0xe9 } },		// の
+	{ 0x82cd, { 0xea } },		// は
+	{ 0x82d0, { 0xeb } },		// ひ
+	{ 0x82d3, { 0xec } },		// ふ
+	{ 0x82d6, { 0xed } },		// へ
+	{ 0x82d9, { 0xee } },		// ほ
+	{ 0x82dc, { 0xef } },		// ま
+	{ 0x82dd, { 0xf0 } },		// み
+	{ 0x82de, { 0xf1 } },		// む
+	{ 0x82df, { 0xf2 } },		// め
+	{ 0x82e0, { 0xf3 } },		// も
+	{ 0x82e2, { 0xf4 } },		// や
+	{ 0x82e4, { 0xf5 } },		// ゆ
+	{ 0x82e6, { 0xf6 } },		// よ
+	{ 0x82e7, { 0xf7 } },		// ら
+	{ 0x82e8, { 0xf8 } },		// り
+	{ 0x82e9, { 0xf9 } },		// る
+	{ 0x82ea, { 0xfa } },		// れ
+	{ 0x82eb, { 0xfb } },		// ろ
+	{ 0x82ed, { 0xfc } },		// わ
+	{ 0x82f1, { 0xfd } },		// ん
+	{ 0x82aa, { 0x96, 0xde } },	// が
+	{ 0x82ac, { 0x97, 0xde } },	// ぎ
+	{ 0x82ae, { 0x98, 0xde } },	// ぐ
+	{ 0x82b0, { 0x99, 0xde } },	// げ
+	{ 0x82b2, { 0x9a, 0xde } },	// ご
+	{ 0x82b4, { 0x9b, 0xde } },	// ざ
+	{ 0x82b6, { 0x9c, 0xde } },	// じ
+	{ 0x82b8, { 0x9d, 0xde } },	// ず
+	{ 0x82ba, { 0x9e, 0xde } },	// ぜ
+	{ 0x82bc, { 0x9f, 0xde } },	// ぞ
+	{ 0x82be, { 0xe0, 0xde } },	// だ
+	{ 0x82c0, { 0xe1, 0xde } },	// ぢ
+	{ 0x82c3, { 0xe2, 0xde } },	// づ
+	{ 0x82c5, { 0xe3, 0xde } },	// で
+	{ 0x82c7, { 0xe4, 0xde } },	// ど
+	{ 0x82ce, { 0xea, 0xde } },	// ば
+	{ 0x82d1, { 0xeb, 0xde } },	// び
+	{ 0x82d4, { 0xec, 0xde } },	// ぶ
+	{ 0x82d7, { 0xed, 0xde } },	// べ
+	{ 0x82da, { 0xee, 0xde } },	// ぼ
+	{ 0x834b, { 0xb6, 0xde } },	// ガ
+	{ 0x834d, { 0xb7, 0xde } },	// ギ
+	{ 0x834f, { 0xb8, 0xde } },	// グ
+	{ 0x8351, { 0xb9, 0xde } },	// ゲ
+	{ 0x8353, { 0xba, 0xde } },	// ゴ
+	{ 0x8355, { 0xbb, 0xde } },	// ザ
+	{ 0x8357, { 0xbc, 0xde } },	// ジ
+	{ 0x8359, { 0xbd, 0xde } },	// ズ
+	{ 0x835b, { 0xbe, 0xde } },	// ゼ
+	{ 0x835d, { 0xbf, 0xde } },	// ゾ
+	{ 0x835f, { 0xc0, 0xde } },	// ダ
+	{ 0x8361, { 0xc1, 0xde } },	// ヂ
+	{ 0x8364, { 0xc2, 0xde } },	// ヅ
+	{ 0x8366, { 0xc3, 0xde } },	// デ
+	{ 0x8368, { 0xc4, 0xde } },	// ド
+	{ 0x836f, { 0xca, 0xde } },	// バ
+	{ 0x8372, { 0xcb, 0xde } },	// ビ
+	{ 0x8375, { 0xcc, 0xde } },	// ブ
+	{ 0x8378, { 0xcd, 0xde } },	// ベ
+	{ 0x837b, { 0xce, 0xde } },	// ボ
+	{ 0x8394, { 0xb3, 0xde } },	// ヴ
+	{ 0x82cf, { 0xea, 0xdf } },	// ぱ
+	{ 0x82d2, { 0xeb, 0xdf } },	// ぴ
+	{ 0x82d5, { 0xec, 0xdf } },	// ぷ
+	{ 0x82d8, { 0xed, 0xdf } },	// ぺ
+	{ 0x82db, { 0xee, 0xdf } },	// ぽ
+	{ 0x8370, { 0xca, 0xdf } },	// パ
+	{ 0x8373, { 0xcb, 0xdf } },	// ピ
+	{ 0x8376, { 0xcc, 0xdf } },	// プ
+	{ 0x8379, { 0xcd, 0xdf } },	// ペ
+	{ 0x837c, { 0xce, 0xdf } }	// ポ
 };
 
-// add 2000.05.25.
-const int sjistbl2[] = {
-	// sjis dakuon list
-	0x82aa, 0x82ac, 0x82ae, 0x82b0, 0x82b2, 
-	0x82b4, 0x82b6, 0x82b8, 0x82ba, 0x82bc, 
-	0x82be, 0x82c0, 0x82c3, 0x82c5, 0x82c7, 
-	0x82ce, 0x82d1, 0x82d4, 0x82d7, 0x82da, 
-	0x834b, 0x834d, 0x834f, 0x8351, 0x8353, 
-	0x8355, 0x8357, 0x8359, 0x835b, 0x835d, 
-	0x835f, 0x8361, 0x8364, 0x8366, 0x8368, 
-	0x836f, 0x8372, 0x8375, 0x8378, 0x837b, 
-	// sjis han-dakuon list
-	0x82cf, 0x82d2, 0x82d5, 0x82d8, 0x82db, 
-	0x8370, 0x8373, 0x8376, 0x8379, 0x837c, 
-	// for "vu" (2001.01.06)
-	0x8394,
-};
 
 
 /////////////////////////////////////////////////////////////////////////////
 // SJIS -> P6
 //
-// 引数:	dstr			P6文字列格納バッファへの参照(末尾に追記)
-//			sstr			SJIS文字列への参照
-// 返値:	なし
+// 引数:	dstr		P6文字列格納バッファへの参照(末尾に追記)
+//			sstr		SJIS文字列への参照
+// 返値:	bool		true:正常終了 false:変換できない文字があった
 /////////////////////////////////////////////////////////////////////////////
-void Sjis2P6( std::string& dstr, const std::string& sstr )
+bool Sjis2P6( std::string& dstr, const std::string& sstr )
 {
-	auto ss = sstr.begin();
+	WORD w = 0;
 	
-	while( ss != sstr.end() ){
-		int c = *ss++;
-		if( (c >= 0x80) && (c <= 0x9f) ){
-			c = c * 256 + (BYTE)(*ss++);
-			
-			// for dakuon/han-dakuon 2000.05.25.
-			int opt = 0;
-			for( int j = 0; j < COUNTOF(sjistbl2); j++ ){
-				if( sjistbl2[j] == c ){
-					if( j == 50 ){
-						// for "vu" (2001.01.06)
-						opt = 1;
-						c = 0x8345;
-					}else{
-						opt = (j < 40) ? 1 : 2;
-						c = c - opt;
-						break;
-					}
-				}
+	for( auto &c : sstr ){
+		if( w ){
+			w += (BYTE)c;
+			auto c2 = sjisp6tbl.find( w );
+			if( c2 == sjisp6tbl.end() ){
+				return false;
 			}
-			
-			for( int j = 0; j < 256; j++ ){
-				if( sjistbl[j] == c ){
-					if( j <= 0x1f ){
-						// if graphic character
-						dstr += 0x14;
-						dstr += (char)(j + 0x30);
-					}else{
-						dstr += (char)j;
-						if( opt != 0 )
-							dstr += (char)(0xde + opt - 1);
-					}
-					break;
-				}
-			}
+			dstr.insert( dstr.end(), c2->second.begin(), c2->second.end());
+			w = 0;
+		}else if( (((BYTE)c >= 0x80) && ((BYTE)c <= 0x9f)) || (((BYTE)c >= 0xe0) && ((BYTE)c <= 0xef)) ){
+			w = (BYTE)c << 8;
 		}else if( c <= 0x1f ){
 			switch( c ){
 			case 0x09:
-				dstr += 0x09;
-				break;
-				
-			case 0x0a:
-				dstr += 0x0d;
-				break;
-				
 			case 0x0d:
-				if( *ss == 0x0a ) ss++;
-				dstr += 0x0d;
+				dstr += c;
 			}
-		}else
-			dstr += (char)c;
+		}else{
+			dstr += c;
+		}
 	}
+	return true;
 }
 
 
@@ -210,8 +439,9 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 	VRect rec;
 	
 	
-	if( !(bpp == 32 || bpp == 24 || bpp == 8 || bpp == 1) )
+	if( !(bpp == 32 || bpp == 24 || bpp == 8 || bpp == 1) ){
 		return false;
+	}
 	
 	// 領域設定
 	if( pos ){
@@ -227,8 +457,9 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 	
 	
 	// 各構造体を確保・初期化する
-	if( !(PngPtr = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr)) )
+	if( !(PngPtr = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr)) ){
 		return false;
+	}
 	
 	if( !(InfoPtr = png_create_info_struct( PngPtr )) ){
 		png_destroy_write_struct( &PngPtr, nullptr );
@@ -238,10 +469,11 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 	// エラー処理
 	if( setjmp( png_jmpbuf( PngPtr ) ) ){
 		png_destroy_write_struct( &PngPtr, &InfoPtr );
-		if( fp ) fclose( fp );
+		if( fp ){ fclose( fp ); }
 		if( image ){
-			for( int i = 0; i < rec.h; i++ )
-				if( image[i] ) delete [] image[i];
+			for( int i = 0; i < rec.h; i++ ){
+				if( image[i] ){ delete [] image[i]; }
+			}
 			delete [] image;
 		}
 		return false;
@@ -287,8 +519,9 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 	
 	// 画像ファイルを開く
 	if( !(fp = OSD_Fopen( filepath, "wb" )) ){
-		for( int i = 0; i < rec.h; i++ )
-			if( image[i] ) delete [] image[i];
+		for( int i = 0; i < rec.h; i++ ){
+			if( image[i] ){ delete [] image[i]; }
+		}
 		delete [] image;
 		png_destroy_write_struct( &PngPtr, &InfoPtr );
 		return false;
@@ -354,8 +587,9 @@ VSurface* LoadImg( const P6VPATH& filepath )
 	
 	
 	// 各構造体を確保・初期化する
-	if( !(PngPtr = png_create_read_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr)) )
+	if( !(PngPtr = png_create_read_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr)) ){
 		return nullptr;
+	}
 	
 	if( !(InfoPtr = png_create_info_struct( PngPtr )) ){
 		png_destroy_read_struct( &PngPtr, nullptr, nullptr );
@@ -369,9 +603,9 @@ VSurface* LoadImg( const P6VPATH& filepath )
 	
 	// エラー処理
 	if( setjmp( png_jmpbuf( PngPtr ) ) ){
-		if( fp ) fclose( fp );
+		if( fp ){ fclose( fp ); }
 		png_destroy_read_struct( &PngPtr, &InfoPtr, &EndInfo );
-		if( sur ) delete sur;
+		if( sur ){ delete sur; }
 		return nullptr;
 	}
 	
@@ -450,7 +684,7 @@ VSurface* LoadImg( const P6VPATH& filepath )
 /////////////////////////////////////////////////////////////////////////////
 // メッセージテーブル
 /////////////////////////////////////////////////////////////////////////////
-static const std::unordered_map<TextID, const std::string> MsgString =
+static const std::map<TextID, const std::string> MsgString =
 {
 	{ T_EMPTY,					"???" },
 	
@@ -468,46 +702,48 @@ static const std::unordered_map<TextID, const std::string> MsgString =
 	{ T_REPLAYRES,				N_( "リプレイを途中保存地点まで巻き戻します\nよろしいですか？" ) },
 	
 	// INIファイル用メッセージ ------
-	{ TINI_TITLE,				N_( "; === PC6001V 初期設定ファイル ===\n\n" ) },
+	{ TINI_TITLE,				"; === PC6001V " N_( "初期設定ファイル" ) " ===\n\n" },
 	// [CONFIG]
-	{ TINI_Model,				N_( "機種 60:PC-6001 61:PC-6001A 62:PC-6001mkⅡ 66:PC-6601 64:PC-6001mkⅡSR 68:PC-6601SR" ) },
-	{ TINI_OverClock,			N_( "オーバークロック率 (1-1000)%" ) },
-	{ TINI_CheckCRC,			N_( "CRCチェック Yes:有効 No:無効" ) },
+	{ TINI_Model,				N_( "機種" ) " 60:PC-6001 61:PC-6001A 62:PC-6001mkⅡ 66:PC-6601 64:PC-6001mkⅡSR 68:PC-6601SR" },
+	{ TINI_OverClock,			N_( "オーバークロック率" ) " (1-1000)%" },
+	{ TINI_CheckCRC,			N_( "CRCチェック" ) " "		N_( "Yes:有効 No:無効" ) },
+	{ TINI_Romaji,				N_( "ローマ字入力" ) " "	N_( "Yes:有効 No:無効") },
+	
 	// [CMT]
-	{ TINI_TurboTAPE,			N_( "Turbo TAPE Yes:有効 No:無効" ) },
-	{ TINI_BoostUp,				N_( "BoostUp Yes:有効 No:無効" ) },
-	{ TINI_MaxBoost60,			N_( "BoostUp 最大倍率(N60モード)" ) },
-	{ TINI_MaxBoost62,			N_( "BoostUp 最大倍率(N60m/N66モード)" ) },
-	{ TINI_StopBit,				N_( "ストップビット数 (2-10)bit" ) },
+	{ TINI_TurboTAPE,			N_( "Turbo TAPE" ) " "		N_( "Yes:有効 No:無効" ) },
+	{ TINI_BoostUp,				N_( "Boost Up" ) " "		N_( "Yes:有効 No:無効" ) },
+	{ TINI_MaxBoost60,			N_( "Boost Up" ) " "		N_( "最大倍率(N60モード)" ) },
+	{ TINI_MaxBoost62,			N_( "Boost Up" ) " "		N_( "最大倍率(N60m/N66モード)" ) },
+	{ TINI_StopBit,				N_( "ストップビット数" ) " (2-10)bit" },
 	// [FDD]
-	{ TINI_FDDrive,				N_( "ドライブ数 (0-2)" ) },
-	{ TINI_FDDWait,				N_( "アクセスウェイト Yes:有効 No:無効" ) },
+	{ TINI_FDDrive,				N_( "ドライブ数" ) " (0-2)" },
+	{ TINI_FDDWait,				N_( "アクセスウェイト" ) " "	N_( "Yes:有効 No:無効" ) },
 	// [DISPLAY]
 	{ TINI_Mode4Color,			N_( "MODE4カラーモード 0:モノクロ 1:赤/青 2:青/赤 3:ピンク/緑 4:緑/ピンク" ) },
-	{ TINI_WindowZoom,			N_( "ウィンドウ表示倍率(%)" ) },
+	{ TINI_WindowZoom,			N_( "ウィンドウ表示倍率" ) "(%)" },
 	{ TINI_FrameSkip,			N_( "フレームスキップ" ) },
-	{ TINI_ScanLine,			N_( "スキャンライン Yes:あり No:なし" ) },
-	{ TINI_ScanLineBr,			N_( "スキャンライン輝度 (0-100)%" ) },
-	{ TINI_DispNTSC,			N_( "4:3表示 Yes:有効 No:無効" ) },
-	{ TINI_Filtering,			N_( "フィルタリング Yes:アンチエイリアシング No:ニアレストネイバー" ) },
-	{ TINI_FullScreen,			N_( "フルスクリーンモード Yes:有効 No:無効" ) },
-	{ TINI_DispStatus,			N_( "ステータスバー Yes:表示 No:非表示" ) },
+	{ TINI_ScanLine,			N_( "スキャンライン" ) " "	N_( "Yes:あり No:なし" ) },
+	{ TINI_ScanLineBr,			N_( "スキャンライン輝度" ) " (0-100)%" },
+	{ TINI_DispNTSC,			N_( "4:3表示" ) " "					N_( "Yes:有効 No:無効" ) },
+	{ TINI_Filtering,			N_( "フィルタリング" ) " "			N_( "Yes:アンチエイリアシング No:ニアレストネイバー" ) },
+	{ TINI_FullScreen,			N_( "フルスクリーンモード" ) " "	N_( "Yes:有効 No:無効" ) },
+	{ TINI_DispStatus,			N_( "ステータスバー" ) " "			N_( "Yes:表示 No:非表示" ) },
 	// [MOVIE]
-	{ TINI_AviBpp,				N_( "ビデオキャプチャ色深度 (16,24,32)bit" ) },
-	{ TINI_AviZoom,				N_( "ビデオキャプチャ時ウィンドウ表示倍率(%)" ) },
-	{ TINI_AviFrameSkip,		N_( "ビデオキャプチャ時フレームスキップ" ) },
-	{ TINI_AviScanLine,			N_( "ビデオキャプチャ時スキャンライン Yes:あり No:なし" ) },
-	{ TINI_AviScanLineBr,		N_( "ビデオキャプチャ時スキャンライン輝度 (0-100)%" ) },
-	{ TINI_AviDispNTSC,			N_( "ビデオキャプチャ時4:3表示 Yes:有効 No:無効" ) },
-	{ TINI_AviFiltering,		N_( "ビデオキャプチャ時フィルタリング Yes:アンチエイリアシング No:ニアレストネイバー" ) },
+	{ TINI_AviBpp,				N_( "ビデオキャプチャ時" ) N_( "色深度" ) " (16,24,32)bit" },
+	{ TINI_AviZoom,				N_( "ビデオキャプチャ時" ) N_( "ウィンドウ表示倍率" ) "(%)" },
+	{ TINI_AviFrameSkip,		N_( "ビデオキャプチャ時" ) N_( "フレームスキップ" ) },
+	{ TINI_AviScanLine,			N_( "ビデオキャプチャ時" ) N_( "スキャンライン" ) " "	N_( "Yes:あり No:なし" ) },
+	{ TINI_AviScanLineBr,		N_( "ビデオキャプチャ時" ) N_( "スキャンライン輝度" ) " (0-100)%" },
+	{ TINI_AviDispNTSC,			N_( "ビデオキャプチャ時" ) N_( "4:3表示" ) " "			N_( "Yes:有効 No:無効" ) },
+	{ TINI_AviFiltering,		N_( "ビデオキャプチャ時" ) N_( "フィルタリング" ) " "	N_( "Yes:アンチエイリアシング No:ニアレストネイバー" ) },
 	// [SOUND]
-	{ TINI_SampleRate,			N_( "サンプリングレート (44100/22050/11025)Hz" ) },
+	{ TINI_SampleRate,			N_( "サンプリングレート" ) " (44100/22050/11025)Hz" },
 	{ TINI_SoundBuffer,			N_( "サウンドバッファサイズ" ) },
-	{ TINI_MasterVolume,		N_( "マスター音量 (0-100)" ) },
-	{ TINI_PsgVolume,			N_( "PSG音量 (0-100)" ) },
+	{ TINI_MasterVolume,		N_( "マスター音量" ) " (0-100)" },
+	{ TINI_PsgVolume,			N_( "PSG音量" ) " (0-100)" },
 	{ TINI_PsgLPF,				N_( "PSG LPFカットオフ周波数(0で無効)" ) },
-	{ TINI_VoiceVolume,			N_( "音声合成音量 (0-100)" ) },
-	{ TINI_TapeVolume,			N_( "TAPEモニタ音量 (0-100)" ) },
+	{ TINI_VoiceVolume,			N_( "音声合成音量" ) " (0-100)" },
+	{ TINI_TapeVolume,			N_( "TAPEモニタ音量" ) " (0-100)" },
 	{ TINI_TapeLPF,				N_( "TAPE LPFカットオフ周波数(0で無効)" ) },
 	// [FILES]
 	{ TINI_ExtRom,				N_( "拡張ROMファイル名" ) },
@@ -517,23 +753,23 @@ static const std::unordered_map<TextID, const std::string> MsgString =
 	{ TINI_disk2,				N_( "DISK2ファイル名(起動時に自動マウント)" ) },
 	{ TINI_printer,				N_( "プリンタ出力ファイル名" ) },
 	// [PATH]
-	{ TINI_RomPath,				N_( "ROMイメージ格納パス" ) },
-	{ TINI_TapePath,			N_( "TAPEイメージ格納パス" ) },
-	{ TINI_DiskPath,			N_( "DISKイメージ格納パス" ) },
-	{ TINI_ExtRomPath,			N_( "拡張ROMイメージ格納パス" ) },
-	{ TINI_ImgPath,				N_( "スナップショット格納パス" ) },
-	{ TINI_WavePath,			N_( "WAVEファイル格納パス" ) },
-	{ TINI_FontPath,			N_( "FONTファイル格納パス" ) },
-	{ TINI_DokoPath,			N_( "どこでもSAVE格納パス" ) },
+	{ TINI_RomPath,				N_( "ROMイメージ" )			N_( "ファイル格納パス" ) },
+	{ TINI_TapePath,			N_( "TAPEイメージ" )		N_( "ファイル格納パス" ) },
+	{ TINI_DiskPath,			N_( "DISKイメージ" )		N_( "ファイル格納パス" ) },
+	{ TINI_ExtRomPath,			N_( "拡張ROMイメージ" )		N_( "ファイル格納パス" ) },
+	{ TINI_ImgPath,				N_( "スナップショット" )	N_( "ファイル格納パス" ) },
+	{ TINI_WavePath,			N_( "WAVE" )				N_( "ファイル格納パス" ) },
+	{ TINI_FontPath,			N_( "FONT" )				N_( "ファイル格納パス" ) },
+	{ TINI_DokoPath,			N_( "どこでもSAVE" )		N_( "ファイル格納パス" ) },
 	// [CHECK]
-	{ TINI_CkDokoLoad,			N_( "どこでもLOAD(SLOT)実行時確認 Yes:する No:しない" ) },
-	{ TINI_CkQuit,				N_( "終了時確認 Yes:する No:しない" ) },
-	{ TINI_SaveQuit,			N_( "終了時INIファイルを保存 Yes:する No:しない" ) },
+	{ TINI_CkDokoLoad,			N_( "どこでもLOAD(SLOT)実行時確認" ) " "	N_( "Yes:する No:しない" ) },
+	{ TINI_CkQuit,				N_( "終了時確認" ) " "						N_( "Yes:する No:しない" ) },
+	{ TINI_SaveQuit,			N_( "終了時INIファイルを保存" ) " "			N_( "Yes:する No:しない" ) },
 	// [OPTION]
 	{ TINI_ExCartridge,			N_( "拡張カートリッジ 0:なし" ) },
 	
 	// どこでもSAVE用メッセージ ------
-	{ TDOK_TITLE,				N_( "; === PC6001V どこでもSAVEファイル ===\n\n" ) },
+	{ TDOK_TITLE,				"; === PC6001V" N_( "どこでもSAVEファイル" ) " ===\n\n" },
 	
 	// Error用メッセージ ------
 	{ TERR_ERROR,				N_( "Error" ) },
@@ -571,21 +807,63 @@ static const std::unordered_map<TextID, const std::string> MsgString =
 /////////////////////////////////////////////////////////////////////////////
 static const std::vector<std::string> JColorName =
 {
-	N_( "MODE1,2 黒(ボーダー)" ),
-	N_( "MODE1 Set1 緑" ),			N_( "MODE1 Set1 深緑" ),		N_( "MODE1 Set2 橙" ),			N_( "MODE1 Set2 深橙" ),
-	N_( "MODE2/3 緑" ),				N_( "MODE2/3 黄" ),				N_( "MODE2/3 青" ),				N_( "MODE2/3 赤" ),
-	N_( "MODE2/3 白" ),				N_( "MODE2/3 シアン" ),			N_( "MODE2/3 マゼンタ" ),		N_( "MODE2/3 橙" ),
-	N_( "MODE4 Set1 深緑" ),		N_( "MODE4 Set1 緑" ),			N_( "MODE4 Set2 黒" ),			N_( "MODE4 Set2 白" ),
-	N_( "MODE4 Set1 にじみ 赤" ),	N_( "MODE4 Set1 にじみ 青" ),	N_( "MODE4 Set1 にじみ 桃" ),	N_( "MODE4 Set1 にじみ 緑" ),
-	N_( "MODE4 Set1 にじみ 明赤" ),	N_( "MODE4 Set1 にじみ 暗赤" ),	N_( "MODE4 Set1 にじみ 明青" ),	N_( "MODE4 Set1 にじみ 暗青" ),
-	N_( "MODE4 Set1 にじみ 明桃" ),	N_( "MODE4 Set1 にじみ 暗桃" ),	N_( "MODE4 Set1 にじみ 明緑" ),	N_( "MODE4 Set1 にじみ 暗緑" ),
-	N_( "MODE4 Set2 にじみ 赤" ),	N_( "MODE4 Set2 にじみ 青" ),	N_( "MODE4 Set2 にじみ 桃" ),	N_( "MODE4 Set2 にじみ 緑" ),
-	N_( "MODE4 Set2 にじみ 明赤" ),	N_( "MODE4 Set2 にじみ 暗赤" ),	N_( "MODE4 Set2 にじみ 明青" ),	N_( "MODE4 Set2 にじみ 暗青" ),
-	N_( "MODE4 Set2 にじみ 明桃" ),	N_( "MODE4 Set2 にじみ 暗桃" ),	N_( "MODE4 Set2 にじみ 明緑" ),	N_( "MODE4 Set2 にじみ 暗緑" ),
-	N_( "RGB 透明(黒)" ),			N_( "RGB 橙" ),					N_( "RGB 青緑" ),				N_( "RGB 黄緑" ),
-	N_( "RGB 青紫" ),				N_( "RGB 赤紫" ),				N_( "RGB 空色" ),				N_( "RGB 灰色" ),
-	N_( "RGB 黒" ),					N_( "RGB 赤" ),					N_( "RGB 緑" ),					N_( "RGB 黄" ),
-	N_( "RGB 青" ),					N_( "RGB マゼンタ" ),			N_( "RGB シアン" ),				N_( "RGB 白" )
+	"MODE1,2 "		N_( "黒(ボーダー)" ),
+	"MODE1 Set1 "	N_( "緑" ),
+	"MODE1 Set1 "	N_( "深緑" ),
+	"MODE1 Set2 "	N_( "橙" ),
+	"MODE1 Set2 "	N_( "深橙" ),
+	"MODE2/3 "		N_( "緑" ),
+	"MODE2/3 "		N_( "黄" ),
+	"MODE2/3 "		N_( "青" ),
+	"MODE2/3 "		N_( "赤" ),
+	"MODE2/3 "		N_( "白" ),
+	"MODE2/3 "		N_( "シアン" ),
+	"MODE2/3 "		N_( "マゼンタ" ),
+	"MODE2/3 "		N_( "橙" ),
+	"MODE4 Set1 "	N_( "深緑" ),
+	"MODE4 Set1 "	N_( "緑" ),
+	"MODE4 Set2 "	N_( "黒" ),
+	"MODE4 Set2 "	N_( "白" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "赤" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "青" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "桃" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "緑" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "明赤" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "暗赤" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "明青" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "暗青" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "明桃" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "暗桃" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "明緑" ),
+	"MODE4 Set1 "	N_( "にじみ" ) " " N_( "暗緑" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "赤" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "青" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "桃" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "緑" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "明赤" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "暗赤" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "明青" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "暗青" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "明桃" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "暗桃" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "明緑" ),
+	"MODE4 Set2 "	N_( "にじみ" ) " " N_( "暗緑" ),
+	"RGB "			N_( "透明(黒)" ),
+	"RGB "			N_( "橙" ),
+	"RGB "			N_( "青緑" ),
+	"RGB "			N_( "黄緑" ),
+	"RGB "			N_( "青紫" ),
+	"RGB "			N_( "赤紫" ),
+	"RGB "			N_( "空色" ),
+	"RGB "			N_( "灰色" ),
+	"RGB "			N_( "黒" ),
+	"RGB "			N_( "赤" ),
+	"RGB "			N_( "緑" ),
+	"RGB "			N_( "黄" ),
+	"RGB "			N_( "青" ),
+	"RGB "			N_( "マゼンタ" ),
+	"RGB "			N_( "シアン" ),
+	"RGB "			N_( "白" )
 };
 
 
@@ -595,14 +873,14 @@ static const std::vector<std::string> JColorName =
 static const std::map<WORD, const std::string> CartName =
 {
 	{ 0,			"" },
-	{ EXC6001,		N_( "PCS-6001R 拡張BASIC" ) },
-	{ EXC6005,		N_( "PC-6005 ROMカートリッジ" ) },
-	{ EXC6006,		N_( "PC-6006 拡張ROM/RAMカートリッジ" ) },
-	{ EXC660101,	N_( "PC-6601-01 拡張漢字ROMカートリッジ" ) },
-	{ EXC6006SR,	N_( "PC-6006SR 拡張64KRAMカートリッジ" ) },
-	{ EXC6007SR,	N_( "PC-6007SR 拡張漢字ROM&RAMカートリッジ" ) },
-	{ EXC6053,		N_( "PC-6053 ボイスシンセサイザー" ) },
-	{ EXC60M55,		N_( "PC-60m55 FM音源カートリッジ" ) },
+	{ EXC6001,		"PCS-6001R "	N_( "拡張BASIC" ) },
+	{ EXC6005,		"PC-6005 "		N_( "ROMカートリッジ" ) },
+	{ EXC6006,		"PC-6006 "		N_( "拡張ROM/RAMカートリッジ" ) },
+	{ EXC660101,	"PC-6601-01 "	N_( "拡張漢字ROMカートリッジ" ) },
+	{ EXC6006SR,	"PC-6006SR "	N_( "拡張64KRAMカートリッジ" ) },
+	{ EXC6007SR,	"PC-6007SR "	N_( "拡張漢字ROM&RAMカートリッジ" ) },
+	{ EXC6053,		"PC-6053 "		N_( "ボイスシンセサイザー" ) },
+	{ EXC60M55,		"PC-60m55 "		N_( "FM音源カートリッジ" ) },
 	{ EXCSOL1,		N_( "戦士のカートリッジ" ) },
 	{ EXCSOL2,		N_( "戦士のカートリッジmkⅡ" ) },
 	{ EXCSOL3,		N_( "戦士のカートリッジmkⅢ" ) }
@@ -612,7 +890,7 @@ static const std::map<WORD, const std::string> CartName =
 /////////////////////////////////////////////////////////////////////////////
 // 仮想キーコード -> 名称 変換テーブル
 /////////////////////////////////////////////////////////////////////////////
-static const std::unordered_map<PCKEYsym, const std::string> VKname =
+static const std::map<PCKEYsym, const std::string> VKname =
 {
 	{ KVC_UNKNOWN,		"Unknown" },
 	
@@ -744,258 +1022,129 @@ static const std::unordered_map<PCKEYsym, const std::string> VKname =
 /////////////////////////////////////////////////////////////////////////////
 // 仮想キーコード  -> 文字コード 変換テーブル
 /////////////////////////////////////////////////////////////////////////////
-static const std::unordered_map<PCKEYsym, const BYTE> VKChar0 =
+static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 {
-	{ KVC_UNKNOWN,		0 },
+	{ KVC_UNKNOWN,		{ 0,	0    } },
 	
-	{ KVC_1,			'1' },
-	{ KVC_2,			'2' },
-	{ KVC_3,			'3' },
-	{ KVC_4,			'4' },
-	{ KVC_5,			'5' },
-	{ KVC_6,			'6' },
-	{ KVC_7,			'7' },
-	{ KVC_8,			'8' },
-	{ KVC_9,			'9' },
-	{ KVC_0,			'0' },
+	{ KVC_1,			{ '1',	'!'  } },
+	{ KVC_2,			{ '2',	'\"' } },
+	{ KVC_3,			{ '3',	'#'  } },
+	{ KVC_4,			{ '4',	'$'  } },
+	{ KVC_5,			{ '5',	'%'  } },
+	{ KVC_6,			{ '6',	'&'  } },
+	{ KVC_7,			{ '7',	'\'' } },
+	{ KVC_8,			{ '8',	'('  } },
+	{ KVC_9,			{ '9',	')'  } },
+	{ KVC_0,			{ '0',	0    } },
 	
-	{ KVC_A,			'a' },
-	{ KVC_B,			'b' },
-	{ KVC_C,			'c' },
-	{ KVC_D,			'd' },
-	{ KVC_E,			'e' },
-	{ KVC_F,			'f' },
-	{ KVC_G,			'g' },
-	{ KVC_H,			'h' },
-	{ KVC_I,			'i' },
-	{ KVC_J,			'j' },
-	{ KVC_K,			'k' },
-	{ KVC_L,			'l' },
-	{ KVC_M,			'm' },
-	{ KVC_N,			'n' },
-	{ KVC_O,			'o' },
-	{ KVC_P,			'p' },
-	{ KVC_Q,			'q' },
-	{ KVC_R,			'r' },
-	{ KVC_S,			's' },
-	{ KVC_T,			't' },
-	{ KVC_U,			'u' },
-	{ KVC_V,			'v' },
-	{ KVC_W,			'w' },
-	{ KVC_X,			'x' },
-	{ KVC_Y,			'y' },
-	{ KVC_Z,			'z' },
+	{ KVC_A,			{ 'a',	'A'  } },
+	{ KVC_B,			{ 'b',	'B'  } },
+	{ KVC_C,			{ 'c',	'C'  } },
+	{ KVC_D,			{ 'd',	'D'  } },
+	{ KVC_E,			{ 'e',	'E'  } },
+	{ KVC_F,			{ 'f',	'F'  } },
+	{ KVC_G,			{ 'g',	'G'  } },
+	{ KVC_H,			{ 'h',	'H'  } },
+	{ KVC_I,			{ 'i',	'I'  } },
+	{ KVC_J,			{ 'j',	'J'  } },
+	{ KVC_K,			{ 'k',	'K'  } },
+	{ KVC_L,			{ 'l',	'L'  } },
+	{ KVC_M,			{ 'm',	'M'  } },
+	{ KVC_N,			{ 'n',	'N'  } },
+	{ KVC_O,			{ 'o',	'O'  } },
+	{ KVC_P,			{ 'p',	'P'  } },
+	{ KVC_Q,			{ 'q',	'Q'  } },
+	{ KVC_R,			{ 'r',	'R'  } },
+	{ KVC_S,			{ 's',	'S'  } },
+	{ KVC_T,			{ 't',	'T'  } },
+	{ KVC_U,			{ 'u',	'U'  } },
+	{ KVC_V,			{ 'v',	'V'  } },
+	{ KVC_W,			{ 'w',	'W'  } },
+	{ KVC_X,			{ 'x',	'X'  } },
+	{ KVC_Y,			{ 'y',	'Y'  } },
+	{ KVC_Z,			{ 'z',	'Z'  } },
 	
-	{ KVC_F1,			0 },	// F1
-	{ KVC_F2,			0 },	// F2
-	{ KVC_F3,			0 },	// F3
-	{ KVC_F4,			0 },	// F4
-	{ KVC_F5,			0 },	// F5
-	{ KVC_F6,			0 },	// F6
-	{ KVC_F7,			0 },	// F7
-	{ KVC_F8,			0 },	// F8
-	{ KVC_F9,			0 },	// F9
-	{ KVC_F10,			0 },	// F10
-	{ KVC_F11,			0 },	// F11
-	{ KVC_F12,			0 },	// F12
+	{ KVC_F1,			{ 0,	0    } },	// F1
+	{ KVC_F2,			{ 0,	0    } },	// F2
+	{ KVC_F3,			{ 0,	0    } },	// F3
+	{ KVC_F4,			{ 0,	0    } },	// F4
+	{ KVC_F5,			{ 0,	0    } },	// F5
+	{ KVC_F6,			{ 0,	0    } },	// F6
+	{ KVC_F7,			{ 0,	0    } },	// F7
+	{ KVC_F8,			{ 0,	0    } },	// F8
+	{ KVC_F9,			{ 0,	0    } },	// F9
+	{ KVC_F10,			{ 0,	0    } },	// F10
+	{ KVC_F11,			{ 0,	0    } },	// F11
+	{ KVC_F12,			{ 0,	0    } },	// F12
 	
-	{ KVC_MINUS,		'-' },
-	{ KVC_CARET,		'^' },
-	{ KVC_AT,			'@' },
-	{ KVC_LBRACKET,		'[' },
-	{ KVC_RBRACKET,		']' },
-	{ KVC_SEMICOLON,	';' },
-	{ KVC_COLON,		':' },
-	{ KVC_COMMA,		',' },
-	{ KVC_PERIOD,		'.' },
-	{ KVC_SLASH,		'/' },
-	{ KVC_SPACE,		' ' },
+	{ KVC_MINUS,		{ '-',	'='  } },
+	{ KVC_CARET,		{ '^',	'~'  } },
+	{ KVC_AT,			{ '@',	'`'  } },
+	{ KVC_LBRACKET,		{ '[',	'{'  } },
+	{ KVC_RBRACKET,		{ ']',	'}'  } },
+	{ KVC_SEMICOLON,	{ ';',	'+'  } },
+	{ KVC_COLON,		{ ':',	'*'  } },
+	{ KVC_COMMA,		{ ',',	'<'  } },
+	{ KVC_PERIOD,		{ '.',	'>'  } },
+	{ KVC_SLASH,		{ '/',	'?'  } },
+	{ KVC_SPACE,		{ ' ',	' '  } },
 	
-	{ KVC_BACKSPACE,	0 },	// BackSpace
-	{ KVC_ESC,			0 },	// ESC
-	{ KVC_TAB,			0 },	// Tab
-	{ KVC_CAPSLOCK,		0 },	// CapsLock
-	{ KVC_ENTER,		0 },	// Enter
-	{ KVC_LCTRL,		0 },	// L-Ctrl
-	{ KVC_RCTRL,		0 },	// R-Ctrl
-	{ KVC_LSHIFT,		0 },	// L-Shift
-	{ KVC_RSHIFT,		0 },	// R-Shift
-	{ KVC_LALT,			0 },	// L-Alt
-	{ KVC_RALT,			0 },	// R-Alt
-	{ KVC_PRINT,		0 },	// PrintScreen
-	{ KVC_SCROLLLOCK,	0 },	// ScrollLock
-	{ KVC_PAUSE,		0 },	// Pause
-	{ KVC_INSERT,		0 },	// Insert
-	{ KVC_DELETE,		0 },	// Delete
-	{ KVC_END,			0 },	// End
-	{ KVC_HOME,			0 },	// Home
-	{ KVC_PAGEUP,		0 },	// PageUp
-	{ KVC_PAGEDOWN,		0 },	// PageDown
+	{ KVC_BACKSPACE,	{ 0,	0    } },	// BackSpace
+	{ KVC_ESC,			{ 0,	0    } },	// ESC
+	{ KVC_TAB,			{ 0,	0    } },	// Tab
+	{ KVC_CAPSLOCK,		{ 0,	0    } },	// CapsLock
+	{ KVC_ENTER,		{ 0,	0    } },	// Enter
+	{ KVC_LCTRL,		{ 0,	0    } },	// L-Ctrl
+	{ KVC_RCTRL,		{ 0,	0    } },	// R-Ctrl
+	{ KVC_LSHIFT,		{ 0,	0    } },	// L-Shift
+	{ KVC_RSHIFT,		{ 0,	0    } },	// R-Shift
+	{ KVC_LALT,			{ 0,	0    } },	// L-Alt
+	{ KVC_RALT,			{ 0,	0    } },	// R-Alt
+	{ KVC_PRINT,		{ 0,	0    } },	// PrintScreen
+	{ KVC_SCROLLLOCK,	{ 0,	0    } },	// ScrollLock
+	{ KVC_PAUSE,		{ 0,	0    } },	// Pause
+	{ KVC_INSERT,		{ 0,	0    } },	// Insert
+	{ KVC_DELETE,		{ 0,	0    } },	// Delete
+	{ KVC_END,			{ 0,	0    } },	// End
+	{ KVC_HOME,			{ 0,	0    } },	// Home
+	{ KVC_PAGEUP,		{ 0,	0    } },	// PageUp
+	{ KVC_PAGEDOWN,		{ 0,	0    } },	// PageDown
 	
-	{ KVC_UP,			0 },	// ↑
-	{ KVC_DOWN,			0 },	// ↓
-	{ KVC_LEFT,			0 },	// ←
-	{ KVC_RIGHT,		0 },	// →
+	{ KVC_UP,			{ 0,	0    } },	// ↑
+	{ KVC_DOWN,			{ 0,	0    } },	// ↓
+	{ KVC_LEFT,			{ 0,	0    } },	// ←
+	{ KVC_RIGHT,		{ 0,	0    } },	// →
 	
-	{ KVC_P0,			'0' },	// [0]
-	{ KVC_P1,			'1' },	// [1]
-	{ KVC_P2,			'2' },	// [2]
-	{ KVC_P3,			'3' },	// [3]
-	{ KVC_P4,			'4' },	// [4]
-	{ KVC_P5,			'5' },	// [5]
-	{ KVC_P6,			'6' },	// [6]
-	{ KVC_P7,			'7' },	// [7]
-	{ KVC_P8,			'8' },	// [8]
-	{ KVC_P9,			'9' },	// [9]
-	{ KVC_P_PLUS,		'+' },	// [+]
-	{ KVC_P_MINUS,		'-' },	// [-]
-	{ KVC_P_MULTIPLY,	'*' },	// [*]
-	{ KVC_P_DIVIDE,		'/' },	// [/]
-	{ KVC_P_PERIOD,		'.' },	// [.]
-	{ KVC_NUMLOCK,		0 },	// NumLock
-	{ KVC_P_ENTER,		0 },	// [Enter]
-	
-	//
-	{ KVC_UNDERSCORE,	'\\' },
-	{ KVC_YEN,			'\\' },
-	{ KVC_HIRAGANA,		0 },	// カタカナ/ひらがな
-	{ KVC_HENKAN,		0 },	// 変換
-	{ KVC_MUHENKAN,		0 },	// 無変換
-	{ KVC_HANZEN,		0 },	// 半角/全角
+	{ KVC_P0,			{ '0',	0    } },	// [0]
+	{ KVC_P1,			{ '1',	0    } },	// [1]
+	{ KVC_P2,			{ '2',	0    } },	// [2]
+	{ KVC_P3,			{ '3',	0    } },	// [3]
+	{ KVC_P4,			{ '4',	0    } },	// [4]
+	{ KVC_P5,			{ '5',	0    } },	// [5]
+	{ KVC_P6,			{ '6',	0    } },	// [6]
+	{ KVC_P7,			{ '7',	0    } },	// [7]
+	{ KVC_P8,			{ '8',	0    } },	// [8]
+	{ KVC_P9,			{ '9',	0    } },	// [9]
+	{ KVC_P_PLUS,		{ '+',	'+'  } },	// [+]
+	{ KVC_P_MINUS,		{ '-',	'-'  } },	// [-]
+	{ KVC_P_MULTIPLY,	{ '*',	'*'  } },	// [*]
+	{ KVC_P_DIVIDE,		{ '/',	'/'  } },	// [/]
+	{ KVC_P_PERIOD,		{ '.',	'.'  } },	// [.]
+	{ KVC_NUMLOCK,		{ 0,	0    } },	// NumLock
+	{ KVC_P_ENTER,		{ 0,	0    } },	// [Enter]
 	
 	//
-	{ KVX_LMETA,		0 },	// L-Meta
-	{ KVX_RMETA,		0 },	// R-Meta
-	{ KVX_MENU,			0 }		// Menu
-};
-
-
-/////////////////////////////////////////////////////////////////////////////
-// 仮想キーコード  -> 文字コード 変換テーブル(SHIFT)
-/////////////////////////////////////////////////////////////////////////////
-static const std::unordered_map<PCKEYsym, const BYTE> VKChar1 =
-{
-	{ KVC_UNKNOWN,		0 },
-	
-	{ KVC_1,			'!' },
-	{ KVC_2,			'\"' },
-	{ KVC_3,			'#' },
-	{ KVC_4,			'$' },
-	{ KVC_5,			'%' },
-	{ KVC_6,			'&' },
-	{ KVC_7,			'\'' },
-	{ KVC_8,			'(' },
-	{ KVC_9,			')' },
-	{ KVC_0,			0 },
-	
-	{ KVC_A,			'A' },
-	{ KVC_B,			'B' },
-	{ KVC_C,			'C' },
-	{ KVC_D,			'D' },
-	{ KVC_E,			'E' },
-	{ KVC_F,			'F' },
-	{ KVC_G,			'G' },
-	{ KVC_H,			'H' },
-	{ KVC_I,			'I' },
-	{ KVC_J,			'J' },
-	{ KVC_K,			'K' },
-	{ KVC_L,			'L' },
-	{ KVC_M,			'M' },
-	{ KVC_N,			'N' },
-	{ KVC_O,			'O' },
-	{ KVC_P,			'P' },
-	{ KVC_Q,			'Q' },
-	{ KVC_R,			'R' },
-	{ KVC_S,			'S' },
-	{ KVC_T,			'T' },
-	{ KVC_U,			'U' },
-	{ KVC_V,			'V' },
-	{ KVC_W,			'W' },
-	{ KVC_X,			'X' },
-	{ KVC_Y,			'Y' },
-	{ KVC_Z,			'Z' },
-	
-	{ KVC_F1,			0 },	// F1
-	{ KVC_F2,			0 },	// F2
-	{ KVC_F3,			0 },	// F3
-	{ KVC_F4,			0 },	// F4
-	{ KVC_F5,			0 },	// F5
-	{ KVC_F6,			0 },	// F6
-	{ KVC_F7,			0 },	// F7
-	{ KVC_F8,			0 },	// F8
-	{ KVC_F9,			0 },	// F9
-	{ KVC_F10,			0 },	// F10
-	{ KVC_F11,			0 },	// F11
-	{ KVC_F12,			0 },	// F12
-	
-	{ KVC_MINUS,		'=' },
-	{ KVC_CARET,		'~' },
-	{ KVC_AT,			'`' },
-	{ KVC_LBRACKET,		'{' },
-	{ KVC_RBRACKET,		'}' },
-	{ KVC_SEMICOLON,	'+' },
-	{ KVC_COLON,		'*' },
-	{ KVC_COMMA,		'<' },
-	{ KVC_PERIOD,		'>' },
-	{ KVC_SLASH,		'?' },
-	{ KVC_SPACE,		' ' },
-	
-	{ KVC_BACKSPACE,	0 },	// BackSpace
-	{ KVC_ESC,			0 },	// ESC
-	{ KVC_TAB,			0 },	// Tab
-	{ KVC_CAPSLOCK,		0 },	// CapsLock
-	{ KVC_ENTER,		0 },	// Enter
-	{ KVC_LCTRL,		0 },	// L-Ctrl
-	{ KVC_RCTRL,		0 },	// R-Ctrl
-	{ KVC_LSHIFT,		0 },	// L-Shift
-	{ KVC_RSHIFT,		0 },	// R-Shift
-	{ KVC_LALT,			0 },	// L-Alt
-	{ KVC_RALT,			0 },	// R-Alt
-	{ KVC_PRINT,		0 },	// PrintScreen
-	{ KVC_SCROLLLOCK,	0 },	// ScrollLock
-	{ KVC_PAUSE,		0 },	// Pause
-	{ KVC_INSERT,		0 },	// Insert
-	{ KVC_DELETE,		0 },	// Delete
-	{ KVC_END,			0 },	// End
-	{ KVC_HOME,			0 },	// Home
-	{ KVC_PAGEUP,		0 },	// PageUp
-	{ KVC_PAGEDOWN,		0 },	// PageDown
-	
-	{ KVC_UP,			0 },	// ↑
-	{ KVC_DOWN,			0 },	// ↓
-	{ KVC_LEFT,			0 },	// ←
-	{ KVC_RIGHT,		0 },	// →
-	
-	{ KVC_P0,			0 },	// [0]
-	{ KVC_P1,			0 },	// [1]
-	{ KVC_P2,			0 },	// [2]
-	{ KVC_P3,			0 },	// [3]
-	{ KVC_P4,			0 },	// [4]
-	{ KVC_P5,			0 },	// [5]
-	{ KVC_P6,			0 },	// [6]
-	{ KVC_P7,			0 },	// [7]
-	{ KVC_P8,			0 },	// [8]
-	{ KVC_P9,			0 },	// [9]
-	{ KVC_P_PLUS,		'+' },	// [+]
-	{ KVC_P_MINUS,		'-' },	// [-]
-	{ KVC_P_MULTIPLY,	'*' },	// [*]
-	{ KVC_P_DIVIDE,		'/' },	// [/]
-	{ KVC_P_PERIOD,		'.' },	// [.]
-	{ KVC_NUMLOCK,		0 },	// NumLock
-	{ KVC_P_ENTER,		0 },	// [Enter]
+	{ KVC_UNDERSCORE,	{ '\\',	'_'  } },
+	{ KVC_YEN,			{ '\\',	'|'  } },
+	{ KVC_HIRAGANA,		{ 0,	0    } },	// カタカナ/ひらがな
+	{ KVC_HENKAN,		{ 0,	0    } },	// 変換
+	{ KVC_MUHENKAN,		{ 0,	0    } },	// 無変換
+	{ KVC_HANZEN,		{ 0,	0    } },	// 半角/全角
 	
 	//
-	{ KVC_UNDERSCORE,	'_' },
-	{ KVC_YEN,			'|' },
-	{ KVC_HIRAGANA,		0 },	// カタカナ/ひらがな
-	{ KVC_HENKAN,		0 },	// 変換
-	{ KVC_MUHENKAN,		0 },	// 無変換
-	{ KVC_HANZEN,		0 },	// 半角/全角
-	
-	//
-	{ KVX_LMETA,		0 },	// L-Meta
-	{ KVX_RMETA,		0 },	// R-Meta
-	{ KVX_MENU,			0 }		// Menu
+	{ KVX_LMETA,		{ 0,	0    } },	// L-Meta
+	{ KVX_RMETA,		{ 0,	0    } },	// R-Meta
+	{ KVX_MENU,			{ 0,	0    } }	// Menu
 };
 
 
@@ -1077,9 +1226,9 @@ const std::string GetKeyName( PCKEYsym sym )
 BYTE GetKeyChar( PCKEYsym sym, bool shift )
 {
 	try{
-		return shift ? VKChar1.at( sym ) : VKChar0.at( sym );
+		return VKChar.at( sym ).at( shift ? 1 : 0 );
 	}
 	catch( std::out_of_range& ){
-		return VKChar0.at( KVC_UNKNOWN );
+		return VKChar.at( KVC_UNKNOWN )[0];
 	}
 }

@@ -23,7 +23,9 @@ cD88::cD88( bool dd ) : FilePath(""), DDDrv(dd), Protected(false), trkno(0)
 /////////////////////////////////////////////////////////////////////////////
 cD88::~cD88( void )
 {
-	if( fs.is_open() ) fs.close();
+	if( fs.is_open() ){
+		fs.close();
+	}
 }
 
 
@@ -68,7 +70,9 @@ void cD88::ReadHeader88( void )
 	
 	PRINTD( D88_LOG, "[D88][ReadHeader88]\n" )
 	
-	if( !fs.is_open() ) return;
+	if( !fs.is_open() ){
+		return;
+	}
 	
 	// DISK名
 	fs.read( (char*)buf, 17 * sizeof(BYTE) );
@@ -81,8 +85,11 @@ void cD88::ReadHeader88( void )
 	
 	// ライトプロテクト
 	d88.protect = FSGETBYTE( fs );
-	if( d88.protect ) Protected = true;
-	else if( Protected ) d88.protect = 0x10;
+	if( d88.protect ){
+		Protected = true;
+	}else if( Protected ){
+		d88.protect = 0x10;
+	}
 	
 	// DISKの種類
 	d88.type = FSGETBYTE( fs );
@@ -96,12 +103,14 @@ void cD88::ReadHeader88( void )
 	// 1DDドライブで1Dディスクを使う時は2トラック飛びで読込む
 	if( DDDrv && !(GetType() & FD_DOUBLETRACK) ){
 		PRINTD( D88_LOG, " (1D disk on 1DD drive)\n" )
-		for( int i = 0; i < 164; i += 2 )
+		for( int i = 0; i < 164; i += 2 ){
 			d88.table[i] = FSGETDWORD( fs );
-	}else
-		for( int i = 0; i < 164; i++ )
+		}
+	}else{
+		for( int i = 0; i < 164; i++ ){
 			d88.table[i] = FSGETDWORD( fs );
-		
+		}
+	}
 	// アクセス中のトラックNo
 	trkno = 0;
 	
@@ -186,8 +195,11 @@ BYTE cD88::Get8( void )
 	// 最終セクタの次は同一トラックの先頭セクタに移動
 	// エラーセクタの場合は次のセクタに移動しない(Ditt!のエラー対応)
 	if( secinfo.offset >= secinfo.size && !secinfo.status ){
-		if( secinfo.secno > secinfo.sec_nr ) Seek( trkno );
-		else										 ReadSector88();
+		if( secinfo.secno > secinfo.sec_nr ){
+			Seek( trkno );
+		}else{
+			ReadSector88();
+		}
 	}
 	dat = FSGETBYTE( fs );
 	secinfo.offset++;
@@ -213,8 +225,11 @@ bool cD88::Put8( BYTE dat )
 	// セクタの終わりに到達したら次のセクタをシークする
 	// 最終セクタの次は同一トラックの先頭セクタに移動
 	if( secinfo.offset >= secinfo.size ){
-		if( secinfo.secno > secinfo.sec_nr ) Seek( trkno );
-		else										 ReadSector88();
+		if( secinfo.secno > secinfo.sec_nr ){
+			Seek( trkno );
+		}else{
+			ReadSector88();
+		}
 	}
 	
 	// r+,w+,a+ で開いたファイルに対して読込みと書込みを切り替える場合は
@@ -335,10 +350,10 @@ void cD88::GetID( BYTE* C, BYTE* H, BYTE* R, BYTE* N ) const
 {
 	PRINTD( D88_LOG, "[D88][GetID] %02X %02X %02X %02X\n", secinfo.c, secinfo.h, secinfo.r, secinfo.n );
 	
-	if( C ) *C = secinfo.c;
-	if( H ) *H = secinfo.h;
-	if( R ) *R = secinfo.r;
-	if( N ) *N = secinfo.n;
+	if( C ){ *C = secinfo.c; }
+	if( H ){ *H = secinfo.h; }
+	if( R ){ *R = secinfo.r; }
+	if( N ){ *N = secinfo.n; }
 }
 
 

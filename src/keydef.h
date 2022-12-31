@@ -9,6 +9,7 @@
 
 #include "typedef.h"
 
+
 // P6キーコード定義
 typedef enum {
 	KP6_UNKNOWN		= 0,
@@ -123,12 +124,15 @@ typedef enum {
 	KFN_8			= 96,
 	KFN_9			= 97,
 	
+	// 自動キー入力処理用
+	KP6_RELEASED,
+	
 	KP6_LAST
 } P6KEYsym;
 
 // 仮想キーコード定義
 typedef enum {
-	KVC_UNKNOWN	= 0,
+	KVC_UNKNOWN		= 0,
 	
 	KVC_1			= 1,
 	KVC_2			= 2,
@@ -261,15 +265,15 @@ typedef enum {
 	KVM_NONE	= 0x0000,
 	KVM_LSHIFT	= 0x0001,
 	KVM_RSHIFT	= 0x0002,
-	KVM_LCTRL	= 0x0040,
-	KVM_RCTRL	= 0x0080,
-	KVM_LALT	= 0x0100,
-	KVM_RALT	= 0x0200,
-	KVM_LMETA	= 0x0400,
-	KVM_RMETA	= 0x0800,
-	KVM_NUM		= 0x1000,
-	KVM_CAPS	= 0x2000,
-	KVM_MODE	= 0x4000,
+	KVM_LCTRL	= 0x0004,
+	KVM_RCTRL	= 0x0008,
+	KVM_LALT	= 0x0010,
+	KVM_RALT	= 0x0020,
+	KVM_LMETA	= 0x0040,
+	KVM_RMETA	= 0x0080,
+	KVM_NUM		= 0x0100,
+	KVM_CAPS	= 0x0200,
+	KVM_MODE	= 0x0400,
 } PCKEYmod;
 
 #define KVM_CTRL	(KVM_LCTRL|KVM_RCTRL)
@@ -306,6 +310,13 @@ typedef struct {
 } P6KeyMatrix;
 
 
+// P6キースキャンコード
+typedef struct {
+	P6KEYsym P6Key;		// P6キーコード
+	PCKEYmod mod;		// 仮想キーモディファイア
+} P6KeyScan;
+
+
 // マウスボタン定義
 typedef enum {
 	MBT_NONE		= 0,
@@ -313,7 +324,5 @@ typedef enum {
 	MBT_MIDDLE		= 2,
 	MBT_RIGHT		= 3
 } MouseButton;
-
-
 
 #endif	// KEYDEF_H_INCLUDED

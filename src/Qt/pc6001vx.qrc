@@ -311,5 +311,6 @@
         <file>res/rom/BASICROM.61</file>
         <file>res/rom/CGROM60.61</file>
         <file>res/rom/EXKANJI.ROM</file>
+        <file>res/vkey/key_roma.png</file>
     </qresource>
 </RCC>

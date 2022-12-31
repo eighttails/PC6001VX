@@ -14,6 +14,7 @@ class VirtualKeyItem : public QObject, public QGraphicsPixmapItem
 	Q_OBJECT
 public:
 	VirtualKeyItem(PCKEYsym code,
+				   PCKEYmod mod,
 				   QString pixNormal,
 				   QString pixShift,
 				   QString pixGrph,
@@ -31,7 +32,8 @@ public slots:
 			bool ON_GRAPH,	// GRAPH
 			bool ON_KANA,	// かな
 			bool ON_KKANA,	// カタカナ
-			bool ON_CAPS	// CAPS
+			bool ON_CAPS,	// CAPS
+			bool ON_ROMAJI	// ローマ字入力
 			);
 
 	// QGraphicsItem interface
@@ -42,6 +44,7 @@ protected:
 	void sendKeyEvent(EventType type, bool state);
 
 	const PCKEYsym Code;			// キーコード
+	const PCKEYmod Mod;				// キーモディファイヤ
 	const QPixmap PixNormal;		// 通常時の画像
 	const QPixmap PixShift;			// SHIFT押下時の画像
 	const QPixmap PixGrph;			// GRPH押下時の画像
@@ -53,7 +56,8 @@ protected:
 	const bool MouseToggle;			// マウス入力時にトグル入力にする(SHIFT,GRPH用)
 	bool ToggleStatus;				// マウス入力時のトグル状態
 
-	QGraphicsColorizeEffect* pressEffect; // ボタンを押すと色が変わるエフェクト
+	QGraphicsColorizeEffect* pressEffect;	// ボタンを押すと色が変わるエフェクト
+	QGraphicsColorizeEffect* romajiEffect;	// ローマ字入力中に色が変わるエフェクト
 };
 
 #endif // VIRTUALKEYITEM_H

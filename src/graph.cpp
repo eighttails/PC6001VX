@@ -67,7 +67,7 @@ DSP6::DSP6( EL6* el ) : el( el ), Wh( nullptr ), rsize( false )
 /////////////////////////////////////////////////////////////////////////////
 DSP6::~DSP6( void )
 {
-	if( Wh ) OSD_DestroyWindow( Wh );
+	if( Wh ){ OSD_DestroyWindow( Wh ); }
 }
 
 
@@ -82,7 +82,9 @@ bool DSP6::Init( void )
 	PRINTD( GRP_LOG, "[GRP][Init]\n" );
 	
 	// スクリーンサーフェス作成
-	if( !SetScreenSurface() ) return false;
+	if( !SetScreenSurface() ){
+		return false;
+	}
 	
 	return true;
 }
@@ -135,7 +137,9 @@ bool DSP6::SetScreenSurface( void )
 	
 	PRINTD( GRP_LOG, " -> %s ( %d x %d )\n", Wh ? "OK" : "Failed", Wh ? OSD_GetWindowWidth( Wh ) : 0, Wh ? OSD_GetWindowHeight( Wh ) : 0 );
 	
-	if( !Wh ) return false;
+	if( !Wh ){
+		return false;
+	}
 	
 	// マウスカーソル表示
 	OSD_ShowCursor( true );
@@ -190,9 +194,10 @@ bool DSP6::ResizeScreen( void )
 		
 		// ResizeScreen()を使ったリサイズであることを通知
 		rsize = true;
-	}else
+	}else{
 		// 作り直さない場合は現在のスクリーンサーフェスをクリア
 		OSD_ClearWindow( Wh );
+	}
 	
 	return true;
 }
@@ -210,7 +215,9 @@ void DSP6::DrawScreen( void )
 	
 	VRect pos;
 	
-	if( !Wh ) return;
+	if( !Wh ){
+		return;
+	}
 	
 	// スクリーンサーフェスにblit
 	PRINTD( GRP_LOG, " -> Blit" );
@@ -310,7 +317,9 @@ void DSP6::SnapShot( const P6VPATH& path )
 	
 	// スナップショット格納フォルダがなければフォルダを作成
 	if( !OSD_FileExist( path ) ){
-		if( !OSD_CreateFolder( path ) ) return;
+		if( !OSD_CreateFolder( path ) ){
+			return;
+		}
 	}
 	
 	// スナップショットファイル名を決める

@@ -131,7 +131,9 @@ bool ZCons::Init( int winx, int winy, const std::string& caption, BYTE fcol, BYT
 bool ZCons::InitRes( int winx, int winy, const std::string& caption, BYTE fcol, BYTE bcol )
 {
 	// サーフェス作成
-	if( !VSurface::InitSurface( winx, winy ) ) return false;
+	if( !VSurface::InitSurface( winx, winy ) ){
+		return false;
+	}
 	
 	fgc = fcol;
 	bgc = bcol;

@@ -291,7 +291,9 @@ bool VM6::AllocObject( const std::shared_ptr<CFG6>& cnfg )
 		
 		
 		// 内部メモリ確保とROMファイル読込み
-		if( !mem->AllocMemoryInt( cnfg->GetValue( CF_RomPath ), cnfg->GetValue( CB_CheckCRC ) ) ) throw Error::GetError();
+		if( !mem->AllocMemoryInt( cnfg->GetValue( CF_RomPath ), cnfg->GetValue( CB_CheckCRC ) ) ){
+			throw Error::GetError();
+		}
 	}
 	catch( std::bad_alloc& ){	// new に失敗した場合
 		Error::SetError( Error::MemAllocFailed );
@@ -311,7 +313,9 @@ bool VM6::AllocObject( const std::shared_ptr<CFG6>& cnfg )
 bool VM6::Init( const std::shared_ptr<CFG6>& cnfg  )
 {
 	// 全オブジェクト確保
-	if( !AllocObject( cnfg ) ) return false;
+	if( !AllocObject( cnfg ) ){
+		return false;
+	}
 	
 	// イベントスケジューラ
 	evsc->SetMasterClock( cclock * cnfg->GetValue( CV_OverClock ) / 100 );
@@ -319,10 +323,14 @@ bool VM6::Init( const std::shared_ptr<CFG6>& cnfg  )
 	evsc->Entry( devs );
 	
 	// I/O(Z80)　-----
-	if( !iom->Init( 256 ) ) return false;
+	if( !iom->Init( 256 ) ){
+		return false;
+	}
 	
 	// I/O(SUB CPU)　-----
-	if( !ios->Init( 10 ) ) return false;
+	if( !ios->Init( 10 ) ){
+		return false;
+	}
 	
 	// 割込み -----
 	intr->Reset();
@@ -334,34 +342,46 @@ bool VM6::Init( const std::shared_ptr<CFG6>& cnfg  )
 	cpus->Reset();
 	
 	// メモリ -----
-	if( !mem->InitInt() ) return false;
+	if( !mem->InitInt() ){
+		return false;
+	}
 	mem->Reset();
 	
 	// VDG -----
-	if( !vdg->Init() ) return false;
+	if( !vdg->Init() ){
+		return false;
+	}
 	vdg->SetMode4Color( cnfg->GetValue( CV_Mode4Color ) );
 	
 	// PSG/OPN -----
 	psg->SetVolume( cnfg->GetValue( CV_PsgVolume ) );	// 音量設定
 	psg->SetLPF( cnfg->GetValue( CV_PsgLPF ) );			// ローパスフィルタ カットオフ周波数設定
 	for( auto &i : *DevTable.Psg ){						// ウェイト設定
-		if( i.rule == IOBus::portout ) iom->SetOutWait( i.bank, 1 );
-		else						   iom->SetInWait ( i.bank, 1 );
+		if( i.rule == IOBus::portout ){ iom->SetOutWait( i.bank, 1 ); }
+		else						  { iom->SetInWait ( i.bank, 1 ); }
 	}
-	if( !psg->Init( pclock, cnfg->GetValue( CV_SampleRate ) ) ) return false;
+	if( !psg->Init( pclock, cnfg->GetValue( CV_SampleRate ) ) ){
+		return false;
+	}
 	
 	// 8255 -----
 	pio->Reset();
 	pio->cPRT::SetFile( cnfg->GetValue( CF_Printer ) );
 	
 	// キー -----
-	if( !key->Init() ) return false;
+	if( !key->Init() ){
+		return false;
+	}
 	std::vector<VKeyConv> vk;
-	if( cnfg->GetVKeyDef( vk ) )				// キー定義配列取得
+	if( cnfg->GetVKeyDef( vk ) ){				// キー定義配列取得
 		key->SetVKeySymbols( vk );				// 仮想キーコード -> P6キーコード 設定
+	}
+	if( cnfg->GetValue( CB_Romaji ) != (key->GetKeyIndicator() & KI_ROMAJI ? true : false) ){
+		key->ChangeRomaji();	// ローマ字入力
+	}
 	
 	// CMT(LOAD) -----
-	if( !cmtl->Init( cnfg->GetValue( CV_SampleRate ) ) ) return false;
+	cmtl->Unmount();
 	cmtl->SetVolume( cnfg->GetValue( CV_TapeVolume ) );	// 音量設定
 	cmtl->SetLPF( cnfg->GetValue( CV_TapeLPF ) );		// ローパスフィルタ カットオフ周波数設定
 	cmtl->SetBoost( cnfg->GetValue( CB_BoostUp ) );
@@ -369,27 +389,42 @@ bool VM6::Init( const std::shared_ptr<CFG6>& cnfg  )
 	cmtl->SetStopBit( cnfg->GetValue( CV_StopBit ) );	// ストップビット数
 	
 	// CMT(SAVE) -----
-	if( !cmts->Init( cnfg->GetValue( CF_Save ) ) ) return false;
+	if( !cmts->Init( cnfg->GetValue( CF_Save ) ) ){
+		return false;
+	}
 	
 	// DISK -----
-	if( !disk->Init( cnfg->GetValue( CV_FDDrive ) ) ) return false;
+	if( !disk->Init( cnfg->GetValue( CV_FDDrive ) ) ){
+		return false;
+	}
 	disk->WaitEnable( cnfg->GetValue( CB_FDDWait ) );
 	
 	// 音声合成 -----
 	if( DevTable.Voice ){
-		if( !voice->Init( cnfg->GetValue( CV_SampleRate ) ) ) return false;
 		voice->SetVolume( cnfg->GetValue( CV_VoiceVolume ) );	// 音量設定
 		voice->SetPath( cnfg->GetValue( CF_WavePath ) );
 	}
 	
 	
 	// I/Oポートにデバイスを接続
-	if( !iom->Connect( pio,  *DevTable.M8255 ) ) return false;	// 8255(Z80側)
-	if( !ios->Connect( pio,  *DevTable.S8255 ) ) return false;	// 8255(SUB CPU側)
-	if( !iom->Connect( cmtl, *DevTable.CmtL  ) ) return false;	// CMT(LOAD)
-	if( !iom->Connect( intr, *DevTable.Intr  ) ) return false;	// 割込み
-	if( !iom->Connect( vdg,  *DevTable.Vdg   ) ) return false;	// VDG
-	if( !iom->Connect( psg,  *DevTable.Psg   ) ) return false;	// PSG/OPN
+	if( !iom->Connect( pio,  *DevTable.M8255 ) ){	// 8255(Z80側)
+		return false;
+	}
+	if( !ios->Connect( pio,  *DevTable.S8255 ) ){	// 8255(SUB CPU側)
+		return false;
+	}
+	if( !iom->Connect( cmtl, *DevTable.CmtL  ) ){	// CMT(LOAD)
+		return false;
+	}
+	if( !iom->Connect( intr, *DevTable.Intr  ) ){	// 割込み
+		return false;
+	}
+	if( !iom->Connect( vdg,  *DevTable.Vdg   ) ){	// VDG
+		return false;
+	}
+	if( !iom->Connect( psg,  *DevTable.Psg   ) ){	// PSG/OPN
+		return false;
+	}
 	if( cnfg->GetValue( CV_FDDrive ) || (cnfg->GetValue( CV_Model ) == 66) || (cnfg->GetValue( CV_Model ) == 68) ){	// DISK
 		if( !iom->Connect( disk,  *DevTable.Disk   ) ){
 			return false;

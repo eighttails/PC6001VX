@@ -31,7 +31,6 @@ public:
 	virtual void Put( int );				// 書込み
 	
 	int ReadySize() const;					// 未読データ数取得
-	int FreeSize( bool = false ) const;		// 残りバッファ取得
 	int GetSize() const;					// バッファサイズ取得
 };
 
@@ -49,8 +48,6 @@ protected:
 public:
 	SndDev();
 	virtual ~SndDev();
-	
-	virtual bool Init( int );				// 初期化
 	
 	int Get() override;						// 読込み
 	
@@ -86,11 +83,16 @@ public:
 	int GetSampleRate();					// サンプリングレート取得
 	
 	int GetBufferSize();					// バッファサイズ(倍率)取得
+	int OverflowSamples();					// バッファから溢れたサンプル数取得
 	
 	void SetVolume( int );					// マスター音量設定
 	
 	int PreUpdate( int, cRing* = nullptr );	// サウンド事前更新関数
-	void Update( BYTE*, int );				// サウンド更新関数
+	#ifndef NOCALLBACK	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	void Update( BYTE*, int );				// サウンド更新関数(Callback)
+	#else				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	void Update();							// サウンド更新関数(Push)
+	#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 };
 
 #endif	// SOUND_H_INCLUDED

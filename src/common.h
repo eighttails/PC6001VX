@@ -37,11 +37,12 @@ enum TextID{
 	TINI_Model,				// "機種 60:PC-6001 61:PC-6001A 62:PC-6001mkⅡ 66:PC-6601 64:PC-6001mkⅡSR 68:PC-6601SR"
 	TINI_OverClock,			// "オーバークロック率 (1-1000)%"
 	TINI_CheckCRC,			// "CRCチェック Yes:有効 No:無効"
+	TINI_Romaji,			// "ローマ字入力 Yes:有効 No:無効"
 	// [CMT]
 	TINI_TurboTAPE,			// "Turbo TAPE Yes:有効 No:無効"
-	TINI_BoostUp,			// "BoostUp Yes:有効 No:無効"
-	TINI_MaxBoost60,		// "BoostUp 最大倍率(N60モード)"
-	TINI_MaxBoost62,		// "BoostUp 最大倍率(N60m/N66モード)"
+	TINI_BoostUp,			// "Boost Up Yes:有効 No:無効"
+	TINI_MaxBoost60,		// "Boost Up 最大倍率(N60モード)"
+	TINI_MaxBoost62,		// "Boost Up 最大倍率(N60m/N66モード)"
 	TINI_StopBit,			// "ストップビット数 (2-10)bit"
 	// [FDD]
 	TINI_FDDrive,			// "ドライブ数 (0-2)"
@@ -57,7 +58,7 @@ enum TextID{
 	TINI_FullScreen,		// "フルスクリーンモード Yes:有効 No:無効"
 	TINI_DispStatus,		// "ステータスバー Yes:表示 No:非表示"
 	// [MOVIE]
-	TINI_AviBpp,			// "ビデオキャプチャ色深度 (16,24,32)bit"
+	TINI_AviBpp,			// "ビデオキャプチャ時色深度 (16,24,32)bit"
 	TINI_AviZoom,			// "ビデオキャプチャ時ウィンドウ表示倍率(%)"
 	TINI_AviFrameSkip,		// "ビデオキャプチャ時フレームスキップ"
 	TINI_AviScanLine,		// "ビデオキャプチャ時スキャンライン Yes:あり No:なし"
@@ -81,14 +82,14 @@ enum TextID{
 	TINI_disk2,				// "DISK2ファイル名(起動時に自動マウント)"
 	TINI_printer,			// "プリンタ出力ファイル名"
 	// [PATH]
-	TINI_RomPath,			// "ROMイメージ格納パス"
-	TINI_TapePath,			// "TAPEイメージ格納パス"
-	TINI_DiskPath,			// "DISKイメージ格納パス"
-	TINI_ExtRomPath,		// "拡張ROMイメージ格納パス"
-	TINI_ImgPath,			// "スナップショット格納パス"
+	TINI_RomPath,			// "ROMイメージファイル格納パス"
+	TINI_TapePath,			// "TAPEイメージファイル格納パス"
+	TINI_DiskPath,			// "DISKイメージファイル格納パス"
+	TINI_ExtRomPath,		// "拡張ROMイメージファイル格納パス"
+	TINI_ImgPath,			// "スナップショットファイル格納パス"
 	TINI_WavePath,			// "WAVEファイル格納パス"
 	TINI_FontPath,			// "FONTファイル格納パス"
-	TINI_DokoPath,			// "どこでもSAVE格納パス"
+	TINI_DokoPath,			// "どこでもSAVEファイル格納パス"
 	// [CHECK]
 	TINI_CkDokoLoad,		// "どこでもLOAD(SLOT)実行時確認 Yes:する No:しない"
 	TINI_CkQuit,			// "終了時確認 Yes:する No:しない"
@@ -136,7 +137,7 @@ enum TextID{
 // 文字コード操作関数
 /////////////////////////////////////////////////////////////////////////////
 // SJIS -> P6
-void Sjis2P6( std::string&, const std::string& );
+bool Sjis2P6( std::string&, const std::string& );
 
 
 /////////////////////////////////////////////////////////////////////////////

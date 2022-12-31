@@ -24,7 +24,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Constructor
 /////////////////////////////////////////////////////////////////////////////
-PSGb::PSGb( VM6* vm, const ID& id ) : Device( vm, id ), JoyNo( 0 ), Clock( 0 )
+PSGb::PSGb( VM6* vm, const ID& id ) : Device( vm, id ), JoyNo( 0 ), Clock( 0 ), Smpls( 0 )
 {
 }
 
@@ -77,16 +77,22 @@ OPN64::~OPN64( void )
 /////////////////////////////////////////////////////////////////////////////
 void PSG60::EventCallback( int id, int clock )
 {
+	std::lock_guard<cMutex> lock( Mutex );
+	
 	switch( id ){
 	case EID_PSG:
+		Smpls -= SndDev::SampleRate;
 		break;
 	}
 }
 
 void OPN64::EventCallback( int id, int clock )
 {
+	std::lock_guard<cMutex> lock( Mutex );
+	
 	switch( id ){
 	case EID_PSG:
+		Smpls -= SndDev::SampleRate;
 		break;
 	
 	case EID_TIMERA:
@@ -103,8 +109,12 @@ void OPN64::EventCallback( int id, int clock )
 /////////////////////////////////////////////////////////////////////////////
 int PSGb::GetUpdateSamples( void )
 {
-	int samples = (int)( (double)SndDev::SampleRate * vm->EventGetProgress( this->Device::GetID(), EID_PSG ) + 0.5 );
-	vm->EventReset( this->Device::GetID(), EID_PSG );
+	std::lock_guard<cMutex> lock( Mutex );
+	
+	int prgsample = (int)( (double)SndDev::SampleRate * vm->EventGetProgress( this->Device::GetID(), EID_PSG ) + 0.5 );
+	int samples = prgsample - Smpls;
+	Smpls = prgsample;
+	
 	return samples;
 }
 
@@ -134,8 +144,8 @@ void OPN64::SetTimerA( int cnt )
 {
 	double ct = 72. * (1024. - (double)cnt) / (double)Clock * 1000000.;
 	
-	if( cnt ) vm->EventAdd( Device::GetID(), EID_TIMERA, ct, EV_LOOP | EV_US );
-	else	  vm->EventDel( Device::GetID(), EID_TIMERA );
+	if( cnt ){ vm->EventAdd( Device::GetID(), EID_TIMERA, ct, EV_LOOP | EV_US ); }
+	else	 { vm->EventDel( Device::GetID(), EID_TIMERA ); }
 }
 
 
@@ -146,8 +156,8 @@ void OPN64::SetTimerB( int cnt )
 {
 	double ct = 1152. * (256. - (double)cnt) / (double)Clock * 1000000.;
 	
-	if( cnt ) vm->EventAdd( Device::GetID(), EID_TIMERB, ct, EV_LOOP | EV_US );
-	else	  vm->EventDel( Device::GetID(), EID_TIMERB );
+	if( cnt ){ vm->EventAdd( Device::GetID(), EID_TIMERB, ct, EV_LOOP | EV_US ); }
+	else	 { vm->EventDel( Device::GetID(), EID_TIMERB ); }
 }
 
 
@@ -160,19 +170,18 @@ bool PSG60::Init( int clock, int srate )
 	
 	Clock = clock;
 	
-	// PSG/OPN クロック設定
+	// PSG/OPN クロック設定＆リセット
 	InitMod( Clock, srate );
 	
 	// PSG/OPN ボリュームテーブル設定
 	SetVolumeTable( DEFAULT_PSGVOL );
 	
-	// リセット
-	cAY8910::Reset();
+	// 1サイクル=サンプリングレート相当のサンプル数
+	if( !vm->EventAdd( Device::GetID(), EID_PSG, 1000, EV_LOOP | EV_MS ) ){
+		return false;
+	}
 	
-	// 少なくとも1秒に1回くらいは更新するだろうという前提
-	if( !vm->EventAdd( Device::GetID(), EID_PSG, 1000, EV_LOOP | EV_MS ) ) return false;
-	
-	return SndDev::Init( srate );
+	return true;
 }
 
 
@@ -182,19 +191,18 @@ bool OPN64::Init( int clock, int srate )
 	
 	Clock = clock;
 	
-	// PSG/OPN クロック設定
+	// PSG/OPN クロック設定＆リセット
 	InitMod( Clock, srate );
 	
 	// PSG/OPN ボリュームテーブル設定
 	SetVolumeTable( DEFAULT_PSGVOL );
 	
-	// リセット
-	cYM2203::Reset();
+	// 1サイクル=サンプリングレート相当のサンプル数
+	if( !vm->EventAdd( Device::GetID(), EID_PSG, 1000, EV_LOOP | EV_MS ) ){
+		return false;
+	}
 	
-	// 少なくとも1秒に1回くらいは更新するだろうという前提
-	if( !vm->EventAdd( Device::GetID(), EID_PSG, 1000, EV_LOOP | EV_MS ) ) return false;
-	
-	return SndDev::Init( srate );
+	return true;
 }
 
 
@@ -230,13 +238,13 @@ bool OPN64::SetSampleRate( int rate, int size )
 /////////////////////////////////////////////////////////////////////////////
 int PSG60::SoundUpdate( int samples )
 {
-	int length = min( max( 0, samples ? samples : GetUpdateSamples() ), SndDev::cRing::FreeSize() );
+	int length = max( 0, samples ? samples : GetUpdateSamples() );
 	
 	PRINTD( PSG_LOG, "[PSG][SoundUpdate] Samples: %d -> %d\n", samples, length );
 	
 	// バッファに書込み
 	for( int i = 0; i < length; i++ ){
-		SndDev::cRing::Put( ( this->Update1Sample() * SndDev::Volume ) / 100 );
+		SndDev::Put( this->Update1Sample() );
 	}
 	
 	return SndDev::cRing::ReadySize();
@@ -244,13 +252,13 @@ int PSG60::SoundUpdate( int samples )
 
 int OPN64::SoundUpdate( int samples )
 {
-	int length = min( max( 0, samples ? samples : GetUpdateSamples() ), SndDev::cRing::FreeSize() );
+	int length = max( 0, samples ? samples : GetUpdateSamples() );
 	
 	PRINTD( PSG_LOG, "[OPN][SoundUpdate] Samples: %d -> %d\n", samples, length );
 	
 	// バッファに書込み
 	for( int i = 0; i < length; i++ ){
-		SndDev::cRing::Put( ( this->Update1Sample() * SndDev::Volume ) / 100 );
+		SndDev::Put( this->Update1Sample() );
 	}
 	
 	return SndDev::cRing::ReadySize();
@@ -329,7 +337,9 @@ BYTE OPN64::InA3H( int )
 /////////////////////////////////////////////////////////////////////////////
 bool PSG60::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "PSG", "RegisterLatch",	"", "0x%02X", RegisterLatch );
 	Ini->SetVal( "PSG", "LastEnable",		"", "0x%02X", LastEnable    );
@@ -395,7 +405,9 @@ bool PSG60::DokoSave( cIni* Ini )
 
 bool OPN64::DokoSave( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->SetVal( "OPN", "RegTimerA1",		"", "0x%02X", RegTimerA1    );
 	Ini->SetVal( "OPN", "RegTimerA2",		"", "0x%02X", RegTimerA2    );
@@ -684,7 +696,9 @@ bool OPN64::DokoSave( cIni* Ini )
 /////////////////////////////////////////////////////////////////////////////
 bool PSG60::DokoLoad( cIni* Ini )
 {
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->GetVal( "PSG", "RegisterLatch",	RegisterLatch );
 	Ini->GetVal( "PSG", "LastEnable",		LastEnable    );
@@ -752,7 +766,9 @@ bool OPN64::DokoLoad( cIni* Ini )
 {
 	int st;
 	
-	if( !Ini ) return false;
+	if( !Ini ){
+		return false;
+	}
 	
 	Ini->GetVal( "OPN", "RegTimerA1",		RegTimerA1    );
 	Ini->GetVal( "OPN", "RegTimerA2",		RegTimerA2    );

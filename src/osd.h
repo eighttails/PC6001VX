@@ -151,6 +151,12 @@ void OSD_StartAudio();
 void OSD_StopAudio();
 // 再生状態取得
 bool OSD_AudioPlaying();
+#ifdef NOCALLBACK	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// オーディオキューサンプル数取得
+int OSD_GetQueuedAudioSamples();
+// オーディオストリーム書込み
+void OSD_WriteAudioStream( BYTE*, int );
+#endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // Waveファイル読込み
 bool OSD_LoadWAV( const P6VPATH&, BYTE**, DWORD*, int* );
 // Waveファイル開放

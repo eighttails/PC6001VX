@@ -21,7 +21,8 @@ signals:
 			bool ON_GRAPH,	// GRAPH
 			bool ON_KANA,	// かな
 			bool ON_KKANA,	// カタカナ
-			bool ON_CAPS	// CAPS
+			bool ON_CAPS,	// CAPS
+			bool ON_ROMAJI	// ローマ字入力
 			);
 
 public:
@@ -31,7 +32,8 @@ public:
 		GRAPH	= 0x04,
 		KANA	= 0x08,
 		KKANA	= 0x16,
-		CAPS	= 0x32
+		CAPS	= 0x32,
+		ROMAJI	= 0x64,
 	};
 	int GetModifierStatus();
 
@@ -49,6 +51,7 @@ protected:
 	bool ON_KANA;	// かな
 	bool ON_KKANA;	// カタカナ
 	bool ON_CAPS;	// CAPS
+	bool ON_ROMAJI;	// ローマ字入力
 
 	QMutex mutex;
 };

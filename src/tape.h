@@ -48,8 +48,6 @@ public:
 	
 	void EventCallback( int, int ) override;	// イベントコールバック関数
 	
-	bool Init( int ) override;					// 初期化
-	
 	bool Mount( const P6VPATH& );				// TAPE マウント
 	void Unmount();								// TAPE アンマウント
 	

@@ -223,7 +223,7 @@ cmake \
 
 export PATH=$PWD/bin:$PATH
 
-cmake --build .
+nice -n19 cmake --build .
 exitOnError
 
 cmake --install .

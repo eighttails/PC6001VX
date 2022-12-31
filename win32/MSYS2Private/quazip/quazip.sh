@@ -16,7 +16,7 @@ echo "QuaZip is already installed."
 exit 0
 fi
 
-QUAZIP_VERSION=1.2
+QUAZIP_VERSION=1.3
 QUAZIP_TAG=v$QUAZIP_VERSION
 QUAZIP_ARCHIVE=quazip-$QUAZIP_TAG.tar.gz
 QUAZIP_SRC_DIR=quazip-$QUAZIP_VERSION
@@ -30,9 +30,12 @@ tar xf $QUAZIP_ARCHIVE
 mv $QUAZIP_SRC_DIR $QUAZIP_BUILD_DIR
 pushd $QUAZIP_BUILD_DIR
 
+#CMAKE_PREFIX_PATHを設定しているのは、デフォルト設定だと
+#$MINGW_PREFIX/localにあるQt6のプライベートビルドを参照してしまうため。
 mkdir build
 pushd build
 cmake .. \
+-DCMAKE_PREFIX_PATH=$MINGW_PREFIX \
 -G"MSYS Makefiles" \
 -DCMAKE_INSTALL_PREFIX=$PREFIX \
 -DQUAZIP_QT_MAJOR_VERSION=6

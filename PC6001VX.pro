@@ -8,7 +8,7 @@ QT += core gui widgets openglwidgets network core5compat
 
 TARGET = PC6001VX
 TEMPLATE = app
-VERSION = 4.0.0
+VERSION = 4.1.0
 
 QMAKE_TARGET_COMPANY = eighttails
 QMAKE_TARGET_DESCRIPTION = PC6001VX

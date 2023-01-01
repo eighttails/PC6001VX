@@ -159,6 +159,9 @@ void ConfigDialog::readConfig()
 	// BoostUp 最大倍率(N60m/N66モード)
 	ui->spinBoxBoost66->setValue(qMin(qMax(1, config->GetValue(CV_MaxBoost62)), 100));
 
+	// ストップビット数
+	ui->spinBoxStopBit->setValue(qMin(qMax(2, config->GetValue(CV_StopBit)), 10));
+
 	// 内蔵互換ROM使用
 	const bool CompatibleRomMode = P6VPATH2QSTR(config->GetValue(CF_RomPath)).startsWith(":");
 	ui->checkBoxCompatibleRomMode->setChecked(CompatibleRomMode);
@@ -418,6 +421,9 @@ void ConfigDialog::writeConfig()
 
 	// BoostUp 最大倍率(N60m/N66モード)
 	config->SetValue(CV_MaxBoost62, ui->spinBoxBoost66->value());
+
+	// ストップビット数
+	config->SetValue(CV_StopBit, ui->spinBoxStopBit->value());
 
 	// 拡張カートリッジ
 	config->SetValue(CV_ExCartridge, int(extCartIds[ui->comboBoxExtCartridge->currentIndex()]));

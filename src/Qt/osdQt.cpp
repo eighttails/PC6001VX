@@ -468,7 +468,7 @@ void OSD_AddPath( P6VPATH& cpath, const P6VPATH& path1, const P6VPATH& path2 )
 // パスからフォルダ名を取得
 //
 // 引数:	path			パス
-// 返値:	std::string		取得した文字列
+// 返値:	std::string		取得した文字列(UTF-8)
 /////////////////////////////////////////////////////////////////////////////
 const std::string OSD_GetFolderNamePart( const P6VPATH& path )
 {
@@ -574,9 +574,9 @@ bool OSD_FSopen( std::fstream& fs, const P6VPATH& path, const std::ios_base::ope
 		tempFile->setAutoRemove(true);
 		// アプリ終了時に削除されるように設定
 		tempFile->setParent(qApp);
-		fs.open( tempFile->fileName().toStdString(), mode );
+		fs.open( tempFile->fileName().toLocal8Bit(), mode );
 	} else {
-		fs.open( strFileName.toStdString(), mode );
+		fs.open( strFileName.toLocal8Bit(), mode );
 	}
 	return fs.is_open() && fs.good();
 }
@@ -695,14 +695,14 @@ bool OSD_FileDelete( const P6VPATH& fullpath )
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_FindFile( const P6VPATH& path, const P6VPATH& file, std::vector<P6VPATH>& files, size_t size )
 {
-	std::string sfile = OSD_GetFileNamePart( file );
+	std::string sfile = QString::fromStdString(OSD_GetFileNamePart( file )).toLocal8Bit().toStdString();
 	std::transform( sfile.begin(), sfile.end(), sfile.begin(), ::tolower );	// 小文字
 
 	QDirIterator it(P6VPATH2QSTR(path),  QDir::Files, QDirIterator::FollowSymlinks);
 	while (it.hasNext()) {
 		it.next();
 		// パスからファイル名を抽出し、小文字に変換
-		std::string tfile = it.fileName().toLower().toStdString();
+		std::string tfile = it.fileName().toLower().toLocal8Bit().toStdString();
 
 		// ファイル名比較。
 		if (sfile == tfile){

@@ -889,6 +889,10 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 		if(keyCode == Qt::Key_Backslash){
 			keyCode = nativeKey == 115 ? Qt::Key_Underscore : Qt::Key_Backslash;
 		}
+		// カタカナ/ひらがな
+		else if(nativeKey == 112){
+			keyCode = Qt::Key_Hiragana_Katakana;
+		}
 		// 変換
 		else if(nativeKey == 121){
 			keyCode = Qt::Key_Henkan;

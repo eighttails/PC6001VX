@@ -772,6 +772,10 @@ Qt 6.2.0以上が必要です。
 * Linuxではサウンドの再生に大きな遅延があります。(Qt6.4以降で解消します)
 
 == 更新履歴
+.git master
+* (Windows)カタカナ/ひらがなキー(かな切り替え)が効かなかったのを修正。
+* (Windows)Fixed Katakana/Hiragana key (kana switching) not working.
+
 .4.1.1 2023/01/05
 * (Windows)ファイル名に日本語を含むファイルを開けなかったのを修正。
 * (Windows)Fixed issue in opening file with Japanese file name.

@@ -107,7 +107,10 @@ void MainWidget::closeEvent(QCloseEvent *event)
 	app->setSetting(P6VXApp::keyMaximized, isMaximized());
 	app->setSetting(P6VXApp::keyVirtualKeyVisible, VKeyWidget->isVisible());
 	app->setSetting(P6VXApp::keyVirtualKeyTabIndex, VKeyWidget->currentIndex());
-	QWidget::closeEvent(event);
+
+	// アプリの終了及び実際のウィンドウのクローズはメインロジックに移譲
+	OSD_PushEvent(EV_QUIT);
+	event->ignore();
 }
 
 

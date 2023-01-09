@@ -777,7 +777,7 @@ Qt 6.2.0以上が必要です。
 * 「終了時に確認する」にチェックが入っている場合に終了をキャンセルできないのを修正
 * (Windows)カタカナ/ひらがなキー(かな切り替え)が効かなかったのを修正
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.2.
-* Fixed: Could not cancel quit if "Confirm at exit" is checked.
+* Fixed: Could not cancel quiting if "Confirm at exit" is checked.
 * (Windows)Fixed: Katakana/Hiragana key (kana switching) not working.
 
 .4.1.1 2023/01/05

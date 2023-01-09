@@ -772,16 +772,20 @@ Qt 6.2.0以上が必要です。
 * Linuxではサウンドの再生に大きな遅延があります。(Qt6.4以降で解消します)
 
 == 更新履歴
-.git master
-* (Windows)カタカナ/ひらがなキー(かな切り替え)が効かなかったのを修正。
-* (Windows)Fixed Katakana/Hiragana key (kana switching) not working.
+.4.1.2 2023/01/09
+* PC-6001mkII/6601用互換BASICを0.4.2に更新
+* 「終了時に確認する」にチェックが入っている場合に終了をキャンセルできないのを修正
+* (Windows)カタカナ/ひらがなキー(かな切り替え)が効かなかったのを修正
+* Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.2.
+* Fixed: Could not cancel quit if "Confirm at exit" is checked.
+* (Windows)Fixed: Katakana/Hiragana key (kana switching) not working.
 
 .4.1.1 2023/01/05
-* (Windows)ファイル名に日本語を含むファイルを開けなかったのを修正。
+* (Windows)ファイル名に日本語を含むファイルを開けなかったのを修正
 * (Windows)Fixed issue in opening file with Japanese file name.
 
 .4.1.0 2023/01/01
-* PC6001V 2.0.4ベースに更新。
+* PC6001V 2.0.4ベースに更新
 ** ローマ字入力に対応。ALT+F12で切り替えができます。
 * PC-6001mkII/6601用互換BASICを0.4.1に更新
 * リプレイの記録、再生時の不整合を修正
@@ -795,15 +799,15 @@ Qt 6.2.0以上が必要です。
 * 4.0 final release.
 
 .4.0.0Beta2 2022/08/05
-* PC6001V 2.0.3ベースに更新。
-* ムービーを別スレッドでエンコードすることでビデオキャプチャのレスポンスが改善。
+* PC6001V 2.0.3ベースに更新
+* ムービーを別スレッドでエンコードすることでビデオキャプチャのレスポンスが改善
 * ジョイスティックが使えなかったのを修正
 * Merged upstream PC6001V version 2.0.3.
 * Endode movie in background thread. This makes better performance of video capturing. 
 * Fixed issue joystick did not work.
 
 .4.0.0Beta1 2022/02/28
-* PC6001V 2.0.2ベースに更新。
+* PC6001V 2.0.2ベースに更新
 * Qt5からQt6に移行。ビルドにはQt6.2以上が必要になります。
 * Merged upstream PC6001V version 2.0.2.
 * Migrated to Qt6 from Qt5. Now Qt6.2 or higher is required to build.
@@ -827,9 +831,9 @@ Qt 6.2.0以上が必要です。
 * Fixed crash in drag & drop operation.
 
 .3.8.0 2021/07/25
-* PC-6001互換BASICを0.7.4に更新。
+* PC-6001互換BASICを0.7.4に更新
 * 互換ROM使用時にPC-6001Aを選択できるようになった。
-* 2回めのビデオキャプチャがおかしくなるのを修正。
+* 2回めのビデオキャプチャがおかしくなるのを修正
 * Updated PC-6001 compatible basic ROMs to 0.7.4.
 * PC-6001A(aka NEC TREK) is now available in compatible ROM mode.
 * Fixed issue of 2nd time of video capture operation.
@@ -837,7 +841,7 @@ Qt 6.2.0以上が必要です。
 .3.7.2 2021/05/17
 * 設定画面から「入力」タブを削除
 * どこでもSAVE/LOAD時のオブジェクトリークを修正
-* 動画エンコード速度を改善。
+* 動画エンコード速度を改善
 * Removed "Input" tab from config dialog.
 * Fixed object leak in state save/load.
 * Improved video capture performance.
@@ -856,9 +860,9 @@ Qt 6.2.0以上が必要です。
 * テープやディスクイメージなどをドラッグ&ドロップでマウントできるようにした。
 * ウィンドウのダブルクリックをフルスクリーン表示切り替えに割り当て。
 * ジョイスティックのHATスイッチに対応。Nintendo Switch用のデジタルコントローラーが使用可能になった。
-* ウィンドウの表示倍率が不正確だったのを修正。
-* 設定初期化でフリーズするのを修正。
-* コンソールフォントを改善。モニタモードでひらがな、グラフィックキャラクタが表示可能に。
+* ウィンドウの表示倍率が不正確だったのを修正
+* 設定初期化でフリーズするのを修正
+* コンソールフォントを改善モニタモードでひらがな、グラフィックキャラクタが表示可能に。
 * Opening files by drag & drop is now available.
 * Assigned double clicking window to toggle fullscreen.
 * HAT switches on gamepad is now available. You can use digital gamepad or joystick for Nintendo Switch.  
@@ -868,7 +872,7 @@ Qt 6.2.0以上が必要です。
 
 .3.6.1 2021/01/09
 * ROMの一部が見つからない場合に互換ROMに切り替えられるようにした。
-* mk2用互換BASICの配置を誤っていたのを修正。
+* mk2用互換BASICの配置を誤っていたのを修正
 * 下位互換性を向上。Qt5.5以上であればビルドできるようにした。
 * その他軽微なバグ修正
 * Fallback to compatible rom when some of ROM files are missing.
@@ -878,12 +882,12 @@ Qt 6.2.0以上が必要です。
 
 .3.6.0 2020/12/15
 * Androidでジョイスティックが使えるようになった。
-* PC-6001互換BASICを0.7.2に更新。
-* PC-6001mkII/6601用互換BASICを0.3.1に更新。
+* PC-6001互換BASICを0.7.2に更新
+* PC-6001mkII/6601用互換BASICを0.3.1に更新
 * サンプリングレート設定を削除。
-* 動画エンコード速度を改善。
-* スナップショットのファイル命名規則を変更。
-* (Android)セミグラフィックの表示が化けていたのを修正。
+* 動画エンコード速度を改善
+* スナップショットのファイル命名規則を変更
+* (Android)セミグラフィックの表示が化けていたのを修正
 * Joysticks are available on Android.
 * Updated PC-6001 compatible basic ROMs to 0.7.2.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.1.
@@ -893,32 +897,32 @@ Qt 6.2.0以上が必要です。
 * (Android)Fixed semi-graphic's glitch.
 
 .3.5.3 2020/09/26
-* ハードウェアアクセラレーション使用時に描画がちらつくのを修正。
-* システム情報ダイアログを追加。
+* ハードウェアアクセラレーション使用時に描画がちらつくのを修正
+* システム情報ダイアログを追加
 * (Android)Android SDK 29に対応。
-* (Android)外部ストレージの扱いを改善。
+* (Android)外部ストレージの扱いを改善
 * Fixed screen flicker when using hardware acceleration.
 * Added System Information dialog.
 * (Android)better handling of external storage.
 * (Android)Targetted at Android SDK 29.
 
 .3.5.2 2020/06/15
-* (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を再度修正。
+* (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を再度修正
 * (Android)ファイル選択ダイアログでシングルタップでファイル、フォルダを開くようにした。
 * (Android)Fixed file selection dialog to show files in external storage (again). 
 * (Android)Changed file/folder open operation in file selection dialog from double tap to single tap.
 
 .3.5.1 2020/06/14
 * 「設定初期化」メニューを追加
-* (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を修正。
+* (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を修正
 * Added "Reset settings" menu.
 * (Android)Fixed file selection dialog to show files in external storage. 
 
 .3.5.0 2020/06/07
-* PC-6001互換BASICを0.7.1に更新。
-* PC-6001mkII/6601用互換BASICを0.3.0に更新。
+* PC-6001互換BASICを0.7.1に更新
+* PC-6001mkII/6601用互換BASICを0.3.0に更新
 * 互換ROM使用時にmk2を選べるようにした。
-* 「速度調整」メニューを追加。
+* 「速度調整」メニューを追加
 * 設定画面の「ファイル」「フォルダ」タブで存在しないファイル、フォルダを赤字で表示するようにした。
 * (Windows) メニューを出してもエミュレータが動き続けてしまうのを修正
 * Updated PC-6001 compatible basic ROMs to 0.7.1.
@@ -929,17 +933,17 @@ Qt 6.2.0以上が必要です。
 * (Windows) Fixed issue that emulator continues to work during menu popup.
 
 .3.4.0 2020/03/25
-* TAPE(SAVE)をエクスポートする機能を追加。
+* TAPE(SAVE)をエクスポートする機能を追加
 * Added "Export saved tape" menu function.
 
 .3.3.2 2019/11/04
-* (Android)画面回転時に表示が乱れるのを修正。
+* (Android)画面回転時に表示が乱れるのを修正
 * (Android)Fixed display glitches when screen is rotated.
 
 .3.3.1 2019/10/28
 * 英語キーボードの対応を改善
-* Androidでのマウス操作を変更。左クリックでメニュー表示。
-* PC-6601用の互換CGROMを更新。トランプマークが正しく表示されるようになった。
+* Androidでのマウス操作を変更左クリックでメニュー表示。
+* PC-6601用の互換CGROMを更新トランプマークが正しく表示されるようになった。
 * Works better with English keyboard.
 * Modified mouse operation on Android. LMB is assigned to popup menu.
 * Updated compatible CGROM for PC-6601. Now characters for playng card suit are properly displayed.
@@ -952,7 +956,7 @@ Qt 6.2.0以上が必要です。
 
 .3.2.0 2019/09/14
 * 秋川様による互換ROMを内蔵。ROMファイルがなくても起動可能になった。
-* SRモデルにおけるタイマー割込み間隔を修正。(暫定対応)
+* SRモデルにおけるタイマー割込み間隔を修正(暫定対応)
 * Alt+F9/F10にどこでもSAVE/LOADを割り当て。
 * 「ROMファイルにパッチを当てる」設定を廃止。(ジョイスティック2が使えなくなる不具合があるため)
 * Compatible ROM implemented by AKIKAWA Hisashi is now built in the emulator. Now the emulator is bootable without genuine ROM.
@@ -961,28 +965,28 @@ Qt 6.2.0以上が必要です。
 * Dropped "Patch the ROM" setting.(Because it made JOYSTICK2 unusable.)
 
 .3.1.3 2019/05/05
-* シンプル仮想キーボードの操作性を改善。
+* シンプル仮想キーボードの操作性を改善
 * Improved virtual keyboard(simple) operability.
 
 .3.1.2 2019/03/23
 * Windows上でリプレイが正常に記録されない問題への対応。
-* SRモデルを選択時にアプリアイコンが正常に表示されなかったのを修正。
+* SRモデルを選択時にアプリアイコンが正常に表示されなかったのを修正
 * 細かいバグ修正
 * Fixed issue related to replay recording on Windows.
 * Fixed issue that wrong icon is shown when SR models are chosen.
 * Some minor bug fixes.
 
 .3.1.1 2018/12/31
-* タッチスクリーンでメニューを出すジェスチャをロングタップからシングルタップに変更。
+* タッチスクリーンでメニューを出すジェスチャをロングタップからシングルタップに変更
 * 細かいバグ修正
 * Changed context menu touch gesture from long tap to single tap.
 * Some minor bug fixes.
 
 .3.1.0 2018/12/15
-* 仮想キーボードの表示サイズを改善。
+* 仮想キーボードの表示サイズを改善
 * 仮想キーボードがマウスで操作できるようになった。
-* エミュレート速度を等速に戻すボタンをマウス中ボタンに変更。
-* 「リプレイを動画に変換」メニューを追加。
+* エミュレート速度を等速に戻すボタンをマウス中ボタンに変更
+* 「リプレイを動画に変換」メニューを追加
 * 動画エンコード中は音が鳴らないようにした。
 * Better virtual keyboard display size.
 * Virtual Keyboard is now mouse operable.
@@ -1005,7 +1009,7 @@ Qt 6.2.0以上が必要です。
 * Embedded images to README.html. So doc folder is no longer distributed with Windows binary.
 
 .2.32.0 2018/02/17
-* リプレイが正常に再生されないことがあるのを修正。
+* リプレイが正常に再生されないことがあるのを修正
 * ファイル選択ダイアログを開くとマウスカーソルが消える問題を修正
 * Android6.0以降のパーミッションモデルに対応するため、Qt5.10のAPIを利用。Androidでは5.10以上が必要になります。
 
@@ -1024,7 +1028,7 @@ Is is necessary to set PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig environ
 * ALWAYSFULLSCREENフラグを付加してビルドした場合にファイルダイアログ、設定ダイアログもフルスクリーンになるようにした。(PocketChipなどの低解像度デバイス用) +
 * サウンド周りのメソッド呼び出しがスレッドセーフでなかったのを修正 +
 * ドキュメントをasciidocで書き直した。
-* (Windows)ビルド手順を更新。 +
+* (Windows)ビルド手順を更新 +
 ** 64ビット版がビルドできるようになった。 +
 ** MSYS2のバージョンを固定する運用を推奨。 +
 ** PATHの設定を不要にした。 +
@@ -1034,28 +1038,28 @@ Is is necessary to set PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig environ
 
 .2.30.0 2016/08/27
 * P6V1.25ベースに更新 +
-* 動画記録中にメニューを出そうとすると固まっていたのを修正。 +
+* 動画記録中にメニューを出そうとすると固まっていたのを修正 +
 * (Windows)MSYS2に同梱のMinGWのバグが取れたので、最新版の6.1を使ってビルドすることにした。 +
 QtおよびMSYS2がXPのサポートを落としたため、今回のバージョンからXPでは動きません。XPでどうしても動かしたいという方は2.21を使ってください。 +
 
 .2.21.0 2016/05/04
 * バージョン番号のスキームを変えました。今後のバージョン番号は(メジャーバージョン).(マイナーバージョン).(バグフィックス)とします。 +
-* モニタモードでブレークポイントにヒットすると固まるのを修正。 +
-* (Windows)ビルドオプションを変更。もしかしたらXPで動かくかも(無保証) +
+* モニタモードでブレークポイントにヒットすると固まるのを修正 +
+* (Windows)ビルドオプションを変更もしかしたらXPで動かくかも(無保証) +
 * (Windows)MSYS2に同梱のMinGW5.3があまりに不安定なため、GCC4.9を使ってビルドすることにした。 +
 
 .2.2 2016/04/24
 * P6V1.24ベースに更新 +
 * ヘルプメニューにオンラインリファレンスへのリンクを入れた。 +
-* (Windows)safemode.batのオプションの書式が間違っていたので修正。 +
-* (Windows)環境によって起動しないことがあったので最適化オプションを修正。 +
-* (Android)レジュームに失敗することがあるのを修正。 +
+* (Windows)safemode.batのオプションの書式が間違っていたので修正 +
+* (Windows)環境によって起動しないことがあったので最適化オプションを修正 +
+* (Android)レジュームに失敗することがあるのを修正 +
 * (Android)UIが中華フォントで表示されていたのをMotoyaLMaruで表示するようにした。 +
 
 .2.11 2015/11/11
 * リプレイに「1つ前の途中保存から再開」を追加 +
 * (Linux)WebMのオーディオにOpusを使うディストリビューションの場合クラッシュしてしまうので、強制的にVorbisを使うようにした。 +
-* (Windows)ビルド手順と環境構築スクリプトを修正。 +
+* (Windows)ビルド手順と環境構築スクリプトを修正 +
 自前ビルドライブラリは/mingw32/localに集約。 +
 ビルド環境を作る場合は、一度MSYS2の再インストールから行ってください。 +
 
@@ -1181,7 +1185,7 @@ Windows上でのIntelGPUなど、QtでOpenGLを使うための機能要件を満
 * 設定ダイアログを、より小さな画面に収まるようにレイアウトを修正 +
 * 「=」が入力できないのを修正 +
 * 「カタカナ/ひらがな」キーをかなキーにマップした(X11でPAUSEが効きにくい対策) +
-* ウィンドウ最大化時にモニタモードやスキャンラインなど、ウィンドウサイズが変わる操作をした場合に表示倍率が維持されないのを修正。
+* ウィンドウ最大化時にモニタモードやスキャンラインなど、ウィンドウサイズが変わる操作をした場合に表示倍率が維持されないのを修正
 * TILTモード中にモニタモードに入った場合ディスプレイ枠を消すようにした。 +
 * 再起動時にジョイスティックが使えなくなるのを修正 +
 * (Windows)ビルドにQt5.1を使用 +
@@ -1248,8 +1252,8 @@ CPU使用率も下がって、サウンドのバッファアンダーフロー�
 バグ修正
 
 * CRCが合わないROMを使用している場合、警告を出した上でCRCチェックを無効にできるようにした。 +
-* ボリュームの設定が全てマスターに反映されてしまうのを修正。 +
-* スキャンライン輝度が常に1として保存されてしまうのを修正。 +
+* ボリュームの設定が全てマスターに反映されてしまうのを修正 +
+* スキャンライン輝度が常に1として保存されてしまうのを修正 +
 
 .1.0β 2012/02/06
 * 初リリース。 P6V1.13ベース +

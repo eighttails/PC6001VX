@@ -1,5 +1,5 @@
 ;Compatible BASIC for PC-6001mkII/6601
-; by AKIKAWA, Hisashi  2017-2022
+; by AKIKAWA, Hisashi  2017-2023
 
 ;This software is redistributable under the LGPLv2.1 or any later version.
 
@@ -6033,9 +6033,9 @@ OPENCMT:
 				;write=3dh(600baud), 3eh(1200baud)
 	and	0f8h
 	inc	a		;read=19h, write=39h
-	di
+;	di
 	call	OUT90H
-	ei
+;	ei
 	xor	a
 	ld	(CMTSTAT),a
 ;	ld	(STOPFLG),a
@@ -7767,7 +7767,7 @@ INPT232:
 	ld	hl,INPBUF
 	ld	b,71
 INPTEXTLP:
-	pop	af
+	pop	af		;RS-232C?
 	push	af
 	jr	nz,INPTCMT
 
@@ -7787,7 +7787,7 @@ INPTCHKRET:
 	djnz	INPTEXTLP
 
 INPTEXTEND:
-	pop	af
+	pop	af		;RS-232C?
 	call	nz,RCLOSE
 	ld	(hl),00h
 	jp	INPTANA
@@ -13840,7 +13840,7 @@ SETTBLLP1:
 ;(fa00h, e000h, c000h, or a000h)
 
 
-;set FAT pointer table
+;set FAT info and FAT pointer table
 ;	ld	a,(DRIVES)
 	ld	b,a
 	ld	a,0d2h
@@ -13852,32 +13852,35 @@ SETTBLLP1:
 	ld	e,l
 
 SETTBLLP2:
-	ld	a,e
-	sub	4dh-3
-	ld	e,a
-	jr	nc,SETTBLNC1
-	dec	d
-SETTBLNC1:
+	push	hl
+	ld	hl,0-(4dh-3)	;FAT buffer size=70+6+1 bytes
+	add	hl,de
+	ld	(hl),0ffh	;+0: last accessed track (ff=no open files)
+	ex	de,hl
+	pop	hl
+
 	ld	(hl),e
 	inc	hl
 	ld	(hl),d
 	inc	hl
+	dec	de
+	dec	de
+	xor	a
+	ld	(de),a		;-2: not need to overwrite FAT
+	dec	de
 
-	ex	de,hl
-	ld	(hl),0ffh	;last accessed track (ff=no open files)
-	dec	hl
-	dec	hl
-	ld	(hl),00h	;not need to overwrite FAT
-	dec	hl
-	ld	(hl),'S'	;FAT check sum
-	ex	de,hl
+	push	hl
+	push	de
+	ld	a,c		;start=0
+	inc	c
+	call	SETFATP
+	call	SETSUM
+	pop	de
+	pop	hl
 
 	djnz	SETTBLLP2
 
 	push	de		;
-
-	xor	a
-	call	SETFATP
 
 ;hook
 	ld	hl,HOOKTBL
@@ -13894,9 +13897,8 @@ SETTBLLP3:
 	ldi
 	jp	pe,SETTBLLP3
 
+;set file buffer pointer table
 	pop	hl		;
-
-;set buffer pointer table
 	ld	a,(FILES)
 	inc	a
 	ld	b,a
@@ -13908,23 +13910,24 @@ SETTBLLP3:
 	ld	(BUFPTBL),hl
 	ld	d,h
 	ld	e,l
-	dec	d
+	dec	d		;file buffer data size=256 bytes
 	ld	(BUF0),de
+	inc	d
+
 SETTBLLP4:
-	ld	a,e
-	sub	09h
-	ld	e,a
-	jr	nc,SETTBLNC2
-	dec	d
-SETTBLNC2:
+	push	hl
+	ld	hl,0-0109h	;file buffer size=256+9bytes
+	add	hl,de
+	ld	(hl),c		;+0: file open mode, c=0
+	ex	de,hl
+	pop	hl
+
 	ld	(hl),e
 	inc	hl
 	ld	(hl),d
 	inc	hl
-	dec	d
 	djnz	SETTBLLP4
-	inc	d
-	dec	e
+	dec	de
 	ex	de,hl
 
 SETTBLZ2:
@@ -14229,7 +14232,7 @@ SETRWC2:
 	jr	nc,DSKERR	;if sector>16
 	ld	(SECTOR),a
 
-	ld	a,(ix+00h)
+	ld	a,(ix+00h)	;drive-1
 	call	CHKDRV
 	jr	c,DSKERR
 	ld	(DRIVE),a
@@ -17252,7 +17255,7 @@ _SETFATP:ds	SETFATP-_SETFATP
 	cp	(hl)
 	jp	nc,DNERR
 
-	ld	(ix+00h),a
+	ld	(ix+00h),a	;drive-1
 	ld	hl,(FATPTBL)
 	add	a,a
 	add	a,l
@@ -17649,7 +17652,7 @@ SAMECLST:
 NXSCTWEND:
 	call	SETSUM
 	inc	hl
-	ld	(hl),0ffh	;need to overwrite FAT
+	ld	(hl),0ffh	;-2: need to overwrite FAT
 	pop	de
 	pop	hl
 	ret
@@ -18112,7 +18115,7 @@ OPENOUT:
 ;a=cluster
 OPENEND:
 	ld	hl,(FATP)
-	ld	(hl),12h	;last accessed track
+	ld	(hl),12h	;+0: last accessed track
 	pop	de		;d=file open mode
 	pop	hl		;file buffer pointer
 
@@ -18134,7 +18137,7 @@ FOPEN:
 	inc	(hl)		;if append mode
 FOPENZ:
 	inc	hl
-	ld	c,(ix+00h)
+	ld	c,(ix+00h)	;drive-1
 	ld	(hl),c		;+4: drive-1
 	inc	hl
 	ld	(hl),a		;+5: end position
@@ -18235,7 +18238,7 @@ WRTFATCHK:
 	dec	hl
 	ld	a,(hl)
 	or	a
-	jr	z,CHKCLOSE	;not need to overwrite FAT
+	jr	z,CHKCLOSE	;-2: not need to overwrite FAT
 
 ;write FAT
 ;destroy: af,bc,de,hl
@@ -18254,7 +18257,7 @@ WRTFATLP:
 
 	dec	hl
 	dec	hl
-	ld	(hl),00h	;not need to overwrite FAT
+	ld	(hl),00h	;-2: not need to overwrite FAT
 ;	jr	CHKCLOSE
 
 
@@ -18272,7 +18275,7 @@ CHKCLLP:
 	djnz	CHKCLLP
 CHKCLZ:
 	ld	hl,(FATP)
-	ld	(hl),0ffh	;last accessed track (ff=no open files)
+	ld	(hl),0ffh	;+0: last accessed track (ff=no open files)
 	ret
 
 
@@ -18286,7 +18289,7 @@ RELEASEFAT:
 	ld	hl,(FATP)
 	dec	hl
 	dec	hl
-	ld	(hl),0ffh	;need to overwrite FAT
+	ld	(hl),0ffh	;-2: need to overwrite FAT
 	ret
 
 
@@ -18298,7 +18301,7 @@ REVFAT:
 	ld	hl,(FATP)
 	dec	hl
 	dec	hl
-	ld	(hl),0ffh	;need to overwrite FAT
+	ld	(hl),0ffh	;-2: need to overwrite FAT
 	pop	hl
 
 	ld	de,0-0008h
@@ -18390,7 +18393,7 @@ KILLLP:
 	inc	hl
 	inc	hl
 	ld	a,(hl)		;+4: drive-1
-	cp	(ix+00h)
+	cp	(ix+00h)	;drive-1
 	jp	z,AOERR
 KILLOK:
 	djnz	KILLLP
@@ -19043,7 +19046,7 @@ FLSEND:
 	call	PUTNL
 
 	ld	hl,(FATP)
-	ld	(hl),0ffh	;last accessed track (ff=no open files)
+	ld	(hl),0ffh	;+0: last accessed track (ff=no open files)
 
 	xor	a
 	ld	(DEVICE),a
@@ -19191,7 +19194,7 @@ PUTDDATA:
 PUTDNC2:
 	ld	c,a
 	ld	hl,(FATP)
-	ld	(hl),b		;last accessed track
+	ld	(hl),b		;+0: last accessed track
 	call	WRTBUF
 	call	RDNEXT
 	call	c,NEXTSECTW2
@@ -19354,7 +19357,7 @@ NEXTSECTW4:
 NXSCTWEND2:
 	call	SETSUM
 	inc	hl
-	ld	(hl),0ffh	;need to overwrite FAT
+	ld	(hl),0ffh	;-2: need to overwrite FAT
 
 	ld	hl,(BUFP)
 	inc	hl
@@ -19566,7 +19569,7 @@ RDBFMAIN:
 	call	DISK2
 	jp	c,ATERR
 	ld	hl,(FATP)
-	ld	(hl),b		;last accessed track
+	ld	(hl),b		;+0: last accessed track
 	pop	hl
 	ret
 
@@ -19608,7 +19611,7 @@ WRTBFMAIN:
 	call	DISK2
 	jp	c,ATERR
 	ld	hl,(FATP)
-	ld	(hl),b		;last accessed track
+	ld	(hl),b		;+0: last accessed track
 	ret
 
 
@@ -20709,7 +20712,7 @@ MENU:
 
 
 SYSNAME66:
-	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.4.1", 0dh, 0ah, 00h
+	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.4.2", 0dh, 0ah, 00h
 
 
 ;PEEK() function

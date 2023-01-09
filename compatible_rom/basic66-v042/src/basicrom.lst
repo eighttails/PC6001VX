@@ -1,6 +1,6 @@
 			  Z80 ASSEMBLER - ZASM VER 1.6
                       	;Compatible BASIC for PC-6001mkII/6601
-                      	; by AKIKAWA, Hisashi  2017-2022
+                      	; by AKIKAWA, Hisashi  2017-2023
                       	
                       	;This software is redistributable under the LGPLv2.1 or any later version.
                       	
@@ -946,7 +946,7 @@
   0418  FE2A          		cp	2ah
   041A  3E3F          		ld	a,'?'
   041C  3806          		jr	c,PRTERRC
-  041E  21E541        		ld	hl,ERRIDEX-2ah
+  041E  21E941        		ld	hl,ERRIDEX-2ah
   0421  CD7510        		call	PRTC
   0424                	PRTERRC:
   0424  1600          		ld	d,00h
@@ -6034,18 +6034,18 @@
                       					;write=3dh(600baud), 3eh(1200baud)
   1B1C  E6F8          		and	0f8h
   1B1E  3C            		inc	a		;read=19h, write=39h
-  1B1F  F3            		di
-  1B20  CD8F0E        		call	OUT90H
-  1B23  FB            		ei
-  1B24  AF            		xor	a
-  1B25  3219FA        		ld	(CMTSTAT),a
+                      	;	di
+  1B1F  CD8F0E        		call	OUT90H
+                      	;	ei
+  1B22  AF            		xor	a
+  1B23  3219FA        		ld	(CMTSTAT),a
                       	;	ld	(STOPFLG),a
-  1B28  C9            		ret
+  1B26  C9            		ret
                       	
                       	
                       	;blink asterisk
                       	;destroy: af
-  1B29                	_BLNKAST:ds	BLNKAST-_BLNKAST
+  1B27                	_BLNKAST:ds	BLNKAST-_BLNKAST
   1B2A                		org	BLNKAST
                       	
   1B2A  E5            		push	hl
@@ -7768,7 +7768,7 @@
   2408  21DAFE        		ld	hl,INPBUF
   240B  0647          		ld	b,71
   240D                	INPTEXTLP:
-  240D  F1            		pop	af
+  240D  F1            		pop	af		;RS-232C?
   240E  F5            		push	af
   240F  2020          		jr	nz,INPTCMT
                       	
@@ -7788,7 +7788,7 @@
   2426  10E5          		djnz	INPTEXTLP
                       	
   2428                	INPTEXTEND:
-  2428  F1            		pop	af
+  2428  F1            		pop	af		;RS-232C?
   2429  C4AA1A        		call	nz,RCLOSE
   242C  3600          		ld	(hl),00h
   242E  C3C409        		jp	INPTANA
@@ -8100,7 +8100,7 @@
   25B5  212B02        		ld	hl,CMDNAME-1
   25B8  FEAB          		cp	CMDLAST+1
   25BA  3819          		jr	c,CNVASCC
-  25BC  218941        		ld	hl,CMDNAMEEX-1
+  25BC  218D41        		ld	hl,CMDNAMEEX-1
   25BF  FEC2          		cp	CLAST66+1
   25C1  3004          		jr	nc,CNVFNC
   25C3  D62B          		sub	CMDLAST-7fh
@@ -8112,7 +8112,7 @@
   25CA  D642          		sub	TAB_-80h
   25CC  FEB0          		cp	FNCLAST-(TAB_-80h)+1
   25CE  3805          		jr	c,CNVASCC
-  25D0  21F141        		ld	hl,FNCNAMEEX-1
+  25D0  21F541        		ld	hl,FNCNAMEEX-1
   25D3  D630          		sub	FNCLAST+1-TAB_
                       	
   25D5                	CNVASCC:
@@ -13697,7 +13697,7 @@
   4022  281E          		jr	z,CHKEXT6END
                       	
   4024                	FILELP:
-  4024  213F41        		ld	hl,HOWMANYFILES
+  4024  214341        		ld	hl,HOWMANYFILES
   4027  CDCF30        		call	PUTS
   402A  CD0529        		call	INPT1
   402D  D7            		rst	ANADAT
@@ -13738,7 +13738,7 @@
   4059  2221FB        		ld	(FNCTBL+(0f2h-FNC1ST)*2),hl
                       	
                       	;RENUM(ab)-PUT(ae)
-  405C  214E41        		ld	hl,CMDLSTEX
+  405C  215241        		ld	hl,CMDLSTEX
   405F  11B7FA        		ld	de,CMDTBL+(0abh-80h)*2
   4062  010800        		ld	bc,0008h
   4065  EDB0          		ldir
@@ -13783,7 +13783,7 @@
   409E  DD23          		inc	ix
                       	;	ld	a,(DRIVES)
                       	;	or	a
-  40A0  2862          		jr	z,SETTBLZ2
+  40A0  2866          		jr	z,SETTBLZ2
                       	
                       	
                       	;disk work
@@ -13841,7 +13841,7 @@
                       	;(fa00h, e000h, c000h, or a000h)
                       	
                       	
-                      	;set FAT pointer table
+                      	;set FAT info and FAT pointer table
                       	;	ld	a,(DRIVES)
   40A2  47            		ld	b,a
   40A3  3ED2          		ld	a,0d2h
@@ -13853,215 +13853,218 @@
   40AC  5D            		ld	e,l
                       	
   40AD                	SETTBLLP2:
-  40AD  7B            		ld	a,e
-  40AE  D64A          		sub	4dh-3
-  40B0  5F            		ld	e,a
-  40B1  3001          		jr	nc,SETTBLNC1
-  40B3  15            		dec	d
-  40B4                	SETTBLNC1:
-  40B4  73            		ld	(hl),e
-  40B5  23            		inc	hl
-  40B6  72            		ld	(hl),d
+  40AD  E5            		push	hl
+  40AE  21B6FF        		ld	hl,0-(4dh-3)	;FAT buffer size=70+6+1 bytes
+  40B1  19            		add	hl,de
+  40B2  36FF          		ld	(hl),0ffh	;+0: last accessed track (ff=no open files)
+  40B4  EB            		ex	de,hl
+  40B5  E1            		pop	hl
+                      	
+  40B6  73            		ld	(hl),e
   40B7  23            		inc	hl
+  40B8  72            		ld	(hl),d
+  40B9  23            		inc	hl
+  40BA  1B            		dec	de
+  40BB  1B            		dec	de
+  40BC  AF            		xor	a
+  40BD  12            		ld	(de),a		;-2: not need to overwrite FAT
+  40BE  1B            		dec	de
                       	
-  40B8  EB            		ex	de,hl
-  40B9  36FF          		ld	(hl),0ffh	;last accessed track (ff=no open files)
-  40BB  2B            		dec	hl
-  40BC  2B            		dec	hl
-  40BD  3600          		ld	(hl),00h	;not need to overwrite FAT
-  40BF  2B            		dec	hl
-  40C0  3653          		ld	(hl),'S'	;FAT check sum
-  40C2  EB            		ex	de,hl
+  40BF  E5            		push	hl
+  40C0  D5            		push	de
+  40C1  79            		ld	a,c		;start=0
+  40C2  0C            		inc	c
+  40C3  CDF251        		call	SETFATP
+  40C6  CDF953        		call	SETSUM
+  40C9  D1            		pop	de
+  40CA  E1            		pop	hl
                       	
-  40C3  10E8          		djnz	SETTBLLP2
+  40CB  10E0          		djnz	SETTBLLP2
                       	
-  40C5  D5            		push	de		;
-                      	
-  40C6  AF            		xor	a
-  40C7  CDF251        		call	SETFATP
+  40CD  D5            		push	de		;
                       	
                       	;hook
-  40CA  212741        		ld	hl,HOOKTBL
-  40CD  3EC3          		ld	a,0c3h		;jp
-  40CF  0E0C          		ld	c,0+(HOOKTBLEND-HOOKTBL)/2	;b=0
-  40D1                	SETTBLLP3:
-  40D1  5E            		ld	e,(hl)
-  40D2  23            		inc	hl
-  40D3  56            		ld	d,(hl)
-  40D4  23            		inc	hl
-  40D5  12            		ld	(de),a
-  40D6  13            		inc	de
-  40D7  EDA0          		ldi
-  40D9  EDA0          		ldi
-  40DB  EAD140        		jp	pe,SETTBLLP3
+  40CE  212B41        		ld	hl,HOOKTBL
+  40D1  3EC3          		ld	a,0c3h		;jp
+  40D3  0E0C          		ld	c,0+(HOOKTBLEND-HOOKTBL)/2	;b=0
+  40D5                	SETTBLLP3:
+  40D5  5E            		ld	e,(hl)
+  40D6  23            		inc	hl
+  40D7  56            		ld	d,(hl)
+  40D8  23            		inc	hl
+  40D9  12            		ld	(de),a
+  40DA  13            		inc	de
+  40DB  EDA0          		ldi
+  40DD  EDA0          		ldi
+  40DF  EAD540        		jp	pe,SETTBLLP3
                       	
-  40DE  E1            		pop	hl		;
-                      	
-                      	;set buffer pointer table
-  40DF  3A31FB        		ld	a,(FILES)
-  40E2  3C            		inc	a
-  40E3  47            		ld	b,a
-  40E4  87            		add	a,a		;c-flag=0
-  40E5  5F            		ld	e,a
-  40E6  51            		ld	d,c		;=0
+                      	;set file buffer pointer table
+  40E2  E1            		pop	hl		;
+  40E3  3A31FB        		ld	a,(FILES)
+  40E6  3C            		inc	a
+  40E7  47            		ld	b,a
+  40E8  87            		add	a,a		;c-flag=0
+  40E9  5F            		ld	e,a
+  40EA  51            		ld	d,c		;=0
                       	;	or	a
-  40E7  ED52          		sbc	hl,de
-  40E9  2235FB        		ld	(BUFPTBL),hl
-  40EC  54            		ld	d,h
-  40ED  5D            		ld	e,l
-  40EE  15            		dec	d
-  40EF  ED5337FB      		ld	(BUF0),de
-  40F3                	SETTBLLP4:
-  40F3  7B            		ld	a,e
-  40F4  D609          		sub	09h
-  40F6  5F            		ld	e,a
-  40F7  3001          		jr	nc,SETTBLNC2
-  40F9  15            		dec	d
-  40FA                	SETTBLNC2:
-  40FA  73            		ld	(hl),e
-  40FB  23            		inc	hl
-  40FC  72            		ld	(hl),d
-  40FD  23            		inc	hl
-  40FE  15            		dec	d
-  40FF  10F2          		djnz	SETTBLLP4
-  4101  14            		inc	d
-  4102  1D            		dec	e
-  4103  EB            		ex	de,hl
+  40EB  ED52          		sbc	hl,de
+  40ED  2235FB        		ld	(BUFPTBL),hl
+  40F0  54            		ld	d,h
+  40F1  5D            		ld	e,l
+  40F2  15            		dec	d		;file buffer data size=256 bytes
+  40F3  ED5337FB      		ld	(BUF0),de
+  40F7  14            		inc	d
                       	
-  4104                	SETTBLZ2:
-  4104  228DFD        		ld	(USREND),hl
-  4107  012C01        		ld	bc,300
-  410A  CDBC35        		call	CLRMAIN
-  410D  CDAE12        		call	PRTFKEY
-  4110  CD9539        		call	CHKMOD
-  4113  C2C100        		jp	nz,PRTSYS60
+  40F8                	SETTBLLP4:
+  40F8  E5            		push	hl
+  40F9  21F7FE        		ld	hl,0-0109h	;file buffer size=256+9bytes
+  40FC  19            		add	hl,de
+  40FD  71            		ld	(hl),c		;+0: file open mode, c=0
+  40FE  EB            		ex	de,hl
+  40FF  E1            		pop	hl
+                      	
+  4100  73            		ld	(hl),e
+  4101  23            		inc	hl
+  4102  72            		ld	(hl),d
+  4103  23            		inc	hl
+  4104  10F2          		djnz	SETTBLLP4
+  4106  1B            		dec	de
+  4107  EB            		ex	de,hl
+                      	
+  4108                	SETTBLZ2:
+  4108  228DFD        		ld	(USREND),hl
+  410B  012C01        		ld	bc,300
+  410E  CDBC35        		call	CLRMAIN
+  4111  CDAE12        		call	PRTFKEY
+  4114  CD9539        		call	CHKMOD
+  4117  C2C100        		jp	nz,PRTSYS60
                       	
                       	;TALK(be)-DELETE(c1)
-  4116  218241        		ld	hl,CMDLST66
-  4119  11DDFA        		ld	de,CMDTBL+(0beh-80h)*2
-  411C  010800        		ld	bc,0+(0c2h-0beh)*2
-  411F  EDB0          		ldir
+  411A  218641        		ld	hl,CMDLST66
+  411D  11DDFA        		ld	de,CMDTBL+(0beh-80h)*2
+  4120  010800        		ld	bc,0+(0c2h-0beh)*2
+  4123  EDB0          		ldir
                       	
-  4121  210463        		ld	hl,SYSNAME66
-  4124  C3C400        		jp	PRTSYS
-                      	
-                      	
-  4127                	HOOKTBL:
-  4127  8DFFF456      		dw	HOOKERR, ERRCLRB
-  412B  93FFD656      		dw	HOOKEDT, REMOVE
-  412F  AEFF3952      		dw	HOOKPRT, FNUMPRT
-  4133  BAFF7F52      		dw	HOOKINP, FNUMINP
-  4137  CFFFB85A      		dw	HOOKPUT, PUTDSK
-  413B  C9FFCC59      		dw	HOOKRES, CHKROPT
-  413F                	HOOKTBLEND:
+  4125  210463        		ld	hl,SYSNAME66
+  4128  C3C400        		jp	PRTSYS
                       	
                       	
-  413F                	HOWMANYFILES:
-  413F  486F77204D616E		db	"How Many Files", 00h
+  412B                	HOOKTBL:
+  412B  8DFFF456      		dw	HOOKERR, ERRCLRB
+  412F  93FFD656      		dw	HOOKEDT, REMOVE
+  4133  AEFF3952      		dw	HOOKPRT, FNUMPRT
+  4137  BAFF7F52      		dw	HOOKINP, FNUMINP
+  413B  CFFFB85A      		dw	HOOKPUT, PUTDSK
+  413F  C9FFCC59      		dw	HOOKRES, CHKROPT
+  4143                	HOOKTBLEND:
                       	
-  414E                	CMDLSTEX:
+                      	
+  4143                	HOWMANYFILES:
+  4143  486F77204D616E		db	"How Many Files", 00h
+                      	
+  4152                	CMDLSTEX:
                       	;ab-af
-  414E  C203724A8E4EA0		dw				C_RENM,	C_CRCL,	C_GET,	C_PUT,	C_BLD
+  4152  C203724A8E4EA0		dw				C_RENM,	C_CRCL,	C_GET,	C_PUT,	C_BLD
                       	;b0-bd
-  4158  B85DE859E35940		dw	C_BSV,	C_FLS,	C_LFLS,	C_LOAD,	C_MRG,	C_NAME,	C_SAVE,	C_FLD
-  4168  F258DE586155AD		dw	C_LSET,	C_RSET,	C_OPEN,	C_CLOS,	C_DSKO,	C_KILL
+  415C  B85DE859E35940		dw	C_BSV,	C_FLS,	C_LFLS,	C_LOAD,	C_MRG,	C_NAME,	C_SAVE,	C_FLD
+  416C  F258DE586155AD		dw	C_LSET,	C_RSET,	C_OPEN,	C_CLOS,	C_DSKO,	C_KILL
                       	
-  4174                	FNCLSTEX:
+  4178                	FNCLSTEX:
                       	;f3-f9
-  4174  2E5C4D5D305D5B		dw				F_DSKI,	F_LOF,	F_LOC,	F_EOF,	F_DSKF
-  417E  90598259      		dw	F_CVS,	F_MKS
+  4178  2E5C4D5D305D5B		dw				F_DSKI,	F_LOF,	F_LOC,	F_EOF,	F_DSKF
+  4182  90598259      		dw	F_CVS,	F_MKS
                       	
-  4182                	CMDLST66:
+  4186                	CMDLST66:
                       	;be-bf
-  4182  41766F76      		dw							C_TALK,	C_MON
+  4186  41766F76      		dw							C_TALK,	C_MON
                       	;c0-c1
-  4186  D273B67E      		dw	C_KANJ,	C_DEL
+  418A  D273B67E      		dw	C_KANJ,	C_DEL
                       	
-  418A                	CMDNAMEEX:
-  418A  D2454E554D    		db							'R'+80h,"ENUM"
-  418F  C34952434C45C7		db	'C'+80h,"IRCLE",'G'+80h,"ET",	'P'+80h,"UT",	'B'+80h,"LOAD"
+  418E                	CMDNAMEEX:
+  418E  D2454E554D    		db							'R'+80h,"ENUM"
+  4193  C34952434C45C7		db	'C'+80h,"IRCLE",'G'+80h,"ET",	'P'+80h,"UT",	'B'+80h,"LOAD"
                       	
-  41A0  C253415645C649		db	'B'+80h,"SAVE",	'F'+80h,"ILES",	'L'+80h,"FILES",'L'+80h,"OAD"
-  41B4  CD45524745CE41		db	'M'+80h,"ERGE",	'N'+80h,"AME",	'S'+80h,"AVE",	'F'+80h,"IELD"
+  41A4  C253415645C649		db	'B'+80h,"SAVE",	'F'+80h,"ILES",	'L'+80h,"FILES",'L'+80h,"OAD"
+  41B8  CD45524745CE41		db	'M'+80h,"ERGE",	'N'+80h,"AME",	'S'+80h,"AVE",	'F'+80h,"IELD"
                       	
-  41C6  CC534554D25345		db	'L'+80h,"SET",	'R'+80h,"SET",	'O'+80h,"PEN",	'C'+80h,"LOSE"
-  41D7  C4534B4F24CB49		db	'D'+80h,"SKO$",	'K'+80h,"ILL",	'T'+80h,"ALK",	'M'+80h,"ON"
+  41CA  CC534554D25345		db	'L'+80h,"SET",	'R'+80h,"SET",	'O'+80h,"PEN",	'C'+80h,"LOSE"
+  41DB  C4534B4F24CB49		db	'D'+80h,"SKO$",	'K'+80h,"ILL",	'T'+80h,"ALK",	'M'+80h,"ON"
                       	
-  41E7  CB414E4A49C445		db	'K'+80h,"ANJI",	'D'+80h,"ELETE"
+  41EB  CB414E4A49C445		db	'K'+80h,"ANJI",	'D'+80h,"ELETE"
                       	
                       	
-  41F2                	FNCNAMEEX:
-  41F2  D04144C4534B49		db					'P'+80h,"AD",	'D'+80h,"SKI$"
-  41FA  CC4F46CC4F43C5		db	'L'+80h,"OF",	'L'+80h,"OC",	'E'+80h,"OF",	'D'+80h,"SKF"
+  41F6                	FNCNAMEEX:
+  41F6  D04144C4534B49		db					'P'+80h,"AD",	'D'+80h,"SKI$"
+  41FE  CC4F46CC4F43C5		db	'L'+80h,"OF",	'L'+80h,"OC",	'E'+80h,"OF",	'D'+80h,"SKF"
                       	
-  4207  C35653CD4B5324		db	'C'+80h,"VS",	'M'+80h,"KS$",	80h
+  420B  C35653CD4B5324		db	'C'+80h,"VS",	'M'+80h,"KS$",	80h
                       	
                       	
                       	;error ID for extended BASIC
-  420F                	ERRIDEX:
-  420F  464F4945424E  		db	"FO", "IE", "BN"
-  4215  4646424D414F49		db	"FF", "BM", "AO", "IO", "FE", "DF", "EF", "NM"
-  4225  44534154444E54		db	"DS", "AT", "DN", "TS", "RD", "SP", "CF", "FW"
+  4213                	ERRIDEX:
+  4213  464F4945424E  		db	"FO", "IE", "BN"
+  4219  4646424D414F49		db	"FF", "BM", "AO", "IO", "FE", "DF", "EF", "NM"
+  4229  44534154444E54		db	"DS", "AT", "DN", "TS", "RD", "SP", "CF", "FW"
                       	
                       	
-  4235                	FOERR:
-  4235  1E2A          		ld	e,2ah
-  4237  01            		db	01h		;ld bc,****
-  4238                	IEERR:
-  4238  1E2C          		ld	e,2ch
-  423A  01            		db	01h		;ld bc,****
-  423B                	BNERR:
-  423B  1E2E          		ld	e,2eh
-  423D  01            		db	01h		;ld bc,****
-  423E                	FFERR:
-  423E  1E30          		ld	e,30h
-  4240  01            		db	01h		;ld bc,****
-  4241                	BMERR:
-  4241  1E32          		ld	e,32h
-  4243  01            		db	01h		;ld bc,****
-  4244                	AOERR:
-  4244  1E34          		ld	e,34h
-  4246  01            		db	01h		;ld bc,****
-  4247                	IOERR:
-  4247  1E36          		ld	e,36h
-  4249  01            		db	01h		;ld bc,****
-  424A                	FEERR:
-  424A  1E38          		ld	e,38h
-  424C  01            		db	01h		;ld bc,****
-  424D                	DFERR:
-  424D  1E3A          		ld	e,3ah
-  424F  01            		db	01h		;ld bc,****
-  4250                	EFERR:
-  4250  1E3C          		ld	e,3ch
-  4252  01            		db	01h		;ld bc,****
-  4253                	NMERR:
-  4253  1E3E          		ld	e,3eh
-  4255  01            		db	01h		;ld bc,****
-  4256                	DSERR:
-  4256  1E40          		ld	e,40h
-  4258  01            		db	01h		;ld bc,****
-  4259                	ATERR:
-  4259  1E42          		ld	e,42h
-  425B  01            		db	01h		;ld bc,****
-  425C                	DNERR:
-  425C  1E44          		ld	e,44h
-  425E  01            		db	01h		;ld bc,****
-  425F                	TSERR:
-  425F  1E46          		ld	e,46h
-  4261  01            		db	01h		;ld bc,****
-  4262                	RDERR:
-  4262  1E48          		ld	e,48h
-  4264  01            		db	01h		;ld bc,****
-  4265                	SPERR:
-  4265  1E4A          		ld	e,4ah
-  4267  01            		db	01h		;ld bc,****
-  4268                	CFERR:
-  4268  1E4C          		ld	e,4ch
-  426A  01            		db	01h		;ld bc,****
-  426B                	FWERR:
-  426B  1E4E          		ld	e,4eh
+  4239                	FOERR:
+  4239  1E2A          		ld	e,2ah
+  423B  01            		db	01h		;ld bc,****
+  423C                	IEERR:
+  423C  1E2C          		ld	e,2ch
+  423E  01            		db	01h		;ld bc,****
+  423F                	BNERR:
+  423F  1E2E          		ld	e,2eh
+  4241  01            		db	01h		;ld bc,****
+  4242                	FFERR:
+  4242  1E30          		ld	e,30h
+  4244  01            		db	01h		;ld bc,****
+  4245                	BMERR:
+  4245  1E32          		ld	e,32h
+  4247  01            		db	01h		;ld bc,****
+  4248                	AOERR:
+  4248  1E34          		ld	e,34h
+  424A  01            		db	01h		;ld bc,****
+  424B                	IOERR:
+  424B  1E36          		ld	e,36h
+  424D  01            		db	01h		;ld bc,****
+  424E                	FEERR:
+  424E  1E38          		ld	e,38h
+  4250  01            		db	01h		;ld bc,****
+  4251                	DFERR:
+  4251  1E3A          		ld	e,3ah
+  4253  01            		db	01h		;ld bc,****
+  4254                	EFERR:
+  4254  1E3C          		ld	e,3ch
+  4256  01            		db	01h		;ld bc,****
+  4257                	NMERR:
+  4257  1E3E          		ld	e,3eh
+  4259  01            		db	01h		;ld bc,****
+  425A                	DSERR:
+  425A  1E40          		ld	e,40h
+  425C  01            		db	01h		;ld bc,****
+  425D                	ATERR:
+  425D  1E42          		ld	e,42h
+  425F  01            		db	01h		;ld bc,****
+  4260                	DNERR:
+  4260  1E44          		ld	e,44h
+  4262  01            		db	01h		;ld bc,****
+  4263                	TSERR:
+  4263  1E46          		ld	e,46h
+  4265  01            		db	01h		;ld bc,****
+  4266                	RDERR:
+  4266  1E48          		ld	e,48h
+  4268  01            		db	01h		;ld bc,****
+  4269                	SPERR:
+  4269  1E4A          		ld	e,4ah
+  426B  01            		db	01h		;ld bc,****
+  426C                	CFERR:
+  426C  1E4C          		ld	e,4ch
+  426E  01            		db	01h		;ld bc,****
+  426F                	FWERR:
+  426F  1E4E          		ld	e,4eh
                       	
-  426D  C3FD03        		jp	ERROR
+  4271  C3FD03        		jp	ERROR
                       	
                       	
                       	;read/write/check disk
@@ -14074,7 +14077,7 @@
                       	;output: c-flag(1=error), (de=de+data size)
                       	;destroy: f,(de)
                       	;destroy: af,(de),hl if error count>=10 (FAT error)
-  4270                	_DISK:	ds	DISK-_DISK
+  4274                	_DISK:	ds	DISK-_DISK
   4274                		org	DISK
   4274  C30C43        		jp	DSKMAIN
                       	
@@ -14092,14 +14095,14 @@
   4289  C38705        		jp	ILNC
                       	
   428C                	IL661:
-  428C  218A41        		ld	hl,CMDNAMEEX
+  428C  218E41        		ld	hl,CMDNAMEEX
   428F  C39405        		jp	ILLP3
   4292                	IL662:
   4292  21E402        		ld	hl,FNCNAME
   4295  06C2          		ld	b,TAB_
   4297  C39405        		jp	ILLP3
   429A                	IL663:
-  429A  21F241        		ld	hl,FNCNAMEEX
+  429A  21F641        		ld	hl,FNCNAMEEX
   429D  C39405        		jp	ILLP3
                       	
                       	
@@ -14230,7 +14233,7 @@
   432D  305A          		jr	nc,DSKERR	;if sector>16
   432F  3274FE        		ld	(SECTOR),a
                       	
-  4332  DD7E00        		ld	a,(ix+00h)
+  4332  DD7E00        		ld	a,(ix+00h)	;drive-1
   4335  CDA042        		call	CHKDRV
   4338  384F          		jr	c,DSKERR
   433A  3273FE        		ld	(DRIVE),a
@@ -14317,7 +14320,7 @@
   43A8  FE03          		cp	10h-0eh+1
   43AA  3803          		jr	c,ERRFAT
   43AC                	ERRJMPNZ:
-  43AC  C34742        		jp	IOERR
+  43AC  C34B42        		jp	IOERR
                       	
                       	;FAT error
   43AF                	ERRFAT:
@@ -16173,7 +16176,7 @@
                       	
   4CBC  7A            		ld	a,d
   4CBD  B3            		or	e
-  4CBE  CA4D42        		jp	z,DFERR
+  4CBE  CA5142        		jp	z,DFERR
                       	
   4CC1  01FBFF        		ld	bc,0-0005h
   4CC4  09            		add	hl,bc
@@ -16250,7 +16253,7 @@
   4D1D  47            		ld	b,a		;drive-1
   4D1E  CDCA53        		call	READFAT
   4D21  CD3C54        		call	SRCHFILE
-  4D24  C23E42        		jp	nz,FFERR
+  4D24  C24242        		jp	nz,FFERR
   4D27  CB40          		bit	0,b
   4D29  CACB03        		jp	z,FCERR		;if not binary file
   4D2C  1601          		ld	d,01h		;file open mode=input
@@ -16555,14 +16558,14 @@
   4EB9  FEC0          		cp	0c0h		;
   4EBB  15            		dec	d
   4EBC  2805          		jr	z,GETZ
-  4EBE  D25042        		jp	nc,EFERR	;
+  4EBE  D25442        		jp	nc,EFERR	;
   4EC1  18F2          		jr	GETLP
                       	
   4EC3                	GETZ:
   4EC3  3806          		jr	c,GETOK
   4EC5  D6C0          		sub	0c0h
   4EC7  B9            		cp	c
-  4EC8  DA5042        		jp	c,EFERR
+  4EC8  DA5442        		jp	c,EFERR
   4ECB                	GETOK:
   4ECB  CB38          		srl	b		;track=cluster/2
   4ECD  3004          		jr	nc,GETNC	;even cluster: 1-8
@@ -16575,7 +16578,7 @@
                       	
   4ED9                	GETNZ:
   4ED9  CDFA5B        		call	RDNEXT
-  4EDC  DA5042        		jp	c,EFERR
+  4EDC  DA5442        		jp	c,EFERR
   4EDF  C3ED56        		jp	CLRBUFP
                       	
                       	
@@ -16599,7 +16602,7 @@
   4EF7  CD190E        		call	INT2ARG
   4EFA  7A            		ld	a,d
   4EFB  B3            		or	e
-  4EFC  CA5042        		jp	z,EFERR
+  4EFC  CA5442        		jp	z,EFERR
   4EFF  BF            		cp	a		;set z-flag
   4F00  C9            		ret
                       	
@@ -17251,9 +17254,9 @@
                       	
   51F2  213BFB        		ld	hl,DRIVES
   51F5  BE            		cp	(hl)
-  51F6  D25C42        		jp	nc,DNERR
+  51F6  D26042        		jp	nc,DNERR
                       	
-  51F9  DD7700        		ld	(ix+00h),a
+  51F9  DD7700        		ld	(ix+00h),a	;drive-1
   51FC  2AFCFF        		ld	hl,(FATPTBL)
   51FF  87            		add	a,a
   5200  85            		add	a,l
@@ -17274,7 +17277,7 @@
   520C                	GETBUFP:
   520C  3A31FB        		ld	a,(FILES)
   520F  BB            		cp	e
-  5210  DA3B42        		jp	c,BNERR
+  5210  DA3F42        		jp	c,BNERR
   5213  2A35FB        		ld	hl,(BUFPTBL)
   5216  1600          		ld	d,00h
   5218  CB23          		sla	e
@@ -17303,7 +17306,7 @@
   5225                	CHKOPEN:
   5225  CD4F07        		call	FTOI1
   5228  CD0C52        		call	GETBUFP		;a=file open mode
-  522B  CA6842        		jp	z,CFERR		;not open
+  522B  CA6C42        		jp	z,CFERR		;not open
   522E  E5            		push	hl
   522F  110400        		ld	de,0004h
   5232  19            		add	hl,de
@@ -17349,14 +17352,14 @@
   5252  CD2552        		call	CHKOPEN
   5255  C1            		pop	bc		;b=1:print#, b=2:input#
   5256  B8            		cp	b
-  5257  CA4142        		jp	z,BMERR		;a=1(input mode) and b=1(print#) or a=2(output mode) and b=2(input#)
+  5257  CA4542        		jp	z,BMERR		;a=1(input mode) and b=1(print#) or a=2(output mode) and b=2(input#)
                       	
   525A  E5            		push	hl
   525B  110700        		ld	de,0007h
   525E  19            		add	hl,de
   525F  7E            		ld	a,(hl)		;+7: file status
   5260  E604          		and	04h
-  5262  C26542        		jp	nz,SPERR	;random file
+  5262  C26942        		jp	nz,SPERR	;random file
   5265  E1            		pop	hl
   5266  2239FB        		ld	(BUFP),hl
                       	
@@ -17397,7 +17400,7 @@
                       	
   5296                	INPDLP1:
   5296  CD415B        		call	GETDSK
-  5299  DA5042        		jp	c,EFERR
+  5299  DA5442        		jp	c,EFERR
   529C  FE20          		cp	' '
   529E  28F6          		jr	z,INPDLP1
                       	
@@ -17650,7 +17653,7 @@
   53B3                	NXSCTWEND:
   53B3  CDF953        		call	SETSUM
   53B6  23            		inc	hl
-  53B7  36FF          		ld	(hl),0ffh	;need to overwrite FAT
+  53B7  36FF          		ld	(hl),0ffh	;-2: need to overwrite FAT
   53B9  D1            		pop	de
   53BA  E1            		pop	hl
   53BB  C9            		ret
@@ -17702,7 +17705,7 @@
   53F0  CD935C        		call	READBUF0
   53F3  CB66          		bit	4,(hl)
   53F5  C8            		ret	z
-  53F6  C36B42        		jp	FWERR
+  53F6  C36F42        		jp	FWERR
                       	
                       	
                       	;set FAT check sum
@@ -17723,7 +17726,7 @@
   5400  CD0854        		call	CALCSUM
   5403  BE            		cp	(hl)
   5404  C8            		ret	z
-  5405  C33842        		jp	IEERR
+  5405  C33C42        		jp	IEERR
                       	
                       	
                       	;calculate FAT check sum
@@ -17773,12 +17776,12 @@
   542B  FEFE          		cp	0feh
   542D  D0            		ret	nc
   542E  FEC9          		cp	0c9h
-  5430  D25942        		jp	nc,ATERR
+  5430  D25D42        		jp	nc,ATERR
   5433  FEC0          		cp	0c0h
   5435  D0            		ret	nc
   5436  FE46          		cp	CLSTS
   5438  D8            		ret	c
-  5439  C35942        		jp	ATERR
+  5439  C35D42        		jp	ATERR
                       	
                       	
                       	;search file
@@ -17825,7 +17828,7 @@
   5470  23            		inc	hl
   5471  7E            		ld	a,(hl)		;cluster
   5472  FEC0          		cp	0c0h
-  5474  D25942        		jp	nc,ATERR
+  5474  D25D42        		jp	nc,ATERR
   5477  11F6FF        		ld	de,0-10
   547A  19            		add	hl,de
   547B  BF            		cp	a		;set z-flag
@@ -17875,7 +17878,7 @@
   54B6  C1            		pop	bc
   54B7  0C            		inc	c
   54B8  10E3          		djnz	SRCHFLP4
-  54BA  C34D42        		jp	DFERR
+  54BA  C35142        		jp	DFERR
                       	
                       	
   54BD                	SRCHFZ2:
@@ -17918,7 +17921,7 @@
   54DB  0C            		inc	c
   54DC  2805          		jr	z,SRCHCZ1	;ff=unused
   54DE  10F9          		djnz	SRCHCLP1
-  54E0  C34D42        		jp	DFERR
+  54E0  C35142        		jp	DFERR
                       	
   54E3                	SRCHCZ1:
   54E3  E6FE          		and	0feh		;track*2
@@ -17977,11 +17980,11 @@
   551F  CD5E5F        		call	SETFNAME
   5522  C1            		pop	bc
   5523  B8            		cp	b
-  5524  C26242        		jp	nz,RDERR
+  5524  C26642        		jp	nz,RDERR
   5527  DD7700        		ld	(ix+00h),a	;drive-1
   552A  CD0054        		call	CHKSUM
   552D  CD3C54        		call	SRCHFILE
-  5530  CA4A42        		jp	z,FEERR
+  5530  CA4E42        		jp	z,FEERR
                       	
   5533  DDE5          		push	ix
   5535  0609          		ld	b,09h
@@ -17995,7 +17998,7 @@
   5547  DDE1          		pop	ix
                       	
   5549  CD3C54        		call	SRCHFILE
-  554C  C23E42        		jp	nz,FFERR
+  554C  C24242        		jp	nz,FFERR
                       	
   554F  DDE5          		push	ix
   5551  0609          		ld	b,09h
@@ -18063,7 +18066,7 @@
   559B  3D            		dec	a
   559C  2131FB        		ld	hl,FILES
   559F  BE            		cp	(hl)
-  55A0  D23B42        		jp	nc,BNERR
+  55A0  D23F42        		jp	nc,BNERR
                       	
                       	;de=file number
   55A3  2A35FB        		ld	hl,(BUFPTBL)
@@ -18078,7 +18081,7 @@
   55AD  6F            		ld	l,a
   55AE  7E            		ld	a,(hl)
   55AF  B7            		or	a
-  55B0  C24442        		jp	nz,AOERR
+  55B0  C24842        		jp	nz,AOERR
   55B3  D1            		pop	de		;d=file open mode
   55B4  F1            		pop	af		;drive-1
                       	
@@ -18093,7 +18096,7 @@
                       	;for append
   55BF  CDCA53        		call	READFAT
   55C2  CD3C54        		call	SRCHFILE
-  55C5  C23E42        		jp	nz,FFERR
+  55C5  C24242        		jp	nz,FFERR
   55C8  1812          		jr	OPENEND
                       	
                       	
@@ -18113,7 +18116,7 @@
                       	;a=cluster
   55DC                	OPENEND:
   55DC  2A33FB        		ld	hl,(FATP)
-  55DF  3612          		ld	(hl),12h	;last accessed track
+  55DF  3612          		ld	(hl),12h	;+0: last accessed track
   55E1  D1            		pop	de		;d=file open mode
   55E2  E1            		pop	hl		;file buffer pointer
                       	
@@ -18135,7 +18138,7 @@
   55EF  34            		inc	(hl)		;if append mode
   55F0                	FOPENZ:
   55F0  23            		inc	hl
-  55F1  DD4E00        		ld	c,(ix+00h)
+  55F1  DD4E00        		ld	c,(ix+00h)	;drive-1
   55F4  71            		ld	(hl),c		;+4: drive-1
   55F5  23            		inc	hl
   55F6  77            		ld	(hl),a		;+5: end position
@@ -18236,7 +18239,7 @@
   5667  2B            		dec	hl
   5668  7E            		ld	a,(hl)
   5669  B7            		or	a
-  566A  2816          		jr	z,CHKCLOSE	;not need to overwrite FAT
+  566A  2816          		jr	z,CHKCLOSE	;-2: not need to overwrite FAT
                       	
                       	;write FAT
                       	;destroy: af,bc,de,hl
@@ -18255,7 +18258,7 @@
                       	
   567E  2B            		dec	hl
   567F  2B            		dec	hl
-  5680  3600          		ld	(hl),00h	;not need to overwrite FAT
+  5680  3600          		ld	(hl),00h	;-2: not need to overwrite FAT
                       	;	jr	CHKCLOSE
                       	
                       	
@@ -18273,7 +18276,7 @@
   568E  10F9          		djnz	CHKCLLP
   5690                	CHKCLZ:
   5690  2A33FB        		ld	hl,(FATP)
-  5693  36FF          		ld	(hl),0ffh	;last accessed track (ff=no open files)
+  5693  36FF          		ld	(hl),0ffh	;+0: last accessed track (ff=no open files)
   5695  C9            		ret
                       	
                       	
@@ -18287,7 +18290,7 @@
   569F  2A33FB        		ld	hl,(FATP)
   56A2  2B            		dec	hl
   56A3  2B            		dec	hl
-  56A4  36FF          		ld	(hl),0ffh	;need to overwrite FAT
+  56A4  36FF          		ld	(hl),0ffh	;-2: need to overwrite FAT
   56A6  C9            		ret
                       	
                       	
@@ -18299,7 +18302,7 @@
   56A8  2A33FB        		ld	hl,(FATP)
   56AB  2B            		dec	hl
   56AC  2B            		dec	hl
-  56AD  36FF          		ld	(hl),0ffh	;need to overwrite FAT
+  56AD  36FF          		ld	(hl),0ffh	;-2: need to overwrite FAT
   56AF  E1            		pop	hl
                       	
   56B0  11F8FF        		ld	de,0-0008h
@@ -18371,9 +18374,9 @@
   56FE  CDCA53        		call	READFAT
   5701  CDED53        		call	CHKID
   5704  CD3C54        		call	SRCHFILE
-  5707  C23E42        		jp	nz,FFERR
+  5707  C24242        		jp	nz,FFERR
   570A  CB60          		bit	4,b
-  570C  C26B42        		jp	nz,FWERR
+  570C  C26F42        		jp	nz,FWERR
                       	
   570F  E5            		push	hl
   5710  4F            		ld	c,a		;first cluster
@@ -18391,8 +18394,8 @@
   5721  23            		inc	hl
   5722  23            		inc	hl
   5723  7E            		ld	a,(hl)		;+4: drive-1
-  5724  DDBE00        		cp	(ix+00h)
-  5727  CA4442        		jp	z,AOERR
+  5724  DDBE00        		cp	(ix+00h)	;drive-1
+  5727  CA4842        		jp	z,AOERR
   572A                	KILLOK:
   572A  10E9          		djnz	KILLLP
   572C  E1            		pop	hl
@@ -18450,7 +18453,7 @@
   576B  78            		ld	a,b		;drive-1
   576C  CDCA53        		call	READFAT
   576F  CD3C54        		call	SRCHFILE
-  5772  C23E42        		jp	nz,FFERR
+  5772  C24242        		jp	nz,FFERR
                       	
   5775  4F            		ld	c,a		;cluster
   5776  F1            		pop	af		;c-flag: load/run=0, merge=1
@@ -18458,7 +18461,7 @@
   577A  79            		ld	a,c		;cluster
   577B  CB78          		bit	7,b		;attribute
   577D  2855          		jr	z,LOADASC
-  577F  DA4142        		jp	c,BMERR		;merge and not ascii
+  577F  DA4542        		jp	c,BMERR		;merge and not ascii
                       	
                       	
                       	;normal format load
@@ -18471,7 +18474,7 @@
   578C  EB            		ex	de,hl
   578D  F5            		push	af		;FAT value
   578E  FEC9          		cp	0c9h
-  5790  D25942        		jp	nc,ATERR
+  5790  D25D42        		jp	nc,ATERR
   5793  D6C0          		sub	0c0h
   5795  2813          		jr	z,LOADZ
   5797  3002          		jr	nc,LOADNC2	;c1-c8
@@ -18519,7 +18522,7 @@
                       	;input: a=cluster, b=attribute
   57D4                	LOADASC:
   57D4  05            		dec	b
-  57D5  CA5642        		jp	z,DSERR
+  57D5  CA5A42        		jp	z,DSERR
                       	
   57D8  CDD65C        		call	C2TRSECT
   57DB  0600          		ld	b,00h		;attribute=ascii
@@ -18536,7 +18539,7 @@
   57EF  B7            		or	a
   57F0  2806          		jr	z,LDASCZ
   57F2  CDAD0B        		call	CHKFIG
-  57F5  D25642        		jp	nc,DSERR
+  57F5  D25A42        		jp	nc,DSERR
   57F8                	LDASCZ:
   57F8  21DAFE        		ld	hl,INPBUF
   57FB  0648          		ld	b,48h
@@ -18666,7 +18669,7 @@
   58A5  E5            		push	hl		;directory address
   58A6  2022          		jr	nz,SETDNZ	;not found
   58A8  CB60          		bit	4,b		;can overwrite?
-  58AA  C26B42        		jp	nz,FWERR
+  58AA  C26F42        		jp	nz,FWERR
                       	
   58AD  F5            		push	af		;first cluster
   58AE  57            		ld	d,a
@@ -18682,7 +18685,7 @@
   58BD  23            		inc	hl
   58BE  7E            		ld	a,(hl)		;+1: first cluster
   58BF  BA            		cp	d
-  58C0  CA4442        		jp	z,AOERR
+  58C0  CA4842        		jp	z,AOERR
   58C3                	SETDZ1:
   58C3  1D            		dec	e
   58C4  20F0          		jr	nz,SETDLP
@@ -18802,7 +18805,7 @@
                       	
   593A  3A31FB        		ld	a,(FILES)
   593D  BB            		cp	e
-  593E  DA3B42        		jp	c,BNERR
+  593E  DA3F42        		jp	c,BNERR
   5941  7B            		ld	a,e
   5942  CD0C52        		call	GETBUFP
   5945  010900        		ld	bc,0009h
@@ -18837,7 +18840,7 @@
   596C  D5            		push	de		;variable address
   596D  110101        		ld	de,0101h
   5970  E7            		rst	CPHLDE
-  5971  D23542        		jp	nc,FOERR
+  5971  D23942        		jp	nc,FOERR
   5974  D1            		pop	de		;variable address
   5975  E3            		ex	(sp),hl		;buffer address
                       	
@@ -18932,7 +18935,7 @@
   59ED  C4E40D        		call	nz,INT1ARG
   59F0  3D            		dec	a
   59F1  CDCA53        		call	READFAT
-  59F4  C24442        		jp	nz,AOERR
+  59F4  C24842        		jp	nz,AOERR
                       	
                       	;read directory
   59F7  0E01          		ld	c,01h		;sector 1
@@ -19044,7 +19047,7 @@
   5A88  CD3927        		call	PUTNL
                       	
   5A8B  2A33FB        		ld	hl,(FATP)
-  5A8E  36FF          		ld	(hl),0ffh	;last accessed track (ff=no open files)
+  5A8E  36FF          		ld	(hl),0ffh	;+0: last accessed track (ff=no open files)
                       	
   5A90  AF            		xor	a
   5A91  3258FA        		ld	(DEVICE),a
@@ -19064,11 +19067,11 @@
   5A9A  2819          		jr	z,CNTCLZ
   5A9C  CD1F54        		call	GETFAT
   5A9F  FEC9          		cp	0c9h
-  5AA1  D25942        		jp	nc,ATERR
+  5AA1  D25D42        		jp	nc,ATERR
   5AA4  FEC0          		cp	0c0h
   5AA6  3007          		jr	nc,CNTCNC
   5AA8  FE46          		cp	CLSTS
-  5AAA  D25942        		jp	nc,ATERR
+  5AAA  D25D42        		jp	nc,ATERR
   5AAD  10EA          		djnz	CNTCLP
   5AAF                	CNTCNC:
   5AAF  D6C0          		sub	0c0h
@@ -19116,7 +19119,7 @@
   5AD1  E5            		push	hl
   5AD2  23            		inc	hl
   5AD3  CB66          		bit	4,(hl)		;+7: file status: write protect?
-  5AD5  C26B42        		jp	nz,FWERR
+  5AD5  C26F42        		jp	nz,FWERR
   5AD8  CB4E          		bit	1,(hl)		;+7: file status: to next sector?
   5ADA  2832          		jr	z,PUTDDATA
                       	
@@ -19192,7 +19195,7 @@
   5B2D                	PUTDNC2:
   5B2D  4F            		ld	c,a
   5B2E  2A33FB        		ld	hl,(FATP)
-  5B31  70            		ld	(hl),b		;last accessed track
+  5B31  70            		ld	(hl),b		;+0: last accessed track
   5B32  CDC15C        		call	WRTBUF
   5B35  CDFA5B        		call	RDNEXT
   5B38  DCBA5B        		call	c,NEXTSECTW2
@@ -19355,7 +19358,7 @@
   5BD6                	NXSCTWEND2:
   5BD6  CDF953        		call	SETSUM
   5BD9  23            		inc	hl
-  5BDA  36FF          		ld	(hl),0ffh	;need to overwrite FAT
+  5BDA  36FF          		ld	(hl),0ffh	;-2: need to overwrite FAT
                       	
   5BDC  2A39FB        		ld	hl,(BUFP)
   5BDF  23            		inc	hl
@@ -19475,16 +19478,16 @@
   5C5F  3D            		dec	a
   5C60  213BFB        		ld	hl,DRIVES
   5C63  BE            		cp	(hl)
-  5C64  D25C42        		jp	nc,DNERR
+  5C64  D26042        		jp	nc,DNERR
                       	
   5C67  F5            		push	af		;drive-1(0-3)
   5C68  78            		ld	a,b
   5C69  FE23          		cp	TRACKS		;track(0-34)
-  5C6B  D25F42        		jp	nc,TSERR
+  5C6B  D26342        		jp	nc,TSERR
   5C6E  79            		ld	a,c
   5C6F  3D            		dec	a
   5C70  FE10          		cp	10h		;sector(1-16)
-  5C72  D25F42        		jp	nc,TSERR
+  5C72  D26342        		jp	nc,TSERR
   5C75  F1            		pop	af		;drive-1(0-3)
                       	
   5C76  CDDF5C        		call	SETIX
@@ -19565,9 +19568,9 @@
   5CAA  5D            		ld	e,l
   5CAB  B7            		or	a		;reset z- and c-flag for reading
   5CAC  CDFD5C        		call	DISK2
-  5CAF  DA5942        		jp	c,ATERR
+  5CAF  DA5D42        		jp	c,ATERR
   5CB2  2A33FB        		ld	hl,(FATP)
-  5CB5  70            		ld	(hl),b		;last accessed track
+  5CB5  70            		ld	(hl),b		;+0: last accessed track
   5CB6  E1            		pop	hl
   5CB7  C9            		ret
                       	
@@ -19607,9 +19610,9 @@
   5CCA                	WRTBFMAIN:
   5CCA  37            		scf			;set c-flag for writing
   5CCB  CDFD5C        		call	DISK2
-  5CCE  DA5942        		jp	c,ATERR
+  5CCE  DA5D42        		jp	c,ATERR
   5CD1  2A33FB        		ld	hl,(FATP)
-  5CD4  70            		ld	(hl),b		;last accessed track
+  5CD4  70            		ld	(hl),b		;+0: last accessed track
   5CD5  C9            		ret
                       	
                       	
@@ -19828,7 +19831,7 @@
   5D9D  D6C0          		sub	0c0h
   5D9F  FE09          		cp	09h
   5DA1  D8            		ret	c
-  5DA2  C36B42        		jp	FWERR
+  5DA2  C36F42        		jp	FWERR
                       	
                       	
                       	;get the end position in sector
@@ -19984,7 +19987,7 @@
   5E45  AF            		xor	a
   5E46  CD5E5F        		call	SETFNAME	;default: no R option
   5E49  F5            		push	af		;drive-1
-  5E4A  115942        		ld	de,ATERR
+  5E4A  115D42        		ld	de,ATERR
   5E4D  D5            		push	de		;dummy (start address)
                       	
   5E4E  DD361901      		ld	(ix+19h),01h	;1=start address is not specified
@@ -20018,7 +20021,7 @@
   5E87  D5            		push	de		;start address
   5E88  CDCA53        		call	READFAT
   5E8B  CD3C54        		call	SRCHFILE
-  5E8E  C23E42        		jp	nz,FFERR
+  5E8E  C24242        		jp	nz,FFERR
                       	
   5E91  CDD65C        		call	C2TRSECT
   5E94  CD1F54        		call	GETFAT
@@ -20211,7 +20214,7 @@
   5F61  DD7703        		ld	(ix+03h),a	;R option?
   5F64  CD8A26        		call	STRARG
   5F67  B7            		or	a
-  5F68  CA5342        		jp	z,NMERR
+  5F68  CA5742        		jp	z,NMERR
   5F6B  E5            		push	hl
                       	
                       	;get drive number
@@ -20227,7 +20230,7 @@
   5F7A  1A            		ld	a,(de)
   5F7B  D631          		sub	'1'
   5F7D  FE08          		cp	08h
-  5F7F  D25C42        		jp	nc,DNERR	;1-8=ok
+  5F7F  D26042        		jp	nc,DNERR	;1-8=ok
   5F82  47            		ld	b,a		;drive(0-3)
   5F83  0D            		dec	c
   5F84  0D            		dec	c
@@ -20235,14 +20238,14 @@
   5F86  13            		inc	de
   5F87  1A            		ld	a,(de)
   5F88  FE2E          		cp	'.'
-  5F8A  CA5342        		jp	z,NMERR
+  5F8A  CA5742        		jp	z,NMERR
                       	
   5F8D                	SETFC:
   5F8D  3A3BFB        		ld	a,(DRIVES)
   5F90  3D            		dec	a
-  5F91  FA4442        		jp	m,AOERR
+  5F91  FA4842        		jp	m,AOERR
   5F94  B8            		cp	b
-  5F95  DA5C42        		jp	c,DNERR
+  5F95  DA6042        		jp	c,DNERR
   5F98  C5            		push	bc		;b=drive(0-3)
   5F99  2AFCFF        		ld	hl,(FATPTBL)
   5F9C  2ED7          		ld	l,0d7h		;ix+5
@@ -20287,7 +20290,7 @@
   5FC6  1A            		ld	a,(de)
   5FC7  13            		inc	de
   5FC8  FE2E          		cp	'.'
-  5FCA  CA5342        		jp	z,NMERR
+  5FCA  CA5742        		jp	z,NMERR
   5FCD  77            		ld	(hl),a
   5FCE  23            		inc	hl
   5FCF  10F2          		djnz	SETFLP3
@@ -20710,7 +20713,7 @@
                       	
                       	
   6304                	SYSNAME66:
-  6304  36369ADE96FD42		db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.4.1", 0dh, 0ah, 00h
+  6304  36369ADE96FD42		db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.4.2", 0dh, 0ah, 00h
                       	
                       	
                       	;PEEK() function

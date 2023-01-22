@@ -129,15 +129,21 @@ win32 {
 }
 
 !contains(DEFINES, NOAVI) {
-    packagesExist(libavformat-private) {
-        DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
-        PKGCONFIG += libavformat-private libavcodec-private libswscale-private \
-                    libswresample-private libavutil-private
-    } else:packagesExist(libavformat) {
-        DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
-        PKGCONFIG += libavformat libavcodec libswscale libswresample libavutil
+    win32 {
+        packagesExist(libavformat-private) {
+            DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
+            PKGCONFIG += libavformat-private libavcodec-private libswscale-private \
+                        libswresample-private libavutil-private
+        } else {
+            DEFINES += NOAVI
+        }
     } else {
-        DEFINES += NOAVI
+        packagesExist(libavformat) {
+            DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
+            PKGCONFIG += libavformat libavcodec libswscale libswresample libavutil
+        } else {
+            DEFINES += NOAVI
+        }
     }
 }
 

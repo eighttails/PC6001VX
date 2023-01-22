@@ -3,20 +3,23 @@
 function prerequisite(){
 #必要ライブラリ
 pacman "${PACMAN_INSTALL_OPTS[@]}" \
-$MINGW_PACKAGE_PREFIX-SDL2 \
 $MINGW_PACKAGE_PREFIX-brotli \
 $MINGW_PACKAGE_PREFIX-cc \
 $MINGW_PACKAGE_PREFIX-clang \
 $MINGW_PACKAGE_PREFIX-clang-tools-extra \
+$MINGW_PACKAGE_PREFIX-cmake \
 $MINGW_PACKAGE_PREFIX-dbus \
+$MINGW_PACKAGE_PREFIX-freetype \
 $MINGW_PACKAGE_PREFIX-gcc-libs \
-$MINGW_PACKAGE_PREFIX-mlir \
+$MINGW_PACKAGE_PREFIX-libjpeg-turbo \
+$MINGW_PACKAGE_PREFIX-libmng \
+$MINGW_PACKAGE_PREFIX-libpng \
+$MINGW_PACKAGE_PREFIX-libtiff \
+$MINGW_PACKAGE_PREFIX-libwebp \
 $MINGW_PACKAGE_PREFIX-ninja \
-$MINGW_PACKAGE_PREFIX-ntldd \
 $MINGW_PACKAGE_PREFIX-openssl \
 $MINGW_PACKAGE_PREFIX-pcre2 \
 $MINGW_PACKAGE_PREFIX-pkgconf \
-$MINGW_PACKAGE_PREFIX-polly \
 $MINGW_PACKAGE_PREFIX-qtbinpatcher \
 $MINGW_PACKAGE_PREFIX-vulkan-headers \
 $MINGW_PACKAGE_PREFIX-vulkan-loader \
@@ -54,8 +57,8 @@ apply_patch_with_msg() {
 
 function makeQtSourceTree(){
 #Qt
-QT_MAJOR_VERSION=6.2
-QT_MINOR_VERSION=.1
+QT_MAJOR_VERSION=6.4
+QT_MINOR_VERSION=.2
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 QT_ARCHIVE_DIR=qt-everywhere-src-$QT_VERSION
 QT_ARCHIVE=$QT_ARCHIVE_DIR.tar.xz
@@ -78,44 +81,38 @@ else
     pushd $QT_SOURCE_DIR
 
     apply_patch_with_msg \
-        001-adjust-qmake-conf-mingw.patch \
-        002-qt-6.2.0-win32-g-Add-QMAKE_EXTENSION_IMPORTLIB-defaulting-to-.patch \
-        003-qt-6.2.0-dont-add-resource-files-to-qmake-libs.patch \
-        004-Allow-overriding-CMAKE_FIND_LIBRARY_SUFFIXES-to-pref.patch \
-        005-qt-6.2.0-win32static-cmake-link-ws2_32-and--static.patch \
-        006-Fix-finding-D-Bus.patch \
-        007-Fix-using-static-PCRE2-and-DBus-1.patch \
-        008-Fix-libjpeg-workaround-for-conflict-with-rpcndr.h.patch \
-        009-Fix-transitive-dependencies-of-static-libraries.patch \
-        010-Support-finding-static-MariaDB-client-library.patch \
-        011-Fix-crashes-in-rasterization-code-using-setjmp.patch \
-        012-Handle-win64-in-dumpcpp-and-MetaObjectGenerator-read.patch \
-        013-qmng-fix-build.patch \
-        014-fix-relocatable-prefix-staticbuild-v2.patch \
-        015-qt6-windeployqt-fixes.patch
+    001-adjust-qmake-conf-mingw.patch \
+    002-qt-6.2.0-win32-g-Add-QMAKE_EXTENSION_IMPORTLIB-defaulting-to-.patch \
+    003-qt-6.2.0-dont-add-resource-files-to-qmake-libs.patch \
+    004-Allow-overriding-CMAKE_FIND_LIBRARY_SUFFIXES-to-pref.patch \
+    005-qt-6.2.0-win32static-cmake-link-ws2_32-and--static.patch \
+    006-Fix-finding-D-Bus.patch \
+    007-Fix-using-static-PCRE2-and-DBus-1.patch \
+    008-Fix-libjpeg-workaround-for-conflict-with-rpcndr.h.patch \
+    009-Fix-transitive-dependencies-of-static-libraries.patch \
+    010-Support-finding-static-MariaDB-client-library.patch \
+    011-Fix-crashes-in-rasterization-code-using-setjmp.patch \
+    012-Handle-win64-in-dumpcpp-and-MetaObjectGenerator-read.patch \
+    013-disable-finding-webp-from-cmake-config-files.patch \
+    015-qt6-windeployqt-fixes.patch
+    # このパッチはPREFIXがおかしくなるので適用しない
+    # 014-fix-relocatable-prefix-staticbuild-v2.patch \
 
-    local _ARCH_TUNE=
-    local _HARD_FLAGS=
-    case ${MINGW_CHOST} in
+  local _ARCH_TUNE=
+  case ${MINGW_CHOST} in
     i686*)
-        _ARCH_TUNE="-march=i686 -mtune=core2"
-        if [ "${_enable_hardening}" = "yes" ]; then
-        _HARD_FLAGS="-Wl,--dynamicbase,--nxcompat,--no-seh"
-        fi
-        ;;
+      _ARCH_TUNE="-march=pentium4 -mtune=generic"
+    ;;
     x86_64*)
-        _ARCH_TUNE="-march=nocona -mtune=core2"
-        if [ "${_enable_hardening}" = "yes" ]; then
-        _HARD_FLAGS="-Wl,--dynamicbase,--high-entropy-va,--nxcompat,--default-image-base-high"
-        fi
-        ;;
-    esac
+      _ARCH_TUNE="-march=nocona -msahf -mtune=generic"
+    ;;
+  esac
 
-    BIGOBJ_FLAGS="-Wa,-mbig-obj"
+  BIGOBJ_FLAGS="-Wa,-mbig-obj"
 
-    # Append these ones ..
-    sed -i "s|^QMAKE_CFLAGS .*= \(.*\)$|QMAKE_CFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS} ${LTCG_CFLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
-    sed -i "s|^QMAKE_LFLAGS           +=\(.*\)$|QMAKE_LFLAGS            += \1 ${_HARD_FLAGS}|g" qtbase/mkspecs/common/gcc-base.conf
+  # Append these ones ..
+  sed -i "s|^QMAKE_CFLAGS .*= \(.*\)$|QMAKE_CFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
+  sed -i "s|^QMAKE_CXXFLAGS .*= \(.*\)$|QMAKE_CXXFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
 
     popd
 fi
@@ -124,24 +121,26 @@ fi
 
 
 function buildQtStatic(){
-if [ -e $QT6_STATIC_PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
-    echo "Qt6 Static Libs are already installed."
-    return 0
-fi
+    if [ -e $QT6_STATIC_PREFIX/bin/qmake.exe -a $((FORCE_INSTALL)) == 0 ]; then
+        echo "Qt6 Static Libs are already installed."
+        return 0
+    fi
 
-#Qtのソースコードを展開
-makeQtSourceTree static
-exitOnError
+    #Qtのソースコードを展開
+    makeQtSourceTree static
+    exitOnError
 
-#static版
-QT6_STATIC_BUILD=qt6-static-$BIT
-rm -rf $QT6_STATIC_BUILD
-mkdir $QT6_STATIC_BUILD
-pushd $QT6_STATIC_BUILD
+    #static版
+    QT6_STATIC_BUILD=qt6-static-$BIT
+    rm -rf $QT6_STATIC_BUILD
+    mkdir $QT6_STATIC_BUILD
+    pushd $QT6_STATIC_BUILD
 
 
-MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=;-DCMAKE_CONFIGURATION_TYPES=;-DCMAKE_FIND_LIBRARY_SUFFIXES=" \
-cmake \
+    MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=;-DCMAKE_CONFIGURATION_TYPES=;-DCMAKE_FIND_LIBRARY_SUFFIXES=" \
+    ${MINGW_PREFIX}/bin/cmake \
+    -Wno-dev \
+    --log-level=STATUS \
     -G "Ninja" \
     -DCMAKE_BUILD_TYPE=Release \
     -DFEATURE_optimize_size=ON \
@@ -150,7 +149,7 @@ cmake \
     -DBUILD_WITH_PCH=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DQT_QMAKE_TARGET_MKSPEC=${_platform} \
-    -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
+    -DCMAKE_INSTALL_PREFIX="$(cygpath -am $QT6_STATIC_PREFIX)" \
     -DINSTALL_BINDIR=bin \
     -DINSTALL_LIBDIR=lib \
     -DINSTALL_INCLUDEDIR=include/qt6 \
@@ -177,11 +176,8 @@ cmake \
     -DFEATURE_system_harfbuzz=OFF \
     -DFEATURE_hunspell=OFF \
     -DFEATURE_system_hunspell=OFF \
-    -DFEATURE_mng=OFF \
-    -DFEATURE_jasper=OFF \
     -DFEATURE_system_jpeg=OFF \
     -DFEATURE_system_pcre2=OFF \
-    -DFEATURE_system_mng=OFF \
     -DFEATURE_system_png=OFF \
     -DFEATURE_system_sqlite=OFF \
     -DFEATURE_system_tiff=OFF \
@@ -192,6 +188,7 @@ cmake \
     -DFEATURE_opengl_desktop=OFF \
     -DFEATURE_egl=OFF \
     -DFEATURE_gstreamer=OFF \
+    -DFEATURE_ffmpeg=OFF \
     -DFEATURE_icu=OFF \
     -DFEATURE_fontconfig=OFF \
     -DFEATURE_pkg_config=ON \
@@ -200,6 +197,7 @@ cmake \
     -DFEATURE_sql_psql=OFF \
     -DFEATURE_sql_mysql=OFF \
     -DFEATURE_sql_odbc=OFF \
+    -DFEATURE_mng=OFF \
     -DFEATURE_zstd=OFF \
     -DFEATURE_wmf=ON \
     -DQT_BUILD_TESTS=OFF \
@@ -208,22 +206,20 @@ cmake \
     -DBUILD_qtdoc=OFF \
     -DBUILD_qttranslations=ON \
     -DBUILD_qtwebengine=OFF \
+    -DBUILD_qtquick3dphysics=OFF \
     -DOPENSSL_DEPENDENCIES="-lws2_32;-lgdi32;-lcrypt32" \
     -DPOSTGRESQL_DEPENDENCIES="-lpgcommon;-lpgport;-lintl;-lssl;-lcrypto;-lshell32;-lws2_32;-lsecur32;-liconv" \
     -DMYSQL_DEPENDENCIES="-lssl;-lcrypto;-lshlwapi;-lgdi32;-lws2_32;-lpthread;-lz;-lm" \
     -DLIBPNG_DEPENDENCIES="-lz" \
     -DGLIB2_DEPENDENCIES="-lintl;-lws2_32;-lole32;-lwinmm;-lshlwapi;-lm" \
     -DFREETYPE_DEPENDENCIES="-lbz2;-lharfbuzz;-lfreetype;-lbrotlidec;-lbrotlicommon" \
-    -DHARFBUZZ_DEPENDENCIES="-lglib-2.0;-lintl;-lws2_32;;-lgdi32;-lole32;-lwinmm;-lshlwapi;-lintl;-lm;-lfreetype;-lgraphite2;-lrpcrt4" \
-    -DLIBBROTLIDEC_DEPENDENCIES="-lbrotlicommon" \
-    -DLIBBROTLIENC_DEPENDENCIES="-lbrotlicommon" \
-    -DLIBBROTLICOMMON_DEPENDENCIES="" \
+    -DHARFBUZZ_DEPENDENCIES="-lglib-2.0;-lintl;-lws2_32;-lusp10;-lgdi32;-lole32;-lwinmm;-lshlwapi;-lintl;-lm;-lfreetype;-lgraphite2;-lrpcrt4" \
     -DDBUS1_DEPENDENCIES="-lws2_32;-liphlpapi;-ldbghelp" \
     $(cygpath -am ../$QT_SOURCE_DIR)
 
 export PATH=$PWD/bin:$PATH
 
-nice -n19 cmake --build .
+nice -n19 ${MINGW_PREFIX}/bin/cmake --build .
 exitOnError
 
 cmake --install .

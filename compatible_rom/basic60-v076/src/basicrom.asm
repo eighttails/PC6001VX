@@ -1,5 +1,5 @@
 ;Compatible BASIC for PC-6001
-; by AKIKAWA, Hisashi  2013-2022
+; by AKIKAWA, Hisashi  2013-2023
 
 ;This software is redistributable under the LGPLv2.1 or any later version.
 
@@ -94,7 +94,8 @@ PUTPRNL	equ	2701h
 PUTNLX	equ	272dh
 PUTNL	equ	2739h
 STOPESC	equ	274dh
-INPT1	equ	28f9h
+INPTSCR	equ	28f9h
+INPT1	equ	2905h
 SETGXY	equ	2d13h
 PSET	equ	2d47h
 LINEBF	equ	2de4h
@@ -141,7 +142,7 @@ GRPWRK	equ	0fa30h		;input graphic character work
 GRPFLG	equ	0fa31h		;print graphic character flag
 FKEYCNT	equ	0fa32h		;function key counter
 RSEED	equ	0fa51h		;random seed, fa51-fa55
-PRTPOS	equ	0fa57h		;printer head position
+PRTPOS	equ	0fa57h		;printer head position (0-origin)
 DEVICE	equ	0fa58h		;output device
 STACK	equ	0fa5bh		;initial stack pointer
 LINENUM	equ	0fa5dh		;current line number
@@ -217,14 +218,14 @@ CSRAD	equ	0fdaah		;cursor address
 WIDTH	equ	0fdach		;X max+1
 GRPX1	equ	0fdaeh		;graphic X, fdae-fdaf
 GRPY1	equ	0fdb0h		;graphic Y, fdb0-fdb1
-LINEST	equ	0fdb7h		;line connection status, (0=connect) fdb7-fdc6
+LINEST	equ	0fdb7h		;line connection status, fdb7-fdc6 (0=connect to next line)
 PAGE1	equ	0fdc8h		;page1 data, fdc8-fdfe
 PAGE2	equ	0fdffh		;page2 data, fdff-fe35
 PAGE3	equ	0fe36h		;page3 data, fe36-fe6c
 PAGE4	equ	0fe6dh		;page4 data, fe6d-fea3
 
 INPTXY	equ	0fea4h		;INPUT command initial position
-INPTX	equ	0fea6h		;INPUT command end position
+INPTX	equ	0fea6h		;INPUT command end position, or length
 INPTPAG	equ	0fea7h		;INPUT command page
 INSMODE	equ	0fea8h		;0=not insert mode, ff=insert mode
 STOPSC2	equ	0feaah		;screen 2nd parameter -1 in stop
@@ -270,6 +271,7 @@ FAC3	equ	0ff72h		;floating accumlator 3 (string conversion)
 HOOK	equ	0ff8ah		;hook area, ff8a-ffe3
 HOOKEDT	equ	0ff93h		;hook for screen editor
 HOOKCLP	equ	0ff99h		;hook for changing link pointer
+HOOKLCP	equ	0ffd2h		;hook for LCOPY
 HOOKSTP	equ	0ffd8h		;hook for stop key
 HOOK18H	equ	0ffdbh		;hook for 0018h
 HOOK38H	equ	0ffe1h		;hook for 0038h
@@ -286,7 +288,7 @@ REM_	equ	08eh
 DEF_	equ	093h
 PRINT_	equ	095h
 SCREEN_	equ	09fh
-CMDLAST	equ	0aah
+CMDLAST	equ	0aah		;last command
 TAB_	equ	0c2h
 TO_	equ	0c3h
 FN_	equ	0c4h
@@ -301,11 +303,11 @@ ASTRSK_	equ	0cch
 GT_	equ	0d1h
 EQ_	equ	0d2h
 LT_	equ	0d3h
-FNC1ST	equ	0d4h
+FNC1ST	equ	0d4h		;1st function
 USR_	equ	0d7h
 LEFT_	equ	0eah
 MID_	equ	0ech
-FNCLAST	equ	0f1h
+FNCLAST	equ	0f1h		;last function
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -464,7 +466,7 @@ SETPAGE:
 
 	call	NEW
 	ld	hl,ENDTBL-1
-	add	hl,de
+	add	hl,de		;d=0
 	ld	h,(hl)
 	ld	l,0ffh
 	ld	(USREND),hl
@@ -492,7 +494,13 @@ PUTSEDIT:
 
 ;initialize table
 IOTBL93:
-	db	0c0h		;8255 portA=mode2 portB=mode0
+	db	0c0h		;bit0: portC-lower=output
+				;bit1: portB=output
+				;bit2: portB=mode 0
+				;bit3: portC-upper=output
+				;bit4: portA=output
+				;bit65:portA=mode 2
+				;bit7: mode definition
 	db	0dh		;enable 8255 INT for writing
 	db	09h		;enable 8255 INT for reading
 	db	05h		;CGROM off
@@ -514,7 +522,15 @@ F0:	db	71h		;0000-3fff:internal ROM for reading
 				;4000-7fff:external ROM for reading
 F1:	db	0ddh		;8000-ffff:internal RAM for reading
 F2:	db	55h		;0000-ffff:internal RAM for writing
-F3:	db	0c2h		;wait & int control
+F3:	db	0c2h		;wait and interrupt control
+				; bit7: M1 wait (1=on)
+				; bit6: ROM wait (1=on)
+				; bit5: RAM wait (1=on)
+				; bit4: INT2 interrupt address (1=output)
+				; bit3: INT1 interrupt address (1=output)
+				; bit2: timer interrupt (1=disable)
+				; bit1: INT2 interrupt (1=disable)
+				; bit0: INT1 interrupt (1=disable)
 F4:	db	00h		;INT1 address
 F5:	db	00h		;INT2 address
 F6:	db	03h		;timer count up
@@ -547,7 +563,7 @@ BFREE:
 ENDTBL:
 	db	0f9h, 0dfh, 0bfh, 9fh
 HOWMANY:
-	db	"How Many Pages"
+	db	"How Many Pages", 00h
 QMARK:
 	db	"? ", 00h
 SYSNAME:
@@ -555,7 +571,7 @@ SYSNAME:
 SYSNAME2:
 	db	"Compatible ", 00h
 BASICVER:
-	db	"BASIC Ver.0.7.5", 0dh, 0ah, 00h
+	db	"BASIC Ver.0.7.6", 0dh, 0ah, 00h
 
 PAGEDATA:
 	db	0c0h		;fd91	VRAM address
@@ -590,12 +606,12 @@ PAGEDATA:
 FKEYLST:
 	db	9ah, ' '	;COLOR
 	db	0a3h, 22h	;CLOAD"
-	db	88h, ' '	;GOTO
+	db	GOTO_, ' '	;GOTO
 	db	97h, ' '	;LIST
-	db	89h, 0dh	;RUN
+	db	RUN_, 0dh	;RUN
 	db	9fh, ' '	;SCREEN
 	db	0a4h, 22h	;CSAVE"
-	db	95h, ' '	;PRINT
+	db	PRINT_, ' '	;PRINT
 	db	0a7h, ' '	;PLAY
 	db	96h, 0dh	;CONT
 
@@ -812,7 +828,7 @@ EDIT2:
 	ld	(LINENUM),hl
 
 EDITLP:
-	call	INPT1		;hl=INPBUF-1
+	call	INPTSCR		;hl=INPBUF-1
 	call	c,PLSTOP
 	call	CNVIL
 	ld	hl,INPBUF-1
@@ -1323,7 +1339,7 @@ C_FOR:
 	cp	TO_
 	jp	nz,SNERR
 	inc	hl
-	call	NUMARGMO
+	call	NARGMO
 	ex	de,hl
 	call	PUSHF1		;TO value
 	ex	de,hl
@@ -1334,7 +1350,7 @@ C_FOR:
 	cp	STEP_
 	jp	nz,SNERR
 	inc	hl
-	call	NUMARGMO
+	call	NARGMO
 STEP1:
 	call	POPF2		;TO value
 	pop	bc		;variable address
@@ -1682,7 +1698,7 @@ ONZ:
 
 ;IF command
 C_IF:
-	call	NUMARGMO
+	call	NARGMO
 	ld	a,(hl)
 	cp	THEN_
 	jr	z,IFOK
@@ -1937,11 +1953,8 @@ INPTMAIN:
 	or	a
 	jp	nz,INPTEXT
 
-	call	CUTLINE
-
-	ld	hl,QMARK
-	call	PUTS
 	call	INPT1
+
 	pop	de		;program address
 	pop	bc		;return address
 	jp	c,STOP3
@@ -1951,37 +1964,20 @@ INPTMAIN:
 	ld	a,0ffh
 	ld	(STOPAD+1),a
 
-	inc	hl		;INPBUF
-	ld	a,(INPTX)
-	ld	b,a
-	or	a
-	jr	z,INPTLP2
-	ld	a,14h
-INPTLP1:
-	cp	(hl)
-	jr	nz,INPTNZ
-	inc	hl
-INPTNZ:
-	inc	hl
-	djnz	INPTLP1
-
-INPTLP2:
-	ld	(hl),b		;b=0
-	dec	hl
-	ld	a,(hl)
-	cp	' '
-	jr	z,INPTLP2
-
 ;analyze input buffer
 INPTANA:
 	ld	de,INPBUF
-INPTLP3:
+INPTLP:
 	ld	hl,(PROGAD)
 	call	CHKVAR
+	ld	(PROGAD),hl
+	ld	a,(INPBUF)
+	or	a
+	jr	z,INPTNEXT
+
 	push	de		;input buffer
 	call	GETVAR
 	pop	hl		;input buffer
-
 	bit	7,c
 	jr	nz,INPTSTR
 
@@ -1990,9 +1986,6 @@ INPTNUM:
 	ld	a,0ffh
 	call	ATOF
 	pop	de		;variable address
-	ld	a,(INPBUF)
-	or	a
-	jr	z,INPTNEXT
 	push	hl		;input buffer
 	ld	hl,FAC1
 	call	SETF
@@ -2024,11 +2017,11 @@ INPTNEXT:
 
 	ld	a,(INPBUF)
 	or	a
-	jr	z,INPTLP3
+	jr	z,INPTLP
 	ld	a,(de)
 	inc	de
 	cp	','
-	jr	z,INPTLP3
+	jr	z,INPTLP
 	ld	a,(INPDEV)
 	or	a
 	jp	nz,ODERR
@@ -2271,7 +2264,7 @@ FNCNUMR:
 ;input: hl=program address
 ;output: FAC1, hl=next address
 ;destroy: af,bc,de,FAC2
-NUMARGMO:
+NARGMO:
 	call	CHKCLN
 	jp	z,MOERR
 ;	call	NUMARG
@@ -2618,7 +2611,7 @@ I4TOFEND:
 	jr	I2TOFEND2
 
 
-;convert float to 2-byte integer (-65535~65535)
+;convert float to 2-byte integer [-65535,65535]
 ;(round toward minus infinity)
 ;input: FAC1
 ;output: de
@@ -2676,7 +2669,7 @@ GETINT:
 GETILP1:
 	add	a,08h		;
 	jr	c,GETIC
-	ld	(hl),0
+	ld	(hl),00h
 	inc	hl
 	jr	GETILP1
 GETIC:
@@ -2849,13 +2842,13 @@ C_OUT:
 	ret
 
 
-;increment hl and get a 1-byte integer argument (0~255)
+;increment hl and get a 1-byte integer argument [0,255]
 _INT1INC:ds	INT1INC-_INT1INC
 	org	INT1INC
 
 	inc	hl
 
-;get a 1-byte integer argument (0~255)
+;get a 1-byte integer argument [0,255]
 ;input: hl=program address
 ;output: FAC1,a,de=integer, hl=next address
 ;destroy: FAC2,f,bc
@@ -2880,7 +2873,7 @@ F_PEEK:
 
 ;POKE command
 C_POKE:
-	call	NUMARGMO
+	call	NARGMO
 	ld	a,(hl)
 	cp	','
 	jp	nz,SNERR
@@ -2889,38 +2882,38 @@ C_POKE:
 	pop	hl
 	push	de		;
 	inc	hl
-	call	NUMARGMO
+	call	NARGMO
 	call	FTOI1
 	pop	hl		;
 	ld	(hl),e
 	ret
 
 
-;get a 2-byte integer argument (-65535~65535)
+;get a 2-byte integer argument [-65535,65535]
 ;input: hl=program address
 ;output: FAC1,de=integer, hl=next address
 ;destroy: FAC2,af,bc
 INTARG:
-	call	NUMARGMO
+	call	NARGMO
 	push	hl
 	call	FTOI
 	pop	hl
 	ret
 
 
-;get a 2-byte integer argument (-32768~32767)
+;get a 2-byte integer argument [-32768,32767]
 ;input: hl=program address
 ;output: FAC1,de=integer, hl=next address
 ;destroy: FAC2,af,bc
 INT2ARG:
-	call	NUMARGMO
+	call	NARGMO
 	push	hl
 	call	FTOI2
 	pop	hl
 	ret
 
 
-;get two 2-byte integer arguments (-65535~65535)
+;get two 2-byte integer arguments [-65535,65535]
 ;input: hl=program address
 ;output: FAC1, bc=1st, de=2nd, hl=next address
 ;destroy: af
@@ -3385,7 +3378,7 @@ GETRSBF:
 
 ;get from PLAY command buffer
 ;input: b=channel+1 (1,2,3)
-;output: a,z
+;output: a,z-flag(1=no input)
 ;destroy: f,hl
 GETPLBF:
 	ld	hl,BUFAIN-6
@@ -4658,11 +4651,9 @@ _SETATT:ds	SETATT-_SETATT
 CNVATT:
 	push	af		;color
 	ld	a,(SCREEN1)
-	dec	a
-	jr	z,ATT2
-	jp	m,ATT1
-	dec	a
-	jr	z,ATT3
+	srl	a
+	jr	z,ATT12		;screen mode 1 or 2
+	jr	nc,ATT3
 
 ATT4:
 	pop	af
@@ -4692,6 +4683,9 @@ ATT3LP:
 	djnz	ATT3LP
 	pop	bc
 	ret
+
+ATT12:
+	jr	nc,ATT1
 
 ATT2:
 	pop	af
@@ -5429,13 +5423,13 @@ BACKSTR:
 
 ;send graphic data to PC-6021
 ;input: c
-;destroy: af,b
+;destroy: af
 SENDGRP:
-	ld	b,08h
+	ld	a,80h
 SENDGLP:
 	rlc	c
 	rra
-	djnz	SENDGLP
+	jr	nc,SENDGLP
 	jr	PRINTER
 
 
@@ -5466,6 +5460,7 @@ NOTGRP:
 	ret
 
 
+;put data to printer
 ;input: a
 ;destroy: af
 PRINTER:
@@ -5646,7 +5641,7 @@ _CHK90H:ds	CHK90H-_CHK90H
 	in	a,(92h)
 	and	88h		;nobf=1,intr=1?
 	jp	pe,CHK90PE
-	xor	a		;set z-flag
+	cp	a		;set z-flag
 CHK90PE:
 	ld	a,09h
 	out	(93h),a		;enable 8255 INT for reading
@@ -5678,9 +5673,9 @@ OPENCMT:
 				;write=3dh(600baud), 3eh(1200baud)
 	and	0f8h
 	inc	a		;read=19h, write=39h
-	di
+;	di
 	call	OUT90H
-	ei
+;	ei
 	xor	a
 	ld	(CMTSTAT),a
 ;	ld	(STOPFLG),a
@@ -5698,12 +5693,14 @@ _BLNKAST:ds	BLNKAST-_BLNKAST
 	xor	'*'-' '
 	ld	(hl),a
 
-	ld	hl,(WIDTH-1)	;h=(WIDTH)
-	dec	h
-	ld	l,01h
-	call	XY2AD
-	ld	(hl),a
+;	ld	hl,(WIDTH-1)	;h=(WIDTH)
+;	dec	h
+;	ld	l,01h
 
+;for compatibility with N60-BASIC
+	ld	hl,01h+(COLUMNS-1)*100h
+
+	call	PRTCHXY
 	pop	hl
 	ret
 
@@ -5875,10 +5872,7 @@ _BELL:	ds	BELL-_BELL
 ;play subroutine called by time interrupt
 ;destroy: af,bc,de,hl
 PLAYINT:
-	ld	a,(CHANNEL)
-	inc	a
 	ld	a,(PLAYST)
-	jr	z,PLIZ
 	or	a
 	ret	z
 PLIZ:
@@ -5906,16 +5900,15 @@ PLILP:
 	jr	PLIGET
 
 PLINC:
-	ld	hl,PLAYST
-	ld	a,(CHANNEL)
-	inc	a
-	or	(hl)
-	jr	nz,PLINEXT	;if (PLAYST)<>0 or (CHANNEL)<>ff
+	ld	a,(PLAYST)
+	or	a
+	jr	nz,PLINEXT	;if (PLAYST)<>0
 
 PLIGET:
 ;length
 	call	GETPLBF
-	jr	z,PLINEXT
+;	jr	z,PLINEXT
+	jr	z,PLIRES
 	cp	0ffh
 	jr	z,PLIRES
 	pop	de
@@ -5984,13 +5977,12 @@ PLINEXT:
 	ld	hl,PLAYST
 	ld	a,(hl)
 	ld	(hl),c
-	inc	c
-	dec	c
+	or	a
+	ret	z		;old (PLAYST)=0
+	ld	a,c
+	or	a
 	ret	nz		;new (PLAYST)<>0
-	or	a		;old (PLAYST)
-	jp	nz,PLAYINT
-	ld	(CHANNEL),a	;=0
-	ret
+	jp	PLIZ		;old<>0 and new=0
 
 ;reset
 PLIRES:
@@ -6466,18 +6458,19 @@ PLSTR0:
 PLAYLP2:
 	ld	a,(hl)
 	or	a
-	jr	nz,PLAYNZ
+	jr	nz,PLAYNZ1
 	ld	a,b
 	dec	a
 	ld	(CHANNEL),a
 	ld	a,0ffh
 	push	hl
+	di
 	call	PUTPLBF
+	ei
 	pop	hl
-PLAYNZ:
+PLAYNZ1:
 	add	hl,de
 	djnz	PLAYLP2
-
 
 PLAYLP3:
 	ld	a,(STOPFLG)
@@ -6485,8 +6478,9 @@ PLAYLP3:
 	call	z,PLSTOP
 	jr	z,PLAYEND
 
+	di
 	ld	ix,PLWKC
-	ld	b,03h
+	ld	bc,0300h	;c=PLAYLEN check counter
 PLAYLP4:
 	ld	a,b
 	dec	a
@@ -6509,29 +6503,34 @@ PLAYLP4:
 	ld	(ix+PLADR),l
 	ld	(ix+PLADR+1),h
 
+	inc	c
 	or	a
 	jr	nz,PLAYNEXT
+	dec	c
 	dec	a
 	call	PUTPLBF		;a=ffh
-
 PLAYNEXT:
 	ld	de,PLWKB-PLWKC
 	add	ix,de
 	djnz	PLAYLP4
 
-	ld	a,0ffh
-	ld	(CHANNEL),a
+	ld	hl,PLAYST
+	ld	a,(hl)
+	or	a
+	jr	nz,PLAYNZ2
 
-	ld	a,(PLWKA+PLLEN)
-	ld	hl,PLWKB+PLLEN
-	or	(hl)
-	ld	hl,PLWKC+PLLEN
-	or	(hl)
-	jr	nz,PLAYLP3
+	inc	a		;=01h
+	ld	(PLWKA+REMAIN+1),a
+	ld	(PLWKB+REMAIN+1),a
+	ld	(PLWKC+REMAIN+1),a
+	ld	a,07h
+	ld	(hl),a
 
-	di
-	call	PLAYINT
+PLAYNZ2:
 	ei
+	ld	a,c		;c=PLAYLEN check counter
+	or	a
+	jr	nz,PLAYLP3
 
 PLAYEND:
 	pop	de
@@ -6573,35 +6572,52 @@ PLAYCMD:
 	sub	'A'
 	cp	'G'-'A'+1
 	jp	c,TONE
-	ld	hl,PLAYTBL
-	ld	b,08h
-PLCMDLP:
-	cp	(hl)
-	inc	hl
-	jp	z,JPTBLNC
-	inc	hl
-	inc	hl
-	djnz	PLCMDLP
-	jp	FCERR
+;	ld	hl,PLAYTBL
+;	ld	b,08h
+;PLCMDLP:
+;	cp	(hl)
+;	inc	hl
+;	jp	z,JPTBLNC
+;	inc	hl
+;	inc	hl
+;	djnz	PLCMDLP
+;	jp	FCERR
+;
+;
+;PLAYTBL:
+;	db	'V'-'A'
+;	dw	PLAYV
+;	db	'M'-'A'
+;	dw	PLAYM
+;	db	'S'-'A'
+;	dw	PLAYS
+;	db	'L'-'A'
+;	dw	PLAYL
+;	db	'T'-'A'
+;	dw	PLAYT
+;	db	'O'-'A'
+;	dw	PLAYO
+;	db	'R'-'A'
+;	dw	PLAYR
+;	db	'N'-'A'
+;	dw	PLAYN
 
-
-PLAYTBL:
-	db	'V'-'A'
-	dw	PLAYV
-	db	'M'-'A'
-	dw	PLAYM
-	db	'S'-'A'
-	dw	PLAYS
-	db	'L'-'A'
-	dw	PLAYL
-	db	'T'-'A'
-	dw	PLAYT
-	db	'O'-'A'
-	dw	PLAYO
-	db	'R'-'A'
-	dw	PLAYR
-	db	'N'-'A'
-	dw	PLAYN
+	cp	'M'-'A'
+	jr	z,PLAYM
+	cp	'S'-'A'
+	jr	z,PLAYS
+	cp	'L'-'A'
+	jr	z,PLAYL
+	cp	'T'-'A'
+	jr	z,PLAYT
+	cp	'O'-'A'
+	jr	z,PLAYO
+	cp	'R'-'A'
+	jp	z,PLAYR
+	cp	'N'-'A'
+	jp	z,PLAYN
+	cp	'V'-'A'
+	jp	nz,FCERR
 
 
 PLAYV:
@@ -6856,7 +6872,7 @@ DOTLP:
 	jr	DOTLP
 NOTDOT:
 
-	di
+;	di
 	ld	a,d		;length
 	call	PUTPLBF
 	ld	a,e
@@ -6875,7 +6891,7 @@ NOTDOT:
 	ld	a,(ix+PERIOD+1)
 	call	PUTPLBF
 PLCMDEND:
-	ei
+;	ei
 	ret
 
 
@@ -7043,6 +7059,7 @@ STRG0:
 
 ;LCOPY command
 C_LCPY:
+	call	HOOKLCP
 	ld	hl,LCPYHD
 	ld	b,05h
 LCPYLP1:
@@ -7391,7 +7408,7 @@ INPT232:
 	ld	hl,INPBUF
 	ld	b,71
 INPTEXTLP:
-	pop	af
+	pop	af		;RS-232C?
 	push	af
 	jr	nz,INPTCMT
 
@@ -7411,7 +7428,7 @@ INPTCHKRET:
 	djnz	INPTEXTLP
 
 INPTEXTEND:
-	pop	af
+	pop	af		;RS-232C?
 	call	nz,RCLOSE
 	ld	(hl),00h
 	jp	INPTANA
@@ -7764,7 +7781,7 @@ WAITLP:
 
 ;EXEC command
 C_EXEC:
-	call	NUMARGMO
+	call	NARGMO
 	call	FTOI
 
 ;for compatibility with N60-BASIC
@@ -8416,35 +8433,122 @@ GETSCRCZ:
 	ret
 
 
+NOINSTBL:
+	db	02h, 03h, 05h, 06h, 0bh, 0ch, 0dh, 15h, 1ch, 1dh, 1eh, 1fh
+
+DELSTR:
+	db	1dh, ' ', 1dh, 00h
+
+
+;screen input
+;output: hl=INPBUF-1, c-flag(1=stop)
+;destroy: af,bc,de
+_INPTSCR:ds	INPTSCR-_INPTSCR
+	org	INPTSCR
+
+	call	SCREDIT
+	ret	c
+	ld	a,71
+	jr	COPYIBF
+
+
 ;one line input
 ;output: hl=INPBUF-1, c-flag(1=stop)
 ;destroy: af,bc,de
 _INPT1:	ds	INPT1-_INPT1
 	org	INPT1
 
+	ld	hl,QMARK
+	call	PUTS
+	call	SCREDIT
+	ret	c
+	ld	a,(INPTX)
+;	jr	COPYIBF
+
+;copy characters to input buffer from VRAM
+;input: a=length, hl=start position address
+;output: hl=INPBUF-1, c-flag=0
+;destroy: af,bc,de
+COPYIBF:
+	ld	de,INPBUF
+	or	a
+	jr	z,CPIBFZ
+	ld	c,a
+	ld	b,71
+CPIBFLP1:
+	call	GETSCRC
+	cp	20h
+	jr	nc,CPIBFNC
+	ex	de,hl
+	ld	(hl),14h
+	ex	de,hl
+	djnz	CPIBFGRP
+	xor	a
+	jr	CPIBFNZ
+CPIBFZ:
+	ld	(de),a
+	jr	CPIBFNZ
+CPIBFGRP:
+	inc	de
+	add	a,30h
+
+CPIBFNC:
+	ld	(de),a
+	inc	de
+	inc	hl
+	call	CHKLINE
+	jr	nz,CPIBFNZ
+	dec	c
+	jr	z,CPIBFNZ
+	djnz	CPIBFLP1
+
+CPIBFNZ:
+	dec	hl
+	call	AD2XY
+	call	SETCSR
+	call	PUTNL
+
+CPIBFLP2:
+	dec	de
+	ld	a,(de)
+	cp	' '
+	jr	z,CPIBFLP2
+	inc	de
+	xor	a
+	ld	(de),a
+
+	ld	hl,INPBUF-1
+	ret
+
+
+;screen edit
+;output: hl=start position address, c-flag(1=stop)
+;destroy: af,bc,de
+SCREDIT:
+	call	CUTLINE
 	ld	hl,(CSRY)
 	ld	(INPTX-1),hl	;h=end position for INPUT command
 	ld	(INPTXY),hl	;initial position for INPUT command
 	ld	a,(CSRAD+1)
 	ld	(INPTPAG),a	;page for INPUT command
 
-INPT1LP:
+SEDLP:
 	call	GETC
-	call	INPT1CMD
-	jr	INPT1LP
+	call	SEDCMD
+	jr	SEDLP
 
 
 ;one line input main routine
-INPT1CMD:
+SEDCMD:
 	cp	20h
-	jr	c,INPT1CTL
+	jr	c,SEDCTL
 
 	ld	hl,(INSMODE)
 	inc	l
 	dec	l
 	call	nz,INSERT
 
-INPT1PRTC:
+SEDPRTC:
 	call	PRTC
 
 CHKIPOS2:
@@ -8482,42 +8586,38 @@ IPOSNC:
 
 
 ;control code
-INPT1CTL:
+SEDCTL:
 	ld	hl,NOINSTBL
 	ld	bc,000ch
 	cpir
-	jr	nz,INPT1CMDNZ
+	jr	nz,SEDCMDNZ
 	ld	hl,INSMODE
 	ld	(hl),b		;b=0
-INPT1CMDNZ:
+SEDCMDNZ:
 	ld	hl,(CSRAD)
 
 	cp	02h
-	jp	z,INPT1CTLB
+	jr	z,SEDCTLB
 	cp	03h
-	jp	z,INPT1STOP
+	jp	z,SEDSTOP
 	cp	05h
-	jr	z,INPT1CTLE
+	jr	z,SEDCTLE
 	cp	06h
-	jp	z,INPT1CTLF
+	jp	z,SEDCTLF
 	cp	08h
-	jr	z,INPT1DEL
+	jr	z,SEDDEL
 	cp	09h
-	jp	z,INPT1TAB
+	jp	z,SEDTAB
 	cp	0ah
-	jp	z,INPT1CTLJ
+	jp	z,SEDCTLJ
 	cp	0dh
-	jp	z,INPT1RET
-	cp	12h
-	jr	z,INPT1INS
-	cp	14h
-	jr	z,INPT1PRTC
+	jp	z,SEDRET
 	cp	15h
-	jr	z,INPT1CTLU
-	jr	INPT1PRTC	;1ch,1dh,1eh,1fh
+	jr	z,SEDCTLU
+	cp	12h
+	jr	nz,SEDPRTC	;14h,1ch,1dh,1eh,1fh
 
-
-INPT1INS:
+SEDINS:
 	ld	hl,INSMODE
 	ld	a,(hl)
 	cpl
@@ -8525,13 +8625,13 @@ INPT1INS:
 	ret
 
 
-INPT1DEL:
+SEDDEL:
 	call	CHKLINE
 	push	hl		;
 	ld	hl,DELSTR
-	jr	z,INPT1DELZ
+	jr	z,SEDDELZ
 	inc	hl
-INPT1DELZ:
+SEDDELZ:
 	call	PUTS
 	call	CHKIPOS2
 	pop	hl		;
@@ -8564,17 +8664,14 @@ DELLP:
 
 	ret
 
-DELSTR:
-	db	1dh, ' ', 1dh, 00h
-
 
 CTLULP:
 	dec	hl
-INPT1CTLU:
+SEDCTLU:
 	call	CHKLINE
 	jr	z,CTLULP
 
-INPT1CTLE:
+SEDCTLE:
 	dec	h
 	dec	h
 	call	CNVATT1
@@ -8584,13 +8681,13 @@ INPT1CTLE:
 	ld	(hl),' '
 	inc	hl
 	call	CHKLINE
-	jr	z,INPT1CTLE
+	jr	z,SEDCTLE
 	ret
 
 
-INPT1CTLB:
+SEDCTLB:
 	call	CHKCTLB
-	jr	nc,INPT1CTLB
+	jr	nc,SEDCTLB
 CTLBLP:
 	call	CHKCTLB
 	jr	c,CTLBLP
@@ -8612,9 +8709,9 @@ CTLBNC:
 	jp	CTLCR
 
 
-INPT1CTLF:
+SEDCTLF:
 	call	CHKCTLF
-	jr	c,INPT1CTLF
+	jr	c,SEDCTLF
 CTLFLP:
 	call	CHKCTLF
 	jr	nc,CTLFLP
@@ -8642,11 +8739,11 @@ CTLFC:
 	jp	SETCSR
 
 
-INPT1CTLJ:
+SEDCTLJ:
 	ld	a,(INSMODE)
 	or	a
 	ld	a,0ah
-	jp	z,INPT1PRTC
+	jp	z,SEDPRTC
 
 	ld	hl,(CSRY)	;l=y+1, h=x+1
 	ld	a,COLUMNS+1
@@ -8667,7 +8764,7 @@ CTLJLP:
 	jp	SETLINE
 
 
-INPT1TAB:
+SEDTAB:
 	ld	a,(CSRX)
 	sub	COLUMNS-07h
 	sbc	a,07h
@@ -8680,16 +8777,16 @@ INPT1TAB:
 	and	04h
 	add	a,1ch		;1ch(right) or 20h(space)
 	ld	c,a
-INPT1TABLP:
+SEDTABLP:
 	push	bc
 	ld	a,c
-	call	INPT1CMD
+	call	SEDCMD
 	pop	bc
-	djnz	INPT1TABLP
+	djnz	SEDTABLP
 	ret
 
 
-INPT1STOP:
+SEDSTOP:
 	pop	hl		;cancel return address
 	ld	hl,(CSRY)
 	xor	a
@@ -8716,20 +8813,18 @@ STOPLP:
 	ret
 
 
-INPT1RET:
+SEDRET:
 	pop	af		;cancel return address
 
-	ld	a,(CSRAD+1)
-	ld	d,a
 	ld	a,(INPTPAG)
-	xor	d		;
+	xor	h		;(CSRAD+1)
 	and	0f0h
-	jr	nz,IRETNZ1
+	jr	nz,SETLENMAX	;if other page
 
 	ld	a,(CSRY)
 	ld	de,(INPTXY)
 	cp	e
-	jr	nz,IRETNZ1
+	jr	nz,SETLENMAX
 
 	ld	bc,LINEST-1
 	ld	a,c
@@ -8737,87 +8832,42 @@ INPT1RET:
 	ld	c,a
 	ld	a,(bc)
 	or	a
-	jr	z,IRETNZ1
+	jr	z,SETLENMAX	;if connected to next line
+	dec	bc
+	ld	a,(bc)
+	or	a
+	jr	z,SETLENMAX	;if connected to previous line
 
 	ld	a,(INPTX)
 	sub	d
-	jr	SETINPTX
-IRETNZ1:
-	ld	a,71
-SETINPTX:
-	ld	(INPTX),a
+	jr	SETLEN
 
-IRETLP1:
+SETLENMAX:
+	ld	a,71
+SETLEN:
+	ld	(INPTX),a	;length
+
+SRETLP:
 	call	CHKLINE
 	dec	hl
-	jr	z,IRETLP1
+	jr	z,SRETLP
+
 	inc	hl
 	ld	d,h		;
 	call	AD2XY
 	ld	a,(INPTPAG)
 	xor	d		;
 	and	0f0h
-	jr	nz,IRETNZ2
+	jr	nz,SRETNZ	;if other page
 
 	ld	de,(INPTXY)	;initial position
 	ld	a,l
 	cp	e
-	jr	nz,IRETNZ2
-	ex	de,hl
-
-IRETNZ2:
-	call	XY2AD
-
-IRETLP2:
-	call	GETSCRC
-	ld	de,INPBUF
-	ld	b,71
-IRETLP3:
-	call	GETSCRC
-	cp	20h
-	jr	nc,IRETNC
-	ex	de,hl
-	ld	(hl),14h
-	ex	de,hl
-;	dec	b
-;	jr	nz,IRETGRP
-	djnz	IRETGRP
-	xor	a
-	ld	(de),a
-	jr	IRETNZ3
-IRETGRP:
-	inc	de
-	add	a,30h
-
-IRETNC:
-	ld	(de),a
-	inc	de
-	inc	hl
-	call	CHKLINE
-	jr	nz,IRETNZ3
-	djnz	IRETLP3
-
-IRETNZ3:
-	dec	hl
-	call	AD2XY
-	call	SETCSR
-
-IRETLP4:
-	dec	de
-	ld	a,(de)
-	cp	' '
-	jr	z,IRETLP4
-	inc	de
-	xor	a
-	ld	(de),a
-
-	call	PUTNL
-
-	ld	hl,INPBUF-1
-	ret
-
-NOINSTBL:
-	db	02h, 03h, 05h, 06h, 0bh, 0ch, 0dh, 15h, 1ch, 1dh, 1eh, 1fh
+	jr	nz,SRETNZ	;if other line
+	ex	de,hl		;if same line
+SRETNZ:
+	or	a		;reset c-flag
+	jp	XY2AD
 
 
 ;x=x+-(8 or 4 or 2 or 1)
@@ -10768,7 +10818,7 @@ ARRNEXT:
 
 ;make array
 ;input: c=dimensions, hl=program address
-;pushed: size*(1~255), array address, element bytes
+;pushed: size*[1,255], array address, element bytes
 ;destroy:
 MAKEARR:
 	ld	(PROGAD),hl
@@ -10871,7 +10921,7 @@ VARIN:
 	jr	VARINOK
 
 VARNUM:
-	call	NUMARGMO
+	call	NARGMO
 	ld	hl,FAC1
 	ld	bc,0005h
 VARINOK:
@@ -10889,6 +10939,7 @@ C_NEW:
 	push	hl
 
 NEWRESSTK:
+;destroy: af,bc,de,hl
 	ld	hl,RESSTK
 	push	hl
 ;	jp	NEW
@@ -11043,7 +11094,7 @@ C_CLR:
 	cp	','
 	jr	nz,CLRNZ
 	inc	hl
-	call	NUMARGMO
+	call	NARGMO
 	call	FTOI
 	dec	de
 
@@ -12413,7 +12464,7 @@ MULRNC:
 
 
 ;EXP() function
-;exp(x)=2^n*e^a, n=[x/log2], a=x-n*log2
+;exp(x)=2^n * e^a, n=[x/log2], a=x-n*log2
 F_EXP:
 	call	CHKNUM
 EXP:
@@ -12425,7 +12476,7 @@ EXP:
 	ld	hl,(FAC1+3)
 	ld	a,h		;(FAC1+4)
 	cp	89h
-	jr	nc,EXPLARGE
+	jr	nc,EXPLARGE	;|x/log2|>=256
 
 	call	INT		;n=[x/log2]
 	call	FTOI
@@ -12434,7 +12485,7 @@ EXP:
 	call	SETF2
 	call	MULF		;n*log2
 	pop	de		;n
-	call	POPF2
+	call	POPF2		;x
 	push	de		;n
 	call	SUBF21		;a=x-n*log2
 
@@ -12459,21 +12510,27 @@ EXPLP:
 	dec	c
 	jr	nz,EXPLP
 
-	pop	de		;n
+	pop	de		;-256<=n<=255
 ;	ld	a,(FAC1+4)	;=81h?
 	ld	a,81h
 	add	a,e
-	ld	(FAC1+4),a	;e^a*2^n
-	ld	a,c		;c=0
-	adc	a,d
-	ret	z
-	jp	OVERR
+	ld	(FAC1+4),a	;exponent
+	bit	7,d
+	jr	nz,EXPNZ
+	ret	nc		;0<=n<=126
+EXPOV:
+	jp	OVERR		;127<=n<=255
+EXPNZ:
+	dec	a
+	ret	p		;-128=<n<=-1
+EXPZERO:
+	jp	SETZERO		;-256=<n<=-129
 
 EXPLARGE:
 	bit	7,l		;(FAC1+3)
-	jp	z,OVERR		;x>0
+	jr	z,EXPOV		;x/log2>=256
 	call	POPF1
-	jp	SETZERO		;x<0
+	jr	EXPZERO		;x/log2<=-256
 
 ;log(2)
 LOG2:
@@ -12640,8 +12697,8 @@ SIN:
 	call	POPF2		;x
 	call	SUBF21		;x'=x-int(x/2pi)*2pi
 
-	call	SINRANGE	;-pi~+pi
-	call	SINRANGE	;-pi/2~+pi/2
+	call	SINRANGE	;[-pi,+pi]
+	call	SINRANGE	;[-pi/2,+pi/2]
 
 	call	PUSHF1		;x'
 	call	CPYFAC
@@ -12685,7 +12742,7 @@ SINLP:
 	ld	(FAC1),a	;=0
 	ret
 
-;-pi/2~+pi/2
+;[-pi/2,+pi/2]
 SINRANGE:
 	ld	hl,PIDIV2	;pi/2
 	call	SETCMPF
@@ -13111,7 +13168,7 @@ DIV12C:
 
 ;convert hiragana -> katakana (PC-6001)
 ;convert kana -> 00h (PC-6001A)
-CNVKANA2
+CNVKANA2:
 	or	a
 	ret	p
 	push	hl

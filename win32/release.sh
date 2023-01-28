@@ -56,5 +56,6 @@ SOURCENAME=PC6001VX_$VERSION\_src
 git archive --format=tar --prefix=$SOURCENAME/ HEAD | gzip > $RELEASE_DIR/$SOURCENAME.tar.gz
 popd
 
+start $(cygpath -am $RELEASE_DIR)
 ) 200>$LOCKFILE
 

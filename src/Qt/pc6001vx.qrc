@@ -312,5 +312,6 @@
         <file>res/rom/CGROM60.61</file>
         <file>res/rom/EXKANJI.ROM</file>
         <file>res/vkey/key_roma.png</file>
+        <file>translation/PC6001VX_ru.qm</file>
     </qresource>
 </RCC>

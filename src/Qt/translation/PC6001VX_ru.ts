@@ -345,7 +345,7 @@ cut off fre&amp;quency</translation>
     <message>
         <location filename="../configdialog.ui" line="450"/>
         <source>MODE4カラー(&amp;M):</source>
-        <translation>Цвет режима "MODE4":</translation>
+        <translation>Цвет режима &quot;MODE4&quot;:</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="506"/>
@@ -503,7 +503,7 @@ cut off fre&amp;quency</translation>
     <message>
         <location filename="../configdialog.ui" line="2993"/>
         <source>MODE1(&amp;1)</source>
-        <translation>Режим "Mode&amp;1"</translation>
+        <translation>Режим &quot;Mode&amp;1&quot;</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="1860"/>
@@ -614,7 +614,7 @@ cut off fre&amp;quency</translation>
     <message>
         <location filename="../configdialog.ui" line="2202"/>
         <source>MODE4(&amp;4)</source>
-        <translation>Режим "Mode&amp;4"</translation>
+        <translation>Режим &quot;Mode&amp;4&quot;</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="2321"/>
@@ -721,7 +721,7 @@ cut off fre&amp;quency</translation>
     <message>
         <location filename="../configdialog.ui" line="1953"/>
         <source>MODE2/3(&amp;2)</source>
-        <translation>Режим "Mode4 {2/3(&amp;2)"?}</translation>
+        <translation>Режим &quot;Mode4 {2/3(&amp;2)&quot;?}</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="3180"/>
@@ -2570,7 +2570,7 @@ Save time and PC6001V version </translation>
     <message>
         <location filename="../qtel6.cpp" line="482"/>
         <source>MODE4 カラー</source>
-        <translation>Цвета режима "Mode4"</translation>
+        <translation>Цвета режима &quot;Mode4&quot;</translation>
     </message>
     <message>
         <location filename="../qtel6.cpp" line="484"/>

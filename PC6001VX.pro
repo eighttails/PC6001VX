@@ -15,7 +15,10 @@ QMAKE_TARGET_DESCRIPTION = PC6001VX
 QMAKE_TARGET_COPYRIGHT = eighttails
 QMAKE_TARGET_PRODUCT = PC6001VX
 
-TRANSLATIONS = src/Qt/translation/PC6001VX_en.ts
+TRANSLATIONS += \
+    src/Qt/translation/PC6001VX_en.ts \
+    src/Qt/translation/PC6001VX_ru.ts
+
 TR_EXCLUDE += /usr/include/*
 
 CONFIG += silent
@@ -331,7 +334,8 @@ DISTFILES += \
     android/gradlew \
     android/gradlew.bat \
     android/res/values/libs.xml \
-    android/res/xml/filepaths.xml
+    android/res/xml/filepaths.xml \
+    src/Qt/translation/PC6001VX_ru.ts
 
 contains(ANDROID_TARGET_ARCH,) {
     ANDROID_ABIS = \

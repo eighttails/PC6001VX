@@ -32,10 +32,14 @@ int main( int argc, char *argv[] )
 	QLocale locale;
 	QTranslator myappTranslator;
 
-	// 表示言語が日本語でない場合は英語リソースを読み込む
-	if(locale.language() != QLocale::Japanese){
-		qDebug() << "LANG = " << locale;
-		if (myappTranslator.load(":/translation/PC6001VX_en")) {
+	// 表示言語が日本語でない場合はまずシステムの言語リソースを読み込み、
+	// 見つからない場合は英語リソースを読み込む
+	if (locale.language() != QLocale::Japanese) {
+		auto lang = QLocale::languageToCode(QLocale::system().language());
+		qDebug() << "Lang Name = " << lang;
+		if (myappTranslator.load(QString(":/translation/PC6001VX_" + lang))) {
+			app.installTranslator(&myappTranslator);
+		} else if (myappTranslator.load(":/translation/PC6001VX_en")) {
 			app.installTranslator(&myappTranslator);
 		}
 	} else {

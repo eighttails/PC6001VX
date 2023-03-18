@@ -185,7 +185,7 @@ WorkingDir not valid</source>
     <message>
         <location filename="../configdialog.ui" line="634"/>
         <source>ステータスバーを表示する(&amp;T)</source>
-        <translation>Show s&amp;tatus bar</translation>
+        <translation>Показать панель состояния</translation>
     </message>
     <message>
         <source>フレームスキップ(&amp;K)</source>
@@ -741,7 +741,7 @@ cut off fre&amp;quency</translation>
     <message>
         <location filename="../configdialog.ui" line="3230"/>
         <source>システムROMのCRCチェック有効(&amp;C)</source>
-        <translation>Вкобчить проверку CRC образов системных ПЗУ</translation>
+        <translation>Включить проверку CRC образов системных ПЗУ</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="270"/>

@@ -35,7 +35,7 @@ echo "gImageReader is already installed."
 exit 0
 fi
 
-    GIMAGEREADER_VERSION=b0b4f286d502d3cb09342df1eee9ab4c82c5b91a #3.4.0+バグ修正
+    GIMAGEREADER_VERSION=3.4.1
 if [ "$GIMAGEREADER_GIT" != "" ]; then
     GIMAGEREADER_SRC_DIR=gImageReader-git
     git clone https://github.com/manisandro/gImageReader.git $GIMAGEREADER_SRC_DIR 2> /dev/null
@@ -43,12 +43,14 @@ if [ "$GIMAGEREADER_GIT" != "" ]; then
     git checkout $GIMAGEREADER_VERSION
     GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR
 else
-    if [ "$GIMAGEREADER_VERSION" == "*.*" ]; then
+    if [[ $GIMAGEREADER_VERSION == *.* ]]; then
         GIMAGEREADER_TAG=v$GIMAGEREADER_VERSION
         GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
+        GIMAGEREADER_ARCHIVE_URL=https://github.com/manisandro/gImageReader/archive/refs/tags/$GIMAGEREADER_TAG.tar.gz
     else
         GIMAGEREADER_TAG=$GIMAGEREADER_VERSION
         GIMAGEREADER_ARCHIVE=gImageReader-$GIMAGEREADER_TAG.tar.gz
+        GIMAGEREADER_ARCHIVE_URL=https://github.com/manisandro/gImageReader/archive/$GIMAGEREADER_TAG/$GIMAGEREADER_ARCHIVE
         if [ "$GIMAGEREADER_VERSION" == "master" ]; then
             rm $GIMAGEREADER_ARCHIVE 2> /dev/null
         fi
@@ -57,7 +59,7 @@ else
     GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR-$BIT
 
     if [ ! -e $GIMAGEREADER_ARCHIVE ]; then
-    wget -c https://github.com/manisandro/gImageReader/archive/$GIMAGEREADER_TAG/$GIMAGEREADER_ARCHIVE
+    wget -c $GIMAGEREADER_ARCHIVE_URL -O $GIMAGEREADER_ARCHIVE
     fi
     rm -rf $GIMAGEREADER_SRC_DIR $GIMAGEREADER_BUILD_DIR 
     tar xf $GIMAGEREADER_ARCHIVE

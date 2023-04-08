@@ -104,7 +104,7 @@ macx {
 win32 {
     #On Windows, link libraries statically as long as possible.
     QMAKE_LFLAGS += -static
-    LIBS_PRIVATE= -lpthread -lsetupapi -lintl -liconv
+    LIBS_PRIVATE= -lpthread -lsetupapi -lintl -liconv -lOleAut32
     PKG_CONFIG = 'pkg-config --static'
     RC_ICONS += src/win32/PC6001VX.ico
 } else {

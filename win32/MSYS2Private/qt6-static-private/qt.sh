@@ -53,7 +53,7 @@ apply_patch_with_msg() {
 }
 
 QT_MAJOR_VERSION=6.5
-QT_MINOR_VERSION=.0
+QT_MINOR_VERSION=.1
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){
@@ -91,13 +91,14 @@ else
         010-Support-finding-static-MariaDB-client-library.patch \
         011-Fix-crashes-in-rasterization-code-using-setjmp.patch \
         012-Handle-win64-in-dumpcpp-and-MetaObjectGenerator-read.patch \
-        013-disable-finding-webp-from-cmake-config-files \
+        013-disable-finding-webp-from-cmake-config-files.patch \
         015-qt6-windeployqt-fixes.patch
-
-        #インストールパスがおかしくなるので適用しない
-        #https://github.com/msys2/MINGW-packages/issues/15218
-        #014-fix-relocatable-prefix-staticbuild-v2.patch \
         
+    cd qtshadertools
+    apply_patch_with_msg \
+        016-fix-building-shadertools-with-gcc-13.patch
+
+    cd ..
 
     local _ARCH_TUNE=
     local _HARD_FLAGS=

@@ -10,7 +10,6 @@ $MINGW_PACKAGE_PREFIX-clang \
 $MINGW_PACKAGE_PREFIX-clang-tools-extra \
 $MINGW_PACKAGE_PREFIX-dbus \
 $MINGW_PACKAGE_PREFIX-gcc-libs \
-$MINGW_PACKAGE_PREFIX-libmng \
 $MINGW_PACKAGE_PREFIX-mlir \
 $MINGW_PACKAGE_PREFIX-ninja \
 $MINGW_PACKAGE_PREFIX-ntldd \
@@ -163,7 +162,7 @@ cmake \
     -DFEATURE_openssl_linked=ON \
     -DINPUT_openssl=linked \
     -DINPUT_dbus=linked \
-    -DINPUT_mng=yes \
+    -DINPUT_mng=no \
     -DINPUT_libmd4c=qt \
     -DFEATURE_glib=OFF \
     -DINPUT_qt3d_assimp=qt \

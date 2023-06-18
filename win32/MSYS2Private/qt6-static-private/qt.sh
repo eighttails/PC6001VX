@@ -10,6 +10,7 @@ $MINGW_PACKAGE_PREFIX-clang \
 $MINGW_PACKAGE_PREFIX-clang-tools-extra \
 $MINGW_PACKAGE_PREFIX-dbus \
 $MINGW_PACKAGE_PREFIX-gcc-libs \
+$MINGW_PACKAGE_PREFIX-libmng \
 $MINGW_PACKAGE_PREFIX-mlir \
 $MINGW_PACKAGE_PREFIX-ninja \
 $MINGW_PACKAGE_PREFIX-ntldd \
@@ -17,9 +18,7 @@ $MINGW_PACKAGE_PREFIX-openssl \
 $MINGW_PACKAGE_PREFIX-pcre2 \
 $MINGW_PACKAGE_PREFIX-pkgconf \
 $MINGW_PACKAGE_PREFIX-polly \
-$MINGW_PACKAGE_PREFIX-qtbinpatcher \
-$MINGW_PACKAGE_PREFIX-vulkan-headers \
-$MINGW_PACKAGE_PREFIX-vulkan-loader \
+$MINGW_PACKAGE_PREFIX-vulkan-devel \
 $MINGW_PACKAGE_PREFIX-xmlstarlet \
 $MINGW_PACKAGE_PREFIX-zlib \
 $MINGW_PACKAGE_PREFIX-zstd \
@@ -101,27 +100,20 @@ else
     cd ..
 
     local _ARCH_TUNE=
-    local _HARD_FLAGS=
     case ${MINGW_CHOST} in
     i686*)
-        _ARCH_TUNE="-march=i686 -mtune=core2"
-        if [ "${_enable_hardening}" = "yes" ]; then
-        _HARD_FLAGS="-Wl,--dynamicbase,--nxcompat,--no-seh"
-        fi
-        ;;
+      _ARCH_TUNE="-march=pentium4 -mtune=generic"
+    ;;
     x86_64*)
-        _ARCH_TUNE="-march=nocona -mtune=core2"
-        if [ "${_enable_hardening}" = "yes" ]; then
-        _HARD_FLAGS="-Wl,--dynamicbase,--high-entropy-va,--nxcompat,--default-image-base-high"
-        fi
-        ;;
+      _ARCH_TUNE="-march=nocona -msahf -mtune=generic"
+    ;;
     esac
 
     BIGOBJ_FLAGS="-Wa,-mbig-obj"
 
     # Append these ones ..
-    sed -i "s|^QMAKE_CFLAGS .*= \(.*\)$|QMAKE_CFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS} ${LTCG_CFLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
-    sed -i "s|^QMAKE_LFLAGS           +=\(.*\)$|QMAKE_LFLAGS            += \1 ${_HARD_FLAGS}|g" qtbase/mkspecs/common/gcc-base.conf
+    sed -i "s|^QMAKE_CFLAGS .*= \(.*\)$|QMAKE_CFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
+    sed -i "s|^QMAKE_CXXFLAGS .*= \(.*\)$|QMAKE_CXXFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
 
     popd
 fi
@@ -153,7 +145,6 @@ cmake \
     -DFEATURE_optimize_size=ON \
     -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a;.dll.a" \
     -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} -static -static-libgcc -static-libstdc++" \
-    -DBUILD_WITH_PCH=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DQT_QMAKE_TARGET_MKSPEC=${_platform} \
     -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
@@ -183,11 +174,8 @@ cmake \
     -DFEATURE_system_harfbuzz=OFF \
     -DFEATURE_hunspell=OFF \
     -DFEATURE_system_hunspell=OFF \
-    -DFEATURE_mng=OFF \
-    -DFEATURE_jasper=OFF \
     -DFEATURE_system_jpeg=OFF \
     -DFEATURE_system_pcre2=OFF \
-    -DFEATURE_system_mng=OFF \
     -DFEATURE_system_png=OFF \
     -DFEATURE_system_sqlite=OFF \
     -DFEATURE_system_tiff=OFF \
@@ -215,16 +203,12 @@ cmake \
     -DBUILD_qttranslations=ON \
     -DBUILD_qtwebengine=OFF \
     -DOPENSSL_DEPENDENCIES="-lws2_32;-lgdi32;-lcrypt32" \
-    -DPOSTGRESQL_DEPENDENCIES="-lpgcommon;-lpgport;-lintl;-lssl;-lcrypto;-lshell32;-lws2_32;-lsecur32;-liconv" \
-    -DMYSQL_DEPENDENCIES="-lssl;-lcrypto;-lshlwapi;-lgdi32;-lws2_32;-lpthread;-lz;-lm" \
     -DLIBPNG_DEPENDENCIES="-lz" \
     -DGLIB2_DEPENDENCIES="-lintl;-lws2_32;-lole32;-lwinmm;-lshlwapi;-lm" \
     -DFREETYPE_DEPENDENCIES="-lbz2;-lharfbuzz;-lfreetype;-lbrotlidec;-lbrotlicommon" \
     -DHARFBUZZ_DEPENDENCIES="-lglib-2.0;-lintl;-lws2_32;;-lgdi32;-lole32;-lwinmm;-lshlwapi;-lintl;-lm;-lfreetype;-lgraphite2;-lrpcrt4" \
-    -DLIBBROTLIDEC_DEPENDENCIES="-lbrotlicommon" \
-    -DLIBBROTLIENC_DEPENDENCIES="-lbrotlicommon" \
-    -DLIBBROTLICOMMON_DEPENDENCIES="" \
     -DDBUS1_DEPENDENCIES="-lws2_32;-liphlpapi;-ldbghelp" \
+    -DPython_EXECUTABLE=${MINGW_PREFIX}/bin/python \
     $(cygpath -am ../$QT_SOURCE_DIR)
 
 export PATH=$PWD/bin:$PATH

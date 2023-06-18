@@ -6,6 +6,7 @@ pacman "${PACMAN_INSTALL_OPTS[@]}" \
 $MINGW_PACKAGE_PREFIX-libvorbis \
 $MINGW_PACKAGE_PREFIX-libvpx \
 $MINGW_PACKAGE_PREFIX-yasm \
+$MINGW_PACKAGE_PREFIX-vulkan-devel \
 2>/dev/null
 
 exitOnError
@@ -17,7 +18,7 @@ echo "FFMpeg is already installed."
 exit 0
 fi
 
-FFMPEG_VERSION=5.1.2
+FFMPEG_VERSION=5.1.3
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 FFMPEG_BUILD_DIR=$FFMPEG_SRC_DIR-$BIT
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz

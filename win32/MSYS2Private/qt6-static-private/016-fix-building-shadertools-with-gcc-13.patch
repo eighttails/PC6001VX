@@ -1,0 +1,59 @@
+From fcc470ea9268f3ceb2bd2a830ba836f23541d185 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bj=C3=B6rn=20Sch=C3=A4pers?= <bjoern@hazardy.de>
+Date: Mon, 1 May 2023 20:28:05 +0200
+Subject: [PATCH] Fix build with gcc 13
+
+Change-Id: Ib2a9d2e9590be01ce62da8e9476a06e1031f4b6e
+Reviewed-by: Laszlo Agocs <laszlo.agocs@qt.io>
+---
+ .../glslang/MachineIndependent/SymbolTable.h  |  1 +
+ .../patches/0003-Fix-build-with-gcc-13.patch  | 25 +++++++++++++++++++
+ 2 files changed, 26 insertions(+)
+ create mode 100644 src/glslang/patches/0003-Fix-build-with-gcc-13.patch
+
+diff --git a/src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h b/src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h
+index c43972f..a1f27dd 100644
+--- a/src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h
++++ b/src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h
+@@ -68,6 +68,7 @@
+ #include "../Include/Common.h"
+ #include "../Include/intermediate.h"
+ #include "../Include/InfoSink.h"
++#include <cstdint>
+ 
+ namespace QtShaderTools {
+ namespace glslang {
+diff --git a/src/glslang/patches/0003-Fix-build-with-gcc-13.patch b/src/glslang/patches/0003-Fix-build-with-gcc-13.patch
+new file mode 100644
+index 0000000..8d34fc2
+--- /dev/null
++++ b/src/glslang/patches/0003-Fix-build-with-gcc-13.patch
+@@ -0,0 +1,25 @@
++From 08881a072f210746ea4edf904fd4902d588e49f5 Mon Sep 17 00:00:00 2001
++From: =?UTF-8?q?Bj=C3=B6rn=20Sch=C3=A4pers?= <bjoern@hazardy.de>
++Date: Mon, 1 May 2023 20:28:05 +0200
++Subject: [PATCH] Fix build with gcc 13
++
++Change-Id: Ib2a9d2e9590be01ce62da8e9476a06e1031f4b6e
++---
++ src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h | 1 +
++ 1 file changed, 1 insertion(+)
++
++diff --git a/src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h b/src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h
++index c43972f..a1f27dd 100644
++--- a/src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h
+++++ b/src/3rdparty/glslang/glslang/MachineIndependent/SymbolTable.h
++@@ -68,6 +68,7 @@
++ #include "../Include/Common.h"
++ #include "../Include/intermediate.h"
++ #include "../Include/InfoSink.h"
+++#include <cstdint>
++ 
++ namespace QtShaderTools {
++ namespace glslang {
++-- 
++2.40.1
++
+-- 
+GitLab
+

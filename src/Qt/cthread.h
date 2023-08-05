@@ -4,8 +4,8 @@
 // Mail Address.    ast@qt-space.com
 // Official HP URL. http://ast.qt-space.com/
 
-#ifndef THREAD_H_INCLUDED
-#define THREAD_H_INCLUDED
+#ifndef CTHREAD_H_
+#define CTHREAD_H_
 
 #include "typedef.h"
 #include "semaphore.h"
@@ -18,22 +18,23 @@ private:
 	bool m_bCancel;				// for Cancel().
 	HTHREAD m_hThread;			// for Thread Handle.
 	void *m_BeginThreadParam;
-	
-	static void ThreadProc( void * );	// Default thread procedure. Don't call this method in direct!
-	
+
+	static void ThreadProc( void * );		// デフォルトスレッド関数
+
 protected:
 	virtual void OnThread( void * ) = 0;	// Virtual func. You need overwrite.
-	
+
 public:
 	cThread();
 	virtual ~cThread();
-	
-	bool BeginThread( void * = nullptr );	// Start Thread.
-	bool Waiting();						// Wait for created thread end.
-	
-	void Cancel();						// Method for cancel.
-	bool IsCancel();
+
+	bool BeginThread( void * = nullptr );	// スレッド開始
+	bool Waiting();						// スレッド終了を待つ
+
+	void Cancel();						// スレッド終了要求
+	bool IsCancel();					// スレッド終了要求された？
+	void yield();						// スレッドを明け渡す
 };
 
-#endif // THREAD_H_INCLUDED
+#endif // CTHREAD_H_
 

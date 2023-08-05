@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <ctime>
 
@@ -268,11 +268,20 @@ void SUB6::ExtIntr( void )
 		}
 		break;
 		
-	default:	// ヒマなら新たな外部割込み受付
-		// P6V2.0.2の実装ではゲームキー入力でフリーズすることがあるため
-		// 暫定的に2.0.1の実装に戻す
+	default:		// ヒマなら新たな外部割込み受付
 		PRINTD( SUB_LOG, "Command %02X\n", comm );
 		ExtIntrExec( comm );
+		// 本当はベクタ(+データ)出力中は外部割込み禁止
+		// 後で考える，かも
+
+//	case SS_IDLE:	// ヒマなら新たな外部割込み受付
+//		PRINTD( SUB_LOG, "Command %02X\n", comm );
+		
+//		ExtIntrExec( comm );
+//		break;
+		
+//	default:		// 何らか処理中
+//		PRINTD( SUB_LOG, " %02X << Cancel >> (%d)\n", comm, CpuStatus );
 	}
 }
 

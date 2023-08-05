@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef INI_H_INCLUDED
 #define INI_H_INCLUDED
@@ -50,6 +50,7 @@ public:
 	
 	bool GetEntry( const std::string&, const std::string&, std::string& );									// エントリ読込み(文字列)
 	bool SetEntry( const std::string&, const std::string&, const std::string&, const std::string&, ... );	// エントリ書込み(文字列)
+	bool SetEntryWithoutFormat( const std::string&, const std::string&, const std::string&, const std::string& );	// エントリ書込み(文字列)
 	
 	// エントリ読込み
 	template <typename T> bool GetVal( const std::string& section, const std::string& entry, T& val )

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef PSGFM_H_INCLUDED
 #define PSGFM_H_INCLUDED
@@ -10,7 +10,7 @@
 #include "typedef.h"
 #include "device.h"
 #include "ini.h"
-#include "semaphore.h"
+#include "csemaphore.h"
 #include "sound.h"
 #include "device/ay8910.h"
 #include "device/ym2203.h"

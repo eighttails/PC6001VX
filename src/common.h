@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef COMMON_H_INCLUDED
 #define COMMON_H_INCLUDED
@@ -38,6 +38,8 @@ enum TextID{
 	TINI_OverClock,			// "オーバークロック率 (1-1000)%"
 	TINI_CheckCRC,			// "CRCチェック Yes:有効 No:無効"
 	TINI_Romaji,			// "ローマ字入力 Yes:有効 No:無効"
+	TINI_RomajiWait,		// "ローマ字入力ウェイト (0-60)"
+	
 	// [CMT]
 	TINI_TurboTAPE,			// "Turbo TAPE Yes:有効 No:無効"
 	TINI_BoostUp,			// "Boost Up Yes:有効 No:無効"

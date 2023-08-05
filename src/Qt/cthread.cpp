@@ -4,7 +4,7 @@
 // Mail Address.    ast@qt-space.com
 // Official HP URL. http://ast.qt-space.com/
 
-#include "../thread.h"
+#include "../cthread.h"
 
 #include <QThread>
 #include <QApplication>
@@ -42,20 +42,20 @@ cThread::~cThread( void )
 }
 
 
-// Start Thread. 
+// Start Thread.
 bool cThread::BeginThread ( void *lpVoid )
 {
 	bool bSuccess = false;
-	
+
 	if( this->m_hThread == nullptr ){
 		this->m_BeginThreadParam = lpVoid;
 		this->m_bCancel			= false;
-		
+
 		this->m_hThread = new InternalThread(this, lpVoid);
 		((InternalThread*)m_hThread)->start();
 		bSuccess = true;
 	}
-	
+
 	return bSuccess;
 }
 
@@ -65,7 +65,7 @@ bool cThread::BeginThread ( void *lpVoid )
 bool cThread::Waiting( void )
 {
 	bool bSuccess = false;
-	
+
 	if( m_hThread != nullptr ){
 		while(!(bSuccess = ((InternalThread*)m_hThread)->wait(100))){
 			// Qtのイベントを処理しないとデッドロックで終われないスレッドがあるためその対策
@@ -76,7 +76,7 @@ bool cThread::Waiting( void )
 	}else{
 		bSuccess = true;
 	}
-	
+
 	return bSuccess;
 }
 
@@ -94,6 +94,13 @@ bool cThread::IsCancel()
 	QMutexLocker lock(&m_Mutex);
 	bCancel = this->m_bCancel;
 	return bCancel;
+}
+
+void cThread::yield()
+{
+	if( m_hThread != nullptr ){
+		((InternalThread*)m_hThread)->yieldCurrentThread();
+	}
 }
 
 

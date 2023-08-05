@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef PC6001V_H_INCLUDED
 #define PC6001V_H_INCLUDED
@@ -72,6 +72,7 @@
 #define	DEFAULT_SAVEQUIT		(true) 				// 終了時INI保存
 #define	DEFAULT_EXCARTRIDGE		(0) 				// 拡張カートリッジ
 #define	DEFAULT_ROMAJI			(true) 				// ローマ字入力 Yes:有効 No:無効
+#define	DEFAULT_ROMAJIWAIT		(0) 				// ローマ字入力ウェイト (0-60)
 
 #define	MIN_MODEL				(60)				// 機種 最小値
 #define	MAX_MODEL				(68)				// 機種 最大値
@@ -103,6 +104,8 @@
 #define	MAX_AVIBPP				(32)				// ビデオキャプチャ色深度 最大値
 #define	MIN_AVIZOOM				(100)				// ビデオキャプチャ時ウィンドウ表示倍率 最小値
 #define	MAX_AVIZOOM				(400)				// ビデオキャプチャ時ウィンドウ表示倍率 最大値
+#define	MIN_ROMAJIWAIT			(0)					// ローマ字入力ウェイト 最小値
+#define	MAX_ROMAJIWAIT			(60)				// ローマ字入力ウェイト 最大値
 
 #define	CPUM_CLOCK60			(3993600)			// メインCPUクロック(Hz) 60,62
 #define	CPUM_CLOCK66			(4000000)			// メインCPUクロック(Hz) 66

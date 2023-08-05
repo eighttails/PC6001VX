@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <algorithm>
 
@@ -545,7 +545,9 @@ void SCH6::OnThread( void* inst )
 			next += WRUPDATE;
 			
 			WRClk.emplace_front( ClkCnt );
-			while( WRClk.size() > SPDCNT ) WRClk.pop_back();
+			while( WRClk.size() > SPDCNT ){
+				WRClk.pop_back();
+			}
 			ClkCnt -= WRClk.front();
 		}
 		
@@ -557,21 +559,28 @@ void SCH6::OnThread( void* inst )
 			if( FPSCnt ){
 				FPSCnt--;
 				FPSClk.emplace_front( now );
-				while( (FPSClk.size() > FPSCNT) || (*FPSClk.begin() - *FPSClk.end() > FPSSEC * 1000) ) FPSClk.pop_back();
+				while( (FPSClk.size() > FPSCNT) || (*FPSClk.begin() - *FPSClk.end() > FPSSEC * 1000) ){
+					FPSClk.pop_back();
+				}
 			}
 			
 			// 画面更新フラグを立てる
 			EnableScrUpdate++;
 			// タイミング調整用VSYNC Wait解除
 			ti->VWaitReset();
-		}else
-			OSD_Delay( 0 );
+		}else{
+			this->cThread::yield();
+		}
 	}
 	
-	while( !WRClk.empty() ) WRClk.pop_back();
+	while( !WRClk.empty() ){
+		WRClk.pop_back();
+	}
 	ClkCnt = 0;
 	
-	while( !FPSClk.empty() ) FPSClk.pop_back();
+	while( !FPSClk.empty() ){
+		FPSClk.pop_back();
+	}
 	FPSCnt = 0;
 
 

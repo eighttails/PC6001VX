@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef MOVIE_H_INCLUDED
 #define MOVIE_H_INCLUDED
@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "osd.h"
-#include "thread.h"
+#include "cthread.h"
 #include "sound.h"
 #include "vsurface.h"
 

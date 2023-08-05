@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef P6EL_H_INCLUDED
 #define P6EL_H_INCLUDED
@@ -11,7 +11,7 @@
 #include "typedef.h"
 #include "movie.h"
 #include "replay.h"
-#include "thread.h"
+#include "cthread.h"
 #include "vdg.h"
 #include "vsurface.h"
 

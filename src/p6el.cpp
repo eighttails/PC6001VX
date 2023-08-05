@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <algorithm>
 #include <cctype>
@@ -257,7 +257,7 @@ void EL6::Wait( void )
 			// 調整幅は最大2フレーム分(暫定)
 			DWORD dtick = OSD_GetTicks() + min( (ofsize * 1000) / snd->GetSampleRate(), (DWORD)(1000.0 / FRAMERATE) * 2 );
 			while( OSD_GetTicks() < dtick ){
-				OSD_Delay( 0 );
+				cThread::yield();
 			}
 		}
 #endif
@@ -532,14 +532,11 @@ EL6::ReturnCode EL6::EventLoop( ReturnCode rc )
 	
 	switch( rc ){
 	case ReplayPlay:	// リプレイ再生
-		Stop();
 		REPLAY::StartReplay( cfg->GetDokoFile() );
-		Start();
 		break;
 		
 	case ReplayResume:	// リプレイ保存再開
 		{
-			Stop();
 			P6VPATH fpath = cfg->GetDokoFile();
 			cIni save;
 			DWORD frame = 0;
@@ -548,15 +545,12 @@ EL6::ReturnCode EL6::EventLoop( ReturnCode rc )
 			save.GetVal( "REPLAY", "frame", frame );
 			OSD_ChangeFileNameExt( fpath, EXT_REPLAY );	// 拡張子を差替え
 			REPLAY::ResumeRecord( fpath, frame );
-			Start();
 		}
 		break;
 		
 	case ReplayMovie:	// リプレイを動画に変換
-		Stop();
 		UI_AVISaveStart();
 		REPLAY::StartReplay( cfg->GetDokoFile() );
-		Start();
 		break;
 		
 	default:
@@ -1183,7 +1177,8 @@ WORD EL6::GetAutoKey( void )
 		[[fallthrough]];
 		
 	default:	// 一般の文字
-		ak.Wait = 1;	// 待ち1回
+		// ローマ字入力の時は待ち増やす
+		ak.Wait = 1 + (vm->key->GetKeyIndicator() & KI_ROMAJI) ? cfg->GetValue( CV_RomajiWait ) : 0;
 	}
 	return dat;
 }
@@ -2589,6 +2584,9 @@ void EL6::UI_Config( void )
 		vm->cmtl->SetMaxBoost( cfg->GetValue( CV_MaxBoost60 ), cfg->GetValue( CV_MaxBoost62 ) );	// BoostUp 最大倍率
 		vm->disk->WaitEnable( cfg->GetValue( CB_FDDWait ) );		// FDアクセスウェイト有効フラグ
 		vm->cmtl->SetStopBit( cfg->GetValue( CV_StopBit ) );		// ストップビット数
+		if( cfg->GetValue( CB_Romaji ) != (vm->key->GetKeyIndicator() & KI_ROMAJI ? true : false) ){	// ローマ字入力
+			vm->key->ChangeRomaji();
+		}
 		
 		// [DISPLAY] ---------------------------------------------------
 		vm->vdg->SetMode4Color( cfg->GetValue( CV_Mode4Color ) );	// モード4カラーモード
@@ -2721,6 +2719,8 @@ void EL6::ExecMenu( int id )
 	case ID_FSKP3:																	// フレームスキップ 3
 	case ID_FSKP4:																	// フレームスキップ 4
 	case ID_FSKP5:			UI_FrameSkip( id - ID_FSKP0 );					break;	// フレームスキップ 5
+	
+	case ID_ROMAJI:			UI_Romaji();									break;	// ローマ字入力切替
 	
 	case ID_SPR44:																	// サンプリングレート 44100Hz
 	case ID_SPR22:																	// サンプリングレート 22050Hz

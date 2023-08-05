@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
@@ -19,6 +19,7 @@ typedef enum {
 	CV_Model = 0,
 	CV_FDDrive,
 	CV_OverClock,
+	CV_RomajiWait,
 	CV_MaxBoost60,
 	CV_MaxBoost62,
 	CV_StopBit,

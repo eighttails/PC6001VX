@@ -154,6 +154,7 @@ SOURCES += \
     src/Qt/audiooutputwrapper.cpp \
     src/Qt/colorbutton.cpp \
     src/Qt/configdialog.cpp \
+    src/Qt/cthread.cpp \
     src/Qt/emulationadaptor.cpp \
     src/Qt/keypanel.cpp \
     src/Qt/keypanelbutton.cpp \
@@ -168,7 +169,6 @@ SOURCES += \
     src/Qt/renderview.cpp \
     src/Qt/simplevirtualkeyboardscene.cpp \
     src/Qt/systeminfodialog.cpp \
-    src/Qt/thread.cpp \
     src/Qt/virtualkeyboardscene.cpp \
     src/Qt/virtualkeyboardview.cpp \
     src/Qt/virtualkeyitem.cpp \
@@ -180,6 +180,7 @@ SOURCES += \
     src/console.cpp \
     src/cpum.cpp \
     src/cpus.cpp \
+    src/csemaphore.cpp \
     src/d88.cpp \
     src/debug.cpp \
     src/device.cpp \
@@ -214,7 +215,6 @@ SOURCES += \
     src/replay.cpp \
     src/romaji.cpp \
     src/schedule.cpp \
-    src/semaphore.cpp \
     src/sound.cpp \
     src/status.cpp \
     src/tape.cpp \
@@ -226,6 +226,7 @@ HEADERS  += \
     src/Qt/audiooutputwrapper.h \
     src/Qt/colorbutton.h \
     src/Qt/configdialog.h \
+    src/Qt/cthread.h \
     src/Qt/emulationadaptor.h \
     src/Qt/keypanel.h \
     src/Qt/keypanelbutton.h \
@@ -238,7 +239,6 @@ HEADERS  += \
     src/Qt/renderview.h \
     src/Qt/simplevirtualkeyboardscene.h \
     src/Qt/systeminfodialog.h \
-    src/Qt/thread.h \
     src/Qt/virtualkeyboardscene.h \
     src/Qt/virtualkeyboardview.h \
     src/Qt/virtualkeyitem.h \
@@ -251,6 +251,7 @@ HEADERS  += \
     src/console.h \
     src/cpum.h \
     src/cpus.h \
+    src/csemaphore.h \
     src/d88.h \
     src/debug.h \
     src/device.h \
@@ -303,7 +304,6 @@ HEADERS  += \
     src/replay.h \
     src/romaji.h \
     src/schedule.h \
-    src/semaphore.h \
     src/sound.h \
     src/status.h \
     src/tape.h \

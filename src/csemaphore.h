@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 // Based on SLibrary.
 /////////////////////////////////////////////////////////////////////////////
@@ -31,15 +31,16 @@ public:
 	void unlock();		// Unlock
 };
 
+
 // RecursiveMutex クラス
 class cRecursiveMutex {
 private:
 	std::recursive_mutex mtx;
-
+	
 public:
 	cRecursiveMutex();
 	~cRecursiveMutex();
-
+	
 	void lock();		// Lock
 	void unlock();		// Unlock
 };

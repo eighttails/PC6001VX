@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <algorithm>
 #include <cstdarg>
@@ -356,6 +356,11 @@ bool cIni::SetEntry( const std::string& section, const std::string& entry, const
 	std::vsnprintf( rstr, sizeof(rstr), text.c_str(), arg );
 	va_end( arg );
 	
+	return SetEntryWithoutFormat( section, entry, comment, rstr );
+}
+
+bool cIni::SetEntryWithoutFormat( const std::string& section, const std::string& entry, const std::string& comment, const std::string& text )
+{
 	// セクションを探す
 	auto node = std::find_if( IniNode.begin(), IniNode.end(), [&]( cNode& n ){
 				return( n.NodeID == cNode::NODE_SECTION && n.Section == section );
@@ -385,7 +390,7 @@ bool cIni::SetEntry( const std::string& section, const std::string& entry, const
 	if( !comment.empty() ){ node->SetMember( cNode::NODE_COMMENT, comment ); }
 	
 	// エントリを保存
-	node->SetMember( cNode::NODE_ENTRY, entry + '=' + rstr );
+	node->SetMember( cNode::NODE_ENTRY, entry + '=' + text );
 	
 	return true;
 }
@@ -442,7 +447,8 @@ template <> bool cIni::SetVal<bool>( const std::string& section, const std::stri
 // Path(テンプレート特殊化)
 template <> bool cIni::SetVal<P6VPATH>( const std::string& section, const std::string& entry, const std::string& comment, const P6VPATH& path )
 {
-	return SetEntry( section, entry, comment, P6VPATH2STR( path ).c_str() );
+	// パス文字列は可変長引数によるフォーマットを行わない。(%を含んだパスが扱えなくなるため)
+	return SetEntryWithoutFormat( section, entry, comment, P6VPATH2STR( path ) );
 }
 
 

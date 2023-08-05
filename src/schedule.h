@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef SCHEDULE_H_INCLUDED
 #define SCHEDULE_H_INCLUDED
@@ -11,8 +11,8 @@
 #include "typedef.h"
 #include "device.h"
 #include "ini.h"
-#include "semaphore.h"
-#include "thread.h"
+#include "csemaphore.h"
+#include "cthread.h"
 
 
 // イベントスタイルフラグ

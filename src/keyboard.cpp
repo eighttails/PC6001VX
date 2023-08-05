@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <array>
 
@@ -833,7 +833,7 @@ void KEY6::UpdateMatrixKeyChrRelease( void )
 /////////////////////////////////////////////////////////////////////////////
 void KEY6::UpdateMatrixKeyChr( const WORD code )
 {
-	PRINTD( KEY_LOG, "[KEY][UpdateMatrixKeyChr] %04X %s\n", code, pflag ? "PUSH" : "RELEASE" );
+	PRINTD( KEY_LOG, "[KEY][UpdateMatrixKeyChr] %04X PUSH\n", code );
 	
 	// 文字コード -> P6キースキャンコード
 	auto scan = P6KeyScanTable.find( code );

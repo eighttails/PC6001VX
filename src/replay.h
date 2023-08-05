@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef REPLAY_H_INCLUDED
 #define REPLAY_H_INCLUDED
@@ -9,7 +9,7 @@
 
 #include "typedef.h"
 #include "ini.h"
-#include "semaphore.h"
+#include "csemaphore.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ protected:
 	DWORD RepFrm;				// フレームNo.カウンタ
 	DWORD EndFrm;				// リプレイ終了フレーム
 	mutable cRecursiveMutex Mutex;
-
+	
 public:
 	REPLAY();
 	~REPLAY();

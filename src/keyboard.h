@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #ifndef KEYBOARD_H_INCLUDED
 #define KEYBOARD_H_INCLUDED
@@ -15,7 +15,7 @@
 #include "ini.h"
 #include "keydef.h"
 #include "romaji.h"
-#include "semaphore.h"
+#include "csemaphore.h"
 
 
 // キーボードインジケータ状態

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <fstream>
 #include <algorithm>
@@ -21,6 +21,7 @@
 static const std::map<TCValue, const CfgSet<TCValue>> ConfigValue = {
 	{ CV_Model,			{ "CONFIG",		"Model",		TINI_Model,			DEFAULT_MODEL,			MAX_MODEL,		MIN_MODEL		} },
 	{ CV_OverClock,		{ "CONFIG",		"OverClock",	TINI_OverClock,		DEFAULT_OVERCLOCK,		MAX_OVERCLOCK,	MIN_OVERCLOCK	} },
+	{ CV_RomajiWait,	{ "CONFIG",		"RomajiWait",	TINI_RomajiWait,	DEFAULT_ROMAJIWAIT,		MAX_ROMAJIWAIT,	MIN_ROMAJIWAIT	} },
 	{ CV_MaxBoost60,	{ "CMT",		"MaxBoost60",	TINI_MaxBoost60,	DEFAULT_MAXBOOST60,		MAX_BOOST,		MIN_BOOST		} },
 	{ CV_MaxBoost62,	{ "CMT",		"MaxBoost62",	TINI_MaxBoost62,	DEFAULT_MAXBOOST62,		MAX_BOOST,		MIN_BOOST		} },
 	{ CV_StopBit,		{ "CMT",		"StopBit",		TINI_StopBit,		DEFAULT_STOPBIT,		MAX_STOPBIT,	MIN_STOPBIT		} },
@@ -983,6 +984,7 @@ void CFG6::InitIni( bool over )
 	SetDefault( CV_OverClock,		over );	// オーバークロック率
 	SetDefault( CB_CheckCRC,		over );	// CRCチェック
 	SetDefault( CB_Romaji,			over );	// ローマ字入力
+	SetDefault( CV_RomajiWait,		over );	// ローマ字入力ウェイト
 	
 	// [CMT] ---------------------------------------------------
 	SetDefault( CB_TurboTAPE,		over );	// Turbo TAPE

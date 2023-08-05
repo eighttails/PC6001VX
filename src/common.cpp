@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //  P C 6 0 0 1 V
-//  Copyright 1999,2022 Yumitaro
+//  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <cctype>
 #include <cstring> 
@@ -708,6 +708,7 @@ static const std::map<TextID, const std::string> MsgString =
 	{ TINI_OverClock,			N_( "オーバークロック率" ) " (1-1000)%" },
 	{ TINI_CheckCRC,			N_( "CRCチェック" ) " "		N_( "Yes:有効 No:無効" ) },
 	{ TINI_Romaji,				N_( "ローマ字入力" ) " "	N_( "Yes:有効 No:無効") },
+	{ TINI_RomajiWait,			N_( "ローマ字入力ウェイト" ) " (0-60)" },
 	
 	// [CMT]
 	{ TINI_TurboTAPE,			N_( "Turbo TAPE" ) " "		N_( "Yes:有効 No:無効" ) },

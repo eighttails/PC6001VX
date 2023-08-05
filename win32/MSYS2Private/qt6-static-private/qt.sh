@@ -51,7 +51,7 @@ apply_patch_with_msg() {
 }
 
 QT_MAJOR_VERSION=6.5
-QT_MINOR_VERSION=.1
+QT_MINOR_VERSION=.2
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){
@@ -92,11 +92,17 @@ else
         013-disable-finding-webp-from-cmake-config-files.patch \
         015-qt6-windeployqt-fixes.patch
         
-    cd qtshadertools
+    pushd qtshadertools
     apply_patch_with_msg \
         016-fix-building-shadertools-with-gcc-13.patch
-    cd ..
+    popd
 
+    pushd qtgrpc
+    apply_patch_with_msg \
+        017-fix-build-with-grpc-1.53.patch \
+        018-fix-build-with-protobuf-23.patch
+    popd
+    
     # gcc13用暫定パッチ
     sed -i s/stdint.h/cstdint/g qt3d/src/3rdparty/assimp/src/code/AssetLib/FBX/FBXBinaryTokenizer.cpp
 

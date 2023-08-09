@@ -104,10 +104,11 @@ protected:
 	struct AKEY{
 		std::string Buffer;		// キーバッファ
 		int Wait;				// 待ち回数カウンタ
+		int ExWait;				// 追加待ち回数
 		bool Relay;				// リレースイッチOFF待ちフラグ
 		bool RelayOn;			// リレースイッチON待ちフラグ
 		
-		AKEY() : Buffer(""), Wait(0), Relay(false), RelayOn(false) {}
+		AKEY() : Buffer(""), Wait(0), ExWait(0), Relay(false), RelayOn(false) {}
 	};
 	AKEY ak;					// 自動キー入力情報
 	
@@ -181,7 +182,7 @@ protected:
 	
 	bool IsAutoKey();										// 自動キー入力実行中?
 	bool SetAutoKeyFile( const P6VPATH& );					// 自動キー入力文字列設定(ファイルから)
-	bool SetAutoKey( const std::string&, int = 60 );		// 自動キー入力文字列設定
+	bool SetAutoKey( const std::string&, int = 60, int = 0 );	// 自動キー入力文字列設定
 	void SetAutoStart();									// オートスタート文字列設定
 	
 	void SetPalette();										// パレット設定

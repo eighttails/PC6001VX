@@ -57,6 +57,12 @@ static const std::map<WORD, P6KeyScan> P6KeyScanTable =
 	{ 0x141e,	{ KP6_L,			KVM_LALT } }, 	// 中
 	{ 0x141f,	{ KP6_COMMA,		KVM_LALT } }, 	// 小
 	
+	{ 0x14F0,	{ KP6_F1,			KVM_LALT } }, 	// F1
+	{ 0x14F1,	{ KP6_F2,			KVM_LALT } }, 	// F2
+	{ 0x14F2,	{ KP6_F3,			KVM_LALT } }, 	// F3
+	{ 0x14F3,	{ KP6_F4,			KVM_LALT } }, 	// F4
+	{ 0x14F4,	{ KP6_F5,			KVM_LALT } }, 	// F5
+	
 	{ ' ',		{ KP6_SPACE,		KVM_LSHIFT } },
 	{ '!',		{ KP6_1,			KVM_LSHIFT } },
 	{ '"',		{ KP6_2,			KVM_LSHIFT } },

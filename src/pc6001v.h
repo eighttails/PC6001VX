@@ -17,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // バージョン情報,機種名など
 /////////////////////////////////////////////////////////////////////////////
-#define	VERSION					"4.1.3"
+#define	VERSION					"4.1.4"
 #define	APPNAME					"PC6001VX"
 
 #define	P60NAME					"PC-6001"
@@ -34,7 +34,7 @@
 #define	DEFAULT_MODEL			(0)					// 機種 60:PC-6001 61:PC-6001A 62:PC-6001mkⅡ 66:PC-6601 64:PC-6001mkⅡSR 68:PC-6601SR (0:自動選定)
 #define	DEFAULT_USEEXTRAM		(1)					// 拡張RAM 0:なし 1:あり
 #define	DEFAULT_SAMPLERATE		(44100)				// サンプリングレート
-#define	DEFAULT_SOUNDBUF		(2)					// サウンドバッファ長倍率(基本長はVSYNC)
+#define	DEFAULT_SOUNDBUF		(1)					// サウンドバッファ長倍率(基本長はVSYNC)
 #define	DEFAULT_MASTERVOL		(70)				// マスター音量
 #define	DEFAULT_PSGVOL			(60)				// PSG音量
 #define	DEFAULT_PSGLPF			(0)					// PSG LPFカットオフ周波数(0で無効)

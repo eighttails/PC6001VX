@@ -785,6 +785,12 @@ Qt 6.2.0以上が必要です。
 * Linuxではサウンドの再生に大きな遅延があります。(Qt6.4以降で解消します)
 
 == 更新履歴
+.4.1.4 2023/08/19
+* PC6001V 2.1.1ベースに更新
+* ローマ字入力関連の設定UIを追加
+* Merged upstream PC6001V version 2.1.1.
+* Added menu and config UI related to Romaji input.
+
 .4.1.3 2023/01/29
 * PC-6001互換BASICを0.7.6に更新
 * ロシア語翻訳を追加

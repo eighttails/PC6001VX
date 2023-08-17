@@ -1793,7 +1793,7 @@ void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 				APPNAME " Version " VERSION
 				"\n"
 				"https://eighttails.seesaa.net\n"
-				"©2012-2023, Tadahito Yao (@eighttails)\n"
+				"©2012-, Tadahito Yao (@eighttails)\n"
 				"Based on PC6001V by Yumitaro."
 				);
 }

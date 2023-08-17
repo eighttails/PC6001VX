@@ -124,7 +124,7 @@ WorkingDir not valid</source>
         <translation type="vanished">&amp;Screen</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="641"/>
+        <location filename="../configdialog.ui" line="701"/>
         <source>ハードウェアアクセラレーション
 (次回起動時に反映)(&amp;H)</source>
         <translation>Аппаратное ускорение
@@ -135,27 +135,27 @@ WorkingDir not valid</source>
         <translation type="vanished">Mode&amp;4 color</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="461"/>
+        <location filename="../configdialog.ui" line="521"/>
         <source>モノクロ</source>
         <translation>Чёрно-белый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="466"/>
+        <location filename="../configdialog.ui" line="526"/>
         <source>赤/青</source>
         <translation>Красный/Синий</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="471"/>
+        <location filename="../configdialog.ui" line="531"/>
         <source>青/赤</source>
         <translation>Синий/Красный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="476"/>
+        <location filename="../configdialog.ui" line="536"/>
         <source>桃/緑</source>
         <translation>Персиковый/Зелёный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="481"/>
+        <location filename="../configdialog.ui" line="541"/>
         <source>緑/桃</source>
         <translation>Зелёный/Персиковый</translation>
     </message>
@@ -168,8 +168,8 @@ WorkingDir not valid</source>
         <translation type="vanished">Scanline b&amp;rightness:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="530"/>
-        <location filename="../configdialog.ui" line="681"/>
+        <location filename="../configdialog.ui" line="590"/>
+        <location filename="../configdialog.ui" line="741"/>
         <source>％</source>
         <translation>％</translation>
     </message>
@@ -178,12 +178,12 @@ WorkingDir not valid</source>
         <translation type="vanished">4:&amp;3 display</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="627"/>
+        <location filename="../configdialog.ui" line="687"/>
         <source>フルスクリーン(&amp;U)</source>
         <translation>На весь экран</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="634"/>
+        <location filename="../configdialog.ui" line="694"/>
         <source>ステータスバーを表示する(&amp;T)</source>
         <translation>Показать панель состояния</translation>
     </message>
@@ -220,10 +220,10 @@ WorkingDir not valid</source>
         <translation type="vanished">Buffer si&amp;ze</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="877"/>
-        <location filename="../configdialog.ui" line="920"/>
-        <location filename="../configdialog.ui" line="963"/>
-        <location filename="../configdialog.ui" line="1006"/>
+        <location filename="../configdialog.ui" line="937"/>
+        <location filename="../configdialog.ui" line="980"/>
+        <location filename="../configdialog.ui" line="1023"/>
+        <location filename="../configdialog.ui" line="1066"/>
         <source>TextLabel</source>
         <translation>ТекстБлок</translation>
     </message>
@@ -234,23 +234,23 @@ WorkingDir not valid</source>
 cut off fre&amp;quency</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="847"/>
+        <location filename="../configdialog.ui" line="907"/>
         <source>マスター音量(&amp;M)</source>
         <translation>Общая громкость</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="853"/>
-        <location filename="../configdialog.ui" line="903"/>
-        <location filename="../configdialog.ui" line="939"/>
-        <location filename="../configdialog.ui" line="982"/>
+        <location filename="../configdialog.ui" line="913"/>
+        <location filename="../configdialog.ui" line="963"/>
+        <location filename="../configdialog.ui" line="999"/>
+        <location filename="../configdialog.ui" line="1042"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="870"/>
-        <location filename="../configdialog.ui" line="896"/>
+        <location filename="../configdialog.ui" line="930"/>
         <location filename="../configdialog.ui" line="956"/>
-        <location filename="../configdialog.ui" line="999"/>
+        <location filename="../configdialog.ui" line="1016"/>
+        <location filename="../configdialog.ui" line="1059"/>
         <source>100</source>
         <translation>100</translation>
     </message>
@@ -259,12 +259,12 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;PSG volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="933"/>
+        <location filename="../configdialog.ui" line="993"/>
         <source>音声合成音量(&amp;V)</source>
         <translation>Громкость голоса</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="976"/>
+        <location filename="../configdialog.ui" line="1036"/>
         <source>TAPEモニタ音量(&amp;T)</source>
         <translation>Монитор громкости кассеты</translation>
     </message>
@@ -281,44 +281,44 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Key repeat interval:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1035"/>
+        <location filename="../configdialog.ui" line="1095"/>
         <source>ファイル(&amp;F)</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1118"/>
+        <location filename="../configdialog.ui" line="1178"/>
         <source>拡張ROM(&amp;R):</source>
         <translation>Расширенное ПЗУ:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1182"/>
+        <location filename="../configdialog.ui" line="1242"/>
         <source>プリンタ(&amp;P):</source>
         <translation>Принтер:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1047"/>
+        <location filename="../configdialog.ui" line="1107"/>
         <source>TAPE(SAVE)(&amp;V):</source>
         <translation>Сохранить на кассету:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1135"/>
+        <location filename="../configdialog.ui" line="1195"/>
         <source>TAPE(LOAD)(&amp;A):</source>
         <translation>Загрузить с кассеты:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1057"/>
-        <location filename="../configdialog.ui" line="1076"/>
-        <location filename="../configdialog.ui" line="1083"/>
-        <location filename="../configdialog.ui" line="1111"/>
-        <location filename="../configdialog.ui" line="1145"/>
-        <location filename="../configdialog.ui" line="1202"/>
-        <location filename="../configdialog.ui" line="1238"/>
-        <location filename="../configdialog.ui" line="1265"/>
-        <location filename="../configdialog.ui" line="1292"/>
-        <location filename="../configdialog.ui" line="1319"/>
-        <location filename="../configdialog.ui" line="1346"/>
-        <location filename="../configdialog.ui" line="1373"/>
-        <location filename="../configdialog.ui" line="1400"/>
+        <location filename="../configdialog.ui" line="1117"/>
+        <location filename="../configdialog.ui" line="1136"/>
+        <location filename="../configdialog.ui" line="1143"/>
+        <location filename="../configdialog.ui" line="1171"/>
+        <location filename="../configdialog.ui" line="1205"/>
+        <location filename="../configdialog.ui" line="1262"/>
+        <location filename="../configdialog.ui" line="1298"/>
+        <location filename="../configdialog.ui" line="1325"/>
+        <location filename="../configdialog.ui" line="1352"/>
+        <location filename="../configdialog.ui" line="1379"/>
+        <location filename="../configdialog.ui" line="1406"/>
+        <location filename="../configdialog.ui" line="1433"/>
+        <location filename="../configdialog.ui" line="1460"/>
         <source>参照...</source>
         <translation>Выбрать...</translation>
     </message>
@@ -328,117 +328,137 @@ cut off fre&amp;quency</translation>
         <translation>Модель:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="383"/>
+        <location filename="../configdialog.ui" line="264"/>
+        <source>KEY</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="270"/>
+        <source>ローマ字入力有効(&amp;R)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="282"/>
+        <source>ローマ字入力ウェイト(&amp;I):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="299"/>
+        <source>(0-60)</source>
+        <translation type="unfinished">(0-2) {0-60)?}</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="443"/>
         <source>ストップビット数(&amp;B):</source>
         <translation>Стоп-биты:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="403"/>
+        <location filename="../configdialog.ui" line="463"/>
         <source>bit (2-10)</source>
         <translation>bits (2-0)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="442"/>
+        <location filename="../configdialog.ui" line="502"/>
         <source>画面(&amp;D)</source>
         <translation>Экран</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="450"/>
+        <location filename="../configdialog.ui" line="510"/>
         <source>MODE4カラー(&amp;M):</source>
         <translation>Цвет режима &quot;MODE4&quot;:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="506"/>
-        <location filename="../configdialog.ui" line="657"/>
+        <location filename="../configdialog.ui" line="566"/>
+        <location filename="../configdialog.ui" line="717"/>
         <source>スキャンライン(&amp;N)</source>
         <translation>Сканлайн</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="513"/>
-        <location filename="../configdialog.ui" line="664"/>
+        <location filename="../configdialog.ui" line="573"/>
+        <location filename="../configdialog.ui" line="724"/>
         <source>輝度(&amp;B):</source>
         <translation>Яркость:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="554"/>
-        <location filename="../configdialog.ui" line="705"/>
+        <location filename="../configdialog.ui" line="614"/>
+        <location filename="../configdialog.ui" line="765"/>
         <source>フレームスキップ(&amp;K):</source>
         <translation>Пропуск кадров:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="565"/>
-        <location filename="../configdialog.ui" line="716"/>
+        <location filename="../configdialog.ui" line="625"/>
+        <location filename="../configdialog.ui" line="776"/>
         <source>0 (59.92fps)</source>
         <translation>0 (59.92fps)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="570"/>
-        <location filename="../configdialog.ui" line="721"/>
+        <location filename="../configdialog.ui" line="630"/>
+        <location filename="../configdialog.ui" line="781"/>
         <source>1 (29.96fps)</source>
         <translation>1 (29.96fps)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="575"/>
-        <location filename="../configdialog.ui" line="726"/>
+        <location filename="../configdialog.ui" line="635"/>
+        <location filename="../configdialog.ui" line="786"/>
         <source>2 (19.97fps)</source>
         <translation>2 (19.97fps)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="580"/>
-        <location filename="../configdialog.ui" line="731"/>
+        <location filename="../configdialog.ui" line="640"/>
+        <location filename="../configdialog.ui" line="791"/>
         <source>3 (14.98fps)</source>
         <translation>3 (14.98fps)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="585"/>
-        <location filename="../configdialog.ui" line="736"/>
+        <location filename="../configdialog.ui" line="645"/>
+        <location filename="../configdialog.ui" line="796"/>
         <source>4 (11.98fps)</source>
         <translation>4 (11.98fps)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="590"/>
-        <location filename="../configdialog.ui" line="741"/>
+        <location filename="../configdialog.ui" line="650"/>
+        <location filename="../configdialog.ui" line="801"/>
         <source>5 (9.99fps)</source>
         <translation>5 (9.99fps)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="613"/>
-        <location filename="../configdialog.ui" line="808"/>
+        <location filename="../configdialog.ui" line="673"/>
+        <location filename="../configdialog.ui" line="868"/>
         <source>4:3表示(&amp;3)</source>
         <translation>Экран 4:&amp;3</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="649"/>
+        <location filename="../configdialog.ui" line="709"/>
         <source>ビデオキャプチャ時の設定</source>
         <translation>Во время захвата видео</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="766"/>
+        <location filename="../configdialog.ui" line="826"/>
         <source>解像度倍率(&amp;Z):</source>
         <translation>Коэффициент масштабирования:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="786"/>
+        <location filename="../configdialog.ui" line="846"/>
         <source>(50-400)</source>
         <translation>(50-400)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="839"/>
+        <location filename="../configdialog.ui" line="899"/>
         <source>サウンド(&amp;S)</source>
         <translation>Звук</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1041"/>
+        <location filename="../configdialog.ui" line="1101"/>
         <source>ファイル</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1159"/>
+        <location filename="../configdialog.ui" line="1219"/>
         <source>DISK1(&amp;K):</source>
         <translation>Диск 1:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1169"/>
+        <location filename="../configdialog.ui" line="1229"/>
         <source>DISK2(&amp;J):</source>
         <translation>Лиск 2:</translation>
     </message>
@@ -447,24 +467,24 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Fo&amp;lder</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1299"/>
+        <location filename="../configdialog.ui" line="1359"/>
         <source>拡張ROM(&amp;X):</source>
         <translation>Расширенное ПЗУ:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1090"/>
-        <location filename="../configdialog.ui" line="1097"/>
-        <location filename="../configdialog.ui" line="1104"/>
-        <location filename="../configdialog.ui" line="1128"/>
-        <location filename="../configdialog.ui" line="1152"/>
-        <location filename="../configdialog.ui" line="1195"/>
-        <location filename="../configdialog.ui" line="1231"/>
-        <location filename="../configdialog.ui" line="1258"/>
-        <location filename="../configdialog.ui" line="1285"/>
-        <location filename="../configdialog.ui" line="1312"/>
-        <location filename="../configdialog.ui" line="1339"/>
-        <location filename="../configdialog.ui" line="1366"/>
-        <location filename="../configdialog.ui" line="1393"/>
+        <location filename="../configdialog.ui" line="1150"/>
+        <location filename="../configdialog.ui" line="1157"/>
+        <location filename="../configdialog.ui" line="1164"/>
+        <location filename="../configdialog.ui" line="1188"/>
+        <location filename="../configdialog.ui" line="1212"/>
+        <location filename="../configdialog.ui" line="1255"/>
+        <location filename="../configdialog.ui" line="1291"/>
+        <location filename="../configdialog.ui" line="1318"/>
+        <location filename="../configdialog.ui" line="1345"/>
+        <location filename="../configdialog.ui" line="1372"/>
+        <location filename="../configdialog.ui" line="1399"/>
+        <location filename="../configdialog.ui" line="1426"/>
+        <location filename="../configdialog.ui" line="1453"/>
         <source>クリア</source>
         <translation>Очистить</translation>
     </message>
@@ -473,17 +493,17 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">State sa&amp;ve</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1245"/>
+        <location filename="../configdialog.ui" line="1305"/>
         <source>TAPE(&amp;T):</source>
         <translation>Образ кассеты:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1272"/>
+        <location filename="../configdialog.ui" line="1332"/>
         <source>DISK(&amp;K):</source>
         <translation>Диск:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1326"/>
+        <location filename="../configdialog.ui" line="1386"/>
         <source>SnapShot(&amp;H):</source>
         <translation>Снимок экрана:</translation>
     </message>
@@ -492,7 +512,7 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Wave</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1218"/>
+        <location filename="../configdialog.ui" line="1278"/>
         <source>ROM(&amp;R):</source>
         <translation>Образ ПЗУ:</translation>
     </message>
@@ -501,64 +521,64 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Color&amp;1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2993"/>
+        <location filename="../configdialog.ui" line="3053"/>
         <source>MODE1(&amp;1)</source>
         <translation>Режим &quot;Mode&amp;1&quot;</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1860"/>
-        <location filename="../configdialog.ui" line="2768"/>
-        <location filename="../configdialog.ui" line="3066"/>
+        <location filename="../configdialog.ui" line="1920"/>
+        <location filename="../configdialog.ui" line="2828"/>
+        <location filename="../configdialog.ui" line="3126"/>
         <source>黒</source>
         <translation>Чёрный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2314"/>
-        <location filename="../configdialog.ui" line="3126"/>
+        <location filename="../configdialog.ui" line="2374"/>
+        <location filename="../configdialog.ui" line="3186"/>
         <source>Set1</source>
         <translation>Набор1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2284"/>
-        <location filename="../configdialog.ui" line="3156"/>
+        <location filename="../configdialog.ui" line="2344"/>
+        <location filename="../configdialog.ui" line="3216"/>
         <source>Set2</source>
         <translation>Набор2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1212"/>
+        <location filename="../configdialog.ui" line="1272"/>
         <source>フォルダ</source>
         <translation>Каталог</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1424"/>
+        <location filename="../configdialog.ui" line="1484"/>
         <source>色(&amp;C)</source>
         <translation>Цает</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1874"/>
-        <location filename="../configdialog.ui" line="2125"/>
-        <location filename="../configdialog.ui" line="2609"/>
-        <location filename="../configdialog.ui" line="2623"/>
-        <location filename="../configdialog.ui" line="2775"/>
-        <location filename="../configdialog.ui" line="3059"/>
+        <location filename="../configdialog.ui" line="1934"/>
+        <location filename="../configdialog.ui" line="2185"/>
+        <location filename="../configdialog.ui" line="2669"/>
+        <location filename="../configdialog.ui" line="2683"/>
+        <location filename="../configdialog.ui" line="2835"/>
+        <location filename="../configdialog.ui" line="3119"/>
         <source>緑</source>
         <translation>Зелёеый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2895"/>
-        <location filename="../configdialog.ui" line="3119"/>
+        <location filename="../configdialog.ui" line="2955"/>
+        <location filename="../configdialog.ui" line="3179"/>
         <source>深緑</source>
         <translation>Тёмно-зелёный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1627"/>
-        <location filename="../configdialog.ui" line="2081"/>
-        <location filename="../configdialog.ui" line="3006"/>
+        <location filename="../configdialog.ui" line="1687"/>
+        <location filename="../configdialog.ui" line="2141"/>
+        <location filename="../configdialog.ui" line="3066"/>
         <source>橙</source>
         <translation>Оранжевый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2999"/>
+        <location filename="../configdialog.ui" line="3059"/>
         <source>深橙</source>
         <translation>Тёмно-оранжевый</translation>
     </message>
@@ -567,43 +587,43 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Mode&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1881"/>
-        <location filename="../configdialog.ui" line="2185"/>
+        <location filename="../configdialog.ui" line="1941"/>
+        <location filename="../configdialog.ui" line="2245"/>
         <source>黄</source>
         <translation>Жёлтый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1888"/>
-        <location filename="../configdialog.ui" line="2192"/>
-        <location filename="../configdialog.ui" line="2441"/>
-        <location filename="../configdialog.ui" line="2842"/>
+        <location filename="../configdialog.ui" line="1948"/>
+        <location filename="../configdialog.ui" line="2252"/>
+        <location filename="../configdialog.ui" line="2501"/>
+        <location filename="../configdialog.ui" line="2902"/>
         <source>青</source>
         <translation>Синий</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1867"/>
-        <location filename="../configdialog.ui" line="2118"/>
-        <location filename="../configdialog.ui" line="2616"/>
-        <location filename="../configdialog.ui" line="2828"/>
+        <location filename="../configdialog.ui" line="1927"/>
+        <location filename="../configdialog.ui" line="2178"/>
+        <location filename="../configdialog.ui" line="2676"/>
+        <location filename="../configdialog.ui" line="2888"/>
         <source>赤</source>
         <translation>Красный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1902"/>
-        <location filename="../configdialog.ui" line="2178"/>
-        <location filename="../configdialog.ui" line="2427"/>
+        <location filename="../configdialog.ui" line="1962"/>
+        <location filename="../configdialog.ui" line="2238"/>
+        <location filename="../configdialog.ui" line="2487"/>
         <source>白</source>
         <translation>Белый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1909"/>
-        <location filename="../configdialog.ui" line="2111"/>
+        <location filename="../configdialog.ui" line="1969"/>
+        <location filename="../configdialog.ui" line="2171"/>
         <source>シアン</source>
         <translation>Циан</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1895"/>
-        <location filename="../configdialog.ui" line="2051"/>
+        <location filename="../configdialog.ui" line="1955"/>
+        <location filename="../configdialog.ui" line="2111"/>
         <source>マゼンタ</source>
         <translation>Магента</translation>
     </message>
@@ -612,19 +632,19 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Mode&amp;3</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2202"/>
+        <location filename="../configdialog.ui" line="2262"/>
         <source>MODE4(&amp;4)</source>
         <translation>Режим &quot;Mode&amp;4&quot;</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2321"/>
-        <location filename="../configdialog.ui" line="2434"/>
+        <location filename="../configdialog.ui" line="2381"/>
+        <location filename="../configdialog.ui" line="2494"/>
         <source>にじみ2</source>
         <translation>Fringe2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2328"/>
-        <location filename="../configdialog.ui" line="2835"/>
+        <location filename="../configdialog.ui" line="2388"/>
+        <location filename="../configdialog.ui" line="2895"/>
         <source>桃</source>
         <translation>Персиковый</translation>
     </message>
@@ -638,29 +658,29 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Hardware acceleration(Applied in next startup)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="620"/>
-        <location filename="../configdialog.ui" line="815"/>
+        <location filename="../configdialog.ui" line="680"/>
+        <location filename="../configdialog.ui" line="875"/>
         <source>フィルタリング(&amp;F)</source>
         <translation>Фильтрация</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="890"/>
+        <location filename="../configdialog.ui" line="950"/>
         <source>PSG、FM音量(&amp;P)</source>
         <translation>Уровень громкости PSG и FM</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1380"/>
+        <location filename="../configdialog.ui" line="1440"/>
         <source>どこでもSAVE(&amp;V):</source>
         <translation>Сохранение состояния:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1353"/>
+        <location filename="../configdialog.ui" line="1413"/>
         <source>WAVE(&amp;W):</source>
         <translation>&amp;WAVE:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2254"/>
-        <location filename="../configdialog.ui" line="2902"/>
+        <location filename="../configdialog.ui" line="2314"/>
+        <location filename="../configdialog.ui" line="2962"/>
         <source>にじみ1</source>
         <translation>Fringe1</translation>
     </message>
@@ -673,78 +693,78 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Color&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1430"/>
+        <location filename="../configdialog.ui" line="1490"/>
         <source>mk2〜(&amp;M)</source>
         <translation>&amp;mk2~</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1620"/>
+        <location filename="../configdialog.ui" line="1680"/>
         <source>透明(黒)</source>
         <translation>Прозрачный(Чёрный)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1634"/>
+        <location filename="../configdialog.ui" line="1694"/>
         <source>青緑</source>
         <translation>Сине-зелёный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1641"/>
+        <location filename="../configdialog.ui" line="1701"/>
         <source>黄緑</source>
         <translation>Жёлто-зелёный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1648"/>
+        <location filename="../configdialog.ui" line="1708"/>
         <source>灰色</source>
         <translation>Серый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1655"/>
+        <location filename="../configdialog.ui" line="1715"/>
         <source>空色</source>
         <translation>Лазурный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1662"/>
+        <location filename="../configdialog.ui" line="1722"/>
         <source>赤紫</source>
         <translation>Красно-фиолетовый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1669"/>
+        <location filename="../configdialog.ui" line="1729"/>
         <source>青紫</source>
         <translation>Сине-фиолетовый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1919"/>
+        <location filename="../configdialog.ui" line="1979"/>
         <source>変更したい色を
 クリックしてください</source>
         <translation>Выберите нужный цвет.</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1953"/>
+        <location filename="../configdialog.ui" line="2013"/>
         <source>MODE2/3(&amp;2)</source>
         <translation>Режим &quot;Mode4 {2/3(&amp;2)&quot;?}</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3180"/>
+        <location filename="../configdialog.ui" line="3240"/>
         <source>その他(&amp;O)</source>
         <translation>Прочее</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3188"/>
+        <location filename="../configdialog.ui" line="3248"/>
         <source>オーバークロック率(&amp;V):</source>
         <translation>Множитель разгона:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3208"/>
+        <location filename="../configdialog.ui" line="3268"/>
         <source>% (1-1000)</source>
         <translation>% (1-1000)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3230"/>
+        <location filename="../configdialog.ui" line="3290"/>
         <source>システムROMのCRCチェック有効(&amp;C)</source>
         <translation>Включить проверку CRC образов системных ПЗУ</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="270"/>
+        <location filename="../configdialog.ui" line="330"/>
         <source>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</source>
         <translation>Ускорение плёнки (без ожидания считывания)</translation>
     </message>
@@ -834,27 +854,27 @@ cut off fre&amp;quency</translation>
         <translation>(0-2)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="264"/>
+        <location filename="../configdialog.ui" line="324"/>
         <source>CMT</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="277"/>
+        <location filename="../configdialog.ui" line="337"/>
         <source>Boost Up (TAPE最速化)(&amp;U)</source>
         <translation>Ускорить ход плёнки</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="286"/>
+        <location filename="../configdialog.ui" line="346"/>
         <source>最大倍率</source>
         <translation>Maximum magnification</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="309"/>
+        <location filename="../configdialog.ui" line="369"/>
         <source>N60</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="345"/>
+        <location filename="../configdialog.ui" line="405"/>
         <source>N60m/N66</source>
         <translation>N60m/N66</translation>
     </message>
@@ -864,22 +884,22 @@ cut off fre&amp;quency</translation>
         <translation>Включить ожидание лоступа к дисководу</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3237"/>
+        <location filename="../configdialog.ui" line="3297"/>
         <source>どこでもLOAD(SLOT)実行時に確認する(&amp;L)</source>
         <translation>Подтверждать загрузку</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3244"/>
+        <location filename="../configdialog.ui" line="3304"/>
         <source>終了時に確認する(&amp;F)</source>
         <translation>Подтверждать выход</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3251"/>
+        <location filename="../configdialog.ui" line="3311"/>
         <source>終了時にINIファイルを保存する(&amp;Q)</source>
         <translation>Сохранять INI файл при выходе</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="303"/>
+        <location filename="../configdialog.cpp" line="309"/>
         <source>互換ROM使用中</source>
         <translation>Использовать встроенный образ ПЗУ</translation>
     </message>
@@ -2208,90 +2228,90 @@ Save time and PC6001V version </translation>
 <context>
     <name>QtEL6</name>
     <message>
-        <location filename="../qtel6.cpp" line="275"/>
+        <location filename="../qtel6.cpp" line="276"/>
         <source>システム</source>
         <translation>Система</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="277"/>
-        <location filename="../qtel6.cpp" line="284"/>
+        <location filename="../qtel6.cpp" line="278"/>
+        <location filename="../qtel6.cpp" line="287"/>
         <source>リセット</source>
         <translation>Сброс</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="278"/>
+        <location filename="../qtel6.cpp" line="279"/>
         <source>再起動</source>
         <translation>Перезапуск</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="296"/>
+        <location filename="../qtel6.cpp" line="299"/>
         <source>どこでもLOAD</source>
         <translation>Точка загрузки</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="297"/>
+        <location filename="../qtel6.cpp" line="300"/>
         <source>どこでもSAVE</source>
         <translation>Точка сохранения</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="299"/>
+        <location filename="../qtel6.cpp" line="302"/>
         <source>LOAD...</source>
         <translation>Загрузить...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="303"/>
+        <location filename="../qtel6.cpp" line="306"/>
         <source>SAVE...</source>
         <translation>Сохранить...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="309"/>
+        <location filename="../qtel6.cpp" line="312"/>
         <source>リプレイ</source>
         <translation>Воспроизвести</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="330"/>
+        <location filename="../qtel6.cpp" line="333"/>
         <source>記録再開...</source>
         <translation>Продолжить запись...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="336"/>
+        <location filename="../qtel6.cpp" line="339"/>
         <source>途中保存</source>
         <translation>КОнтрольная точка</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="337"/>
+        <location filename="../qtel6.cpp" line="340"/>
         <source>途中保存から再開</source>
         <translation>Вернуться к контрольной точке</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="355"/>
+        <location filename="../qtel6.cpp" line="358"/>
         <source>打込み代行...</source>
         <translation>Автоввод...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="357"/>
+        <location filename="../qtel6.cpp" line="360"/>
         <source>終了</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="360"/>
+        <location filename="../qtel6.cpp" line="363"/>
         <source>TAPE</source>
         <translation>Кассета</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="361"/>
-        <location filename="../qtel6.cpp" line="372"/>
+        <location filename="../qtel6.cpp" line="364"/>
+        <location filename="../qtel6.cpp" line="375"/>
         <source>挿入...</source>
         <translation>Вставить...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="362"/>
-        <location filename="../qtel6.cpp" line="373"/>
+        <location filename="../qtel6.cpp" line="365"/>
+        <location filename="../qtel6.cpp" line="376"/>
         <source>取出</source>
         <translation>Извлечь</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="368"/>
+        <location filename="../qtel6.cpp" line="371"/>
         <source>DISK</source>
         <translation>Диск</translation>
     </message>
@@ -2300,104 +2320,104 @@ Save time and PC6001V version </translation>
         <translation type="vanished">Расширенное ПЗУ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="425"/>
+        <location filename="../qtel6.cpp" line="428"/>
         <source>ジョイスティック</source>
         <translation>Джойстик</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="382"/>
-        <location filename="../qtel6.cpp" line="441"/>
-        <location filename="../qtel6.cpp" line="442"/>
+        <location filename="../qtel6.cpp" line="385"/>
+        <location filename="../qtel6.cpp" line="444"/>
+        <location filename="../qtel6.cpp" line="445"/>
         <source>なし</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="450"/>
+        <location filename="../qtel6.cpp" line="453"/>
         <source>設定</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="213"/>
-        <location filename="../qtel6.cpp" line="452"/>
+        <location filename="../qtel6.cpp" line="214"/>
+        <location filename="../qtel6.cpp" line="455"/>
         <source>表示サイズ</source>
         <translation>Размер дисплея</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="213"/>
+        <location filename="../qtel6.cpp" line="214"/>
         <source>表示サイズ(%)を入力してください。(50-1000)</source>
         <translation>Коэффициент масштабирования (%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="222"/>
+        <location filename="../qtel6.cpp" line="223"/>
         <source>設定を反映するには一度終了しますがよろしいですか?</source>
         <translation>Для применения настроек нужно выйти из программы.\nХотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="281"/>
+        <location filename="../qtel6.cpp" line="282"/>
         <source>一時停止</source>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="292"/>
+        <location filename="../qtel6.cpp" line="295"/>
         <source>スナップショットを取得</source>
         <translation>Скриншот</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="332"/>
+        <location filename="../qtel6.cpp" line="335"/>
         <source>リプレイを動画に変換...</source>
         <translation>Превратить запись в видео...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="338"/>
+        <location filename="../qtel6.cpp" line="341"/>
         <source>1つ前の途中保存から再開</source>
         <translation>Вернуться к предыдущему состоянию</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="349"/>
+        <location filename="../qtel6.cpp" line="352"/>
         <source>キーパネル</source>
         <translation>Панель кнопок</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="351"/>
+        <location filename="../qtel6.cpp" line="354"/>
         <source>仮想キーボード</source>
         <translation>Виртуальная кассета</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="364"/>
+        <location filename="../qtel6.cpp" line="367"/>
         <source>TAPE(SAVE)をエクスポート...</source>
         <translation>Экспорт сохранённого образа кассеты...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="285"/>
-        <location filename="../qtel6.cpp" line="453"/>
+        <location filename="../qtel6.cpp" line="288"/>
+        <location filename="../qtel6.cpp" line="456"/>
         <source>50%</source>
         <translation>50%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="454"/>
+        <location filename="../qtel6.cpp" line="457"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="287"/>
-        <location filename="../qtel6.cpp" line="455"/>
+        <location filename="../qtel6.cpp" line="290"/>
+        <location filename="../qtel6.cpp" line="458"/>
         <source>150%</source>
         <translation>150%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="288"/>
-        <location filename="../qtel6.cpp" line="456"/>
+        <location filename="../qtel6.cpp" line="291"/>
+        <location filename="../qtel6.cpp" line="459"/>
         <source>200%</source>
         <translation>200%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="457"/>
+        <location filename="../qtel6.cpp" line="460"/>
         <source>250%</source>
         <translation>250%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="289"/>
-        <location filename="../qtel6.cpp" line="458"/>
+        <location filename="../qtel6.cpp" line="292"/>
+        <location filename="../qtel6.cpp" line="461"/>
         <source>300%</source>
         <translation>300%</translation>
     </message>
@@ -2412,193 +2432,193 @@ Save time and PC6001V version </translation>
         <translation>Введите значение(%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="283"/>
+        <location filename="../qtel6.cpp" line="286"/>
         <source>速度調節</source>
         <translation>Контроль скорости</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="286"/>
+        <location filename="../qtel6.cpp" line="289"/>
         <source>70%</source>
         <translation>70%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="290"/>
+        <location filename="../qtel6.cpp" line="293"/>
         <source>速度を指定...</source>
         <translation>Задать скорость...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="318"/>
+        <location filename="../qtel6.cpp" line="321"/>
         <source>再生停止</source>
         <translation>Остановить воспроизведение</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="318"/>
+        <location filename="../qtel6.cpp" line="321"/>
         <source>再生...</source>
         <translation>Воспроизвести...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="327"/>
+        <location filename="../qtel6.cpp" line="330"/>
         <source>記録停止</source>
         <translation>Остановить запись</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="327"/>
+        <location filename="../qtel6.cpp" line="330"/>
         <source>記録...</source>
         <translation>Записать...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="345"/>
+        <location filename="../qtel6.cpp" line="348"/>
         <source>ビデオキャプチャ停止</source>
         <translation>Остановить захват видео</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="345"/>
+        <location filename="../qtel6.cpp" line="348"/>
         <source>ビデオキャプチャ...</source>
         <translation>Захватить видео...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="381"/>
+        <location filename="../qtel6.cpp" line="384"/>
         <source>拡張カートリッジ</source>
         <translation>Картридж расширения</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="384"/>
+        <location filename="../qtel6.cpp" line="387"/>
         <source>PC-6005    ROMカートリッジ...</source>
         <translation>Картридж ПЗУ PC-6005</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="385"/>
+        <location filename="../qtel6.cpp" line="388"/>
         <source>PC-6006    拡張ROM/RAMカートリッジ</source>
         <translation>Картридж с расширенным ПЗУ/ОЗУ для PC-6006</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="386"/>
-        <location filename="../qtel6.cpp" line="399"/>
+        <location filename="../qtel6.cpp" line="389"/>
         <location filename="../qtel6.cpp" line="402"/>
         <location filename="../qtel6.cpp" line="405"/>
+        <location filename="../qtel6.cpp" line="408"/>
         <source>ROM選択...</source>
         <translation>Выбор образа ПЗУ...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="387"/>
-        <location filename="../qtel6.cpp" line="400"/>
+        <location filename="../qtel6.cpp" line="390"/>
         <location filename="../qtel6.cpp" line="403"/>
         <location filename="../qtel6.cpp" line="406"/>
+        <location filename="../qtel6.cpp" line="409"/>
         <source>ROMなし</source>
         <translation>Нет образа ПЗУ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="389"/>
+        <location filename="../qtel6.cpp" line="392"/>
         <source>PCS-6001R  拡張BASIC</source>
         <translation>Расширенный BASIC PCS-6001R</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="390"/>
+        <location filename="../qtel6.cpp" line="393"/>
         <source>PC-6601-01 拡張漢字ROMカートリッジ</source>
         <translation>Образ ПЗУ картриджа расширения  с кандзи для PC-6601-01</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="391"/>
+        <location filename="../qtel6.cpp" line="394"/>
         <source>PC-6006SR  拡張64KRAMカートリッジ</source>
         <translation>Картридж расширения ОЗУ на 64K для PC-6006SR</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="392"/>
+        <location filename="../qtel6.cpp" line="395"/>
         <source>PC-6007SR  拡張漢字ROM&amp;&amp;RAMカートリッジ</source>
         <translation>Образ ПЗУ картриджа расширения для PC-6007SR &amp; картридж с доп. ОЗУ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="398"/>
+        <location filename="../qtel6.cpp" line="401"/>
         <source>戦士のカートリッジ</source>
         <translation>Картридж Warrior</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="401"/>
+        <location filename="../qtel6.cpp" line="404"/>
         <source>戦士のカートリッジmkⅡ</source>
         <translation>Картридж Warrior, mkⅡ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="404"/>
+        <location filename="../qtel6.cpp" line="407"/>
         <source>戦士のカートリッジmkⅢ</source>
         <translation>Картридж Warrior, mkⅢ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="459"/>
+        <location filename="../qtel6.cpp" line="462"/>
         <source>倍率を指定...</source>
         <translation>Задать масштаб картинки...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="460"/>
+        <location filename="../qtel6.cpp" line="463"/>
         <source>倍率を固定</source>
         <translation>Исправить масштаб</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="463"/>
+        <location filename="../qtel6.cpp" line="466"/>
         <source>フルスクリーン</source>
         <translation>На весь экран</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="466"/>
+        <location filename="../qtel6.cpp" line="469"/>
         <source>ステータスバー</source>
         <translation>Панель статуса</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="468"/>
+        <location filename="../qtel6.cpp" line="471"/>
         <source>4:3表示</source>
         <translation>Экран телевизора 4:3</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="470"/>
+        <location filename="../qtel6.cpp" line="473"/>
         <source>スキャンライン</source>
         <translation>Сканлайн</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="473"/>
+        <location filename="../qtel6.cpp" line="476"/>
         <source>ハードウェアアクセラレーション</source>
         <translation>Аппаратное ускорение</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="476"/>
+        <location filename="../qtel6.cpp" line="479"/>
         <source>フィルタリング</source>
         <translation>Фильтрация</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="479"/>
+        <location filename="../qtel6.cpp" line="482"/>
         <source>TILTモード</source>
         <translation>Режим дрожжания</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="482"/>
+        <location filename="../qtel6.cpp" line="485"/>
         <source>MODE4 カラー</source>
         <translation>Цвета режима &quot;Mode4&quot;</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="484"/>
+        <location filename="../qtel6.cpp" line="487"/>
         <source>モノクロ</source>
         <translation>Чёрно-белый</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="485"/>
+        <location filename="../qtel6.cpp" line="488"/>
         <source>赤/青</source>
         <translation>Красный/Синий</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="486"/>
+        <location filename="../qtel6.cpp" line="489"/>
         <source>青/赤</source>
         <translation>Синий/Красный</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="487"/>
+        <location filename="../qtel6.cpp" line="490"/>
         <source>桃/緑</source>
         <translation>Зелёный/Персиковый</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="488"/>
+        <location filename="../qtel6.cpp" line="491"/>
         <source>緑/桃</source>
         <translation>Персиковый/Зелёный</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="494"/>
+        <location filename="../qtel6.cpp" line="497"/>
         <source>フレームスキップ</source>
         <translation>Пропуск кадров</translation>
     </message>
@@ -2607,62 +2627,67 @@ Save time and PC6001V version </translation>
         <translation type="vanished">Sampling rate</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="508"/>
+        <location filename="../qtel6.cpp" line="284"/>
         <source>ウェイト無効</source>
         <translation>Отключить ожидание</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="510"/>
+        <location filename="../qtel6.cpp" line="511"/>
+        <source>ローマ字入力</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qtel6.cpp" line="515"/>
         <source>Turbo TAPE</source>
         <translation>Ускорение плёнки</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="512"/>
+        <location filename="../qtel6.cpp" line="517"/>
         <source>Boost Up</source>
         <translation>Ускорение</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="514"/>
+        <location filename="../qtel6.cpp" line="519"/>
         <source>環境設定...</source>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="518"/>
+        <location filename="../qtel6.cpp" line="523"/>
         <source>デバッグ</source>
         <translation>Отладка</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="520"/>
+        <location filename="../qtel6.cpp" line="525"/>
         <source>モニタモード</source>
         <translation>Режим монитора</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="525"/>
+        <location filename="../qtel6.cpp" line="530"/>
         <source>ヘルプ</source>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="526"/>
+        <location filename="../qtel6.cpp" line="531"/>
         <source>オンラインヘルプ</source>
         <translation>Онлайн справка</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="527"/>
+        <location filename="../qtel6.cpp" line="532"/>
         <source>バージョン情報...</source>
         <translation>О программе...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="528"/>
+        <location filename="../qtel6.cpp" line="533"/>
         <source>About Qt...</source>
         <translation>О Qt...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="529"/>
+        <location filename="../qtel6.cpp" line="534"/>
         <source>システム情報...</source>
         <translation>Информация о системе...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="530"/>
+        <location filename="../qtel6.cpp" line="535"/>
         <source>設定初期化...</source>
         <translation>Сбросить настройки...</translation>
     </message>

@@ -144,7 +144,13 @@ void ConfigDialog::readConfig()
 	// FDD数
 	ui->spinBoxNumFdd->setValue(config->GetValue(CV_FDDrive));
 	// FDDウェイト
-	ui->checkBoxFDDWaitEnable->setChecked(config->GetValue(CB_FDDWait));
+	ui->checkBoxFDDWait->setChecked(config->GetValue(CB_FDDWait));
+
+	//// KEY
+	// ローマ字入力有効
+	ui->checkBoxRomajiInput->setChecked(config->GetValue(CB_Romaji));
+	// ローマ字入力ウェイト
+	ui->spinBoxRomajiWait->setValue(config->GetValue(CV_RomajiWait));
 
 	//// CMT
 	// Turbo TAPE
@@ -407,7 +413,13 @@ void ConfigDialog::writeConfig()
 	// FDDドライブ数
 	config->SetValue(CV_FDDrive, ui->spinBoxNumFdd->value());
 	// FDDアクセスウェイト有効
-	config->SetValue(CB_FDDWait, ui->checkBoxFDDWaitEnable->isChecked());
+	config->SetValue(CB_FDDWait, ui->checkBoxFDDWait->isChecked());
+
+	//// KEY
+	// ローマ字入力有効
+	config->SetValue(CB_Romaji, ui->checkBoxRomajiInput->isChecked());
+	// ローマ字入力ウェイト
+	config->SetValue(CV_RomajiWait, ui->spinBoxRomajiWait->value());
 
 	//// CMT
 	// Turbo TAPE

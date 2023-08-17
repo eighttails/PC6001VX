@@ -138,6 +138,7 @@ void EL6::ExecMenu( int id )
 	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
 	case ID_QUIT:			UI_Quit();								break;	// 終了
 	case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
+	case ID_ROMAJI:			UI_Romaji();							break;	// ローマ字入力
 	case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
 	case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
 	case ID_FULLSCRN:
@@ -280,6 +281,8 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	QAction* pause = addCommand(systemMenu, tr("一時停止"), ID_PAUSE, true);
 	pause->setChecked(GetPauseEnable());
+	QAction* noWait = addCommand(systemMenu, tr("ウェイト無効"), ID_NOWAIT, true);
+	if (!sche->GetWaitEnable()) noWait->setChecked(true);
 	QMenu* speedMenu = systemMenu->addMenu(tr("速度調節"));
 	addCommand(speedMenu, tr("リセット"), ID_SPEEDRESET);
 	addCommand(speedMenu, tr("50%"), ID_SPEED50);
@@ -505,8 +508,10 @@ void QtEL6::ShowPopupImpl(int x, int y)
 		if (cfg->GetValue(CV_FrameSkip) == i) fps->setChecked(true);
 	}
 
-	QAction* noWait = addCommand(settingsMenu, tr("ウェイト無効"), ID_NOWAIT, true);
-	if (!sche->GetWaitEnable()) noWait->setChecked(true);
+	QAction* romajiInput = addCommand(settingsMenu, tr("ローマ字入力"), ID_ROMAJI, true);
+	if (cfg->GetValue(CB_Romaji)) romajiInput->setChecked(true);
+	settingsMenu->addSeparator();
+
 	QAction* turboTape = addCommand(settingsMenu, tr("Turbo TAPE"), ID_TURBO, true);
 	if (cfg->GetValue(CB_TurboTAPE)) turboTape->setChecked(true);
 	QAction* boostUp =  addCommand(settingsMenu, tr("Boost Up"), ID_BOOST, true);

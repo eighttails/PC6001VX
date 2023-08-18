@@ -47,6 +47,7 @@ DEFINES += USEFILESYSTEM
 #DEFINES += NOOPENGL
 #DEFINES += NOSOUND
 #DEFINES += NOCALLBACK
+#DEFINES += NOLIBINTL
 #DEFINES += AUTOSUSPEND
 #DEFINES += REPLAYDEBUG_FRAME
 #DEFINES += REPLAYDEBUG_INST
@@ -96,7 +97,7 @@ unix:!macx {
 
 #Configuration for macOS
 macx {
-    LIBS_PRIVATE= -lintl
+    DEFINES += NOLIBINTL
 }
 
 
@@ -104,7 +105,7 @@ macx {
 win32 {
     #On Windows, link libraries statically as long as possible.
     QMAKE_LFLAGS += -static
-    LIBS_PRIVATE= -lpthread -lsetupapi -lintl -liconv -lOleAut32
+    LIBS_PRIVATE= -lpthread -lsetupapi -lOleAut32
     PKG_CONFIG = 'pkg-config --static'
     RC_ICONS += src/win32/PC6001VX.ico
 } else {
@@ -148,6 +149,11 @@ win32 {
             DEFINES += NOAVI
         }
     }
+}
+
+!contains(DEFINES, NOLIBINTL) {
+    LIBS_PRIVATE += -lintl
+    win32:LIBS_PRIVATE += -liconv
 }
 
 SOURCES += \

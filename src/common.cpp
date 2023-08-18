@@ -18,10 +18,17 @@
 
 
 #include <locale.h>
+
+#ifndef NOLIBINTL
 #include <libintl.h>
 #define	_(str)	gettext(str)
 #define N_(str)	gettext_noop(str)
 #define gettext_noop(str)	str
+#else
+#define	_(str)	str
+#define N_(str)	str
+#define gettext_noop(str)	str
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -95,12 +95,6 @@ unix:!macx {
     }
 }
 
-#Configuration for macOS
-macx {
-    DEFINES += NOLIBINTL
-}
-
-
 #Configuration for Windows
 win32 {
     #On Windows, link libraries statically as long as possible.
@@ -152,8 +146,8 @@ win32 {
 }
 
 !contains(DEFINES, NOLIBINTL) {
-    LIBS_PRIVATE += -lintl
-    win32:LIBS_PRIVATE += -liconv
+    macx:LIBS_PRIVATE += -lintl
+    win32:LIBS_PRIVATE += -lintl -liconv
 }
 
 SOURCES += \

@@ -697,7 +697,7 @@ TALK文の固定語を録音したファイルを配置するフォルダです�
 +
 [NOTE]
 ====
-AndroidではSnapShot、どこでもSAVEフォルダの設定はできません。
+AndroidではROMとWAVE以外のフォルダの設定はできません。
 ====
 
 * 色 +
@@ -778,13 +778,26 @@ make
 
 ==== Android
 http://qt-project.org/doc/qtcreator/creator-developing-android.html[こちら] を参考にして環境を構築してください。 +
-Qt 6.2.0以上が必要です。
+Qt 6.5.0以上が必要です。
 
 
 == 既知の不具合、制約事項
-* Linuxではサウンドの再生に大きな遅延があります。(Qt6.4以降で解消します)
+* Android
+** 日本語を含むファイル、フォルダを開けません。
+** スナップショット、テープのエクスポート機能が正常に機能しません。
 
 == 更新履歴
+.git master
+* (Android)Android13に対応
+** 制約事項
+*** 日本語を含むファイル、フォルダを開けません。
+*** スナップショット、テープのエクスポート機能が正常に機能しません。
+* (Android)Now works on Android13.
+** Known Issues
+*** Cannot open file with non-ascii filename.
+*** Snapshot and Export tape function doesn't work.
+
+
 .4.1.4 2023/08/18
 * PC6001V 2.1.1ベースに更新
 * ローマ字入力関連の設定UIを追加

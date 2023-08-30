@@ -1,7 +1,7 @@
 #include "../log.h"
 #include "../common.h"
-#include "../p6vxcommon.h"
-#include "../p6vxapp.h"
+#include "./p6vxcommon.h"
+#include "./p6vxapp.h"
 
 #include <QVector>
 #include <QImage>
@@ -9,9 +9,6 @@
 #include <QDir>
 #include <QFile>
 #include <QDateTime>
-#ifdef Q_OS_ANDROID
-#include "ekkesShare/shareutils.hpp"
-#endif
 
 extern QVector<QRgb> PaletteTable;              // パレットテーブル
 
@@ -30,7 +27,7 @@ extern QVector<QRgb> PaletteTable;              // パレットテーブル
 ////////////////////////////////////////////////////////////////
 bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const int ww, const int hh, VRect *pos )
 {
-	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", filename );
+	PRINTD( GRP_LOG, "[COMMON][SaveImg] -> %s\n", P6VPATH2STR(filename).c_str() );
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
 	VRect rec;
@@ -68,11 +65,13 @@ bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const in
 	image.save(saveFileFullPath);
 
 #ifdef Q_OS_ANDROID
+#if 0 //#TODO
 	// Androidの場合はインテントで他のアプリに送る
-	ShareUtils util;
+	PlatformShareUtils util;
 	int req = 0;
 	bool altImpl = false;
 	util.sendFile(saveFileFullPath, "Snapshot", "image/png", req, altImpl);
+#endif
 #endif
 
 	return true;
@@ -102,7 +101,7 @@ bool SaveImg( const P6VPATH& filename, VSurface *sur, VRect *pos )
 ////////////////////////////////////////////////////////////////
 VSurface *LoadImg( const P6VPATH& filepath )
 {
-	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", filepath );
+	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", P6VPATH2STR(filepath).c_str() );
 
 	// 画像を読み込む
 	QImage loadImage(P6VPATH2QSTR(filepath));

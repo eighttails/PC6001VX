@@ -4,7 +4,7 @@
 // Mail Address.    ast@qt-space.com
 // Official HP URL. http://ast.qt-space.com/
 
-#include "../cthread.h"
+#include "cthread.h"
 
 #include <QThread>
 #include <QApplication>

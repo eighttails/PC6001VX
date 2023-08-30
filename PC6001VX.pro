@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui widgets openglwidgets network core5compat
+QT += core gui widgets network core5compat
 
 TARGET = PC6001VX
 TEMPLATE = app
@@ -52,36 +52,29 @@ DEFINES += USEFILESYSTEM
 #DEFINES += REPLAYDEBUG_FRAME
 #DEFINES += REPLAYDEBUG_INST
 
+
 debug:DEFINES += DEBUG
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 INCLUDEPATH += src src/Qt
 
-include(src/Qt/SingleApplication/singleapplication.pri)
-DEFINES += QAPPLICATION_CLASS=QApplication
+
 
 #Configuration for UNIX variants
 unix:!macx {
     #Configuration for Android
     android {
-        DEFINES += NOSINGLEAPP NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
-        DEFINES -= QT_NO_DEBUG_OUTPUT
+        QT_ANDROID_TARGET_SDK_VERSION = 31
+        DEFINES += NOLIBINTL NOSINGLEAPP NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
+        DEFINES -= QT_NO_DEBUG_OUTPUT USEFILESYSTEM
         #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
         debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
-        QT += androidextras
-
         ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
         DISTFILES += \
-            android/AndroidManifest.xml \
-            android/build.gradle \
-            android/res/values/libs.xml
+            android/AndroidManifest.xml
 
-        HEADERS += \
-            src/Qt/ekkesShare/shareutils.hpp \
-            src/Qt/ekkesShare/android/androidshareutils.hpp
-        SOURCES += \
-            src/Qt/ekkesShare/shareutils.cpp \
-            src/Qt/ekkesShare/android/androidshareutils.cpp
+        HEADERS +=
+        SOURCES +=
     }
 
     ios {
@@ -117,7 +110,7 @@ win32 {
 }
 
 !contains(DEFINES, NOOPENGL) {
-    QT += opengl
+    QT += opengl openglwidgets
 }
 
 !contains(DEFINES, NOSOUND) {
@@ -143,6 +136,11 @@ win32 {
             DEFINES += NOAVI
         }
     }
+}
+
+!contains(DEFINES, NOSINGLEAPP) {
+    include(src/Qt/SingleApplication/singleapplication.pri)
+    DEFINES += QAPPLICATION_CLASS=QApplication
 }
 
 !contains(DEFINES, NOLIBINTL) {
@@ -327,22 +325,6 @@ DISTFILES += \
     LICENSE \
     android/AndroidManifest.xml \
     android/PrivacyPolicy.html \
-    android/build.gradle \
-    android/gradle.properties \
-    android/gradle/wrapper/gradle-wrapper.jar \
-    android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew \
-    android/gradlew.bat \
-    android/res/values/libs.xml \
-    android/res/xml/filepaths.xml \
-    src/Qt/translation/PC6001VX_ru.ts
-
-contains(ANDROID_TARGET_ARCH,) {
-    ANDROID_ABIS = \
-        armeabi-v7a \
-        arm64-v8a \
-        x86 \
-        x86_64
-}
+    android/res/xml/filepaths.xml
 
 

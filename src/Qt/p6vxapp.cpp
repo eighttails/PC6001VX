@@ -23,10 +23,6 @@
 #include "keystatewatcher.h"
 #include "p6vxapp.h"
 
-#ifdef Q_OS_ANDROID
-#include <QtAndroid>
-#include "ekkesShare/shareutils.hpp"
-#endif
 
 const QString P6VXApp::keyGeometry				= "window/geometry";
 const QString P6VXApp::keyMaximized				= "window/maximized";
@@ -152,6 +148,8 @@ void P6VXApp::startup()
 #endif
 
 #ifdef Q_OS_ANDROID
+	// #TODO
+#if 0
 	// SDカードへのアクセス許可を要求
 	QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
 	if(r == QtAndroid::PermissionResult::Denied) {
@@ -161,6 +159,7 @@ void P6VXApp::startup()
 			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr, tr("Storage access denied.")).toStdString(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
 		}
 	}
+#endif
 #endif
 
 	// 設定ファイルフォルダの存在チェック&作成
@@ -273,7 +272,9 @@ bool P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, const cha
 
 	dialog->setWindowTitle(title);
 	dialog->setDirectory(pathStr);
+#ifndef Q_OS_ANDROID // Androidでは拡張子フィルタがうまく働かない
 	dialog->setNameFilter(filter);
+#endif
 
 	OSD_ShowCursor(true);
 	if(mode == FM_Save){
@@ -335,7 +336,14 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	Q_ASSERT(view);
 
 #ifdef ALWAYSFULLSCREEN
+#ifdef Q_OS_ANDROID
+	// Androidの場合はshowMaximized()を使わないと正しいサイズで描画されない。
+	// また、画面サイズを明示的に与えないと正しいサイズにならない場合がある。
+	MWidget->showMaximized();
+	MWidget->resize(MWidget->screen()->availableSize());
+#else
 	MWidget->showFullScreen();
+#endif
 #else
 	if (fsflag) {
 		MWidget->setWindowState(MWidget->windowState() | Qt::WindowFullScreen);
@@ -633,7 +641,8 @@ void P6VXApp::exportSavedTape()
 					GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR);
 		return;
 	}
-#ifdef Q_OS_ANDROID
+//#ifdef Q_OS_ANDROID
+#if 0 // 後で対応 #TODO
 	// Androidの場合はインテントで他のアプリに送る
 	ShareUtils util;
 	int req = 0;
@@ -767,7 +776,7 @@ void P6VXApp::executeEmulation()
 	case EL6::Quit:	// 通常起動
 #ifdef AUTOSUSPEND
 		// 自動サスペンド有効時はここでLOAD
-		P6CoreObj->DokoDemoLoad(0);
+		P6CoreObj->UI_DokoLoad(0);
 #endif
 		break;
 	case EL6::Dokoload:	// どこでもLOAD
@@ -828,7 +837,7 @@ void P6VXApp::postExecuteEmulation()
 #ifdef AUTOSUSPEND
 		// 自動サスペンド有効時はここでSAVE
 		if( Restart == EL6::Quit ){
-			P6Core->DokoDemoSave(0);
+			P6Core->UI_DokoSave(0);
 		}
 #endif
 		P6Core->deleteLater();
@@ -1019,13 +1028,14 @@ void P6VXApp::overrideSettings(std::shared_ptr<CFG6>& cfg)
 	P6VPATH str;
 	// 設定のデフォルト値でなく、プラットフォームごとのデータフォルダを探す。
 	// Androidではこの方法でないとSDカードが検出できない場合がある。
-	const auto dataPath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0].toLocal8Bit();
+	std::string dataPath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)[0].toLocal8Bit().data();
+
 	// ROM,TAPE,DISK,拡張ROM,WAVEパスの初期値にはこのデータフォルダを設定する。
-	if(P6VPATH2QSTR(cfg->GetValue(CF_RomPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_RomPath, dataPath);
-	if(P6VPATH2QSTR(cfg->GetValue(CF_TapePath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_TapePath, dataPath);
-	if(P6VPATH2QSTR(cfg->GetValue(CF_DiskPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_DiskPath, dataPath);
-	if(P6VPATH2QSTR(cfg->GetValue(CF_ExtRomPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_ExtRomPath, dataPath);
-	if(P6VPATH2QSTR(cfg->GetValue(CF_WavePath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_WavePath, dataPath);
+	if(P6VPATH2QSTR(cfg->GetValue(CF_RomPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_RomPath, STR2P6VPATH(dataPath));
+	if(P6VPATH2QSTR(cfg->GetValue(CF_TapePath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_TapePath, STR2P6VPATH(dataPath));
+	if(P6VPATH2QSTR(cfg->GetValue(CF_DiskPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_DiskPath, STR2P6VPATH(dataPath));
+	if(P6VPATH2QSTR(cfg->GetValue(CF_ExtRomPath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_ExtRomPath, STR2P6VPATH(dataPath));
+	if(P6VPATH2QSTR(cfg->GetValue(CF_WavePath)).contains(P6VPATH2QSTR(OSD_GetConfigPath()))) cfg->SetValue(CF_WavePath, STR2P6VPATH(dataPath));
 
 	// AndroidではSDカードにファイルを書き出せないため、
 	// SnapshotおよびどこでもSAVEはアプリ内のサンドボックス領域に固定する。
@@ -1054,33 +1064,10 @@ QFileDialog *P6VXApp::createFileDialog(void *hwnd)
 	QWidget* parent = reinterpret_cast<QWidget*>(hwnd);
 	auto dialog = new QFileDialog(parent);
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
-	// Androidのネイティブファイルダイアログが動かないための暫定措置
 	// https://bugreports.qt.io/browse/QTBUG-77214
-	if (isPlatform("xcb") || isPlatform("android")){
+	if (isPlatform("xcb")){
 		dialog->setOptions(QFileDialog::DontUseNativeDialog);
 	}
-
-#ifdef ALWAYSFULLSCREEN
-	dialog->setWindowState(dialog->windowState() | Qt::WindowFullScreen);
-#endif
-#ifdef Q_OS_ANDROID
-	// シングルタップで開くように設定
-	dialog->setStyleSheet(QStringLiteral("QAbstractItemView { activate-on-singleclick: 1; }"));
-	// Androidではローカルストレージのトップフォルダをブックマークさせる。
-	// こうしないとなぜかファイル選択ダイアログにローカルストレージが表示されない。
-	QStringList dataPaths;
-	dataPaths << "/storage";
-	dataPaths << QProcessEnvironment::systemEnvironment().value("EXTERNAL_STORAGE");
-	dataPaths += QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
-	auto sidebarList = dialog->sidebarUrls();
-	foreach (auto path, dataPaths){
-		auto uri = QUrl::fromLocalFile(path);
-		if (!sidebarList.contains(uri) && QFile::exists(path)){
-			sidebarList << uri;
-		}
-	}
-	dialog->setSidebarUrls(sidebarList);
-#endif
 	return dialog;
 }
 
@@ -1172,7 +1159,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 				P6Core->Stop();
 #ifdef AUTOSUSPEND
 				// 自動サスペンド有効時はここでSAVE
-				P6Core->DokoDemoSave(0);
+				P6Core->UI_DokoSave(0);
 #endif
 			}
 		}

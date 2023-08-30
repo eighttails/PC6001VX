@@ -5,6 +5,7 @@
 #include <QMutex>
 #include <QPointer>
 #include <QSettings>
+#include <QApplication>
 
 #include <memory>
 
@@ -16,7 +17,9 @@
 #include "../p6vxcommon.h"
 #include "qtel6.h"
 #include "emulationadaptor.h"
+#ifndef NOSINGLEAPP
 #include "singleapplication.h"
+#endif
 
 #ifdef NOSINGLEAPP
 typedef QApplication ParentAppClass;

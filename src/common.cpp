@@ -3,7 +3,7 @@
 //  Copyright 1999 Yumitaro
 /////////////////////////////////////////////////////////////////////////////
 #include <cctype>
-#include <cstring> 
+#include <cstring>
 #include <algorithm>
 #include <new>
 #include <map>
@@ -47,7 +47,7 @@
 // SJIS -> P6 character set table
 static const std::map<WORD, std::vector<BYTE>> sjisp6tbl =
 {
-	{ 0x8140, { ' ' } },		// 　
+	{ 0x8140, { ' ' } },		//
 	{ 0x8149, { '!' } },		// ！
 	{ 0x8168, { '"' } },		// ”
 	{ 0x8194, { '#' } },		// ＃
@@ -368,7 +368,7 @@ static const std::map<WORD, std::vector<BYTE>> sjisp6tbl =
 bool Sjis2P6( std::string& dstr, const std::string& sstr )
 {
 	WORD w = 0;
-	
+
 	for( auto &c : sstr ){
 		if( w ){
 			w += (BYTE)c;
@@ -409,11 +409,11 @@ int StriCmp( const std::string& s1, const std::string& s2 )
 {
 	std::string str1 = s1;
 	std::string str2 = s2;
-	
+
 	// 小文字化
 	std::transform( str1.begin(), str1.end(), str1.begin(), ::tolower );
 	std::transform( str2.begin(), str2.end(), str2.begin(), ::tolower );
-	
+
 	return str1.compare( str2 );
 }
 
@@ -438,18 +438,18 @@ int StriCmp( const std::string& s1, const std::string& s2 )
 bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const int ww, const int hh, VRect* pos )
 {
 	PRINTD( GRP_LOG, "[COMMON][SaveImgData] -> %s\n", P6VPATH2STR( filepath ).c_str() );
-	
+
 	FILE* fp           = nullptr;
 	png_structp PngPtr = nullptr;
 	png_infop InfoPtr  = nullptr;
 	png_bytepp image   = nullptr;	// image[HEIGHT][WIDTH]の形式
 	VRect rec;
-	
-	
+
+
 	if( !(bpp == 32 || bpp == 24 || bpp == 8 || bpp == 1) ){
 		return false;
 	}
-	
+
 	// 領域設定
 	if( pos ){
 		rec.x = pos->x;	rec.y = pos->y;
@@ -458,21 +458,21 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 		rec.x =     rec.y = 0;
 		rec.w = ww; rec.h = hh;
 	}
-	
+
 	int spit = ( (ww    * bpp + 31 ) / 32 ) * sizeof(DWORD);
 	int dpit = ( (rec.w * bpp + 31 ) / 32 ) * sizeof(DWORD);
-	
-	
+
+
 	// 各構造体を確保・初期化する
 	if( !(PngPtr = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr)) ){
 		return false;
 	}
-	
+
 	if( !(InfoPtr = png_create_info_struct( PngPtr )) ){
 		png_destroy_write_struct( &PngPtr, nullptr );
 		return false;
 	}
-	
+
 	// エラー処理
 	if( setjmp( png_jmpbuf( PngPtr ) ) ){
 		png_destroy_write_struct( &PngPtr, &InfoPtr );
@@ -485,10 +485,10 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 		}
 		return false;
 	}
-	
+
 	// 圧縮率の設定
 	png_set_compression_level( PngPtr, 9 );
-	
+
 	// IHDRチャンク情報を設定する
 	png_set_IHDR( PngPtr, InfoPtr, rec.w, rec.h, bpp == 1 ? 1 : 8,
 					bpp == 1  ? PNG_COLOR_TYPE_GRAY :
@@ -498,7 +498,7 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 					PNG_INTERLACE_NONE,
 					PNG_COMPRESSION_TYPE_DEFAULT,
 					PNG_FILTER_TYPE_DEFAULT );
-	
+
 	if( bpp == 8 ){	// 8bitの場合
 		// パレットを作る
 		png_colorp Palette = (png_colorp)png_malloc( PngPtr, 256 * sizeof(png_color) );
@@ -510,7 +510,7 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 		}
 		png_set_PLTE( PngPtr, InfoPtr, Palette, 256 );
 	}
-	
+
 	// イメージデータを2次元配列に配置する
 	image = (png_bytepp)png_malloc( PngPtr, sizeof(png_bytep) * rec.h );
 	ZeroMemory( image, sizeof(png_bytep) * rec.h );
@@ -520,10 +520,10 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 		std::memcpy( image[i], doff, dpit );
 		doff += spit;
 	}
-	
+
 	// イメージデータをlibpngに知らせる
 	png_set_rows( PngPtr, InfoPtr, image );
-	
+
 	// 画像ファイルを開く
 	if( !(fp = OSD_Fopen( filepath, "wb" )) ){
 		for( int i = 0; i < rec.h; i++ ){
@@ -533,23 +533,23 @@ bool SaveImgData( const P6VPATH& filepath, BYTE* pixels, const int bpp, const in
 		png_destroy_write_struct( &PngPtr, &InfoPtr );
 		return false;
 	}
-	
+
 	// libpngにfpを知らせる
 	png_init_io( PngPtr, fp );
-	
+
 	// 画像データを書込む
 	png_write_png( PngPtr, InfoPtr, PNG_TRANSFORM_IDENTITY, nullptr );
-	
+
 	// 画像ファイルを閉じる
 	fclose( fp );
-	
+
 	// イメージデータを開放する
 	for( int i = 0; i < rec.h; i++ ) delete [] image[i];
 	delete [] image;
-	
+
 	// 2つの構造体のメモリを解放する
 	png_destroy_write_struct( &PngPtr, &InfoPtr );
-	
+
 	return true;
 }
 
@@ -582,7 +582,7 @@ bool SaveImg( const P6VPATH& filepath, VSurface* sur, VRect* pos )
 VSurface* LoadImg( const P6VPATH& filepath )
 {
 	PRINTD( GRP_LOG, "[COMMON][LoadImg] <- %s\n", P6VPATH2STR( filepath ).c_str() );
-	
+
 	FILE* fp           = nullptr;
 	png_structp PngPtr = nullptr;
 	png_infop InfoPtr  = nullptr;
@@ -591,23 +591,23 @@ VSurface* LoadImg( const P6VPATH& filepath )
 	png_byte BitDepth, ColorType, Channels;
 	png_bytep* RowPtrs = nullptr;
 	VSurface* sur      = nullptr;
-	
-	
+
+
 	// 各構造体を確保・初期化する
 	if( !(PngPtr = png_create_read_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr)) ){
 		return nullptr;
 	}
-	
+
 	if( !(InfoPtr = png_create_info_struct( PngPtr )) ){
 		png_destroy_read_struct( &PngPtr, nullptr, nullptr );
 		return nullptr;
 	}
-	
+
 	if( !(EndInfo = png_create_info_struct( PngPtr )) ){
 		png_destroy_read_struct( &PngPtr, &InfoPtr, nullptr );
 		return nullptr;
 	}
-	
+
 	// エラー処理
 	if( setjmp( png_jmpbuf( PngPtr ) ) ){
 		if( fp ){ fclose( fp ); }
@@ -615,19 +615,19 @@ VSurface* LoadImg( const P6VPATH& filepath )
 		if( sur ){ delete sur; }
 		return nullptr;
 	}
-	
+
 	// 画像ファイルを開く
 	if( !(fp = OSD_Fopen( filepath, "rb" )) ){
 		png_destroy_read_struct( &PngPtr, &InfoPtr, &EndInfo );
 		return nullptr;
 	}
-	
+
 	// libpngにfpを知らせる
 	png_init_io( PngPtr, fp );
-	
+
 	// 画像データを読込む
 	png_read_png( PngPtr, InfoPtr, PNG_TRANSFORM_IDENTITY, nullptr );
-	
+
 	// 各種情報抽出
 	RowPtrs   = png_get_rows( PngPtr, InfoPtr );
 	width     = png_get_image_width( PngPtr, InfoPtr );
@@ -635,25 +635,25 @@ VSurface* LoadImg( const P6VPATH& filepath )
 	BitDepth  = png_get_bit_depth( PngPtr, InfoPtr );
 	ColorType = png_get_color_type( PngPtr, InfoPtr );
 	Channels  = png_get_channels( PngPtr, InfoPtr );
-	
-	
+
+
 	// サーフェスを作成
 	sur = new VSurface;
 	sur->InitSurface( width, height );
-	
+
 	// 画像データを取得
 	BYTE* doff  = (BYTE*)sur->GetPixels().data();
-	
+
 	if( Channels == 1 && ( ColorType == PNG_COLOR_TYPE_GRAY || ColorType == PNG_COLOR_TYPE_PALETTE ) &&
 		( BitDepth == 1 || BitDepth == 8 ) ){
 		// GRAY, PALETTE
 		int num_palette;
 		png_colorp palette;
-		
+
 		// パレットがあれば読込む
 		if( ColorType == PNG_COLOR_TYPE_PALETTE )
 			png_get_PLTE( PngPtr, InfoPtr, &palette, &num_palette );
-		
+
 		for( int i = 0; i < (int)height; i++){
 			png_bytep rpt = RowPtrs[i];
 			for( int j = 0; j < (int)width; j++ ){
@@ -673,13 +673,13 @@ VSurface* LoadImg( const P6VPATH& filepath )
 		delete sur;
 		sur = nullptr;
 	}
-	
+
 	// 画像ファイルを閉じる
 	fclose( fp );
-	
+
 	// 各構造体を開放する
 	png_destroy_read_struct( &PngPtr, &InfoPtr, &EndInfo );
-	
+
 	return sur;
 }
 #endif //#if 0
@@ -694,7 +694,7 @@ VSurface* LoadImg( const P6VPATH& filepath )
 static const std::map<TextID, const std::string> MsgString =
 {
 	{ T_EMPTY,					"???" },
-	
+
 	// 一般メッセージ
 	{ T_QUIT,					N_( "終了してよろしいですか?" ) },
 	{ T_QUITC,					N_( "終了確認" ) },
@@ -707,7 +707,7 @@ static const std::map<TextID, const std::string> MsgString =
 	{ T_DOKOC,					N_( "どこでもLOAD確認" ) },
 	{ T_DOKOSLOT,				N_( "どこでもLOADを実行してよろしいですか？" ) },
 	{ T_REPLAYRES,				N_( "リプレイを途中保存地点まで巻き戻します\nよろしいですか？" ) },
-	
+
 	// INIファイル用メッセージ ------
 	{ TINI_TITLE,				"; === PC6001V " N_( "初期設定ファイル" ) " ===\n\n" },
 	// [CONFIG]
@@ -716,7 +716,7 @@ static const std::map<TextID, const std::string> MsgString =
 	{ TINI_CheckCRC,			N_( "CRCチェック" ) " "		N_( "Yes:有効 No:無効" ) },
 	{ TINI_Romaji,				N_( "ローマ字入力" ) " "	N_( "Yes:有効 No:無効") },
 	{ TINI_RomajiWait,			N_( "ローマ字入力ウェイト" ) " (0-60)" },
-	
+
 	// [CMT]
 	{ TINI_TurboTAPE,			N_( "Turbo TAPE" ) " "		N_( "Yes:有効 No:無効" ) },
 	{ TINI_BoostUp,				N_( "Boost Up" ) " "		N_( "Yes:有効 No:無効" ) },
@@ -775,10 +775,10 @@ static const std::map<TextID, const std::string> MsgString =
 	{ TINI_SaveQuit,			N_( "終了時INIファイルを保存" ) " "			N_( "Yes:する No:しない" ) },
 	// [OPTION]
 	{ TINI_ExCartridge,			N_( "拡張カートリッジ 0:なし" ) },
-	
+
 	// どこでもSAVE用メッセージ ------
 	{ TDOK_TITLE,				"; === PC6001V" N_( "どこでもSAVEファイル" ) " ===\n\n" },
-	
+
 	// Error用メッセージ ------
 	{ TERR_ERROR,				N_( "Error" ) },
 	{ TERR_WARNING,				N_( "Warning" ) },
@@ -901,7 +901,7 @@ static const std::map<WORD, const std::string> CartName =
 static const std::map<PCKEYsym, const std::string> VKname =
 {
 	{ KVC_UNKNOWN,		"Unknown" },
-	
+
 	{ KVC_1,			"1" },
 	{ KVC_2,			"2" },
 	{ KVC_3,			"3" },
@@ -912,7 +912,7 @@ static const std::map<PCKEYsym, const std::string> VKname =
 	{ KVC_8,			"8" },
 	{ KVC_9,			"9" },
 	{ KVC_0,			"0" },
-	
+
 	{ KVC_A,			"A" },
 	{ KVC_B,			"B" },
 	{ KVC_C,			"C" },
@@ -939,7 +939,7 @@ static const std::map<PCKEYsym, const std::string> VKname =
 	{ KVC_X,			"X" },
 	{ KVC_Y,			"Y" },
 	{ KVC_Z,			"Z" },
-	
+
 	{ KVC_F1,			"F1" },
 	{ KVC_F2,			"F2" },
 	{ KVC_F3,			"F3" },
@@ -952,7 +952,7 @@ static const std::map<PCKEYsym, const std::string> VKname =
 	{ KVC_F10,			"F10" },
 	{ KVC_F11,			"F11" },
 	{ KVC_F12,			"F12" },
-	
+
 	{ KVC_MINUS,		"-" },
 	{ KVC_CARET,		"^" },
 	{ KVC_BACKSPACE,	"BackSpace" },
@@ -964,7 +964,7 @@ static const std::map<PCKEYsym, const std::string> VKname =
 	{ KVC_PERIOD,		"." },
 	{ KVC_SLASH,		"/" },
 	{ KVC_SPACE,		"Space" },
-	
+
 	{ KVC_ESC,			"ESC" },
 	{ KVC_HANZEN,		N_( "半角/全角" ) },
 	{ KVC_TAB,			"Tab" },
@@ -985,12 +985,12 @@ static const std::map<PCKEYsym, const std::string> VKname =
 	{ KVC_HOME,			"Home" },
 	{ KVC_PAGEUP,		"PageUp" },
 	{ KVC_PAGEDOWN,		"PageDown" },
-	
+
 	{ KVC_UP,			"↑" },
 	{ KVC_DOWN,			"↓" },
 	{ KVC_LEFT,			"←" },
 	{ KVC_RIGHT,		"→" },
-	
+
 	{ KVC_P0,			"0(Numeric key)" },
 	{ KVC_P1,			"1(Numeric key)" },
 	{ KVC_P2,			"2(Numeric key)" },
@@ -1008,7 +1008,7 @@ static const std::map<PCKEYsym, const std::string> VKname =
 	{ KVC_P_DIVIDE,		"/(Numeric key)" },
 	{ KVC_P_PERIOD,		".(Numeric key)" },
 	{ KVC_P_ENTER,		"Enter(Numeric key)" },
-	
+
 	// 日本語キーボードのみ
 	{ KVC_YEN,			"\\" },
 	{ KVC_RBRACKET,		"]" },
@@ -1016,10 +1016,10 @@ static const std::map<PCKEYsym, const std::string> VKname =
 	{ KVC_MUHENKAN,		N_( "無変換" ) },
 	{ KVC_HENKAN,		N_( "変換" ) },
 	{ KVC_HIRAGANA,		N_( "カタカナ/ひらがな" ) },
-	
+
 	// 英語キーボードのみ
 	{ KVE_BACKSLASH,	"BackSlash" },
-	
+
 	// 追加キー
 	{ KVX_RMETA,		"L-Windows" },
 	{ KVX_LMETA,		"R-Windows" },
@@ -1033,7 +1033,7 @@ static const std::map<PCKEYsym, const std::string> VKname =
 static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 {
 	{ KVC_UNKNOWN,		{ 0,	0    } },
-	
+
 	{ KVC_1,			{ '1',	'!'  } },
 	{ KVC_2,			{ '2',	'\"' } },
 	{ KVC_3,			{ '3',	'#'  } },
@@ -1044,7 +1044,7 @@ static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 	{ KVC_8,			{ '8',	'('  } },
 	{ KVC_9,			{ '9',	')'  } },
 	{ KVC_0,			{ '0',	0    } },
-	
+
 	{ KVC_A,			{ 'a',	'A'  } },
 	{ KVC_B,			{ 'b',	'B'  } },
 	{ KVC_C,			{ 'c',	'C'  } },
@@ -1071,7 +1071,7 @@ static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 	{ KVC_X,			{ 'x',	'X'  } },
 	{ KVC_Y,			{ 'y',	'Y'  } },
 	{ KVC_Z,			{ 'z',	'Z'  } },
-	
+
 	{ KVC_F1,			{ 0,	0    } },	// F1
 	{ KVC_F2,			{ 0,	0    } },	// F2
 	{ KVC_F3,			{ 0,	0    } },	// F3
@@ -1084,7 +1084,7 @@ static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 	{ KVC_F10,			{ 0,	0    } },	// F10
 	{ KVC_F11,			{ 0,	0    } },	// F11
 	{ KVC_F12,			{ 0,	0    } },	// F12
-	
+
 	{ KVC_MINUS,		{ '-',	'='  } },
 	{ KVC_CARET,		{ '^',	'~'  } },
 	{ KVC_AT,			{ '@',	'`'  } },
@@ -1096,7 +1096,7 @@ static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 	{ KVC_PERIOD,		{ '.',	'>'  } },
 	{ KVC_SLASH,		{ '/',	'?'  } },
 	{ KVC_SPACE,		{ ' ',	' '  } },
-	
+
 	{ KVC_BACKSPACE,	{ 0,	0    } },	// BackSpace
 	{ KVC_ESC,			{ 0,	0    } },	// ESC
 	{ KVC_TAB,			{ 0,	0    } },	// Tab
@@ -1117,12 +1117,12 @@ static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 	{ KVC_HOME,			{ 0,	0    } },	// Home
 	{ KVC_PAGEUP,		{ 0,	0    } },	// PageUp
 	{ KVC_PAGEDOWN,		{ 0,	0    } },	// PageDown
-	
+
 	{ KVC_UP,			{ 0,	0    } },	// ↑
 	{ KVC_DOWN,			{ 0,	0    } },	// ↓
 	{ KVC_LEFT,			{ 0,	0    } },	// ←
 	{ KVC_RIGHT,		{ 0,	0    } },	// →
-	
+
 	{ KVC_P0,			{ '0',	0    } },	// [0]
 	{ KVC_P1,			{ '1',	0    } },	// [1]
 	{ KVC_P2,			{ '2',	0    } },	// [2]
@@ -1140,7 +1140,7 @@ static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 	{ KVC_P_PERIOD,		{ '.',	'.'  } },	// [.]
 	{ KVC_NUMLOCK,		{ 0,	0    } },	// NumLock
 	{ KVC_P_ENTER,		{ 0,	0    } },	// [Enter]
-	
+
 	//
 	{ KVC_UNDERSCORE,	{ '\\',	'_'  } },
 	{ KVC_YEN,			{ '\\',	'|'  } },
@@ -1148,7 +1148,7 @@ static const std::map<PCKEYsym, const std::vector<BYTE>> VKChar =
 	{ KVC_HENKAN,		{ 0,	0    } },	// 変換
 	{ KVC_MUHENKAN,		{ 0,	0    } },	// 無変換
 	{ KVC_HANZEN,		{ 0,	0    } },	// 半角/全角
-	
+
 	//
 	{ KVX_LMETA,		{ 0,	0    } },	// L-Meta
 	{ KVX_RMETA,		{ 0,	0    } },	// R-Meta

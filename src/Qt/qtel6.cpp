@@ -181,7 +181,12 @@ void EL6::ExecMenu( int id )
 	{
 		auto&& dialog = SystemInfoDialog(reinterpret_cast<RenderView*>(graph->GetWindowHandle()));
 #ifdef ALWAYSFULLSCREEN
+#ifdef Q_OS_ANDROID
+		// Androidの場合はQt::WindowMaximizedを使わないと正しいサイズで描画されない。
+		dialog.setWindowState(Qt::WindowMaximized);
+#else
 		dialog.setWindowState(Qt::WindowFullScreen);
+#endif
 #endif
 		dialog.exec();
 		break;
@@ -572,7 +577,11 @@ std::shared_ptr<KEY6> QtEL6::GetKeyboard()
 
 bool QtEL6::IsMonitor()
 {
+#ifndef NOMONITOR
 	return vm->IsMonitor();
+#else
+	return false;
+#endif
 }
 
 void QtEL6::SetPaletteTable(QVector<QRgb> &palette, int scanbr)
@@ -600,5 +609,15 @@ void QtEL6::SetPaletteTable(QVector<QRgb> &palette, int scanbr)
 							  brRate * col.b);
 		}
 	}
+}
+
+void QtEL6::UI_DokoSave(int slot)
+{
+	EL6::UI_DokoSave(slot);
+}
+
+void QtEL6::UI_DokoLoad(int slot, bool ask)
+{
+	EL6::UI_DokoLoad(slot, ask);
 }
 

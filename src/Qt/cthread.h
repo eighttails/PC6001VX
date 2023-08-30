@@ -8,7 +8,6 @@
 #define CTHREAD_H_
 
 #include "typedef.h"
-#include "semaphore.h"
 #include <QMutex>
 
 class cThread {

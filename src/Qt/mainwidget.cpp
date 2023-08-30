@@ -78,9 +78,7 @@ void MainWidget::updateLayout()
 
 void MainWidget::adjustSizeToChild(QSize size)
 {
-#ifndef ALWAYSFULLSCREEN
 	setGeometry(x(), y(), size.width(), size.height() * (VKeyWidget->isVisible() ? 2 : 1));
-#endif
 }
 
 void MainWidget::toggleVirtualKeyboard()

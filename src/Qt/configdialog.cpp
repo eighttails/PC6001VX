@@ -349,7 +349,8 @@ void ConfigDialog::readConfig()
 	warnFileOrFolderNotExist(ui->lineEditFolderDokoSave);
 
 #ifdef Q_OS_ANDROID
-	// AndroidではTAPE(SAVE)とプリンタファイル、IMGパスとどこでもSAVEパスを編集不可にする。
+	// AndroidではTAPE(SAVE)とプリンタファイル、
+	// TAPE,DISK,EXTROM,IMG,SAVEパスを編集不可にする。
 	ui->labelSaveTape->setVisible(false);
 	ui->lineEditSaveTape->setVisible(false);
 	ui->pushButtonClearSaveTape->setVisible(false);
@@ -359,6 +360,21 @@ void ConfigDialog::readConfig()
 	ui->lineEditPrinter->setVisible(false);
 	ui->pushButtonClearPrinter->setVisible(false);
 	ui->pushButtonRefPrinter->setVisible(false);
+
+	ui->labelFolderTape->setVisible(false);
+	ui->lineEditFolderTape->setVisible(false);
+	ui->pushButtonClearFolderTape->setVisible(false);
+	ui->pushButtonRefFolderTape->setVisible(false);
+
+	ui->labelFolderDisk->setVisible(false);
+	ui->lineEditFolderDisk->setVisible(false);
+	ui->pushButtonClearFolderDisk->setVisible(false);
+	ui->pushButtonRefFolderDisk->setVisible(false);
+
+	ui->labelFolderExtRom->setVisible(false);
+	ui->lineEditFolderExtRom->setVisible(false);
+	ui->pushButtonClearFolderExtRom->setVisible(false);
+	ui->pushButtonRefFolderExtRom->setVisible(false);
 
 	ui->labelFolderImg->setVisible(false);
 	ui->lineEditFolderImg->setVisible(false);

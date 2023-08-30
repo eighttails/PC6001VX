@@ -18,6 +18,10 @@ public:
 	std::shared_ptr<KEY6> GetKeyboard();
 	bool IsMonitor();
 	void SetPaletteTable(QVector<QRgb>& palette, int scanbr);
+
+	// 親クラスのメソッドをpublicでオーバーライド
+	void UI_DokoSave( int slot );
+	void UI_DokoLoad( int slot, bool ask = false );
 public slots:
 	void UpdateFPS();
 };

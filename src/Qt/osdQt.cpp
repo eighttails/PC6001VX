@@ -386,7 +386,14 @@ const P6VPATH& OSD_GetConfigPath()
 void OSD_AddDelimiter( P6VPATH& path )
 {
 	QString qPath = P6VPATH2QSTR(path);
-	if (!qPath.endsWith('/') && !qPath.endsWith(QDir::separator())){
+	if (qPath.startsWith("content:")){
+		// Content URIにおけるデリミタは%2Fとなる(OSのパスデリミタとは別)
+		if (!qPath.endsWith("%2F")){
+			qPath += "%2F";
+		}
+		path = QSTR2P6VPATH(qPath);
+		return;
+	} else if (!qPath.endsWith('/') && !qPath.endsWith(QDir::separator())){
 		qPath += QDir::separator();
 	}
 	path = QSTR2P6VPATH(QDir::toNativeSeparators(qPath));
@@ -402,7 +409,14 @@ void OSD_AddDelimiter( P6VPATH& path )
 void OSD_DelDelimiter( P6VPATH& path )
 {
 	QString qPath = P6VPATH2QSTR(path);
-	if (qPath.endsWith('/') || qPath.endsWith(QDir::separator())){
+	if (qPath.startsWith("content:")){
+		// Content URIにおけるデリミタは%2Fとなる(OSのパスデリミタとは別)
+		if (qPath.endsWith("%2F")){
+			qPath.truncate(qPath.length() - 3);
+			path = QSTR2P6VPATH(qPath);
+			return;
+		}
+	} else if (qPath.endsWith('/') || qPath.endsWith(QDir::separator())){
 		qPath.truncate(qPath.length() - 1);
 	}
 	path = QSTR2P6VPATH(QDir::toNativeSeparators(qPath));
@@ -439,7 +453,7 @@ void OSD_RelativePath( P6VPATH& path )
 void OSD_AbsolutePath( P6VPATH& path )
 {
 	QString qPath = P6VPATH2QSTR(path);
-	if( !QDir( qPath ).isRelative() || qPath.isEmpty() ) return;
+	if( !QDir( qPath ).isRelative() || qPath.isEmpty() || qPath.startsWith("content:") ) return;
 	QDir dir(P6VPATH2QSTR(OSD_GetConfigPath()));
 	path = QSTR2P6VPATH(QDir::toNativeSeparators(QDir::cleanPath(dir.absoluteFilePath(qPath))));
 }
@@ -456,10 +470,32 @@ void OSD_AbsolutePath( P6VPATH& path )
 void OSD_AddPath( P6VPATH& cpath, const P6VPATH& path1, const P6VPATH& path2 )
 {
 	QDir dir(P6VPATH2QSTR(path1));
-	QString path = QDir::cleanPath(dir.filePath(P6VPATH2QSTR(path2)));
-	if (!path.startsWith(":")) {
-		path = QDir::toNativeSeparators(path);
+	auto qPath1 = P6VPATH2QSTR(path1);
+	auto qPath2 = P6VPATH2QSTR(path2);
+	QString path;
+	qDebug()<<"before " << qPath1 << qPath2 ;
+	if (qPath1.startsWith("content:")){
+		if (qPath2.contains("*")){
+			// Content URI におけるデリミタは%2Fとなる(OSのパスデリミタとは別)
+			path = qPath1 + qPath2;
+		} else {
+			// ディレクトリ選択で取得した URI 内のファイルパスは
+			// content://com.android.externalstorage.documents/tree/primary: + フォルダパス + document/primary: + ファイルパス になる。
+			QString mPath = qPath1;
+			if (qPath1.endsWith("%2F")){
+				qPath1.chop(3);
+			}
+			mPath.replace("content://com.android.externalstorage.documents/tree/primary%3A", "/document/primary%3A");
+			path += qPath1 + mPath + "%2F" + qPath2;
+		}
+	} else {
+		path = QDir::cleanPath(dir.filePath(P6VPATH2QSTR(path2)));
+		if (!path.startsWith(":")) {
+			path = QDir::toNativeSeparators(path);
+		}
 	}
+	qDebug()<<"after " << path ;
+
 	cpath = QSTR2P6VPATH(path);
 }
 
@@ -541,10 +577,18 @@ FILE* OSD_Fopen( const P6VPATH& path, const std::string& mode )
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_Fopen] %s(%s) ", P6VPATH2STR( path ).c_str(), mode.c_str() );
 	QString strFileName = P6VPATH2QSTR(path);
-
 	if (strFileName.startsWith(":")){
-		// リソース内のファイルはテンポラリファイルとして作成
-		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(strFileName);
+		auto file = QFile(strFileName);
+		// リソース内のファイルはテンポラリファイルとしてコピーを作成
+		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(file);
+		tempFile->setAutoRemove(true);
+		// アプリ終了時に削除されるように設定
+		tempFile->setParent(qApp);
+		return fopen(tempFile->fileName().toLocal8Bit(), mode.c_str());
+	} else if (strFileName.contains("content:")){
+		auto file = QFile(strFileName);
+		// Androidの外部ストレージ内のファイルはテンポラリファイルとしてコピーを作成
+		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(file);
 		tempFile->setAutoRemove(true);
 		// アプリ終了時に削除されるように設定
 		tempFile->setParent(qApp);
@@ -567,10 +611,22 @@ bool OSD_FSopen( std::fstream& fs, const P6VPATH& path, const std::ios_base::ope
 {
 	PRINTD( OSD_LOG, "[OSD][OSD_FSopen] %s\n", P6VPATH2STR( path ).c_str() );
 	QString strFileName = P6VPATH2QSTR(path);
+	qDebug() << "OSD_FSopen" << path ;
 
 	if (strFileName.startsWith(":")){
-		// リソース内のファイルはテンポラリファイルとして作成
-		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(strFileName);
+		auto file = QFile(strFileName);
+		if (!file.exists() && (mode | std::ios_base::in)) return false;
+		// リソース内のファイルはテンポラリファイルとしてコピーを作成
+		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(file);
+		tempFile->setAutoRemove(true);
+		// アプリ終了時に削除されるように設定
+		tempFile->setParent(qApp);
+		fs.open( tempFile->fileName().toLocal8Bit(), mode );
+	} else if (strFileName.contains("content:")){
+		auto file = QFile(strFileName);
+		if (!file.exists() && (mode | std::ios_base::in)) return false;
+		// Androidの外部ストレージ内のファイルはテンポラリファイルとしてコピーを作成
+		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(file);
 		tempFile->setAutoRemove(true);
 		// アプリ終了時に削除されるように設定
 		tempFile->setParent(qApp);
@@ -621,13 +677,22 @@ bool OSD_FileExist( const P6VPATH& fullpath )
 
 	// ワイルドカードを含む場合
 	if (pathString.contains("*")){
-		QFileInfo info(pathString);
-
-		QDir dir = info.absoluteDir();
-		QFile file(pathString);
-		QString wildcard = info.fileName();
-
-		QFileInfoList list = dir.entryInfoList(QStringList(wildcard), QDir::Files);
+		QFileInfoList list;
+		if (pathString.startsWith("content:")){
+			// ファイル名からフォルダ名を取り出す場合 document -> tree の変換が必要
+			auto dir = QDir(pathString.section("%2F", 0, -2).replace(
+				"com.android.externalstorage.documents/document/",
+				"com.android.externalstorage.documents/tree/"));
+			auto wildcard = pathString.section("%2F", -1, -1);
+			qDebug() << "OSD_FileExist" << pathString << dir << wildcard;
+			list = dir.entryInfoList(QStringList(wildcard), QDir::Files);
+			qDebug() << list;
+		} else {
+			QFileInfo info(pathString);
+			QDir dir = info.absoluteDir();
+			QString wildcard = info.fileName();
+			list = dir.entryInfoList(QStringList(wildcard), QDir::Files);
+		}
 		if (list.empty()){
 			qDebug() << pathString << " does not exist.";
 		}
@@ -697,19 +762,30 @@ bool OSD_FindFile( const P6VPATH& path, const P6VPATH& file, std::vector<P6VPATH
 {
 	std::string sfile = QString::fromStdString(OSD_GetFileNamePart( file )).toLocal8Bit().toStdString();
 	std::transform( sfile.begin(), sfile.end(), sfile.begin(), ::tolower );	// 小文字
+	qDebug() << "OSD_FindFile " << path << file;
+	auto qPath = P6VPATH2QSTR(path);
+	if (qPath.startsWith("content:")){
+		P6VPATH filePath;
+		OSD_AddPath(filePath, path, file);
+		qDebug() << "OSD_FindFile " << filePath << "challenge";
+		if (QFileInfo(P6VPATH2QSTR(filePath)).exists()){
+			qDebug() << "OSD_FindFile " << filePath << "found";
+			files.push_back(filePath);
+		}
+	} else {
+		QDirIterator it(qPath,  QDir::Files, QDirIterator::FollowSymlinks);
+		while (it.hasNext()) {
+			it.next();
+			// パスからファイル名を抽出し、小文字に変換
+			std::string tfile = it.fileName().toLower().toLocal8Bit().toStdString();
 
-	QDirIterator it(P6VPATH2QSTR(path),  QDir::Files, QDirIterator::FollowSymlinks);
-	while (it.hasNext()) {
-		it.next();
-		// パスからファイル名を抽出し、小文字に変換
-		std::string tfile = it.fileName().toLower().toLocal8Bit().toStdString();
-
-		// ファイル名比較。
-		if (sfile == tfile){
-			// ファイル名一致＆サイズ一致してたら結果に登録
-			QFileInfo info(it.filePath());
-			if (size_t(info.size()) == size){
-				files.push_back(QSTR2P6VPATH(it.filePath()));
+				   // ファイル名比較。
+			if (sfile == tfile){
+				// ファイル名一致＆サイズ一致してたら結果に登録
+				QFileInfo info(it.filePath());
+				if (size_t(info.size()) == size){
+					files.push_back(QSTR2P6VPATH(it.filePath()));
+				}
 			}
 		}
 	}
@@ -801,7 +877,7 @@ bool OSD_FileSelect( HWINDOW hwnd, FileDlg type, P6VPATH& fullpath, P6VPATH& pat
 	case FD_Disk:		// DISK選択
 		mode   = FM_Load;
 		title  = QT_TRANSLATE_NOOP("PC6001VX", "DISKイメージ選択");
-		filter = QT_TRANSLATE_NOOP("PC6001VX", "DISKイメージ(*.d88);;"
+		filter = QT_TRANSLATE_NOOP("PC6001VX", "DISKイメージ (*.d88);;"
 											   "D88形式 (*.d88);;"
 											   "全てのファイル (*.*)");
 		ext    = EXT_DISK;
@@ -1758,7 +1834,12 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 
 		ConfigDialog dialog(ecfg);
 #ifdef ALWAYSFULLSCREEN
+#ifdef Q_OS_ANDROID
+		// Androidの場合はQt::WindowMaximizedを使わないと正しいサイズで描画されない。
+		dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
+#else
 		dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
+#endif
 #endif
 		dialog.exec();
 		int ret = dialog.result();

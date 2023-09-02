@@ -473,7 +473,6 @@ void OSD_AddPath( P6VPATH& cpath, const P6VPATH& path1, const P6VPATH& path2 )
 	auto qPath1 = P6VPATH2QSTR(path1);
 	auto qPath2 = P6VPATH2QSTR(path2);
 	QString path;
-	qDebug()<<"before " << qPath1 << qPath2 ;
 	if (qPath1.startsWith("content:")){
 		if (qPath2.contains("*")){
 			// Content URI におけるデリミタは%2Fとなる(OSのパスデリミタとは別)
@@ -494,8 +493,6 @@ void OSD_AddPath( P6VPATH& cpath, const P6VPATH& path1, const P6VPATH& path2 )
 			path = QDir::toNativeSeparators(path);
 		}
 	}
-	qDebug()<<"after " << path ;
-
 	cpath = QSTR2P6VPATH(path);
 }
 
@@ -684,9 +681,7 @@ bool OSD_FileExist( const P6VPATH& fullpath )
 				"com.android.externalstorage.documents/document/",
 				"com.android.externalstorage.documents/tree/"));
 			auto wildcard = pathString.section("%2F", -1, -1);
-			qDebug() << "OSD_FileExist" << pathString << dir << wildcard;
 			list = dir.entryInfoList(QStringList(wildcard), QDir::Files);
-			qDebug() << list;
 		} else {
 			QFileInfo info(pathString);
 			QDir dir = info.absoluteDir();
@@ -762,14 +757,11 @@ bool OSD_FindFile( const P6VPATH& path, const P6VPATH& file, std::vector<P6VPATH
 {
 	std::string sfile = QString::fromStdString(OSD_GetFileNamePart( file )).toLocal8Bit().toStdString();
 	std::transform( sfile.begin(), sfile.end(), sfile.begin(), ::tolower );	// 小文字
-	qDebug() << "OSD_FindFile " << path << file;
 	auto qPath = P6VPATH2QSTR(path);
 	if (qPath.startsWith("content:")){
 		P6VPATH filePath;
 		OSD_AddPath(filePath, path, file);
-		qDebug() << "OSD_FindFile " << filePath << "challenge";
 		if (QFileInfo(P6VPATH2QSTR(filePath)).exists()){
-			qDebug() << "OSD_FindFile " << filePath << "found";
 			files.push_back(filePath);
 		}
 	} else {

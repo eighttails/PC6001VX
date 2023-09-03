@@ -297,8 +297,10 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(speedMenu, tr("300%"), ID_SPEED300);
 	addCommand(speedMenu, tr("速度を指定..."), ID_SPEEDMANUAL);
 	systemMenu->addSeparator();
+#ifndef Q_OS_ANDROID
 	addCommand(systemMenu, tr("スナップショットを取得"), ID_SNAPSHOT);
 	systemMenu->addSeparator();
+#endif
 
 	// どこでもLOAD,SAVEメニュー
 	QMenu* dokoLoadMenu = systemMenu->addMenu(tr("どこでもLOAD"));
@@ -369,7 +371,9 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	addCommand(tapeMenu, tr("挿入..."), ID_TAPEINSERT);
 	QAction* tapeEject = addCommand(tapeMenu, tr("取出"), ID_TAPEEJECT);
 	if(P6VPATH2QSTR(vm->cmtl->GetFile()).isEmpty()) tapeEject->setEnabled(false);
+#ifndef Q_OS_ANDROID
 	addCommand(tapeMenu, tr("TAPE(SAVE)をエクスポート..."), ID_TAPEEXPORT);
+#endif
 
 	// DISKメニュー
 	if (vm->disk->GetDrives()){

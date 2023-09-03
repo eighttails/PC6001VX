@@ -42,7 +42,7 @@
 #define	DEFAULT_TAPEVOL			(10)				// TAPEモニタ音量
 #define	DEFAULT_TAPELPF			(1540)				// TAPE LPFカットオフ周波数(0で無効)
 #define	DEFAULT_TURBO			(true)				// Turbo TAPE Yes:有効 No:無効
-#define	DEFAULT_BOOST			(false)				// BoostUp Yes:有効 No:無効
+#define	DEFAULT_BOOST			(true)				// BoostUp Yes:有効 No:無効
 #define DEFAULT_MAXBOOST60		(7)					// BoostUp最大倍率(N60モード)
 #define DEFAULT_MAXBOOST62		(5)					// BoostUp最大倍率(N60m/N66モード)
 #define	DEFAULT_BAUD			(1200)				// CMTボーレート

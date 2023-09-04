@@ -279,7 +279,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
 
 	// システムメニュー
 	QMenu* systemMenu = menu.addMenu(tr("システム"));
-	menu.addSeparator();
 	addCommand(systemMenu, tr("リセット"), ID_RESET);
 	addCommand(systemMenu, tr("再起動"), ID_RESTART);
 	systemMenu->addSeparator();

@@ -777,8 +777,10 @@ void P6VXApp::executeEmulation()
 #ifdef AUTOSUSPEND
 		// 自動サスペンド有効時はここでLOAD
 		P6CoreObj->UI_DokoLoad(0);
-#endif
+		[[fallthrough]];
+#else
 		break;
+#endif
 	case EL6::Dokoload:	// どこでもLOAD
 		if( !P6CoreObj->DokoDemoLoad( Cfg->GetDokoFile() ) ){
 			// 失敗した場合

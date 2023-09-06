@@ -479,12 +479,12 @@ void OSD_AddPath( P6VPATH& cpath, const P6VPATH& path1, const P6VPATH& path2 )
 			path = qPath1 + qPath2;
 		} else {
 			// ディレクトリ選択で取得した URI 内のファイルパスは
-			// content://com.android.externalstorage.documents/tree/primary: + フォルダパス + document/primary: + ファイルパス になる。
+			// content://com.android.externalstorage.documents/tree/(primary or SDCard ID): + フォルダパス + /document/(primary or SDCard ID): + ファイルパス になる。
 			QString mPath = qPath1;
 			if (qPath1.endsWith("%2F")){
 				qPath1.chop(3);
 			}
-			mPath.replace("content://com.android.externalstorage.documents/tree/primary%3A", "/document/primary%3A");
+			mPath.replace("content://com.android.externalstorage.documents/tree/", "/document/");
 			path += qPath1 + mPath + "%2F" + qPath2;
 		}
 	} else {

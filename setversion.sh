@@ -41,5 +41,5 @@ $PERL -pi -e "s/(#define\tVERSION)(.*)/\$1\t\t\t\t\t\"$FULLVER\"/" "$SCRIPT_DIR/
 $PERL -pi -e "s/(android:versionName=)\"([^\"]+)\"/\$1\"$FULLVER\"/" "$SCRIPT_DIR/android/AndroidManifest.xml"
 
 #proファイル
-$PERL -pi -e "s/(VERSION =)(.*)/\$1 $NUMVER/" "$SCRIPT_DIR/PC6001VX.pro"
+$PERL -pi -e "s/^(VERSION =)(.*)/\$1 $NUMVER/" "$SCRIPT_DIR/PC6001VX.pro"
 

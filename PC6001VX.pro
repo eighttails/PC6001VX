@@ -8,7 +8,7 @@ QT += core gui widgets network core5compat
 
 TARGET = PC6001VX
 TEMPLATE = app
-VERSION = 4.1.4
+VERSION = 4.2.0
 
 QMAKE_TARGET_COMPANY = eighttails
 QMAKE_TARGET_DESCRIPTION = PC6001VX
@@ -63,7 +63,7 @@ INCLUDEPATH += src src/Qt
 unix:!macx {
     #Configuration for Android
     android {
-        ANDROID_TARGET_SDK_VERSION = 33
+        ANDROID_TARGET_SDK_VERSION = 4.2.0
         DEFINES += NOLIBINTL NOSINGLEAPP NOMONITOR NOAVI ALWAYSFULLSCREEN AUTOSUSPEND
         DEFINES -= QT_NO_DEBUG_OUTPUT USEFILESYSTEM
         #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"

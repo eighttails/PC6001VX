@@ -790,11 +790,9 @@ Qt 6.5.0以上が必要です。
 .git master
 * (Android)Android13に対応
 ** 制約事項
-*** 日本語を含むファイル、フォルダを開けません。
 *** スナップショット、テープのエクスポート機能が正常に機能しません。
 * (Android)Now works on Android13.
 ** Known Issues
-*** Cannot open file with non-ascii filename.
 *** Snapshot and Export tape function doesn't work.
 
 

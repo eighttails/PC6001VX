@@ -24,8 +24,6 @@ int main( int argc, char *argv[] )
 	app.enableSafeMode(safeMode);
 
 #ifdef Q_OS_ANDROID
-	// AndroidではFusion以外のスタイルでは表示が崩れるので明示的に指定する。
-	app.setStyle(QStyleFactory::create("Fusion"));
 	app.setCustomRomPath(CUSTOMROMPATH);
 #endif
 
@@ -44,9 +42,8 @@ int main( int argc, char *argv[] )
 		}
 	} else {
 #ifdef Q_OS_ANDROID
-		QFontDatabase database;
 		// 日本語に対応したフォントを検索
-		auto list = database.families(QFontDatabase::Japanese);
+		auto list = QFontDatabase::families(QFontDatabase::Japanese);
 		QString family;
 		if(!list.isEmpty()){
 			for (auto& f : list){

@@ -620,7 +620,7 @@ bool OSD_FSopen( std::fstream& fs, const P6VPATH& path, const std::ios_base::ope
 		tempFile->setParent(qApp);
 		fs.open( tempFile->fileName().toLocal8Bit(), mode );
 	} else if (strFileName.contains("content:")){
-		auto file = QFile(strFileName);
+		auto file = QFile(EncodeContentURI(strFileName));
 		if (!file.exists() && (mode | std::ios_base::in)) return false;
 		// Androidの外部ストレージ内のファイルはテンポラリファイルとしてコピーを作成
 		QTemporaryFile* tempFile = QTemporaryFile::createNativeFile(file);

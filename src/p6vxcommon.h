@@ -45,4 +45,7 @@ Q_DECLARE_METATYPE(TiltDirection)
 void TiltScreen(TiltDirection dir);
 void UpdateTilt();
 
+// Android用ファイル名エンコーディング
+QString EncodeContentURI(const QString& uri);
+
 #endif // P6VXCOMMON_H

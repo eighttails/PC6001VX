@@ -305,8 +305,8 @@ bool P6VXApp::fileDialog(void *hwnd, FileMode mode, const char *title, const cha
 
 	QDir dir(result);
 
-	if( path ) strcpy( path, dir.path().toUtf8().constData() );
-	if( fullpath ) strcpy( fullpath, result.toUtf8().constData() );
+	if( path ) strcpy( path, EncodeContentURI(dir.path()).toUtf8().constData() );
+	if( fullpath ) strcpy( fullpath, EncodeContentURI(result).toUtf8().constData() );
 	QFile file(result);
 	return true;
 }
@@ -321,7 +321,7 @@ bool P6VXApp::folderDialog(void *hwnd, char *Result)
 	QByteArray result;
 	OSD_ShowCursor(true);
 	if (dialog->exec() == QDialog::Accepted) {
-		result = dialog->selectedFiles().value(0).toUtf8();
+		result = EncodeContentURI(dialog->selectedFiles().value(0)).toUtf8();
 	} else {
 		return false;
 	}

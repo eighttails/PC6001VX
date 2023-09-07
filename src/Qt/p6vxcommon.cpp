@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QFile>
 #include <QDateTime>
+#include <QUrl>
 
 extern QVector<QRgb> PaletteTable;              // パレットテーブル
 
@@ -176,5 +177,29 @@ void UpdateTilt()
 	case NEWTRAL:
 		app->setTiltStep(t == 0 ? 0 : t > 0 ? t - 1 : t + 1);
 	default:;
+	}
+}
+
+QString EncodeContentURI(const QString &uri)
+{
+	if (uri.startsWith("content:")){
+		// AndroidのContentURIの日本語部分をURLエンコードする
+		qDebug() << "       URI" << uri;
+		auto parts = uri.split("%3A");
+		QStringList encodedParts;
+		for (auto s : parts){
+			auto subParts = s.split("%");
+			QStringList encodedSubParts;
+			for ( auto ss : subParts){
+				encodedSubParts.append(QUrl::toPercentEncoding(ss, ":/"));
+			}
+			encodedParts.append(encodedSubParts.join("%"));
+		}
+		auto encodedURI = encodedParts.join("%3A");
+		qDebug() << "encodedURI" << encodedURI;
+		return encodedURI;
+	} else {
+		// ContentURIでないものはそのまま返す
+		return uri;
 	}
 }

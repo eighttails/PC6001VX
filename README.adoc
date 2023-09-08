@@ -783,18 +783,18 @@ Qt 6.5.0以上が必要です。
 
 == 既知の不具合、制約事項
 * Android
-** 日本語を含むファイル、フォルダを開けません。
 ** スナップショット、テープのエクスポート機能が正常に機能しません。
 
 == 更新履歴
-.git master
+.4.2.0 2023/09/08
 * (Android)Android13に対応
 ** 制約事項
 *** スナップショット、テープのエクスポート機能が正常に機能しません。
+*** メニューのテキストの一部が中略されて表示されています。
 * (Android)Now works on Android13.
 ** Known Issues
 *** Snapshot and Export tape function doesn't work.
-
+*** Some menu text is shown omitted.
 
 .4.1.4 2023/08/18
 * PC6001V 2.1.1ベースに更新

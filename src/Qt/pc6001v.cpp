@@ -23,10 +23,6 @@ int main( int argc, char *argv[] )
 	bool safeMode = parser.isSet(safeModeOption);
 	app.enableSafeMode(safeMode);
 
-#ifdef Q_OS_ANDROID
-	app.setCustomRomPath(CUSTOMROMPATH);
-#endif
-
 	QLocale locale;
 	QTranslator myappTranslator;
 
@@ -42,6 +38,9 @@ int main( int argc, char *argv[] )
 		}
 	} else {
 #ifdef Q_OS_ANDROID
+		// カスタムROMパスを設定する場合(現在は埋め込み互換ROMがあるのでほぼ使わない)
+		app.setCustomRomPath(CUSTOMROMPATH);
+
 		// 日本語に対応したフォントを検索
 		auto list = QFontDatabase::families(QFontDatabase::Japanese);
 		QString family;

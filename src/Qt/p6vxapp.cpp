@@ -782,7 +782,7 @@ void P6VXApp::executeEmulation()
 		break;
 #endif
 	case EL6::Dokoload:	// どこでもLOAD
-		if( !P6CoreObj->DokoDemoLoad( Cfg->GetDokoFile() ) ){
+		if( OSD_FileExist( Cfg->GetDokoFile() ) && !P6CoreObj->DokoDemoLoad( Cfg->GetDokoFile() ) ){
 			// 失敗した場合
 			OSD_Message( P6CoreObj ? P6CoreObj->GetWindowHandle() : nullptr,
 						 Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );

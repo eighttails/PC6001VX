@@ -191,7 +191,7 @@ QString EncodeContentURI(const QString &uri)
 			auto subParts = s.split("%");
 			QStringList encodedSubParts;
 			for ( auto ss : subParts){
-				encodedSubParts.append(QUrl::toPercentEncoding(ss, ":/"));
+				encodedSubParts.append(QUrl::toPercentEncoding(ss, ":/!'()"));
 			}
 			encodedParts.append(encodedSubParts.join("%"));
 		}

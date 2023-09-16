@@ -786,6 +786,10 @@ Qt 6.5.0以上が必要です。
 ** スナップショット、テープのエクスポート機能が正常に機能しません。
 
 == 更新履歴
+.git master
+* (Android)ファイル名に「!'()」を含むファイルが開けなかったのを修正
+* (Android)Fixed:Could not open file whose filename contains "!'()".
+
 .4.2.0 2023/09/08
 * (Android)Android13に対応
 ** 制約事項

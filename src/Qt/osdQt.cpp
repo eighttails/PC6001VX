@@ -33,9 +33,10 @@
 
 
 //エミュレータ内部用イベントキュー
-QMutex eventMutex;
 QQueue<Event> eventQueue;
+QMutex eventQueueMutex;
 QWaitCondition eventEmitted;
+QMutex eventMutex;
 
 //経過時間タイマ
 QElapsedTimer elapsedTimer;
@@ -1880,7 +1881,7 @@ void OSD_VersionDialog( HWINDOW hwnd, int mdl )
 /////////////////////////////////////////////////////////////////////////////
 void OSD_FlushEvents( void )
 {
-	QMutexLocker lock(&eventMutex);
+	QMutexLocker lock(&eventQueueMutex);
 	eventQueue.clear();
 }
 
@@ -1893,14 +1894,21 @@ void OSD_FlushEvents( void )
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_GetEvent( Event *ev )
 {
-	QMutexLocker lock(&eventMutex);
+	bool isEmpty = true;
+	{
+		QMutexLocker lock(&eventQueueMutex);
+		isEmpty = eventQueue.empty();
+	}
 	// イベントキューが空の場合、イベントが発行されるまで待つ
-	if(eventQueue.empty()){
+	if (isEmpty){
+		QMutexLocker elock(&eventMutex);
 		eventEmitted.wait(&eventMutex);
 	}
-	*ev = eventQueue.front();
-	eventQueue.pop_front();
-
+	{
+		QMutexLocker lock(&eventQueueMutex);
+		*ev = eventQueue.front();
+		eventQueue.pop_front();
+	}
 	return true;
 }
 
@@ -1914,7 +1922,7 @@ bool OSD_GetEvent( Event *ev )
 bool OSD_PushEvent(const Event& ev)
 {
 	// イベントキューにプッシュ
-	QMutexLocker lock(&eventMutex);
+	QMutexLocker lock(&eventQueueMutex);
 	eventQueue.push_back(ev);
 	eventEmitted.wakeAll();
 	return true;
@@ -1955,7 +1963,7 @@ bool OSD_PushEvent( EventType ev, ... )
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_HasEvent( EventType ev )
 {
-	QMutexLocker lock(&eventMutex);
+	QMutexLocker lock(&eventQueueMutex);
 	foreach(auto e, eventQueue) {
 		if (e.type == ev) return true;
 	}

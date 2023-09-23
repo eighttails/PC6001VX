@@ -784,11 +784,14 @@ Qt 6.5.0以上が必要です。
 == 既知の不具合、制約事項
 * Android
 ** スナップショット、テープのエクスポート機能が正常に機能しません。
+** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
-.git master
+.4.2.1 2023/09/23
+* 環境によってデッドロックすることがあるのを修正
 * (Android)ファイル名に「!'()」を含むファイルが開けなかったのを修正
-* (Android)Fixed:Could not open file whose filename contains "!'()".
+* Fixed: Deadlock in certain situation.
+* (Android)Fixed: Could not open file whose filename contains "!'()".
 
 .4.2.0 2023/09/08
 * (Android)Android13に対応

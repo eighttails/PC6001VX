@@ -1450,6 +1450,8 @@ bool EL6::DokoDemoSave( const P6VPATH& path )
 			ini.SetEntry( "KEY", Stringf( "AKBuf_%02X", nn ), "", strva.c_str() );
 		}
 		
+		ini.SetVal( "DOKOSAVE", "Complete",	"どこでもSAVEファイルの書き込み完了チェック用フラグ", true );
+		
 		ini.Write();
 	}
 	catch( Error::Errno i ){	// 例外発生
@@ -1478,6 +1480,12 @@ bool EL6::DokoDemoLoad( const P6VPATH& path )
 	try{
 		// どこでもLOADファイルを開く
 		if( !ini.Read( path ) ){
+			throw Error::DokoReadFailed;
+		}
+		
+		// どこでもSAVEファイルが最後まで書き込まれているかチェック
+		bool complete = false;
+		if( !ini.GetVal( "DOKOSAVE", "Complete", complete ) ){
 			throw Error::DokoReadFailed;
 		}
 		

@@ -526,16 +526,13 @@ SCH6::~SCH6( void )
 void SCH6::OnThread( void* inst )
 {
 	SCH6* ti = STATIC_CAST( SCH6*, inst );	// 自分自身のオブジェクトポインタ取得
-	double fnext;							// 次の画面更新時間
-	DWORD now,next;
-	
 	
 	EnableScrUpdate = 0;
 	
 	// 最初の待ち時間を設定
-	now   = OSD_GetTicks();
-	next  = now + WRUPDATE;
-	fnext = (double)now + FRMTICK;
+	DWORD now   = OSD_GetTicks();
+	DWORD next  = now + WRUPDATE;
+	double fnext = (double)now + FRMTICK;	// 次の画面更新時間
 	
 	while( !this->cThread::IsCancel() ){
 		now = OSD_GetTicks();
@@ -552,7 +549,8 @@ void SCH6::OnThread( void* inst )
 		}
 		
 		// 画面更新タイミング更新
-		if( now >= (DWORD)(fnext + 0.5) ){
+		DWORD dwfnext = (DWORD)(fnext + 0.5);
+		if( now >= dwfnext ){
 			fnext += FRMTICK;
 			
 			// FPS更新
@@ -568,9 +566,11 @@ void SCH6::OnThread( void* inst )
 			EnableScrUpdate++;
 			// タイミング調整用VSYNC Wait解除
 			ti->VWaitReset();
-		}else{
-			this->cThread::yield();
 		}
+		
+		// 次回更新タイミングまで待つ
+		DWORD delay = max( 0, min( next, dwfnext ) - OSD_GetTicks() );
+		OSD_Delay( delay );
 	}
 	
 	while( !WRClk.empty() ){
@@ -582,8 +582,8 @@ void SCH6::OnThread( void* inst )
 		FPSClk.pop_back();
 	}
 	FPSCnt = 0;
-
-
+	
+	
 }
 
 

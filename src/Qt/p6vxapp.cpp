@@ -529,6 +529,8 @@ void P6VXApp::resetSettings()
 			// 自動ステートセーブファイルを削除
 			OSD_AddPath( path, Cfg->GetValue(CF_DokoPath), ".0.dds" );
 			QFile::remove(P6VPATH2QSTR(path));
+			OSD_AddPath( path, Cfg->GetValue(CF_DokoPath), ".-1.dds" );
+			QFile::remove(P6VPATH2QSTR(path));
 #endif
 			// P6V設定ファイルを削除
 			OSD_AddPath( path, OSD_GetConfigPath(), FILE_CONFIG );
@@ -783,10 +785,20 @@ void P6VXApp::executeEmulation()
 #endif
 	case EL6::Dokoload:	// どこでもLOAD
 		if( OSD_FileExist( Cfg->GetDokoFile() ) && !P6CoreObj->DokoDemoLoad( Cfg->GetDokoFile() ) ){
+#ifdef AUTOSUSPEND
+			// ロードに失敗した場合、フォールバックスロット(-1)からロード
+			P6CoreObj->UI_DokoLoad(-1);
+#else
 			// 失敗した場合
 			OSD_Message( P6CoreObj ? P6CoreObj->GetWindowHandle() : nullptr,
 						 Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
 			Error::Clear();
+#endif
+		}else{
+#ifdef AUTOSUSPEND
+			// ロードに成功した場合(またはセーブファイルがない場合)、フォールバック用スロット(-1)に保存
+			P6CoreObj->UI_DokoSave(-1);
+#endif
 		}
 		Cfg->SetDokoFile( "" );
 		break;

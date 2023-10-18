@@ -1408,7 +1408,13 @@ void OSD_UnlockAudio( void )
 ////////////////////////////////////////////////////////////////
 void OSD_Delay( DWORD tms )
 {
-	QThread::msleep(tms);
+#ifndef DELAY_RESOLUTION_MS
+#define DELAY_RESOLUTION_MS 1
+#endif
+	int ms = (tms / DELAY_RESOLUTION_MS) * DELAY_RESOLUTION_MS;
+	if (ms >= 0) {
+		QThread::msleep(ms);
+	}
 }
 
 

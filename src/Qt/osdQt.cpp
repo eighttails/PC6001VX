@@ -1408,7 +1408,13 @@ void OSD_UnlockAudio( void )
 ////////////////////////////////////////////////////////////////
 void OSD_Delay( DWORD tms )
 {
-	QThread::msleep(tms);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+
+	int delayResolution = app->getSetting(P6VXApp::keyTimerResolution).toInt();
+	int ms = (tms / delayResolution) * delayResolution;
+	if (ms >= 0) {
+		QThread::msleep(ms);
+	}
 }
 
 

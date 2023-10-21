@@ -4,76 +4,46 @@
 <context>
     <name>AndroidShareUtils</name>
     <message>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="105"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="227"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="338"/>
         <source>Share: an Error occured
 FilePath not valid</source>
-        <translation>Share: Произошла ошибка
+        <translation type="vanished">Share: Произошла ошибка
 Значение FilePath не верно</translation>
     </message>
     <message>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="112"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="234"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="345"/>
         <source>Share: an Error occured
 URI not valid</source>
-        <translation>Share: Произошла ошибка
+        <translation type="vanished">Share: Произошла ошибка
 Значение URL не верно</translation>
     </message>
     <message>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="121"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="128"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="149"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="158"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="166"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="243"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="250"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="271"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="354"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="361"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="382"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="449"/>
         <source>Share: an Error occured</source>
-        <translation>Share: Произошла ошибка</translation>
+        <translation type="vanished">Share: Произошла ошибка</translation>
     </message>
     <message>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="135"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="257"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="368"/>
         <source>Share: an Error occured
 MimeType is empty</source>
-        <translation>Share: Произошла ошибка
+        <translation type="vanished">Share: Произошла ошибка
 Значение MimeType пусто</translation>
     </message>
     <message>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="142"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="264"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="375"/>
         <source>Share: an Error occured
 MimeType not valid</source>
-        <translation>Share: Произошла ошибка
+        <translation type="vanished">Share: Произошла ошибка
 Значение MimeType не верно</translation>
     </message>
     <message>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="461"/>
         <source>Share: an Error occured
 WorkingDir not valid</source>
-        <translation>Share: Произошла ошибка
+        <translation type="vanished">Share: Произошла ошибка
 Значение WorkingDir не верно</translation>
     </message>
     <message>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="475"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="501"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="529"/>
         <source>Empty URL received</source>
-        <translation>Получено пустой URL</translation>
+        <translation type="vanished">Получено пустой URL</translation>
     </message>
     <message>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="493"/>
-        <location filename="../ekkesShare/android/androidshareutils.cpp" line="519"/>
         <source>File does not exist: %1</source>
-        <translation>Файла %1 не существует</translation>
+        <translation type="vanished">Файла %1 не существует</translation>
     </message>
 </context>
 <context>
@@ -759,7 +729,17 @@ cut off fre&amp;quency</translation>
         <translation>% (1-1000)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3290"/>
+        <location filename="../configdialog.ui" line="3292"/>
+        <source>タイマー精度(&amp;T):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="3312"/>
+        <source>ms (1-1000)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="3334"/>
         <source>システムROMのCRCチェック有効(&amp;C)</source>
         <translation>Включить проверку CRC образов системных ПЗУ</translation>
     </message>
@@ -884,17 +864,17 @@ cut off fre&amp;quency</translation>
         <translation>Включить ожидание лоступа к дисководу</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3297"/>
+        <location filename="../configdialog.ui" line="3341"/>
         <source>どこでもLOAD(SLOT)実行時に確認する(&amp;L)</source>
         <translation>Подтверждать загрузку</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3304"/>
+        <location filename="../configdialog.ui" line="3348"/>
         <source>終了時に確認する(&amp;F)</source>
         <translation>Подтверждать выход</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3311"/>
+        <location filename="../configdialog.ui" line="3355"/>
         <source>終了時にINIファイルを保存する(&amp;Q)</source>
         <translation>Сохранять INI файл при выходе</translation>
     </message>
@@ -975,33 +955,33 @@ cut off fre&amp;quency</translation>
 <context>
     <name>P6VXApp</name>
     <message>
-        <location filename="../p6vxapp.cpp" line="161"/>
+        <location filename="../p6vxapp.cpp" line="160"/>
         <source>Storage access denied.</source>
         <translation>Нет доступа к хранилищу.</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="632"/>
+        <location filename="../p6vxapp.cpp" line="647"/>
         <source>TAPE(SAVE)ファイルが存在しません。</source>
         <translation>Образа кассеты, который был сохранён, не существует.</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="292"/>
-        <location filename="../p6vxapp.cpp" line="648"/>
+        <location filename="../p6vxapp.cpp" line="298"/>
+        <location filename="../p6vxapp.cpp" line="664"/>
         <source>ファイルはすでに存在しています。上書きしますか?</source>
         <translation>Файл с таким именем уже существует. Перезаписать?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="514"/>
+        <location filename="../p6vxapp.cpp" line="527"/>
         <source>本当に設定を初期化しますか?</source>
         <translation>Вы действительно хотите сбросить настройки?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="516"/>
+        <location filename="../p6vxapp.cpp" line="529"/>
         <source>設定を反映するには一度終了しますがよろしいですか?</source>
         <translation>Для применения изменений нужно перезапустить эмулятор.\nХотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="679"/>
+        <location filename="../p6vxapp.cpp" line="695"/>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
@@ -1010,12 +990,12 @@ ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォル�
 Можете указать другой каталог?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="700"/>
+        <location filename="../p6vxapp.cpp" line="716"/>
         <source>エミュレーター内蔵の互換ROMを使用しますか?</source>
         <translation>Использовать те образы, что идут в комплекте?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="728"/>
+        <location filename="../p6vxapp.cpp" line="744"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>
@@ -1024,7 +1004,7 @@ CRCが一致しないROMを使用すると、予期せぬ不具合を引き起�
 Всё равно использовать эти образы ПЗУ?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="745"/>
+        <location filename="../p6vxapp.cpp" line="761"/>
         <source>ROMファイルの一部が見つかりません。
 エミュレーター内蔵の互換ROMを使用しますか?</source>
         <translation>Не удалось найти необходимые образы ПЗУ.\nИспользовать те образы, что идут в комплекте?</translation>
@@ -1737,112 +1717,116 @@ Save time and PC6001V version </translation>
         <translation type="vanished">Hiragana</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="783"/>
+        <location filename="../osdQt.cpp" line="852"/>
         <source>TAPEイメージ選択(LOAD)</source>
         <translation>Выбор образа кассеты для загрузки</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="784"/>
-        <location filename="../osdQt.cpp" line="794"/>
+        <location filename="../osdQt.cpp" line="853"/>
+        <location filename="../osdQt.cpp" line="863"/>
         <source>TAPEイメージ (*.p6t *.cas *.p6);;P6T形式 (*.p6t);;ベタ形式 (*.cas *.p6);;全てのファイル (*.*)</source>
         <translation>Образ кассеты (*.p6t *.cas *.p6);;Формат P6T (*.p6t);;Стандартный формат (*.cas *.p6);;Все файлы(*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="793"/>
+        <location filename="../osdQt.cpp" line="862"/>
         <source>TAPEイメージ選択(SAVE)</source>
         <translation>Выбор образа кассеты для сохранения</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="803"/>
+        <location filename="../osdQt.cpp" line="872"/>
         <source>DISKイメージ選択</source>
         <translation>Выбор образа диска</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="804"/>
         <source>DISKイメージ(*.d88);;D88形式 (*.d88);;全てのファイル (*.*)</source>
-        <translation>Образ диска (*.d88);;Формат D88 (*.d88);;Все файлы (*.*)</translation>
+        <translation type="vanished">Образ диска (*.d88);;Формат D88 (*.d88);;Все файлы (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="812"/>
+        <location filename="../osdQt.cpp" line="873"/>
+        <source>DISKイメージ (*.d88);;D88形式 (*.d88);;全てのファイル (*.*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../osdQt.cpp" line="881"/>
         <source>拡張ROMイメージ選択</source>
         <translation>Выбой образа ПЗУ расширения </translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="813"/>
-        <location filename="../osdQt.cpp" line="819"/>
-        <location filename="../osdQt.cpp" line="885"/>
+        <location filename="../osdQt.cpp" line="882"/>
+        <location filename="../osdQt.cpp" line="888"/>
+        <location filename="../osdQt.cpp" line="954"/>
         <source>全てのファイル (*.*)</source>
         <translation>Все файлы (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="818"/>
+        <location filename="../osdQt.cpp" line="887"/>
         <source>プリンター出力ファイル選択</source>
         <translation>Быбор файла вывода принтера</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="825"/>
+        <location filename="../osdQt.cpp" line="894"/>
         <source>全角フォントファイル選択</source>
         <translation>Выбор файла полногиринного шрифта</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="826"/>
-        <location filename="../osdQt.cpp" line="834"/>
+        <location filename="../osdQt.cpp" line="895"/>
+        <location filename="../osdQt.cpp" line="903"/>
         <source>PNGファイル (*.png);;全てのファイル (*.*)</source>
         <translation>Файл PNG (*.png);;Все файлы (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="833"/>
+        <location filename="../osdQt.cpp" line="902"/>
         <source>半角フォントファイル選択</source>
         <translation>Выбор файла полутороширинного шрифта</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="841"/>
+        <location filename="../osdQt.cpp" line="910"/>
         <source>どこでもLOADファイル選択</source>
         <translation>State load file selection</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="842"/>
+        <location filename="../osdQt.cpp" line="911"/>
         <source>どこでもSAVEファイル (*.dds *.ddr);;どこでもSAVE形式 (*.dds);;リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>Файлы сохранений (*.dds *.ddr);;Формат файла сохранения (*.dds);;Файл повтора (*.ddr);;Все файлы (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="851"/>
+        <location filename="../osdQt.cpp" line="920"/>
         <source>どこでもSAVEファイル選択</source>
         <translation>Выбор файла точки сохранения</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="852"/>
+        <location filename="../osdQt.cpp" line="921"/>
         <source>どこでもSAVE形式 (*.dds);;全てのファイル (*.*)</source>
         <translation>Формат точки сохранения (*.dds);;Все файлы (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="859"/>
+        <location filename="../osdQt.cpp" line="928"/>
         <source>リプレイ再生ファイル選択</source>
         <translation>Выбор файла прохождения</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="860"/>
-        <location filename="../osdQt.cpp" line="868"/>
+        <location filename="../osdQt.cpp" line="929"/>
+        <location filename="../osdQt.cpp" line="937"/>
         <source>リプレイファイル (*.ddr);;全てのファイル (*.*)</source>
         <translation>Файл прохождения (*.ddr);;All files (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="867"/>
+        <location filename="../osdQt.cpp" line="936"/>
         <source>リプレイ保存ファイル選択</source>
         <translation>Сохранение файоа прохождения</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="875"/>
+        <location filename="../osdQt.cpp" line="944"/>
         <source>ビデオキャプチャ出力ファイル選択</source>
         <translation>Файл вывода  захвата видео</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="876"/>
+        <location filename="../osdQt.cpp" line="945"/>
         <source>WebMファイル (*.webm);;全てのファイル (*.*)</source>
         <translation>Файл WebM (*.webm);;Все файлы (*.*)</translation>
     </message>
     <message>
-        <location filename="../osdQt.cpp" line="884"/>
+        <location filename="../osdQt.cpp" line="953"/>
         <source>ファイル選択</source>
         <translation>Выбор файла</translation>
     </message>
@@ -2228,90 +2212,90 @@ Save time and PC6001V version </translation>
 <context>
     <name>QtEL6</name>
     <message>
-        <location filename="../qtel6.cpp" line="276"/>
+        <location filename="../qtel6.cpp" line="281"/>
         <source>システム</source>
         <translation>Система</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="278"/>
-        <location filename="../qtel6.cpp" line="287"/>
+        <location filename="../qtel6.cpp" line="282"/>
+        <location filename="../qtel6.cpp" line="291"/>
         <source>リセット</source>
         <translation>Сброс</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="279"/>
+        <location filename="../qtel6.cpp" line="283"/>
         <source>再起動</source>
         <translation>Перезапуск</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="299"/>
+        <location filename="../qtel6.cpp" line="305"/>
         <source>どこでもLOAD</source>
         <translation>Точка загрузки</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="300"/>
+        <location filename="../qtel6.cpp" line="306"/>
         <source>どこでもSAVE</source>
         <translation>Точка сохранения</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="302"/>
+        <location filename="../qtel6.cpp" line="308"/>
         <source>LOAD...</source>
         <translation>Загрузить...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="306"/>
+        <location filename="../qtel6.cpp" line="312"/>
         <source>SAVE...</source>
         <translation>Сохранить...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="312"/>
+        <location filename="../qtel6.cpp" line="318"/>
         <source>リプレイ</source>
         <translation>Воспроизвести</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="333"/>
+        <location filename="../qtel6.cpp" line="339"/>
         <source>記録再開...</source>
         <translation>Продолжить запись...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="339"/>
+        <location filename="../qtel6.cpp" line="345"/>
         <source>途中保存</source>
         <translation>КОнтрольная точка</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="340"/>
+        <location filename="../qtel6.cpp" line="346"/>
         <source>途中保存から再開</source>
         <translation>Вернуться к контрольной точке</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="358"/>
+        <location filename="../qtel6.cpp" line="364"/>
         <source>打込み代行...</source>
         <translation>Автоввод...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="360"/>
+        <location filename="../qtel6.cpp" line="366"/>
         <source>終了</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="363"/>
+        <location filename="../qtel6.cpp" line="369"/>
         <source>TAPE</source>
         <translation>Кассета</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="364"/>
-        <location filename="../qtel6.cpp" line="375"/>
+        <location filename="../qtel6.cpp" line="370"/>
+        <location filename="../qtel6.cpp" line="383"/>
         <source>挿入...</source>
         <translation>Вставить...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="365"/>
-        <location filename="../qtel6.cpp" line="376"/>
+        <location filename="../qtel6.cpp" line="371"/>
+        <location filename="../qtel6.cpp" line="384"/>
         <source>取出</source>
         <translation>Извлечь</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="371"/>
+        <location filename="../qtel6.cpp" line="379"/>
         <source>DISK</source>
         <translation>Диск</translation>
     </message>
@@ -2320,104 +2304,104 @@ Save time and PC6001V version </translation>
         <translation type="vanished">Расширенное ПЗУ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="428"/>
+        <location filename="../qtel6.cpp" line="436"/>
         <source>ジョイスティック</source>
         <translation>Джойстик</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="385"/>
-        <location filename="../qtel6.cpp" line="444"/>
-        <location filename="../qtel6.cpp" line="445"/>
+        <location filename="../qtel6.cpp" line="393"/>
+        <location filename="../qtel6.cpp" line="452"/>
+        <location filename="../qtel6.cpp" line="453"/>
         <source>なし</source>
         <translation>Нет</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="453"/>
+        <location filename="../qtel6.cpp" line="461"/>
         <source>設定</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="214"/>
-        <location filename="../qtel6.cpp" line="455"/>
+        <location filename="../qtel6.cpp" line="219"/>
+        <location filename="../qtel6.cpp" line="463"/>
         <source>表示サイズ</source>
         <translation>Размер дисплея</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="214"/>
+        <location filename="../qtel6.cpp" line="219"/>
         <source>表示サイズ(%)を入力してください。(50-1000)</source>
         <translation>Коэффициент масштабирования (%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="223"/>
+        <location filename="../qtel6.cpp" line="228"/>
         <source>設定を反映するには一度終了しますがよろしいですか?</source>
         <translation>Для применения настроек нужно выйти из программы.\nХотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="282"/>
+        <location filename="../qtel6.cpp" line="286"/>
         <source>一時停止</source>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="295"/>
+        <location filename="../qtel6.cpp" line="300"/>
         <source>スナップショットを取得</source>
         <translation>Скриншот</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="335"/>
+        <location filename="../qtel6.cpp" line="341"/>
         <source>リプレイを動画に変換...</source>
         <translation>Превратить запись в видео...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="341"/>
+        <location filename="../qtel6.cpp" line="347"/>
         <source>1つ前の途中保存から再開</source>
         <translation>Вернуться к предыдущему состоянию</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="352"/>
+        <location filename="../qtel6.cpp" line="358"/>
         <source>キーパネル</source>
         <translation>Панель кнопок</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="354"/>
+        <location filename="../qtel6.cpp" line="360"/>
         <source>仮想キーボード</source>
         <translation>Виртуальная кассета</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="367"/>
+        <location filename="../qtel6.cpp" line="374"/>
         <source>TAPE(SAVE)をエクスポート...</source>
         <translation>Экспорт сохранённого образа кассеты...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="288"/>
-        <location filename="../qtel6.cpp" line="456"/>
+        <location filename="../qtel6.cpp" line="292"/>
+        <location filename="../qtel6.cpp" line="464"/>
         <source>50%</source>
         <translation>50%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="457"/>
+        <location filename="../qtel6.cpp" line="465"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="290"/>
-        <location filename="../qtel6.cpp" line="458"/>
+        <location filename="../qtel6.cpp" line="294"/>
+        <location filename="../qtel6.cpp" line="466"/>
         <source>150%</source>
         <translation>150%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="291"/>
-        <location filename="../qtel6.cpp" line="459"/>
+        <location filename="../qtel6.cpp" line="295"/>
+        <location filename="../qtel6.cpp" line="467"/>
         <source>200%</source>
         <translation>200%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="460"/>
+        <location filename="../qtel6.cpp" line="468"/>
         <source>250%</source>
         <translation>250%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="292"/>
-        <location filename="../qtel6.cpp" line="461"/>
+        <location filename="../qtel6.cpp" line="296"/>
+        <location filename="../qtel6.cpp" line="469"/>
         <source>300%</source>
         <translation>300%</translation>
     </message>
@@ -2432,193 +2416,193 @@ Save time and PC6001V version </translation>
         <translation>Введите значение(%)</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="286"/>
+        <location filename="../qtel6.cpp" line="290"/>
         <source>速度調節</source>
         <translation>Контроль скорости</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="289"/>
+        <location filename="../qtel6.cpp" line="293"/>
         <source>70%</source>
         <translation>70%</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="293"/>
+        <location filename="../qtel6.cpp" line="297"/>
         <source>速度を指定...</source>
         <translation>Задать скорость...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="321"/>
+        <location filename="../qtel6.cpp" line="327"/>
         <source>再生停止</source>
         <translation>Остановить воспроизведение</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="321"/>
+        <location filename="../qtel6.cpp" line="327"/>
         <source>再生...</source>
         <translation>Воспроизвести...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="330"/>
+        <location filename="../qtel6.cpp" line="336"/>
         <source>記録停止</source>
         <translation>Остановить запись</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="330"/>
+        <location filename="../qtel6.cpp" line="336"/>
         <source>記録...</source>
         <translation>Записать...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="348"/>
+        <location filename="../qtel6.cpp" line="354"/>
         <source>ビデオキャプチャ停止</source>
         <translation>Остановить захват видео</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="348"/>
+        <location filename="../qtel6.cpp" line="354"/>
         <source>ビデオキャプチャ...</source>
         <translation>Захватить видео...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="384"/>
+        <location filename="../qtel6.cpp" line="392"/>
         <source>拡張カートリッジ</source>
         <translation>Картридж расширения</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="387"/>
+        <location filename="../qtel6.cpp" line="395"/>
         <source>PC-6005    ROMカートリッジ...</source>
         <translation>Картридж ПЗУ PC-6005</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="388"/>
+        <location filename="../qtel6.cpp" line="396"/>
         <source>PC-6006    拡張ROM/RAMカートリッジ</source>
         <translation>Картридж с расширенным ПЗУ/ОЗУ для PC-6006</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="389"/>
-        <location filename="../qtel6.cpp" line="402"/>
-        <location filename="../qtel6.cpp" line="405"/>
-        <location filename="../qtel6.cpp" line="408"/>
+        <location filename="../qtel6.cpp" line="397"/>
+        <location filename="../qtel6.cpp" line="410"/>
+        <location filename="../qtel6.cpp" line="413"/>
+        <location filename="../qtel6.cpp" line="416"/>
         <source>ROM選択...</source>
         <translation>Выбор образа ПЗУ...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="390"/>
-        <location filename="../qtel6.cpp" line="403"/>
-        <location filename="../qtel6.cpp" line="406"/>
-        <location filename="../qtel6.cpp" line="409"/>
+        <location filename="../qtel6.cpp" line="398"/>
+        <location filename="../qtel6.cpp" line="411"/>
+        <location filename="../qtel6.cpp" line="414"/>
+        <location filename="../qtel6.cpp" line="417"/>
         <source>ROMなし</source>
         <translation>Нет образа ПЗУ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="392"/>
+        <location filename="../qtel6.cpp" line="400"/>
         <source>PCS-6001R  拡張BASIC</source>
         <translation>Расширенный BASIC PCS-6001R</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="393"/>
+        <location filename="../qtel6.cpp" line="401"/>
         <source>PC-6601-01 拡張漢字ROMカートリッジ</source>
         <translation>Образ ПЗУ картриджа расширения  с кандзи для PC-6601-01</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="394"/>
+        <location filename="../qtel6.cpp" line="402"/>
         <source>PC-6006SR  拡張64KRAMカートリッジ</source>
         <translation>Картридж расширения ОЗУ на 64K для PC-6006SR</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="395"/>
+        <location filename="../qtel6.cpp" line="403"/>
         <source>PC-6007SR  拡張漢字ROM&amp;&amp;RAMカートリッジ</source>
         <translation>Образ ПЗУ картриджа расширения для PC-6007SR &amp; картридж с доп. ОЗУ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="401"/>
+        <location filename="../qtel6.cpp" line="409"/>
         <source>戦士のカートリッジ</source>
         <translation>Картридж Warrior</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="404"/>
+        <location filename="../qtel6.cpp" line="412"/>
         <source>戦士のカートリッジmkⅡ</source>
         <translation>Картридж Warrior, mkⅡ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="407"/>
+        <location filename="../qtel6.cpp" line="415"/>
         <source>戦士のカートリッジmkⅢ</source>
         <translation>Картридж Warrior, mkⅢ</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="462"/>
+        <location filename="../qtel6.cpp" line="470"/>
         <source>倍率を指定...</source>
         <translation>Задать масштаб картинки...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="463"/>
+        <location filename="../qtel6.cpp" line="471"/>
         <source>倍率を固定</source>
         <translation>Исправить масштаб</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="466"/>
+        <location filename="../qtel6.cpp" line="474"/>
         <source>フルスクリーン</source>
         <translation>На весь экран</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="469"/>
+        <location filename="../qtel6.cpp" line="477"/>
         <source>ステータスバー</source>
         <translation>Панель статуса</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="471"/>
+        <location filename="../qtel6.cpp" line="479"/>
         <source>4:3表示</source>
         <translation>Экран телевизора 4:3</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="473"/>
+        <location filename="../qtel6.cpp" line="481"/>
         <source>スキャンライン</source>
         <translation>Сканлайн</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="476"/>
+        <location filename="../qtel6.cpp" line="484"/>
         <source>ハードウェアアクセラレーション</source>
         <translation>Аппаратное ускорение</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="479"/>
+        <location filename="../qtel6.cpp" line="487"/>
         <source>フィルタリング</source>
         <translation>Фильтрация</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="482"/>
+        <location filename="../qtel6.cpp" line="490"/>
         <source>TILTモード</source>
         <translation>Режим дрожжания</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="485"/>
+        <location filename="../qtel6.cpp" line="493"/>
         <source>MODE4 カラー</source>
         <translation>Цвета режима &quot;Mode4&quot;</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="487"/>
+        <location filename="../qtel6.cpp" line="495"/>
         <source>モノクロ</source>
         <translation>Чёрно-белый</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="488"/>
+        <location filename="../qtel6.cpp" line="496"/>
         <source>赤/青</source>
         <translation>Красный/Синий</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="489"/>
+        <location filename="../qtel6.cpp" line="497"/>
         <source>青/赤</source>
         <translation>Синий/Красный</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="490"/>
+        <location filename="../qtel6.cpp" line="498"/>
         <source>桃/緑</source>
         <translation>Зелёный/Персиковый</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="491"/>
+        <location filename="../qtel6.cpp" line="499"/>
         <source>緑/桃</source>
         <translation>Персиковый/Зелёный</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="497"/>
+        <location filename="../qtel6.cpp" line="505"/>
         <source>フレームスキップ</source>
         <translation>Пропуск кадров</translation>
     </message>
@@ -2627,67 +2611,67 @@ Save time and PC6001V version </translation>
         <translation type="vanished">Sampling rate</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="284"/>
+        <location filename="../qtel6.cpp" line="288"/>
         <source>ウェイト無効</source>
         <translation>Отключить ожидание</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="511"/>
+        <location filename="../qtel6.cpp" line="519"/>
         <source>ローマ字入力</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="515"/>
+        <location filename="../qtel6.cpp" line="523"/>
         <source>Turbo TAPE</source>
         <translation>Ускорение плёнки</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="517"/>
+        <location filename="../qtel6.cpp" line="525"/>
         <source>Boost Up</source>
         <translation>Ускорение</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="519"/>
+        <location filename="../qtel6.cpp" line="527"/>
         <source>環境設定...</source>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="523"/>
+        <location filename="../qtel6.cpp" line="531"/>
         <source>デバッグ</source>
         <translation>Отладка</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="525"/>
+        <location filename="../qtel6.cpp" line="533"/>
         <source>モニタモード</source>
         <translation>Режим монитора</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="530"/>
+        <location filename="../qtel6.cpp" line="538"/>
         <source>ヘルプ</source>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="531"/>
+        <location filename="../qtel6.cpp" line="539"/>
         <source>オンラインヘルプ</source>
         <translation>Онлайн справка</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="532"/>
+        <location filename="../qtel6.cpp" line="540"/>
         <source>バージョン情報...</source>
         <translation>О программе...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="533"/>
+        <location filename="../qtel6.cpp" line="541"/>
         <source>About Qt...</source>
         <translation>О Qt...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="534"/>
+        <location filename="../qtel6.cpp" line="542"/>
         <source>システム情報...</source>
         <translation>Информация о системе...</translation>
     </message>
     <message>
-        <location filename="../qtel6.cpp" line="535"/>
+        <location filename="../qtel6.cpp" line="543"/>
         <source>設定初期化...</source>
         <translation>Сбросить настройки...</translation>
     </message>

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>625</width>
+    <width>634</width>
     <height>689</height>
    </rect>
   </property>
@@ -3243,7 +3243,7 @@ border-radius: 1;</string>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_15">
          <item>
-          <widget class="QLabel" name="label_54">
+          <widget class="QLabel" name="labelOverClockRatio">
            <property name="text">
             <string>オーバークロック率(&amp;V):</string>
            </property>
@@ -3271,6 +3271,50 @@ border-radius: 1;</string>
          </item>
          <item>
           <spacer name="horizontalSpacer_9">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <item>
+          <widget class="QLabel" name="labelTimerResolution">
+           <property name="text">
+            <string>タイマー精度(&amp;T):</string>
+           </property>
+           <property name="buddy">
+            <cstring>spinBoxTimerResolution</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBoxTimerResolution">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>ms (1-1000)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_17">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -3339,9 +3383,18 @@ border-radius: 1;</string>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>spinBoxClockRatio</tabstop>
+  <tabstop>spinBoxTimerResolution</tabstop>
   <tabstop>checkBoxRomCRC</tabstop>
+  <tabstop>checkBoxCkDokoLoad</tabstop>
   <tabstop>checkBoxCkQuit</tabstop>
   <tabstop>checkBoxSaveQuit</tabstop>
+  <tabstop>pushButtonColor0</tabstop>
+  <tabstop>pushButtonColor1</tabstop>
+  <tabstop>pushButtonColor2</tabstop>
+  <tabstop>pushButtonColor3</tabstop>
+  <tabstop>pushButtonColor4</tabstop>
   <tabstop>pushButtonColor5</tabstop>
   <tabstop>pushButtonColor6</tabstop>
   <tabstop>pushButtonColor7</tabstop>
@@ -3350,21 +3403,120 @@ border-radius: 1;</string>
   <tabstop>pushButtonColor10</tabstop>
   <tabstop>pushButtonColor11</tabstop>
   <tabstop>pushButtonColor12</tabstop>
-  <tabstop>buttonBox</tabstop>
+  <tabstop>pushButtonColor41</tabstop>
+  <tabstop>pushButtonColor42</tabstop>
+  <tabstop>pushButtonColor43</tabstop>
+  <tabstop>pushButtonColor44</tabstop>
+  <tabstop>pushButtonColor45</tabstop>
+  <tabstop>pushButtonColor46</tabstop>
+  <tabstop>pushButtonColor47</tabstop>
+  <tabstop>pushButtonColor48</tabstop>
+  <tabstop>pushButtonColor49</tabstop>
+  <tabstop>pushButtonColor50</tabstop>
+  <tabstop>pushButtonColor51</tabstop>
+  <tabstop>pushButtonColor52</tabstop>
+  <tabstop>pushButtonColor53</tabstop>
+  <tabstop>pushButtonColor54</tabstop>
+  <tabstop>pushButtonColor55</tabstop>
+  <tabstop>pushButtonColor56</tabstop>
+  <tabstop>pushButtonColor13</tabstop>
+  <tabstop>pushButtonColor14</tabstop>
+  <tabstop>pushButtonColor21</tabstop>
+  <tabstop>pushButtonColor17</tabstop>
+  <tabstop>pushButtonColor22</tabstop>
+  <tabstop>pushButtonColor23</tabstop>
+  <tabstop>pushButtonColor18</tabstop>
+  <tabstop>pushButtonColor24</tabstop>
+  <tabstop>pushButtonColor25</tabstop>
+  <tabstop>pushButtonColor19</tabstop>
+  <tabstop>pushButtonColor26</tabstop>
+  <tabstop>pushButtonColor27</tabstop>
+  <tabstop>pushButtonColor20</tabstop>
+  <tabstop>pushButtonColor28</tabstop>
+  <tabstop>pushButtonColor15</tabstop>
+  <tabstop>pushButtonColor16</tabstop>
+  <tabstop>pushButtonColor33</tabstop>
+  <tabstop>pushButtonColor29</tabstop>
+  <tabstop>pushButtonColor34</tabstop>
+  <tabstop>pushButtonColor35</tabstop>
+  <tabstop>pushButtonColor30</tabstop>
+  <tabstop>pushButtonColor36</tabstop>
+  <tabstop>pushButtonColor37</tabstop>
+  <tabstop>pushButtonColor31</tabstop>
+  <tabstop>pushButtonColor38</tabstop>
+  <tabstop>pushButtonColor39</tabstop>
+  <tabstop>pushButtonColor32</tabstop>
+  <tabstop>pushButtonColor40</tabstop>
+  <tabstop>comboBoxModel</tabstop>
+  <tabstop>comboBoxExtCartridge</tabstop>
+  <tabstop>checkBoxCompatibleRomMode</tabstop>
+  <tabstop>spinBoxNumFdd</tabstop>
+  <tabstop>checkBoxFDDWait</tabstop>
+  <tabstop>checkBoxRomajiInput</tabstop>
+  <tabstop>spinBoxRomajiWait</tabstop>
+  <tabstop>checkBoxTurboTape</tabstop>
+  <tabstop>groupBoxBoostUp</tabstop>
+  <tabstop>spinBoxBoost60</tabstop>
+  <tabstop>spinBoxBoost66</tabstop>
+  <tabstop>spinBoxStopBit</tabstop>
+  <tabstop>comboBoxMode4Color</tabstop>
+  <tabstop>checkBoxScanline</tabstop>
+  <tabstop>spinBoxScanLineBr</tabstop>
+  <tabstop>comboBoxFrameSkip</tabstop>
+  <tabstop>checkBoxDispNTSC</tabstop>
+  <tabstop>checkBoxFiltering</tabstop>
+  <tabstop>checkBoxFullscreen</tabstop>
+  <tabstop>checkBoxStatDisp</tabstop>
+  <tabstop>checkBoxHwAccel</tabstop>
+  <tabstop>checkBoxMovieScanline</tabstop>
+  <tabstop>spinBoxMovieScanLineBr</tabstop>
+  <tabstop>comboBoxMovieFrameSkip</tabstop>
+  <tabstop>spinBoxMovieZoom</tabstop>
+  <tabstop>checkBoxMovieDispNTSC</tabstop>
+  <tabstop>checkBoxMovieFiltering</tabstop>
   <tabstop>horizontalSliderMasterVol</tabstop>
   <tabstop>horizontalSliderPSGVol</tabstop>
   <tabstop>horizontalSliderVoiceVol</tabstop>
   <tabstop>horizontalSliderTapeVol</tabstop>
   <tabstop>lineEditExtRom</tabstop>
+  <tabstop>pushButtonClearExtRom</tabstop>
   <tabstop>pushButtonRefExtRom</tabstop>
   <tabstop>lineEditLoadTape</tabstop>
+  <tabstop>pushButtonClearLoadTape</tabstop>
   <tabstop>pushButtonRefLoadTape</tabstop>
   <tabstop>lineEditSaveTape</tabstop>
+  <tabstop>pushButtonClearSaveTape</tabstop>
   <tabstop>pushButtonRefSaveTape</tabstop>
   <tabstop>lineEditDisk1</tabstop>
+  <tabstop>pushButtonClearDisk1</tabstop>
   <tabstop>pushButtonRefDisk1</tabstop>
+  <tabstop>lineEditDisk2</tabstop>
+  <tabstop>pushButtonClearDisk2</tabstop>
+  <tabstop>pushButtonRefDisk2</tabstop>
   <tabstop>lineEditPrinter</tabstop>
+  <tabstop>pushButtonClearPrinter</tabstop>
   <tabstop>pushButtonRefPrinter</tabstop>
+  <tabstop>lineEditFolderRom</tabstop>
+  <tabstop>pushButtonClearFolderRom</tabstop>
+  <tabstop>pushButtonRefFolderRom</tabstop>
+  <tabstop>lineEditFolderTape</tabstop>
+  <tabstop>pushButtonClearFolderTape</tabstop>
+  <tabstop>pushButtonRefFolderTape</tabstop>
+  <tabstop>lineEditFolderDisk</tabstop>
+  <tabstop>pushButtonClearFolderDisk</tabstop>
+  <tabstop>pushButtonRefFolderDisk</tabstop>
+  <tabstop>lineEditFolderExtRom</tabstop>
+  <tabstop>pushButtonClearFolderExtRom</tabstop>
+  <tabstop>pushButtonRefFolderExtRom</tabstop>
+  <tabstop>lineEditFolderImg</tabstop>
+  <tabstop>pushButtonClearFolderImg</tabstop>
+  <tabstop>pushButtonRefFolderImg</tabstop>
+  <tabstop>lineEditFolderWave</tabstop>
+  <tabstop>pushButtonClearFolderWave</tabstop>
+  <tabstop>pushButtonRefFolderWave</tabstop>
+  <tabstop>lineEditFolderDokoSave</tabstop>
+  <tabstop>pushButtonClearFolderDokoSave</tabstop>
+  <tabstop>pushButtonRefFolderDokoSave</tabstop>
  </tabstops>
  <resources/>
  <connections>

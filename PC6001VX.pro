@@ -42,6 +42,9 @@ DEFINES += USEFILESYSTEM
 #Disable debug features. For low performance machine.
 #DEFINES += NOMONITOR
 
+#Set if timer resolutions of target OS is more than 1ms.
+#DEFINES += DELAY_TIMER_MS_DEFAULT=10
+
 #Other feature control flags.
 #DEFINES += NOSINGLEAPP
 #DEFINES += NOOPENGL
@@ -52,11 +55,9 @@ DEFINES += USEFILESYSTEM
 #DEFINES += REPLAYDEBUG_FRAME
 #DEFINES += REPLAYDEBUG_INST
 
-
 debug:DEFINES += DEBUG
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 INCLUDEPATH += src src/Qt
-
 
 
 #Configuration for UNIX variants

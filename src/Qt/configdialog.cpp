@@ -402,6 +402,9 @@ void ConfigDialog::readConfig()
 	// オーバークロック率
 	ui->spinBoxClockRatio->setValue(config->GetValue(CV_OverClock));
 
+	// タイマー精度
+	ui->spinBoxTimerResolution->setValue(app->getSetting(P6VXApp::keyTimerResolution).toInt());
+
 	// CRCチェック
 	ui->checkBoxRomCRC->setChecked(config->GetValue(CB_CheckCRC));
 
@@ -611,6 +614,9 @@ void ConfigDialog::writeConfig()
 	// その他--------------------------------------------------------------
 	// オーバークロック率
 	config->SetValue(CV_OverClock, ui->spinBoxClockRatio->value());
+
+	// タイマー精度
+	app->setSetting(P6VXApp::keyTimerResolution, ui->spinBoxTimerResolution->value());
 
 	// CRCチェック
 	config->SetValue(CB_CheckCRC, ui->checkBoxRomCRC->isChecked());

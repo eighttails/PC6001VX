@@ -792,7 +792,7 @@ Qt 6.5.0以上が必要です。
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
-.git master
+.4.2.3 2023/10/21
 * 環境に合わせてタイマ精度を変更できるようにした。
 * The timer precision can now be changed to suit the environment.
 

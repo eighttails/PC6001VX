@@ -9,8 +9,6 @@ $SCRIPT_DIR/../quazip/quazip.sh
 exitOnError
 $SCRIPT_DIR/../twaindsm/twaindsm.sh
 exitOnError
-$SCRIPT_DIR/../tesseract/tesseract.sh
-exitOnError
 fi
 
 #必要ライブラリ
@@ -20,6 +18,7 @@ $MINGW_PACKAGE_PREFIX-poppler-qt6 \
 $MINGW_PACKAGE_PREFIX-djvulibre \
 $MINGW_PACKAGE_PREFIX-podofo \
 $MINGW_PACKAGE_PREFIX-dlfcn \
+$MINGW_PACKAGE_PREFIX-tesseract-ocr \
 2>/dev/null
 
 exitOnError

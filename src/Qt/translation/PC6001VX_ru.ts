@@ -139,7 +139,7 @@ WorkingDir not valid</source>
     </message>
     <message>
         <location filename="../configdialog.ui" line="590"/>
-        <location filename="../configdialog.ui" line="741"/>
+        <location filename="../configdialog.ui" line="792"/>
         <source>％</source>
         <translation>％</translation>
     </message>
@@ -190,10 +190,10 @@ WorkingDir not valid</source>
         <translation type="vanished">Buffer si&amp;ze</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="937"/>
-        <location filename="../configdialog.ui" line="980"/>
-        <location filename="../configdialog.ui" line="1023"/>
-        <location filename="../configdialog.ui" line="1066"/>
+        <location filename="../configdialog.ui" line="988"/>
+        <location filename="../configdialog.ui" line="1031"/>
+        <location filename="../configdialog.ui" line="1074"/>
+        <location filename="../configdialog.ui" line="1117"/>
         <source>TextLabel</source>
         <translation>ТекстБлок</translation>
     </message>
@@ -204,23 +204,23 @@ WorkingDir not valid</source>
 cut off fre&amp;quency</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="907"/>
+        <location filename="../configdialog.ui" line="958"/>
         <source>マスター音量(&amp;M)</source>
         <translation>Общая громкость</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="913"/>
-        <location filename="../configdialog.ui" line="963"/>
-        <location filename="../configdialog.ui" line="999"/>
-        <location filename="../configdialog.ui" line="1042"/>
+        <location filename="../configdialog.ui" line="964"/>
+        <location filename="../configdialog.ui" line="1014"/>
+        <location filename="../configdialog.ui" line="1050"/>
+        <location filename="../configdialog.ui" line="1093"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="930"/>
-        <location filename="../configdialog.ui" line="956"/>
-        <location filename="../configdialog.ui" line="1016"/>
-        <location filename="../configdialog.ui" line="1059"/>
+        <location filename="../configdialog.ui" line="981"/>
+        <location filename="../configdialog.ui" line="1007"/>
+        <location filename="../configdialog.ui" line="1067"/>
+        <location filename="../configdialog.ui" line="1110"/>
         <source>100</source>
         <translation>100</translation>
     </message>
@@ -229,12 +229,12 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;PSG volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="993"/>
+        <location filename="../configdialog.ui" line="1044"/>
         <source>音声合成音量(&amp;V)</source>
         <translation>Громкость голоса</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1036"/>
+        <location filename="../configdialog.ui" line="1087"/>
         <source>TAPEモニタ音量(&amp;T)</source>
         <translation>Монитор громкости кассеты</translation>
     </message>
@@ -251,44 +251,44 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Key repeat interval:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1095"/>
+        <location filename="../configdialog.ui" line="1146"/>
         <source>ファイル(&amp;F)</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1178"/>
+        <location filename="../configdialog.ui" line="1229"/>
         <source>拡張ROM(&amp;R):</source>
         <translation>Расширенное ПЗУ:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1242"/>
+        <location filename="../configdialog.ui" line="1293"/>
         <source>プリンタ(&amp;P):</source>
         <translation>Принтер:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1107"/>
+        <location filename="../configdialog.ui" line="1158"/>
         <source>TAPE(SAVE)(&amp;V):</source>
         <translation>Сохранить на кассету:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1195"/>
+        <location filename="../configdialog.ui" line="1246"/>
         <source>TAPE(LOAD)(&amp;A):</source>
         <translation>Загрузить с кассеты:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1117"/>
-        <location filename="../configdialog.ui" line="1136"/>
-        <location filename="../configdialog.ui" line="1143"/>
-        <location filename="../configdialog.ui" line="1171"/>
-        <location filename="../configdialog.ui" line="1205"/>
-        <location filename="../configdialog.ui" line="1262"/>
-        <location filename="../configdialog.ui" line="1298"/>
-        <location filename="../configdialog.ui" line="1325"/>
-        <location filename="../configdialog.ui" line="1352"/>
-        <location filename="../configdialog.ui" line="1379"/>
-        <location filename="../configdialog.ui" line="1406"/>
-        <location filename="../configdialog.ui" line="1433"/>
-        <location filename="../configdialog.ui" line="1460"/>
+        <location filename="../configdialog.ui" line="1168"/>
+        <location filename="../configdialog.ui" line="1187"/>
+        <location filename="../configdialog.ui" line="1194"/>
+        <location filename="../configdialog.ui" line="1222"/>
+        <location filename="../configdialog.ui" line="1256"/>
+        <location filename="../configdialog.ui" line="1313"/>
+        <location filename="../configdialog.ui" line="1349"/>
+        <location filename="../configdialog.ui" line="1376"/>
+        <location filename="../configdialog.ui" line="1403"/>
+        <location filename="../configdialog.ui" line="1430"/>
+        <location filename="../configdialog.ui" line="1457"/>
+        <location filename="../configdialog.ui" line="1484"/>
+        <location filename="../configdialog.ui" line="1511"/>
         <source>参照...</source>
         <translation>Выбрать...</translation>
     </message>
@@ -339,96 +339,121 @@ cut off fre&amp;quency</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="566"/>
-        <location filename="../configdialog.ui" line="717"/>
+        <location filename="../configdialog.ui" line="768"/>
         <source>スキャンライン(&amp;N)</source>
         <translation>Сканлайн</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="573"/>
-        <location filename="../configdialog.ui" line="724"/>
+        <location filename="../configdialog.ui" line="775"/>
         <source>輝度(&amp;B):</source>
         <translation>Яркость:</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="614"/>
-        <location filename="../configdialog.ui" line="765"/>
+        <location filename="../configdialog.ui" line="816"/>
         <source>フレームスキップ(&amp;K):</source>
         <translation>Пропуск кадров:</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="625"/>
-        <location filename="../configdialog.ui" line="776"/>
+        <location filename="../configdialog.ui" line="827"/>
         <source>0 (59.92fps)</source>
         <translation>0 (59.92fps)</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="630"/>
-        <location filename="../configdialog.ui" line="781"/>
+        <location filename="../configdialog.ui" line="832"/>
         <source>1 (29.96fps)</source>
         <translation>1 (29.96fps)</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="635"/>
-        <location filename="../configdialog.ui" line="786"/>
+        <location filename="../configdialog.ui" line="837"/>
         <source>2 (19.97fps)</source>
         <translation>2 (19.97fps)</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="640"/>
-        <location filename="../configdialog.ui" line="791"/>
+        <location filename="../configdialog.ui" line="842"/>
         <source>3 (14.98fps)</source>
         <translation>3 (14.98fps)</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="645"/>
-        <location filename="../configdialog.ui" line="796"/>
+        <location filename="../configdialog.ui" line="847"/>
         <source>4 (11.98fps)</source>
         <translation>4 (11.98fps)</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="650"/>
-        <location filename="../configdialog.ui" line="801"/>
+        <location filename="../configdialog.ui" line="852"/>
         <source>5 (9.99fps)</source>
         <translation>5 (9.99fps)</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="673"/>
-        <location filename="../configdialog.ui" line="868"/>
+        <location filename="../configdialog.ui" line="919"/>
         <source>4:3表示(&amp;3)</source>
         <translation>Экран 4:&amp;3</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="709"/>
+        <location filename="../configdialog.ui" line="711"/>
+        <source>横画面時の仮想キーボード位置(&amp;V):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="722"/>
+        <source>右</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="727"/>
+        <source>左</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="732"/>
+        <source>下</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="737"/>
+        <source>非表示</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="760"/>
         <source>ビデオキャプチャ時の設定</source>
         <translation>Во время захвата видео</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="826"/>
+        <location filename="../configdialog.ui" line="877"/>
         <source>解像度倍率(&amp;Z):</source>
         <translation>Коэффициент масштабирования:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="846"/>
+        <location filename="../configdialog.ui" line="897"/>
         <source>(50-400)</source>
         <translation>(50-400)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="899"/>
+        <location filename="../configdialog.ui" line="950"/>
         <source>サウンド(&amp;S)</source>
         <translation>Звук</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1101"/>
+        <location filename="../configdialog.ui" line="1152"/>
         <source>ファイル</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1219"/>
+        <location filename="../configdialog.ui" line="1270"/>
         <source>DISK1(&amp;K):</source>
         <translation>Диск 1:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1229"/>
+        <location filename="../configdialog.ui" line="1280"/>
         <source>DISK2(&amp;J):</source>
         <translation>Лиск 2:</translation>
     </message>
@@ -437,24 +462,24 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Fo&amp;lder</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1359"/>
+        <location filename="../configdialog.ui" line="1410"/>
         <source>拡張ROM(&amp;X):</source>
         <translation>Расширенное ПЗУ:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1150"/>
-        <location filename="../configdialog.ui" line="1157"/>
-        <location filename="../configdialog.ui" line="1164"/>
-        <location filename="../configdialog.ui" line="1188"/>
-        <location filename="../configdialog.ui" line="1212"/>
-        <location filename="../configdialog.ui" line="1255"/>
-        <location filename="../configdialog.ui" line="1291"/>
-        <location filename="../configdialog.ui" line="1318"/>
-        <location filename="../configdialog.ui" line="1345"/>
-        <location filename="../configdialog.ui" line="1372"/>
-        <location filename="../configdialog.ui" line="1399"/>
-        <location filename="../configdialog.ui" line="1426"/>
-        <location filename="../configdialog.ui" line="1453"/>
+        <location filename="../configdialog.ui" line="1201"/>
+        <location filename="../configdialog.ui" line="1208"/>
+        <location filename="../configdialog.ui" line="1215"/>
+        <location filename="../configdialog.ui" line="1239"/>
+        <location filename="../configdialog.ui" line="1263"/>
+        <location filename="../configdialog.ui" line="1306"/>
+        <location filename="../configdialog.ui" line="1342"/>
+        <location filename="../configdialog.ui" line="1369"/>
+        <location filename="../configdialog.ui" line="1396"/>
+        <location filename="../configdialog.ui" line="1423"/>
+        <location filename="../configdialog.ui" line="1450"/>
+        <location filename="../configdialog.ui" line="1477"/>
+        <location filename="../configdialog.ui" line="1504"/>
         <source>クリア</source>
         <translation>Очистить</translation>
     </message>
@@ -463,17 +488,17 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">State sa&amp;ve</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1305"/>
+        <location filename="../configdialog.ui" line="1356"/>
         <source>TAPE(&amp;T):</source>
         <translation>Образ кассеты:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1332"/>
+        <location filename="../configdialog.ui" line="1383"/>
         <source>DISK(&amp;K):</source>
         <translation>Диск:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1386"/>
+        <location filename="../configdialog.ui" line="1437"/>
         <source>SnapShot(&amp;H):</source>
         <translation>Снимок экрана:</translation>
     </message>
@@ -482,7 +507,7 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Wave</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1278"/>
+        <location filename="../configdialog.ui" line="1329"/>
         <source>ROM(&amp;R):</source>
         <translation>Образ ПЗУ:</translation>
     </message>
@@ -491,64 +516,64 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Color&amp;1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3053"/>
+        <location filename="../configdialog.ui" line="3104"/>
         <source>MODE1(&amp;1)</source>
         <translation>Режим &quot;Mode&amp;1&quot;</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1920"/>
-        <location filename="../configdialog.ui" line="2828"/>
-        <location filename="../configdialog.ui" line="3126"/>
+        <location filename="../configdialog.ui" line="1971"/>
+        <location filename="../configdialog.ui" line="2879"/>
+        <location filename="../configdialog.ui" line="3177"/>
         <source>黒</source>
         <translation>Чёрный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2374"/>
-        <location filename="../configdialog.ui" line="3186"/>
+        <location filename="../configdialog.ui" line="2425"/>
+        <location filename="../configdialog.ui" line="3237"/>
         <source>Set1</source>
         <translation>Набор1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2344"/>
-        <location filename="../configdialog.ui" line="3216"/>
+        <location filename="../configdialog.ui" line="2395"/>
+        <location filename="../configdialog.ui" line="3267"/>
         <source>Set2</source>
         <translation>Набор2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1272"/>
+        <location filename="../configdialog.ui" line="1323"/>
         <source>フォルダ</source>
         <translation>Каталог</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1484"/>
+        <location filename="../configdialog.ui" line="1535"/>
         <source>色(&amp;C)</source>
         <translation>Цает</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1934"/>
-        <location filename="../configdialog.ui" line="2185"/>
-        <location filename="../configdialog.ui" line="2669"/>
-        <location filename="../configdialog.ui" line="2683"/>
-        <location filename="../configdialog.ui" line="2835"/>
-        <location filename="../configdialog.ui" line="3119"/>
+        <location filename="../configdialog.ui" line="1985"/>
+        <location filename="../configdialog.ui" line="2236"/>
+        <location filename="../configdialog.ui" line="2720"/>
+        <location filename="../configdialog.ui" line="2734"/>
+        <location filename="../configdialog.ui" line="2886"/>
+        <location filename="../configdialog.ui" line="3170"/>
         <source>緑</source>
         <translation>Зелёеый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2955"/>
-        <location filename="../configdialog.ui" line="3179"/>
+        <location filename="../configdialog.ui" line="3006"/>
+        <location filename="../configdialog.ui" line="3230"/>
         <source>深緑</source>
         <translation>Тёмно-зелёный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1687"/>
-        <location filename="../configdialog.ui" line="2141"/>
-        <location filename="../configdialog.ui" line="3066"/>
+        <location filename="../configdialog.ui" line="1738"/>
+        <location filename="../configdialog.ui" line="2192"/>
+        <location filename="../configdialog.ui" line="3117"/>
         <source>橙</source>
         <translation>Оранжевый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3059"/>
+        <location filename="../configdialog.ui" line="3110"/>
         <source>深橙</source>
         <translation>Тёмно-оранжевый</translation>
     </message>
@@ -557,43 +582,43 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Mode&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1941"/>
-        <location filename="../configdialog.ui" line="2245"/>
+        <location filename="../configdialog.ui" line="1992"/>
+        <location filename="../configdialog.ui" line="2296"/>
         <source>黄</source>
         <translation>Жёлтый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1948"/>
-        <location filename="../configdialog.ui" line="2252"/>
-        <location filename="../configdialog.ui" line="2501"/>
-        <location filename="../configdialog.ui" line="2902"/>
+        <location filename="../configdialog.ui" line="1999"/>
+        <location filename="../configdialog.ui" line="2303"/>
+        <location filename="../configdialog.ui" line="2552"/>
+        <location filename="../configdialog.ui" line="2953"/>
         <source>青</source>
         <translation>Синий</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1927"/>
-        <location filename="../configdialog.ui" line="2178"/>
-        <location filename="../configdialog.ui" line="2676"/>
-        <location filename="../configdialog.ui" line="2888"/>
+        <location filename="../configdialog.ui" line="1978"/>
+        <location filename="../configdialog.ui" line="2229"/>
+        <location filename="../configdialog.ui" line="2727"/>
+        <location filename="../configdialog.ui" line="2939"/>
         <source>赤</source>
         <translation>Красный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1962"/>
-        <location filename="../configdialog.ui" line="2238"/>
-        <location filename="../configdialog.ui" line="2487"/>
+        <location filename="../configdialog.ui" line="2013"/>
+        <location filename="../configdialog.ui" line="2289"/>
+        <location filename="../configdialog.ui" line="2538"/>
         <source>白</source>
         <translation>Белый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1969"/>
-        <location filename="../configdialog.ui" line="2171"/>
+        <location filename="../configdialog.ui" line="2020"/>
+        <location filename="../configdialog.ui" line="2222"/>
         <source>シアン</source>
         <translation>Циан</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1955"/>
-        <location filename="../configdialog.ui" line="2111"/>
+        <location filename="../configdialog.ui" line="2006"/>
+        <location filename="../configdialog.ui" line="2162"/>
         <source>マゼンタ</source>
         <translation>Магента</translation>
     </message>
@@ -602,19 +627,19 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Mode&amp;3</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2262"/>
+        <location filename="../configdialog.ui" line="2313"/>
         <source>MODE4(&amp;4)</source>
         <translation>Режим &quot;Mode&amp;4&quot;</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2381"/>
-        <location filename="../configdialog.ui" line="2494"/>
+        <location filename="../configdialog.ui" line="2432"/>
+        <location filename="../configdialog.ui" line="2545"/>
         <source>にじみ2</source>
         <translation>Fringe2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2388"/>
-        <location filename="../configdialog.ui" line="2895"/>
+        <location filename="../configdialog.ui" line="2439"/>
+        <location filename="../configdialog.ui" line="2946"/>
         <source>桃</source>
         <translation>Персиковый</translation>
     </message>
@@ -629,28 +654,28 @@ cut off fre&amp;quency</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="680"/>
-        <location filename="../configdialog.ui" line="875"/>
+        <location filename="../configdialog.ui" line="926"/>
         <source>フィルタリング(&amp;F)</source>
         <translation>Фильтрация</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="950"/>
+        <location filename="../configdialog.ui" line="1001"/>
         <source>PSG、FM音量(&amp;P)</source>
         <translation>Уровень громкости PSG и FM</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1440"/>
+        <location filename="../configdialog.ui" line="1491"/>
         <source>どこでもSAVE(&amp;V):</source>
         <translation>Сохранение состояния:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1413"/>
+        <location filename="../configdialog.ui" line="1464"/>
         <source>WAVE(&amp;W):</source>
         <translation>&amp;WAVE:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2314"/>
-        <location filename="../configdialog.ui" line="2962"/>
+        <location filename="../configdialog.ui" line="2365"/>
+        <location filename="../configdialog.ui" line="3013"/>
         <source>にじみ1</source>
         <translation>Fringe1</translation>
     </message>
@@ -663,83 +688,83 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Color&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1490"/>
+        <location filename="../configdialog.ui" line="1541"/>
         <source>mk2〜(&amp;M)</source>
         <translation>&amp;mk2~</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1680"/>
+        <location filename="../configdialog.ui" line="1731"/>
         <source>透明(黒)</source>
         <translation>Прозрачный(Чёрный)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1694"/>
+        <location filename="../configdialog.ui" line="1745"/>
         <source>青緑</source>
         <translation>Сине-зелёный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1701"/>
+        <location filename="../configdialog.ui" line="1752"/>
         <source>黄緑</source>
         <translation>Жёлто-зелёный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1708"/>
+        <location filename="../configdialog.ui" line="1759"/>
         <source>灰色</source>
         <translation>Серый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1715"/>
+        <location filename="../configdialog.ui" line="1766"/>
         <source>空色</source>
         <translation>Лазурный</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1722"/>
+        <location filename="../configdialog.ui" line="1773"/>
         <source>赤紫</source>
         <translation>Красно-фиолетовый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1729"/>
+        <location filename="../configdialog.ui" line="1780"/>
         <source>青紫</source>
         <translation>Сине-фиолетовый</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1979"/>
+        <location filename="../configdialog.ui" line="2030"/>
         <source>変更したい色を
 クリックしてください</source>
         <translation>Выберите нужный цвет.</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2013"/>
+        <location filename="../configdialog.ui" line="2064"/>
         <source>MODE2/3(&amp;2)</source>
         <translation>Режим &quot;Mode4 {2/3(&amp;2)&quot;?}</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3240"/>
+        <location filename="../configdialog.ui" line="3291"/>
         <source>その他(&amp;O)</source>
         <translation>Прочее</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3248"/>
+        <location filename="../configdialog.ui" line="3299"/>
         <source>オーバークロック率(&amp;V):</source>
         <translation>Множитель разгона:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3268"/>
+        <location filename="../configdialog.ui" line="3319"/>
         <source>% (1-1000)</source>
         <translation>% (1-1000)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3292"/>
+        <location filename="../configdialog.ui" line="3343"/>
         <source>タイマー精度(&amp;T):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3312"/>
+        <location filename="../configdialog.ui" line="3363"/>
         <source>ms (1-1000)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3334"/>
+        <location filename="../configdialog.ui" line="3385"/>
         <source>システムROMのCRCチェック有効(&amp;C)</source>
         <translation>Включить проверку CRC образов системных ПЗУ</translation>
     </message>
@@ -864,22 +889,22 @@ cut off fre&amp;quency</translation>
         <translation>Включить ожидание лоступа к дисководу</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3341"/>
+        <location filename="../configdialog.ui" line="3392"/>
         <source>どこでもLOAD(SLOT)実行時に確認する(&amp;L)</source>
         <translation>Подтверждать загрузку</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3348"/>
+        <location filename="../configdialog.ui" line="3399"/>
         <source>終了時に確認する(&amp;F)</source>
         <translation>Подтверждать выход</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3355"/>
+        <location filename="../configdialog.ui" line="3406"/>
         <source>終了時にINIファイルを保存する(&amp;Q)</source>
         <translation>Сохранять INI файл при выходе</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="309"/>
+        <location filename="../configdialog.cpp" line="314"/>
         <source>互換ROM使用中</source>
         <translation>Использовать встроенный образ ПЗУ</translation>
     </message>
@@ -955,33 +980,33 @@ cut off fre&amp;quency</translation>
 <context>
     <name>P6VXApp</name>
     <message>
-        <location filename="../p6vxapp.cpp" line="160"/>
+        <location filename="../p6vxapp.cpp" line="161"/>
         <source>Storage access denied.</source>
         <translation>Нет доступа к хранилищу.</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="647"/>
+        <location filename="../p6vxapp.cpp" line="649"/>
         <source>TAPE(SAVE)ファイルが存在しません。</source>
         <translation>Образа кассеты, который был сохранён, не существует.</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="298"/>
-        <location filename="../p6vxapp.cpp" line="664"/>
+        <location filename="../p6vxapp.cpp" line="300"/>
+        <location filename="../p6vxapp.cpp" line="666"/>
         <source>ファイルはすでに存在しています。上書きしますか?</source>
         <translation>Файл с таким именем уже существует. Перезаписать?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="527"/>
+        <location filename="../p6vxapp.cpp" line="529"/>
         <source>本当に設定を初期化しますか?</source>
         <translation>Вы действительно хотите сбросить настройки?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="529"/>
+        <location filename="../p6vxapp.cpp" line="531"/>
         <source>設定を反映するには一度終了しますがよろしいですか?</source>
         <translation>Для применения изменений нужно перезапустить эмулятор.\nХотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="695"/>
+        <location filename="../p6vxapp.cpp" line="697"/>
         <source>ROMファイルが見つかりません。
 ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォルダを指定してください。
 別のROMフォルダを指定しますか?</source>
@@ -990,12 +1015,12 @@ ROMフォルダ(%1)にROMファイルをコピーするか、別のROMフォル�
 Можете указать другой каталог?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="716"/>
+        <location filename="../p6vxapp.cpp" line="718"/>
         <source>エミュレーター内蔵の互換ROMを使用しますか?</source>
         <translation>Использовать те образы, что идут в комплекте?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="744"/>
+        <location filename="../p6vxapp.cpp" line="746"/>
         <source>ROMイメージのCRCが不正です。
 CRCが一致しないROMを使用すると、予期せぬ不具合を引き起こす可能性があります。
 それでも起動しますか?</source>
@@ -1004,7 +1029,7 @@ CRCが一致しないROMを使用すると、予期せぬ不具合を引き起�
 Всё равно использовать эти образы ПЗУ?</translation>
     </message>
     <message>
-        <location filename="../p6vxapp.cpp" line="761"/>
+        <location filename="../p6vxapp.cpp" line="763"/>
         <source>ROMファイルの一部が見つかりません。
 エミュレーター内蔵の互換ROMを使用しますか?</source>
         <translation>Не удалось найти необходимые образы ПЗУ.\nИспользовать те образы, что идут в комплекте?</translation>

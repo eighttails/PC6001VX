@@ -209,6 +209,9 @@ void ConfigDialog::readConfig()
 
 	// 4:3表示
 	ui->checkBoxDispNTSC->setChecked(config->GetValue(CB_DispNTSC));
+	
+	// フィルタリング
+	ui->checkBoxFiltering->setChecked(config->GetValue(CB_Filtering));
 
 	// フルスクリーン
 #ifdef ALWAYSFULLSCREEN
@@ -226,9 +229,11 @@ void ConfigDialog::readConfig()
 #else
 	ui->checkBoxHwAccel->setVisible(false);
 #endif
-	// フィルタリング
-	ui->checkBoxFiltering->setChecked(config->GetValue(CB_Filtering));
 
+	// 横画面時の仮想キーボード位置
+	ui->comboBoxVirtualKeyPosition->setCurrentIndex(app->getSetting(P6VXApp::keyVirtualKeyPosition).toInt());
+
+	
 	//// ビデオキャプチャ時の設定
 	// フレームスキップ
 	ui->comboBoxMovieFrameSkip->setCurrentIndex(config->GetValue(CV_AviFrameSkip));
@@ -475,6 +480,9 @@ void ConfigDialog::writeConfig()
 
 	// 4:3表示
 	config->SetValue(CB_DispNTSC, ui->checkBoxDispNTSC->isChecked());
+	
+	// フィルタリング
+	config->SetValue(CB_Filtering, ui->checkBoxFiltering->isChecked());
 
 #ifndef ALWAYSFULLSCREEN
 	// フルスクリーン
@@ -486,9 +494,10 @@ void ConfigDialog::writeConfig()
 	// ハードウェアアクセラレーション
 	app->setSetting(P6VXApp::keyHwAccel, ui->checkBoxHwAccel->isChecked());
 
-	// フィルタリング
-	config->SetValue(CB_Filtering, ui->checkBoxFiltering->isChecked());
-
+	
+	// 横画面時の仮想キーボード位置
+	app->setSetting(P6VXApp::keyVirtualKeyPosition, ui->comboBoxVirtualKeyPosition->currentIndex());
+	
 
 	//// ビデオキャプチャ時の設定
 	// フレームスキップ

@@ -33,6 +33,7 @@ const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
 const QString P6VXApp::keyKeyPanelPosition		= "keypalette/position";
 const QString P6VXApp::keyVirtualKeyVisible		= "virtualkey/visible";
 const QString P6VXApp::keyVirtualKeyTabIndex	= "virtualkey/tabindex";
+const QString P6VXApp::keyVirtualKeyPosition	= "virtualkey/positionInLandscape";
 const QString P6VXApp::keyTimerResolution		= "generic/timerResolution";
 
 
@@ -207,6 +208,7 @@ void P6VXApp::startup()
 #else
 	setDefaultSetting(keyVirtualKeyVisible, false);
 #endif
+	setDefaultSetting(keyVirtualKeyPosition, 0);
 #ifndef DELAY_TIMER_MS_DEFAULT
 #define DELAY_TIMER_MS_DEFAULT 1
 #endif

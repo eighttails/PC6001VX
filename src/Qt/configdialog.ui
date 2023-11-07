@@ -614,7 +614,7 @@
             <string>フレームスキップ(&amp;K):</string>
            </property>
            <property name="buddy">
-            <cstring>comboBoxMovieFrameSkip</cstring>
+            <cstring>comboBoxFrameSkip</cstring>
            </property>
           </widget>
          </item>
@@ -702,6 +702,57 @@
 (次回起動時に反映)(&amp;H)</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_14">
+         <item>
+          <widget class="QLabel" name="labelVirtualKeyPosition">
+           <property name="text">
+            <string>横画面時の仮想キーボード位置(&amp;V):</string>
+           </property>
+           <property name="buddy">
+            <cstring>comboBoxVirtualKeyPosition</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxVirtualKeyPosition">
+           <item>
+            <property name="text">
+             <string>右</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>左</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>下</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>非表示</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_18">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QGroupBox" name="groupBoxVideoCapture">
@@ -3383,27 +3434,27 @@ border-radius: 1;</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
-  <tabstop>spinBoxClockRatio</tabstop>
   <tabstop>spinBoxTimerResolution</tabstop>
   <tabstop>checkBoxRomCRC</tabstop>
-  <tabstop>checkBoxCkDokoLoad</tabstop>
   <tabstop>checkBoxCkQuit</tabstop>
-  <tabstop>checkBoxSaveQuit</tabstop>
-  <tabstop>pushButtonColor0</tabstop>
-  <tabstop>pushButtonColor1</tabstop>
-  <tabstop>pushButtonColor2</tabstop>
-  <tabstop>pushButtonColor3</tabstop>
-  <tabstop>pushButtonColor4</tabstop>
-  <tabstop>pushButtonColor5</tabstop>
-  <tabstop>pushButtonColor6</tabstop>
-  <tabstop>pushButtonColor7</tabstop>
-  <tabstop>pushButtonColor8</tabstop>
-  <tabstop>pushButtonColor9</tabstop>
-  <tabstop>pushButtonColor10</tabstop>
-  <tabstop>pushButtonColor11</tabstop>
-  <tabstop>pushButtonColor12</tabstop>
-  <tabstop>pushButtonColor41</tabstop>
+  <tabstop>checkBoxCkDokoLoad</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>comboBoxMode4Color</tabstop>
+  <tabstop>checkBoxScanline</tabstop>
+  <tabstop>spinBoxScanLineBr</tabstop>
+  <tabstop>comboBoxFrameSkip</tabstop>
+  <tabstop>checkBoxDispNTSC</tabstop>
+  <tabstop>checkBoxFiltering</tabstop>
+  <tabstop>checkBoxFullscreen</tabstop>
+  <tabstop>checkBoxStatDisp</tabstop>
+  <tabstop>checkBoxHwAccel</tabstop>
+  <tabstop>comboBoxVirtualKeyPosition</tabstop>
+  <tabstop>checkBoxMovieScanline</tabstop>
+  <tabstop>spinBoxMovieScanLineBr</tabstop>
+  <tabstop>comboBoxMovieFrameSkip</tabstop>
+  <tabstop>spinBoxMovieZoom</tabstop>
+  <tabstop>checkBoxMovieDispNTSC</tabstop>
+  <tabstop>checkBoxMovieFiltering</tabstop>
   <tabstop>pushButtonColor42</tabstop>
   <tabstop>pushButtonColor43</tabstop>
   <tabstop>pushButtonColor44</tabstop>
@@ -3459,21 +3510,21 @@ border-radius: 1;</string>
   <tabstop>spinBoxBoost60</tabstop>
   <tabstop>spinBoxBoost66</tabstop>
   <tabstop>spinBoxStopBit</tabstop>
-  <tabstop>comboBoxMode4Color</tabstop>
-  <tabstop>checkBoxScanline</tabstop>
-  <tabstop>spinBoxScanLineBr</tabstop>
-  <tabstop>comboBoxFrameSkip</tabstop>
-  <tabstop>checkBoxDispNTSC</tabstop>
-  <tabstop>checkBoxFiltering</tabstop>
-  <tabstop>checkBoxFullscreen</tabstop>
-  <tabstop>checkBoxStatDisp</tabstop>
-  <tabstop>checkBoxHwAccel</tabstop>
-  <tabstop>checkBoxMovieScanline</tabstop>
-  <tabstop>spinBoxMovieScanLineBr</tabstop>
-  <tabstop>comboBoxMovieFrameSkip</tabstop>
-  <tabstop>spinBoxMovieZoom</tabstop>
-  <tabstop>checkBoxMovieDispNTSC</tabstop>
-  <tabstop>checkBoxMovieFiltering</tabstop>
+  <tabstop>spinBoxClockRatio</tabstop>
+  <tabstop>checkBoxSaveQuit</tabstop>
+  <tabstop>pushButtonColor0</tabstop>
+  <tabstop>pushButtonColor1</tabstop>
+  <tabstop>pushButtonColor2</tabstop>
+  <tabstop>pushButtonColor3</tabstop>
+  <tabstop>pushButtonColor4</tabstop>
+  <tabstop>pushButtonColor5</tabstop>
+  <tabstop>pushButtonColor6</tabstop>
+  <tabstop>pushButtonColor8</tabstop>
+  <tabstop>pushButtonColor9</tabstop>
+  <tabstop>pushButtonColor10</tabstop>
+  <tabstop>pushButtonColor11</tabstop>
+  <tabstop>pushButtonColor12</tabstop>
+  <tabstop>pushButtonColor41</tabstop>
   <tabstop>horizontalSliderMasterVol</tabstop>
   <tabstop>horizontalSliderPSGVol</tabstop>
   <tabstop>horizontalSliderVoiceVol</tabstop>
@@ -3517,6 +3568,7 @@ border-radius: 1;</string>
   <tabstop>lineEditFolderDokoSave</tabstop>
   <tabstop>pushButtonClearFolderDokoSave</tabstop>
   <tabstop>pushButtonRefFolderDokoSave</tabstop>
+  <tabstop>pushButtonColor7</tabstop>
  </tabstops>
  <resources/>
  <connections>

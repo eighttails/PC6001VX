@@ -1,6 +1,6 @@
 #include "mainwidget.h"
 
-#include <QVBoxLayout>
+#include <QBoxLayout>
 #include <QResizeEvent>
 #include <QApplication>
 
@@ -15,7 +15,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	//IMEを無効化
 	setAttribute(Qt::WA_InputMethodEnabled, false);
 
-	QVBoxLayout* layout = new QVBoxLayout();
+	auto layout = new QBoxLayout(QBoxLayout::TopToBottom);
 	layout->setSpacing(0);
 	layout->setContentsMargins(0, 0, 0, 0 );
 	setLayout(layout);
@@ -114,6 +114,41 @@ void MainWidget::closeEvent(QCloseEvent *event)
 
 void MainWidget::resizeEvent(QResizeEvent *event)
 {
-	VKeyWidget->setMaximumHeight(event->size().height() / 2);
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	// 仮想キーボードのは位置設定
+	auto position = app->getSetting(P6VXApp::keyVirtualKeyPosition).toInt();
+	
+	if (event->size().width() > event->size().height()){ 
+		// 横画面の場合、設定値に応じて仮想キーボードの配置位置を変える
+		switch (position) {
+		case 0: // 右
+			dynamic_cast<QBoxLayout*>(this->layout())->setDirection(QBoxLayout::LeftToRight);
+			VKeyWidget->setMaximumWidth(event->size().width() / 2);
+			VKeyWidget->setMaximumHeight(QWIDGETSIZE_MAX);
+			break;
+		case 1: // 左
+			dynamic_cast<QBoxLayout*>(this->layout())->setDirection(QBoxLayout::RightToLeft);
+			VKeyWidget->setMaximumWidth(event->size().width() / 2);
+			VKeyWidget->setMaximumHeight(QWIDGETSIZE_MAX);
+			break;
+		case 2: // 下
+			dynamic_cast<QBoxLayout*>(this->layout())->setDirection(QBoxLayout::TopToBottom);
+			VKeyWidget->setMaximumWidth(QWIDGETSIZE_MAX);
+			VKeyWidget->setMaximumHeight(event->size().height() / 2);
+			break;
+		case 3: // 非表示
+			dynamic_cast<QBoxLayout*>(this->layout())->setDirection(QBoxLayout::LeftToRight);
+			VKeyWidget->setMaximumWidth(0);
+			VKeyWidget->setMaximumHeight(QWIDGETSIZE_MAX);
+			break;
+		default:;
+		}
+		
+	} else {
+		// 縦画面の場合、設定値に関わらず仮想キーボードの配置位置は固定
+		dynamic_cast<QBoxLayout*>(this->layout())->setDirection(QBoxLayout::TopToBottom);
+		VKeyWidget->setMaximumWidth(QWIDGETSIZE_MAX);
+		VKeyWidget->setMaximumHeight(event->size().height() / 2);
+	}
 	ensurePolished();
 }

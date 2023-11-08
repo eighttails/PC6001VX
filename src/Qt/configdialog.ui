@@ -3434,11 +3434,19 @@ border-radius: 1;</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>spinBoxTimerResolution</tabstop>
-  <tabstop>checkBoxRomCRC</tabstop>
-  <tabstop>checkBoxCkQuit</tabstop>
-  <tabstop>checkBoxCkDokoLoad</tabstop>
   <tabstop>tabWidget</tabstop>
+  <tabstop>comboBoxModel</tabstop>
+  <tabstop>comboBoxExtCartridge</tabstop>
+  <tabstop>checkBoxCompatibleRomMode</tabstop>
+  <tabstop>spinBoxNumFdd</tabstop>
+  <tabstop>checkBoxFDDWait</tabstop>
+  <tabstop>checkBoxRomajiInput</tabstop>
+  <tabstop>spinBoxRomajiWait</tabstop>
+  <tabstop>checkBoxTurboTape</tabstop>
+  <tabstop>groupBoxBoostUp</tabstop>
+  <tabstop>spinBoxBoost60</tabstop>
+  <tabstop>spinBoxBoost66</tabstop>
+  <tabstop>spinBoxStopBit</tabstop>
   <tabstop>comboBoxMode4Color</tabstop>
   <tabstop>checkBoxScanline</tabstop>
   <tabstop>spinBoxScanLineBr</tabstop>
@@ -3455,76 +3463,6 @@ border-radius: 1;</string>
   <tabstop>spinBoxMovieZoom</tabstop>
   <tabstop>checkBoxMovieDispNTSC</tabstop>
   <tabstop>checkBoxMovieFiltering</tabstop>
-  <tabstop>pushButtonColor42</tabstop>
-  <tabstop>pushButtonColor43</tabstop>
-  <tabstop>pushButtonColor44</tabstop>
-  <tabstop>pushButtonColor45</tabstop>
-  <tabstop>pushButtonColor46</tabstop>
-  <tabstop>pushButtonColor47</tabstop>
-  <tabstop>pushButtonColor48</tabstop>
-  <tabstop>pushButtonColor49</tabstop>
-  <tabstop>pushButtonColor50</tabstop>
-  <tabstop>pushButtonColor51</tabstop>
-  <tabstop>pushButtonColor52</tabstop>
-  <tabstop>pushButtonColor53</tabstop>
-  <tabstop>pushButtonColor54</tabstop>
-  <tabstop>pushButtonColor55</tabstop>
-  <tabstop>pushButtonColor56</tabstop>
-  <tabstop>pushButtonColor13</tabstop>
-  <tabstop>pushButtonColor14</tabstop>
-  <tabstop>pushButtonColor21</tabstop>
-  <tabstop>pushButtonColor17</tabstop>
-  <tabstop>pushButtonColor22</tabstop>
-  <tabstop>pushButtonColor23</tabstop>
-  <tabstop>pushButtonColor18</tabstop>
-  <tabstop>pushButtonColor24</tabstop>
-  <tabstop>pushButtonColor25</tabstop>
-  <tabstop>pushButtonColor19</tabstop>
-  <tabstop>pushButtonColor26</tabstop>
-  <tabstop>pushButtonColor27</tabstop>
-  <tabstop>pushButtonColor20</tabstop>
-  <tabstop>pushButtonColor28</tabstop>
-  <tabstop>pushButtonColor15</tabstop>
-  <tabstop>pushButtonColor16</tabstop>
-  <tabstop>pushButtonColor33</tabstop>
-  <tabstop>pushButtonColor29</tabstop>
-  <tabstop>pushButtonColor34</tabstop>
-  <tabstop>pushButtonColor35</tabstop>
-  <tabstop>pushButtonColor30</tabstop>
-  <tabstop>pushButtonColor36</tabstop>
-  <tabstop>pushButtonColor37</tabstop>
-  <tabstop>pushButtonColor31</tabstop>
-  <tabstop>pushButtonColor38</tabstop>
-  <tabstop>pushButtonColor39</tabstop>
-  <tabstop>pushButtonColor32</tabstop>
-  <tabstop>pushButtonColor40</tabstop>
-  <tabstop>comboBoxModel</tabstop>
-  <tabstop>comboBoxExtCartridge</tabstop>
-  <tabstop>checkBoxCompatibleRomMode</tabstop>
-  <tabstop>spinBoxNumFdd</tabstop>
-  <tabstop>checkBoxFDDWait</tabstop>
-  <tabstop>checkBoxRomajiInput</tabstop>
-  <tabstop>spinBoxRomajiWait</tabstop>
-  <tabstop>checkBoxTurboTape</tabstop>
-  <tabstop>groupBoxBoostUp</tabstop>
-  <tabstop>spinBoxBoost60</tabstop>
-  <tabstop>spinBoxBoost66</tabstop>
-  <tabstop>spinBoxStopBit</tabstop>
-  <tabstop>spinBoxClockRatio</tabstop>
-  <tabstop>checkBoxSaveQuit</tabstop>
-  <tabstop>pushButtonColor0</tabstop>
-  <tabstop>pushButtonColor1</tabstop>
-  <tabstop>pushButtonColor2</tabstop>
-  <tabstop>pushButtonColor3</tabstop>
-  <tabstop>pushButtonColor4</tabstop>
-  <tabstop>pushButtonColor5</tabstop>
-  <tabstop>pushButtonColor6</tabstop>
-  <tabstop>pushButtonColor8</tabstop>
-  <tabstop>pushButtonColor9</tabstop>
-  <tabstop>pushButtonColor10</tabstop>
-  <tabstop>pushButtonColor11</tabstop>
-  <tabstop>pushButtonColor12</tabstop>
-  <tabstop>pushButtonColor41</tabstop>
   <tabstop>horizontalSliderMasterVol</tabstop>
   <tabstop>horizontalSliderPSGVol</tabstop>
   <tabstop>horizontalSliderVoiceVol</tabstop>
@@ -3568,7 +3506,69 @@ border-radius: 1;</string>
   <tabstop>lineEditFolderDokoSave</tabstop>
   <tabstop>pushButtonClearFolderDokoSave</tabstop>
   <tabstop>pushButtonRefFolderDokoSave</tabstop>
+  <tabstop>pushButtonColor0</tabstop>
+  <tabstop>pushButtonColor1</tabstop>
+  <tabstop>pushButtonColor2</tabstop>
+  <tabstop>pushButtonColor3</tabstop>
+  <tabstop>pushButtonColor4</tabstop>
+  <tabstop>pushButtonColor5</tabstop>
+  <tabstop>pushButtonColor6</tabstop>
   <tabstop>pushButtonColor7</tabstop>
+  <tabstop>pushButtonColor8</tabstop>
+  <tabstop>pushButtonColor9</tabstop>
+  <tabstop>pushButtonColor10</tabstop>
+  <tabstop>pushButtonColor11</tabstop>
+  <tabstop>pushButtonColor12</tabstop>
+  <tabstop>pushButtonColor41</tabstop>
+  <tabstop>pushButtonColor42</tabstop>
+  <tabstop>pushButtonColor43</tabstop>
+  <tabstop>pushButtonColor44</tabstop>
+  <tabstop>pushButtonColor45</tabstop>
+  <tabstop>pushButtonColor46</tabstop>
+  <tabstop>pushButtonColor47</tabstop>
+  <tabstop>pushButtonColor48</tabstop>
+  <tabstop>pushButtonColor49</tabstop>
+  <tabstop>pushButtonColor50</tabstop>
+  <tabstop>pushButtonColor51</tabstop>
+  <tabstop>pushButtonColor52</tabstop>
+  <tabstop>pushButtonColor53</tabstop>
+  <tabstop>pushButtonColor54</tabstop>
+  <tabstop>pushButtonColor55</tabstop>
+  <tabstop>pushButtonColor56</tabstop>
+  <tabstop>pushButtonColor13</tabstop>
+  <tabstop>pushButtonColor14</tabstop>
+  <tabstop>pushButtonColor21</tabstop>
+  <tabstop>pushButtonColor17</tabstop>
+  <tabstop>pushButtonColor22</tabstop>
+  <tabstop>pushButtonColor23</tabstop>
+  <tabstop>pushButtonColor18</tabstop>
+  <tabstop>pushButtonColor24</tabstop>
+  <tabstop>pushButtonColor25</tabstop>
+  <tabstop>pushButtonColor19</tabstop>
+  <tabstop>pushButtonColor26</tabstop>
+  <tabstop>pushButtonColor27</tabstop>
+  <tabstop>pushButtonColor20</tabstop>
+  <tabstop>pushButtonColor28</tabstop>
+  <tabstop>pushButtonColor15</tabstop>
+  <tabstop>pushButtonColor16</tabstop>
+  <tabstop>pushButtonColor33</tabstop>
+  <tabstop>pushButtonColor29</tabstop>
+  <tabstop>pushButtonColor34</tabstop>
+  <tabstop>pushButtonColor35</tabstop>
+  <tabstop>pushButtonColor30</tabstop>
+  <tabstop>pushButtonColor36</tabstop>
+  <tabstop>pushButtonColor37</tabstop>
+  <tabstop>pushButtonColor31</tabstop>
+  <tabstop>pushButtonColor38</tabstop>
+  <tabstop>pushButtonColor39</tabstop>
+  <tabstop>pushButtonColor32</tabstop>
+  <tabstop>pushButtonColor40</tabstop>
+  <tabstop>spinBoxClockRatio</tabstop>
+  <tabstop>spinBoxTimerResolution</tabstop>
+  <tabstop>checkBoxRomCRC</tabstop>
+  <tabstop>checkBoxCkDokoLoad</tabstop>
+  <tabstop>checkBoxCkQuit</tabstop>
+  <tabstop>checkBoxSaveQuit</tabstop>
  </tabstops>
  <resources/>
  <connections>

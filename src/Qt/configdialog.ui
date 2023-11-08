@@ -47,11 +47,11 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QScrollArea" name="scrollArea">
+        <widget class="QScrollArea" name="scrollAreaBasicTab">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
+         <widget class="QWidget" name="scrollAreaBasicTabWidgetContents">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -522,11 +522,11 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
-        <widget class="QScrollArea" name="scrollArea_2">
+        <widget class="QScrollArea" name="scrollAreaScreenTab">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+         <widget class="QWidget" name="scrollAreaScreenTabWidgetContents">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -989,11 +989,11 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_11">
        <item>
-        <widget class="QScrollArea" name="scrollArea_3">
+        <widget class="QScrollArea" name="scrollAreaSoundTab">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_3">
+         <widget class="QWidget" name="scrollAreaSoundTabWidgetContents">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -1203,11 +1203,11 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QScrollArea" name="scrollArea_4">
+        <widget class="QScrollArea" name="scrollAreaFileTab">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_4">
+         <widget class="QWidget" name="scrollAreaFileTabWidgetContents">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -1611,11 +1611,11 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="0" column="1">
-        <widget class="QScrollArea" name="scrollArea_5">
+        <widget class="QScrollArea" name="scrollAreaColorTab">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_5">
+         <widget class="QWidget" name="scrollAreaColorTabWidgetContents">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -3389,11 +3389,11 @@ border-radius: 1;</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_21">
        <item>
-        <widget class="QScrollArea" name="scrollArea_6">
+        <widget class="QScrollArea" name="scrollAreaMiscTab">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_6">
+         <widget class="QWidget" name="scrollAreaMiscTabWidgetContents">
           <property name="geometry">
            <rect>
             <x>0</x>
@@ -3551,7 +3551,7 @@ border-radius: 1;</string>
  </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>scrollArea</tabstop>
+  <tabstop>scrollAreaBasicTab</tabstop>
   <tabstop>comboBoxModel</tabstop>
   <tabstop>comboBoxExtCartridge</tabstop>
   <tabstop>checkBoxCompatibleRomMode</tabstop>
@@ -3564,7 +3564,7 @@ border-radius: 1;</string>
   <tabstop>spinBoxBoost60</tabstop>
   <tabstop>spinBoxBoost66</tabstop>
   <tabstop>spinBoxStopBit</tabstop>
-  <tabstop>scrollArea_2</tabstop>
+  <tabstop>scrollAreaScreenTab</tabstop>
   <tabstop>comboBoxMode4Color</tabstop>
   <tabstop>checkBoxScanline</tabstop>
   <tabstop>spinBoxScanLineBr</tabstop>
@@ -3581,12 +3581,12 @@ border-radius: 1;</string>
   <tabstop>spinBoxMovieZoom</tabstop>
   <tabstop>checkBoxMovieDispNTSC</tabstop>
   <tabstop>checkBoxMovieFiltering</tabstop>
-  <tabstop>scrollArea_3</tabstop>
+  <tabstop>scrollAreaSoundTab</tabstop>
   <tabstop>horizontalSliderMasterVol</tabstop>
   <tabstop>horizontalSliderPSGVol</tabstop>
   <tabstop>horizontalSliderVoiceVol</tabstop>
   <tabstop>horizontalSliderTapeVol</tabstop>
-  <tabstop>scrollArea_4</tabstop>
+  <tabstop>scrollAreaFileTab</tabstop>
   <tabstop>lineEditExtRom</tabstop>
   <tabstop>pushButtonClearExtRom</tabstop>
   <tabstop>pushButtonRefExtRom</tabstop>
@@ -3626,7 +3626,7 @@ border-radius: 1;</string>
   <tabstop>lineEditFolderDokoSave</tabstop>
   <tabstop>pushButtonClearFolderDokoSave</tabstop>
   <tabstop>pushButtonRefFolderDokoSave</tabstop>
-  <tabstop>scrollArea_5</tabstop>
+  <tabstop>scrollAreaColorTab</tabstop>
   <tabstop>pushButtonColor0</tabstop>
   <tabstop>pushButtonColor1</tabstop>
   <tabstop>pushButtonColor2</tabstop>
@@ -3684,7 +3684,7 @@ border-radius: 1;</string>
   <tabstop>pushButtonColor55</tabstop>
   <tabstop>pushButtonColor48</tabstop>
   <tabstop>pushButtonColor56</tabstop>
-  <tabstop>scrollArea_6</tabstop>
+  <tabstop>scrollAreaMiscTab</tabstop>
   <tabstop>spinBoxClockRatio</tabstop>
   <tabstop>spinBoxTimerResolution</tabstop>
   <tabstop>checkBoxRomCRC</tabstop>

@@ -3,6 +3,7 @@
 
 #include <QDir>
 #include <QStandardItemModel>
+#include <QScreen>
 
 #include "../config.h"
 #include "../osd.h"
@@ -119,7 +120,24 @@ ConfigDialog::ConfigDialog(std::shared_ptr<CFG6> cfg, QWidget *parent)
 	connect(this, SIGNAL(accepted()), this, SLOT(writeConfig()));
 
 	readConfig();
+	
+#ifndef ALWAYSFULLSCREEN
+	// ダイアログを設定項目が収まる最適なサイズに設定
+	ui->scrollAreaBasicTab->setMinimumSize(ui->scrollAreaBasicTabWidgetContents->sizeHint());
+	ui->scrollAreaScreenTab->setMinimumSize(ui->scrollAreaScreenTabWidgetContents->sizeHint());
+	ui->scrollAreaSoundTab->setMinimumSize(ui->scrollAreaSoundTabWidgetContents->sizeHint());
+	ui->scrollAreaFileTab->setMinimumSize(ui->scrollAreaFileTabWidgetContents->sizeHint());
+	ui->scrollAreaColorTab->setMinimumSize(ui->scrollAreaColorTabWidgetContents->sizeHint());
+	ui->scrollAreaMiscTab->setMinimumSize(ui->scrollAreaMiscTabWidgetContents->sizeHint());
 	adjustSize();
+	ui->scrollAreaBasicTab->setMinimumSize(0, 0);
+	ui->scrollAreaScreenTab->setMinimumSize(0, 0);
+	ui->scrollAreaSoundTab->setMinimumSize(0, 0);
+	ui->scrollAreaFileTab->setMinimumSize(0, 0);
+	ui->scrollAreaColorTab->setMinimumSize(0, 0);
+	ui->scrollAreaMiscTab->setMinimumSize(0, 0);
+	setMaximumSize(qApp->primaryScreen()->size());
+#endif
 }
 
 ConfigDialog::~ConfigDialog()

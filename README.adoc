@@ -799,7 +799,9 @@ Qt 6.5.0以上が必要です。
 == 更新履歴
 .git master
 * 横画面表示時の仮想キーボードの位置を設定できるようにした。
+* 設定画面をスクロール可能にした(小さい画面用)
 * Virtual keyboard position in landscape screen is now configurable.
+* Made config dialog scrollable.(for small screen)
 
 .4.2.3 2023/10/21
 * 環境に合わせてタイマ精度を変更できるようにした。

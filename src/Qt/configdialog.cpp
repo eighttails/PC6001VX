@@ -253,6 +253,10 @@ void ConfigDialog::readConfig()
 	// フィルタリング
 	ui->checkBoxMovieFiltering->setChecked(config->GetValue(CB_AviFiltering));
 
+#ifdef NOAVI
+	ui->groupBoxVideoCapture->setVisible(false);
+#endif
+	
 	// サウンド------------------------------------------------------
 	// マスター音量
 	ui->horizontalSliderMasterVol->setValue(config->GetValue(CV_MasterVol));

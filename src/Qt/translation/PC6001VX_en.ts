@@ -18,12 +18,12 @@
         <translation type="vanished">&amp;Models</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="80"/>
+        <location filename="../configdialog.ui" line="95"/>
         <source>PC-6601</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="90"/>
+        <location filename="../configdialog.ui" line="105"/>
         <source>PC-6601SR</source>
         <translation></translation>
     </message>
@@ -40,7 +40,7 @@
         <translation type="vanished">FDD &amp;numbers</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="132"/>
+        <location filename="../configdialog.ui" line="147"/>
         <source>なし</source>
         <translation>None</translation>
     </message>
@@ -49,7 +49,7 @@
         <translation type="vanished">&amp;Screen</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="701"/>
+        <location filename="../configdialog.ui" line="735"/>
         <source>ハードウェアアクセラレーション
 (次回起動時に反映)(&amp;H)</source>
         <translation>&amp;Hardware acceleration
@@ -60,27 +60,27 @@
         <translation type="vanished">Mode&amp;4 color</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="521"/>
+        <location filename="../configdialog.ui" line="555"/>
         <source>モノクロ</source>
         <translation>Monochrome</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="526"/>
+        <location filename="../configdialog.ui" line="560"/>
         <source>赤/青</source>
         <translation>Red/Blue</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="531"/>
+        <location filename="../configdialog.ui" line="565"/>
         <source>青/赤</source>
         <translation>Blue/Red</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="536"/>
+        <location filename="../configdialog.ui" line="570"/>
         <source>桃/緑</source>
         <translation>Peach/Green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="541"/>
+        <location filename="../configdialog.ui" line="575"/>
         <source>緑/桃</source>
         <translation>Green/Peach</translation>
     </message>
@@ -93,8 +93,8 @@
         <translation type="vanished">Scanline b&amp;rightness:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="590"/>
-        <location filename="../configdialog.ui" line="792"/>
+        <location filename="../configdialog.ui" line="624"/>
+        <location filename="../configdialog.ui" line="826"/>
         <source>％</source>
         <translation></translation>
     </message>
@@ -103,12 +103,12 @@
         <translation type="vanished">4:&amp;3 display</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="687"/>
+        <location filename="../configdialog.ui" line="721"/>
         <source>フルスクリーン(&amp;U)</source>
         <translation>F&amp;ullscreen</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="694"/>
+        <location filename="../configdialog.ui" line="728"/>
         <source>ステータスバーを表示する(&amp;T)</source>
         <translation>Show s&amp;tatus bar</translation>
     </message>
@@ -145,10 +145,10 @@
         <translation type="vanished">Buffer si&amp;ze</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="988"/>
-        <location filename="../configdialog.ui" line="1031"/>
-        <location filename="../configdialog.ui" line="1074"/>
-        <location filename="../configdialog.ui" line="1117"/>
+        <location filename="../configdialog.ui" line="1039"/>
+        <location filename="../configdialog.ui" line="1082"/>
+        <location filename="../configdialog.ui" line="1125"/>
+        <location filename="../configdialog.ui" line="1168"/>
         <source>TextLabel</source>
         <translation></translation>
     </message>
@@ -159,23 +159,23 @@
 cut off fre&amp;quency</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="958"/>
+        <location filename="../configdialog.ui" line="1009"/>
         <source>マスター音量(&amp;M)</source>
         <translation>&amp;Master volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="964"/>
-        <location filename="../configdialog.ui" line="1014"/>
-        <location filename="../configdialog.ui" line="1050"/>
-        <location filename="../configdialog.ui" line="1093"/>
+        <location filename="../configdialog.ui" line="1015"/>
+        <location filename="../configdialog.ui" line="1065"/>
+        <location filename="../configdialog.ui" line="1101"/>
+        <location filename="../configdialog.ui" line="1144"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="981"/>
-        <location filename="../configdialog.ui" line="1007"/>
-        <location filename="../configdialog.ui" line="1067"/>
-        <location filename="../configdialog.ui" line="1110"/>
+        <location filename="../configdialog.ui" line="1032"/>
+        <location filename="../configdialog.ui" line="1058"/>
+        <location filename="../configdialog.ui" line="1118"/>
+        <location filename="../configdialog.ui" line="1161"/>
         <source>100</source>
         <translation></translation>
     </message>
@@ -184,12 +184,12 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;PSG volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1044"/>
+        <location filename="../configdialog.ui" line="1095"/>
         <source>音声合成音量(&amp;V)</source>
         <translation>&amp;Voice volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1087"/>
+        <location filename="../configdialog.ui" line="1138"/>
         <source>TAPEモニタ音量(&amp;T)</source>
         <translation>&amp;Tape monitor volume</translation>
     </message>
@@ -206,209 +206,207 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Key repeat interval:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1146"/>
+        <location filename="../configdialog.ui" line="1202"/>
         <source>ファイル(&amp;F)</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1229"/>
+        <location filename="../configdialog.ui" line="1300"/>
         <source>拡張ROM(&amp;R):</source>
         <translation>Extended &amp;Rom:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1293"/>
+        <location filename="../configdialog.ui" line="1364"/>
         <source>プリンタ(&amp;P):</source>
         <translation>&amp;Printer:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1158"/>
+        <location filename="../configdialog.ui" line="1229"/>
         <source>TAPE(SAVE)(&amp;V):</source>
         <translation>Tape(Sa&amp;ve):</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1246"/>
+        <location filename="../configdialog.ui" line="1317"/>
         <source>TAPE(LOAD)(&amp;A):</source>
         <translation>Tape(Lo&amp;ad):</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1168"/>
-        <location filename="../configdialog.ui" line="1187"/>
-        <location filename="../configdialog.ui" line="1194"/>
-        <location filename="../configdialog.ui" line="1222"/>
-        <location filename="../configdialog.ui" line="1256"/>
-        <location filename="../configdialog.ui" line="1313"/>
-        <location filename="../configdialog.ui" line="1349"/>
-        <location filename="../configdialog.ui" line="1376"/>
-        <location filename="../configdialog.ui" line="1403"/>
-        <location filename="../configdialog.ui" line="1430"/>
-        <location filename="../configdialog.ui" line="1457"/>
-        <location filename="../configdialog.ui" line="1484"/>
-        <location filename="../configdialog.ui" line="1511"/>
+        <location filename="../configdialog.ui" line="1239"/>
+        <location filename="../configdialog.ui" line="1258"/>
+        <location filename="../configdialog.ui" line="1265"/>
+        <location filename="../configdialog.ui" line="1293"/>
+        <location filename="../configdialog.ui" line="1327"/>
+        <location filename="../configdialog.ui" line="1384"/>
+        <location filename="../configdialog.ui" line="1420"/>
+        <location filename="../configdialog.ui" line="1447"/>
+        <location filename="../configdialog.ui" line="1474"/>
+        <location filename="../configdialog.ui" line="1501"/>
+        <location filename="../configdialog.ui" line="1528"/>
+        <location filename="../configdialog.ui" line="1555"/>
+        <location filename="../configdialog.ui" line="1582"/>
         <source>参照...</source>
         <translation>Select...</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="54"/>
+        <location filename="../configdialog.ui" line="69"/>
         <source>機種(&amp;M):</source>
         <translation>&amp;Model:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="264"/>
-        <source>KEY</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="270"/>
+        <location filename="../configdialog.ui" line="285"/>
         <source>ローマ字入力有効(&amp;R)</source>
         <translation>Enable Romaji input</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="282"/>
+        <location filename="../configdialog.ui" line="297"/>
         <source>ローマ字入力ウェイト(&amp;I):</source>
         <translation>Romaji Input wait:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="299"/>
+        <location filename="../configdialog.ui" line="314"/>
         <source>(0-60)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="443"/>
+        <location filename="../configdialog.ui" line="339"/>
+        <source>CMT(&amp;C)</source>
+        <translation>&amp;CMT</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="458"/>
         <source>ストップビット数(&amp;B):</source>
         <translation>Stop &amp;bits:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="463"/>
+        <location filename="../configdialog.ui" line="478"/>
         <source>bit (2-10)</source>
         <translation>bits (2-0)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="502"/>
+        <location filename="../configdialog.ui" line="521"/>
         <source>画面(&amp;D)</source>
         <translation>&amp;Display</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="510"/>
+        <location filename="../configdialog.ui" line="544"/>
         <source>MODE4カラー(&amp;M):</source>
         <translation>&amp;MODE4 color:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="566"/>
-        <location filename="../configdialog.ui" line="768"/>
+        <location filename="../configdialog.ui" line="600"/>
+        <location filename="../configdialog.ui" line="802"/>
         <source>スキャンライン(&amp;N)</source>
         <translation>Scanli&amp;ne</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="573"/>
-        <location filename="../configdialog.ui" line="775"/>
+        <location filename="../configdialog.ui" line="607"/>
+        <location filename="../configdialog.ui" line="809"/>
         <source>輝度(&amp;B):</source>
         <translation>&amp;Brightness:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="614"/>
-        <location filename="../configdialog.ui" line="816"/>
+        <location filename="../configdialog.ui" line="648"/>
+        <location filename="../configdialog.ui" line="850"/>
         <source>フレームスキップ(&amp;K):</source>
         <translation>Frames&amp;kip:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="625"/>
-        <location filename="../configdialog.ui" line="827"/>
+        <location filename="../configdialog.ui" line="659"/>
+        <location filename="../configdialog.ui" line="861"/>
         <source>0 (59.92fps)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="630"/>
-        <location filename="../configdialog.ui" line="832"/>
+        <location filename="../configdialog.ui" line="664"/>
+        <location filename="../configdialog.ui" line="866"/>
         <source>1 (29.96fps)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="635"/>
-        <location filename="../configdialog.ui" line="837"/>
+        <location filename="../configdialog.ui" line="669"/>
+        <location filename="../configdialog.ui" line="871"/>
         <source>2 (19.97fps)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="640"/>
-        <location filename="../configdialog.ui" line="842"/>
+        <location filename="../configdialog.ui" line="674"/>
+        <location filename="../configdialog.ui" line="876"/>
         <source>3 (14.98fps)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="645"/>
-        <location filename="../configdialog.ui" line="847"/>
+        <location filename="../configdialog.ui" line="679"/>
+        <location filename="../configdialog.ui" line="881"/>
         <source>4 (11.98fps)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="650"/>
-        <location filename="../configdialog.ui" line="852"/>
+        <location filename="../configdialog.ui" line="684"/>
+        <location filename="../configdialog.ui" line="886"/>
         <source>5 (9.99fps)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="673"/>
-        <location filename="../configdialog.ui" line="919"/>
+        <location filename="../configdialog.ui" line="707"/>
+        <location filename="../configdialog.ui" line="953"/>
         <source>4:3表示(&amp;3)</source>
         <translation>4:&amp;3 display</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="711"/>
+        <location filename="../configdialog.ui" line="745"/>
         <source>横画面時の仮想キーボード位置(&amp;V):</source>
         <translation>&amp;Virtual keyboard position in landscape screen:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="722"/>
+        <location filename="../configdialog.ui" line="756"/>
         <source>右</source>
         <translation>Right</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="727"/>
+        <location filename="../configdialog.ui" line="761"/>
         <source>左</source>
         <translation>Left</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="732"/>
+        <location filename="../configdialog.ui" line="766"/>
         <source>下</source>
         <translation>Bottom</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="737"/>
+        <location filename="../configdialog.ui" line="771"/>
         <source>非表示</source>
         <translation>Hide</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="760"/>
         <source>ビデオキャプチャ時の設定</source>
-        <translation>While capturing video</translation>
+        <translation type="vanished">While capturing video</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="877"/>
+        <location filename="../configdialog.ui" line="911"/>
         <source>解像度倍率(&amp;Z):</source>
         <translation>&amp;Zoom factor:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="897"/>
+        <location filename="../configdialog.ui" line="931"/>
         <source>(50-400)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="950"/>
+        <location filename="../configdialog.ui" line="988"/>
         <source>サウンド(&amp;S)</source>
         <translation>&amp;Sound</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1152"/>
         <source>ファイル</source>
-        <translation>File</translation>
+        <translation type="vanished">File</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1270"/>
+        <location filename="../configdialog.ui" line="1341"/>
         <source>DISK1(&amp;K):</source>
         <translation>Dis&amp;k1:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1280"/>
+        <location filename="../configdialog.ui" line="1351"/>
         <source>DISK2(&amp;J):</source>
         <translation>D&amp;isk2:</translation>
     </message>
@@ -417,24 +415,24 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Fo&amp;lder</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1410"/>
+        <location filename="../configdialog.ui" line="1481"/>
         <source>拡張ROM(&amp;X):</source>
         <translation>E&amp;xtended ROM:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1201"/>
-        <location filename="../configdialog.ui" line="1208"/>
-        <location filename="../configdialog.ui" line="1215"/>
-        <location filename="../configdialog.ui" line="1239"/>
-        <location filename="../configdialog.ui" line="1263"/>
-        <location filename="../configdialog.ui" line="1306"/>
-        <location filename="../configdialog.ui" line="1342"/>
-        <location filename="../configdialog.ui" line="1369"/>
-        <location filename="../configdialog.ui" line="1396"/>
-        <location filename="../configdialog.ui" line="1423"/>
-        <location filename="../configdialog.ui" line="1450"/>
-        <location filename="../configdialog.ui" line="1477"/>
-        <location filename="../configdialog.ui" line="1504"/>
+        <location filename="../configdialog.ui" line="1272"/>
+        <location filename="../configdialog.ui" line="1279"/>
+        <location filename="../configdialog.ui" line="1286"/>
+        <location filename="../configdialog.ui" line="1310"/>
+        <location filename="../configdialog.ui" line="1334"/>
+        <location filename="../configdialog.ui" line="1377"/>
+        <location filename="../configdialog.ui" line="1413"/>
+        <location filename="../configdialog.ui" line="1440"/>
+        <location filename="../configdialog.ui" line="1467"/>
+        <location filename="../configdialog.ui" line="1494"/>
+        <location filename="../configdialog.ui" line="1521"/>
+        <location filename="../configdialog.ui" line="1548"/>
+        <location filename="../configdialog.ui" line="1575"/>
         <source>クリア</source>
         <translation>Clear</translation>
     </message>
@@ -443,17 +441,17 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">State sa&amp;ve</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1356"/>
+        <location filename="../configdialog.ui" line="1427"/>
         <source>TAPE(&amp;T):</source>
         <translation>&amp;Tape:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1383"/>
+        <location filename="../configdialog.ui" line="1454"/>
         <source>DISK(&amp;K):</source>
         <translation>Dis&amp;k:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1437"/>
+        <location filename="../configdialog.ui" line="1508"/>
         <source>SnapShot(&amp;H):</source>
         <translation>Snaps&amp;hot:</translation>
     </message>
@@ -462,7 +460,7 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Wave</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1329"/>
+        <location filename="../configdialog.ui" line="1400"/>
         <source>ROM(&amp;R):</source>
         <translation>&amp;ROM:</translation>
     </message>
@@ -471,64 +469,63 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Color&amp;1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3104"/>
+        <location filename="../configdialog.ui" line="1656"/>
         <source>MODE1(&amp;1)</source>
         <translation>Mode&amp;1</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1971"/>
-        <location filename="../configdialog.ui" line="2879"/>
-        <location filename="../configdialog.ui" line="3177"/>
+        <location filename="../configdialog.ui" line="1729"/>
+        <location filename="../configdialog.ui" line="2670"/>
+        <location filename="../configdialog.ui" line="3313"/>
         <source>黒</source>
         <translation>Black</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2425"/>
-        <location filename="../configdialog.ui" line="3237"/>
+        <location filename="../configdialog.ui" line="1789"/>
+        <location filename="../configdialog.ui" line="2216"/>
         <source>Set1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2395"/>
-        <location filename="../configdialog.ui" line="3267"/>
+        <location filename="../configdialog.ui" line="1819"/>
+        <location filename="../configdialog.ui" line="2186"/>
         <source>Set2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1323"/>
         <source>フォルダ</source>
-        <translation>Folder</translation>
+        <translation type="vanished">Folder</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1535"/>
+        <location filename="../configdialog.ui" line="1610"/>
         <source>色(&amp;C)</source>
         <translation>&amp;Color</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1985"/>
-        <location filename="../configdialog.ui" line="2236"/>
-        <location filename="../configdialog.ui" line="2720"/>
-        <location filename="../configdialog.ui" line="2734"/>
-        <location filename="../configdialog.ui" line="2886"/>
-        <location filename="../configdialog.ui" line="3170"/>
+        <location filename="../configdialog.ui" line="1722"/>
+        <location filename="../configdialog.ui" line="2027"/>
+        <location filename="../configdialog.ui" line="2511"/>
+        <location filename="../configdialog.ui" line="2525"/>
+        <location filename="../configdialog.ui" line="2677"/>
+        <location filename="../configdialog.ui" line="3327"/>
         <source>緑</source>
         <translation>Green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3006"/>
-        <location filename="../configdialog.ui" line="3230"/>
+        <location filename="../configdialog.ui" line="1782"/>
+        <location filename="../configdialog.ui" line="2797"/>
         <source>深緑</source>
         <translation>Dark green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1738"/>
-        <location filename="../configdialog.ui" line="2192"/>
-        <location filename="../configdialog.ui" line="3117"/>
+        <location filename="../configdialog.ui" line="1669"/>
+        <location filename="../configdialog.ui" line="1983"/>
+        <location filename="../configdialog.ui" line="3080"/>
         <source>橙</source>
         <translation>Orange</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3110"/>
+        <location filename="../configdialog.ui" line="1662"/>
         <source>深橙</source>
         <translation>Dark orange</translation>
     </message>
@@ -537,43 +534,43 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Mode&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1992"/>
-        <location filename="../configdialog.ui" line="2296"/>
+        <location filename="../configdialog.ui" line="2087"/>
+        <location filename="../configdialog.ui" line="3334"/>
         <source>黄</source>
         <translation>Yellow</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1999"/>
-        <location filename="../configdialog.ui" line="2303"/>
-        <location filename="../configdialog.ui" line="2552"/>
-        <location filename="../configdialog.ui" line="2953"/>
+        <location filename="../configdialog.ui" line="2094"/>
+        <location filename="../configdialog.ui" line="2343"/>
+        <location filename="../configdialog.ui" line="2744"/>
+        <location filename="../configdialog.ui" line="3341"/>
         <source>青</source>
         <translation>Blue</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1978"/>
-        <location filename="../configdialog.ui" line="2229"/>
-        <location filename="../configdialog.ui" line="2727"/>
-        <location filename="../configdialog.ui" line="2939"/>
+        <location filename="../configdialog.ui" line="2020"/>
+        <location filename="../configdialog.ui" line="2518"/>
+        <location filename="../configdialog.ui" line="2730"/>
+        <location filename="../configdialog.ui" line="3320"/>
         <source>赤</source>
         <translation>Red</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2013"/>
-        <location filename="../configdialog.ui" line="2289"/>
-        <location filename="../configdialog.ui" line="2538"/>
+        <location filename="../configdialog.ui" line="2080"/>
+        <location filename="../configdialog.ui" line="2329"/>
+        <location filename="../configdialog.ui" line="3355"/>
         <source>白</source>
         <translation>White</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2020"/>
-        <location filename="../configdialog.ui" line="2222"/>
+        <location filename="../configdialog.ui" line="2013"/>
+        <location filename="../configdialog.ui" line="3362"/>
         <source>シアン</source>
         <translation>Cyan</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2006"/>
-        <location filename="../configdialog.ui" line="2162"/>
+        <location filename="../configdialog.ui" line="1953"/>
+        <location filename="../configdialog.ui" line="3348"/>
         <source>マゼンタ</source>
         <translation>Magenta</translation>
     </message>
@@ -582,24 +579,24 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Mode&amp;3</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2313"/>
+        <location filename="../configdialog.ui" line="2104"/>
         <source>MODE4(&amp;4)</source>
         <translation>Mode&amp;4</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2432"/>
-        <location filename="../configdialog.ui" line="2545"/>
+        <location filename="../configdialog.ui" line="2223"/>
+        <location filename="../configdialog.ui" line="2336"/>
         <source>にじみ2</source>
         <translation>Fringe2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2439"/>
-        <location filename="../configdialog.ui" line="2946"/>
+        <location filename="../configdialog.ui" line="2230"/>
+        <location filename="../configdialog.ui" line="2737"/>
         <source>桃</source>
         <translation>Peach</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="200"/>
+        <location filename="../configdialog.ui" line="215"/>
         <source>内蔵互換ROMを使う(&amp;C)</source>
         <translation>Use builtin &amp;compatible ROM</translation>
     </message>
@@ -608,29 +605,29 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">&amp;Hardware acceleration(Applied in next startup)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="680"/>
-        <location filename="../configdialog.ui" line="926"/>
+        <location filename="../configdialog.ui" line="714"/>
+        <location filename="../configdialog.ui" line="960"/>
         <source>フィルタリング(&amp;F)</source>
         <translation>&amp;Filtering</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1001"/>
+        <location filename="../configdialog.ui" line="1052"/>
         <source>PSG、FM音量(&amp;P)</source>
         <translation>&amp;PSG and FM volume</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1491"/>
+        <location filename="../configdialog.ui" line="1562"/>
         <source>どこでもSAVE(&amp;V):</source>
         <translation>State sa&amp;ve:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1464"/>
+        <location filename="../configdialog.ui" line="1535"/>
         <source>WAVE(&amp;W):</source>
         <translation>&amp;WAVE:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2365"/>
-        <location filename="../configdialog.ui" line="3013"/>
+        <location filename="../configdialog.ui" line="2156"/>
+        <location filename="../configdialog.ui" line="2804"/>
         <source>にじみ1</source>
         <translation>Fringe1</translation>
     </message>
@@ -643,223 +640,238 @@ cut off fre&amp;quency</translation>
         <translation type="vanished">Color&amp;2</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1541"/>
+        <location filename="../configdialog.ui" line="2883"/>
         <source>mk2〜(&amp;M)</source>
         <translation>&amp;mk2~</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1731"/>
+        <location filename="../configdialog.ui" line="3073"/>
         <source>透明(黒)</source>
         <translation>Transparent(Black)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1745"/>
+        <location filename="../configdialog.ui" line="3087"/>
         <source>青緑</source>
         <translation>Blue-green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1752"/>
+        <location filename="../configdialog.ui" line="3094"/>
         <source>黄緑</source>
         <translation>Yellow-green</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1759"/>
+        <location filename="../configdialog.ui" line="3101"/>
         <source>灰色</source>
         <translation>Gray</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1766"/>
+        <location filename="../configdialog.ui" line="3108"/>
         <source>空色</source>
         <translation>Azure</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1773"/>
+        <location filename="../configdialog.ui" line="3115"/>
         <source>赤紫</source>
         <translation>Red-violet</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="1780"/>
+        <location filename="../configdialog.ui" line="3122"/>
         <source>青紫</source>
         <translation>Blue-violet</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2030"/>
+        <location filename="../configdialog.ui" line="3372"/>
         <source>変更したい色を
 クリックしてください</source>
         <translation>Click color you want to change.</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="2064"/>
+        <location filename="../configdialog.ui" line="1855"/>
         <source>MODE2/3(&amp;2)</source>
-        <translation>Mode&amp;4 {2/3(&amp;2)?}</translation>
+        <translation>Mode&amp;2/3</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3291"/>
+        <location filename="../configdialog.ui" line="222"/>
+        <source>FDD(&amp;F)</source>
+        <translation>&amp;FDD</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="279"/>
+        <source>KEY(&amp;K)</source>
+        <translation>&amp;KEY</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="794"/>
+        <source>ビデオキャプチャ時の設定(&amp;C)</source>
+        <translation>Video &amp;capture</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="1223"/>
+        <source>ファイル(&amp;I)</source>
+        <translation>F&amp;ile</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="1394"/>
+        <source>フォルダ(&amp;O)</source>
+        <translation>F&amp;older</translation>
+    </message>
+    <message>
+        <location filename="../configdialog.ui" line="3388"/>
         <source>その他(&amp;O)</source>
         <translation>&amp;Others</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3299"/>
+        <location filename="../configdialog.ui" line="3411"/>
         <source>オーバークロック率(&amp;V):</source>
         <translation>O&amp;verclocking rate:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3319"/>
+        <location filename="../configdialog.ui" line="3431"/>
         <source>% (1-1000)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3343"/>
+        <location filename="../configdialog.ui" line="3455"/>
         <source>タイマー精度(&amp;T):</source>
         <translation>&amp;Timer Resolutoin:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3363"/>
+        <location filename="../configdialog.ui" line="3475"/>
         <source>ms (1-1000)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3385"/>
+        <location filename="../configdialog.ui" line="3497"/>
         <source>システムROMのCRCチェック有効(&amp;C)</source>
         <translation>Enable &amp;CRC check for the System ROM</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="330"/>
+        <location filename="../configdialog.ui" line="345"/>
         <source>Turbo TAPE(読み込み時ノーウェイト)(&amp;T)</source>
         <translation>&amp;Turbo Tape (no wait when reading)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="65"/>
+        <location filename="../configdialog.ui" line="80"/>
         <source>PC-6001</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="70"/>
+        <location filename="../configdialog.ui" line="85"/>
         <source>PC-6001A (NEC TREK)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="75"/>
+        <location filename="../configdialog.ui" line="90"/>
         <source>PC-6001mkⅡ</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="85"/>
+        <location filename="../configdialog.ui" line="100"/>
         <source>PC-6001mkⅡSR</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="115"/>
+        <location filename="../configdialog.ui" line="130"/>
         <source>拡張カートリッジ(&amp;E):</source>
         <translation>&amp;External cartridge:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="137"/>
+        <location filename="../configdialog.ui" line="152"/>
         <source>PC-6005 ROMカートリッジ</source>
         <translation>PC-6005 ROM cartridge</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="142"/>
+        <location filename="../configdialog.ui" line="157"/>
         <source>PC-6006 拡張ROM/RAMカートリッジ</source>
         <translation>PC-6006 Extend ROM/RAM cartridge</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="147"/>
+        <location filename="../configdialog.ui" line="162"/>
         <source>PCS-6001R 拡張BASIC</source>
         <translation>PCS-6001R Extend BASIC</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="152"/>
+        <location filename="../configdialog.ui" line="167"/>
         <source>PC-6601-01 拡張漢字ROMカートリッジ</source>
         <translation>PC-6601-01 Extend Kanji ROM cartridge</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="157"/>
+        <location filename="../configdialog.ui" line="172"/>
         <source>PC-6006SR 拡張64KRAMカートリッジ</source>
         <translation>PC-6006SR Extend 64K RAM cartidge</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="162"/>
+        <location filename="../configdialog.ui" line="177"/>
         <source>PC-6007SR 拡張漢字ROM&amp;RAMカートリッジ</source>
         <translation>PC-6007SR Extend Kanji ROM &amp; RAM cartridge</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="167"/>
+        <location filename="../configdialog.ui" line="182"/>
         <source>戦士のカートリッジ</source>
         <translation>Warrior&apos;s cartridge</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="172"/>
+        <location filename="../configdialog.ui" line="187"/>
         <source>戦士のカートリッジmkⅡ</source>
         <translation>Warrior&apos;s cartridge mkⅡ</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="177"/>
+        <location filename="../configdialog.ui" line="192"/>
         <source>戦士のカートリッジmkⅢ</source>
         <translation>Warrior&apos;s cartridge mkⅢ</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="207"/>
-        <source>&amp;FDD</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="215"/>
+        <location filename="../configdialog.ui" line="230"/>
         <source>ドライブ数(&amp;N):</source>
         <translation>&amp;Num of drives:</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="232"/>
+        <location filename="../configdialog.ui" line="247"/>
         <source>(0-2)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="324"/>
-        <source>CMT</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../configdialog.ui" line="337"/>
+        <location filename="../configdialog.ui" line="352"/>
         <source>Boost Up (TAPE最速化)(&amp;U)</source>
         <translation>Boost &amp;Up (fastest Tape)</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="346"/>
+        <location filename="../configdialog.ui" line="361"/>
         <source>最大倍率</source>
         <translation>Maximum magnification</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="369"/>
+        <location filename="../configdialog.ui" line="384"/>
         <source>N60</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="405"/>
+        <location filename="../configdialog.ui" line="420"/>
         <source>N60m/N66</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="254"/>
+        <location filename="../configdialog.ui" line="269"/>
         <source>FDDアクセスウェイト有効(&amp;W)</source>
         <translation>Enable FDD access &amp;wait</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3392"/>
+        <location filename="../configdialog.ui" line="3504"/>
         <source>どこでもLOAD(SLOT)実行時に確認する(&amp;L)</source>
         <translation>Confirm at state &amp;load</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3399"/>
+        <location filename="../configdialog.ui" line="3511"/>
         <source>終了時に確認する(&amp;F)</source>
         <translation>Con&amp;firm at exit</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="3406"/>
+        <location filename="../configdialog.ui" line="3518"/>
         <source>終了時にINIファイルを保存する(&amp;Q)</source>
         <translation>Save the INI file when &amp;Quit</translation>
     </message>
     <message>
-        <location filename="../configdialog.cpp" line="314"/>
+        <location filename="../configdialog.cpp" line="318"/>
         <source>互換ROM使用中</source>
         <translation>Using builtin compatible ROM</translation>
     </message>

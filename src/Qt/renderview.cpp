@@ -93,17 +93,13 @@ bool RenderView::event(QEvent *event)
 			auto state = tEvent->points()[0].state();
 			if (state == QEventPoint::Pressed){
 				auto point = tEvent->points()[0].globalPosition().toPoint();
-				QGraphicsItem* item = scene()->itemAt(mapToScene(point), transform());
-				// タップしたアイテムが原点にある場合、メイン画面とみなしてメニューを出す
-				if(item && item->pos() == QPoint(0, 0)){
-					Event e;
-					e.type = EV_MOUSEBUTTONUP;
-					e.mousebt.button = MBT_RIGHT;
-					e.mousebt.x = point.x();
-					e.mousebt.y = point.y();
-					OSD_PushEvent(e);
-					return true;
-				}
+				Event e;
+				e.type = EV_MOUSEBUTTONUP;
+				e.mousebt.button = MBT_RIGHT;
+				e.mousebt.x = point.x();
+				e.mousebt.y = point.y();
+				OSD_PushEvent(e);
+				return true;
 			}
 		}
 		break;

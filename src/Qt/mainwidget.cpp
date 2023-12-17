@@ -78,7 +78,17 @@ void MainWidget::updateLayout()
 
 void MainWidget::adjustSizeToChild(QSize size)
 {
-	setGeometry(x(), y(), size.width(), size.height() * (VKeyWidget->isVisible() ? 2 : 1));
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	auto state = this->windowState();
+	if (!((state & Qt::WindowFullScreen) | (state & Qt::WindowMaximized))){
+		if (app->getSetting(P6VXApp::keyVirtualKeyPosition).toInt() == 2){
+			// 下方向に仮想キーボードを表示する場合
+			setGeometry(x(), y(), size.width(), size.height() * (VKeyWidget->isVisible() ? 2 : 1));
+		} else {
+			// それ以外
+			setGeometry(x(), y(), size.width() * (VKeyWidget->isVisible() ? 2 : 1), size.height());
+		}
+	}
 }
 
 void MainWidget::toggleVirtualKeyboard()

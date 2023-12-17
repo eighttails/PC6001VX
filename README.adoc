@@ -797,6 +797,12 @@ Qt 6.5.0以上が必要です。
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.git master
+* 仮想キーボードの有効/無効化時に画面レイアウトが更新されないことがあるのを修正
+* タッチ操作時のメニュー出現位置がおかしかったのを修正
+* Fixed screen layout sometimes not updating when enabling/disabling virtual keyboard.
+* Fixed an issue where the menu appearance position during touch operation was incorrect.
+
 .4.2.4 2023/11/15
 * 横画面表示時の仮想キーボードの位置を設定できるようにした。
 * 設定画面をスクロール可能にした(小さい画面用)

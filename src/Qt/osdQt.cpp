@@ -1,5 +1,6 @@
 // OS依存の汎用ルーチン(主にUI用)
 #include "../typedef.h"
+#include "mainwidget.h"
 
 #include <cstdio>
 
@@ -1830,8 +1831,11 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 	try{
 		std::shared_ptr<CFG6> ecfg(new CFG6());
 		if( !ecfg->Init() ) throw Error::IniReadFailed;
-
-		ConfigDialog dialog(ecfg);
+		
+		QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
+		auto window = view->parentWidget();
+		
+		ConfigDialog dialog(ecfg, window);
 #ifdef ALWAYSFULLSCREEN
 #ifdef Q_OS_ANDROID
 		// Androidの場合はQt::WindowMaximizedを使わないと正しいサイズで描画されない。
@@ -1845,6 +1849,8 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 		// OKボタンが押されたならINIファイル書込み
 		if( ret == QDialog::Accepted) {
 			ecfg->Write();
+			// レイアウトに関する設定を画面に反映
+			qobject_cast<MainWidget*>(window)->updateLayout();
 		}
 		return ret;
 	}

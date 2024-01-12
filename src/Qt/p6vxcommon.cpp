@@ -203,3 +203,23 @@ QString EncodeContentURI(const QString &uri)
 		return uri;
 	}
 }
+
+#include <csignal>
+void HandleQuitSignal()
+{
+#ifdef SIGHUP
+	signal(SIGHUP, [](int) { qApp->quit(); });
+#endif
+#ifdef SIGTERM
+	signal(SIGTERM, [](int) { qApp->quit(); });
+#endif
+#ifdef SIGINT
+	signal(SIGINT, [](int) { qApp->quit(); });
+#endif
+#ifdef SIGABRT
+	signal(SIGABRT, [](int) { qApp->quit(); });
+#endif
+#ifdef SIGKILL
+	signal(SIGKILL, [](int) { qApp->quit(); });
+#endif
+}

@@ -1,5 +1,6 @@
-#include <stdlib.h>
+#include <cstdlib>
 #include <errno.h>
+
 #include <QtWidgets>
 
 #include "p6vxapp.h"
@@ -78,7 +79,8 @@ int main( int argc, char *argv[] )
 
 	// 終了処理を予約
 	atexit(OSD_Quit);
-
+	HandleQuitSignal();
+	
 	// イベントループを開始
 	return app.exec();
 

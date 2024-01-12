@@ -48,4 +48,7 @@ void UpdateTilt();
 // Android用ファイル名エンコーディング
 QString EncodeContentURI(const QString& uri);
 
+// シグナルを受信したら終了するようにする
+void HandleQuitSignal();
+
 #endif // P6VXCOMMON_H

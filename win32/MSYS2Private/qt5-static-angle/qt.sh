@@ -101,7 +101,7 @@ makeQtSourceTree static
 exitOnError
 
 #static版
-QT5_STATIC_BUILD=qt5-static-$BIT
+QT5_STATIC_BUILD=qt5-static-$MSYSTEM
 rm -rf $QT5_STATIC_BUILD
 mkdir $QT5_STATIC_BUILD
 pushd $QT5_STATIC_BUILD
@@ -120,7 +120,7 @@ QT_STATIC_CONF_OPTS+=("-no-dbus")
 export QDOC_SKIP_BUILD=1
 export QDOC_USE_STATIC_LIBCLANG=1
 OPENSSL_LIBS="$(pkg-config --static --libs openssl)" \
-../$QT_SOURCE_DIR/configure "${QT_COMMON_CONF_OPTS[@]}" "${QT_STATIC_CONF_OPTS[@]}" &> ../qt5-static-$BIT-config.status
+../$QT_SOURCE_DIR/configure "${QT_COMMON_CONF_OPTS[@]}" "${QT_STATIC_CONF_OPTS[@]}" &> ../qt5-static-$MSYSTEM-config.status
 exitOnError
 
 makeParallel && make install

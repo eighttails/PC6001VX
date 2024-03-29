@@ -5,8 +5,6 @@ function prerequisite(){
 if [ $((NO_DEPENDENCY)) == 0 ]; then
 $SCRIPT_DIR/../qtspell/qtspell.sh
 exitOnError
-$SCRIPT_DIR/../quazip/quazip.sh
-exitOnError
 $SCRIPT_DIR/../twaindsm/twaindsm.sh
 exitOnError
 fi
@@ -15,6 +13,7 @@ fi
 pacman "${PACMAN_INSTALL_OPTS[@]}" \
 $MINGW_PACKAGE_PREFIX-qt6-base \
 $MINGW_PACKAGE_PREFIX-poppler-qt6 \
+$MINGW_PACKAGE_PREFIX-quazip-qt6 \
 $MINGW_PACKAGE_PREFIX-djvulibre \
 $MINGW_PACKAGE_PREFIX-podofo \
 $MINGW_PACKAGE_PREFIX-dlfcn \
@@ -55,7 +54,7 @@ else
         fi
     fi
     GIMAGEREADER_SRC_DIR=gImageReader-$GIMAGEREADER_VERSION
-    GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR-$BIT
+    GIMAGEREADER_BUILD_DIR=$GIMAGEREADER_SRC_DIR-$MSYSTEM
 
     if [ ! -e $GIMAGEREADER_ARCHIVE ]; then
     wget -c $GIMAGEREADER_ARCHIVE_URL -O $GIMAGEREADER_ARCHIVE

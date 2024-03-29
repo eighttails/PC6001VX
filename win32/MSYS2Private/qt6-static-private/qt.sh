@@ -139,7 +139,7 @@ makeQtSourceTree static
 exitOnError
 
 #static版
-QT6_STATIC_BUILD=qt6-static-$BIT
+QT6_STATIC_BUILD=qt6-static-$MSYSTEM
 rm -rf $QT6_STATIC_BUILD
 mkdir $QT6_STATIC_BUILD
 pushd $QT6_STATIC_BUILD
@@ -149,7 +149,7 @@ MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=;-DCMAKE_CONFIGURATION_TYPES=;-DCMAK
 cmake \
     -G "Ninja" \
     -Wno-dev \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=MinSizeRel \
     -DFEATURE_optimize_size=ON \
     -DBUILD_WITH_PCH=OFF \
     -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a;.dll.a" \
@@ -173,6 +173,7 @@ cmake \
     -DINPUT_openssl=linked \
     -DINPUT_dbus=linked \
     -DINPUT_mng=no \
+    -DINPUT_jasper=no \
     -DINPUT_libmd4c=qt \
     -DFEATURE_glib=OFF \
     -DINPUT_qt3d_assimp=qt \
@@ -227,6 +228,8 @@ exitOnError
 
 cmake --install .
 exitOnError
+
+cp config.summary ../qt6_config_summary_$MSYSTEM.txt
 
 popd
 

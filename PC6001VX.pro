@@ -18,8 +18,8 @@ QMAKE_TARGET_PRODUCT = PC6001VX
 TRANSLATIONS += \
     src/Qt/translation/PC6001VX_en.ts \
     src/Qt/translation/PC6001VX_ru.ts
-
 TR_EXCLUDE += /usr/include/*
+CONFIG += lrelease embed_translations
 
 CONFIG += silent
 CONFIG += link_prl link_pkgconfig c++17

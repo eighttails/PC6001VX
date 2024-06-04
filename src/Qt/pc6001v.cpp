@@ -32,9 +32,9 @@ int main( int argc, char *argv[] )
 	if (locale.language() != QLocale::Japanese) {
 		auto lang = QLocale::languageToCode(QLocale::system().language());
 		qDebug() << "Lang Name = " << lang;
-		if (myappTranslator.load(QString(":/translation/PC6001VX_" + lang))) {
+		if (myappTranslator.load(QString(":/i18n/PC6001VX_" + lang))) {
 			app.installTranslator(&myappTranslator);
-		} else if (myappTranslator.load(":/translation/PC6001VX_en")) {
+		} else if (myappTranslator.load(":/i18n/PC6001VX_en")) {
 			app.installTranslator(&myappTranslator);
 		}
 	} else {
@@ -80,7 +80,7 @@ int main( int argc, char *argv[] )
 	// 終了処理を予約
 	atexit(OSD_Quit);
 	HandleQuitSignal();
-	
+
 	// イベントループを開始
 	return app.exec();
 

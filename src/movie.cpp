@@ -91,7 +91,7 @@ static int WriteFrame( AVFormatContext* fmt_ctx, const AVRational* time_base, AV
 	// タイムスタンプを変換
 	av_packet_rescale_ts( pkt, *time_base, st->time_base );
 	pkt->stream_index = st->index;
-	
+
 	// フレームを書き込み
 	return av_interleaved_write_frame( fmt_ctx, pkt );
 }
@@ -143,12 +143,12 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 	if( !codec ){
 		return false;
 	}
-	
+
 	ost.st = avformat_new_stream( oc, codec );
 	if( !ost.st ){
 		return false;
 	}
-	
+
 	AVCodecContext* c = avcodec_alloc_context3(codec);
 	AVDictionary* opt = nullptr;
 	ost.st->id        = oc->nb_streams - 1;
@@ -168,20 +168,10 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 				}
 			}
 		}
-		c->channels       = av_get_channel_layout_nb_channels( c->channel_layout );
-		c->channel_layout = AV_CH_LAYOUT_STEREO;
-		if( codec->channel_layouts ){
-			c->channel_layout = codec->channel_layouts[0];
-			for( int i = 0; codec->channel_layouts[i]; i++ ){
-				if( codec->channel_layouts[i] == AV_CH_LAYOUT_STEREO ){
-					c->channel_layout = AV_CH_LAYOUT_STEREO;
-				}
-			}
-		}
-		c->channels       = av_get_channel_layout_nb_channels( c->channel_layout );
+		c->ch_layout = AV_CHANNEL_LAYOUT_STEREO;
 		ost.st->time_base = (AVRational){ 1, c->sample_rate };
 		break;
-		
+
 	case AVMEDIA_TYPE_VIDEO:
 		c->codec_id       = codec_id;
 		c->width          = source_width;
@@ -205,7 +195,7 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 	default:
 		break;
 	}
-	
+
 	if( oc->oformat->flags & AVFMT_GLOBALHEADER ){
 		c->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 	}
@@ -221,22 +211,22 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 
 /////////////////////////////////////////////////////////////////////////////
 /* audio output */
-static AVFrame* AllocAudioFrame( enum AVSampleFormat sample_fmt, uint64_t channel_layout, int sample_rate, int nb_samples )
+static AVFrame* AllocAudioFrame( enum AVSampleFormat sample_fmt, AVChannelLayout ch_layout, int sample_rate, int nb_samples )
 {
 	AVFrame* frame = av_frame_alloc();
 	if( !frame ){
 		return nullptr;
 	}
-	
+
 	frame->format         = sample_fmt;
-	frame->channel_layout = channel_layout;
+	frame->ch_layout = ch_layout;
 	frame->sample_rate    = sample_rate;
 	frame->nb_samples     = nb_samples;
-	
+
 	if( nb_samples && (av_frame_get_buffer( frame, 0 ) < 0) ){
 		return nullptr;
 	}
-	
+
 	return frame;
 }
 
@@ -246,26 +236,26 @@ static bool OpenAudio( OutputStream& ost, int sample_rate )
 {
 	AVCodecContext* c = ost.enc;
 	int nb_samples = (c->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) ? 10000 : c->frame_size;
-	
+
 	// フレームを初期化
-	ost.frame     = AllocAudioFrame( c->sample_fmt,     c->channel_layout, c->sample_rate, nb_samples );
-	ost.tmp_frame = AllocAudioFrame( AV_SAMPLE_FMT_S16, c->channel_layout, sample_rate,    nb_samples / (c->sample_rate / sample_rate) );
-	
+	ost.frame     = AllocAudioFrame( c->sample_fmt,     c->ch_layout, c->sample_rate, nb_samples );
+	ost.tmp_frame = AllocAudioFrame( AV_SAMPLE_FMT_S16, c->ch_layout, sample_rate,    nb_samples / (c->sample_rate / sample_rate) );
+
 	// フレームを書き込み可能にする
 	av_frame_make_writable( ost.frame );
 	av_frame_make_writable( ost.tmp_frame );
-	
+
 	// サンプル変換部
 	ost.swr_ctx = swr_alloc();
 	if( !ost.swr_ctx ){
 		return false;
 	}
-	
+
 	// 音声フォーマットの設定
-	av_opt_set_int       ( ost.swr_ctx, "in_channel_count",  c->channels,       0 );
+	av_opt_set_chlayout  ( ost.swr_ctx, "in_channel_count",  &c->ch_layout,     0 );
 	av_opt_set_int       ( ost.swr_ctx, "in_sample_rate",    sample_rate,       0 );
 	av_opt_set_sample_fmt( ost.swr_ctx, "in_sample_fmt",     AV_SAMPLE_FMT_S16, 0 );
-	av_opt_set_int       ( ost.swr_ctx, "out_channel_count", c->channels,       0 );
+	av_opt_set_chlayout  ( ost.swr_ctx, "out_channel_count", &c->ch_layout,     0 );
 	av_opt_set_int       ( ost.swr_ctx, "out_sample_rate",   c->sample_rate,    0 );
 	av_opt_set_sample_fmt( ost.swr_ctx, "out_sample_fmt",    c->sample_fmt,     0 );
 
@@ -273,7 +263,7 @@ static bool OpenAudio( OutputStream& ost, int sample_rate )
 	if( swr_init( ost.swr_ctx ) < 0 ){
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -284,34 +274,34 @@ static AVFrame* GetAudioFrame( OutputStream& ost, AVI6* avi )
 	AVCodecContext* c = ost.enc;
 	AVFrame* frame    = ost.tmp_frame;
 	int16_t* q        = (int16_t*)frame->data[0];
-	
+
 	if( avi->GetAudioBuffer()->ReadySize() < frame->nb_samples ){
 		return nullptr;
 	}
-	
+
 	// オーディオ出力
 	for( int j = 0; j <frame->nb_samples; j++ ){
 		short dat = avi->GetAudioBuffer()->Get();
-		for( int i = 0; i < ost.enc->channels; i++ ){
+		for( int i = 0; i < ost.enc->ch_layout.nb_channels; i++ ){
 			*q++ = dat;
 		}
 	}
-	
+
 	frame->pts = ost.next_pts;
 	ost.next_pts += frame->nb_samples;
-	
+
 	// フォーマット変換後のサンプル数を決定
 	int dst_nb_samples = 0;
 	dst_nb_samples = av_rescale_rnd( swr_get_delay( ost.swr_ctx, frame->sample_rate ) + frame->nb_samples,
 									 c->sample_rate, c->sample_rate, AV_ROUND_UP );
-	
+
 	// 音声フォーマットを変換
 	if( swr_convert( ost.swr_ctx, ost.frame->data, dst_nb_samples, (const uint8_t **)frame->data, frame->nb_samples ) < 0 ){
 		return nullptr;
 	}
 	ost.samples_count += dst_nb_samples;
 	ost.frame->pts = av_rescale_q( ost.samples_count, (AVRational){ 1, c->sample_rate }, c->time_base );
-	
+
 	return ost.frame;
 }
 
@@ -323,13 +313,13 @@ static int WriteAudioFrame( OutputStream& ost, AVI6* avi )
 	if( !frame || !frame->pts ){
 		return 1;
 	}
-	
+
 	// フレームデータのコピーを作成(make_writableをすると内部バッファのコピーまで作られる)
 	AVFrame* queue_frame = av_frame_clone(frame);
 	av_frame_copy(queue_frame, frame);
 	av_frame_copy_props(queue_frame, frame);
 	av_frame_make_writable(queue_frame);
-	
+
 	frameQueue.push(std::make_tuple(&ost, queue_frame));
 	return 0;
 }
@@ -344,16 +334,16 @@ static AVFrame* AllocPicture( enum AVPixelFormat pix_fmt, int width, int height 
 	if( !picture ){
 		return nullptr;
 	}
-	
+
 	picture->format = pix_fmt;
 	picture->width  = width;
 	picture->height = height;
-	
+
 	// 画像バッファを確保
 	if( av_frame_get_buffer( picture, 32 ) < 0 ){	// 32byte aligned
 		return nullptr;
 	}
-	
+
 	return picture;
 }
 
@@ -368,16 +358,16 @@ static bool OpenVideo( OutputStream& ost, enum AVPixelFormat pix_fmt )
 	if( !ost.frame ){
 		return false;
 	}
-	
+
 	// 画像フォーマットの変換元(OSD_GetWindowImage)のフォーマットに合わせて初期化
 	ost.tmp_frame = AllocPicture( pix_fmt, c->width, c->height );
 	if( !ost.tmp_frame ){
 		return false;
 	}
-	
+
 	av_frame_make_writable( ost.frame );
 	av_frame_make_writable( ost.tmp_frame );
-	
+
 	// スケーラの設定
 	if( !ost.sws_ctx ){
 		ost.sws_ctx = sws_getContext( c->width, c->height, pix_fmt, c->width, c->height, c->pix_fmt,
@@ -386,7 +376,7 @@ static bool OpenVideo( OutputStream& ost, enum AVPixelFormat pix_fmt )
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -395,17 +385,17 @@ static bool OpenVideo( OutputStream& ost, enum AVPixelFormat pix_fmt )
 static AVFrame* GetVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, enum AVPixelFormat pix_fmt )
 {
 	AVCodecContext* c = ost.enc;
-	
+
 	// ウィンドウから画像をコピー
 	// 変換元(OSD_GetWindowImage)の画像データは4byte aligned
 	av_image_fill_arrays( ost.tmp_frame->data, ost.tmp_frame->linesize, src_img.data(), pix_fmt, c->width, c->height, 4 );
-	
+
 	// 変換
 	sws_scale( ost.sws_ctx, (const uint8_t * const *)ost.tmp_frame->data, ost.tmp_frame->linesize,
 			   0, c->height, ost.frame->data, ost.frame->linesize );
-	
+
 	ost.frame->pts = ost.next_pts++;
-	
+
 	return ost.frame;
 }
 
@@ -417,13 +407,13 @@ static int WriteVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, enum 
 	if( !frame ){
 		return 1;
 	}
-	
+
 	// フレームデータのコピーを作成(make_writableをすると内部バッファのコピーまで作られる)
 	AVFrame* queue_frame = av_frame_clone(frame);
 	av_frame_copy(queue_frame, frame);
 	av_frame_copy_props(queue_frame, frame);
 	av_frame_make_writable(queue_frame);
-	
+
 	frameQueue.push(std::make_tuple(&ost, queue_frame));
 	return 0;
 }
@@ -492,35 +482,35 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 {
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
-	
+
 	// キャプチャフレーム設定
 	ss.x = 0;
 	ss.y = 0;
 	ss.w = sw;
 	ss.h = sh;
-	
+
 	// ピクセルフォーマット設定
 	pixfmt = bpp == 16 ? PX16RGB :
 			 bpp == 24 ? PX24RGB :
 						 PX32ARGB;
-	
+
 	// フレーム出力リクエスト初期化
 	req = 0;
-	
+
 	// イメージデータバッファ作成
 	Sbuf.resize( ((sw * ( bpp / 8 ) + 3) & ~3) * sh );
-	
+
 	// オーディオバッファ作成
 	ABuf.InitBuffer( arate / vrate * 2 );
-	
+
 	// 出力コンテキスト作成
 	avformat_alloc_output_context2( &oc, nullptr, nullptr, P6VPATH2STR( filepath ).c_str() );
 	if( !oc ){
 		return false;
 	}
-	
+
 	const AVOutputFormat* fmt = oc->oformat;
-	
+
 	// 音声、ビデオストリームを作成
 	if( fmt->video_codec != AV_CODEC_ID_NONE ){
 		// ビデオコーデックにはVP9を選択。
@@ -534,7 +524,7 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 			return false;
 		}
 	}
-	
+
 	if( !OpenVideo( video_st, GetPixelFormat( pixfmt ) ) ){
 		return false;
 	}
@@ -542,21 +532,21 @@ bool AVI6::StartAVI( const P6VPATH& filepath, int sw, int sh, double vrate, int 
 		return false;
 	}
 	av_dump_format( oc, 0, P6VPATH2STR( filepath ).c_str(), 1 );
-	
+
 	// ファイルを開く
 	if( !(fmt->flags & AVFMT_NOFILE) ){
 		if( avio_open( &oc->pb, P6VPATH2STR( filepath ).c_str(), AVIO_FLAG_WRITE ) < 0 ){
 			return false;
 		}
 	}
-	
+
 	// ストリームヘッダを書き込み
 	if( avformat_write_header( oc, &opt ) < 0 ){
 		return false;
 	}
-	
+
 	EncodeThread->BeginThread(this);
-	
+
 	isAVI = true;
 	return true;
 #else
@@ -575,21 +565,21 @@ void AVI6::StopAVI( void )
 {
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
-	
+
 	EncodeThread->Cancel();
 	EncodeThread->Waiting();
-	
+
 	if( oc ){
 		// ストリームトレイラ書込み
 		av_write_trailer( oc );
-		
+
 		CloseStream( video_st );
 		video_st = {};
 		CloseStream( audio_st );
 		audio_st = {};
 		avio_closep( &oc->pb );
 		avformat_free_context( oc );
-		
+
 		oc    = nullptr;
 		isAVI = false;
 	}
@@ -616,7 +606,7 @@ void AVI6::Request( void )
 {
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
-	
+
 	req++;
 #endif
 }
@@ -630,7 +620,7 @@ int AVI6::GetRequest( void )
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
 #endif
-	
+
 	return isAVI ? req : 0;
 }
 
@@ -645,17 +635,17 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 {
 #ifndef NOAVI
 	std::lock_guard<cMutex> lock( Mutex );
-	
+
 	if( !isAVI || !wh || !req ){
 		return false;
 	}
-	
+
 	req--;
-	
+
 	if( !OSD_GetWindowImage( wh, Sbuf, &ss, pixfmt ) ){
 		return false;
 	}
-	
+
 	int encode_video = 1, encode_audio = 1;
 	while (encode_video || encode_audio) {
 		/* select the stream to encode */
@@ -668,7 +658,7 @@ bool AVI6::AVIWriteFrame( HWINDOW wh )
 			encode_audio = !WriteAudioFrame( audio_st, this );
 		}
 	}
-	
+
 	return true;
 #else
 	return false;
@@ -698,7 +688,7 @@ cRing *AVI6::GetAudioBuffer( void )
 DWORD AVI6::GetUpdateSample( void )
 {
 	std::lock_guard<cMutex> lock( Mutex );
-	
+
 	return 0;	// 後で書く
 }
 

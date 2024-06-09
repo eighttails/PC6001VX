@@ -1657,7 +1657,7 @@ INTPRT:
 	jr	INTPEND
 
 ;continued from C_RUN
-;RUN with parmeter
+;RUN with parameter
 RUNPAR:
 	jr	c,RUNLN		;with line number
 	ld	a,(DRIVES)
@@ -1746,7 +1746,7 @@ GETLNLP:
 	jr	GETLNLP
 
 
-;run command
+;RUN command
 _C_RUN:	ds	C_RUN-_C_RUN
 	org	C_RUN
 
@@ -3853,7 +3853,7 @@ PRTCTL:
 	dec	a
 	jr	z,CTLHOM	;0bh
 	dec	a
-	jp	z,CLS		;0ch
+	jp	z,CTLL		;0ch
 	ld	hl,(CSRY)	;l=y+1,h=x+1
 	dec	a
 	jr	z,CTLCR		;0dh
@@ -4531,8 +4531,9 @@ SETWID:
 	ldir
 
 	call	SETCNSL2
-	ld	l,01h
+	ld	c,01h
 	ld	a,(HEIGHT)
+	scf
 	call	CLSMAIN
 
 	pop	bc
@@ -5182,35 +5183,40 @@ GETSP2ZC:
 	ret
 
 
-;clear screen using console parameter
-;destroy: af,bc,de,hl
-CLSMAIN2:
-	ld	hl,(CONSOL1)	;l=(CONSOL1)
-	ld	a,(LASTLIN)
-	sub	l
-	inc	a
-
-;clear from first line to last line
-;input: l=first line+1, a=last line-first line+1
+;clear screen and reset graphic cordinate
+;input: c-flag=1: c=first line+1, a=last line-first line+1
+;       c-flag=0: using console parameters
 ;destroy: af,bc,de,hl
 CLSMAIN:
+	ld	hl,0000h
+	ld	(GRPX1),hl
+	ld	(GRPY1),hl
+	inc	l
+	call	CTLCR		;(0,0)
+	jr	c,CLSMAIN2	;if a,c given
+
+;clear screen using console parameters
+;destroy: af,bc,de,hl
+CTLL:
+	call	CTLHOM
+	ld	bc,(FSTLIN)	;c=(FSTLIN),b=(LASTLIN)
+	ld	a,b
+	sub	c
+	inc	a
+
+;input: e=first line+1, a=last line-first line+1
+CLSMAIN2:
 	ld	b,a
-	ld	c,l
 CLSLP:
+	ld	l,c
 	call	Y2AD
 	call	DELLIN
 	ld	l,c
-	ld	a,c		;>0
+	ld	a,b		;>0
 	call	SETLINE
 	inc	c
-	ld	l,c
 	djnz	CLSLP
 
-	ld	h,b		;=0
-	ld	l,b		;=0
-	ld	(GRPX1),hl
-	ld	(GRPY1),hl
-	call	CTLHOM
 	jp	PRTFKEY
 
 
@@ -6735,7 +6741,8 @@ C_CLS:
 
 	push	hl
 	push	bc
-	call	CLSMAIN2
+	or	a		;reset c-flag
+	call	CLSMAIN
 	pop	bc
 	pop	hl
 	ret
@@ -6745,7 +6752,7 @@ C_CLS:
 _C_SCRN:ds	C_SCRN-_C_SCRN
 	org	C_SCRN
 
-	xor	a		;1st parmeter=none
+	xor	a		;1st parameter=none
 	push	af
 	ld	bc,(SCREEN2)
 	ld	d,c		;2nd parameter-1
@@ -7145,7 +7152,7 @@ PLAYINC:
 	ld	hl,PLAYSTR
 	inc	(hl)
 	ret	nz
-	inc	l
+	inc	l		;inc hl
 	inc	(hl)
 	ret
 
@@ -9313,7 +9320,7 @@ SRETNZ:
 	jp	XY2AD
 
 
-;x=x+-(8 or 4 or 2 or 1)
+;x=x+-1
 ;input: b(bit7=0:increment, bit7=1:decrement), (GRPX3)
 ;output: hl,(GRPX3)=X, z-flag(1=overflow)
 ;destroy: af,de
@@ -9334,7 +9341,7 @@ INCGXEND:
 	ret
 
 
-;y=y+(12 or 4 or 1 or 1)
+;y=y+1
 ;input: (GRPY3)
 ;output: de=(GRPY3)
 ;destroy: af
@@ -9526,18 +9533,18 @@ PSET2:
 	dec	h
 	dec	h
 	ld	a,(ATTDAT)
-	ld	e,a		;
+	ld	e,(hl)		;
 	or	a
 	jr	nz,PS2NZ1
-	bit	6,(hl)
+	bit	6,e		;
 	jr	nz,PS2NZ2
 PS2NZ1:
 	call	GETSPA2NZ
 	ld	(hl),a
 PS2NZ2:
-	bit	6,(hl)
 	inc	h
 	inc	h
+	bit	6,e		;
 	jr	nz,PS2SEMI	;semi-graphic mode?
 	call	GETSP
 	ld	(hl),a
@@ -9548,7 +9555,7 @@ PS2SEMI:
 	or	d
 	ld	c,a		;;
 
-	ld	a,e		;
+	ld	a,(ATTDAT)
 	or	a
 	jr	z,PSET2C0
 	dec	a
@@ -9561,7 +9568,7 @@ PS2SEMI:
 	ret
 
 PSET2C0:
-	ld	a,b
+	ld	a,d
 	cpl
 	and	(hl)
 	ld	(hl),a
@@ -11593,7 +11600,7 @@ READCGROM:
 
 ;CLEAR command
 _C_CLR:	ds	C_CLR-_C_CLR
-	or	C_CLR
+	org	C_CLR
 
 	call	CHKCLN
 	jp	z,RESSTK
@@ -20835,7 +20842,7 @@ MENU:
 
 
 SYSNAME66:
-	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.5", 0dh, 0ah, 00h
+	db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.5.1", 0dh, 0ah, 00h
 
 
 ;PEEK() function

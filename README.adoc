@@ -798,9 +798,9 @@ Qt 6.5.0以上が必要です。
 
 == 更新履歴
 .git master
-* PC-6001mkII/6601用互換BASICを0.5に更新
+* PC-6001mkII/6601用互換BASICを0.5.1に更新
 * FFmpeg7に対応(現時点でバージョン5,6,7でビルド可能)
-* Updated PC-6001mk2/6601 compatible basic ROMs to 0.5.
+* Updated PC-6001mk2/6601 compatible basic ROMs to 0.5.1.
 * Compatible with FFmpeg7 (currently buildable with versions 5, 6, and 7)
 
 .4.2.5 2023/12/23

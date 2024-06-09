@@ -460,7 +460,7 @@
                       	;boot
   0000                		org	BOOT
   0000  F3            		di
-  0001  C36E16        		jp	COLD
+  0001  C37316        		jp	COLD
                       	
                       	
                       	;check parameter
@@ -520,7 +520,7 @@
   0028  3A6AFF        		ld	a,(FAC1+4)
   002B  B7            		or	a
   002C  C8            		ret	z
-  002D  C31039        		jp	CHKSGN2
+  002D  C30E39        		jp	CHKSGN2
                       	
                       	
                       	;jump hook
@@ -624,7 +624,7 @@
                       	
   00BB                	MODE12:
   00BB  013200        		ld	bc,50
-  00BE  CDD335        		call	CLRMAIN
+  00BE  CDD135        		call	CLRMAIN
                       	
                       	;print start message
   00C1                	PRTSYS60:
@@ -784,13 +784,13 @@
                       	;c4-c7
                       	;	dw					F_FN,	F_SPC,	F_INKY,	C_THEN
                       	;c8-cf
-  0186  100CC20386369C		dw	O_NOT,	C_STEP,	O_PLS,	O_MNS,	O_MUL,	O_DIV,	O_POW,	O_AND
+  0186  100CC20384369A		dw	O_NOT,	C_STEP,	O_PLS,	O_MNS,	O_MUL,	O_DIV,	O_POW,	O_AND
                       	;d0-d3
   0196  F80B220C      		dw	O_OR,	O_GTEQLT
                       	
   019A                	CMDLST:
                       	;80-8f
-  019A  66357306F335E0		dw	C_END,	C_FOR,	C_NEXT,	C_DATA,	C_INPT,	C_DIM,	C_READ,	C_LET
+  019A  66357306F135E0		dw	C_END,	C_FOR,	C_NEXT,	C_DATA,	C_INPT,	C_DIM,	C_READ,	C_LET
   01AA  A3078107590817		dw	C_GOTO,	C_RUN,	C_IF,	C_RSTR,	C_GSUB,	C_RET,	C_REM,	C_STOP
                       	;90-9f
   01BA  B60D36087A0857		dw	C_OUT,	C_ON,	C_LPRT,	C_DEF,	C_POKE,	C_PRT,	C_CONT,	C_LIST
@@ -801,7 +801,7 @@
                       	
   01F0                	FNCLST:
                       	;d4-df
-  01F0  183980392439CB		dw					F_SGN,	F_INT,	F_ABS,	F_USR
+  01F0  163980392239CB		dw					F_SGN,	F_INT,	F_ABS,	F_USR
   01F8  1332A80D330D41		dw	F_FRE,	F_INP,	F_LPOS,	F_POS,	F_SQR,	F_RND,	F_LOG,	F_EXP
                       	;e0-ef
   0208  7D3D903D583EEE		dw	F_COS,	F_SIN,	F_TAN,	F_PEEK,	F_LEN,	SNERR,	F_STR,	F_VAL
@@ -1538,7 +1538,7 @@
   068D  C2C203        		jp	nz,SNERR
   0690  CD930B        		call	NARGMOINC
   0693  EB            		ex	de,hl
-  0694  CD2D39        		call	PUSHF1		;TO value
+  0694  CD2B39        		call	PUSHF1		;TO value
   0697  EB            		ex	de,hl
   0698  CD603F        		call	CHKCLN		;a=(hl)
   069B  224EFF        		ld	(PROGAD),hl
@@ -1548,7 +1548,7 @@
   06A5  C2C203        		jp	nz,SNERR
   06A8  CD930B        		call	NARGMOINC
   06AB                	STEP1:
-  06AB  CD4B39        		call	POPF2		;TO value
+  06AB  CD4939        		call	POPF2		;TO value
   06AE  C1            		pop	bc		;variable address
                       	
   06AF  2A4EFF        		ld	hl,(PROGAD)
@@ -1578,7 +1578,7 @@
   06CB  2A5DFA        		ld	hl,(LINENUM)
   06CE  E5            		push	hl		;line number
   06CF  CD1A3C        		call	PUSHF2		;TO value
-  06D2  CD2D39        		call	PUSHF1		;STEP value
+  06D2  CD2B39        		call	PUSHF1		;STEP value
   06D5  C5            		push	bc		;variable address
   06D6  3E81          		ld	a,FOR_		;identifier
   06D8  F5            		push	af
@@ -1658,7 +1658,7 @@
   0727  18BE          		jr	INTPEND
                       	
                       	;continued from C_RUN
-                      	;RUN with parmeter
+                      	;RUN with parameter
   0729                	RUNPAR:
   0729  3807          		jr	c,RUNLN		;with line number
   072B  3A3BFB        		ld	a,(DRIVES)
@@ -1721,7 +1721,7 @@
   075C  C2E303        		jp	nz,TMERR
   075F  CD4107        		call	FTOI2
   0762  D5            		push	de		;
-  0763  CD6D39        		call	EXFAC
+  0763  CD6B39        		call	EXFAC
   0766  CD4107        		call	FTOI2
   0769  E1            		pop	hl		;
   076A  C9            		ret
@@ -1747,7 +1747,7 @@
   077D  18F9          		jr	GETLNLP
                       	
                       	
-                      	;run command
+                      	;RUN command
   077F                	_C_RUN:	ds	C_RUN-_C_RUN
   0781                		org	C_RUN
                       	
@@ -1998,7 +1998,7 @@
   08A0  2878          		jr	z,SPCTAB
                       	
   08A2  2B            		dec	hl
-  08A3  CD6817        		call	ARG
+  08A3  CD6D17        		call	ARG
   08A6  3A25FF        		ld	a,(ARGTYP)
   08A9  B7            		or	a
   08AA  2813          		jr	z,PRTNUM
@@ -2556,7 +2556,7 @@
   0B88                	FNCNUM:
   0B88  CDB70B        		call	CHKLPAR
   0B8B                	FNCNUMR:
-  0B8B  CD6817        		call	ARG
+  0B8B  CD6D17        		call	ARG
   0B8E  CDC60B        		call	CHKRPAR
   0B91  180A          		jr	CHKNUM
                       	
@@ -2584,7 +2584,7 @@
                       	;output: FAC1, hl=next address
                       	;destroy: af,bc,de,FAC2
   0B9A                	NUMARG:
-  0B9A  CD6817        		call	ARG
+  0B9A  CD6D17        		call	ARG
                       	;	call	CHKNUM
                       	;	ret
                       	
@@ -2731,7 +2731,7 @@
                       	;NOT operator
   0C10                	O_NOT:
   0C10  CD9D0B        		call	CHKNUM
-  0C13  CD6D39        		call	EXFAC
+  0C13  CD6B39        		call	EXFAC
   0C16  CD4107        		call	FTOI2
   0C19  7A            		ld	a,d
   0C1A  2F            		cpl
@@ -2860,7 +2860,7 @@
                       	;	ld	(FAC1),hl
                       	;	ld	(FAC1+2),de
   0C97  326AFF        		ld	(FAC1+4),a
-  0C9A  CD9A37        		call	SETI4
+  0C9A  CD9837        		call	SETI4
   0C9D  D1            		pop	de
   0C9E  C9            		ret
                       	
@@ -3854,7 +3854,7 @@
   1107  3D            		dec	a
   1108  283F          		jr	z,CTLHOM	;0bh
   110A  3D            		dec	a
-  110B  CAFB1D        		jp	z,CLS		;0ch
+  110B  CA5616        		jp	z,CTLL		;0ch
   110E  2AA8FD        		ld	hl,(CSRY)	;l=y+1,h=x+1
   1111  3D            		dec	a
   1112  2838          		jr	z,CTLCR		;0dh
@@ -4483,7 +4483,7 @@
   1396  2192FD        		ld	hl,SCREEN1
   1399  5E            		ld	e,(hl)		;
   139A  BB            		cp	e
-  139B  284D          		jr	z,CMODEND
+  139B  284E          		jr	z,CMODEND
   139D  77            		ld	(hl),a
                       	
   139E  C5            		push	bc
@@ -4532,14 +4532,15 @@
   13DC  EDB0          		ldir
                       	
   13DE  CD6F1D        		call	SETCNSL2
-  13E1  2E01          		ld	l,01h
+  13E1  0E01          		ld	c,01h
   13E3  3A20FA        		ld	a,(HEIGHT)
-  13E6  CD4F16        		call	CLSMAIN
+  13E6  37            		scf
+  13E7  CD4716        		call	CLSMAIN
                       	
-  13E9  C1            		pop	bc
-  13EA                	CMODEND:
-  13EA  E1            		pop	hl
-  13EB  C9            		ret
+  13EA  C1            		pop	bc
+  13EB                	CMODEND:
+  13EB  E1            		pop	hl
+  13EC  C9            		ret
                       	
                       	
                       	;change display page
@@ -4549,7 +4550,7 @@
                       	;page4=a000h		out (0b0h),6
                       	;input: a=page-1
                       	;destroy: af
-  13EC                	_CHGDSP:ds	CHGDSP-_CHGDSP
+  13ED                	_CHGDSP:ds	CHGDSP-_CHGDSP
   13ED                		org	CHGDSP
                       	
   13ED  3290FD        		ld	(SCREEN3),a
@@ -5183,223 +5184,228 @@
   1646  C9            		ret
                       	
                       	
-                      	;clear screen using console parameter
+                      	;clear screen and reset graphic cordinate
+                      	;input: c-flag=1: c=first line+1, a=last line-first line+1
+                      	;       c-flag=0: using console parameters
                       	;destroy: af,bc,de,hl
-  1647                	CLSMAIN2:
-  1647  2AA2FD        		ld	hl,(CONSOL1)	;l=(CONSOL1)
-  164A  3AA5FD        		ld	a,(LASTLIN)
-  164D  95            		sub	l
-  164E  3C            		inc	a
+  1647                	CLSMAIN:
+  1647  210000        		ld	hl,0000h
+  164A  22AEFD        		ld	(GRPX1),hl
+  164D  22B0FD        		ld	(GRPY1),hl
+  1650  2C            		inc	l
+  1651  CD4C11        		call	CTLCR		;(0,0)
+  1654  380A          		jr	c,CLSMAIN2	;if a,c given
                       	
-                      	;clear from first line to last line
-                      	;input: l=first line+1, a=last line-first line+1
+                      	;clear screen using console parameters
                       	;destroy: af,bc,de,hl
-  164F                	CLSMAIN:
-  164F  47            		ld	b,a
-  1650  4D            		ld	c,l
-  1651                	CLSLP:
-  1651  CDB811        		call	Y2AD
-  1654  CDDA11        		call	DELLIN
-  1657  69            		ld	l,c
-  1658  79            		ld	a,c		;>0
-  1659  CD5114        		call	SETLINE
-  165C  0C            		inc	c
-  165D  69            		ld	l,c
-  165E  10F1          		djnz	CLSLP
+  1656                	CTLL:
+  1656  CD4911        		call	CTLHOM
+  1659  ED4BA4FD      		ld	bc,(FSTLIN)	;c=(FSTLIN),b=(LASTLIN)
+  165D  78            		ld	a,b
+  165E  91            		sub	c
+  165F  3C            		inc	a
                       	
-  1660  60            		ld	h,b		;=0
-  1661  68            		ld	l,b		;=0
-  1662  22AEFD        		ld	(GRPX1),hl
-  1665  22B0FD        		ld	(GRPY1),hl
-  1668  CD4911        		call	CTLHOM
-  166B  C3B512        		jp	PRTFKEY
+                      	;input: e=first line+1, a=last line-first line+1
+  1660                	CLSMAIN2:
+  1660  47            		ld	b,a
+  1661                	CLSLP:
+  1661  69            		ld	l,c
+  1662  CDB811        		call	Y2AD
+  1665  CDDA11        		call	DELLIN
+  1668  69            		ld	l,c
+  1669  78            		ld	a,b		;>0
+  166A  CD5114        		call	SETLINE
+  166D  0C            		inc	c
+  166E  10F1          		djnz	CLSLP
+                      	
+  1670  C3B512        		jp	PRTFKEY
                       	
                       	
                       	;cold start (initialize hardware)
-  166E                	COLD:
+  1673                	COLD:
                       	
                       	;8255 (port 93h)
-  166E  019306        		ld	bc,0693h
-  1671  78            		ld	a,b
-  1672  21DA00        		ld	hl,IOTBL93
-  1675  EDB3          		otir
+  1673  019306        		ld	bc,0693h
+  1676  78            		ld	a,b
+  1677  21DA00        		ld	hl,IOTBL93
+  167A  EDB3          		otir
                       	
                       	;port c1h
                       	;	ld	a,06h
-  1677  D3C1          		out	(0c1h),a	;32x16 text mode
+  167C  D3C1          		out	(0c1h),a	;32x16 text mode
                       	
                       	;8251 (port 81h)
-  1679  018105        		ld	bc,0581h
+  167E  018105        		ld	bc,0581h
                       	;	ld	hl,IOTBL81
-  167C  EDB3          		otir
+  1681  EDB3          		otir
                       	
                       	;port f0h-f8h
-  167E  01EF09        		ld	bc,09efh
+  1683  01EF09        		ld	bc,09efh
                       	;	ld	hl,IOTBLF0
-  1681                	F0LP:
-  1681  0C            		inc	c
-  1682  EDA3          		outi
-  1684  20FB          		jr	nz,F0LP
+  1686                	F0LP:
+  1686  0C            		inc	c
+  1687  EDA3          		outi
+  1689  20FB          		jr	nz,F0LP
                       	
                       	;interrupt
                       	;	ld	hl,INTTBL
-  1686  1102FA        		ld	de,0fa02h
-  1689  0E21          		ld	c,HEIGHT-0fa00h+1	;b=0
+  168B  1102FA        		ld	de,0fa02h
+  168E  0E21          		ld	c,HEIGHT-0fa00h+1	;b=0
                       	
-  168B  EDB0          		ldir
-  168D  7A            		ld	a,d
-  168E  ED47          		ld	i,a
-  1690  ED5E          		im	2
+  1690  EDB0          		ldir
+  1692  7A            		ld	a,d
+  1693  ED47          		ld	i,a
+  1695  ED5E          		im	2
                       	
                       	;clear work area
                       	
-  1692                	COLDLP1:
-  1692  AF            		xor	a
-  1693  12            		ld	(de),a
-  1694  13            		inc	de
-  1695  7A            		ld	a,d
-  1696  B3            		or	e
-  1697  20F9          		jr	nz,COLDLP1
+  1697                	COLDLP1:
+  1697  AF            		xor	a
+  1698  12            		ld	(de),a
+  1699  13            		inc	de
+  169A  7A            		ld	a,d
+  169B  B3            		or	e
+  169C  20F9          		jr	nz,COLDLP1
                       	
                       	;stack pointer
-  1699  3100E7        		ld	sp,0e700h	;temporary
+  169E  3100E7        		ld	sp,0e700h	;temporary
                       	
                       	;relay,VRAM,timer
-  169C  3C            		inc	a		;a=1
-  169D  322DFA        		ld	(CONSOL4),a
+  16A1  3C            		inc	a		;a=1
+  16A2  322DFA        		ld	(CONSOL4),a
                       	;misc
-  16A0  3E0E          		ld	a,0eh
-  16A2  3259FA        		ld	(CMMCNST),a	;used by EXAS BASIC compiler
+  16A5  3E0E          		ld	a,0eh
+  16A7  3259FA        		ld	(CMMCNST),a	;used by EXAS BASIC compiler
                       	
                       	;hook
-  16A5  218AFF        		ld	hl,HOOK
-  16A8  3EC9          		ld	a,0c9h
-  16AA  1E03          		ld	e,03h		;d=0
-  16AC  061E          		ld	b,1eh
-  16AE                	COLDLP2:
-  16AE  77            		ld	(hl),a
-  16AF  19            		add	hl,de
-  16B0  10FC          		djnz	COLDLP2
+  16AA  218AFF        		ld	hl,HOOK
+  16AD  3EC9          		ld	a,0c9h
+  16AF  1E03          		ld	e,03h		;d=0
+  16B1  061E          		ld	b,1eh
+  16B3                	COLDLP2:
+  16B3  77            		ld	(hl),a
+  16B4  19            		add	hl,de
+  16B5  10FC          		djnz	COLDLP2
                       	
                       	;for PC-6601 VOICEROM
-  16B2  3266FE        		ld	(HOOKVOI),a
+  16B7  3266FE        		ld	(HOOKVOI),a
                       	
                       	;buffer
-  16B5  21B9FB        		ld	hl,KEYBUF
-  16B8  1E40          		ld	e,40h		;d=0
-  16BA  2293FB        		ld	(KYBFAD),hl
-  16BD  19            		add	hl,de		;hl=RSBUF
-  16BE  2299FB        		ld	(RSBFAD),hl
-  16C1  19            		add	hl,de		;hl=BUFA
-  16C2  22A5FB        		ld	(BUFAAD),hl
-  16C5  19            		add	hl,de		;hl=BUFB
-  16C6  22ABFB        		ld	(BUFAAD+6),hl
-  16C9  19            		add	hl,de		;hl=BUFC
-  16CA  22B1FB        		ld	(BUFAAD+12),hl
+  16BA  21B9FB        		ld	hl,KEYBUF
+  16BD  1E40          		ld	e,40h		;d=0
+  16BF  2293FB        		ld	(KYBFAD),hl
+  16C2  19            		add	hl,de		;hl=RSBUF
+  16C3  2299FB        		ld	(RSBFAD),hl
+  16C6  19            		add	hl,de		;hl=BUFA
+  16C7  22A5FB        		ld	(BUFAAD),hl
+  16CA  19            		add	hl,de		;hl=BUFB
+  16CB  22ABFB        		ld	(BUFAAD+6),hl
+  16CE  19            		add	hl,de		;hl=BUFC
+  16CF  22B1FB        		ld	(BUFAAD+12),hl
                       	
-  16CD  2192FB        		ld	hl,KYBFSZ
-  16D0  1E06          		ld	e,06h		;d=0
-  16D2  43            		ld	b,e		;e=6
-  16D3                	COLDLP3:
-  16D3  363F          		ld	(hl),3fh	;KYBFSZ,RSBFSZ,,BUFASZ,BUFBSZ,BUFCSZ
-  16D5  19            		add	hl,de
-  16D6  10FB          		djnz	COLDLP3
+  16D2  2192FB        		ld	hl,KYBFSZ
+  16D5  1E06          		ld	e,06h		;d=0
+  16D7  43            		ld	b,e		;e=6
+  16D8                	COLDLP3:
+  16D8  363F          		ld	(hl),3fh	;KYBFSZ,RSBFSZ,,BUFASZ,BUFBSZ,BUFCSZ
+  16DA  19            		add	hl,de
+  16DB  10FB          		djnz	COLDLP3
                       	
                       	;command/function jump table
-  16D8  2161FA        		ld	hl,CMDTBL
-  16DB  0668          		ld	b,0+(FILES-CMDTBL)/2
-  16DD                	COLDLP4:
-  16DD  36C2          		ld	(hl),SNERR-SNERR/100h*100h
-  16DF  23            		inc	hl
-  16E0  3603          		ld	(hl),SNERR/100h
-  16E2  23            		inc	hl
-  16E3  10F8          		djnz	COLDLP4
+  16DD  2161FA        		ld	hl,CMDTBL
+  16E0  0668          		ld	b,0+(FILES-CMDTBL)/2
+  16E2                	COLDLP4:
+  16E2  36C2          		ld	(hl),SNERR-SNERR/100h*100h
+  16E4  23            		inc	hl
+  16E5  3603          		ld	(hl),SNERR/100h
+  16E7  23            		inc	hl
+  16E8  10F8          		djnz	COLDLP4
                       	
                       	;command jump table
-  16E5  219A01        		ld	hl,CMDLST
-  16E8  1161FA        		ld	de,CMDTBL
-  16EB  0E56          		ld	c,2*(CMDLAST-80h+1)	;b=0
-  16ED  EDB0          		ldir
+  16EA  219A01        		ld	hl,CMDLST
+  16ED  1161FA        		ld	de,CMDTBL
+  16F0  0E56          		ld	c,2*(CMDLAST-80h+1)	;b=0
+  16F2  EDB0          		ldir
                       	
                       	;function jump table
                       	;	ld	hl,FNCLST
-  16EF  11E5FA        		ld	de,FNCTBL
-  16F2  0E3C          		ld	c,2*(FNCLAST-FNC1ST+1)	;b=0
-  16F4  EDB0          		ldir
+  16F4  11E5FA        		ld	de,FNCTBL
+  16F7  0E3C          		ld	c,2*(FNCLAST-FNC1ST+1)	;b=0
+  16F9  EDB0          		ldir
                       	
                       	;screen
-  16F6  1191FD        		ld	de,VRAM		;top of active page data
-  16F9  3E05          		ld	a,05h
-  16FB  32C7FE        		ld	(FKEYLEN),a
-  16FE                	COLDLP5:
-  16FE  213D01        		ld	hl,PAGEDATA
-  1701  0E28          		ld	c,PAGE1-VRAM	;b=0
-  1703  EDB0          		ldir
-  1705  3D            		dec	a
-  1706  20F6          		jr	nz,COLDLP5
+  16FB  1191FD        		ld	de,VRAM		;top of active page data
+  16FE  3E05          		ld	a,05h
+  1700  32C7FE        		ld	(FKEYLEN),a
+  1703                	COLDLP5:
+  1703  213D01        		ld	hl,PAGEDATA
+  1706  0E28          		ld	c,PAGE1-VRAM	;b=0
+  1708  EDB0          		ldir
+  170A  3D            		dec	a
+  170B  20F6          		jr	nz,COLDLP5
                       	
                       	;	ld	de,PAGE4+(PAGE4-PAGE3)
-  1708  EB            		ex	de,hl
-  1709  11D8FF        		ld	de,0-(PAGE4-PAGE3)
-  170C  3EA0          		ld	a,0a0h
-  170E                	COLDLP6:
-  170E  19            		add	hl,de
-  170F  77            		ld	(hl),a		;(PAGE4)=a0h, (PAGE3)=c0h, (PAGE2)=e0h
-  1710  C620          		add	a,20h
-  1712  20FA          		jr	nz,COLDLP6
+  170D  EB            		ex	de,hl
+  170E  11D8FF        		ld	de,0-(PAGE4-PAGE3)
+  1711  3EA0          		ld	a,0a0h
+  1713                	COLDLP6:
+  1713  19            		add	hl,de
+  1714  77            		ld	(hl),a		;(PAGE4)=a0h, (PAGE3)=c0h, (PAGE2)=e0h
+  1715  C620          		add	a,20h
+  1717  20FA          		jr	nz,COLDLP6
                       	
                       	;display
                       	;	xor	a
-  1714  CD0C14        		call	CHGACT
-  1717  CDED13        		call	CHGDSP
-  171A  CDFB1D        		call	CLS
+  1719  CD0C14        		call	CHGACT
+  171C  CDED13        		call	CHGDSP
+  171F  CDFB1D        		call	CLS
                       	
                       	;RND()
                       	;	call	SETZERO
-  171D  CDB53B        		call	RNDMNS
+  1722  CDB53B        		call	RNDMNS
                       	
                       	;PLAY
-  1720  CDB31B        		call	PLSTOP		;ei
+  1725  CDB31B        		call	PLSTOP		;ei
                       	
                       	;for mode select
-  1723  3EFF          		ld	a,0ffh
-  1725  324EFF        		ld	(PROGAD),a	;invalid value, not set yet
+  1728  3EFF          		ld	a,0ffh
+  172A  324EFF        		ld	(PROGAD),a	;invalid value, not set yet
                       	
                       	;RAM access subroutine
-  1728  212260        		ld	hl,READRAM_SRC
-  172B  118DFE        		ld	de,READRAM
-  172E  011F00        		ld	bc,RAMEND-READRAM_SRC
-  1731  EDB0          		ldir
+  172D  212260        		ld	hl,READRAM_SRC
+  1730  118DFE        		ld	de,READRAM
+  1733  011F00        		ld	bc,RAMEND-READRAM_SRC
+  1736  EDB0          		ldir
                       	
                       	;RAM size and stack work
-  1733  0608          		ld	b,08h
-  1735  CDE825        		call	WAITLP
-  1738  CDBC0F        		call	GETCH
-  173B  2100C4        		ld	hl,0c400h
-  173E  0602          		ld	b,02h
-  1740  280E          		jr	z,COLD16K
-  1742  3D            		dec	a
+  1738  0608          		ld	b,08h
+  173A  CDE825        		call	WAITLP
+  173D  CDBC0F        		call	GETCH
+  1740  2100C4        		ld	hl,0c400h
+  1743  0602          		ld	b,02h
+  1745  280E          		jr	z,COLD16K
+  1747  3D            		dec	a
                       	;	or	02h
-  1743  B0            		or	b
-  1744  D633          		sub	'4'-1
-  1746  2008          		jr	nz,COLD16K
-  1748  3C            		inc	a
-  1749  3265FE        		ld	(MODE),a	;a=1 (mode=2)
-  174C  2684          		ld	h,84h
-  174E  0604          		ld	b,04h
-  1750                	COLD16K:
-  1750  2229FF        		ld	(BASICAD),hl
-  1753  2C            		inc	l
-  1754  225FFA        		ld	(STARTAD),hl
-  1757  2100F9        		ld	hl,0f900h
-  175A  225BFA        		ld	(STACK),hl
-  175D  78            		ld	a,b
-  175E  328CFD        		ld	(PAGES),a
+  1748  B0            		or	b
+  1749  D633          		sub	'4'-1
+  174B  2008          		jr	nz,COLD16K
+  174D  3C            		inc	a
+  174E  3265FE        		ld	(MODE),a	;a=1 (mode=2)
+  1751  2684          		ld	h,84h
+  1753  0604          		ld	b,04h
+  1755                	COLD16K:
+  1755  2229FF        		ld	(BASICAD),hl
+  1758  2C            		inc	l
+  1759  225FFA        		ld	(STARTAD),hl
+  175C  2100F9        		ld	hl,0f900h
+  175F  225BFA        		ld	(STACK),hl
+  1762  78            		ld	a,b
+  1763  328CFD        		ld	(PAGES),a
                       	
-  1761  3E71          		ld	a,71h		;0000-3fff:BASIC ROM, 4000-7fff:external ROM
-  1763  D3F0          		out	(0f0h),a
+  1766  3E71          		ld	a,71h		;0000-3fff:BASIC ROM, 4000-7fff:external ROM
+  1768  D3F0          		out	(0f0h),a
                       	
-  1765  C33B00        		jp	HOT
+  176A  C33B00        		jp	HOT
                       	
                       	
                       	;analyze an argument
@@ -5407,224 +5413,224 @@
                       	;output: hl=next address, FAC1=numerical value or pointer to string descriptor
                       	;	 (ARGTYP)=0(numeric), 1(string), other(cannot analyze)
                       	;destroy: FAC2,af,bc,de,hl
-  1768                	ARG:
-  1768  E5            		push	hl
-  1769  CD420C        		call	SETZERO		;for first +-
-  176C  E1            		pop	hl
-  176D  AF            		xor	a
-  176E  5F            		ld	e,a
-  176F  D5            		push	de		;e=dummy operator
-  1770  3D            		dec	a
-  1771  3225FF        		ld	(ARGTYP),a	;ff=unknown
-  1774  3265FF        		ld	(OPRTR),a
-  1777                	ARGLP:
-  1777  E5            		push	hl
-  1778  CDE234        		call	CHKFRE
-  177B  E1            		pop	hl
-  177C                	ARGLP2:
-  177C  CD593F        		call	SKIPSP
-  177F  47            		ld	b,a		;
-  1780  23            		inc	hl
-  1781  224EFF        		ld	(PROGAD),hl
+  176D                	ARG:
+  176D  E5            		push	hl
+  176E  CD420C        		call	SETZERO		;for first +-
+  1771  E1            		pop	hl
+  1772  AF            		xor	a
+  1773  5F            		ld	e,a
+  1774  D5            		push	de		;e=dummy operator
+  1775  3D            		dec	a
+  1776  3225FF        		ld	(ARGTYP),a	;ff=unknown
+  1779  3265FF        		ld	(OPRTR),a
+  177C                	ARGLP:
+  177C  E5            		push	hl
+  177D  CDE234        		call	CHKFRE
+  1780  E1            		pop	hl
+  1781                	ARGLP2:
+  1781  CD593F        		call	SKIPSP
+  1784  47            		ld	b,a		;
+  1785  23            		inc	hl
+  1786  224EFF        		ld	(PROGAD),hl
                       	
                       	;command, function, operator
-  1784  B7            		or	a
-  1785  FA5E18        		jp	m,ARGCMD
+  1789  B7            		or	a
+  178A  FA6318        		jp	m,ARGCMD
                       	
                       	;previous argument without operator?
-  1788  3A65FF        		ld	a,(OPRTR)
-  178B  B7            		or	a
-  178C  281F          		jr	z,ARGTAIL
+  178D  3A65FF        		ld	a,(OPRTR)
+  1790  B7            		or	a
+  1791  281F          		jr	z,ARGTAIL
                       	;[A-Z]
-  178E  78            		ld	a,b		;
-  178F  D641          		sub	'A'
-  1791  FE1A          		cp	'Z'-'A'+1
-  1793  3849          		jr	c,ARGVAR
+  1793  78            		ld	a,b		;
+  1794  D641          		sub	'A'
+  1796  FE1A          		cp	'Z'-'A'+1
+  1798  3849          		jr	c,ARGVAR
                       	;[0-9&.]
-  1795  D6EF          		sub	'0'-'A'
-  1797  FE0A          		cp	'9'-'0'+1
-  1799  78            		ld	a,b		;
-  179A  382F          		jr	c,ARGNUM
-  179C  FE26          		cp	'&'
-  179E  282B          		jr	z,ARGNUM
-  17A0  FE2E          		cp	'.'
-  17A2  2827          		jr	z,ARGNUM
+  179A  D6EF          		sub	'0'-'A'
+  179C  FE0A          		cp	'9'-'0'+1
+  179E  78            		ld	a,b		;
+  179F  382F          		jr	c,ARGNUM
+  17A1  FE26          		cp	'&'
+  17A3  282B          		jr	z,ARGNUM
+  17A5  FE2E          		cp	'.'
+  17A7  2827          		jr	z,ARGNUM
                       	;others
-  17A4  FE22          		cp	22h		;double quotation mark
-  17A6  CA3018        		jp	z,ARGSTR
-  17A9  FE28          		cp	'('
-  17AB  2808          		jr	z,PARL
-  17AD                	ARGTAIL:
-  17AD  2B            		dec	hl
-  17AE  224EFF        		ld	(PROGAD),hl
-  17B1  AF            		xor	a
-  17B2  C3F118        		jp	OPR
+  17A9  FE22          		cp	22h		;double quotation mark
+  17AB  CA3518        		jp	z,ARGSTR
+  17AE  FE28          		cp	'('
+  17B0  2808          		jr	z,PARL
+  17B2                	ARGTAIL:
+  17B2  2B            		dec	hl
+  17B3  224EFF        		ld	(PROGAD),hl
+  17B6  AF            		xor	a
+  17B7  C3F118        		jp	OPR
                       	
-  17B5                	PARL:
-  17B5  CD603F        		call	CHKCLN
-  17B8  CAF803        		jp	z,MOERR
-  17BB  CD6817        		call	ARG
-  17BE  3A25FF        		ld	a,(ARGTYP)
-  17C1  FE02          		cp	02h
-  17C3  D2C203        		jp	nc,SNERR
-  17C6  CDC60B        		call	CHKRPAR
-  17C9  18AC          		jr	ARGLP
+  17BA                	PARL:
+  17BA  CD603F        		call	CHKCLN
+  17BD  CAF803        		jp	z,MOERR
+  17C0  CD6D17        		call	ARG
+  17C3  3A25FF        		ld	a,(ARGTYP)
+  17C6  FE02          		cp	02h
+  17C8  D2C203        		jp	nc,SNERR
+  17CB  CDC60B        		call	CHKRPAR
+  17CE  18AC          		jr	ARGLP
                       	
-  17CB                	ARGNUM:
-  17CB  CDD617        		call	ARGNCHK
-  17CE  2B            		dec	hl
-  17CF  3EFF          		ld	a,0ffh
-  17D1  CD9B39        		call	ATOF
-  17D4  18A6          		jr	ARGLP2
+  17D0                	ARGNUM:
+  17D0  CDDB17        		call	ARGNCHK
+  17D3  2B            		dec	hl
+  17D4  3EFF          		ld	a,0ffh
+  17D6  CD9B39        		call	ATOF
+  17D9  18A6          		jr	ARGLP2
                       	
-  17D6                	ARGNCHK:
-  17D6  AF            		xor	a
-  17D7  3265FF        		ld	(OPRTR),a
-  17DA  3225FF        		ld	(ARGTYP),a
-  17DD  C9            		ret
+  17DB                	ARGNCHK:
+  17DB  AF            		xor	a
+  17DC  3265FF        		ld	(OPRTR),a
+  17DF  3225FF        		ld	(ARGTYP),a
+  17E2  C9            		ret
                       	
-  17DE                	ARGVAR:
-  17DE  E5            		push	hl		;program address
-  17DF  CD8733        		call	GETNAME
-  17E2  3A25FF        		ld	a,(ARGTYP)
-  17E5  F5            		push	af		;;
-  17E6  3A65FF        		ld	a,(OPRTR)
-  17E9  F5            		push	af		;;;
-  17EA  EB            		ex	de,hl
-  17EB  CD2D39        		call	PUSHF1
-  17EE  EB            		ex	de,hl
+  17E3                	ARGVAR:
+  17E3  E5            		push	hl		;program address
+  17E4  CD8733        		call	GETNAME
+  17E7  3A25FF        		ld	a,(ARGTYP)
+  17EA  F5            		push	af		;;
+  17EB  3A65FF        		ld	a,(OPRTR)
+  17EE  F5            		push	af		;;;
+  17EF  EB            		ex	de,hl
+  17F0  CD2B39        		call	PUSHF1
+  17F3  EB            		ex	de,hl
                       	
-  17EF  C5            		push	bc		;variable name
-  17F0  7E            		ld	a,(hl)
-  17F1  FE28          		cp	'('
-  17F3  280D          		jr	z,ARGVARR
-  17F5  224EFF        		ld	(PROGAD),hl
-  17F8  CDAB33        		call	SRCHVAR
-  17FB  3008          		jr	nc,ARGVNC
-  17FD  11AB0E        		ld	de,ZERO
-  1800  1803          		jr	ARGVNC
-  1802                	ARGVARR:
-  1802  CDA932        		call	GETARR
-  1805                	ARGVNC:
-  1805  C1            		pop	bc		;variable name
-  1806  CD3C39        		call	POPF1
-  1809  F1            		pop	af		;;;
-  180A  3225FF        		ld	(ARGTYP),a
-  180D  F1            		pop	af		;;
-  180E  3265FF        		ld	(OPRTR),a
-  1811  E1            		pop	hl		;program address
-  1812  CB79          		bit	7,c
-  1814  2011          		jr	nz,ARGVSTR
-  1816                	ARGVNUM:
-  1816  CDD617        		call	ARGNCHK
-  1819  EB            		ex	de,hl
-  181A  1166FF        		ld	de,FAC1
-  181D  EDA0          		ldi
-  181F                	ARGVLDIR:
-  181F  010400        		ld	bc,0004h
-  1822  EDB0          		ldir
-  1824  C33F19        		jp	ARGNEXT2
+  17F4  C5            		push	bc		;variable name
+  17F5  7E            		ld	a,(hl)
+  17F6  FE28          		cp	'('
+  17F8  280D          		jr	z,ARGVARR
+  17FA  224EFF        		ld	(PROGAD),hl
+  17FD  CDAB33        		call	SRCHVAR
+  1800  3008          		jr	nc,ARGVNC
+  1802  11AB0E        		ld	de,ZERO
+  1805  1803          		jr	ARGVNC
+  1807                	ARGVARR:
+  1807  CDA932        		call	GETARR
+  180A                	ARGVNC:
+  180A  C1            		pop	bc		;variable name
+  180B  CD3A39        		call	POPF1
+  180E  F1            		pop	af		;;;
+  180F  3225FF        		ld	(ARGTYP),a
+  1812  F1            		pop	af		;;
+  1813  3265FF        		ld	(OPRTR),a
+  1816  E1            		pop	hl		;program address
+  1817  CB79          		bit	7,c
+  1819  2011          		jr	nz,ARGVSTR
+  181B                	ARGVNUM:
+  181B  CDDB17        		call	ARGNCHK
+  181E  EB            		ex	de,hl
+  181F  1166FF        		ld	de,FAC1
+  1822  EDA0          		ldi
+  1824                	ARGVLDIR:
+  1824  010400        		ld	bc,0004h
+  1827  EDB0          		ldir
+  1829  C33F19        		jp	ARGNEXT2
                       	
                       	
                       	;string variable
-  1827                	ARGVSTR:
-  1827  CD4E18        		call	ARGSCHK
-  182A  EB            		ex	de,hl
-  182B  112DFF        		ld	de,STRDSC1
-  182E  18EF          		jr	ARGVLDIR
+  182C                	ARGVSTR:
+  182C  CD5318        		call	ARGSCHK
+  182F  EB            		ex	de,hl
+  1830  112DFF        		ld	de,STRDSC1
+  1833  18EF          		jr	ARGVLDIR
                       	
-  1830                	ARGSTR:
-  1830  CD4E18        		call	ARGSCHK
-  1833  222FFF        		ld	(STRDSC1+2),hl
-  1836  1E00          		ld	e,00h
-  1838                	ARGSLP:
-  1838  7E            		ld	a,(hl)
-  1839  B7            		or	a
-  183A  280B          		jr	z,ARGSOK
-  183C  23            		inc	hl
-  183D  FE22          		cp	22h		;double quotation mark
-  183F  2806          		jr	z,ARGSOK
-  1841  1C            		inc	e
-  1842  CAE903        		jp	z,LSERR
-  1845  18F1          		jr	ARGSLP
-  1847                	ARGSOK:
-  1847  ED532DFF      		ld	(STRDSC1),de
-  184B  C37C17        		jp	ARGLP2
+  1835                	ARGSTR:
+  1835  CD5318        		call	ARGSCHK
+  1838  222FFF        		ld	(STRDSC1+2),hl
+  183B  1E00          		ld	e,00h
+  183D                	ARGSLP:
+  183D  7E            		ld	a,(hl)
+  183E  B7            		or	a
+  183F  280B          		jr	z,ARGSOK
+  1841  23            		inc	hl
+  1842  FE22          		cp	22h		;double quotation mark
+  1844  2806          		jr	z,ARGSOK
+  1846  1C            		inc	e
+  1847  CAE903        		jp	z,LSERR
+  184A  18F1          		jr	ARGSLP
+  184C                	ARGSOK:
+  184C  ED532DFF      		ld	(STRDSC1),de
+  1850  C38117        		jp	ARGLP2
                       	
                       	;destroy: af,bc
-  184E                	ARGSCHK:
-  184E  AF            		xor	a
-  184F  3265FF        		ld	(OPRTR),a	;a=0
-  1852  3C            		inc	a
-  1853  3225FF        		ld	(ARGTYP),a	;a=1
-  1856  012DFF        		ld	bc,STRDSC1
-  1859  ED4367FF      		ld	(FAC1+1),bc
-  185D  C9            		ret
+  1853                	ARGSCHK:
+  1853  AF            		xor	a
+  1854  3265FF        		ld	(OPRTR),a	;a=0
+  1857  3C            		inc	a
+  1858  3225FF        		ld	(ARGTYP),a	;a=1
+  185B  012DFF        		ld	bc,STRDSC1
+  185E  ED4367FF      		ld	(FAC1+1),bc
+  1862  C9            		ret
                       	
-  185E                	ARGCMD:
-  185E  3A65FE        		ld	a,(MODE)
-  1861  FE02          		cp	02h
-  1863  78            		ld	a,b		;
-  1864  3005          		jr	nc,ARGCMDEX
+  1863                	ARGCMD:
+  1863  3A65FE        		ld	a,(MODE)
+  1866  FE02          		cp	02h
+  1868  78            		ld	a,b		;
+  1869  3005          		jr	nc,ARGCMDEX
                       	
-  1866  FEF2          		cp	FNCLAST+1	;0f2h
-  1868  D2C203        		jp	nc,SNERR
-  186B                	ARGCMDEX:
-  186B  FEFA          		cp	FLASTEX+1	;0fah
+  186B  FEF2          		cp	FNCLAST+1	;0f2h
   186D  D2C203        		jp	nc,SNERR
-  1870  D6CA          		sub	PLUS_		;0cah
-  1872  FE0A          		cp	FNC1ST-PLUS_
-  1874  78            		ld	a,b		;
-  1875  387A          		jr	c,OPR		;0cah-0d3h
+  1870                	ARGCMDEX:
+  1870  FEFA          		cp	FLASTEX+1	;0fah
+  1872  D2C203        		jp	nc,SNERR
+  1875  D6CA          		sub	PLUS_		;0cah
+  1877  FE0A          		cp	FNC1ST-PLUS_
+  1879  78            		ld	a,b		;
+  187A  3875          		jr	c,OPR		;0cah-0d3h
                       	
-  1877  3A65FF        		ld	a,(OPRTR)
-  187A  B7            		or	a
-  187B  CAAD17        		jp	z,ARGTAIL
+  187C  3A65FF        		ld	a,(OPRTR)
+  187F  B7            		or	a
+  1880  CAB217        		jp	z,ARGTAIL
                       	
-  187E  78            		ld	a,b		;
-  187F  FEC8          		cp	NOT_		;0c8h
-  1881  286E          		jr	z,OPR
-  1883  FE9F          		cp	SCREEN_		;9fh
-  1885  280D          		jr	z,FNC
-  1887  FEC4          		cp	FN_		;0c4h
-  1889  2809          		jr	z,FNC
-  188B  FEC6          		cp	INKEY_		;0c6h
-  188D  2805          		jr	z,FNC
-  188F  FECA          		cp	PLUS_		;0cah
-  1891  DAAD17        		jp	c,ARGTAIL
+  1883  78            		ld	a,b		;
+  1884  FEC8          		cp	NOT_		;0c8h
+  1886  2869          		jr	z,OPR
+  1888  FE9F          		cp	SCREEN_		;9fh
+  188A  280D          		jr	z,FNC
+  188C  FEC4          		cp	FN_		;0c4h
+  188E  2809          		jr	z,FNC
+  1890  FEC6          		cp	INKEY_		;0c6h
+  1892  2805          		jr	z,FNC
+  1894  FECA          		cp	PLUS_		;0cah
+  1896  DAB217        		jp	c,ARGTAIL
                       	
                       	;	jr	FNC
                       	
                       	;function
-  1894                	FNC:
-  1894  AF            		xor	a
-  1895  3225FF        		ld	(ARGTYP),a
-  1898  78            		ld	a,b		;
-  1899  FEC6          		cp	INKEY_
-  189B  CA9E27        		jp	z,F_INKY
-  189E  FEC4          		cp	FN_
-  18A0  CAC73E        		jp	z,F_FN
-  18A3  FE9F          		cp	SCREEN_
-  18A5  CAAA3E        		jp	z,F_SCRN
+  1899                	FNC:
+  1899  AF            		xor	a
+  189A  3225FF        		ld	(ARGTYP),a
+  189D  78            		ld	a,b		;
+  189E  FEC6          		cp	INKEY_
+  18A0  CA9E27        		jp	z,F_INKY
+  18A3  FEC4          		cp	FN_
+  18A5  CAC73E        		jp	z,F_FN
+  18A8  FE9F          		cp	SCREEN_
+  18AA  CAAA3E        		jp	z,F_SCRN
                       	
-  18A8  CDCD18        		call	CALLFNC
-  18AB                	FNCRTN:
-  18AB  2A4EFF        		ld	hl,(PROGAD)
-  18AE                	CLRSTRD:
-  18AE  3A25FF        		ld	a,(ARGTYP)
-  18B1  B7            		or	a
-  18B2  2003          		jr	nz,CLRSTRDNZ
-  18B4  322DFF        		ld	(STRDSC1),a	;=0
-  18B7                	CLRSTRDNZ:
-  18B7  AF            		xor	a
-  18B8  3265FF        		ld	(OPRTR),a
-  18BB  C37717        		jp	ARGLP
+  18AD  CDCD18        		call	CALLFNC
+  18B0                	FNCRTN:
+  18B0  2A4EFF        		ld	hl,(PROGAD)
+  18B3                	CLRSTRD:
+  18B3  3A25FF        		ld	a,(ARGTYP)
+  18B6  B7            		or	a
+  18B7  2003          		jr	nz,CLRSTRDNZ
+  18B9  322DFF        		ld	(STRDSC1),a	;=0
+  18BC                	CLRSTRDNZ:
+  18BC  AF            		xor	a
+  18BD  3265FF        		ld	(OPRTR),a
+  18C0  C37C17        		jp	ARGLP
                       	
                       	
                       	;set border attribute
                       	;input: a=color code
                       	;destroy: af
-  18BE                	_SETBO:	ds	SETBO-_SETBO
+  18C3                	_SETBO:	ds	SETBO-_SETBO
   18C3                		org	SETBO
                       	
   18C3  32C6FE        		ld	(BORDERC),a
@@ -5640,7 +5646,7 @@
                       	;SGN()...CHR$()
   18D1  F5            		push	af
   18D2  CDB70B        		call	CHKLPAR
-  18D5  CD6817        		call	ARG
+  18D5  CD6D17        		call	ARG
   18D8  CDC60B        		call	CHKRPAR
   18DB  F1            		pop	af
                       	
@@ -5701,7 +5707,7 @@
   192B  3A25FF        		ld	a,(ARGTYP)
   192E  3D            		dec	a
   192F  2805          		jr	z,ARGNEXTS
-  1931  CD2D39        		call	PUSHF1
+  1931  CD2B39        		call	PUSHF1
   1934  1809          		jr	ARGNEXT2
   1936                	ARGNEXTS:
   1936  CDE719        		call	COPYSTR
@@ -5710,7 +5716,7 @@
   193E  E5            		push	hl
   193F                	ARGNEXT2:
   193F  2A4EFF        		ld	hl,(PROGAD)
-  1942  C37717        		jp	ARGLP
+  1942  C37C17        		jp	ARGLP
                       	
                       	
   1945                	CALLOP:
@@ -5721,10 +5727,10 @@
   194B  2829          		jr	z,CALLOPS
                       	
                       	;numeric
-  194D  CD5A39        		call	CPYFAC
+  194D  CD5839        		call	CPYFAC
   1950  C1            		pop	bc		;
   1951  D1            		pop	de		;;
-  1952  CD3C39        		call	POPF1
+  1952  CD3A39        		call	POPF1
                       	
   1955                	CALLOPEND:
   1955  CB71          		bit	6,c
@@ -6736,17 +6742,18 @@
                       	
   1DFB  E5            		push	hl
   1DFC  C5            		push	bc
-  1DFD  CD4716        		call	CLSMAIN2
-  1E00  C1            		pop	bc
-  1E01  E1            		pop	hl
-  1E02  C9            		ret
+  1DFD  B7            		or	a		;reset c-flag
+  1DFE  CD4716        		call	CLSMAIN
+  1E01  C1            		pop	bc
+  1E02  E1            		pop	hl
+  1E03  C9            		ret
                       	
                       	
                       	;SCREEN command
-  1E03                	_C_SCRN:ds	C_SCRN-_C_SCRN
+  1E04                	_C_SCRN:ds	C_SCRN-_C_SCRN
   1E04                		org	C_SCRN
                       	
-  1E04  AF            		xor	a		;1st parmeter=none
+  1E04  AF            		xor	a		;1st parameter=none
   1E05  F5            		push	af
   1E06  ED4B8FFD      		ld	bc,(SCREEN2)
   1E0A  51            		ld	d,c		;2nd parameter-1
@@ -7146,7 +7153,7 @@
   206E  2118FD        		ld	hl,PLAYSTR
   2071  34            		inc	(hl)
   2072  C0            		ret	nz
-  2073  2C            		inc	l
+  2073  2C            		inc	l		;inc hl
   2074  34            		inc	(hl)
   2075  C9            		ret
                       	
@@ -8041,7 +8048,7 @@
                       	;	ld	(FAC1),hl
                       	;	ld	(FAC1+2),de
                       	;	ret
-  2507  C39A37        		jp	SETI4
+  2507  C39837        		jp	SETI4
                       	
                       	
                       	;convert 4-byte integer to float (unsigned)
@@ -8343,7 +8350,7 @@
   2681  CD603F        		call	CHKCLN
   2684  CAF803        		jp	z,MOERR
   2687                	STRARG3:
-  2687  CD6817        		call	ARG
+  2687  CD6D17        		call	ARG
   268A                	STRARG2:
   268A  EB            		ex	de,hl
   268B  CDA90B        		call	CHKSTR
@@ -8594,7 +8601,7 @@
                       	
                       	;INKEY$
   279E                	F_INKY:
-  279E  21AB18        		ld	hl,FNCRTN
+  279E  21B018        		ld	hl,FNCRTN
   27A1  E5            		push	hl
                       	
   27A2  CDBC0F        		call	GETCH
@@ -8735,12 +8742,12 @@
   2836  D5            		push	de
   2837  C5            		push	bc
   2838  F5            		push	af
-  2839  CD2739        		call	ABS
-  283C  CDAC37        		call	MULF10
-  283F  CD5A39        		call	CPYFAC
+  2839  CD2539        		call	ABS
+  283C  CDAA37        		call	MULF10
+  283F  CD5839        		call	CPYFAC
   2842  F1            		pop	af
   2843  CD7D0C        		call	I1TOFA
-  2846  CDA636        		call	ADDF
+  2846  CDA436        		call	ADDF
   2849  C1            		pop	bc
   284A  D1            		pop	de
                       	
@@ -9314,7 +9321,7 @@
   2B31  C3CD11        		jp	XY2AD
                       	
                       	
-                      	;x=x+-(8 or 4 or 2 or 1)
+                      	;x=x+-1
                       	;input: b(bit7=0:increment, bit7=1:decrement), (GRPX3)
                       	;output: hl,(GRPX3)=X, z-flag(1=overflow)
                       	;destroy: af,de
@@ -9335,7 +9342,7 @@
   2B46  C9            		ret
                       	
                       	
-                      	;y=y+(12 or 4 or 1 or 1)
+                      	;y=y+1
                       	;input: (GRPY3)
                       	;output: de=(GRPY3)
                       	;destroy: af
@@ -9527,18 +9534,18 @@
   2C24  25            		dec	h
   2C25  25            		dec	h
   2C26  3AACFE        		ld	a,(ATTDAT)
-  2C29  5F            		ld	e,a		;
+  2C29  5E            		ld	e,(hl)		;
   2C2A  B7            		or	a
   2C2B  2004          		jr	nz,PS2NZ1
-  2C2D  CB76          		bit	6,(hl)
+  2C2D  CB73          		bit	6,e		;
   2C2F  2004          		jr	nz,PS2NZ2
   2C31                	PS2NZ1:
   2C31  CD4C15        		call	GETSPA2NZ
   2C34  77            		ld	(hl),a
   2C35                	PS2NZ2:
-  2C35  CB76          		bit	6,(hl)
-  2C37  24            		inc	h
-  2C38  24            		inc	h
+  2C35  24            		inc	h
+  2C36  24            		inc	h
+  2C37  CB73          		bit	6,e		;
   2C39  2004          		jr	nz,PS2SEMI	;semi-graphic mode?
   2C3B  CD1D16        		call	GETSP
   2C3E  77            		ld	(hl),a
@@ -9549,25 +9556,25 @@
   2C42  B2            		or	d
   2C43  4F            		ld	c,a		;;
                       	
-  2C44  7B            		ld	a,e		;
-  2C45  B7            		or	a
-  2C46  2809          		jr	z,PSET2C0
-  2C48  3D            		dec	a
-  2C49  E603          		and	03h
-  2C4B  0F            		rrca
-  2C4C  0F            		rrca
-  2C4D  81            		add	a,c		;;
-  2C4E  77            		ld	(hl),a
-  2C4F  E1            		pop	hl
-  2C50  C9            		ret
+  2C44  3AACFE        		ld	a,(ATTDAT)
+  2C47  B7            		or	a
+  2C48  2809          		jr	z,PSET2C0
+  2C4A  3D            		dec	a
+  2C4B  E603          		and	03h
+  2C4D  0F            		rrca
+  2C4E  0F            		rrca
+  2C4F  81            		add	a,c		;;
+  2C50  77            		ld	(hl),a
+  2C51  E1            		pop	hl
+  2C52  C9            		ret
                       	
-  2C51                	PSET2C0:
-  2C51  78            		ld	a,b
-  2C52  2F            		cpl
-  2C53  A6            		and	(hl)
-  2C54  77            		ld	(hl),a
-  2C55  E1            		pop	hl
-  2C56  C9            		ret
+  2C53                	PSET2C0:
+  2C53  7A            		ld	a,d
+  2C54  2F            		cpl
+  2C55  A6            		and	(hl)
+  2C56  77            		ld	(hl),a
+  2C57  E1            		pop	hl
+  2C58  C9            		ret
                       	
                       	
                       	;screen mode 2 dot bit mask
@@ -9577,124 +9584,124 @@
                       	; bit3 bit2
                       	; bit1 bit0
                       	;destroy: f,bc
-  2C57                	MASK2:
-  2C57  79            		ld	a,c
-  2C58  2F            		cpl
-  2C59  E604          		and	04h
-  2C5B  C604          		add	a,04h
-  2C5D  CB52          		bit	2,d
-  2C5F  C0            		ret	nz	;4<=d<=7
-  2C60  CB5A          		bit	3,d
-  2C62  2003          		jr	nz,MASK2NZ
-  2C64  07            		rlca
-  2C65  07            		rlca
-  2C66  C9            		ret		;0<=d<=3
-  2C67                	MASK2NZ:
-  2C67  0F            		rrca
-  2C68  0F            		rrca
-  2C69  C9            		ret		;8<=d<=11
+  2C59                	MASK2:
+  2C59  79            		ld	a,c
+  2C5A  2F            		cpl
+  2C5B  E604          		and	04h
+  2C5D  C604          		add	a,04h
+  2C5F  CB52          		bit	2,d
+  2C61  C0            		ret	nz	;4<=d<=7
+  2C62  CB5A          		bit	3,d
+  2C64  2003          		jr	nz,MASK2NZ
+  2C66  07            		rlca
+  2C67  07            		rlca
+  2C68  C9            		ret		;0<=d<=3
+  2C69                	MASK2NZ:
+  2C69  0F            		rrca
+  2C6A  0F            		rrca
+  2C6B  C9            		ret		;8<=d<=11
                       	
                       	
                       	;continued from BFG
-  2C6A                	BFG2:
-  2C6A  3AB1FE        		ld	a,(GRPX3)	;smaller x
-  2C6D  E6F8          		and	0f8h
-  2C6F  47            		ld	b,a
-  2C70  3AADFE        		ld	a,(GRPX2)	;larger x
-  2C73  E6F8          		and	0f8h
-  2C75  90            		sub	b		;
-  2C76  0F            		rrca
-  2C77  0F            		rrca
-  2C78  0F            		rrca			;int(larger/8)-int(smaller/8)
-  2C79  47            		ld	b,a		;bytes
-  2C7A  2003          		jr	nz,BFGLP3	;a=0?
-  2C7C  7A            		ld	a,d
-  2C7D  A3            		and	e
-  2C7E  57            		ld	d,a
+  2C6C                	BFG2:
+  2C6C  3AB1FE        		ld	a,(GRPX3)	;smaller x
+  2C6F  E6F8          		and	0f8h
+  2C71  47            		ld	b,a
+  2C72  3AADFE        		ld	a,(GRPX2)	;larger x
+  2C75  E6F8          		and	0f8h
+  2C77  90            		sub	b		;
+  2C78  0F            		rrca
+  2C79  0F            		rrca
+  2C7A  0F            		rrca			;int(larger/8)-int(smaller/8)
+  2C7B  47            		ld	b,a		;bytes
+  2C7C  2003          		jr	nz,BFGLP3	;a=0?
+  2C7E  7A            		ld	a,d
+  2C7F  A3            		and	e
+  2C80  57            		ld	d,a
                       	
-  2C7F                	BFGLP3:
+  2C81                	BFGLP3:
                       	;left part
-  2C7F  C5            		push	bc
-  2C80  3AACFE        		ld	a,(ATTDAT)
-  2C83  AE            		xor	(hl)
-  2C84  A2            		and	d		;d=left part mask
+  2C81  C5            		push	bc
+  2C82  3AACFE        		ld	a,(ATTDAT)
   2C85  AE            		xor	(hl)
-  2C86  77            		ld	(hl),a
+  2C86  A2            		and	d		;d=left part mask
+  2C87  AE            		xor	(hl)
+  2C88  77            		ld	(hl),a
                       	
-  2C87  78            		ld	a,b
-  2C88  B7            		or	a
-  2C89  2811          		jr	z,BFGNEXT
+  2C89  78            		ld	a,b
+  2C8A  B7            		or	a
+  2C8B  2811          		jr	z,BFGNEXT
                       	
                       	;middle part
-  2C8B  E5            		push	hl		;VRAM address
-  2C8C  3AACFE        		ld	a,(ATTDAT)
-  2C8F  05            		dec	b
-  2C90  2804          		jr	z,BFGRGT
-  2C92                	BFGLP4:
-  2C92  23            		inc	hl
-  2C93  77            		ld	(hl),a
-  2C94  10FC          		djnz	BFGLP4
+  2C8D  E5            		push	hl		;VRAM address
+  2C8E  3AACFE        		ld	a,(ATTDAT)
+  2C91  05            		dec	b
+  2C92  2804          		jr	z,BFGRGT
+  2C94                	BFGLP4:
+  2C94  23            		inc	hl
+  2C95  77            		ld	(hl),a
+  2C96  10FC          		djnz	BFGLP4
                       	
                       	;right part
-  2C96                	BFGRGT:
-  2C96  23            		inc	hl
-  2C97  AE            		xor	(hl)
-  2C98  A3            		and	e		;e=right part mask
+  2C98                	BFGRGT:
+  2C98  23            		inc	hl
   2C99  AE            		xor	(hl)
-  2C9A  77            		ld	(hl),a
-  2C9B  E1            		pop	hl		;VRAM address
+  2C9A  A3            		and	e		;e=right part mask
+  2C9B  AE            		xor	(hl)
+  2C9C  77            		ld	(hl),a
+  2C9D  E1            		pop	hl		;VRAM address
                       	
-  2C9C                	BFGNEXT:
-  2C9C  012000        		ld	bc,0020h
-  2C9F  09            		add	hl,bc
-  2CA0  C1            		pop	bc
-  2CA1  0D            		dec	c
-  2CA2  20DB          		jr	nz,BFGLP3
-  2CA4  C3BD2E        		jp	LINEEND2
+  2C9E                	BFGNEXT:
+  2C9E  012000        		ld	bc,0020h
+  2CA1  09            		add	hl,bc
+  2CA2  C1            		pop	bc
+  2CA3  0D            		dec	c
+  2CA4  20DB          		jr	nz,BFGLP3
+  2CA6  C3BD2E        		jp	LINEEND2
                       	
                       	
                       	;if |dy/dx|<=1
-  2CA7                	SLOPEX:
-  2CA7  23            		inc	hl
+  2CA9                	SLOPEX:
+  2CA9  23            		inc	hl
                       	;	or	a
-  2CA8  ED52          		sbc	hl,de		;error=-|dx|
-  2CAA  D9            		exx			;bc'=dx, de'=dy, hl'=error
-  2CAB                	LINELP2:
-  2CAB  ED4BB1FE      		ld	bc,(GRPX3)
-  2CAF  ED5BB3FE      		ld	de,(GRPY3)
+  2CAA  ED52          		sbc	hl,de		;error=-|dx|
+  2CAC  D9            		exx			;bc'=dx, de'=dy, hl'=error
+  2CAD                	LINELP2:
+  2CAD  ED4BB1FE      		ld	bc,(GRPX3)
+  2CB1  ED5BB3FE      		ld	de,(GRPY3)
                       	;	call	PSET
-  2CB3  CD4A2D        		call	PSETSXY
+  2CB5  CD4A2D        		call	PSETSXY
                       	
-  2CB6  D9            		exx
-  2CB7  19            		add	hl,de		;error+=dy
-  2CB8  19            		add	hl,de		;error+=dy
-  2CB9  CB7C          		bit	7,h
-  2CBB  2008          		jr	nz,ERRMNS
+  2CB8  D9            		exx
+  2CB9  19            		add	hl,de		;error+=dy
+  2CBA  19            		add	hl,de		;error+=dy
+  2CBB  CB7C          		bit	7,h
+  2CBD  2008          		jr	nz,ERRMNS
                       	
                       	;if error>=0
-  2CBD  CD512B        		call	SUB2DX		;error-=|dx|*2
-  2CC0  D9            		exx
-  2CC1  CD472B        		call	INCGY		;increment Y
-  2CC4  D9            		exx
-                      	
-  2CC5                	ERRMNS:
-  2CC5  78            		ld	a,b
+  2CBF  CD512B        		call	SUB2DX		;error-=|dx|*2
+  2CC2  D9            		exx
+  2CC3  CD472B        		call	INCGY		;increment Y
   2CC6  D9            		exx
-  2CC7  47            		ld	b,a
-  2CC8  CD342B        		call	INCGX		;increment or decrement X
-  2CCB  CABB2E        		jp	z,LINEEND
                       	
-  2CCE  EB            		ex	de,hl		;de=X
-  2CCF  2AADFE        		ld	hl,(GRPX2)
-  2CD2  D9            		exx
-  2CD3  CB78          		bit	7,b
-  2CD5  D9            		exx
-  2CD6  2801          		jr	z,LINEZ
-  2CD8  EB            		ex	de,hl		;if dx<0
-  2CD9                	LINEZ:
-  2CD9  E7            		rst	CPHLDE
-  2CDA  30CF          		jr	nc,LINELP2
-  2CDC  C3BB2E        		jp	LINEEND
+  2CC7                	ERRMNS:
+  2CC7  78            		ld	a,b
+  2CC8  D9            		exx
+  2CC9  47            		ld	b,a
+  2CCA  CD342B        		call	INCGX		;increment or decrement X
+  2CCD  CABB2E        		jp	z,LINEEND
+                      	
+  2CD0  EB            		ex	de,hl		;de=X
+  2CD1  2AADFE        		ld	hl,(GRPX2)
+  2CD4  D9            		exx
+  2CD5  CB78          		bit	7,b
+  2CD7  D9            		exx
+  2CD8  2801          		jr	z,LINEZ
+  2CDA  EB            		ex	de,hl		;if dx<0
+  2CDB                	LINEZ:
+  2CDB  E7            		rst	CPHLDE
+  2CDC  30CF          		jr	nc,LINELP2
+  2CDE  C3BB2E        		jp	LINEEND
                       	
                       	
                       	;get [step](x,y) cordinate
@@ -9703,27 +9710,27 @@
                       	;	 (GRPX1)=(GRPX2),(GRPY1)=(GRPY2)=0-32767
                       	;	 a=next data, hl=next data address, z(, or not)
                       	;destroy: f
-  2CDF                	GETGXY:
-  2CDF  CD593F        		call	SKIPSP
-  2CE2  FEC9          		cp	STEP_
-  2CE4  F5            		push	af		;STEP?
-  2CE5  2001          		jr	nz,GETGXYNZ
-  2CE7  23            		inc	hl
-  2CE8                	GETGXYNZ:
-  2CE8  CDB70B        		call	CHKLPAR
-  2CEB  CD220E        		call	INTARG2		;bc,de
-  2CEE  CDC60B        		call	CHKRPAR
-  2CF1  F1            		pop	af		;STEP?
-  2CF2  CD132D        		call	SETGXY
-  2CF5  CD593F        		call	SKIPSP
-  2CF8  FE2C          		cp	','
-  2CFA  C9            		ret
+  2CE1                	GETGXY:
+  2CE1  CD593F        		call	SKIPSP
+  2CE4  FEC9          		cp	STEP_
+  2CE6  F5            		push	af		;STEP?
+  2CE7  2001          		jr	nz,GETGXYNZ
+  2CE9  23            		inc	hl
+  2CEA                	GETGXYNZ:
+  2CEA  CDB70B        		call	CHKLPAR
+  2CED  CD220E        		call	INTARG2		;bc,de
+  2CF0  CDC60B        		call	CHKRPAR
+  2CF3  F1            		pop	af		;STEP?
+  2CF4  CD132D        		call	SETGXY
+  2CF7  CD593F        		call	SKIPSP
+  2CFA  FE2C          		cp	','
+  2CFC  C9            		ret
                       	
                       	
                       	;input: bc=x, de=y, z(0=absolute, 1=relative)
                       	;output: bc=x, de=y, (GRPX1)=(GRPX2)=x, (GRPY1)=(GRPY2)=y
                       	;destroy: f
-  2CFB                	_SETGXY:ds	SETGXY-_SETGXY
+  2CFD                	_SETGXY:ds	SETGXY-_SETGXY
   2D13                		org	SETGXY
                       	
   2D13  E5            		push	hl
@@ -9756,7 +9763,7 @@
                       	;PSET and PRESET
   2D3B                	PSETRST:
   2D3B  CDC015        		call	SETATT
-  2D3E  CDDF2C        		call	GETGXY
+  2D3E  CDE12C        		call	GETGXY
   2D41  CC682D        		call	z,PSCOLR
   2D44  C3472D        		jp	PSET
                       	
@@ -9804,7 +9811,7 @@
                       	
                       	;POINT() function
   2D72                	F_POIN:
-  2D72  CDDF2C        		call	GETGXY
+  2D72  CDE12C        		call	GETGXY
   2D75  CD733E        		call	POINT
   2D78  C37D0C        		jp	I1TOFA
                       	
@@ -9818,7 +9825,7 @@
   2D88  2808          		jr	z,LINE2P
                       	
   2D8A                	LINE1P:
-  2D8A  CDDF2C        		call	GETGXY
+  2D8A  CDE12C        		call	GETGXY
   2D8D  FECB          		cp	MINUS_
   2D8F  C2C203        		jp	nz,SNERR
                       	
@@ -9827,7 +9834,7 @@
   2D93  D5            		push	de		;y1
                       	
   2D94  23            		inc	hl
-  2D95  CDDF2C        		call	GETGXY
+  2D95  CDE12C        		call	GETGXY
   2D98  ED43ADFE      		ld	(GRPX2),bc	;x2
   2D9C  ED53AFFE      		ld	(GRPY2),de	;y2
   2DA0  3A93FD        		ld	a,(COLOR1)
@@ -9940,7 +9947,7 @@
   2E17  D1            		pop	de		;d=left part mask, e=right part mask
   2E18  C1            		pop	bc		;c=lines
                       	
-  2E19  C36A2C        		jp	BFG2
+  2E19  C36C2C        		jp	BFG2
                       	
                       	
                       	;by Bresenham's line algorithm
@@ -10035,7 +10042,7 @@
   2E8D                	DXMNS:
   2E8D  2B            		dec	hl
   2E8E  19            		add	hl,de
-  2E8F  D2A72C        		jp	nc,SLOPEX	;if |dy/dx|<=1
+  2E8F  D2A92C        		jp	nc,SLOPEX	;if |dy/dx|<=1
                       	
                       	;if |dy/dx|>1
   2E92  62            		ld	h,d		;error=dy
@@ -10085,7 +10092,7 @@
                       	;PAINT command
   2EC7                	C_PAIN:
   2EC7  CDD02D        		call	SKIPAT
-  2ECA  CDDF2C        		call	GETGXY
+  2ECA  CDE12C        		call	GETGXY
   2ECD  C5            		push	bc		;X
   2ECE  D5            		push	de		;Y
   2ECF  3A93FD        		ld	a,(COLOR1)
@@ -11594,182 +11601,182 @@
                       	
                       	;CLEAR command
   359F                	_C_CLR:	ds	C_CLR-_C_CLR
-  35A9  F6A9          		or	C_CLR
+  35A9                		org	C_CLR
                       	
-  35AB  CD603F        		call	CHKCLN
-  35AE  CAF934        		jp	z,RESSTK
-  35B1  CD190E        		call	INT2ARG
-  35B4  CB7A          		bit	7,d
-  35B6  C2CB03        		jp	nz,FCERR
-  35B9  D5            		push	de		;1st parameter
-  35BA  ED5B27FF      		ld	de,(STREND)
-  35BE  7E            		ld	a,(hl)
-  35BF  FE2C          		cp	','
-  35C1  200E          		jr	nz,CLRNZ
-  35C3  CD930B        		call	NARGMOINC
-  35C6  CD9F0C        		call	FTOI
-  35C9  1B            		dec	de
-  35CA  2A8DFD        		ld	hl,(USREND)
-  35CD  E7            		rst	CPHLDE
-  35CE  DACB03        		jp	c,FCERR
+  35A9  CD603F        		call	CHKCLN
+  35AC  CAF934        		jp	z,RESSTK
+  35AF  CD190E        		call	INT2ARG
+  35B2  CB7A          		bit	7,d
+  35B4  C2CB03        		jp	nz,FCERR
+  35B7  D5            		push	de		;1st parameter
+  35B8  ED5B27FF      		ld	de,(STREND)
+  35BC  7E            		ld	a,(hl)
+  35BD  FE2C          		cp	','
+  35BF  200E          		jr	nz,CLRNZ
+  35C1  CD930B        		call	NARGMOINC
+  35C4  CD9F0C        		call	FTOI
+  35C7  1B            		dec	de
+  35C8  2A8DFD        		ld	hl,(USREND)
+  35CB  E7            		rst	CPHLDE
+  35CC  DACB03        		jp	c,FCERR
                       	
-  35D1                	CLRNZ:
-  35D1  EB            		ex	de,hl
-  35D2  C1            		pop	bc		;1st parameter
+  35CF                	CLRNZ:
+  35CF  EB            		ex	de,hl
+  35D0  C1            		pop	bc		;1st parameter
                       	
                       	;input: bc=1st parameter, hl=2nd parameter-1
-  35D3                	CLRMAIN:
-  35D3  E5            		push	hl		;2nd parameter-1
-  35D4  B7            		or	a
-  35D5  ED42          		sbc	hl,bc
+  35D1                	CLRMAIN:
+  35D1  E5            		push	hl		;2nd parameter-1
+  35D2  B7            		or	a
+  35D3  ED42          		sbc	hl,bc
                       	;	jp	c,OMERR
-  35D7  380A          		jr	c,CLRC
-  35D9  EB            		ex	de,hl
-  35DA  2A56FF        		ld	hl,(VARAD)
-  35DD  013800        		ld	bc,0038h
-  35E0  09            		add	hl,bc
-  35E1  EB            		ex	de,hl
-  35E2  E7            		rst	CPHLDE
-  35E3                	CLRC:
-  35E3  DAD103        		jp	c,OMERR
-  35E6  225BFA        		ld	(STACK),hl
-  35E9  E1            		pop	hl		;2nd parameter-1
-  35EA  2227FF        		ld	(STREND),hl
-  35ED  223DFF        		ld	(STRAD),hl
-  35F0  C3F934        		jp	RESSTK
+  35D5  380A          		jr	c,CLRC
+  35D7  EB            		ex	de,hl
+  35D8  2A56FF        		ld	hl,(VARAD)
+  35DB  013800        		ld	bc,0038h
+  35DE  09            		add	hl,bc
+  35DF  EB            		ex	de,hl
+  35E0  E7            		rst	CPHLDE
+  35E1                	CLRC:
+  35E1  DAD103        		jp	c,OMERR
+  35E4  225BFA        		ld	(STACK),hl
+  35E7  E1            		pop	hl		;2nd parameter-1
+  35E8  2227FF        		ld	(STREND),hl
+  35EB  223DFF        		ld	(STRAD),hl
+  35EE  C3F934        		jp	RESSTK
                       	
                       	
                       	;NEXT command
-  35F3                	C_NEXT:
-  35F3  F1            		pop	af		;cancel return address
-  35F4  0600          		ld	b,00h
-  35F6                	NEXTLP:
-  35F6  CD603F        		call	CHKCLN
-  35F9  C47933        		call	nz,CHKVAR
-  35FC  224EFF        		ld	(PROGAD),hl
+  35F1                	C_NEXT:
+  35F1  F1            		pop	af		;cancel return address
+  35F2  0600          		ld	b,00h
+  35F4                	NEXTLP:
+  35F4  CD603F        		call	CHKCLN
+  35F7  C47933        		call	nz,CHKVAR
+  35FA  224EFF        		ld	(PROGAD),hl
                       	
-  35FF                	NEXTVLP:
-  35FF  CDCE07        		call	SRCHSTK
-  3602  CABF03        		jp	z,NFERR		;not found or gosub identifier found
-  3605  33            		inc	sp		;identifier
+  35FD                	NEXTVLP:
+  35FD  CDCE07        		call	SRCHSTK
+  3600  CABF03        		jp	z,NFERR		;not found or gosub identifier found
+  3603  33            		inc	sp		;identifier
                       	
-  3606  D1            		pop	de		;variable address
+  3604  D1            		pop	de		;variable address
                       	
-  3607  78            		ld	a,b
-  3608  B7            		or	a
-  3609  2813          		jr	z,NEXTOK
+  3605  78            		ld	a,b
+  3606  B7            		or	a
+  3607  2813          		jr	z,NEXTOK
                       	
-  360B  1B            		dec	de
-  360C  1A            		ld	a,(de)
-  360D  B9            		cp	c
-  360E  2007          		jr	nz,NEXTNZ
-  3610  1B            		dec	de
-  3611  1A            		ld	a,(de)
-  3612  13            		inc	de
-  3613  13            		inc	de
-  3614  B8            		cp	b
-  3615  2807          		jr	z,NEXTOK
-  3617                	NEXTNZ:
-  3617  211000        		ld	hl,0010h	;STEP(6)+TO(6)+line number(2)+program address(2)
-  361A  39            		add	hl,sp
-  361B  F9            		ld	sp,hl
-  361C  18E1          		jr	NEXTVLP
+  3609  1B            		dec	de
+  360A  1A            		ld	a,(de)
+  360B  B9            		cp	c
+  360C  2007          		jr	nz,NEXTNZ
+  360E  1B            		dec	de
+  360F  1A            		ld	a,(de)
+  3610  13            		inc	de
+  3611  13            		inc	de
+  3612  B8            		cp	b
+  3613  2807          		jr	z,NEXTOK
+  3615                	NEXTNZ:
+  3615  211000        		ld	hl,0010h	;STEP(6)+TO(6)+line number(2)+program address(2)
+  3618  39            		add	hl,sp
+  3619  F9            		ld	sp,hl
+  361A  18E1          		jr	NEXTVLP
                       	
-  361E                	NEXTOK:
-  361E  CD3C39        		call	POPF1		;STEP value
-  3621  CD2D39        		call	PUSHF1		;STEP value
+  361C                	NEXTOK:
+  361C  CD3A39        		call	POPF1		;STEP value
+  361F  CD2B39        		call	PUSHF1		;STEP value
                       	
-  3624  D5            		push	de		;variable address
-  3625  EB            		ex	de,hl
-  3626  CD9736        		call	SETADDF
-  3629  D1            		pop	de		;variable address
-  362A  D5            		push	de		;variable address
-  362B  2166FF        		ld	hl,FAC1
-  362E  CD480C        		call	SETF
+  3622  D5            		push	de		;variable address
+  3623  EB            		ex	de,hl
+  3624  CD9536        		call	SETADDF
+  3627  D1            		pop	de		;variable address
+  3628  D5            		push	de		;variable address
+  3629  2166FF        		ld	hl,FAC1
+  362C  CD480C        		call	SETF
                       	
-  3631  D1            		pop	de		;variable address
+  362F  D1            		pop	de		;variable address
                       	
-  3632  CD4B39        		call	POPF2		;STEP value
-  3635  CD3C39        		call	POPF1		;TO value
-  3638  CD2D39        		call	PUSHF1		;TO value
-  363B  CD1A3C        		call	PUSHF2		;STEP value
+  3630  CD4939        		call	POPF2		;STEP value
+  3633  CD3A39        		call	POPF1		;TO value
+  3636  CD2B39        		call	PUSHF1		;TO value
+  3639  CD1A3C        		call	PUSHF2		;STEP value
                       	
-  363E  D5            		push	de		;variable address
+  363C  D5            		push	de		;variable address
                       	
-  363F  2A70FF        		ld	hl,(FAC2+3)
-  3642  7C            		ld	a,h
-  3643  B7            		or	a		;z-flag
-  3644  7D            		ld	a,l
-  3645  07            		rlca			;c-flag
-  3646  EB            		ex	de,hl		;variable address
-  3647  CD4E0C        		call	SETF2		;no change in z,c-flag
-  364A  2822          		jr	z,STEP0		;if STEP value = 0
-  364C  DC6D39        		call	c,EXFAC		;if STEP value < 0
-  364F  CD1B3F        		call	CMPF
-  3652  381F          		jr	c,NEXTEND	;for-next loop end
+  363D  2A70FF        		ld	hl,(FAC2+3)
+  3640  7C            		ld	a,h
+  3641  B7            		or	a		;z-flag
+  3642  7D            		ld	a,l
+  3643  07            		rlca			;c-flag
+  3644  EB            		ex	de,hl		;variable address
+  3645  CD4E0C        		call	SETF2		;no change in z,c-flag
+  3648  2822          		jr	z,STEP0		;if STEP value = 0
+  364A  DC6B39        		call	c,EXFAC		;if STEP value < 0
+  364D  CD1B3F        		call	CMPF
+  3650  381F          		jr	c,NEXTEND	;for-next loop end
                       	
-  3654                	NEXTCONT:
-  3654  210E00        		ld	hl,000eh	;variable address(2)+STEP(6)+TO(6)
-  3657  39            		add	hl,sp
-  3658  5E            		ld	e,(hl)
-  3659  23            		inc	hl
-  365A  56            		ld	d,(hl)
-  365B  ED535DFA      		ld	(LINENUM),de
+  3652                	NEXTCONT:
+  3652  210E00        		ld	hl,000eh	;variable address(2)+STEP(6)+TO(6)
+  3655  39            		add	hl,sp
+  3656  5E            		ld	e,(hl)
+  3657  23            		inc	hl
+  3658  56            		ld	d,(hl)
+  3659  ED535DFA      		ld	(LINENUM),de
+  365D  23            		inc	hl
+  365E  5E            		ld	e,(hl)
   365F  23            		inc	hl
-  3660  5E            		ld	e,(hl)
-  3661  23            		inc	hl
-  3662  56            		ld	d,(hl)
-  3663  ED534EFF      		ld	(PROGAD),de
-  3667  3E81          		ld	a,FOR_
-  3669  F5            		push	af		;identifier
-  366A  33            		inc	sp
-  366B  C3E706        		jp	INTPEND
+  3660  56            		ld	d,(hl)
+  3661  ED534EFF      		ld	(PROGAD),de
+  3665  3E81          		ld	a,FOR_
+  3667  F5            		push	af		;identifier
+  3668  33            		inc	sp
+  3669  C3E706        		jp	INTPEND
                       	
-  366E                	STEP0:
-  366E  CD1B3F        		call	CMPF
-  3671  20E1          		jr	nz,NEXTCONT
+  366C                	STEP0:
+  366C  CD1B3F        		call	CMPF
+  366F  20E1          		jr	nz,NEXTCONT
                       	
-  3673                	NEXTEND:
-  3673  211200        		ld	hl,0012h	;variable address(2)+STEP(6)+TO(6)+line number(2)+program address(2)
-  3676  39            		add	hl,sp
-  3677  F9            		ld	sp,hl
+  3671                	NEXTEND:
+  3671  211200        		ld	hl,0012h	;variable address(2)+STEP(6)+TO(6)+line number(2)+program address(2)
+  3674  39            		add	hl,sp
+  3675  F9            		ld	sp,hl
                       	
-  3678  2A4EFF        		ld	hl,(PROGAD)
-  367B  7E            		ld	a,(hl)
-  367C  23            		inc	hl
-  367D  FE2C          		cp	','
-  367F  C2E706        		jp	nz,INTPEND
-  3682  47            		ld	b,a		;not variable name
-  3683  C3F635        		jp	NEXTLP
+  3676  2A4EFF        		ld	hl,(PROGAD)
+  3679  7E            		ld	a,(hl)
+  367A  23            		inc	hl
+  367B  FE2C          		cp	','
+  367D  C2E706        		jp	nz,INTPEND
+  3680  47            		ld	b,a		;not variable name
+  3681  C3F435        		jp	NEXTLP
                       	
                       	
                       	;+ operator
-  3686                	O_PLS:
-  3686  3A25FF        		ld	a,(ARGTYP)
-  3689  B7            		or	a
-  368A  281A          		jr	z,ADDF
+  3684                	O_PLS:
+  3684  3A25FF        		ld	a,(ARGTYP)
+  3687  B7            		or	a
+  3688  281A          		jr	z,ADDF
                       	
-  368C                	PLSSTR:
-  368C  D603          		sub	03h		;string and string
-  368E  CA2326        		jp	z,ADDSTR
-  3691  C3E303        		jp	TMERR
+  368A                	PLSSTR:
+  368A  D603          		sub	03h		;string and string
+  368C  CA2326        		jp	z,ADDSTR
+  368F  C3E303        		jp	TMERR
                       	
                       	
                       	;FAC1=FAC1+1
                       	;destroy: FAC2,af,bc,de,hl
-  3694                	INCF1:
-  3694  21A10E        		ld	hl,PLSONE
+  3692                	INCF1:
+  3692  21A10E        		ld	hl,PLSONE
                       	
                       	;set FAC2 and add
                       	;input: FAC1, hl=float address
-  3697                	SETADDF:
-  3697  CD4E0C        		call	SETF2
-  369A  180A          		jr	ADDF
+  3695                	SETADDF:
+  3695  CD4E0C        		call	SETF2
+  3698  180A          		jr	ADDF
                       	
                       	
                       	;- operator
-  369C                	O_MNS:
-  369C  CD9D0B        		call	CHKNUM
+  369A                	O_MNS:
+  369A  CD9D0B        		call	CHKNUM
                       	;	call	SUBF
                       	;	ret
                       	
@@ -11778,12 +11785,12 @@
                       	;input: FAC1,FAC2
                       	;output: FAC1
                       	;destroy: FAC2,af,b,de,hl
-  369F                	SUBF:
-  369F  2170FF        		ld	hl,FAC2+3
-  36A2                	CHGSGNADD:
-  36A2  7E            		ld	a,(hl)
-  36A3  EE80          		xor	80h
-  36A5  77            		ld	(hl),a
+  369D                	SUBF:
+  369D  2170FF        		ld	hl,FAC2+3
+  36A0                	CHGSGNADD:
+  36A0  7E            		ld	a,(hl)
+  36A1  EE80          		xor	80h
+  36A3  77            		ld	(hl),a
                       	;	call	ADDF
                       	;	ret
                       	
@@ -11792,158 +11799,158 @@
                       	;input: FAC1,FAC2
                       	;output: FAC1
                       	;destroy: FAC2,af,bc,de,hl
-  36A6                	ADDF:
-  36A6  2A70FF        		ld	hl,(FAC2+3)	;l=(FAC2+3),h=(FAC2+4)
-  36A9  7C            		ld	a,h
-  36AA  B7            		or	a
-  36AB  C8            		ret	z		;FAC2=0
+  36A4                	ADDF:
+  36A4  2A70FF        		ld	hl,(FAC2+3)	;l=(FAC2+3),h=(FAC2+4)
+  36A7  7C            		ld	a,h
+  36A8  B7            		or	a
+  36A9  C8            		ret	z		;FAC2=0
                       	
-  36AC  E5            		push	hl
-  36AD  CBFD          		set	7,l
-  36AF  2270FF        		ld	(FAC2+3),hl
+  36AA  E5            		push	hl
+  36AB  CBFD          		set	7,l
+  36AD  2270FF        		ld	(FAC2+3),hl
                       	
-  36B2  2A69FF        		ld	hl,(FAC1+3)	;l=(FAC1+3),h=(FAC1+4)
-  36B5  E5            		push	hl
-  36B6  CBFD          		set	7,l
-  36B8  2269FF        		ld	(FAC1+3),hl
+  36B0  2A69FF        		ld	hl,(FAC1+3)	;l=(FAC1+3),h=(FAC1+4)
+  36B3  E5            		push	hl
+  36B4  CBFD          		set	7,l
+  36B6  2269FF        		ld	(FAC1+3),hl
                       	
                       	;	sub	h
                       	;	jr	c,ADD1GT2	;|FAC1| > |FAC2|
                       	;	jr	nz,ADD1LT2	;|FAC1| < |FAC2|
                       	
-  36BB  CD1B3F        		call	CMPF
-  36BE  380D          		jr	c,ADD1GT2	;|FAC1| > |FAC2|
+  36B9  CD1B3F        		call	CMPF
+  36BC  380D          		jr	c,ADD1GT2	;|FAC1| > |FAC2|
                       	
-  36C0                	ADD1LT2:
-  36C0  CD6D39        		call	EXFAC
+  36BE                	ADD1LT2:
+  36BE  CD6B39        		call	EXFAC
                       	
-  36C3  D1            		pop	de		;e=(FAC1+3),d=(FAC1+4)
-  36C4  E1            		pop	hl		;l=(FAC2+3),h=(FAC2+4)
+  36C1  D1            		pop	de		;e=(FAC1+3),d=(FAC1+4)
+  36C2  E1            		pop	hl		;l=(FAC2+3),h=(FAC2+4)
                       	
-  36C5  7A            		ld	a,d
-  36C6  B7            		or	a
-  36C7  2006          		jr	nz,ADDCHKSGN
-  36C9  2269FF        		ld	(FAC1+3),hl
-  36CC  C9            		ret
+  36C3  7A            		ld	a,d
+  36C4  B7            		or	a
+  36C5  2006          		jr	nz,ADDCHKSGN
+  36C7  2269FF        		ld	(FAC1+3),hl
+  36CA  C9            		ret
                       	
-  36CD                	ADD1GT2:
-  36CD  E1            		pop	hl		;l=(FAC1+3),h=(FAC1+4)
-  36CE  D1            		pop	de		;e=(FAC2+3),d=(FAC2+4)
+  36CB                	ADD1GT2:
+  36CB  E1            		pop	hl		;l=(FAC1+3),h=(FAC1+4)
+  36CC  D1            		pop	de		;e=(FAC2+3),d=(FAC2+4)
                       	
-  36CF                	ADDCHKSGN:
-  36CF  7C            		ld	a,h
-  36D0  92            		sub	d
-  36D1  47            		ld	b,a		;
+  36CD                	ADDCHKSGN:
+  36CD  7C            		ld	a,h
+  36CE  92            		sub	d
+  36CF  47            		ld	b,a		;
                       	
-  36D2  7D            		ld	a,l
-  36D3  F5            		push	af		;sign
+  36D0  7D            		ld	a,l
+  36D1  F5            		push	af		;sign
                       	
-  36D4  AB            		xor	e
-  36D5  07            		rlca
-  36D6  F5            		push	af		;c-flag=0:same sign
-  36D7  3009          		jr	nc,SAMESGN
+  36D2  AB            		xor	e
+  36D3  07            		rlca
+  36D4  F5            		push	af		;c-flag=0:same sign
+  36D5  3009          		jr	nc,SAMESGN
                       	
-  36D9  CD6D39        		call	EXFAC
-  36DC  CDA124        		call	NEGINT4
-  36DF  CD6D39        		call	EXFAC
+  36D7  CD6B39        		call	EXFAC
+  36DA  CDA124        		call	NEGINT4
+  36DD  CD6B39        		call	EXFAC
                       	
-  36E2                	SAMESGN:
-  36E2  0E00          		ld	c,00h		;guard/round/sticky bit
-  36E4  2A6DFF        		ld	hl,(FAC2)
-  36E7  ED5B6FFF      		ld	de,(FAC2+2)
+  36E0                	SAMESGN:
+  36E0  0E00          		ld	c,00h		;guard/round/sticky bit
+  36E2  2A6DFF        		ld	hl,(FAC2)
+  36E5  ED5B6FFF      		ld	de,(FAC2+2)
                       	
-  36EB                	ADDFLP1:
-  36EB  78            		ld	a,b
-  36EC  D608          		sub	08h
-  36EE  3818          		jr	c,EXPLT8
-  36F0  47            		ld	b,a
+  36E9                	ADDFLP1:
+  36E9  78            		ld	a,b
+  36EA  D608          		sub	08h
+  36EC  3818          		jr	c,EXPLT8
+  36EE  47            		ld	b,a
                       	
-  36F1  7D            		ld	a,l
-  36F2  E63F          		and	3fh
-  36F4  2004          		jr	nz,SETSBIT
-  36F6  0C            		inc	c
-  36F7  0D            		dec	c
-  36F8  2802          		jr	z,NOSBIT
-  36FA                	SETSBIT:
-  36FA  0E20          		ld	c,20h		;set sticky bit
-  36FC                	NOSBIT:
-  36FC  AD            		xor	l
-  36FD  B1            		or	c
-  36FE  4F            		ld	c,a
-  36FF  6C            		ld	l,h
-  3700  63            		ld	h,e
-  3701  5A            		ld	e,d
-  3702  F1            		pop	af		;same sign?
-  3703  F5            		push	af
-  3704  9F            		sbc	a,a		;00h or ffh
-  3705  57            		ld	d,a
-  3706  18E3          		jr	ADDFLP1
+  36EF  7D            		ld	a,l
+  36F0  E63F          		and	3fh
+  36F2  2004          		jr	nz,SETSBIT
+  36F4  0C            		inc	c
+  36F5  0D            		dec	c
+  36F6  2802          		jr	z,NOSBIT
+  36F8                	SETSBIT:
+  36F8  0E20          		ld	c,20h		;set sticky bit
+  36FA                	NOSBIT:
+  36FA  AD            		xor	l
+  36FB  B1            		or	c
+  36FC  4F            		ld	c,a
+  36FD  6C            		ld	l,h
+  36FE  63            		ld	h,e
+  36FF  5A            		ld	e,d
+  3700  F1            		pop	af		;same sign?
+  3701  F5            		push	af
+  3702  9F            		sbc	a,a		;00h or ffh
+  3703  57            		ld	d,a
+  3704  18E3          		jr	ADDFLP1
                       	
-  3708                	EXPLT8:
-  3708  C608          		add	a,08h
-  370A  2813          		jr	z,SAMEEXP
+  3706                	EXPLT8:
+  3706  C608          		add	a,08h
+  3708  2813          		jr	z,SAMEEXP
                       	
-  370C                	ADDFLP2:
-  370C  F1            		pop	af		;same sign?
-  370D  F5            		push	af
-  370E  CB1A          		rr	d
-  3710  CB1B          		rr	e
-  3712  CB1C          		rr	h
-  3714  CB1D          		rr	l
+  370A                	ADDFLP2:
+  370A  F1            		pop	af		;same sign?
+  370B  F5            		push	af
+  370C  CB1A          		rr	d
+  370E  CB1B          		rr	e
+  3710  CB1C          		rr	h
+  3712  CB1D          		rr	l
                       	
-  3716  79            		ld	a,c
-  3717  CB19          		rr	c
-  3719  E620          		and	20h		;sticky bit
-  371B  B1            		or	c
+  3714  79            		ld	a,c
+  3715  CB19          		rr	c
+  3717  E620          		and	20h		;sticky bit
+  3719  B1            		or	c
                       	;	and	0e0h
-  371C  4F            		ld	c,a
-  371D  10ED          		djnz	ADDFLP2
+  371A  4F            		ld	c,a
+  371B  10ED          		djnz	ADDFLP2
                       	
-  371F                	SAMEEXP:
-  371F  226DFF        		ld	(FAC2),hl
-  3722  ED536FFF      		ld	(FAC2+2),de
+  371D                	SAMEEXP:
+  371D  226DFF        		ld	(FAC2),hl
+  3720  ED536FFF      		ld	(FAC2+2),de
                       	
-  3726  EB            		ex	de,hl
+  3724  EB            		ex	de,hl
                       	
-  3727  2A66FF        		ld	hl,(FAC1)
+  3725  2A66FF        		ld	hl,(FAC1)
                       	;	ld	de,(FAC2)
-  372A  19            		add	hl,de
-  372B  2266FF        		ld	(FAC1),hl
-  372E  2A68FF        		ld	hl,(FAC1+2)
-  3731  ED5B6FFF      		ld	de,(FAC2+2)
-  3735  ED5A          		adc	hl,de
-  3737  2268FF        		ld	(FAC1+2),hl
+  3728  19            		add	hl,de
+  3729  2266FF        		ld	(FAC1),hl
+  372C  2A68FF        		ld	hl,(FAC1+2)
+  372F  ED5B6FFF      		ld	de,(FAC2+2)
+  3733  ED5A          		adc	hl,de
+  3735  2268FF        		ld	(FAC1+2),hl
                       	
-  373A  17            		rla
-  373B  E1            		pop	hl		;l-bit0=same sign?
-  373C  AD            		xor	l
-  373D  0F            		rrca
-  373E  301A          		jr	nc,SEARCH1
+  3738  17            		rla
+  3739  E1            		pop	hl		;l-bit0=same sign?
+  373A  AD            		xor	l
+  373B  0F            		rrca
+  373C  301A          		jr	nc,SEARCH1
                       	
-  3740  216AFF        		ld	hl,FAC1+4
-  3743  34            		inc	(hl)
-  3744  CACE03        		jp	z,OVERR
+  373E  216AFF        		ld	hl,FAC1+4
+  3741  34            		inc	(hl)
+  3742  CACE03        		jp	z,OVERR
                       	
                       	;	scf			;c-flag=1
-  3747  2D            		dec	l		;dec hl,FAC1+3
-  3748  CB1E          		rr	(hl)
-  374A  2D            		dec	l		;dec hl,FAC1+2
-  374B  CB1E          		rr	(hl)
-  374D  2D            		dec	l		;dec hl,FAC1+1
-  374E  CB1E          		rr	(hl)
-  3750  2D            		dec	l		;dec hl,FAC1
-  3751  CB1E          		rr	(hl)
+  3745  2D            		dec	l		;dec hl,FAC1+3
+  3746  CB1E          		rr	(hl)
+  3748  2D            		dec	l		;dec hl,FAC1+2
+  3749  CB1E          		rr	(hl)
+  374B  2D            		dec	l		;dec hl,FAC1+1
+  374C  CB1E          		rr	(hl)
+  374E  2D            		dec	l		;dec hl,FAC1
+  374F  CB1E          		rr	(hl)
                       	
-  3753  79            		ld	a,c
-  3754  CB19          		rr	c
-  3756  E620          		and	20h		;sticky bit
-  3758  B1            		or	c
+  3751  79            		ld	a,c
+  3752  CB19          		rr	c
+  3754  E620          		and	20h		;sticky bit
+  3756  B1            		or	c
                       	;	and	0e0h
-  3759  4F            		ld	c,a
+  3757  4F            		ld	c,a
                       	
-  375A                	SEARCH1:
-  375A  2A66FF        		ld	hl,(FAC1)
-  375D  ED5B68FF      		ld	de,(FAC1+2)
+  3758                	SEARCH1:
+  3758  2A66FF        		ld	hl,(FAC1)
+  375B  ED5B68FF      		ld	de,(FAC1+2)
                       	;	ld	a,h
                       	;	or	l
                       	;	or	d
@@ -11951,93 +11958,93 @@
                       	;	or	c
                       	;	jp	z,MULFZERO
                       	
-  3761                	ADDFLP3:
-  3761  CB7A          		bit	7,d
-  3763  2014          		jr	nz,CHKROUND
-  3765  CB21          		sla	c
-  3767  ED6A          		adc	hl,hl
-  3769  CB13          		rl	e
-  376B  CB12          		rl	d
-  376D  3A6AFF        		ld	a,(FAC1+4)
-  3770  3D            		dec	a
-  3771  326AFF        		ld	(FAC1+4),a
-  3774  20EB          		jr	nz,ADDFLP3
-  3776  C34F38        		jp	MULFZERO	;pop af/jp SETZERO
+  375F                	ADDFLP3:
+  375F  CB7A          		bit	7,d
+  3761  2014          		jr	nz,CHKROUND
+  3763  CB21          		sla	c
+  3765  ED6A          		adc	hl,hl
+  3767  CB13          		rl	e
+  3769  CB12          		rl	d
+  376B  3A6AFF        		ld	a,(FAC1+4)
+  376E  3D            		dec	a
+  376F  326AFF        		ld	(FAC1+4),a
+  3772  20EB          		jr	nz,ADDFLP3
+  3774  C34D38        		jp	MULFZERO	;pop af/jp SETZERO
                       	
                       	;round to the nearest even
-  3779                	CHKROUND:
-  3779  7D            		ld	a,l
-  377A  0F            		rrca
-  377B  79            		ld	a,c
-  377C  8F            		adc	a,a
-  377D  3015          		jr	nc,ADDSGN	;guard bit=0
-  377F  2813          		jr	z,ADDSGN	;round bit=0 and sticky bit=0 and l=even
+  3777                	CHKROUND:
+  3777  7D            		ld	a,l
+  3778  0F            		rrca
+  3779  79            		ld	a,c
+  377A  8F            		adc	a,a
+  377B  3015          		jr	nc,ADDSGN	;guard bit=0
+  377D  2813          		jr	z,ADDSGN	;round bit=0 and sticky bit=0 and l=even
                       	
                       	;round up
-  3781  23            		inc	hl
-  3782  7C            		ld	a,h
-  3783  B5            		or	l
-  3784  200E          		jr	nz,ADDSGN
-  3786  13            		inc	de
-  3787  7A            		ld	a,d
-  3788  B3            		or	e
-  3789  2009          		jr	nz,ADDSGN
+  377F  23            		inc	hl
+  3780  7C            		ld	a,h
+  3781  B5            		or	l
+  3782  200E          		jr	nz,ADDSGN
+  3784  13            		inc	de
+  3785  7A            		ld	a,d
+  3786  B3            		or	e
+  3787  2009          		jr	nz,ADDSGN
                       	
-  378B  216AFF        		ld	hl,FAC1+4
-  378E  34            		inc	(hl)
-  378F  CACE03        		jp	z,OVERR
+  3789  216AFF        		ld	hl,FAC1+4
+  378C  34            		inc	(hl)
+  378D  CACE03        		jp	z,OVERR
                       	;	ld	d,80h
-  3792  63            		ld	h,e		;e=0
-  3793  6B            		ld	l,e		;e=0
+  3790  63            		ld	h,e		;e=0
+  3791  6B            		ld	l,e		;e=0
                       	
-  3794                	ADDSGN:
-  3794  F1            		pop	af		;sign
-  3795  AA            		xor	d
-  3796  E680          		and	80h
-  3798  AA            		xor	d
-  3799  57            		ld	d,a
+  3792                	ADDSGN:
+  3792  F1            		pop	af		;sign
+  3793  AA            		xor	d
+  3794  E680          		and	80h
+  3796  AA            		xor	d
+  3797  57            		ld	d,a
                       	
                       	;set 4-byte integer in FAC1
                       	;input: de-hl
-  379A                	SETI4:
-  379A  2266FF        		ld	(FAC1),hl
-  379D  ED5368FF      		ld	(FAC1+2),de
-  37A1  C9            		ret
+  3798                	SETI4:
+  3798  2266FF        		ld	(FAC1),hl
+  379B  ED5368FF      		ld	(FAC1+2),de
+  379F  C9            		ret
                       	
                       	
                       	;FAC1 = FAC1 * 0.1
                       	;input: FAC1
                       	;output: FAC1
                       	;destroy: FAC2,af,bc,de,hl
-  37A2                	DIVF10:
-  37A2  21A737        		ld	hl,EM1
-  37A5  1808          		jr	SETMULF
+  37A0                	DIVF10:
+  37A0  21A537        		ld	hl,EM1
+  37A3  1808          		jr	SETMULF
                       	
                       	;0.1
-  37A7                	EM1:
-  37A7  CDCCCC4C7D    		db	0cdh, 0cch, 0cch, 4ch, 7dh
+  37A5                	EM1:
+  37A5  CDCCCC4C7D    		db	0cdh, 0cch, 0cch, 4ch, 7dh
                       	
                       	
                       	;FAC1 = FAC1 * 10
                       	;input: FAC1
                       	;output: FAC1
                       	;destroy: FAC2,af,bc,de,hl
-  37AC                	MULF10:
-  37AC  21B437        		ld	hl,TEN
+  37AA                	MULF10:
+  37AA  21B237        		ld	hl,TEN
                       	
                       	;set FAC2 and multiply
                       	;input: FAC1, hl=float address
-  37AF                	SETMULF:
-  37AF  CD4E0C        		call	SETF2
-  37B2  1808          		jr	MULF
+  37AD                	SETMULF:
+  37AD  CD4E0C        		call	SETF2
+  37B0  1808          		jr	MULF
                       	
-  37B4                	TEN:
-  37B4  0000002084    		db	00h, 00h, 00h, 20h, 84h
+  37B2                	TEN:
+  37B2  0000002084    		db	00h, 00h, 00h, 20h, 84h
                       	
                       	
                       	;* operator
-  37B9                	O_MUL:
-  37B9  CD9D0B        		call	CHKNUM
+  37B7                	O_MUL:
+  37B7  CD9D0B        		call	CHKNUM
                       	;	call	MULF
                       	;	ret
                       	
@@ -12046,160 +12053,160 @@
                       	;input: FAC1,FAC2
                       	;output: FAC1
                       	;destroy: FAC2,af,bc,de,hl
-  37BC                	MULF:
+  37BA                	MULF:
                       	
                       	;result=bc-de-de'-hl'
                       	
-  37BC  3A6AFF        		ld	a,(FAC1+4)
-  37BF  B7            		or	a
-  37C0  C8            		ret	z
+  37BA  3A6AFF        		ld	a,(FAC1+4)
+  37BD  B7            		or	a
+  37BE  C8            		ret	z
                       	
-  37C1  2171FF        		ld	hl,FAC2+4
-  37C4  7E            		ld	a,(hl)
-  37C5  B7            		or	a
-  37C6  CA420C        		jp	z,SETZERO
+  37BF  2171FF        		ld	hl,FAC2+4
+  37C2  7E            		ld	a,(hl)
+  37C3  B7            		or	a
+  37C4  CA420C        		jp	z,SETZERO
                       	
-  37C9  2D            		dec	l		;dec hl,FAC2+3
-  37CA  7E            		ld	a,(hl)
-  37CB  CBFE          		set	7,(hl)
-  37CD  2E69          		ld	l,FAC1+3-(FAC1+3)/256*256	;hl=FAC1+3
-  37CF  AE            		xor	(hl)
-  37D0  F5            		push	af		;sign
-  37D1  CBFE          		set	7,(hl)
+  37C7  2D            		dec	l		;dec hl,FAC2+3
+  37C8  7E            		ld	a,(hl)
+  37C9  CBFE          		set	7,(hl)
+  37CB  2E69          		ld	l,FAC1+3-(FAC1+3)/256*256	;hl=FAC1+3
+  37CD  AE            		xor	(hl)
+  37CE  F5            		push	af		;sign
+  37CF  CBFE          		set	7,(hl)
                       	
-  37D3  010000        		ld	bc,0000h
-  37D6  50            		ld	d,b
-  37D7  59            		ld	e,c
+  37D1  010000        		ld	bc,0000h
+  37D4  50            		ld	d,b
+  37D5  59            		ld	e,c
                       	
-  37D8  D9            		exx
-  37D9  E5            		push	hl
-  37DA  D5            		push	de
-  37DB  C5            		push	bc
+  37D6  D9            		exx
+  37D7  E5            		push	hl
+  37D8  D5            		push	de
+  37D9  C5            		push	bc
                       	
-  37DC  2A66FF        		ld	hl,(FAC1)
-  37DF  ED5B68FF      		ld	de,(FAC1+2)
+  37DA  2A66FF        		ld	hl,(FAC1)
+  37DD  ED5B68FF      		ld	de,(FAC1+2)
                       	;	or	a		;c-flag=0
                       	
-  37E3  0620          		ld	b,20h
-  37E5                	MULFLP:
+  37E1  0620          		ld	b,20h
+  37E3                	MULFLP:
                       	;shift result and FAC1
-  37E5  D9            		exx
-  37E6  CB18          		rr	b
-  37E8  CB19          		rr	c
-  37EA  CB1A          		rr	d
-  37EC  CB1B          		rr	e
-  37EE  D9            		exx
-  37EF  CB1A          		rr	d
-  37F1  CB1B          		rr	e
-  37F3  CB1C          		rr	h
-  37F5  CB1D          		rr	l
-  37F7  300E          		jr	nc,MULFNC1
+  37E3  D9            		exx
+  37E4  CB18          		rr	b
+  37E6  CB19          		rr	c
+  37E8  CB1A          		rr	d
+  37EA  CB1B          		rr	e
+  37EC  D9            		exx
+  37ED  CB1A          		rr	d
+  37EF  CB1B          		rr	e
+  37F1  CB1C          		rr	h
+  37F3  CB1D          		rr	l
+  37F5  300E          		jr	nc,MULFNC1
                       	
                       	;add
-  37F9  D9            		exx
-  37FA  2A6DFF        		ld	hl,(FAC2)
-  37FD  19            		add	hl,de
-  37FE  EB            		ex	de,hl
-  37FF  2A6FFF        		ld	hl,(FAC2+2)
-  3802  ED4A          		adc	hl,bc
-  3804  44            		ld	b,h
-  3805  4D            		ld	c,l
-  3806  D9            		exx
-  3807                	MULFNC1:
-  3807  10DC          		djnz	MULFLP
+  37F7  D9            		exx
+  37F8  2A6DFF        		ld	hl,(FAC2)
+  37FB  19            		add	hl,de
+  37FC  EB            		ex	de,hl
+  37FD  2A6FFF        		ld	hl,(FAC2+2)
+  3800  ED4A          		adc	hl,bc
+  3802  44            		ld	b,h
+  3803  4D            		ld	c,l
+  3804  D9            		exx
+  3805                	MULFNC1:
+  3805  10DC          		djnz	MULFLP
                       	
-  3809  D9            		exx
-  380A  216AFF        		ld	hl,FAC1+4
-  380D  300D          		jr	nc,MULFNC2
+  3807  D9            		exx
+  3808  216AFF        		ld	hl,FAC1+4
+  380B  300D          		jr	nc,MULFNC2
                       	
                       	;shift result
-  380F  CB18          		rr	b
-  3811  CB19          		rr	c
-  3813  CB1A          		rr	d
-  3815  CB1B          		rr	e
-  3817  D9            		exx
-  3818  CB1A          		rr	d
+  380D  CB18          		rr	b
+  380F  CB19          		rr	c
+  3811  CB1A          		rr	d
+  3813  CB1B          		rr	e
+  3815  D9            		exx
+  3816  CB1A          		rr	d
                       	;	rr	e
                       	;	rr	h
                       	;	rr	l
-  381A  D9            		exx
-  381B  34            		inc	(hl)
+  3818  D9            		exx
+  3819  34            		inc	(hl)
                       	
-  381C                	MULFNC2:
-  381C  35            		dec	(hl)		;;
+  381A                	MULFNC2:
+  381A  35            		dec	(hl)		;;
                       	
                       	;round to the nearest even
-  381D  D9            		exx
-  381E  7A            		ld	a,d
-  381F  8F            		adc	a,a		;check d-bit7
-  3820  3041          		jr	nc,NOROUNDUP
-  3822  B3            		or	e
-  3823  B4            		or	h
-  3824  B5            		or	l
-  3825  C1            		pop	bc
-  3826  D1            		pop	de
-  3827  E1            		pop	hl
-  3828  D9            		exx
-  3829  2004          		jr	nz,ROUNDUP
-  382B  7B            		ld	a,e
-  382C  0F            		rrca
-  382D  300E          		jr	nc,MULFEND
+  381B  D9            		exx
+  381C  7A            		ld	a,d
+  381D  8F            		adc	a,a		;check d-bit7
+  381E  3041          		jr	nc,NOROUNDUP
+  3820  B3            		or	e
+  3821  B4            		or	h
+  3822  B5            		or	l
+  3823  C1            		pop	bc
+  3824  D1            		pop	de
+  3825  E1            		pop	hl
+  3826  D9            		exx
+  3827  2004          		jr	nz,ROUNDUP
+  3829  7B            		ld	a,e
+  382A  0F            		rrca
+  382B  300E          		jr	nc,MULFEND
                       	
-  382F                	ROUNDUP:
-  382F  13            		inc	de
-  3830  7A            		ld	a,d
-  3831  B3            		or	e
-  3832  2009          		jr	nz,MULFEND
-  3834  03            		inc	bc
-  3835  78            		ld	a,b
-  3836  B1            		or	c
-  3837  2004          		jr	nz,MULFEND
+  382D                	ROUNDUP:
+  382D  13            		inc	de
+  382E  7A            		ld	a,d
+  382F  B3            		or	e
+  3830  2009          		jr	nz,MULFEND
+  3832  03            		inc	bc
+  3833  78            		ld	a,b
+  3834  B1            		or	c
+  3835  2004          		jr	nz,MULFEND
                       	;	ld	b,80h
-  3839  34            		inc	(hl)
-  383A  CACE03        		jp	z,OVERR
+  3837  34            		inc	(hl)
+  3838  CACE03        		jp	z,OVERR
                       	
-  383D                	MULFEND:
-  383D  ED5366FF      		ld	(FAC1),de
-  3841  ED4368FF      		ld	(FAC1+2),bc
+  383B                	MULFEND:
+  383B  ED5366FF      		ld	(FAC1),de
+  383F  ED4368FF      		ld	(FAC1+2),bc
                       	
                       	;exponent
-  3845  3A71FF        		ld	a,(FAC2+4)
-  3848  86            		add	a,(hl)
-  3849  3808          		jr	c,MULFC
-  384B  D680          		sub	80h		;;not 81h
-  384D  3009          		jr	nc,MULEXP
+  3843  3A71FF        		ld	a,(FAC2+4)
+  3846  86            		add	a,(hl)
+  3847  3808          		jr	c,MULFC
+  3849  D680          		sub	80h		;;not 81h
+  384B  3009          		jr	nc,MULEXP
                       	
-  384F                	MULFZERO:
-  384F  F1            		pop	af		;cancel
-  3850  C3420C        		jp	SETZERO
+  384D                	MULFZERO:
+  384D  F1            		pop	af		;cancel
+  384E  C3420C        		jp	SETZERO
                       	
-  3853                	MULFC:
-  3853  D680          		sub	80h		;;not 81h
-  3855                	MULFCHKOV:
-  3855  D2CE03        		jp	nc,OVERR
-  3858                	MULEXP:
-  3858  77            		ld	(hl),a		;exponent
-  3859  28F4          		jr	z,MULFZERO
-  385B  2D            		dec	l		;dec hl,FAC1+3
-  385C  F1            		pop	af		;sign
-  385D  07            		rlca
-  385E  7E            		ld	a,(hl)
-  385F  17            		rla
-  3860  0F            		rrca
-  3861  77            		ld	(hl),a
-  3862  C9            		ret
+  3851                	MULFC:
+  3851  D680          		sub	80h		;;not 81h
+  3853                	MULFCHKOV:
+  3853  D2CE03        		jp	nc,OVERR
+  3856                	MULEXP:
+  3856  77            		ld	(hl),a		;exponent
+  3857  28F4          		jr	z,MULFZERO
+  3859  2D            		dec	l		;dec hl,FAC1+3
+  385A  F1            		pop	af		;sign
+  385B  07            		rlca
+  385C  7E            		ld	a,(hl)
+  385D  17            		rla
+  385E  0F            		rrca
+  385F  77            		ld	(hl),a
+  3860  C9            		ret
                       	
-  3863                	NOROUNDUP:
-  3863  C1            		pop	bc
-  3864  D1            		pop	de
-  3865  E1            		pop	hl
-  3866  D9            		exx
-  3867  18D4          		jr	MULFEND
+  3861                	NOROUNDUP:
+  3861  C1            		pop	bc
+  3862  D1            		pop	de
+  3863  E1            		pop	hl
+  3864  D9            		exx
+  3865  18D4          		jr	MULFEND
                       	
                       	
                       	;/ operator
-  3869                	O_DIV:
-  3869  CD9D0B        		call	CHKNUM
+  3867                	O_DIV:
+  3867  CD9D0B        		call	CHKNUM
                       	;	call	DIVF
                       	;	ret
                       	
@@ -12208,231 +12215,231 @@
                       	;input: FAC1,FAC2
                       	;output: FAC1
                       	;destroy: FAC2,af,bc,de,hl
-  386C                	DIVF:
-  386C  3A71FF        		ld	a,(FAC2+4)
-  386F  B7            		or	a
-  3870  CADD03        		jp	z,DIV0ERR
+  386A                	DIVF:
+  386A  3A71FF        		ld	a,(FAC2+4)
+  386D  B7            		or	a
+  386E  CADD03        		jp	z,DIV0ERR
                       	
-  3873  216AFF        		ld	hl,FAC1+4
-  3876  7E            		ld	a,(hl)
-  3877  B7            		or	a
-  3878  C8            		ret	z
+  3871  216AFF        		ld	hl,FAC1+4
+  3874  7E            		ld	a,(hl)
+  3875  B7            		or	a
+  3876  C8            		ret	z
                       	
-  3879  2D            		dec	l		;dec hl, FAC1+3
-  387A  7E            		ld	a,(hl)
-  387B  CBFE          		set	7,(hl)
-  387D  2E70          		ld	l,FAC2+3-(FAC2+3)/256*256	;hl<-FAC2+3
-  387F  AE            		xor	(hl)
-  3880  CBFE          		set	7,(hl)
-  3882  F5            		push	af		;sign
+  3877  2D            		dec	l		;dec hl, FAC1+3
+  3878  7E            		ld	a,(hl)
+  3879  CBFE          		set	7,(hl)
+  387B  2E70          		ld	l,FAC2+3-(FAC2+3)/256*256	;hl<-FAC2+3
+  387D  AE            		xor	(hl)
+  387E  CBFE          		set	7,(hl)
+  3880  F5            		push	af		;sign
                       	
-  3883  210000        		ld	hl,0000h
-  3886  54            		ld	d,h
-  3887  5D            		ld	e,l
+  3881  210000        		ld	hl,0000h
+  3884  54            		ld	d,h
+  3885  5D            		ld	e,l
                       	
-  3888  D9            		exx			;
-  3889  E5            		push	hl
-  388A  D5            		push	de
+  3886  D9            		exx			;
+  3887  E5            		push	hl
+  3888  D5            		push	de
                       	
-  388B  CDB724        		call	CMPINT4
-  388E  3007          		jr	nc,DIVFNC
-  3890  216AFF        		ld	hl,FAC1+4
-  3893  35            		dec	(hl)
-  3894  CD3A3F        		call	SLAF1
+  3889  CDB724        		call	CMPINT4
+  388C  3007          		jr	nc,DIVFNC
+  388E  216AFF        		ld	hl,FAC1+4
+  3891  35            		dec	(hl)
+  3892  CD3A3F        		call	SLAF1
                       	
-  3897                	DIVFNC:
-  3897  0620          		ld	b,20h
-  3899                	DIVFLP:
-  3899  3805          		jr	c,DIVFC1
-  389B  CDB724        		call	CMPINT4
-  389E  381A          		jr	c,DIVFC2
-  38A0                	DIVFC1:
-  38A0  2A66FF        		ld	hl,(FAC1)
-  38A3  ED5B6DFF      		ld	de,(FAC2)
-  38A7  B7            		or	a
-  38A8  ED52          		sbc	hl,de
-  38AA  2266FF        		ld	(FAC1),hl
-  38AD  2A68FF        		ld	hl,(FAC1+2)
-  38B0  ED5B6FFF      		ld	de,(FAC2+2)
-  38B4  ED52          		sbc	hl,de
-  38B6  2268FF        		ld	(FAC1+2),hl
-  38B9  B7            		or	a		;reset c-flag
-  38BA                	DIVFC2:
-  38BA  3F            		ccf
-  38BB  D9            		exx			;
-  38BC  ED6A          		adc	hl,hl
-  38BE  CB13          		rl	e
-  38C0  CB12          		rl	d
-  38C2  D9            		exx			;
+  3895                	DIVFNC:
+  3895  0620          		ld	b,20h
+  3897                	DIVFLP:
+  3897  3805          		jr	c,DIVFC1
+  3899  CDB724        		call	CMPINT4
+  389C  381A          		jr	c,DIVFC2
+  389E                	DIVFC1:
+  389E  2A66FF        		ld	hl,(FAC1)
+  38A1  ED5B6DFF      		ld	de,(FAC2)
+  38A5  B7            		or	a
+  38A6  ED52          		sbc	hl,de
+  38A8  2266FF        		ld	(FAC1),hl
+  38AB  2A68FF        		ld	hl,(FAC1+2)
+  38AE  ED5B6FFF      		ld	de,(FAC2+2)
+  38B2  ED52          		sbc	hl,de
+  38B4  2268FF        		ld	(FAC1+2),hl
+  38B7  B7            		or	a		;reset c-flag
+  38B8                	DIVFC2:
+  38B8  3F            		ccf
+  38B9  D9            		exx			;
+  38BA  ED6A          		adc	hl,hl
+  38BC  CB13          		rl	e
+  38BE  CB12          		rl	d
+  38C0  D9            		exx			;
                       	
-  38C3  CD3A3F        		call	SLAF1
-  38C6  10D1          		djnz	DIVFLP
+  38C1  CD3A3F        		call	SLAF1
+  38C4  10D1          		djnz	DIVFLP
                       	
-  38C8  17            		rla			;store c-flag
-  38C9  CDB724        		call	CMPINT4		;no change in a
-  38CC  D1            		pop	de
-  38CD  E1            		pop	hl
-  38CE  D9            		exx
+  38C6  17            		rla			;store c-flag
+  38C7  CDB724        		call	CMPINT4		;no change in a
+  38CA  D1            		pop	de
+  38CB  E1            		pop	hl
+  38CC  D9            		exx
                       	
-  38CF  1F            		rra
-  38D0  3809          		jr	c,DIVFUP
-  38D2  07            		rlca
-  38D3  381B          		jr	c,DIVFNOUP
+  38CD  1F            		rra
+  38CE  3809          		jr	c,DIVFUP
+  38D0  07            		rlca
+  38D1  381B          		jr	c,DIVFNOUP
                       	
                       	;round to the nearest even
-  38D5  2004          		jr	nz,DIVFUP
-  38D7  7D            		ld	a,l
-  38D8  0F            		rrca
-  38D9  3015          		jr	nc,DIVFNOUP
+  38D3  2004          		jr	nz,DIVFUP
+  38D5  7D            		ld	a,l
+  38D6  0F            		rrca
+  38D7  3015          		jr	nc,DIVFNOUP
                       	
                       	;round up
-  38DB                	DIVFUP:
-  38DB  23            		inc	hl
-  38DC  7C            		ld	a,h
-  38DD  B5            		or	l
-  38DE  2010          		jr	nz,DIVFNOUP
-  38E0  13            		inc	de
-  38E1  7A            		ld	a,d
-  38E2  B3            		or	e
-  38E3  200B          		jr	nz,DIVFNOUP
-  38E5  216AFF        		ld	hl,FAC1+4
-  38E8  34            		inc	(hl)
-  38E9  CACE03        		jp	z,OVERR
-  38EC  EB            		ex	de,hl		;hl<-0
-  38ED  110080        		ld	de,8000h
+  38D9                	DIVFUP:
+  38D9  23            		inc	hl
+  38DA  7C            		ld	a,h
+  38DB  B5            		or	l
+  38DC  2010          		jr	nz,DIVFNOUP
+  38DE  13            		inc	de
+  38DF  7A            		ld	a,d
+  38E0  B3            		or	e
+  38E1  200B          		jr	nz,DIVFNOUP
+  38E3  216AFF        		ld	hl,FAC1+4
+  38E6  34            		inc	(hl)
+  38E7  CACE03        		jp	z,OVERR
+  38EA  EB            		ex	de,hl		;hl<-0
+  38EB  110080        		ld	de,8000h
                       	
-  38F0                	DIVFNOUP:
-  38F0  2266FF        		ld	(FAC1),hl
-  38F3  ED5368FF      		ld	(FAC1+2),de
+  38EE                	DIVFNOUP:
+  38EE  2266FF        		ld	(FAC1),hl
+  38F1  ED5368FF      		ld	(FAC1+2),de
                       	
-  38F7  3A71FF        		ld	a,(FAC2+4)
-  38FA  47            		ld	b,a
-  38FB  216AFF        		ld	hl,FAC1+4
-  38FE  7E            		ld	a,(hl)
-  38FF  90            		sub	b
-  3900  3806          		jr	c,DIVF1LT2
+  38F5  3A71FF        		ld	a,(FAC2+4)
+  38F8  47            		ld	b,a
+  38F9  216AFF        		ld	hl,FAC1+4
+  38FC  7E            		ld	a,(hl)
+  38FD  90            		sub	b
+  38FE  3806          		jr	c,DIVF1LT2
                       	
                       	;FAC1>=FAC2
-  3902  C681          		add	a,81h
-  3904  3F            		ccf
-  3905  C35538        		jp	MULFCHKOV
+  3900  C681          		add	a,81h
+  3902  3F            		ccf
+  3903  C35338        		jp	MULFCHKOV
                       	
                       	
                       	;FAC1<FAC2
-  3908                	DIVF1LT2:
-  3908  F24F38        		jp	p,MULFZERO
-  390B  C681          		add	a,81h
-  390D  C35838        		jp	MULEXP
+  3906                	DIVF1LT2:
+  3906  F24D38        		jp	p,MULFZERO
+  3909  C681          		add	a,81h
+  390B  C35638        		jp	MULEXP
                       	
                       	
                       	;continued from CHKSGN
-  3910                	CHKSGN2:
-  3910  3A69FF        		ld	a,(FAC1+3)
-  3913  07            		rlca
-  3914  9F            		sbc	a,a		;00h or ffh
-  3915  D8            		ret	c		;ffh
-  3916  3C            		inc	a
-  3917  C9            		ret			;01h
+  390E                	CHKSGN2:
+  390E  3A69FF        		ld	a,(FAC1+3)
+  3911  07            		rlca
+  3912  9F            		sbc	a,a		;00h or ffh
+  3913  D8            		ret	c		;ffh
+  3914  3C            		inc	a
+  3915  C9            		ret			;01h
                       	
                       	
                       	;SGN() function
-  3918                	F_SGN:
-  3918  CD9D0B        		call	CHKNUM
-  391B  EF            		rst	CHKSGN
-  391C  C8            		ret	z
-  391D  3C            		inc	a
-  391E  CA530C        		jp	z,SETMNS1
-  3921  C34622        		jp	SETPLS1
+  3916                	F_SGN:
+  3916  CD9D0B        		call	CHKNUM
+  3919  EF            		rst	CHKSGN
+  391A  C8            		ret	z
+  391B  3C            		inc	a
+  391C  CA530C        		jp	z,SETMNS1
+  391F  C34622        		jp	SETPLS1
                       	
                       	
                       	;ABS() function
-  3924                	F_ABS:
-  3924  CD9D0B        		call	CHKNUM
-  3927                	ABS:
-  3927  2169FF        		ld	hl,FAC1+3
-  392A  CBBE          		res	7,(hl)
-  392C  C9            		ret
+  3922                	F_ABS:
+  3922  CD9D0B        		call	CHKNUM
+  3925                	ABS:
+  3925  2169FF        		ld	hl,FAC1+3
+  3928  CBBE          		res	7,(hl)
+  392A  C9            		ret
                       	
                       	
                       	;push FAC1
                       	;input: FAC1
                       	;output: sp=sp-6
                       	;destroy: af,hl
-  392D                	PUSHF1:
-  392D  F1            		pop	af		;return address
-  392E  2A69FF        		ld	hl,(FAC1+3)
-  3931  E5            		push	hl
-  3932  2A67FF        		ld	hl,(FAC1+1)
-  3935  E5            		push	hl
-  3936  2A65FF        		ld	hl,(FAC1-1)
-  3939  E5            		push	hl
-  393A  F5            		push	af		;
-  393B  C9            		ret
+  392B                	PUSHF1:
+  392B  F1            		pop	af		;return address
+  392C  2A69FF        		ld	hl,(FAC1+3)
+  392F  E5            		push	hl
+  3930  2A67FF        		ld	hl,(FAC1+1)
+  3933  E5            		push	hl
+  3934  2A65FF        		ld	hl,(FAC1-1)
+  3937  E5            		push	hl
+  3938  F5            		push	af		;
+  3939  C9            		ret
                       	
                       	
                       	;pop FAC1
                       	;input: none
                       	;output: FAC1,sp=sp+6
                       	;destroy: af,hl
-  393C                	POPF1:
-  393C  F1            		pop	af		;return address
-  393D  E1            		pop	hl
-  393E  2265FF        		ld	(FAC1-1),hl
-  3941  E1            		pop	hl
-  3942  2267FF        		ld	(FAC1+1),hl
-  3945  E1            		pop	hl
-  3946  2269FF        		ld	(FAC1+3),hl
-  3949  F5            		push	af		;
-  394A  C9            		ret
+  393A                	POPF1:
+  393A  F1            		pop	af		;return address
+  393B  E1            		pop	hl
+  393C  2265FF        		ld	(FAC1-1),hl
+  393F  E1            		pop	hl
+  3940  2267FF        		ld	(FAC1+1),hl
+  3943  E1            		pop	hl
+  3944  2269FF        		ld	(FAC1+3),hl
+  3947  F5            		push	af		;
+  3948  C9            		ret
                       	
                       	
                       	;pop FAC2
                       	;input: none
                       	;output: FAC2,sp=sp+6
                       	;destroy: af,hl
-  394B                	POPF2:
-  394B  F1            		pop	af		;return address
-  394C  E1            		pop	hl
-  394D  226CFF        		ld	(FAC2-1),hl
-  3950  E1            		pop	hl
-  3951  226EFF        		ld	(FAC2+1),hl
-  3954  E1            		pop	hl
-  3955  2270FF        		ld	(FAC2+3),hl
-  3958  F5            		push	af		;
-  3959  C9            		ret
+  3949                	POPF2:
+  3949  F1            		pop	af		;return address
+  394A  E1            		pop	hl
+  394B  226CFF        		ld	(FAC2-1),hl
+  394E  E1            		pop	hl
+  394F  226EFF        		ld	(FAC2+1),hl
+  3952  E1            		pop	hl
+  3953  2270FF        		ld	(FAC2+3),hl
+  3956  F5            		push	af		;
+  3957  C9            		ret
                       	
                       	
                       	;copy FAC1 to FAC2
                       	;input: FAC1
                       	;output: FAC2
                       	;destroy: hl
-  395A                	CPYFAC:
-  395A  2A65FF        		ld	hl,(FAC1-1)
-  395D  226CFF        		ld	(FAC2-1),hl
-  3960  2A67FF        		ld	hl,(FAC1+1)
-  3963  226EFF        		ld	(FAC2+1),hl
-  3966  2A69FF        		ld	hl,(FAC1+3)
-  3969  2270FF        		ld	(FAC2+3),hl
-  396C  C9            		ret
+  3958                	CPYFAC:
+  3958  2A65FF        		ld	hl,(FAC1-1)
+  395B  226CFF        		ld	(FAC2-1),hl
+  395E  2A67FF        		ld	hl,(FAC1+1)
+  3961  226EFF        		ld	(FAC2+1),hl
+  3964  2A69FF        		ld	hl,(FAC1+3)
+  3967  2270FF        		ld	(FAC2+3),hl
+  396A  C9            		ret
                       	
                       	
                       	;exchange FAC1 and FAC2
                       	;input: FAC1,FAC2
                       	;output: FAC1,FAC2
                       	;destroy: hl
-  396D                	EXFAC:
-  396D  F5            		push	af
-  396E  CD1A3C        		call	PUSHF2
-  3971  CD5A39        		call	CPYFAC
-  3974  CD3C39        		call	POPF1
-  3977  F1            		pop	af
-  3978  C9            		ret
+  396B                	EXFAC:
+  396B  F5            		push	af
+  396C  CD1A3C        		call	PUSHF2
+  396F  CD5839        		call	CPYFAC
+  3972  CD3A39        		call	POPF1
+  3975  F1            		pop	af
+  3976  C9            		ret
                       	
                       	
                       	;print 1-byte integer in device (unsigned)
                       	;input: a
                       	;destroy: af,bc,de,hl
-  3979                	_PUTI1:	ds	PUTI1-_PUTI1
+  3977                	_PUTI1:	ds	PUTI1-_PUTI1
   397A                		org	PUTI1
                       	
   397A  2600          		ld	h,00h
@@ -12445,13 +12452,13 @@
   3980                	F_INT:
   3980  CD9D0B        		call	CHKNUM
   3983                	INT:
-  3983  CD5A39        		call	CPYFAC
+  3983  CD5839        		call	CPYFAC
   3986  CDD00C        		call	GETINT
   3989  CD1B3F        		call	CMPF
   398C  C8            		ret	z
   398D  D8            		ret	c
   398E  21A60E        		ld	hl,MNSONE
-  3991  C39736        		jp	SETADDF
+  3991  C39536        		jp	SETADDF
                       	
                       	
                       	;check BASIC mode
@@ -12514,7 +12521,7 @@
   39D9  0600          		ld	b,00h
   39DB                	ATOFEXP:
   39DB  EB            		ex	de,hl
-  39DC  CD2D39        		call	PUSHF1
+  39DC  CD2B39        		call	PUSHF1
   39DF  EB            		ex	de,hl
                       	
   39E0  C5            		push	bc		;c=after-dot counter
@@ -12532,14 +12539,14 @@
   39EF                	CALCEXP:
   39EF  C1            		pop	bc		;c=after-dot counter
   39F0  E5            		push	hl		;program address
-  39F1  CD5A39        		call	CPYFAC
+  39F1  CD5839        		call	CPYFAC
   39F4  69            		ld	l,c
   39F5  CD7E0C        		call	I1TOF
   39F8  CD143E        		call	SUBF21
                       	
   39FB  D1            		pop	de		;program address
-  39FC  CD5A39        		call	CPYFAC
-  39FF  CD3C39        		call	POPF1
+  39FC  CD5839        		call	CPYFAC
+  39FF  CD3A39        		call	POPF1
   3A02  D5            		push	de		;program address
                       	
   3A03  2170FF        		ld	hl,FAC2+3
@@ -12556,11 +12563,11 @@
   3A13  B7            		or	a
   3A14  2823          		jr	z,ATOFEND	;=0
                       	
-  3A16  CD2D39        		call	PUSHF1
+  3A16  CD2B39        		call	PUSHF1
   3A19  CD530C        		call	SETMNS1
-  3A1C  CDA636        		call	ADDF
-  3A1F  CD5A39        		call	CPYFAC
-  3A22  CD3C39        		call	POPF1
+  3A1C  CDA436        		call	ADDF
+  3A1F  CD5839        		call	CPYFAC
+  3A22  CD3A39        		call	POPF1
                       	
   3A25  C1            		pop	bc		;b=E sign
   3A26  C5            		push	bc
@@ -12568,10 +12575,10 @@
   3A2A  78            		ld	a,b
   3A2B  07            		rlca
   3A2C  F5            		push	af
-  3A2D  D4AC37        		call	nc,MULF10
+  3A2D  D4AA37        		call	nc,MULF10
   3A30  F1            		pop	af
-  3A31  DCA237        		call	c,DIVF10
-  3A34  CD4B39        		call	POPF2
+  3A31  DCA037        		call	c,DIVF10
+  3A34  CD4939        		call	POPF2
                       	
   3A37  18D1          		jr	ATOFLP2
                       	
@@ -12716,7 +12723,7 @@
   3AB6  2802          		jr	z,FTOAPLS	;if FAC1>0
   3AB8  362D          		ld	(hl),'-'
   3ABA                	FTOAPLS:
-  3ABA  CD2739        		call	ABS
+  3ABA  CD2539        		call	ABS
   3ABD  21693B        		ld	hl,E8
   3AC0  CD183F        		call	SETCMPF
   3AC3  3071          		jr	nc,LARGE	;FAC1 >= 1e8
@@ -12731,7 +12738,7 @@
   3AD0  216E3B        		ld	hl,E7
   3AD3  CD183F        		call	SETCMPF
   3AD6  3007          		jr	nc,FTOAOK
-  3AD8  CDAC37        		call	MULF10
+  3AD8  CDAA37        		call	MULF10
   3ADB  C1            		pop	bc
   3ADC  10F1          		djnz	FTOALP1
   3ADE  C5            		push	bc
@@ -12744,7 +12751,7 @@
   3AE8                	FTOALP2:
   3AE8  07            		rlca
   3AE9  10FD          		djnz	FTOALP2
-  3AEB  DC9436        		call	c,INCF1		;round up
+  3AEB  DC9236        		call	c,INCF1		;round up
                       	
   3AEE  CDEB24        		call	FTOI4
                       	
@@ -12790,7 +12797,7 @@
   3B26                	SMALLLP:
   3B26  04            		inc	b
   3B27  C5            		push	bc
-  3B28  CDAC37        		call	MULF10
+  3B28  CDAA37        		call	MULF10
   3B2B  21783B        		ld	hl,E0
   3B2E  CD183F        		call	SETCMPF
   3B31  C1            		pop	bc
@@ -12802,7 +12809,7 @@
   3B39                	LARGELP:
   3B39  04            		inc	b
   3B3A  C5            		push	bc
-  3B3B  CDA237        		call	DIVF10
+  3B3B  CDA037        		call	DIVF10
   3B3E  21733B        		ld	hl,E2
   3B41  CD183F        		call	SETCMPF
   3B44  C1            		pop	bc
@@ -12985,10 +12992,10 @@
   3C29                	F_EXP:
   3C29  CD9D0B        		call	CHKNUM
   3C2C                	EXP:
-  3C2C  CD2D39        		call	PUSHF1		;x
+  3C2C  CD2B39        		call	PUSHF1		;x
   3C2F  21993C        		ld	hl,LOG2
   3C32  CD4E0C        		call	SETF2
-  3C35  CD6C38        		call	DIVF		;x/log2
+  3C35  CD6A38        		call	DIVF		;x/log2
                       	
   3C38  2A69FF        		ld	hl,(FAC1+3)
   3C3B  7C            		ld	a,h		;(FAC1+4)
@@ -12999,30 +13006,30 @@
   3C43  CD9F0C        		call	FTOI
   3C46  D5            		push	de		;n
   3C47  21993C        		ld	hl,LOG2
-  3C4A  CDAF37        		call	SETMULF		;n*log2
+  3C4A  CDAD37        		call	SETMULF		;n*log2
   3C4D  D1            		pop	de		;n
-  3C4E  CD4B39        		call	POPF2		;x
+  3C4E  CD4939        		call	POPF2		;x
   3C51  D5            		push	de		;n
   3C52  CD143E        		call	SUBF21		;a=x-n*log2
                       	
                       	;1+a(1+a/2(1+a/3(1+...(1+a/10))))))))))
-  3C55  CD5A39        		call	CPYFAC
+  3C55  CD5839        		call	CPYFAC
   3C58  CD4622        		call	SETPLS1
                       	
   3C5B  0E0A          		ld	c,0ah
   3C5D                	EXPLP:
   3C5D  CD1A3C        		call	PUSHF2		;a
   3C60  C5            		push	bc
-  3C61  CDBC37        		call	MULF		;a*y
-  3C64  CD5A39        		call	CPYFAC
+  3C61  CDBA37        		call	MULF		;a*y
+  3C64  CD5839        		call	CPYFAC
   3C67  E1            		pop	hl
   3C68  E5            		push	hl
   3C69  CD7E0C        		call	I1TOF
-  3C6C  CD6D39        		call	EXFAC
-  3C6F  CD6C38        		call	DIVF		;a*y/b
-  3C72  CD9436        		call	INCF1		;a*y/b+1
+  3C6C  CD6B39        		call	EXFAC
+  3C6F  CD6A38        		call	DIVF		;a*y/b
+  3C72  CD9236        		call	INCF1		;a*y/b+1
   3C75  C1            		pop	bc
-  3C76  CD4B39        		call	POPF2		;a
+  3C76  CD4939        		call	POPF2		;a
   3C79  0D            		dec	c
   3C7A  20E1          		jr	nz,EXPLP
                       	
@@ -13045,7 +13052,7 @@
   3C90                	EXPLARGE:
   3C90  CB7D          		bit	7,l		;(FAC1+3)
   3C92  28F4          		jr	z,EXPOV		;x/log2>=256
-  3C94  CD3C39        		call	POPF1
+  3C94  CD3A39        		call	POPF1
   3C97  18F4          		jr	EXPZERO		;x/log2<=-256
                       	
                       	;log(2)
@@ -13069,46 +13076,46 @@
   3CAA  D681          		sub	81h
   3CAC  F5            		push	af		;n
   3CAD  3681          		ld	(hl),81h	;a
-  3CAF  CD2D39        		call	PUSHF1		;a
-  3CB2  CD9436        		call	INCF1
-  3CB5  CD4B39        		call	POPF2		;a
-  3CB8  CD2D39        		call	PUSHF1		;a+1
+  3CAF  CD2B39        		call	PUSHF1		;a
+  3CB2  CD9236        		call	INCF1
+  3CB5  CD4939        		call	POPF2		;a
+  3CB8  CD2B39        		call	PUSHF1		;a+1
   3CBB  CD530C        		call	SETMNS1
-  3CBE  CDA636        		call	ADDF		;a-1
-  3CC1  CD4B39        		call	POPF2		;a+1
-  3CC4  CD6C38        		call	DIVF		;a'=(a-1)/(a+1)
-  3CC7  CD2D39        		call	PUSHF1		;a'
-  3CCA  CD5A39        		call	CPYFAC
-  3CCD  CDBC37        		call	MULF		;a'^2
-  3CD0  CD5A39        		call	CPYFAC		;a'^2
+  3CBE  CDA436        		call	ADDF		;a-1
+  3CC1  CD4939        		call	POPF2		;a+1
+  3CC4  CD6A38        		call	DIVF		;a'=(a-1)/(a+1)
+  3CC7  CD2B39        		call	PUSHF1		;a'
+  3CCA  CD5839        		call	CPYFAC
+  3CCD  CDBA37        		call	MULF		;a'^2
+  3CD0  CD5839        		call	CPYFAC		;a'^2
   3CD3  CD4622        		call	SETPLS1		;y
                       	
   3CD6  0E12          		ld	c,12h
   3CD8                	LOGLP:
   3CD8  CD1A3C        		call	PUSHF2		;a'^2
   3CDB  C5            		push	bc
-  3CDC  CDBC37        		call	MULF		;y*a'^2
-  3CDF  CD5A39        		call	CPYFAC
+  3CDC  CDBA37        		call	MULF		;y*a'^2
+  3CDF  CD5839        		call	CPYFAC
   3CE2  E1            		pop	hl		;l=c
   3CE3  E5            		push	hl
   3CE4  2C            		inc	l
   3CE5  CD7E0C        		call	I1TOF
-  3CE8  CD6D39        		call	EXFAC
-  3CEB  CD6C38        		call	DIVF		;y*a'^2/(c+1)
-  3CEE  CD5A39        		call	CPYFAC
+  3CE8  CD6B39        		call	EXFAC
+  3CEB  CD6A38        		call	DIVF		;y*a'^2/(c+1)
+  3CEE  CD5839        		call	CPYFAC
   3CF1  E1            		pop	hl
   3CF2  2D            		dec	l
   3CF3  E5            		push	hl
   3CF4  CD7E0C        		call	I1TOF		;c-1
-  3CF7  CDBC37        		call	MULF		;y*a'^2*(c-1)/(c+1)
-  3CFA  CD9436        		call	INCF1		;y=1+y*a'^2*(c-1)/(c+1)
+  3CF7  CDBA37        		call	MULF		;y*a'^2*(c-1)/(c+1)
+  3CFA  CD9236        		call	INCF1		;y=1+y*a'^2*(c-1)/(c+1)
   3CFD  C1            		pop	bc
-  3CFE  CD4B39        		call	POPF2		;a'^2
+  3CFE  CD4939        		call	POPF2		;a'^2
   3D01  0D            		dec	c
   3D02  20D4          		jr	nz,LOGLP
                       	
-  3D04  CD4B39        		call	POPF2		;a'
-  3D07  CDBC37        		call	MULF		;a'*y
+  3D04  CD4939        		call	POPF2		;a'
+  3D07  CDBA37        		call	MULF		;a'*y
   3D0A  216AFF        		ld	hl,FAC1+4
   3D0D  7E            		ld	a,(hl)
   3D0E  B7            		or	a
@@ -13117,12 +13124,12 @@
   3D12  CACE03        		jp	z,OVERR
   3D15                	LOGZ:
   3D15  C1            		pop	bc		;b=n
-  3D16  CD2D39        		call	PUSHF1		;2*a'*y
+  3D16  CD2B39        		call	PUSHF1		;2*a'*y
   3D19  CD110D        		call	S1TOF
   3D1C  21993C        		ld	hl,LOG2
-  3D1F  CDAF37        		call	SETMULF		;n*log(2)
-  3D22  CD4B39        		call	POPF2		;2*a'*y
-  3D25  C3A636        		jp	ADDF		;n*log(2)+2*a'*y
+  3D1F  CDAD37        		call	SETMULF		;n*log(2)
+  3D22  CD4939        		call	POPF2		;2*a'*y
+  3D25  C3A436        		jp	ADDF		;n*log(2)+2*a'*y
                       	
                       	
                       	;^ operator
@@ -13143,8 +13150,8 @@
   3D39                	POWPOS:
   3D39  CD1A3C        		call	PUSHF2		;y
   3D3C  CDA13C        		call	LOG		;log(x)
-  3D3F  CD4B39        		call	POPF2		;y
-  3D42  CDBC37        		call	MULF		;ylog(x)
+  3D3F  CD4939        		call	POPF2		;y
+  3D42  CDBA37        		call	MULF		;ylog(x)
   3D45  C32C3C        		jp	EXP
                       	
                       	;0^y
@@ -13160,9 +13167,9 @@
   3D4F  FEA1          		cp	0a1h
   3D51  D2CB03        		jp	nc,FCERR
                       	
-  3D54  CD2D39        		call	PUSHF1
+  3D54  CD2B39        		call	PUSHF1
   3D57  CD1A3C        		call	PUSHF2
-  3D5A  CD3C39        		call	POPF1
+  3D5A  CD3A39        		call	POPF1
                       	
   3D5D  CDD00C        		call	GETINT
   3D60  CD1B3F        		call	CMPF
@@ -13171,9 +13178,9 @@
   3D69  3A66FF        		ld	a,(FAC1)	;even/odd
   3D6C  47            		ld	b,a
                       	
-  3D6D  CD3C39        		call	POPF1
+  3D6D  CD3A39        		call	POPF1
   3D70  C5            		push	bc		;
-  3D71  CD2739        		call	ABS
+  3D71  CD2539        		call	ABS
   3D74  CD393D        		call	POWPOS
   3D77  F1            		pop	af		;
   3D78  0F            		rrca
@@ -13188,7 +13195,7 @@
   3D80                	COS:
   3D80  CD280D        		call	NEGABS
   3D83  218B3D        		ld	hl,PIDIV2
-  3D86  CD9736        		call	SETADDF		;pi/2-|x|
+  3D86  CD9536        		call	SETADDF		;pi/2-|x|
   3D89  1808          		jr	SIN
                       	
                       	;pi/2
@@ -13201,53 +13208,53 @@
   3D90                	F_SIN:
   3D90  CD9D0B        		call	CHKNUM
   3D93                	SIN:
-  3D93  CD2D39        		call	PUSHF1		;x
+  3D93  CD2B39        		call	PUSHF1		;x
   3D96  211A3E        		ld	hl,PI2
   3D99  CD4E0C        		call	SETF2
-  3D9C  CD6C38        		call	DIVF		;x/2pi
+  3D9C  CD6A38        		call	DIVF		;x/2pi
   3D9F  CDD00C        		call	GETINT		;int(x/2pi)
   3DA2  211A3E        		ld	hl,PI2
-  3DA5  CDAF37        		call	SETMULF		;int(x/2pi)*2pi
-  3DA8  CD4B39        		call	POPF2		;x
+  3DA5  CDAD37        		call	SETMULF		;int(x/2pi)*2pi
+  3DA8  CD4939        		call	POPF2		;x
   3DAB  CD143E        		call	SUBF21		;x'=x-int(x/2pi)*2pi
                       	
   3DAE  CDFF3D        		call	SINRANGE	;[-pi,+pi]
   3DB1  CDFF3D        		call	SINRANGE	;[-pi/2,+pi/2]
                       	
-  3DB4  CD2D39        		call	PUSHF1		;x'
-  3DB7  CD5A39        		call	CPYFAC
-  3DBA  CDBC37        		call	MULF		;x'^2
+  3DB4  CD2B39        		call	PUSHF1		;x'
+  3DB7  CD5839        		call	CPYFAC
+  3DBA  CDBA37        		call	MULF		;x'^2
                       	
-  3DBD  CD5A39        		call	CPYFAC
+  3DBD  CD5839        		call	CPYFAC
   3DC0  CD4622        		call	SETPLS1		;y=1
                       	
   3DC3  060C          		ld	b,0ch
   3DC5                	SINLP:
   3DC5  CD1A3C        		call	PUSHF2		;x'^2
   3DC8  C5            		push	bc
-  3DC9  CDBC37        		call	MULF		;x'^2*y
+  3DC9  CDBA37        		call	MULF		;x'^2*y
   3DCC  C1            		pop	bc
   3DCD  C5            		push	bc
-  3DCE  CD2D39        		call	PUSHF1		;x'^2*y
+  3DCE  CD2B39        		call	PUSHF1		;x'^2*y
                       	
   3DD1  78            		ld	a,b
   3DD2  04            		inc	b
   3DD3  CD5322        		call	MULINT1		;hl=b(b+1)
   3DD6  CD800C        		call	I2TOF		;hl->FAC1
                       	
-  3DD9  CD5A39        		call	CPYFAC
-  3DDC  CD3C39        		call	POPF1		;x'^2*y
-  3DDF  CD6C38        		call	DIVF		;x'^2/b/(b+1)*y
+  3DD9  CD5839        		call	CPYFAC
+  3DDC  CD3A39        		call	POPF1		;x'^2*y
+  3DDF  CD6A38        		call	DIVF		;x'^2/b/(b+1)*y
   3DE2  CD280D        		call	NEGABS		;-x'^2/b/(b+1)*y (y>0)
-  3DE5  CD9436        		call	INCF1		;y=1-x'^2/b/(b+1)*y
+  3DE5  CD9236        		call	INCF1		;y=1-x'^2/b/(b+1)*y
                       	
   3DE8  C1            		pop	bc
-  3DE9  CD4B39        		call	POPF2		;x'^2
+  3DE9  CD4939        		call	POPF2		;x'^2
   3DEC  05            		dec	b
   3DED  10D6          		djnz	SINLP
                       	
-  3DEF  CD4B39        		call	POPF2		;x'
-  3DF2  CDBC37        		call	MULF
+  3DEF  CD4939        		call	POPF2		;x'
+  3DF2  CDBA37        		call	MULF
   3DF5  3A6AFF        		ld	a,(FAC1+4)
   3DF8  D681          		sub	81h
   3DFA  C0            		ret	nz
@@ -13272,7 +13279,7 @@
                       	;FAC1=FAC2-FAC1
   3E14                	SUBF21:
   3E14  2169FF        		ld	hl,FAC1+3
-  3E17  C3A236        		jp	CHGSGNADD
+  3E17  C3A036        		jp	CHGSGNADD
                       	
                       	;pi*2
   3E1A                	PI2:
@@ -13288,7 +13295,7 @@
   3E24  3C            		inc	a
   3E25  CACB03        		jp	z,FCERR		;sqr(-x)
                       	
-  3E28  CD2D39        		call	PUSHF1
+  3E28  CD2B39        		call	PUSHF1
   3E2B  216AFF        		ld	hl,FAC1+4
   3E2E  7E            		ld	a,(hl)
   3E2F  D681          		sub	81h
@@ -13298,19 +13305,19 @@
                       	
   3E35  0605          		ld	b,05h
   3E37                	SQRLP:
-  3E37  CD5A39        		call	CPYFAC
-  3E3A  CD3C39        		call	POPF1		;x
-  3E3D  CD2D39        		call	PUSHF1		;x
+  3E37  CD5839        		call	CPYFAC
+  3E3A  CD3A39        		call	POPF1		;x
+  3E3D  CD2B39        		call	PUSHF1		;x
   3E40  C5            		push	bc
   3E41  CD1A3C        		call	PUSHF2		;;y
-  3E44  CD6C38        		call	DIVF		;x/y
-  3E47  CD4B39        		call	POPF2		;;y
-  3E4A  CDA636        		call	ADDF		;x/y+y
+  3E44  CD6A38        		call	DIVF		;x/y
+  3E47  CD4939        		call	POPF2		;;y
+  3E4A  CDA436        		call	ADDF		;x/y+y
   3E4D  216AFF        		ld	hl,FAC1+4
   3E50  35            		dec	(hl)		;y=(x/y+y)/2
   3E51  C1            		pop	bc
   3E52  10E3          		djnz	SQRLP
-  3E54  CD4B39        		call	POPF2
+  3E54  CD4939        		call	POPF2
   3E57  C9            		ret
                       	
                       	
@@ -13318,14 +13325,14 @@
                       	;tan(x)=sin(x)/cos(x)
   3E58                	F_TAN:
   3E58  CD9D0B        		call	CHKNUM
-  3E5B  CD2D39        		call	PUSHF1		;x
+  3E5B  CD2B39        		call	PUSHF1		;x
   3E5E  CD803D        		call	COS		;cos(x)
-  3E61  CD5A39        		call	CPYFAC
-  3E64  CD3C39        		call	POPF1		;x
+  3E61  CD5839        		call	CPYFAC
+  3E64  CD3A39        		call	POPF1		;x
   3E67  CD1A3C        		call	PUSHF2		;cos(x)
   3E6A  CD933D        		call	SIN		;sin(x)
-  3E6D  CD4B39        		call	POPF2		;cos(x)
-  3E70  C36C38        		jp	DIVF		;sin(x)/cos(x)
+  3E6D  CD4939        		call	POPF2		;cos(x)
+  3E70  C36A38        		jp	DIVF		;sin(x)/cos(x)
                       	
                       	
                       	;input: bc=graphic X, de=graphic Y
@@ -13399,10 +13406,10 @@
   3EB6  2C            		inc	l
   3EB7  CDCD11        		call	XY2AD
   3EBA  CD9539        		call	CHKMOD
-  3EBD  CA3C63        		jp	z,F_SCRN66
+  3EBD  CA3E63        		jp	z,F_SCRN66
   3EC0  6E            		ld	l,(hl)
   3EC1  CD7E0C        		call	I1TOF
-  3EC4  C3AB18        		jp	FNCRTN
+  3EC4  C3B018        		jp	FNCRTN
                       	
                       	
                       	;FN() function
@@ -13446,7 +13453,7 @@
   3EFD  225EFF        		ld	(FNPAR),hl
                       	
   3F00  EB            		ex	de,hl
-  3F01  CD6817        		call	ARG
+  3F01  CD6D17        		call	ARG
                       	
   3F04  E1            		pop	hl		;old FN() parameter
   3F05  225EFF        		ld	(FNPAR),hl
@@ -13459,7 +13466,7 @@
   3F10  E1            		pop	hl
   3F11  2263FF        		ld	(FNARG+3),hl
   3F14  E1            		pop	hl		;program address
-  3F15  C3AE18        		jp	CLRSTRD
+  3F15  C3B318        		jp	CLRSTRD
                       	
                       	
                       	;set FAC2 and compare
@@ -13999,7 +14006,7 @@
   4104                	SETTBLZ2:
   4104  228DFD        		ld	(USREND),hl
   4107  012C01        		ld	bc,300
-  410A  CDD335        		call	CLRMAIN
+  410A  CDD135        		call	CLRMAIN
   410D  CDB512        		call	PRTFKEY
   4110  CD9539        		call	CHKMOD
   4113  C2C100        		jp	nz,PRTSYS60
@@ -15038,8 +15045,8 @@
   467F  22AFFE        		ld	(YRAD),hl	;yrad=r*a
                       	
   4682                	CRCLMAIN2:
-  4682  CD3C39        		call	POPF1		;end angle
-  4685  CD4B39        		call	POPF2		;start angle
+  4682  CD3A39        		call	POPF1		;end angle
+  4685  CD4939        		call	POPF2		;start angle
                       	
                       	
   4688  2169FF        		ld	hl,FAC1+3
@@ -15068,7 +15075,7 @@
   46AC  B0            		or	b
   46AD  57            		ld	d,a		;bit2=start<=end?, bit10=end quad.
                       	
-  46AE  CD3C39        		call	POPF1		;start angle
+  46AE  CD3A39        		call	POPF1		;start angle
   46B1  D5            		push	de
                       	
   46B2  CD5D4B        		call	ANGL2XY
@@ -15829,7 +15836,7 @@
   4A72  3A93FD        		ld	a,(COLOR1)
   4A75  CDC015        		call	SETATT
   4A78  CDD02D        		call	SKIPAT
-  4A7B  CDDF2C        		call	GETGXY
+  4A7B  CDE12C        		call	GETGXY
   4A7E  C2C203        		jp	nz,SNERR
   4A81  23            		inc	hl
   4A82  CD190E        		call	INT2ARG		;radius
@@ -15841,10 +15848,10 @@
   4A8E  21D700        		ld	hl,00d7h	;default aspect ratio=215/256
   4A91  22E6FF        		ld	(ASPECT),hl
   4A94  CD420C        		call	SETZERO		;default start angle=0
-  4A97  CD2D39        		call	PUSHF1
+  4A97  CD2B39        		call	PUSHF1
   4A9A  211A3E        		ld	hl,PI2		;default end angle=2pi
   4A9D  CD450C        		call	SETF1
-  4AA0  CD2D39        		call	PUSHF1
+  4AA0  CD2B39        		call	PUSHF1
                       	
   4AA3  2A4EFF        		ld	hl,(PROGAD)
   4AA6  CD7B3F        		call	CHKCLCM
@@ -15862,11 +15869,11 @@
   4AC0  2818          		jr	z,CRCLPAR4
   4AC2  CD9A0B        		call	NUMARG		;start angle
                       	
-  4AC5  CD4B39        		call	POPF2		;default end angle
+  4AC5  CD4939        		call	POPF2		;default end angle
   4AC8  F1            		pop	af		;cancel default start angle
   4AC9  F1            		pop	af
   4ACA  F1            		pop	af
-  4ACB  CD2D39        		call	PUSHF1		;new start angle
+  4ACB  CD2B39        		call	PUSHF1		;new start angle
   4ACE  CD1A3C        		call	PUSHF2		;default end angle
                       	
                       	;	ld	hl,FAC1+3
@@ -15886,7 +15893,7 @@
   4AE2  F1            		pop	af		;cancel default end angle
   4AE3  F1            		pop	af
   4AE4  F1            		pop	af
-  4AE5  CD2D39        		call	PUSHF1		;new end angle
+  4AE5  CD2B39        		call	PUSHF1		;new end angle
                       	
                       	;	ld	hl,FAC1+3
                       	;	res	7,(hl)
@@ -15910,11 +15917,11 @@
   4AFC                	ASPNEG:
   4AFC  FE89          		cp	89h
   4AFE  D2CB03        		jp	nc,FCERR	;aspect ratio <= -256
-  4B01  CD5A39        		call	CPYFAC
+  4B01  CD5839        		call	CPYFAC
   4B04  CDD00C        		call	GETINT
-  4B07  CD9F36        		call	SUBF
+  4B07  CD9D36        		call	SUBF
   4B0A  CD2D0D        		call	NEGABSNZ
-  4B0D  CD9436        		call	INCF1
+  4B0D  CD9236        		call	INCF1
                       	;	jr	ASPSMALL
                       	
                       	;0 <= aspect ratio < 1
@@ -15929,7 +15936,7 @@
                       	
                       	;aspect ratio >= 1
   4B1A                	ASPLARGE:
-  4B1A  CD5A39        		call	CPYFAC
+  4B1A  CD5839        		call	CPYFAC
   4B1D  2AADFE        		ld	hl,(XRAD)
   4B20  22AFFE        		ld	(YRAD),hl
                       	
@@ -15938,14 +15945,14 @@
   4B25  CA8246        		jp	z,CRCLMAIN2
                       	
   4B28  CD800C        		call	I2TOF
-  4B2B  CD2D39        		call	PUSHF1		;y-radius(=r)
-  4B2E  CD6C38        		call	DIVF		;r/asp
+  4B2B  CD2B39        		call	PUSHF1		;y-radius(=r)
+  4B2E  CD6A38        		call	DIVF		;r/asp
   4B31  CD9F0C        		call	FTOI
   4B34  EB            		ex	de,hl
   4B35  22ADFE        		ld	(XRAD),hl	;xrad=r/asp
   4B38  CD800C        		call	I2TOF
-  4B3B  CD4B39        		call	POPF2		;y-radius
-  4B3E  CD6C38        		call	DIVF		;1/asp
+  4B3B  CD4939        		call	POPF2		;y-radius
+  4B3E  CD6A38        		call	DIVF		;1/asp
   4B41  CD474B        		call	SETASP		;replace aspect ratio by 256/asp
   4B44  C38246        		jp	CRCLMAIN2
                       	
@@ -16031,14 +16038,14 @@
                       	;output: hl=cos, de=sin (2bit.14bit), b=quardrant(4,3,2,1)
                       	;destroy: af,c,af',bc',de',hl'
   4B9B                	CORDIC:
-  4B9B  CD2739        		call	ABS
+  4B9B  CD2539        		call	ABS
   4B9E  0604          		ld	b,04h
   4BA0                	CRDCLP1:
   4BA0  D9            		exx
   4BA1  218B3D        		ld	hl,PIDIV2
   4BA4  CD183F        		call	SETCMPF
   4BA7  3816          		jr	c,CRDCC1
-  4BA9  CD9F36        		call	SUBF
+  4BA9  CD9D36        		call	SUBF
   4BAC  D9            		exx
   4BAD  10F1          		djnz	CRDCLP1
                       	
@@ -16353,11 +16360,11 @@
                       	
                       	;PUT@ command
   4D03                	PUTAT:
-  4D03  CDDF2C        		call	GETGXY
+  4D03  CDE12C        		call	GETGXY
   4D06  C2C203        		jp	nz,SNERR
   4D09  23            		inc	hl
   4D0A  E5            		push	hl
-  4D0B  CD6817        		call	ARG
+  4D0B  CD6D17        		call	ARG
   4D0E  E1            		pop	hl
   4D0F  3A25FF        		ld	a,(ARGTYP)
   4D12  B7            		or	a
@@ -16741,13 +16748,13 @@
                       	
                       	;GET@ command
   4F07                	GETAT:
-  4F07  CDDF2C        		call	GETGXY
+  4F07  CDE12C        		call	GETGXY
   4F0A  FECB          		cp	MINUS_
   4F0C  C2C203        		jp	nz,SNERR
   4F0F  C5            		push	bc
   4F10  D5            		push	de
   4F11  23            		inc	hl
-  4F12  CDDF2C        		call	GETGXY
+  4F12  CDE12C        		call	GETGXY
   4F15  C2C203        		jp	nz,SNERR
   4F18  D1            		pop	de
   4F19  C1            		pop	bc
@@ -16757,7 +16764,7 @@
   4F1F  23            		inc	hl
                       	
   4F20  E5            		push	hl
-  4F21  CD6817        		call	ARG
+  4F21  CD6D17        		call	ARG
   4F24  E1            		pop	hl
   4F25  3A25FF        		ld	a,(ARGTYP)
   4F28  B7            		or	a
@@ -18984,7 +18991,7 @@
                       	;CVS() function
   5994                	F_CVS:
   5994  CDB70B        		call	CHKLPAR
-  5997  CD6817        		call	ARG
+  5997  CD6D17        		call	ARG
   599A  CDC60B        		call	CHKRPAR
   599D  CD8A26        		call	STRARG2
   59A0  FE05          		cp	05h
@@ -20772,7 +20779,7 @@
   6208  229DFA        		ld	(0fa9dh),hl	;PAINT command
   620B  21A16B        		ld	hl,C_LCP66
   620E  22B3FA        		ld	(0fab3h),hl	;LCOPY command
-  6211  212F63        		ld	hl,F_PEEK66
+  6211  213163        		ld	hl,F_PEEK66
   6214  2203FB        		ld	(0fb03h),hl	;PEEK() function
                       	
   6217  F5            		push	af		;a=(PAGES)
@@ -20836,29 +20843,29 @@
                       	
                       	
   6319                	SYSNAME66:
-  6319  36369ADE96FD42		db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.5", 0dh, 0ah, 00h
+  6319  36369ADE96FD42		db	"66", 9ah, 0deh, 96h, 0fdh, "BASIC Ver.0.5.1", 0dh, 0ah, 00h
                       	
                       	
                       	;PEEK() function
-  632F                	F_PEEK66:
-  632F  CD9D0B        		call	CHKNUM
-  6332  CD9F0C        		call	FTOI
-  6335  EB            		ex	de,hl
-  6336  CD8DFE        		call	READRAM
-  6339  C37D0C        		jp	I1TOFA
+  6331                	F_PEEK66:
+  6331  CD9D0B        		call	CHKNUM
+  6334  CD9F0C        		call	FTOI
+  6337  EB            		ex	de,hl
+  6338  CD8DFE        		call	READRAM
+  633B  C37D0C        		jp	I1TOFA
                       	
                       	
                       	;continued from F_SCRN
-  633C                	F_SCRN66:
-  633C  CD8DFE        		call	READRAM
-  633F  CD7D0C        		call	I1TOFA
-  6342  C3AB18        		jp	FNCRTN
+  633E                	F_SCRN66:
+  633E  CD8DFE        		call	READRAM
+  6341  CD7D0C        		call	I1TOFA
+  6344  C3B018        		jp	FNCRTN
                       	
                       	
                       	;scroll up
                       	;input: h=first line+1, l=last line+1
                       	;destroy: af
-  6345                	_SCRLU66:ds	SCRLU66-_SCRLU66
+  6347                	_SCRLU66:ds	SCRLU66-_SCRLU66
   63E2                		org	SCRLU66
                       	
   63E2  7D            		ld	a,l
@@ -22624,7 +22631,7 @@
                       	;	org	C_PAI66
   7125                	C_PAI66:
   7125  CDD02D        		call	SKIPAT
-  7128  CDDF2C        		call	GETGXY
+  7128  CDE12C        		call	GETGXY
   712B  C5            		push	bc		;X
   712C  D5            		push	de		;Y
   712D  3A93FD        		ld	a,(COLOR1)
@@ -22767,7 +22774,7 @@
   720B  FE02          		cp	02h
   720D  DACB03        		jp	c,FCERR
                       	
-  7210  CDDF2C        		call	GETGXY
+  7210  CDE12C        		call	GETGXY
   7213  C0            		ret	nz
                       	
   7214  ED43ADFE      		ld	(GRPX2),bc
@@ -22792,7 +22799,7 @@
   723B  CD603F        		call	CHKCLN
   723E  C8            		ret	z
                       	
-  723F  CD6817        		call	ARG
+  723F  CD6D17        		call	ARG
   7242  3A25FF        		ld	a,(ARGTYP)
   7245  3D            		dec	a
   7246  2816          		jr	z,KANJSTR

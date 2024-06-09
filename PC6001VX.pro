@@ -122,10 +122,11 @@ win32 {
 
 !contains(DEFINES, NOAVI) {
     win32 {
-        packagesExist(libavformat-private) {
+        FFMPEG_VER = 5.1.4
+        packagesExist(libavformat-private$${FFMPEG_VER}) {
             DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
-            PKGCONFIG += libavformat-private libavcodec-private libswscale-private \
-                        libswresample-private libavutil-private
+            PKGCONFIG += libavformat-private$${FFMPEG_VER} libavcodec-private$${FFMPEG_VER} libswscale-private$${FFMPEG_VER} \
+                        libswresample-private$${FFMPEG_VER} libavutil-private$${FFMPEG_VER}
         } else {
             DEFINES += NOAVI
         }

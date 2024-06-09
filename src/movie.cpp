@@ -422,7 +422,7 @@ static int WriteVideoFrame( OutputStream& ost, std::vector<BYTE>& src_img, enum 
 /////////////////////////////////////////////////////////////////////////////
 static void CloseStream( OutputStream& ost )
 {
-	avcodec_close( ost.enc );
+	avcodec_free_context( &ost.enc );
 	av_frame_free( &ost.frame );
 	av_frame_free( &ost.tmp_frame );
 	sws_freeContext( ost.sws_ctx );

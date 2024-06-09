@@ -13,12 +13,20 @@ exitOnError
 }
 
 function build(){
-if [ -e $PREFIX/lib/libavcodec-private.a -a $((FORCE_INSTALL)) == 0 ]; then
-echo "FFMpeg is already installed."
-exit 0
+MAJOR_VER=$1
+MINOR_VER=$2
+if [ -n "$3" ];then
+PATCH_VER=$3
+FFMPEG_VERSION=$MAJOR_VER.$MINOR_VER.$PATCH_VER
+else
+FFMPEG_VERSION=$MAJOR_VER.$MINOR_VER
 fi
 
-FFMPEG_VERSION=5.1.3
+if [ -e $PREFIX/lib/libavcodec-private$FFMPEG_VERSION.a -a $((FORCE_INSTALL)) == 0 ]; then
+echo "FFMpeg $FFMPEG_VERSION is already installed."
+return
+fi
+
 FFMPEG_SRC_DIR=ffmpeg-$FFMPEG_VERSION
 FFMPEG_BUILD_DIR=$FFMPEG_SRC_DIR-$MSYSTEM
 wget -c https://www.ffmpeg.org/releases/$FFMPEG_SRC_DIR.tar.xz
@@ -28,16 +36,23 @@ tar xf $FFMPEG_SRC_DIR.tar.xz
 mv $FFMPEG_SRC_DIR $FFMPEG_BUILD_DIR
 pushd $FFMPEG_BUILD_DIR
 
+if [ -n "$FFMPEG_DEBUG" ];then
+    DEBUG_FLAGS="--enable-debug=3 --disable-optimizations"
+else
+    DEBUG_FLAGS="--disable-debug"
+fi
+
 ./configure \
 --target-os=mingw32 \
 --prefix=$PREFIX \
---build-suffix=-private \
+--incdir=$PREFIX/include/ffmpeg-private$FFMPEG_VERSION \
+--build-suffix=-private$FFMPEG_VERSION \
+$DEBUG_FLAGS \
 --disable-shared \
 --enable-static \
 --pkg-config-flags=--static \
 --extra-libs=-static \
 --extra-cflags=--static \
---enable-small \
 --disable-programs \
 --disable-doc \
 --disable-everything \
@@ -68,5 +83,6 @@ exitOnError
 
 cd $EXTLIB
 
-build
-exitOnError
+build 5 1 4; exitOnError
+build 6 1 1; exitOnError
+build 7 0 1; exitOnError

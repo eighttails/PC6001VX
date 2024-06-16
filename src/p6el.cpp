@@ -577,7 +577,7 @@ EL6::ReturnCode EL6::EventLoop( ReturnCode rc )
 			if( sche->GetPauseEnable() ){
 				str += " === PAUSE ===";
 			}else{
-				str += Stringf( " (%4d%%  %5.2f/%5.2f fps)", sche->GetRatio(), sche->GetFPS(), FRAMERATE );
+				str += Stringf( " (%4d%%  %5.1f/%5.1f fps)", sche->GetRatio(), sche->GetFPS(), FRAMERATE );
 				if( sche->GetSpeedRatio() != 100 ){
 					str += Stringf( " [x%3.1f]", (double)sche->GetSpeedRatio() / 100 );
 				}

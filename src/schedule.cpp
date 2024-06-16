@@ -530,8 +530,8 @@ void SCH6::OnThread( void* inst )
 	EnableScrUpdate = 0;
 	
 	// 最初の待ち時間を設定
-	DWORD now   = OSD_GetTicks();
-	DWORD next  = now + WRUPDATE;
+	DWORD  now   = OSD_GetTicks();
+	DWORD  next  = now + WRUPDATE;
 	double fnext = (double)now + FRMTICK;	// 次の画面更新時間
 	
 	while( !this->cThread::IsCancel() ){
@@ -582,8 +582,6 @@ void SCH6::OnThread( void* inst )
 		FPSClk.pop_back();
 	}
 	FPSCnt = 0;
-	
-	
 }
 
 

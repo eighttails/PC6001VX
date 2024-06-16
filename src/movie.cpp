@@ -218,10 +218,10 @@ static AVFrame* AllocAudioFrame( enum AVSampleFormat sample_fmt, AVChannelLayout
 		return nullptr;
 	}
 
-	frame->format         = sample_fmt;
-	frame->ch_layout = ch_layout;
-	frame->sample_rate    = sample_rate;
-	frame->nb_samples     = nb_samples;
+	frame->format      = sample_fmt;
+	frame->ch_layout   = ch_layout;
+	frame->sample_rate = sample_rate;
+	frame->nb_samples  = nb_samples;
 
 	if( nb_samples && (av_frame_get_buffer( frame, 0 ) < 0) ){
 		return nullptr;

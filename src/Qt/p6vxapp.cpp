@@ -113,10 +113,14 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 
 P6VXApp::~P6VXApp()
 {
-	Adaptor->thread()->exit();
-	Adaptor->thread()->wait();
-	Adaptor->deleteLater();
-	MWidget->deleteLater();
+	if (Adaptor){
+		Adaptor->thread()->exit();
+		Adaptor->thread()->wait();
+		Adaptor->deleteLater();
+	}
+	if (!MWidget.isNull()){
+		MWidget->deleteLater();
+	}
 }
 
 RenderView *P6VXApp::getView()
@@ -371,7 +375,9 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 
 	if(getSetting(keyKeyPanelVisible).toBool()){
 		// プラットフォームによっては子ウィンドウをここで作りなおさないと表示されない場合がある
-		KPanel->deleteLater();
+		if (!KPanel.isNull()){
+			KPanel->deleteLater();
+		}
 		KPanel = new KeyPanel(view);
 		KPanel->show();
 	}
@@ -828,14 +834,18 @@ void P6VXApp::executeEmulation()
 		break;
 	}
 
-	P6Core->deleteLater();
+	if (!P6Core.isNull()){
+		P6Core->deleteLater();
+	}
 	P6Core = P6CoreObj.release();
 
 	// パレット設定
 	P6Core->SetPaletteTable(PaletteTable, Cfg->GetValue( CV_ScanLineBr ));
 
 	// キーボード状態監視
-	KeyWatcher->deleteLater();
+	if (!KeyWatcher.isNull()){
+		KeyWatcher->deleteLater();
+	}
 	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), this);
 	MWidget->setKeyStateWatcher(KeyWatcher);
 
@@ -854,7 +864,7 @@ void P6VXApp::postExecuteEmulation()
 	Restart = Adaptor->getReturnCode();
 	Adaptor->setEmulationObj(nullptr);
 
-	if(P6Core){
+	if(!P6Core.isNull()){
 		P6Core->Stop();
 
 #ifdef AUTOSUSPEND

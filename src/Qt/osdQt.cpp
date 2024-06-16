@@ -1219,7 +1219,7 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 	format.setSampleRate(rate);
 	format.setSampleFormat(QAudioFormat::Int16);
 
-	if(audioOutput){
+	if(!audioOutput.isNull()){
 		audioOutput->deleteLater();
 	}
 
@@ -1244,10 +1244,10 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 void OSD_CloseAudio( void )
 {
 #ifndef NOSOUND
-	if(audioOutput){
+	if(!audioOutput.isNull()){
 		QMetaObject::invokeMethod(audioOutput, "stop");
+		audioOutput->deleteLater();
 	}
-	audioOutput->deleteLater();
 #endif
 }
 
@@ -1831,10 +1831,10 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 	try{
 		std::shared_ptr<CFG6> ecfg(new CFG6());
 		if( !ecfg->Init() ) throw Error::IniReadFailed;
-		
+
 		QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
 		auto window = view->parentWidget();
-		
+
 		ConfigDialog dialog(ecfg, window);
 #ifdef ALWAYSFULLSCREEN
 #ifdef Q_OS_ANDROID

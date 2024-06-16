@@ -753,7 +753,7 @@ MSYS2環境上でビルドします。 +
 . https://github.com/msys2/msys2-installer/releases/[こちら]からMSYS2をダウンロードしてインストールしてください。 +
 VC++はサポートしていません。 +
 MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(`pacman -Sy`)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用) +
-https://github.com/msys2/msys2-installer/releases/download/2023-10-26/msys2-x86_64-20231026.exe
+https://github.com/msys2/msys2-installer/releases/download/2024-01-13/msys2-x86_64-20240113.exe
 . MSYS2をインストールしたフォルダのucrt64.exeを実行。 +
 . ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに展開。 +
 . `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
@@ -792,11 +792,20 @@ Qt 6.5.0以上が必要です。
 
 
 == 既知の不具合、制約事項
+* Windows
+** Windows11ではカタカナ/ひらがなキーによるかなの切り替えがうまく行かないようです。 +
+PAUSEキーを使うか、キーパネルを表示させてかなの切り替えを行ってください。
 * Android
 ** スナップショット、テープのエクスポート機能が正常に機能しません。
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.git master
+* PC6001V 2.1.2ベースに更新
+* PC-6001互換BASICを0.8に更新
+* Merged upstream PC6001V version 2.1.2.
+* Updated PC-6001 compatible basic ROMs to 0.8.
+
 .4.2.6 2024/06/10
 * PC-6001mkII/6601用互換BASICを0.5.1に更新
 * FFmpeg7に対応(現時点でバージョン5,6,7でビルド可能)

@@ -129,6 +129,9 @@ public slots:
 	// ここで実装する
 	void getWindowImage(HWINDOW Wh, QRect pos, void *pixels);
 
+	// ウィンドウを前面に移動
+	void raiseWidget();
+
 	// グラフィックシーンをクリア
 	void clearLayout(HWINDOW Wh);
 

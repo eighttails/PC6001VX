@@ -67,7 +67,11 @@ bool SerchRom( std::shared_ptr<CFG6> &cfg )
 }
 
 P6VXApp::P6VXApp(int &argc, char **argv)
+#ifndef NOSINGLEAPP
+	: ParentAppClass(argc, argv, true, SingleApplication::User | SingleApplication::SecondaryNotification)
+	#else
 	: ParentAppClass(argc, argv)
+#endif
 	, P6Core(nullptr)
 	, Restart(EL6::Quit)
 	, Cfg(std::make_shared<CFG6>())
@@ -108,7 +112,6 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 
 	// マウスカーソル表示制御用タイマー
 	connect(MouseCursorTimer, &QTimer::timeout, this, &P6VXApp::hideMouseCursor);
-
 }
 
 P6VXApp::~P6VXApp()
@@ -148,8 +151,11 @@ void P6VXApp::startup()
 #ifndef NOSINGLEAPP
 	// 二重起動禁止
 	if( OSD_IsWorking() ) {
+#ifdef Q_OS_WINDOWS
+		AllowSetForegroundWindow( DWORD( primaryPid() ) );
+		sendMessage("RAISE_WIDGET");
+#endif
 		exit();
-		return;
 	}
 #endif
 
@@ -237,6 +243,11 @@ void P6VXApp::startup()
 	// ウィンドウ、ウィジェットの生成
 	MWidget = new MainWidget();
 	KPanel = new KeyPanel(MWidget);
+
+#ifndef NOSINGLEAPP
+	// 二重起動時には既存ウィンドウの方を前面に出す
+	connect(this, &SingleApplication::instanceStarted, this, &P6VXApp::raiseWidget);
+#endif
 
 	emit initialized();
 }
@@ -443,6 +454,24 @@ void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void *pixels)
 	memcpy(pixels, image.bits(), image.sizeInBytes());
 #else
 	memcpy(pixels, image.bits(), image.byteCount());
+#endif
+}
+
+void P6VXApp::raiseWidget()
+{
+#ifdef Q_OS_WINDOWS
+	HWND hwnd = (HWND)MWidget->winId();
+
+	// check if widget is minimized to Windows task bar
+	if (::IsIconic(hwnd)) {
+		::ShowWindow(hwnd, SW_RESTORE);
+	}
+
+	::SetForegroundWindow(hwnd);
+#else
+	MWidget->show();
+	MWidget->raise();
+	MWidget->activateWindow();
 #endif
 }
 

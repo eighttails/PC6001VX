@@ -1,13 +1,5 @@
 # Changelog
 
-## 3.5.1
-
-* Bug Fix: Maximum QNativeIpcKey key size on macOS. - _Jonas Kvinge_
-
-## 3.5.0
-
-* Switch to the new QNativeIpcKey based QSharedMemory constructor with Qt 6.6 and higher. - _Jonas Kvinge_
-
 ## 3.4.1
 
 * Improved Windows advapi32 link library dependency. - _Frederik Seiffert_

@@ -800,10 +800,10 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
-.git master
-* PC6001V 2.1.2ベースに更新
+.4.2.7 2024/06/23
+* PC6001V 2.1.3ベースに更新
 * PC-6001互換BASICを0.8に更新
-* Merged upstream PC6001V version 2.1.2.
+* Merged upstream PC6001V version 2.1.3.
 * Updated PC-6001 compatible basic ROMs to 0.8.
 
 .4.2.6 2024/06/10

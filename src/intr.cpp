@@ -62,9 +62,11 @@ IRQ64::IRQ64( VM6* vm, const ID& id ) : IRQ6( vm, id )
 {
 	TimerCntUp = 0x7f;
 	Timer1st   = 88;
+	SRmode     = true;
 	
 	// Device Description (Out)
 	descs.outdef.emplace( outB0H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutB0H ) );
+	descs.outdef.emplace( outC8H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutC8H ) );
 	descs.outdef.emplace( outBxH, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutBxH ) );
 	descs.outdef.emplace( outF3H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF3H ) );
 	descs.outdef.emplace( outF4H, STATIC_CAST( Device::OutFuncPtr, &IRQ64::OutF4H ) );
@@ -253,6 +255,7 @@ void IRQ64::Reset( void )
 	PRINTD( INTR_LOG, "[INTR][Reset]\n" );
 	
 	TimerCntUp = 0x7f;	// タイマカウンタ初期化
+	SRmode     = true;
 	IRQ6::Reset();
 }
 
@@ -467,6 +470,17 @@ void IRQ64::SetIntrEnableSR( BYTE data )
 
 
 /////////////////////////////////////////////////////////////////////////////
+// 割込み許可フラグ取得
+/////////////////////////////////////////////////////////////////////////////
+BYTE IRQ6::GetIntrEnable( void )
+{
+	return (IntEnable[0] ? 0    : 0x01) | (IntEnable[1] ? 0    : 0x02) |
+	       (IntEnable[2] ? 0    : 0x04) | (VecOutput[0] ? 0x08 : 0   ) |
+		   (VecOutput[1] ? 0x10 : 0   ) | 0xe0;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // 割込みベクタアドレス出力フラグ設定(SR)
 /////////////////////////////////////////////////////////////////////////////
 void IRQ64::SetIntrVectorEnableSR( BYTE data )
@@ -498,21 +512,19 @@ void IRQ6::OutF5H( int, BYTE data ){ if( !vm->VdgIsSRmode() ){ IntVector[1] = da
 void IRQ6::OutF6H( int, BYTE data ){ SetTimerIntrHz( data ); }
 void IRQ6::OutF7H( int, BYTE data ){ if( !vm->VdgIsSRmode() ){ IntVector[2] = data; } }
 
-BYTE IRQ6::InF3H( int )
-{
-	return (IntEnable[0] ? 0 : 0x01) | (IntEnable[1] ? 0 : 0x02) |
-	       (IntEnable[2] ? 0 : 0x04) | (VecOutput[0] ? 0 : 0x08) |
-		   (VecOutput[1] ? 0 : 0x10) | 0xe0;
-}
+BYTE IRQ6::InF3H( int ){ return GetIntrEnable(); }
 BYTE IRQ6::InF4H( int ){ return IntVector[0]; }
 BYTE IRQ6::InF5H( int ){ return IntVector[1]; }
 BYTE IRQ6::InF6H( int ){ return TimerCntUp; }
 BYTE IRQ6::InF7H( int ){ return IntVector[2]; }
 
 void IRQ64::OutBxH( int port, BYTE data ){ IntVector[port & 7] = data; }
+void IRQ64::OutC8H( int, BYTE data ){ SRmode = data & 0x01 ? false : true; }	// SRモードフラグ true:SR-BASIC false:旧BASIC
+void IRQ64::OutF3H( int, BYTE data ){ if( !SRmode ){ SetIntrEnable( data ); } }
 void IRQ64::OutFAH( int, BYTE data ){ SetIntrEnableSR( data ); }
 void IRQ64::OutFBH( int, BYTE data ){ SetIntrVectorEnableSR( data ); }
 
+BYTE IRQ64::InF3H( int ){ return SRmode ? 0xff : GetIntrEnable(); }
 BYTE IRQ64::InFAH( int )
 {
 	return (IntEnable[0] ? 0 : 0x01) | (IntEnable[1] ? 0 : 0x02) |

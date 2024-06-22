@@ -163,12 +163,12 @@
 #define	FILE_FONTZ				"fontz12." EXT_IMG	// 半角フォントファイル
 #define	FILE_FONTH				"fonth12." EXT_IMG	// 全角フォントファイル
 
-#define	SUBCPU60				"subcpu.60"			// サブCPU ROM(PC-6001)
-#define	SUBCPU61				"subcpu.61"			// サブCPU ROM(PC-6001A)
-#define	SUBCPU62				"subcpu.62"			// サブCPU ROM(PC-6001mk2)
-#define	SUBCPU66				"subcpu.66"			// サブCPU ROM(PC-6601)
-#define	SUBCPU64				"subcpu.64"			// サブCPU ROM(PC-6001mk2SR)
-#define	SUBCPU68				"subcpu.68"			// サブCPU ROM(PC-6601SR)
+#define	SUBCPU60				"SUBCPU.60"			// サブCPU ROM(PC-6001)
+#define	SUBCPU61				"SUBCPU.61"			// サブCPU ROM(PC-6001A)
+#define	SUBCPU62				"SUBCPU.62"			// サブCPU ROM(PC-6001mk2)
+#define	SUBCPU66				"SUBCPU.66"			// サブCPU ROM(PC-6601)
+#define	SUBCPU64				"SUBCPU.64"			// サブCPU ROM(PC-6001mk2SR)
+#define	SUBCPU68				"SUBCPU.68"			// サブCPU ROM(PC-6601SR)
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -1325,6 +1325,7 @@ const std::vector<IOBus::Connector> VM64::c_intr = {
 	{ 0xf7, IOBus::portout, IRQ6::outF7H },
 	{ 0xfa, IOBus::portout, IRQ6::outFAH },
 	{ 0xfb, IOBus::portout, IRQ6::outFBH },
+	{ 0xc8, IOBus::portout, IRQ6::outC8H },
 	{ 0xf3, IOBus::portin,  IRQ6::inF3H },
 	{ 0xf4, IOBus::portin,  IRQ6::inF4H },
 	{ 0xf5, IOBus::portin,  IRQ6::inF5H },

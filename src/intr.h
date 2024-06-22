@@ -71,6 +71,7 @@ protected:
 	BYTE Timer1st;			// タイマ割込み初回周期比率
 	
 	virtual void SetIntrEnable( BYTE );				// 割込み許可フラグ設定
+	BYTE GetIntrEnable();							// 割込み許可フラグ取得
 	void SetTimerIntr( bool );						// タイマ割込みスイッチ設定
 	virtual void SetTimerIntrHz( BYTE, BYTE=0 );	// タイマ割込み周波数設定
 	
@@ -78,12 +79,12 @@ protected:
 	void OutB0H( int, BYTE );
 	
 	// for 62,66,64,68 -----------------------------------------------------------------------
-	void OutF3H( int, BYTE );
+	virtual void OutF3H( int, BYTE );
 	void OutF4H( int, BYTE );
 	void OutF5H( int, BYTE );
 	void OutF6H( int, BYTE );
 	void OutF7H( int, BYTE );
-	BYTE InF3H( int );
+	virtual BYTE InF3H( int );
 	BYTE InF4H( int );
 	BYTE InF5H( int );
 	BYTE InF6H( int );
@@ -107,7 +108,7 @@ public:
 	DWORD GetIntrFlag();						// 割込み要求フラグ取得
 	
 	// デバイスID
-	enum IDOut{ outB0H=0, outBxH, outF3H, outF4H, outF5H, outF6H, outF7H, outFAH, outFBH };
+	enum IDOut{ outB0H=0, outBxH, outC8H, outF3H, outF4H, outF5H, outF6H, outF7H, outFAH, outFBH };
 	enum IDIn {  inF3H=0,  inF4H,  inF5H,  inF6H,  inF7H,  inFAH,  inFBH };
 	
 	// ----------------------------------------------------------------------
@@ -142,6 +143,8 @@ public:
 
 class IRQ64 : public IRQ6 {
 private:
+	bool SRmode;									// SRモードフラグ true:SR-BASIC false:旧BASIC
+	
 	void SetIntrEnable( BYTE ) override;			// 割込み許可フラグ設定
 	void SetIntrEnableSR( BYTE );					// 割込み許可フラグ設定(SR)
 	void SetTimerIntrHz( BYTE, BYTE=0 ) override;	// タイマ割込み周波数設定
@@ -149,8 +152,11 @@ private:
 	
 	// I/Oアクセス関数
 	void OutBxH( int, BYTE );
+	void OutC8H( int, BYTE );
+	void OutF3H( int, BYTE ) override;
 	void OutFAH( int, BYTE );
 	void OutFBH( int, BYTE );
+	BYTE InF3H( int ) override;
 	BYTE InFAH( int );
 	BYTE InFBH( int );
 	
@@ -163,3 +169,47 @@ public:
 
 
 #endif	// INTR_H_INCLUDED
+
+
+// (メモ)SRにおけるPortF3Hの挙動
+
+// Write (Mode1-5)
+//  bit7	有効
+//  bit6	有効
+//  bit5	1を書込むと暗転して暴走
+//  bit4	有効
+//  bit3	有効
+//  bit2	有効
+//  bit1	有効
+//  bit0	有効
+
+// Write (Mode6)
+//  bit7	有効
+//  bit6	有効
+//  bit5	1を書込むと暗転して暴走 リレーがカチカチ鳴る
+//  bit4	無効
+//  bit3	無効
+//  bit2	無効
+//  bit1	無効
+//  bit0	無効
+
+
+// Read (Mode1-5)
+//  bit7	常に1
+//  bit6	常に1
+//  bit5	常に1
+//  bit4	書いた値が読める
+//  bit3	書いた値が読める
+//  bit2	書いた値が読める
+//  bit1	書いた値が読める
+//  bit0	書いた値が読める
+
+// Read (Mode6)
+//  bit7	常に1
+//  bit6	常に1
+//  bit5	常に1
+//  bit4	常に1
+//  bit3	常に1
+//  bit2	常に1
+//  bit1	常に1
+//  bit0	常に1

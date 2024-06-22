@@ -471,6 +471,7 @@ MEM64::MEM64( VM6* vm, const ID& id ) : MEM62( vm, id )
 	// Device Description (In)
 	descs.indef.emplace ( in6xH,  STATIC_CAST( Device::InFuncPtr,  &MEM64::In6xH  ) );
 	descs.indef.emplace ( inB2H,  STATIC_CAST( Device::InFuncPtr,  &MEM64::InB2H  ) );
+	descs.indef.emplace ( inF3H,  STATIC_CAST( Device::InFuncPtr,  &MEM64::InF3H  ) );
 }
 
 MEM68::MEM68( VM6* vm, const ID& id ) : MEM64( vm, id )
@@ -1701,8 +1702,9 @@ BYTE MEM62::InF2H( int ){ return Rf[2]; }
 BYTE MEM62::InF3H( int ){ return GetWait() | 0x1f; }
 
 BYTE MEM64::In6xH( int port ){ return RfSR[port & 0x0f]; }
-BYTE MEM64::InB2H( int port ){ return 0xfd; }	// bit1 0:mk2SR 1:66SR
-BYTE MEM68::InB2H( int port ){ return 0xff; }	// bit1 0:mk2SR 1:66SR
+BYTE MEM64::InB2H( int ){ return 0xfd; }	// bit1 0:mk2SR 1:66SR
+BYTE MEM64::InF3H( int ){ return 0xff; }
+BYTE MEM68::InB2H( int ){ return 0xff; }	// bit1 0:mk2SR 1:66SR
 
 
 

@@ -356,7 +356,7 @@ protected:
 	BYTE InF0H( int );
 	BYTE InF1H( int );
 	BYTE InF2H( int );
-	BYTE InF3H( int );
+	virtual BYTE InF3H( int );
 
 public:
 	MEM62( VM6*, const ID& );
@@ -419,9 +419,9 @@ protected:
 	
 	// I/Oアクセス関数 ------------------------------------------------------
 	void Out6xH( int, BYTE );
-	void OutC8H( int, BYTE );
 	BYTE In6xH( int );
 	virtual BYTE InB2H( int );
+	BYTE InF3H( int ) override;
 
 public:
 	MEM64( VM6*, const ID& );

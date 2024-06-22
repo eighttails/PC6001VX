@@ -11,12 +11,13 @@
 // ---------------------------------------------------------------------------
 //	コンストラクタ・デストラクタ
 //
-PSG::PSG()
+PSG::PSG() : reg(), envelop( nullptr ), olevel(), scount(),
+			 speriod(), ecount( 0 ), eperiod( 0 ), ncount( 0 ), nperiod( 0 ),
+			 tperiodbase( 0 ), eperiodbase( 0 ), nperiodbase( 0 ), mask( 0x3f )
 {
 	SetVolume(0);
 	MakeNoiseTable();
 	Reset();
-	mask = 0x3f;
 }
 
 PSG::~PSG()

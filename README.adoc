@@ -802,7 +802,7 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 == 更新履歴
 .4.2.8 2024/06/23
 * Qt6.7でビルドすると終了時にフリーズするのを修正
-* Fixed freezing on completion when building with Qt6.7
+* Fixed freezing on termination when building with Qt6.7
 
 .4.2.7 2024/06/23
 * PC6001V 2.1.3ベースに更新

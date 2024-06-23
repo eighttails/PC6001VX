@@ -165,6 +165,7 @@ void AudioOutputWrapper::resume()
 
 void AudioOutputWrapper::stop()
 {
+	AudioSink->reset();
 	AudioSink->stop();
 	AudioBuffer->close();
 }

@@ -24,7 +24,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 #ifndef NOOPENGL
 	if(!app->isSafeMode() &&
 			app->getSetting(P6VXApp::keyHwAccel).toBool()){
-		QScopedPointer<QOpenGLWidget> glw(new QOpenGLWidget(this));
+		setViewport(new QOpenGLWidget(this));
 	}
 #endif
 	grabGesture(Qt::TapGesture);

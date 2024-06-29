@@ -25,6 +25,7 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	if(!app->isSafeMode() &&
 			app->getSetting(P6VXApp::keyHwAccel).toBool()){
 		setViewport(new QOpenGLWidget(this));
+		setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 	}
 #endif
 	grabGesture(Qt::TapGesture);

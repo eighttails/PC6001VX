@@ -77,7 +77,6 @@ public slots:
 	void suspend();
 	void resume();
 	void stop();
-	int bytesPerSample();
 public:
 	QAudio::State state() const;
 

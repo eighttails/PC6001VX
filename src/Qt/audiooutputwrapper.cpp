@@ -78,13 +78,11 @@ class AudioBufferWrapper : public QIODevice
 public:
 	AudioBufferWrapper(CBF_SND cbFunc,
 					   void *cbData,
-					   int samples,
 					   int bytesPerSample,
 					   QObject* parent)
 		: QIODevice(parent)
 		, CbFunc(cbFunc)
 		, CbData(cbData)
-		, Samples(samples)
 		, BytesPerSample(bytesPerSample)
 	{}
 
@@ -98,7 +96,7 @@ public:
 
 	qint64 size() const override
 	{
-		return Samples * BytesPerSample;
+		return bytesAvailable();
 	}
 
 	qint64 bytesAvailable() const override{
@@ -125,7 +123,6 @@ protected:
 private:
 	CBF_SND CbFunc;
 	void* CbData;
-	int Samples;
 	int BytesPerSample;
 };
 
@@ -139,7 +136,7 @@ AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
 	: QObject(parent)
 	, AudioSink(new QAudioSink(device, format, this))
 {
-	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, samples, format.bytesPerSample(), this);
+	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, format.bytesPerSample(), this);
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()
@@ -158,6 +155,7 @@ void AudioOutputWrapper::start()
 	AudioSink->start(AudioBuffer);
 }
 
+
 void AudioOutputWrapper::suspend()
 {
 	AudioSink->suspend();
@@ -173,11 +171,6 @@ void AudioOutputWrapper::stop()
 	AudioSink->reset();
 	AudioSink->stop();
 	AudioBuffer->close();
-}
-
-int AudioOutputWrapper::bytesPerSample()
-{
-	return AudioSink->format().bytesPerSample();
 }
 
 QAudio::State AudioOutputWrapper::state() const

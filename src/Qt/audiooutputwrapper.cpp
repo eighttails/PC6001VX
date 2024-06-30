@@ -1,4 +1,5 @@
 #include "audiooutputwrapper.h"
+#include "qtel6.h"
 
 #ifndef NOSOUND
 #include <QAudioSink>
@@ -77,12 +78,14 @@ class AudioBufferWrapper : public QIODevice
 public:
 	AudioBufferWrapper(CBF_SND cbFunc,
 					   void *cbData,
-					   int sampleBytes,
+					   int samples,
+					   int bytesPerSample,
 					   QObject* parent)
 		: QIODevice(parent)
 		, CbFunc(cbFunc)
 		, CbData(cbData)
-		, SampleBytes(sampleBytes)
+		, Samples(samples)
+		, BytesPerSample(bytesPerSample)
 	{}
 
 	virtual ~AudioBufferWrapper(){
@@ -95,13 +98,14 @@ public:
 
 	qint64 size() const override
 	{
-		return SampleBytes;
+		return Samples * BytesPerSample;
 	}
 
 	qint64 bytesAvailable() const override{
-		// 実際にエミュレータ側に溜まっているサンプル数を知る術はないが、
-		// 適当な値を返しておかないとreadData()が呼ばれない。
-		return SampleBytes;
+		EL6* el6 = STATIC_CAST(EL6*, CbData);
+		QtEL6* qtel6 = dynamic_cast<QtEL6*>(el6);
+		int bytesAvailable = qtel6->SoundReadySize() * BytesPerSample;
+		return bytesAvailable;
 	}
 
 protected:
@@ -121,7 +125,8 @@ protected:
 private:
 	CBF_SND CbFunc;
 	void* CbData;
-	int SampleBytes;
+	int Samples;
+	int BytesPerSample;
 };
 
 
@@ -134,7 +139,7 @@ AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
 	: QObject(parent)
 	, AudioSink(new QAudioSink(device, format, this))
 {
-	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, samples * format.bytesPerSample(), this);
+	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, samples, format.bytesPerSample(), this);
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()

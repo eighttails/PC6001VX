@@ -614,6 +614,11 @@ void QtEL6::SetPaletteTable(QVector<QRgb> &palette, int scanbr)
 	}
 }
 
+int QtEL6::SoundReadySize()
+{
+	return this->snd->cRing::ReadySize();
+}
+
 void QtEL6::UI_DokoSave(int slot)
 {
 	EL6::UI_DokoSave(slot);

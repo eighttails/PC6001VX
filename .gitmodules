@@ -1,3 +1,0 @@
-[submodule "win32/MSYS2Private"]
-	path = win32/MSYS2Private
-	url = https://github.com/eighttails/MSYS2Private.git

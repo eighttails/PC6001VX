@@ -1265,10 +1265,7 @@ void OSD_StartAudio( void )
 		if(audioOutput->state() == QAudio::SuspendedState){
 			QMetaObject::invokeMethod(audioOutput, "resume");
 		} else {
-			// 呼び元スレッドによってコネクションタイプを変える(戻り値を取得できるようにするために必要)
-			Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
-						Qt::DirectConnection : Qt::BlockingQueuedConnection;
-			QMetaObject::invokeMethod(audioOutput, "start", cType);
+			QMetaObject::invokeMethod(audioOutput, "start");
 		}
 	}
 #endif

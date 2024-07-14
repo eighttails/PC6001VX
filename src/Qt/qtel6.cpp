@@ -573,6 +573,16 @@ void QtEL6::SetPauseEnable(bool en)
 	}
 }
 
+int QtEL6::GetSoundReadySize()
+{
+	return this->snd->cRing::ReadySize();
+}
+
+int QtEL6::GetSpeedRatio()
+{
+	return this->sche->GetSpeedRatio();
+}
+
 std::shared_ptr<KEY6> QtEL6::GetKeyboard()
 {
 	return vm->key;
@@ -612,11 +622,6 @@ void QtEL6::SetPaletteTable(QVector<QRgb> &palette, int scanbr)
 							  brRate * col.b);
 		}
 	}
-}
-
-int QtEL6::SoundReadySize()
-{
-	return this->snd->cRing::ReadySize();
 }
 
 void QtEL6::UI_DokoSave(int slot)

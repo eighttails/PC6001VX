@@ -15,10 +15,11 @@ public:
 	void ShowPopupImpl(int x, int y);
 	bool GetPauseEnable();
 	void SetPauseEnable(bool en);
+	int GetSoundReadySize();
+	int GetSpeedRatio();
 	std::shared_ptr<KEY6> GetKeyboard();
 	bool IsMonitor();
 	void SetPaletteTable(QVector<QRgb>& palette, int scanbr);
-	int SoundReadySize();
 
 	// 親クラスのメソッドをpublicでオーバーライド
 	void UI_DokoSave( int slot );

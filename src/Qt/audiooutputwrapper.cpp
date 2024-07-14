@@ -1,5 +1,6 @@
 #include "audiooutputwrapper.h"
 #include "qtel6.h"
+#include "p6vxapp.h"
 
 #ifndef NOSOUND
 #include <QAudioSink>
@@ -102,7 +103,8 @@ public:
 	qint64 bytesAvailable() const override{
 		EL6* el6 = STATIC_CAST(EL6*, CbData);
 		QtEL6* qtel6 = dynamic_cast<QtEL6*>(el6);
-		int bytesAvailable = qtel6->SoundReadySize() * BytesPerSample;
+		int bytesAvailable = qtel6->GetSoundReadySize() * BytesPerSample /
+							 ((double)qtel6->GetSpeedRatio() / 100.0);
 		return bytesAvailable;
 	}
 

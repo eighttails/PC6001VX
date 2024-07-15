@@ -1,4 +1,3 @@
-PC6001VX.pro.user
-PC6001VX.pro.user.*
-.vscode
+*.pro.user*
 build
+.vscode

@@ -365,6 +365,8 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	MWidget->showMaximized();
 	MWidget->resize(1,1); // 強制的にresizeEvent()を発動させる
 	MWidget->resize(MWidget->screen()->availableSize());
+	// 2回ShowMaximizedを呼ばないと反映されない
+	MWidget->showMaximized();
 #else
 	MWidget->showFullScreen();
 #endif

@@ -769,7 +769,7 @@ image::doc/qtsetting_envvar.png[]
 
 ==== Linux
 Debian系のディストリビューションについて解説します。 +
-ビルドにはQt6.2.0以上(6.4.0以上推奨)が必要です。 +
+ビルドにはQt6.4.0以上が必要です。 +
 [NOTE]
 ====
 ディストリビューションやそのバージョンによってはQt6がまだパッケージ化されていない場合があります。その場合はQtの公式インストーラーを利用してください。
@@ -792,6 +792,7 @@ Qt 6.5.0以上が必要です。
 
 
 == 既知の不具合、制約事項
+* 表示のハードウェアアクセラレーションは、CPU使用率の低下をもたらしますが、フルHDより広い表示領域ではフレームレートの低下を引き起こすことが確認されています。ご使用の環境に合わせて設定してください。
 * Windows
 ** Windows11ではカタカナ/ひらがなキーによるかなの切り替えがうまく行かないようです。 +
 PAUSEキーを使うか、キーパネルを表示させてかなの切り替えを行ってください。
@@ -800,6 +801,16 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.4.2.9 2024/07/20
+* 表示のハードウェアアクセラレーションが動作していなかったのを修正
+** Androidではパフォーマンスの問題で引き続き無効化
+** 表示のハードウェアアクセラレーションは、CPU使用率の低下をもたらしますが、フルHDより大きい表示領域ではフレームレートの低下を引き起こすことが確認されています。ご使用の環境に合わせて設定してください。
+* サウンド再生の安定性を向上
+* Fixed display hardware acceleration not working.
+** Still disabled on Android due to performance issues.
+** Hardware acceleration of the display results in lower CPU usage, but has been observed to cause lower frame rates for display areas larger than Full HD. Please set according to your environment.
+* Improved stability of sound playback.
+
 .4.2.8 2024/06/23
 * Qt6.7でビルドすると終了時にフリーズするのを修正
 * Fixed freezing on termination when building with Qt6.7

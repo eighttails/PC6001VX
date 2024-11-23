@@ -1799,8 +1799,11 @@ void OSD_SetWindowCaption( HWINDOW hwnd, const std::string& str )
 /////////////////////////////////////////////////////////////////////////////
 void OSD_ShowCursor( bool disp )
 {
-	QMetaObject::invokeMethod(qApp, "deactivateMouseCursorTimer");
-	qApp->setOverrideCursor(disp ? Qt::ArrowCursor : Qt::BlankCursor);
+	if (disp) {
+		QMetaObject::invokeMethod(qApp, "showMouseCursor");
+	} else {
+		QMetaObject::invokeMethod(qApp, "hideMouseCursor");
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////

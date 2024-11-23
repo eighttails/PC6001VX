@@ -107,7 +107,6 @@ bool RenderView::event(QEvent *event)
 	case QEvent::Enter:
 	case QEvent::HoverMove:
 		OSD_ShowCursor(true);
-		app->activateMouseCursorTimer();
 		break;
 	case QEvent::Leave:
 		OSD_ShowCursor(true);

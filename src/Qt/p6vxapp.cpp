@@ -77,7 +77,6 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, Cfg(std::make_shared<CFG6>())
 	, Adaptor(new EmulationAdaptor())
 	, KPanel(nullptr)
-	, MouseCursorTimer(new QTimer(this))
 	, Setting(P6VPATH2QSTR(OSD_GetConfigPath()) + "/pc6001vx.ini", QSettings::IniFormat)
 	, TiltEnabled(false)
 	, TiltDir(NEWTRAL)
@@ -109,9 +108,6 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	timer->setInterval(30000);
 	connect(timer, SIGNAL(timeout()), this, SLOT(inhibitScreenSaver()));
 	timer->start();
-
-	// マウスカーソル表示制御用タイマー
-	connect(MouseCursorTimer, &QTimer::timeout, this, &P6VXApp::hideMouseCursor);
 }
 
 P6VXApp::~P6VXApp()
@@ -551,16 +547,6 @@ void P6VXApp::toggleKeyPanel()
 void P6VXApp::toggleVirtualKeyboard()
 {
 	MWidget->toggleVirtualKeyboard();
-}
-
-void P6VXApp::activateMouseCursorTimer()
-{
-	MouseCursorTimer->start(5000);
-}
-
-void P6VXApp::deactivateMouseCursorTimer()
-{
-	MouseCursorTimer->stop();
 }
 
 void P6VXApp::resetSettings()
@@ -1287,6 +1273,11 @@ void P6VXApp::inhibitScreenSaver()
 #else
 	// 何もしない
 #endif
+}
+
+void P6VXApp::showMouseCursor()
+{
+	setOverrideCursor(Qt::ArrowCursor);
 }
 
 void P6VXApp::hideMouseCursor()

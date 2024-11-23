@@ -275,7 +275,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QAction* selectedAction = nullptr;
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
-	QMenu menu(app->getView());
+	QMenu menu;
 
 	// システムメニュー
 	QMenu* systemMenu = menu.addMenu(tr("システム"));

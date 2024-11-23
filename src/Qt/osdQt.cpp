@@ -48,6 +48,7 @@ std::map<int, PCKEYsym> VKTable;		// Qtキーコード  -> 仮想キーコード
 //サウンド関連
 #include "audiooutputwrapper.h"
 QPointer<AudioOutputWrapper> audioOutput = nullptr;
+QThread audioThread;
 #endif
 
 //ジョイスティック関連
@@ -1230,6 +1231,8 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 	}
 
 	audioOutput = new AudioOutputWrapper(device, format, callback, obj, samples);
+	audioOutput->moveToThread(&audioThread);
+	audioThread.start();
 #endif
 	return true;
 }
@@ -1247,6 +1250,7 @@ void OSD_CloseAudio( void )
 	if(!audioOutput.isNull()){
 		QMetaObject::invokeMethod(audioOutput, "stop");
 		audioOutput->deleteLater();
+		audioThread.exit();
 	}
 #endif
 }

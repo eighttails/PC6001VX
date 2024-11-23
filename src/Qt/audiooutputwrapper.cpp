@@ -139,6 +139,16 @@ AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
 	, AudioSink(new QAudioSink(device, format, this))
 {
 	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, format.bytesPerSample(), this);
+	// バックエンド側のバッファサイズ
+	// OSやバックエンド実装によって最適値が異なる。
+	// デフォルト値で音の再生に支障がある場合は明示的に設定する。
+	// 等速再生時のみでなく、特にスロー実行時に音が途切れる場合に調整
+#ifdef Q_OS_ANDROID
+	AudioSink->setBufferSize(44100/30);
+#elif defined Q_OS_WIN
+	AudioSink->setBufferSize(44100/2);
+#endif
+	AudioBuffer->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()
@@ -147,13 +157,6 @@ AudioOutputWrapper::~AudioOutputWrapper()
 
 void AudioOutputWrapper::start()
 {
-	AudioBuffer->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
-	// バックエンド側のバッファサイズ
-	// OSやバックエンド実装によって最適値が異なる。
-	// デフォルト値で音の再生に支障がある場合は明示的に設定する。
-#ifdef Q_OS_ANDROID
-	AudioSink->setBufferSize(44100/30);
-#endif
 	AudioSink->start(AudioBuffer);
 }
 

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui widgets network core5compat
+QT += core gui widgets network
 
 TARGET = PC6001VX
 TEMPLATE = app

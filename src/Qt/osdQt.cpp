@@ -3,10 +3,10 @@
 #include "mainwidget.h"
 
 #include <cstdio>
+#include <iconv.h>
 
 #include <QtCore>
 #include <QtWidgets>
-#include <QTextCodec>
 #ifndef NOSOUND
 #include <QtMultimedia>
 #endif
@@ -2026,11 +2026,39 @@ bool OSD_CreateFont( const char *hfile, const char *zfile, int size )
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_SJIStoUTF8( std::string& str )
 {
-	QByteArray encodedString = str.c_str();
-	QTextCodec *codec = QTextCodec::codecForName("Shift-JIS");
-	if (!codec) return false;
-	str = codec->toUnicode(encodedString).toUtf8().data();
+	std::string sjisStr = str;
 
+	// iconv変換ハンドルを作成
+	iconv_t conv = iconv_open("UTF-8", "SHIFT_JISX0213");
+	if (conv == (iconv_t)-1) {
+		throw std::runtime_error("iconv_open failed");
+	}
+
+	// 入力バッファとそのサイズ
+	const char* input = sjisStr.c_str();
+	size_t inBytesLeft = sjisStr.size();
+
+	// 出力バッファの準備
+	size_t outBytesLeft = inBytesLeft * 4;  // UTF-8は最大4バイト/文字
+	char* outBuffer = new char[outBytesLeft];
+	char* outPtr = outBuffer;
+
+	// iconvの呼び出し
+	size_t result = iconv(conv, (char**)&input, &inBytesLeft, &outPtr, &outBytesLeft);
+	if (result == (size_t)-1) {
+		delete[] outBuffer;
+		iconv_close(conv);
+		throw std::runtime_error("iconv conversion failed");
+	}
+
+	// UTF-8文字列を取得
+	std::string utf8Str(outBuffer, outPtr - outBuffer);
+
+	// メモリ解放とiconvハンドルのクローズ
+	delete[] outBuffer;
+	iconv_close(conv);
+
+	str = utf8Str;
 	return true;
 }
 
@@ -2042,9 +2070,38 @@ bool OSD_SJIStoUTF8( std::string& str )
 /////////////////////////////////////////////////////////////////////////////
 bool OSD_UTF8toSJIS( std::string& str )
 {
-	QString string = str.c_str();
-	QTextCodec *codec = QTextCodec::codecForName("Shift-JIS");
-	if (!codec) return false;
-	str = codec->fromUnicode(string).data();
+	std::string utf8Str = str;
+
+	// iconv変換ハンドルを作成
+	iconv_t conv = iconv_open("SHIFT_JISX0213", "UTF-8");
+	if (conv == (iconv_t)-1) {
+		throw std::runtime_error("iconv_open failed");
+	}
+
+	// 入力バッファとそのサイズ
+	const char* input = utf8Str.c_str();
+	size_t inBytesLeft = utf8Str.size();
+
+	// 出力バッファの準備
+	size_t outBytesLeft = inBytesLeft * 2;  // SJISは最大2バイト/文字
+	char* outBuffer = new char[outBytesLeft];
+	char* outPtr = outBuffer;
+
+	// iconvの呼び出し
+	size_t result = iconv(conv, (char**)&input, &inBytesLeft, &outPtr, &outBytesLeft);
+	if (result == (size_t)-1) {
+		delete[] outBuffer;
+		iconv_close(conv);
+		throw std::runtime_error("iconv conversion failed");
+	}
+
+	// SJIS文字列を取得
+	std::string sjisStr(outBuffer, outPtr - outBuffer);
+
+	// メモリ解放とiconvハンドルのクローズ
+	delete[] outBuffer;
+	iconv_close(conv);
+
+	str = sjisStr;
 	return true;
 }

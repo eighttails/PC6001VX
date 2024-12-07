@@ -57,7 +57,7 @@ DEFINES += USEFILESYSTEM
 
 debug:DEFINES += DEBUG
 CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
-INCLUDEPATH += src src/Qt
+INCLUDEPATH += src src/Qt src/Qt/babel
 
 
 #Configuration for UNIX variants

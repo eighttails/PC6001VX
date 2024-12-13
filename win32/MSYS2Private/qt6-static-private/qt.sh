@@ -3,24 +3,29 @@
 function prerequisite(){
 #必要ライブラリ
 pacman "${PACMAN_INSTALL_OPTS[@]}" \
-$MINGW_PACKAGE_PREFIX-SDL2 \
-$MINGW_PACKAGE_PREFIX-brotli \
-$MINGW_PACKAGE_PREFIX-cc \
-$MINGW_PACKAGE_PREFIX-clang \
-$MINGW_PACKAGE_PREFIX-clang-tools-extra \
-$MINGW_PACKAGE_PREFIX-dbus \
-$MINGW_PACKAGE_PREFIX-gcc-libs \
-$MINGW_PACKAGE_PREFIX-mlir \
-$MINGW_PACKAGE_PREFIX-ninja \
-$MINGW_PACKAGE_PREFIX-ntldd \
-$MINGW_PACKAGE_PREFIX-openssl \
-$MINGW_PACKAGE_PREFIX-pcre2 \
-$MINGW_PACKAGE_PREFIX-pkgconf \
-$MINGW_PACKAGE_PREFIX-polly \
-$MINGW_PACKAGE_PREFIX-vulkan-devel \
-$MINGW_PACKAGE_PREFIX-xmlstarlet \
-$MINGW_PACKAGE_PREFIX-zlib \
-$MINGW_PACKAGE_PREFIX-zstd \
+${MINGW_PACKAGE_PREFIX}-SDL2 \
+${MINGW_PACKAGE_PREFIX}-brotli \
+${MINGW_PACKAGE_PREFIX}-vulkan-loader \
+${MINGW_PACKAGE_PREFIX}-cc \
+${MINGW_PACKAGE_PREFIX}-cmake \
+${MINGW_PACKAGE_PREFIX}-ninja \
+${MINGW_PACKAGE_PREFIX}-clang \
+${MINGW_PACKAGE_PREFIX}-clang-tools-extra \
+${MINGW_PACKAGE_PREFIX}-pkgconf \
+${MINGW_PACKAGE_PREFIX}-python \
+${MINGW_PACKAGE_PREFIX}-xmlstarlet \
+${MINGW_PACKAGE_PREFIX}-vulkan-headers \
+${MINGW_PACKAGE_PREFIX}-dbus \
+${MINGW_PACKAGE_PREFIX}-brotli \
+${MINGW_PACKAGE_PREFIX}-freetype \
+${MINGW_PACKAGE_PREFIX}-libjpeg-turbo \
+${MINGW_PACKAGE_PREFIX}-libpng \
+${MINGW_PACKAGE_PREFIX}-libtiff \
+${MINGW_PACKAGE_PREFIX}-libwebp \
+${MINGW_PACKAGE_PREFIX}-openssl \
+${MINGW_PACKAGE_PREFIX}-pcre2 \
+${MINGW_PACKAGE_PREFIX}-zlib \
+${MINGW_PACKAGE_PREFIX}-zstd \
 2> /dev/null
 
 exitOnError
@@ -47,11 +52,12 @@ apply_patch_with_msg() {
   do
     echo "Applying ${_patch}"
     patch -Nbp1 -i "${SCRIPT_DIR}/${_patch}"
+    exitOnError
   done
 }
 
-QT_MAJOR_VERSION=6.5
-QT_MINOR_VERSION=.2
+QT_MAJOR_VERSION=6.8
+QT_MINOR_VERSION=.1
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){
@@ -64,65 +70,55 @@ QT_RELEASE=official_releases
 
 
 if [ -e $QT_SOURCE_DIR ]; then
-    # 存在する場合
-    echo "$QT_SOURCE_DIR already exists."
+  # 存在する場合
+  echo "$QT_SOURCE_DIR already exists."
 else
-    # 存在しない場合
-    if [ ! -e $QT_ARCHIVE ]; then
-    wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_ARCHIVE
-    fi
+  # 存在しない場合
+  if [ ! -e $QT_ARCHIVE ]; then
+  wget -c  http://download.qt.io/$QT_RELEASE/qt/$QT_MAJOR_VERSION/$QT_VERSION/single/$QT_ARCHIVE
+  fi
 
-    tar xf $QT_ARCHIVE
-    mv $QT_ARCHIVE_DIR $QT_SOURCE_DIR
-    pushd $QT_SOURCE_DIR
+  pv $QT_ARCHIVE | tar -xJ
+  mv $QT_ARCHIVE_DIR $QT_SOURCE_DIR
+  pushd $QT_SOURCE_DIR
 
-    apply_patch_with_msg \
-        001-adjust-qmake-conf-mingw.patch \
-        002-qt-6.2.0-win32-g-Add-QMAKE_EXTENSION_IMPORTLIB-defaulting-to-.patch \
-        003-qt-6.2.0-dont-add-resource-files-to-qmake-libs.patch \
-        004-Allow-overriding-CMAKE_FIND_LIBRARY_SUFFIXES-to-pref.patch \
-        005-qt-6.2.0-win32static-cmake-link-ws2_32-and--static.patch \
-        006-Fix-finding-D-Bus.patch \
-        007-Fix-using-static-PCRE2-and-DBus-1.patch \
-        008-Fix-libjpeg-workaround-for-conflict-with-rpcndr.h.patch \
-        009-Fix-transitive-dependencies-of-static-libraries.patch \
-        010-Support-finding-static-MariaDB-client-library.patch \
-        011-Fix-crashes-in-rasterization-code-using-setjmp.patch \
-        012-Handle-win64-in-dumpcpp-and-MetaObjectGenerator-read.patch \
-        013-disable-finding-webp-from-cmake-config-files.patch \
-        015-qt6-windeployqt-fixes.patch
-        
-    pushd qtshadertools
-    apply_patch_with_msg \
-        016-fix-building-shadertools-with-gcc-13.patch
-    popd
+  apply_patch_with_msg \
+    001-adjust-qmake-conf-mingw.patch \
+    002-qt-6.2.0-win32-g-Add-QMAKE_EXTENSION_IMPORTLIB-defaulting-to-.patch \
+    003-qt-6.2.0-dont-add-resource-files-to-qmake-libs.patch \
+    004-Allow-overriding-CMAKE_FIND_LIBRARY_SUFFIXES-to-pref.patch \
+    005-qt-6.2.0-win32static-cmake-link-ws2_32-and--static.patch \
+    006-Fix-finding-D-Bus.patch \
+    007-Fix-using-static-PCRE2-and-DBus-1.patch \
+    008-Fix-libjpeg-workaround-for-conflict-with-rpcndr.h.patch \
+    009-Fix-transitive-dependencies-of-static-libraries.patch \
+    010-Support-finding-static-MariaDB-client-library.patch \
+    011-Fix-crashes-in-rasterization-code-using-setjmp.patch \
+    012-Handle-win64-in-dumpcpp-and-MetaObjectGenerator-read.patch \
+    013-disable-finding-webp-from-cmake-config-files.patch \
+    014-imageformats-transitive-dependencies.patch \
+    015-qt6-windeployqt-fixes.patch
+  
+  # gcc13用暫定パッチ
+  # sed -i s/stdint.h/cstdint/g qt3d/src/3rdparty/assimp/src/code/AssetLib/FBX/FBXBinaryTokenizer.cpp
 
-    pushd qtgrpc
-    apply_patch_with_msg \
-        017-fix-build-with-grpc-1.53.patch \
-        018-fix-build-with-protobuf-23.patch
-    popd
-    
-    # gcc13用暫定パッチ
-    sed -i s/stdint.h/cstdint/g qt3d/src/3rdparty/assimp/src/code/AssetLib/FBX/FBXBinaryTokenizer.cpp
+  cd qtquick3d
+  apply_patch_with_msg \
+    016-fix-build-qtquick3d-with-clang-19.patch
+  cd ..
 
-    local _ARCH_TUNE=
-    case ${MINGW_CHOST} in
-    i686*)
-      _ARCH_TUNE="-march=pentium4 -mtune=generic"
-    ;;
-    x86_64*)
-      _ARCH_TUNE="-march=nocona -msahf -mtune=generic"
-    ;;
-    esac
+  local _ARCH_TUNE
+  if [[ ${CARCH} == x86_64 ]]; then
+    _ARCH_TUNE="-march=nocona -msahf -mtune=generic"
+  fi
 
-    BIGOBJ_FLAGS="-Wa,-mbig-obj"
+  BIGOBJ_FLAGS="-Wa,-mbig-obj"
 
-    # Append these ones ..
-    sed -i "s|^QMAKE_CFLAGS .*= \(.*\)$|QMAKE_CFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
-    sed -i "s|^QMAKE_CXXFLAGS .*= \(.*\)$|QMAKE_CXXFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
+  # Append these ones ..
+  sed -i "s|^QMAKE_CFLAGS .*= \(.*\)$|QMAKE_CFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
+  sed -i "s|^QMAKE_CXXFLAGS .*= \(.*\)$|QMAKE_CXXFLAGS            = \1 ${_ARCH_TUNE} ${BIGOBJ_FLAGS}|g" qtbase/mkspecs/${_platform}/qmake.conf
 
-    popd
+  popd
 fi
 
 }
@@ -143,17 +139,17 @@ QT6_STATIC_BUILD=qt6-static-$MSYSTEM
 rm -rf $QT6_STATIC_BUILD
 mkdir $QT6_STATIC_BUILD
 pushd $QT6_STATIC_BUILD
-
-
-MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=;-DCMAKE_CONFIGURATION_TYPES=;-DCMAKE_FIND_LIBRARY_SUFFIXES=" \
-cmake \
-    -G "Ninja" \
+#---------------------------------------------------
+  CXXFLAGS+=" -Wno-invalid-constexpr" \
+  PKG_CONFIG_ARGN="--static" \
+  LDFLAGS+=" -static -static-libgcc -static-libstdc++" \
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=;-DCMAKE_CONFIGURATION_TYPES=;-DCMAKE_FIND_LIBRARY_SUFFIXES=" \
+  ${MINGW_PREFIX}/bin/cmake \
     -Wno-dev \
-    -DCMAKE_BUILD_TYPE=MinSizeRel \
-    -DFEATURE_optimize_size=ON \
-    -DBUILD_WITH_PCH=OFF \
-    -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a;.dll.a" \
-    -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} -static -static-libgcc -static-libstdc++" \
+    --log-level=STATUS \
+    -G "Ninja" \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a" \
     -DBUILD_SHARED_LIBS=OFF \
     -DQT_QMAKE_TARGET_MKSPEC=${_platform} \
     -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
@@ -176,14 +172,11 @@ cmake \
     -DINPUT_jasper=no \
     -DINPUT_libmd4c=qt \
     -DFEATURE_glib=OFF \
-    -DINPUT_qt3d_assimp=qt \
     -DINPUT_quick3d_assimp=qt \
     -DFEATURE_system_assimp=OFF \
     -DFEATURE_system_doubleconversion=OFF \
     -DFEATURE_system_freetype=OFF \
     -DFEATURE_system_harfbuzz=OFF \
-    -DFEATURE_hunspell=OFF \
-    -DFEATURE_system_hunspell=OFF \
     -DFEATURE_system_jpeg=OFF \
     -DFEATURE_system_pcre2=OFF \
     -DFEATURE_system_png=OFF \
@@ -192,7 +185,6 @@ cmake \
     -DFEATURE_system_webp=OFF \
     -DFEATURE_system_zlib=OFF \
     -DFEATURE_opengl=ON \
-    -DFEATURE_opengl_dynamic=ON \
     -DFEATURE_opengl_desktop=OFF \
     -DFEATURE_egl=OFF \
     -DFEATURE_gstreamer=OFF \
@@ -208,20 +200,29 @@ cmake \
     -DFEATURE_wmf=ON \
     -DQT_BUILD_TESTS=OFF \
     -DQT_BUILD_EXAMPLES=OFF \
-    -DBUILD_qttools=ON \
-    -DBUILD_qtdoc=OFF \
-    -DBUILD_qttranslations=ON \
-    -DBUILD_qtwebengine=OFF \
     -DOPENSSL_DEPENDENCIES="-lws2_32;-lgdi32;-lcrypt32" \
     -DLIBPNG_DEPENDENCIES="-lz" \
     -DGLIB2_DEPENDENCIES="-lintl;-lws2_32;-lole32;-lwinmm;-lshlwapi;-lm" \
     -DFREETYPE_DEPENDENCIES="-lbz2;-lharfbuzz;-lfreetype;-lbrotlidec;-lbrotlicommon" \
-    -DHARFBUZZ_DEPENDENCIES="-lglib-2.0;-lintl;-lws2_32;;-lgdi32;-lole32;-lwinmm;-lshlwapi;-lintl;-lm;-lfreetype;-lgraphite2;-lrpcrt4" \
+    -DHARFBUZZ_DEPENDENCIES="-lglib-2.0;-lintl;-lws2_32;-lusp10;-lgdi32;-lole32;-lwinmm;-lshlwapi;-lintl;-lm;-lfreetype;-lgraphite2;-lrpcrt4" \
     -DDBUS1_DEPENDENCIES="-lws2_32;-liphlpapi;-ldbghelp" \
     -DPython_EXECUTABLE=${MINGW_PREFIX}/bin/python \
-    $(cygpath -am ../$QT_SOURCE_DIR)
+    -DOPENSSL_USE_STATIC_LIBS=ON \
+    -DZLIB_USE_STATIC_LIBS=ON \
+    $(cygpath -am ../$QT_SOURCE_DIR) 
 
-export PATH=$PWD/bin:$PATH
+    #カスタマイズポイント
+    #-DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
+    #最後のソースパス↓
+    #$(cygpath -am ../$QT_SOURCE_DIR) 
+    #-DINPUT_jasper=no \
+    #(スタティックLIBがない)
+    #-DFEATURE_SYSTEM_*=OFF
+    #-DFEATURE_opengl_desktop=OFF \
+
+#---------------------------------------------------
+
+  export PATH=$PWD/bin:$PATH
 
 nice -n19 cmake --build .
 exitOnError

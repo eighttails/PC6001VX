@@ -76,6 +76,7 @@ zip \
 python \
 ruby \
 intltool \
+pv \
 $MINGW_PACKAGE_PREFIX-toolchain \
 $MINGW_PACKAGE_PREFIX-autotools \
 $MINGW_PACKAGE_PREFIX-cmake \

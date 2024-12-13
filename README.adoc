@@ -802,10 +802,12 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 
 == 更新履歴
 .git master
-* (Windows)ステータスバーが文字化けすることがあるのを修正
+* ステータスバーが文字化けすることがあるのを修正
 * (Windows)サウンドが再生されないことがあるのを修正
-* (Windows)Fixed an issue where the status bar may become garbled.
+* (Windows)フルスクリーン時にメニューが表示されないことがあるのを修正
+* Fixed an issue where the status bar may become garbled.
 * (Windows)Fixed an issue where sound might not play.
+* (Windows) Fixed an issue where the menu may not be displayed when in full screen.
 
 .4.2.9 2024/07/20
 * 表示のハードウェアアクセラレーションが動作していなかったのを修正

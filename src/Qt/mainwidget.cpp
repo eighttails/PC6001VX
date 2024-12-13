@@ -3,6 +3,7 @@
 #include <QBoxLayout>
 #include <QResizeEvent>
 #include <QApplication>
+#include <QWindow>
 
 #include "p6vxapp.h"
 #include "renderview.h"
@@ -159,5 +160,11 @@ void MainWidget::closeEvent(QCloseEvent *event)
 
 void MainWidget::resizeEvent(QResizeEvent *event)
 {
+#if defined(Q_OS_WIN)
+	if (windowHandle()) {
+		HWND handle = reinterpret_cast<HWND>(windowHandle()->winId());
+		SetWindowLongPtr(handle, GWL_STYLE, GetWindowLongPtr(handle, GWL_STYLE) | WS_BORDER);
+	}
+#endif
 	updateLayout();
 }

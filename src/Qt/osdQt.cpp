@@ -1231,8 +1231,8 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 	}
 
 	audioOutput = new AudioOutputWrapper(device, format, callback, obj, samples);
-#ifndef Q_OS_WIN
-	// Windowsではサウンドスレッドを移動すると音が出ないことがある
+#ifndef NOSEPARATEAUDIOTHREAD
+	// 環境によってはサウンドスレッドを分離すると音が出ないことがある
 	audioOutput->moveToThread(&audioThread);
 #endif
 	audioThread.start();

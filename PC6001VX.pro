@@ -51,6 +51,7 @@ DEFINES += USEFILESYSTEM
 #DEFINES += NOSOUND
 #DEFINES += NOCALLBACK
 #DEFINES += NOLIBINTL
+#DEFINES += NOSEPARATEAUDIOTHREAD
 #DEFINES += AUTOSUSPEND
 #DEFINES += REPLAYDEBUG_FRAME
 #DEFINES += REPLAYDEBUG_INST
@@ -92,10 +93,11 @@ unix:!macx {
 #Configuration for Windows
 win32 {
     #On Windows, link libraries statically as long as possible.
+    DEFINES += NOSEPARATEAUDIOTHREAD
     QMAKE_LFLAGS += -static
     LIBS_PRIVATE= -lpthread -lsetupapi -lOleAut32
     PKG_CONFIG = 'pkg-config --static'
-    RC_ICONS += src/win32/PC6001VX.ico
+    RC_ICONS += src/win32/PC6001VX.ico    
 } else {
     DEFINES += __stdcall=
 }

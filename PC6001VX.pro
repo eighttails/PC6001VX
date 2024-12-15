@@ -93,7 +93,6 @@ unix:!macx {
 #Configuration for Windows
 win32 {
     #On Windows, link libraries statically as long as possible.
-    DEFINES += NOSEPARATEAUDIOTHREAD
     QMAKE_LFLAGS += -static
     LIBS_PRIVATE= -lpthread -lsetupapi -lOleAut32
     PKG_CONFIG = 'pkg-config --static'

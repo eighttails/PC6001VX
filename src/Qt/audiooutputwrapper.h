@@ -85,7 +85,7 @@ private slots:
 private:
 	QAudioSink* AudioSink;
 	QPointer<QIODevice> AudioBuffer;
-	QAudio::State State;
+	QAudio::State ExpectedState;
 };
 #endif // NOCALLBACK
 #endif // NOSOUND

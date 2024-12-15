@@ -137,8 +137,13 @@ AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
 									   QObject *parent)
 	: QObject(parent)
 	, AudioSink(new QAudioSink(device, format, this))
+	, State(QAudio::StoppedState)
 {
 	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, format.bytesPerSample(), this);
+	QTimer* recoveryTimer = new QTimer(this);
+	connect(recoveryTimer, &QTimer::timeout, this, &AudioOutputWrapper::recoverPlayback);
+	recoveryTimer->setInterval(1000);
+	recoveryTimer->start();
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()
@@ -155,17 +160,20 @@ void AudioOutputWrapper::start()
 	AudioSink->setBufferSize(44100/30);
 #endif
 	AudioSink->start(AudioBuffer);
+	State = QAudio::ActiveState;
 }
 
 
 void AudioOutputWrapper::suspend()
 {
 	AudioSink->suspend();
+	State = QAudio::SuspendedState;
 }
 
 void AudioOutputWrapper::resume()
 {
 	AudioSink->resume();
+	State = QAudio::ActiveState;
 }
 
 void AudioOutputWrapper::stop()
@@ -173,11 +181,31 @@ void AudioOutputWrapper::stop()
 	AudioSink->reset();
 	AudioSink->stop();
 	AudioBuffer->close();
+	State = QAudio::StoppedState;
 }
 
 QAudio::State AudioOutputWrapper::state() const
 {
 	return AudioSink->state();
+}
+
+void AudioOutputWrapper::recoverPlayback()
+{
+	// バッファアンダーランなど、予期しないイベントによって
+	// 内部で想定している状態と実際の状態に乖離が現れた場合
+	// 状態を有るべき姿に復元を試みる。
+	auto actualState = state();
+	if (actualState != State){
+		switch (actualState){
+		case QAudio::ActiveState:
+		// 現状は、音が鳴るはずなのに鳴ってないという場合のみ
+		// 再度再生状態に持っていく
+		start();
+		break;
+		// それ以外の状態では何もしない。
+		default:;
+		}
+	}
 }
 #endif // NOCALLBACK
 #endif

@@ -80,10 +80,12 @@ public slots:
 public:
 	QAudio::State state() const;
 
+private slots:
+	void recoverPlayback();
 private:
 	QAudioSink* AudioSink;
 	QPointer<QIODevice> AudioBuffer;
-
+	QAudio::State State;
 };
 #endif // NOCALLBACK
 #endif // NOSOUND

@@ -803,10 +803,10 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 == 更新履歴
 .4.2.9 2024/12/15
 * ステータスバーが文字化けすることがあるのを修正
-* (Windows)サウンドが再生されないことがあるのを修正
+* サウンドが再生されないことがあるのを修正
 * (Windows)フルスクリーン時にメニューが表示されないことがあるのを修正
 * Fixed an issue where the status bar may become garbled.
-* (Windows)Fixed an issue where sound might not play.
+* Fixed an issue where sound might not play.
 * (Windows) Fixed an issue where the menu may not be displayed when in full screen.
 
 .4.2.9 2024/07/20

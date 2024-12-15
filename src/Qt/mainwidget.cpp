@@ -161,6 +161,8 @@ void MainWidget::closeEvent(QCloseEvent *event)
 void MainWidget::resizeEvent(QResizeEvent *event)
 {
 #if defined(Q_OS_WIN)
+	// WindowsではOpenGL有効かつフルスクリーンの場合にメニューやダイアログが出ない問題への対応
+	// https://doc.qt.io/qt-6/windows-issues.html#fullscreen-opengl-based-windows
 	if (windowHandle()) {
 		HWND handle = reinterpret_cast<HWND>(windowHandle()->winId());
 		SetWindowLongPtr(handle, GWL_STYLE, GetWindowLongPtr(handle, GWL_STYLE) | WS_BORDER);

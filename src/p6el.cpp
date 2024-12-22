@@ -1449,6 +1449,11 @@ bool EL6::DokoDemoSave( const P6VPATH& path )
 		if( !ak.Buffer.empty() ){
 			ini.SetEntry( "KEY", Stringf( "AKBuf_%02X", nn ), "", strva.c_str() );
 		}
+
+		for( size_t jno = 0; jno < 2; jno++ ){
+			strva = OSD_GetJoyName( joy->GetID( jno ) );
+			ini.SetEntry( "JOYSTICK", Stringf( "JoyName_%d", jno ), "", strva.c_str() );
+		}
 		
 		ini.SetVal( "DOKOSAVE", "Complete",	"どこでもSAVEファイルの書き込み完了チェック用フラグ", true );
 		
@@ -1528,7 +1533,18 @@ bool EL6::DokoDemoLoad( const P6VPATH& path )
 				strva.erase( strva.begin() );
 			}
 		}
-		
+
+		for( int jno = 0; jno < 2; jno++ ){
+			// ジョイスティックをいったん接続解除
+			joy->Connect( jno, -1 );
+			ini.GetEntry( "JOYSTICK", Stringf( "JoyName_%d", jno ), strva );
+			for( int index = 0; index < OSD_GetJoyNum(); index++ ){
+				if ( OSD_GetJoyName( index ) == strva ){
+					joy->Connect( jno, index );
+				}
+			}
+		}
+
 		// ディスクドライブ数によってステータスバーサイズ変更
 		if( !staw->Init( -1, vm->disk->GetDrives() ) ){
 			throw Error::GetError();

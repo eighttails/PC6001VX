@@ -1055,7 +1055,9 @@ const std::string OSD_GetJoyName( int index )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickNameForIndex( index );
+	const char* name = SDL_JoystickNameForIndex( index );
+	std::string tname = name ? name : "(Unknown)";
+	return tname;
 #else
 	return "";
 #endif // NOJOYSTICK

@@ -60,13 +60,20 @@ bool JOY6::Connect( int jno, int index )
 	if( jno < 0 || jno > 1 ){
 		return false;
 	}
+
+	if( index < 0 ){
+		// indexに負の値を設定した場合は接続解除
+		JID[jno] = -1;
+		return true;
+	}
 	
 	if( index >= 0 && index < min( OSD_GetJoyNum(), MAX_JOY ) ){
+		if( !OSD_OpenedJoy( Jinfo[index] ) ){
+			Jinfo[index] = OSD_OpenJoy( index );
+		}
 		if( OSD_OpenedJoy( Jinfo[index] ) ){
 			JID[jno] = index;
 			return true;
-		}else{
-			Jinfo[index] = OSD_OpenJoy( index );
 		}
 	}
 	JID[jno] = -1;

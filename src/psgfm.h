@@ -25,7 +25,7 @@ protected:
 	BYTE JoyNo;		// 読取るジョイスティックの番号(0-1)
 	int Clock;		// クロック
 	int Smpls;		// 生成サンプル数カウンタ
-	mutable cMutex Mutex;
+	mutable cRecursiveMutex Mutex;
 	
 	int GetUpdateSamples();						// 更新サンプル数取得
 	

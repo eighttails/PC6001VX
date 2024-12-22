@@ -77,7 +77,7 @@ OPN64::~OPN64( void )
 /////////////////////////////////////////////////////////////////////////////
 void PSG60::EventCallback( int id, int clock )
 {
-	std::lock_guard<cMutex> lock( Mutex );
+	std::lock_guard<cRecursiveMutex> lock( Mutex );
 	
 	switch( id ){
 	case EID_PSG:
@@ -88,7 +88,7 @@ void PSG60::EventCallback( int id, int clock )
 
 void OPN64::EventCallback( int id, int clock )
 {
-	std::lock_guard<cMutex> lock( Mutex );
+	std::lock_guard<cRecursiveMutex> lock( Mutex );
 	
 	switch( id ){
 	case EID_PSG:
@@ -109,7 +109,7 @@ void OPN64::EventCallback( int id, int clock )
 /////////////////////////////////////////////////////////////////////////////
 int PSGb::GetUpdateSamples( void )
 {
-	std::lock_guard<cMutex> lock( Mutex );
+	std::lock_guard<cRecursiveMutex> lock( Mutex );
 	
 	int prgsample = (int)( (double)SndDev::SampleRate * vm->EventGetProgress( this->Device::GetID(), EID_PSG ) + 0.5 );
 	int samples = prgsample - Smpls;

@@ -148,7 +148,9 @@ pushd $QT6_STATIC_BUILD
     -Wno-dev \
     --log-level=STATUS \
     -G "Ninja" \
-    -DCMAKE_BUILD_TYPE="Release" \
+    -DCMAKE_BUILD_TYPE=MinSizeRel \
+    -DFEATURE_optimize_size=ON \
+    -DBUILD_WITH_PCH=OFF \
     -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a" \
     -DBUILD_SHARED_LIBS=OFF \
     -DQT_QMAKE_TARGET_MKSPEC=${_platform} \
@@ -213,16 +215,20 @@ pushd $QT6_STATIC_BUILD
 
     #カスタマイズポイント
     #-DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
-    #最後のソースパス↓
-    #$(cygpath -am ../$QT_SOURCE_DIR) 
+    #-DCMAKE_BUILD_TYPE=MinSizeRel \
+    #-DFEATURE_optimize_size=ON \
+    #-DBUILD_WITH_PCH=OFF \
     #-DINPUT_jasper=no \
-    #(スタティックLIBがない)
     #-DFEATURE_SYSTEM_*=OFF
     #-DFEATURE_opengl_desktop=OFF \
+    #最後のソースパス↓
+    #$(cygpath -am ../$QT_SOURCE_DIR) 
 
 #---------------------------------------------------
 
   export PATH=$PWD/bin:$PATH
+
+cp config.summary ../qt6_config_summary_$MSYSTEM.txt
 
 nice -n19 cmake --build .
 exitOnError
@@ -230,11 +236,10 @@ exitOnError
 cmake --install .
 exitOnError
 
-cp config.summary ../qt6_config_summary_$MSYSTEM.txt
 
 popd
 
-rm -rf $QT6_STATIC_BUILD
+# rm -rf $QT6_STATIC_BUILD
 }
 
 

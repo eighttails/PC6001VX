@@ -753,7 +753,7 @@ MSYS2環境上でビルドします。 +
 . https://github.com/msys2/msys2-installer/releases/[こちら]からMSYS2をダウンロードしてインストールしてください。 +
 VC++はサポートしていません。 +
 MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(`pacman -Sy`)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用) +
-https://github.com/msys2/msys2-installer/releases/download/2024-01-13/msys2-x86_64-20240113.exe
+https://github.com/msys2/msys2-installer/releases/download/2024-12-08/msys2-x86_64-20241208.exe
 . MSYS2をインストールしたフォルダのucrt64.exeを実行。 +
 . ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに展開。 +
 . `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
@@ -801,6 +801,12 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.git master
+* FM音源再生時にフリーズすることがあるのを修正
+* ジョイスティック設定が保存されないのを修正
+* Fixed freezes when playing FM synthesizer.
+* Fixed joystick settings not saved.
+
 .4.2.10 2024/12/15
 * ステータスバーが文字化けすることがあるのを修正
 * サウンドが再生されないことがあるのを修正

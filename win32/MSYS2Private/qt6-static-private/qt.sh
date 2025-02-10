@@ -57,7 +57,7 @@ apply_patch_with_msg() {
 }
 
 QT_MAJOR_VERSION=6.8
-QT_MINOR_VERSION=.1
+QT_MINOR_VERSION=.2
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){
@@ -98,14 +98,6 @@ else
     013-disable-finding-webp-from-cmake-config-files.patch \
     014-imageformats-transitive-dependencies.patch \
     015-qt6-windeployqt-fixes.patch
-  
-  # gcc13用暫定パッチ
-  # sed -i s/stdint.h/cstdint/g qt3d/src/3rdparty/assimp/src/code/AssetLib/FBX/FBXBinaryTokenizer.cpp
-
-  cd qtquick3d
-  apply_patch_with_msg \
-    016-fix-build-qtquick3d-with-clang-19.patch
-  cd ..
 
   local _ARCH_TUNE
   if [[ ${CARCH} == x86_64 ]]; then

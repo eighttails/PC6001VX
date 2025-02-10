@@ -33,7 +33,7 @@ echo "gImageReader is already installed."
 exit 0
 fi
 
-    GIMAGEREADER_VERSION=3.4.1
+    GIMAGEREADER_VERSION=3.4.2
 if [ "$GIMAGEREADER_GIT" != "" ]; then
     GIMAGEREADER_SRC_DIR=gImageReader-git
     git clone https://github.com/manisandro/gImageReader.git $GIMAGEREADER_SRC_DIR 2> /dev/null

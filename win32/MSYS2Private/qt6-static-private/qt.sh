@@ -57,7 +57,7 @@ apply_patch_with_msg() {
 }
 
 QT_MAJOR_VERSION=6.8
-QT_MINOR_VERSION=.2
+QT_MINOR_VERSION=.1
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){

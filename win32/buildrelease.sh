@@ -6,7 +6,7 @@ QTDIR=$MINGW_PREFIX/local/qt6-static-private
 export PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig
 
 #並列ビルド
-MINGW32MAKE="mingw32-make -j$NUMBER_OF_PROCESSORS"
+MAKE="make -j$NUMBER_OF_PROCESSORS"
 
 if [ -z $1 ]; then
     cd $SCRIPT_DIR/../../
@@ -23,5 +23,5 @@ mkdir $P6VX_DBUILD_DIR
 
 cd $P6VX_DBUILD_DIR
 $QTDIR/bin/qmake $SCRIPT_DIR/../PC6001VX.pro 
-$MINGW32MAKE release
+$MAKE release
 

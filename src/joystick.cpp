@@ -41,8 +41,9 @@ bool JOY6::Init( void )
 		if( OSD_OpenedJoy( Jinfo[i] ) ){ OSD_CloseJoy( Jinfo[i] ); }
 	}
 	
-	Connect( 0, 0 );
-	Connect( 1, 1 );
+	ScanConnect();
+//	Connect( 0, 1 );
+//	Connect( 1, 2 );
 	
 	return true;
 }
@@ -60,22 +61,25 @@ bool JOY6::Connect( int jno, int index )
 	if( jno < 0 || jno > 1 ){
 		return false;
 	}
-
-	if( index < 0 ){
-		// indexに負の値を設定した場合は接続解除
-		JID[jno] = -1;
+	
+	if( index <= 0 ){
+		// indexに0以下の値を設定した場合は接続解除
+		// -1 : 未接続 ジョイスティックを検出したら自動的に接続する
+		//  0 : 未接続 ジョイスティックを検出しても何もしない
+		// >0 : 接続済
+		JID[jno] = index;
 		return true;
 	}
 	
-	if( index >= 0 && index < min( OSD_GetJoyNum(), MAX_JOY ) ){
-		if( !OSD_OpenedJoy( Jinfo[index] ) ){
-			Jinfo[index] = OSD_OpenJoy( index );
+ 	if( index <= min( OSD_GetJoyNum(), MAX_JOY ) ){
+		if( !OSD_OpenedJoy( Jinfo[index - 1] ) ){
+			Jinfo[index - 1] = OSD_OpenJoy( index - 1 );
 		}
-		if( OSD_OpenedJoy( Jinfo[index] ) ){
-			JID[jno] = index;
-			return true;
-		}
-	}
+ 		if( OSD_OpenedJoy( Jinfo[index - 1] ) ){
+ 			JID[jno] = index;
+ 			return true;
+ 		}
+ 	}
 	JID[jno] = -1;
 	return false;
 }
@@ -90,6 +94,27 @@ bool JOY6::Connect( int jno, int index )
 int JOY6::GetID( int jno )
 {
 	return 	( jno == 0 || jno == 1 ) ? JID[jno] : -1;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// ジョイスティックスキャン
+/////////////////////////////////////////////////////////////////////////////
+void JOY6::ScanConnect( void )
+{
+	int resjoy = 0;	// 予約済み(使用済み)
+	
+	for( int i = 0; i < 2; i++ ){
+		if( (JID[i] < 0) || (JID[i] > 0 && !OSD_OpenedJoy( Jinfo[i] )) ){
+			int j = resjoy;
+			while( j++ < OSD_GetJoyNum() ){
+				if( Connect( i, j ) ){
+					resjoy = j;
+					break;
+				}
+			}
+		}
+	}
 }
 
 
@@ -111,11 +136,11 @@ BYTE JOY6::GetJoyState( int jno )
 {
 	BYTE ret = 0xff;
 	
-	if( jno < 0 || jno > 1 || JID[jno] < 0 ){
+	if( jno < 0 || jno > 1 || JID[jno] <= 0 ){
 		return ret;
 	}
 	
-	HJOYINFO jj = Jinfo[JID[jno]];
+	HJOYINFO jj = Jinfo[JID[jno] - 1];
 	
 	int Xmove = OSD_GetJoyAxis( jj, 0 );	// X軸
 	int Ymove = OSD_GetJoyAxis( jj, 1 );	// Y軸

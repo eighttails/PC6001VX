@@ -1070,11 +1070,11 @@ const std::string OSD_GetJoyName( int index )
 // 引数:	HJOYINFO		ジョイスティック情報へのポインタ
 // 返値:	bool			true:OPEN false:CLOSE
 /////////////////////////////////////////////////////////////////////////////
-bool OSD_OpenedJoy( HJOYINFO joy )
+bool OSD_OpenedJoy( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickGetAttached( (SDL_Joystick*)joy ) ? true : false;
+	return jinfo && SDL_JoystickGetAttached( (SDL_Joystick*)jinfo ) ? true : false;
 #else
 	return false;
 #endif // NOJOYSTICK
@@ -1101,7 +1101,7 @@ HJOYINFO OSD_OpenJoy( int index )
 /////////////////////////////////////////////////////////////////////////////
 // ジョイスティッククローズ
 //
-// 引数:	int				インデックス
+// 引数:	HJOYINFO		ジョイスティック情報へのポインタ
 // 返値:	なし
 /////////////////////////////////////////////////////////////////////////////
 void OSD_CloseJoy( HJOYINFO jinfo )

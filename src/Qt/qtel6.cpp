@@ -80,13 +80,13 @@ void EL6::ExecMenu( int id )
 	case ID_JOY102:
 	case ID_JOY103:
 	case ID_JOY104:
-	case ID_JOY105:			joy->Connect( 0, id - ID_JOY101 );		break;
+	case ID_JOY105:			joy->Connect( 0, id - ID_JOY100 );		break;
 	case ID_JOY200:															// ジョイスティック2
 	case ID_JOY201:
 	case ID_JOY202:
 	case ID_JOY203:
 	case ID_JOY204:
-	case ID_JOY205:			joy->Connect( 1, id - ID_JOY201 );		break;
+	case ID_JOY205:			joy->Connect( 1, id - ID_JOY200 );		break;
 	case ID_CONFIG:			UI_Config();							break;	// 環境設定
 	case ID_RESET:			UI_Reset();								break;	// リセット
 	case ID_RESTART:		UI_Restart();							break;	// 再起動
@@ -439,22 +439,22 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QMenu* joyMenu2 = joystickMenu->addMenu("2");
 	QActionGroup* joyGroup1 = new QActionGroup(&menu);
 	QActionGroup* joyGroup2 = new QActionGroup(&menu);
+	QAction* noJoy1 = addCommand(joyMenu1, tr("なし"), ID_JOY100, true);
+	QAction* noJoy2 = addCommand(joyMenu2, tr("なし"), ID_JOY200, true);
+	joyGroup1->addAction(noJoy1);
+	joyGroup2->addAction(noJoy2);
+	if (joy->GetID(0) <= 0) noJoy1->setChecked(true);
+	if (joy->GetID(1) <= 0) noJoy2->setChecked(true);
 	for( int i = 0; i < 5; i++ ){
 		if( i < OSD_GetJoyNum() ){
 			QAction* joyAction1 = addCommand(joyMenu1, QString::fromStdString(OSD_GetJoyName( i )), MenuCommand(ID_JOY101 + i), true);
 			QAction* joyAction2 = addCommand(joyMenu2, QString::fromStdString(OSD_GetJoyName( i )), MenuCommand(ID_JOY201 + i), true);
 			joyGroup1->addAction(joyAction1);
 			joyGroup2->addAction(joyAction2);
-			if(joy->GetID(0) == i) joyAction1->setChecked(true);
-			if(joy->GetID(1) == i) joyAction2->setChecked(true);
+			if(joy->GetID(0) == i+1) joyAction1->setChecked(true);
+			if(joy->GetID(1) == i+1) joyAction2->setChecked(true);
 		}
 	}
-	QAction* noJoy1 = addCommand(joyMenu1, tr("なし"), ID_JOY100, true);
-	QAction* noJoy2 = addCommand(joyMenu2, tr("なし"), ID_JOY200, true);
-	joyGroup1->addAction(noJoy1);
-	joyGroup2->addAction(noJoy2);
-	if (joy->GetID(0) < 0) noJoy1->setChecked(true);
-	if (joy->GetID(1) < 0) noJoy2->setChecked(true);
 #endif // NOJOYSTICK
 
 	// 設定メニュー

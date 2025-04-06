@@ -1074,12 +1074,11 @@ bool OSD_OpenedJoy( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return jinfo && SDL_JoystickGetAttached( (SDL_Joystick*)jinfo ) ? true : false;
+	return jinfo && SDL_JoystickGetAttached( reinterpret_cast<SDL_Joystick*>(jinfo) ) ? true : false;
 #else
 	return false;
 #endif // NOJOYSTICK
 }
-
 
 /////////////////////////////////////////////////////////////////////////////
 // ジョイスティックオープン
@@ -1159,17 +1158,19 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 	QMutexLocker lock(&joystickMutex);
 	// HAT(デジタルスティック)から値を取得
 	SDL_JoystickUpdate();
-	auto hat = SDL_JoystickGetHat( reinterpret_cast<SDL_Joystick*>(jinfo), 0 );
+	auto hat   = SDL_JoystickGetHat( reinterpret_cast<SDL_Joystick*>(jinfo), 0 );
 	int hatVal = 0;
-	switch (num){
+	switch( num ){
 	case 0:
-		if (hat & SDL_HAT_RIGHT)	hatVal = 32767;
-		if (hat & SDL_HAT_LEFT)		hatVal = -32767;
+		if( hat & SDL_HAT_RIGHT ){ hatVal =  32767; }
+		if( hat & SDL_HAT_LEFT  ){ hatVal = -32767; }
 		break;
-	case 1:;
-		if (hat & SDL_HAT_UP)		hatVal = -32767;
-		if (hat & SDL_HAT_DOWN)		hatVal = 32767;
+
+	case 1:
+		if( hat & SDL_HAT_UP    ){ hatVal = -32767; }
+		if( hat & SDL_HAT_DOWN  ){ hatVal =  32767; }
 		break;
+
 	default:;
 	}
 

@@ -57,7 +57,7 @@ apply_patch_with_msg() {
 }
 
 QT_MAJOR_VERSION=6.8
-QT_MINOR_VERSION=.1
+QT_MINOR_VERSION=.3
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){
@@ -145,6 +145,8 @@ pushd $QT6_STATIC_BUILD
     -DBUILD_WITH_PCH=OFF \
     -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a" \
     -DBUILD_SHARED_LIBS=OFF \
+    -DBUILD_qtpdf=OFF \
+    -DBUILD_qtwebengine=OFF \
     -DQT_QMAKE_TARGET_MKSPEC=${_platform} \
     -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
     -DINSTALL_BINDIR=bin \
@@ -192,6 +194,7 @@ pushd $QT6_STATIC_BUILD
     -DFEATURE_sql_odbc=OFF \
     -DFEATURE_zstd=OFF \
     -DFEATURE_wmf=ON \
+    -DFEATURE_ffmpeg=OFF \
     -DQT_BUILD_TESTS=OFF \
     -DQT_BUILD_EXAMPLES=OFF \
     -DOPENSSL_DEPENDENCIES="-lws2_32;-lgdi32;-lcrypt32" \
@@ -206,15 +209,16 @@ pushd $QT6_STATIC_BUILD
     $(cygpath -am ../$QT_SOURCE_DIR) 
 
     #カスタマイズポイント
-    #-DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
-    #-DCMAKE_BUILD_TYPE=MinSizeRel \
-    #-DFEATURE_optimize_size=ON \
-    #-DBUILD_WITH_PCH=OFF \
-    #-DINPUT_jasper=no \
-    #-DFEATURE_SYSTEM_*=OFF
-    #-DFEATURE_opengl_desktop=OFF \
-    #最後のソースパス↓
-    #$(cygpath -am ../$QT_SOURCE_DIR) 
+    # -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
+    # -DCMAKE_BUILD_TYPE=MinSizeRel \
+    # -DFEATURE_optimize_size=ON \
+    # -DBUILD_WITH_PCH=OFF \
+    # -DINPUT_jasper=no \
+    # -DFEATURE_SYSTEM_*=OFF
+    # -DFEATURE_opengl_desktop=OFF \
+    # -DFEATURE_ffmpeg=OFF \
+    # 最後のソースパス↓
+    # $(cygpath -am ../$QT_SOURCE_DIR) 
 
 #---------------------------------------------------
 

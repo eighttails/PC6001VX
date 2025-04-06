@@ -1227,11 +1227,6 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 	}
 
 	QAudioDevice device = QMediaDevices::defaultAudioOutput();
-	if (!device.isFormatSupported(format)) {
-		qWarning()<<"raw audio format not supported by backend, cannot play audio.";
-		format = device.preferredFormat();
-	}
-
 	audioOutput = new AudioOutputWrapper(device, format, callback, obj, samples);
 	audioThread = new QThread(qApp);
 	audioOutput->moveToThread(audioThread);

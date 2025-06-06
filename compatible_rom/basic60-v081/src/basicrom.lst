@@ -1,6 +1,6 @@
 			  Z80 ASSEMBLER - ZASM VER 1.6
                       	;Compatible BASIC for PC-6001
-                      	; by AKIKAWA, Hisashi  2013-2024
+                      	; by AKIKAWA, Hisashi  2013-2025
                       	
                       	;This software is redistributable under the LGPLv2.1 or any later version.
                       	
@@ -419,7 +419,7 @@
                       	;hot start
   003B                	HOT:
                       	;initialize function key
-  003B  216E01        		ld	hl,FKEYLST
+  003B  217001        		ld	hl,FKEYLST
   003E  113DFB        		ld	de,FKEYTBL
   0041  0E0A          		ld	c,0ah
   0043                	SETFKLP1:
@@ -539,8 +539,8 @@
   00E0  0F            		db	0fh		;nobf=1 (for emulator?)
                       	
   00E1                	IOTBL81:
-  00E1  12            		db	12h		;reset error, DTR=1, RxE/TxEN=0
-  00E2  12            		db	12h		; set twice for synchronous mode
+  00E1  92            		db	92h		;reset error, DTR=1, RxE/TxEN=0
+  00E2  92            		db	92h		; set twice for synchronous mode
   00E3  52            		db	52h		;reset, reset error, DTR=1, RxE/TxEN=0
   00E4  4F            		db	4fh		;stop bits=1, parity disable,
                       					; character length=8bits, baud rate factor=64
@@ -602,116 +602,116 @@
   012C                	SYSNAME2:
   012C  436F6D70617469		db	"Compatible ", 00h
   0138                	BASICVER:
-  0138  42415349432056		db	"BASIC Ver.0.8", 0dh, 0ah, 00h
+  0138  42415349432056		db	"BASIC Ver.0.8.1", 0dh, 0ah, 00h
                       	
-  0148                	PAGEDATA:
-  0148  C0            		db	0c0h		;fd91	VRAM address
-  0149  00            		db	00h		;fd92	screen 1st parameter-1
-  014A  01            		db	01h		;fd93	color 1st parameter
-  014B  00            		db	00h		;fd94	color 2nd parameter
-  014C  00            		db	00h		;fd95	color 3rd parameter (1,2 -> 0,2)
-  014D  010000        		db	01h, 00h, 00h	;fd96	screen mode 1 color parameters
-  0150  010000        		db	01h, 00h, 00h	;fd99	screen mode 2 color parameters
-  0153  020000        		db	02h, 00h, 00h	;fd9c	screen mode 3 color parameters
-  0156  030000        		db	03h, 00h, 00h	;fd9f	screen mode 4 color parameters
-  0159  01            		db	01h		;fda2	console 1st line number+1
-  015A  10            		db	10h		;fda3	console last line number+1
-  015B  01            		db	01h		;fda4	=(fda2)
-  015C  0F            		db	0fh		;fda5	sc12:(fda3)-(fda6) sc34:(fda3)
-  015D  01            		db	01h		;fda6	console 3rd parameter
-  015E  00            		db	00h		;fda7	shift key status for function key disp
-  015F  01            		db	01h		;fda8	cursor Y+1
-  0160  01            		db	01h		;fda9	cursor X+1
-  0161  00C2          		dw	0c200h		;fdaa	cursor address
-  0163  20            		db	COLUMNS		;fdac	X max+1
-  0164  00            		db	00h		;fdad
-  0165  0000          		dw	0000h		;fdae	graphic X
-  0167  0000          		dw	0000h		;fdb0	graphic Y
-  0169  00            		db	00h		;fdb2
-  016A  00            		db	00h		;fdb3
-  016B  00            		db	00h		;fdb4
-  016C  00            		db	00h		;fdb5
-  016D  10            		db	10h		;fdb6	LINEST-1
-                      	
-                      	
-  016E                	FKEYLST:
-  016E  9A20          		db	9ah, ' '	;COLOR
-  0170  A322          		db	0a3h, 22h	;CLOAD"
-  0172  8820          		db	GOTO_, ' '	;GOTO
-  0174  9720          		db	97h, ' '	;LIST
-  0176  890D          		db	RUN_, 0dh	;RUN
-  0178  9F20          		db	9fh, ' '	;SCREEN
-  017A  A422          		db	0a4h, 22h	;CSAVE"
-  017C  9520          		db	PRINT_, ' '	;PRINT
-  017E  A720          		db	0a7h, ' '	;PLAY
-  0180  960D          		db	96h, 0dh	;CONT
+  014A                	PAGEDATA:
+  014A  C0            		db	0c0h		;fd91	VRAM address
+  014B  00            		db	00h		;fd92	screen 1st parameter-1
+  014C  01            		db	01h		;fd93	color 1st parameter
+  014D  00            		db	00h		;fd94	color 2nd parameter
+  014E  00            		db	00h		;fd95	color 3rd parameter (1,2 -> 0,2)
+  014F  010000        		db	01h, 00h, 00h	;fd96	screen mode 1 color parameters
+  0152  010000        		db	01h, 00h, 00h	;fd99	screen mode 2 color parameters
+  0155  020000        		db	02h, 00h, 00h	;fd9c	screen mode 3 color parameters
+  0158  030000        		db	03h, 00h, 00h	;fd9f	screen mode 4 color parameters
+  015B  01            		db	01h		;fda2	console 1st line number+1
+  015C  10            		db	10h		;fda3	console last line number+1
+  015D  01            		db	01h		;fda4	=(fda2)
+  015E  0F            		db	0fh		;fda5	sc12:(fda3)-(fda6) sc34:(fda3)
+  015F  01            		db	01h		;fda6	console 3rd parameter
+  0160  00            		db	00h		;fda7	shift key status for function key disp
+  0161  01            		db	01h		;fda8	cursor Y+1
+  0162  01            		db	01h		;fda9	cursor X+1
+  0163  00C2          		dw	0c200h		;fdaa	cursor address
+  0165  20            		db	COLUMNS		;fdac	X max+1
+  0166  00            		db	00h		;fdad
+  0167  0000          		dw	0000h		;fdae	graphic X
+  0169  0000          		dw	0000h		;fdb0	graphic Y
+  016B  00            		db	00h		;fdb2
+  016C  00            		db	00h		;fdb3
+  016D  00            		db	00h		;fdb4
+  016E  00            		db	00h		;fdb5
+  016F  10            		db	10h		;fdb6	LINEST-1
                       	
                       	
-  0182                	OPRTBL:
+  0170                	FKEYLST:
+  0170  9A20          		db	9ah, ' '	;COLOR
+  0172  A322          		db	0a3h, 22h	;CLOAD"
+  0174  8820          		db	GOTO_, ' '	;GOTO
+  0176  9720          		db	97h, ' '	;LIST
+  0178  890D          		db	RUN_, 0dh	;RUN
+  017A  9F20          		db	9fh, ' '	;SCREEN
+  017C  A422          		db	0a4h, 22h	;CSAVE"
+  017E  9520          		db	PRINT_, ' '	;PRINT
+  0180  A720          		db	0a7h, ' '	;PLAY
+  0182  960D          		db	96h, 0dh	;CONT
+                      	
+                      	
+  0184                	OPRTBL:
                       	;c4-c7
                       	;	dw					F_FN,	F_SPC,	F_INKY,	C_THEN
                       	;c8-cf
-  0182  100CDC037E3694		dw	O_NOT,	C_STEP,	O_PLS,	O_MNS,	O_MUL,	O_DIV,	O_POW,	O_AND
+  0184  100CDC037E3694		dw	O_NOT,	C_STEP,	O_PLS,	O_MNS,	O_MUL,	O_DIV,	O_POW,	O_AND
                       	;d0-d3
-  0192  F80B220C      		dw	O_OR,	O_GTEQLT
+  0194  F80B220C      		dw	O_OR,	O_GTEQLT
                       	
-  0196                	CMDLST:
+  0198                	CMDLST:
                       	;80-8f
-  0196  66356506F135E0		dw	C_END,	C_FOR,	C_NEXT,	C_DATA,	C_INPT,	C_DIM,	C_READ,	C_LET
-  01A6  A6078107590817		dw	C_GOTO,	C_RUN,	C_IF,	C_RSTR,	C_GSUB,	C_RET,	C_REM,	C_STOP
+  0198  66356506F135E0		dw	C_END,	C_FOR,	C_NEXT,	C_DATA,	C_INPT,	C_DIM,	C_READ,	C_LET
+  01A8  A6078107590817		dw	C_GOTO,	C_RUN,	C_IF,	C_RSTR,	C_GSUB,	C_RET,	C_REM,	C_STOP
                       	;90-9f
-  01B6  B60D36087A0857		dw	C_OUT,	C_ON,	C_LPRT,	C_DEF,	C_POKE,	C_PRT,	C_CONT,	C_LIST
-  01C6  C005A9359B1D3C		dw	C_LLST,	C_CLR,	C_COLR,	C_PSET,	C_PRST,	C_LINE,	C_PAIN,	C_SCRN
+  01B8  B60D36087A0857		dw	C_OUT,	C_ON,	C_LPRT,	C_DEF,	C_POKE,	C_PRT,	C_CONT,	C_LIST
+  01C8  C005A9359B1D3C		dw	C_LLST,	C_CLR,	C_COLR,	C_PSET,	C_PRST,	C_LINE,	C_PAIN,	C_SCRN
                       	;a0-aa
-  01D6  FB1DD21CF61CB5		dw	C_CLS,	C_LOCA,	C_CNSL,	C_CLD,	C_CSV,	C_EXEC,	C_SOUN,	C_PLAY
-  01E6  4123A622B034  		dw	C_KEY,	C_LCPY,	C_NEW
+  01D8  FB1DD21CF61CB5		dw	C_CLS,	C_LOCA,	C_CNSL,	C_CLD,	C_CSV,	C_EXEC,	C_SOUN,	C_PLAY
+  01E8  4123A622B034  		dw	C_KEY,	C_LCPY,	C_NEW
                       	
-  01EC                	FNCLST:
+  01EE                	FNCLST:
                       	;d4-df
-  01EC  043980391C39E5		dw					F_SGN,	F_INT,	F_ABS,	F_USR
-  01F4  2932A80D330D41		dw	F_FRE,	F_INP,	F_LPOS,	F_POS,	F_SQR,	F_RND,	F_LOG,	F_EXP
+  01EE  043980391C39E5		dw					F_SGN,	F_INT,	F_ABS,	F_USR
+  01F6  2932A80D330D41		dw	F_FRE,	F_INP,	F_LPOS,	F_POS,	F_SQR,	F_RND,	F_LOG,	F_EXP
                       	;e0-ef
-  0204  7D3D903D583EEE		dw	F_COS,	F_SIN,	F_TAN,	F_PEEK,	F_LEN,	F_HEX,	F_STR,	F_VAL
-  0214  AC31B631C031C7		dw	F_ASC,	F_CHR,	F_LEFT,	F_RGT,	F_MID,	F_POIN,	F_CSRL,	F_STCK
+  0206  7D3D903D583EEE		dw	F_COS,	F_SIN,	F_TAN,	F_PEEK,	F_LEN,	F_HEX,	F_STR,	F_VAL
+  0216  AC31B631C031C7		dw	F_ASC,	F_CHR,	F_LEFT,	F_RGT,	F_MID,	F_POIN,	F_CSRL,	F_STCK
                       	;f0-f1
-  0224  56226C1E      		dw	F_STRG,	F_TIME
+  0226  56226C1E      		dw	F_STRG,	F_TIME
                       	
                       	
-  0228                	CMDNAME:
-  0228  C54E44C64F52CE		db	'E'+80h,"ND",	'F'+80h,"OR",	'N'+80h,"EXT",	'D'+80h,"ATA"
-  0236  C94E505554C449		db	'I'+80h,"NPUT",	'D'+80h,"IM",	'R'+80h,"EAD",	'L'+80h,"ET"
-  0245  C74F544FD2554E		db	'G'+80h,"OTO",	'R'+80h,"UN",	'I'+80h,"F",	'R'+80h,"ESTORE"
-  0255  C74F535542D245		db	'G'+80h,"OSUB",	'R'+80h,"ETURN",'R'+80h,"EM",	'S'+80h,"TOP"
+  022A                	CMDNAME:
+  022A  C54E44C64F52CE		db	'E'+80h,"ND",	'F'+80h,"OR",	'N'+80h,"EXT",	'D'+80h,"ATA"
+  0238  C94E505554C449		db	'I'+80h,"NPUT",	'D'+80h,"IM",	'R'+80h,"EAD",	'L'+80h,"ET"
+  0247  C74F544FD2554E		db	'G'+80h,"OTO",	'R'+80h,"UN",	'I'+80h,"F",	'R'+80h,"ESTORE"
+  0257  C74F535542D245		db	'G'+80h,"OSUB",	'R'+80h,"ETURN",'R'+80h,"EM",	'S'+80h,"TOP"
                       	
-  0267  CF5554CF4ECC50		db	'O'+80h,"UT",	'O'+80h,"N",	'L'+80h,"PRINT",'D'+80h,"EF"
-  0275  D04F4B45D05249		db	'P'+80h,"OKE",	'P'+80h,"RINT",	'C'+80h,"ONT",	'L'+80h,"IST"
-  0286  CC4C495354C34C		db	'L'+80h,"LIST",	'C'+80h,"LEAR",	'C'+80h,"OLOR",	'P'+80h,"SET"
-  0299  D05245534554CC		db	'P'+80h,"RESET",'L'+80h,"INE",	'P'+80h,"AINT",	'S'+80h,"CREEN"
+  0269  CF5554CF4ECC50		db	'O'+80h,"UT",	'O'+80h,"N",	'L'+80h,"PRINT",'D'+80h,"EF"
+  0277  D04F4B45D05249		db	'P'+80h,"OKE",	'P'+80h,"RINT",	'C'+80h,"ONT",	'L'+80h,"IST"
+  0288  CC4C495354C34C		db	'L'+80h,"LIST",	'C'+80h,"LEAR",	'C'+80h,"OLOR",	'P'+80h,"SET"
+  029B  D05245534554CC		db	'P'+80h,"RESET",'L'+80h,"INE",	'P'+80h,"AINT",	'S'+80h,"CREEN"
                       	
-  02AE  C34C53CC4F4341		db	'C'+80h,"LS",	'L'+80h,"OCATE",'C'+80h,"ONSOLE",'C'+80h,"LOAD"
-  02C3  C353415645C558		db	'C'+80h,"SAVE",	'E'+80h,"XEC",	'S'+80h,"OUND",	'P'+80h,"LAY"
-  02D5  CB4559CC434F50		db	'K'+80h,"EY",	'L'+80h,"COPY",	'N'+80h,"EW"
+  02B0  C34C53CC4F4341		db	'C'+80h,"LS",	'L'+80h,"OCATE",'C'+80h,"ONSOLE",'C'+80h,"LOAD"
+  02C5  C353415645C558		db	'C'+80h,"SAVE",	'E'+80h,"XEC",	'S'+80h,"OUND",	'P'+80h,"LAY"
+  02D7  CB4559CC434F50		db	'K'+80h,"EY",	'L'+80h,"COPY",	'N'+80h,"EW"
                       	
-  02E0                	FNCNAME:
-  02E0  D4414228D44F  		db					'T'+80h,"AB(",	'T'+80h,"O"
-  02E6  C64ED3504328C9		db	'F'+80h,"N",	'S'+80h,"PC(",	'I'+80h,"NKEY$",'T'+80h,"HEN"
-  02F6  CE4F54D3544550		db	'N'+80h,"OT",	'S'+80h,"TEP",	'+'+80h,	'-'+80h
-  02FF  AAAFDEC14E44  		db	'*'+80h,	'/'+80h,	'^'+80h,	'A'+80h,"ND"
+  02E2                	FNCNAME:
+  02E2  D4414228D44F  		db					'T'+80h,"AB(",	'T'+80h,"O"
+  02E8  C64ED3504328C9		db	'F'+80h,"N",	'S'+80h,"PC(",	'I'+80h,"NKEY$",'T'+80h,"HEN"
+  02F8  CE4F54D3544550		db	'N'+80h,"OT",	'S'+80h,"TEP",	'+'+80h,	'-'+80h
+  0301  AAAFDEC14E44  		db	'*'+80h,	'/'+80h,	'^'+80h,	'A'+80h,"ND"
                       	
-  0305  CF52BEBDBC    		db	'O'+80h,"R",	'>'+80h,	'='+80h,	'<'+80h
-  030A  D3474EC94E54C1		db	'S'+80h,"GN",	'I'+80h,"NT",	'A'+80h,"BS",	'U'+80h,"SR"
-  0316  C65245C94E50CC		db	'F'+80h,"RE",	'I'+80h,"NP",	'L'+80h,"POS",	'P'+80h,"OS"
-  0323  D35152D24E44CC		db	'S'+80h,"QR",	'R'+80h,"ND",	'L'+80h,"OG",	'E'+80h,"XP"
+  0307  CF52BEBDBC    		db	'O'+80h,"R",	'>'+80h,	'='+80h,	'<'+80h
+  030C  D3474EC94E54C1		db	'S'+80h,"GN",	'I'+80h,"NT",	'A'+80h,"BS",	'U'+80h,"SR"
+  0318  C65245C94E50CC		db	'F'+80h,"RE",	'I'+80h,"NP",	'L'+80h,"POS",	'P'+80h,"OS"
+  0325  D35152D24E44CC		db	'S'+80h,"QR",	'R'+80h,"ND",	'L'+80h,"OG",	'E'+80h,"XP"
                       	
-  032F  C34F53D3494ED4		db	'C'+80h,"OS",	'S'+80h,"IN",	'T'+80h,"AN",	'P'+80h,"EEK"
-  033C  CC454EC8455824		db	'L'+80h,"EN",	'H'+80h,"EX$",	'S'+80h,"TR$",	'V'+80h,"AL"
-  034A  C15343C3485224		db	'A'+80h,"SC",	'C'+80h,"HR$",	'L'+80h,"EFT$",	'R'+80h,"IGHT$"
-  035C  CD494424D04F49		db	'M'+80h,"ID$",	'P'+80h,"OINT",	'C'+80h,"SRLIN",'S'+80h,"TICK"
+  0331  C34F53D3494ED4		db	'C'+80h,"OS",	'S'+80h,"IN",	'T'+80h,"AN",	'P'+80h,"EEK"
+  033E  CC454EC8455824		db	'L'+80h,"EN",	'H'+80h,"EX$",	'S'+80h,"TR$",	'V'+80h,"AL"
+  034C  C15343C3485224		db	'A'+80h,"SC",	'C'+80h,"HR$",	'L'+80h,"EFT$",	'R'+80h,"IGHT$"
+  035E  CD494424D04F49		db	'M'+80h,"ID$",	'P'+80h,"OINT",	'C'+80h,"SRLIN",'S'+80h,"TICK"
                       	
-  0370  D354524947D449		db	'S'+80h,"TRIG",	'T'+80h,"IME",	80h
+  0372  D354524947D449		db	'S'+80h,"TRIG",	'T'+80h,"IME",	80h
                       	
                       	
-  037A                	_ERRBELL:ds	ERRSTR-1-_ERRBELL
+  037C                	_ERRBELL:ds	ERRSTR-1-_ERRBELL
   0383                		org	ERRSTR-1
   0383                	ERRBELL:
   0383  07            		db	07h
@@ -1042,9 +1042,9 @@
   0519  2B            		dec	hl
   051A  66            		ld	h,(hl)
   051B  6F            		ld	l,a
-  051C  38EA          		jr	c,SRCHLP2	;(hl,hl-1)-de
+  051C  38EA          		jr	c,SRCHLP2	;(hl,hl-1)<de
   051E  23            		inc	hl
-  051F  2001          		jr	nz,SRCHEND	;(hl,hl-1)-de
+  051F  2001          		jr	nz,SRCHEND	;(hl,hl-1)>de
   0521  37            		scf
   0522                	SRCHEND:
   0522  2B            		dec	hl
@@ -1132,7 +1132,6 @@
   056D  77            		ld	(hl),a		;a=0
   056E  C9            		ret
                       	
-                      	
                       	;found
   056F                	ILFOUND:
   056F  F1            		pop	af		;cancel
@@ -1163,7 +1162,7 @@
   0588  12            		ld	(de),a
                       	
   0589  E5            		push	hl
-  058A  212802        		ld	hl,CMDNAME
+  058A  212A02        		ld	hl,CMDNAME
   058D  0680          		ld	b,80h
                       	
   058F                	ILLP3:
@@ -1286,8 +1285,8 @@
                       	
   0619  E1            		pop	hl
                       	
-  061A  010000        		ld	bc,0000h	;double quotation mark and DATA counter
-  061D  50            		ld	d,b		;REM counter
+  061A  110000        		ld	de,0000h	;double quotation mark and DATA counter
+  061D  4B            		ld	c,e		;REM counter
   061E                	LISTLP3:
   061E  23            		inc	hl
   061F  7E            		ld	a,(hl)
@@ -1297,15 +1296,15 @@
   0623  FE22          		cp	22h
   0625  2822          		jr	z,LISTDQ
                       	
-  0627  CB40          		bit	0,b
+  0627  CB42          		bit	0,d
   0629  2014          		jr	nz,LISTPUT
                       	
-  062B  0C            		inc	c
-  062C  0D            		dec	c
+  062B  1C            		inc	e
+  062C  1D            		dec	e
   062D  201D          		jr	nz,LISTCHKCLN
                       	
-  062F  14            		inc	d
-  0630  15            		dec	d
+  062F  0C            		inc	c
+  0630  0D            		dec	c
   0631  200C          		jr	nz,LISTPUT
                       	
   0633  FE8E          		cp	REM_
@@ -1325,19 +1324,19 @@
   0646  C34204        		jp	EDIT
                       	
   0649                	LISTDQ:
-  0649  04            		inc	b
+  0649  14            		inc	d
   064A  18F3          		jr	LISTPUT
                       	
   064C                	LISTCHKCLN:
   064C  FE3A          		cp	':'
   064E  20EF          		jr	nz,LISTPUT
-  0650  0D            		dec	c
+  0650  1D            		dec	e
   0651  18EC          		jr	LISTPUT
                       	
   0653                	LISTREM:
-  0653  14            		inc	d
+  0653  0C            		inc	c
   0654                	LISTDATA:
-  0654  0C            		inc	c
+  0654  1C            		inc	e
   0655                	LISTCMD:
   0655  E5            		push	hl
   0656  CDB525        		call	CNVASC
@@ -1514,7 +1513,7 @@
   0749  C3E503        		jp	FCERR
                       	
                       	
-                      	;convert float to 1-byte integer
+                      	;convert float to 1-byte integer [0,255]
                       	;input: FAC1
                       	;output: e, a(0=ok)
                       	;destroy: f,bc,de,hl
@@ -1810,7 +1809,7 @@
   08A0  2875          		jr	z,SPCTAB
                       	
   08A2  2B            		dec	hl
-  08A3  CD2717        		call	ARG
+  08A3  CD2C17        		call	ARG
   08A6  3A25FF        		ld	a,(ARGTYP)
   08A9  B7            		or	a
   08AA  2813          		jr	z,PRTNUM
@@ -1917,7 +1916,7 @@
   092E  B7            		or	a
   092F  28D0          		jr	z,TAB0		;0=CRT
   0931  3D            		dec	a
-  0932  28C2          		jr	z,TAB	1	;1=printer
+  0932  28C2          		jr	z,TAB1		;1=printer
                       	
   0934                	PRTSPC:
   0934  7B            		ld	a,e
@@ -2361,7 +2360,7 @@
   0B86                	FNCNUM:
   0B86  CDB50B        		call	CHKLPAR
   0B89                	FNCNUMR:
-  0B89  CD2717        		call	ARG
+  0B89  CD2C17        		call	ARG
   0B8C  CDC40B        		call	CHKRPAR
   0B8F  180A          		jr	CHKNUM
                       	
@@ -2389,7 +2388,7 @@
                       	;output: FAC1, hl=next address
                       	;destroy: af,bc,de,FAC2
   0B98                	NUMARG:
-  0B98  CD2717        		call	ARG
+  0B98  CD2C17        		call	ARG
                       	;	call	CHKNUM
                       	;	ret
                       	
@@ -2694,7 +2693,7 @@
   0CBD  CB3C          		srl	h
   0CBF  CB1D          		rr	l
   0CC1  3001          		jr	nc,FTOINC
-  0CC3  07            		rlca			;a>0
+  0CC3  17            		rla			;a>0
   0CC4                	FTOINC:
   0CC4  10F7          		djnz	FTOILP
                       	
@@ -3033,7 +3032,7 @@
   0E89  C9            		ret
                       	
                       	
-                      	;output to port 90h
+                      	;output to port 90h (send sub CPU command)
                       	;input: a=data
                       	;destroy: none
   0E8A                	_OUT90H:ds	OUT90H-_OUT90H
@@ -3255,14 +3254,17 @@
   0F61  2195FB        		ld	hl,RSBFIN
   0F64  CD390F        		call	PUTBF
                       	
-  0F67  3E37          		ld	a,37h		;RTS=1
-  0F69  D381          		out	(81h),a
-  0F6B  E1            		pop	hl
-  0F6C  1838          		jr	POPAF
+  0F67  3E0C          		ld	a,0ch		;enable RS-232C interrupt
+  0F69  CD8F0E        		call	OUT90H
+                      	
+  0F6C  3E37          		ld	a,37h		;RTS=1
+  0F6E  D381          		out	(81h),a
+  0F70  E1            		pop	hl
+  0F71  1833          		jr	POPAF
                       	
                       	
                       	;interrupt for timer
-  0F6E                	_INTTIM:ds	INTTIM-_INTTIM
+  0F73                	_INTTIM:ds	INTTIM-_INTTIM
   0F74                		org	INTTIM
                       	
   0F74  C5            		push	bc
@@ -4655,7 +4657,7 @@
   1578                		org	GXY2SXY
                       	
   1578  E5            		push	hl
-  1579  CDED2B        		call	CHKGXY
+  1579  CDF22B        		call	CHKGXY
   157C  E1            		pop	hl
   157D  3A92FD        		ld	a,(SCREEN1)
   1580  CB3F          		srl	a
@@ -4880,166 +4882,168 @@
   164B  018105        		ld	bc,0581h
                       	;	ld	hl,IOTBL81
   164E  EDB3          		otir
+  1650  3E0C          		ld	a,0ch		;enable RS-232C interrupt
+  1652  CD8F0E        		call	OUT90H
                       	
                       	;for mkII
                       	;port f0h-f8h and port c1h
-  1650  01EF09        		ld	bc,09efh
+  1655  01EF09        		ld	bc,09efh
                       	;	ld	hl,IOTBLF0
-  1653                	F0LP:
-  1653  0C            		inc	c
-  1654  EDA3          		outi
-  1656  20FB          		jr	nz,F0LP
-  1658  3E06          		ld	a,06h
-  165A  D3C1          		out	(0c1h),a	;32x16 text mode
+  1658                	F0LP:
+  1658  0C            		inc	c
+  1659  EDA3          		outi
+  165B  20FB          		jr	nz,F0LP
+  165D  3E06          		ld	a,06h
+  165F  D3C1          		out	(0c1h),a	;32x16 text mode
                       	
                       	;interrupt
                       	;	ld	hl,INTTBL
-  165C  1102FA        		ld	de,0fa02h
-  165F  0E16          		ld	c,11*2		;b=0
-  1661  EDB0          		ldir
-  1663  7A            		ld	a,d
-  1664  ED47          		ld	i,a
-  1666  ED5E          		im	2
+  1661  1102FA        		ld	de,0fa02h
+  1664  0E16          		ld	c,11*2		;b=0
+  1666  EDB0          		ldir
+  1668  7A            		ld	a,d
+  1669  ED47          		ld	i,a
+  166B  ED5E          		im	2
                       	
                       	;clear work area
-  1668  AF            		xor	a
-  1669  62            		ld	h,d
-  166A  6B            		ld	l,e
-  166B  77            		ld	(hl),a
-  166C  13            		inc	de
-  166D  01E705        		ld	bc,0ffffh-0fa18h
-  1670  EDB0          		ldir
+  166D  AF            		xor	a
+  166E  62            		ld	h,d
+  166F  6B            		ld	l,e
+  1670  77            		ld	(hl),a
+  1671  13            		inc	de
+  1672  01E705        		ld	bc,0ffffh-0fa18h
+  1675  EDB0          		ldir
                       	
                       	;stack pointer
-  1672  31CDF9        		ld	sp,0f9ffh-50	;temporary
+  1677  31CDF9        		ld	sp,0f9ffh-50	;temporary
                       	
                       	;relay,VRAM,timer
                       	;	xor	a
-  1675  D3B0          		out	(0b0h),a	;bit3=CMT relay, bit21=VRAM address=c000, bit0=timer on
+  167A  D3B0          		out	(0b0h),a	;bit3=CMT relay, bit21=VRAM address=c000, bit0=timer on
                       	
-  1677  3D            		dec	a
-  1678  321FFA        		ld	(BAUD),a	;a=ffh:1200 baud
+  167C  3D            		dec	a
+  167D  321FFA        		ld	(BAUD),a	;a=ffh:1200 baud
                       	
                       	;misc
-  167B  3E20          		ld	a,' '
-  167D  321EFA        		ld	(ASTSTAT),a
-  1680  3E01          		ld	a,01h
-  1682  322DFA        		ld	(CONSOL4),a
-  1685  3E0E          		ld	a,0eh
-  1687  3259FA        		ld	(CMMCNST),a	;used by EXAS BASIC compiler
+  1680  3E20          		ld	a,' '
+  1682  321EFA        		ld	(ASTSTAT),a
+  1685  3E01          		ld	a,01h
+  1687  322DFA        		ld	(CONSOL4),a
+  168A  3E0E          		ld	a,0eh
+  168C  3259FA        		ld	(CMMCNST),a	;used by EXAS BASIC compiler
                       	
                       	;hook
-  168A  218AFF        		ld	hl,HOOK
-  168D  1E03          		ld	e,03h		;d=0
-  168F  061E          		ld	b,1eh
-  1691                	COLDLP1:
-  1691  36C9          		ld	(hl),0c9h
-  1693  19            		add	hl,de
-  1694  10FB          		djnz	COLDLP1
+  168F  218AFF        		ld	hl,HOOK
+  1692  1E03          		ld	e,03h		;d=0
+  1694  061E          		ld	b,1eh
+  1696                	COLDLP1:
+  1696  36C9          		ld	(hl),0c9h
+  1698  19            		add	hl,de
+  1699  10FB          		djnz	COLDLP1
                       	
                       	
                       	;buffer
-  1696  21B9FB        		ld	hl,KEYBUF
-  1699  1E40          		ld	e,40h		;d=0
-  169B  2293FB        		ld	(KYBFAD),hl
-  169E  19            		add	hl,de		;hl=RSBUF
-  169F  2299FB        		ld	(RSBFAD),hl
-  16A2  19            		add	hl,de		;hl=BUFA
-  16A3  22A5FB        		ld	(BUFAAD),hl
-  16A6  19            		add	hl,de		;hl=BUFB
-  16A7  22ABFB        		ld	(BUFAAD+6),hl
-  16AA  19            		add	hl,de		;hl=BUFC
-  16AB  22B1FB        		ld	(BUFAAD+12),hl
+  169B  21B9FB        		ld	hl,KEYBUF
+  169E  1E40          		ld	e,40h		;d=0
+  16A0  2293FB        		ld	(KYBFAD),hl
+  16A3  19            		add	hl,de		;hl=RSBUF
+  16A4  2299FB        		ld	(RSBFAD),hl
+  16A7  19            		add	hl,de		;hl=BUFA
+  16A8  22A5FB        		ld	(BUFAAD),hl
+  16AB  19            		add	hl,de		;hl=BUFB
+  16AC  22ABFB        		ld	(BUFAAD+6),hl
+  16AF  19            		add	hl,de		;hl=BUFC
+  16B0  22B1FB        		ld	(BUFAAD+12),hl
                       	
-  16AE  2192FB        		ld	hl,KYBFSZ
-  16B1  1E06          		ld	e,06h		;d=0
-  16B3  43            		ld	b,e		;e=6
-  16B4                	COLDLP2:
-  16B4  363F          		ld	(hl),3fh	;KYBFSZ,RSBFSZ,,BUFASZ,BUFBSZ,BUFCSZ
-  16B6  19            		add	hl,de
-  16B7  10FB          		djnz	COLDLP2
+  16B3  2192FB        		ld	hl,KYBFSZ
+  16B6  1E06          		ld	e,06h		;d=0
+  16B8  43            		ld	b,e		;e=6
+  16B9                	COLDLP2:
+  16B9  363F          		ld	(hl),3fh	;KYBFSZ,RSBFSZ,,BUFASZ,BUFBSZ,BUFCSZ
+  16BB  19            		add	hl,de
+  16BC  10FB          		djnz	COLDLP2
                       	
                       	;command jump table
-  16B9  219601        		ld	hl,CMDLST
-  16BC  1161FA        		ld	de,CMDTBL
-  16BF  0E56          		ld	c,2*(CMDLAST-80h+1)	;b=0
-  16C1  EDB0          		ldir
+  16BE  219801        		ld	hl,CMDLST
+  16C1  1161FA        		ld	de,CMDTBL
+  16C4  0E56          		ld	c,2*(CMDLAST-80h+1)	;b=0
+  16C6  EDB0          		ldir
                       	
                       	;function jump table
                       	;	ld	hl,FNCLST
-  16C3  11E5FA        		ld	de,FNCTBL
-  16C6  0E3C          		ld	c,2*(FNCLAST-FNC1ST+1)	;b=0
-  16C8  EDB0          		ldir
+  16C8  11E5FA        		ld	de,FNCTBL
+  16CB  0E3C          		ld	c,2*(FNCLAST-FNC1ST+1)	;b=0
+  16CD  EDB0          		ldir
                       	
                       	;screen
-  16CA  3E10          		ld	a,ROWS
-  16CC  3220FA        		ld	(HEIGHT),a
+  16CF  3E10          		ld	a,ROWS
+  16D1  3220FA        		ld	(HEIGHT),a
                       	
-  16CF  1191FD        		ld	de,VRAM		;top of active page data
-  16D2  3E05          		ld	a,05h
-  16D4                	COLDLP3:
-  16D4  214801        		ld	hl,PAGEDATA
-  16D7  0E37          		ld	c,PAGE1-VRAM	;b=0
-  16D9  EDB0          		ldir
-  16DB  3D            		dec	a
-  16DC  20F6          		jr	nz,COLDLP3
+  16D4  1191FD        		ld	de,VRAM		;top of active page data
+  16D7  3E05          		ld	a,05h
+  16D9                	COLDLP3:
+  16D9  214A01        		ld	hl,PAGEDATA
+  16DC  0E37          		ld	c,PAGE1-VRAM	;b=0
+  16DE  EDB0          		ldir
+  16E0  3D            		dec	a
+  16E1  20F6          		jr	nz,COLDLP3
                       	
                       	;	ld	de,PAGE4+(PAGE4-PAGE3)
-  16DE  EB            		ex	de,hl
-  16DF  11C9FF        		ld	de,0-(PAGE4-PAGE3)
-  16E2  3EA0          		ld	a,0a0h
-  16E4                	COLDLP5:
-  16E4  19            		add	hl,de
-  16E5  77            		ld	(hl),a		;(PAGE4)=a0h, (PAGE3)=c0h, (PAGE2)=e0h
-  16E6  C620          		add	a,20h
-  16E8  20FA          		jr	nz,COLDLP5
+  16E3  EB            		ex	de,hl
+  16E4  11C9FF        		ld	de,0-(PAGE4-PAGE3)
+  16E7  3EA0          		ld	a,0a0h
+  16E9                	COLDLP5:
+  16E9  19            		add	hl,de
+  16EA  77            		ld	(hl),a		;(PAGE4)=a0h, (PAGE3)=c0h, (PAGE2)=e0h
+  16EB  C620          		add	a,20h
+  16ED  20FA          		jr	nz,COLDLP5
                       	
                       	;RND()
                       	;	call	SETZERO
-  16EA  CDB53B        		call	RNDMNS
+  16EF  CDB53B        		call	RNDMNS
                       	
                       	;16KB or 32KB?
-  16ED  210080        		ld	hl,8000h
+  16F2  210080        		ld	hl,8000h
                       	
                       	;for iP6/iP6win: 16KB if patched
-  16F0  3AEA10        		ld	a,(PATCH1)
-  16F3  B7            		or	a
-  16F4  2008          		jr	nz,RAM16K
+  16F5  3AEA10        		ld	a,(PATCH1)
+  16F8  B7            		or	a
+  16F9  2008          		jr	nz,RAM16K
                       	
-  16F6  7E            		ld	a,(hl)
-  16F7  2F            		cpl
-  16F8  77            		ld	(hl),a
-  16F9  BE            		cp	(hl)
-  16FA  3E04          		ld	a,04h
-  16FC  2804          		jr	z,RAM32K
-  16FE                	RAM16K:
-  16FE  26C0          		ld	h,0c0h
-  1700  3E02          		ld	a,02h
-  1702                	RAM32K:
-  1702  328CFD        		ld	(PAGES),a
-  1705  47            		ld	b,a		;
+  16FB  7E            		ld	a,(hl)
+  16FC  2F            		cpl
+  16FD  77            		ld	(hl),a
+  16FE  BE            		cp	(hl)
+  16FF  3E04          		ld	a,04h
+  1701  2804          		jr	z,RAM32K
+  1703                	RAM16K:
+  1703  26C0          		ld	h,0c0h
+  1705  3E02          		ld	a,02h
+  1707                	RAM32K:
+  1707  328CFD        		ld	(PAGES),a
+  170A  47            		ld	b,a		;
                       	
-  1706  7C            		ld	a,h
-  1707  3291FD        		ld	(VRAM),a
-  170A  CBD4          		set	2,h		;h=h+40h
-  170C  2229FF        		ld	(BASICAD),hl	;l=0
-  170F  2C            		inc	l		;inc hl
-  1710  225FFA        		ld	(STARTAD),hl
+  170B  7C            		ld	a,h
+  170C  3291FD        		ld	(VRAM),a
+  170F  CBD4          		set	2,h		;h=h+40h
+  1711  2229FF        		ld	(BASICAD),hl	;l=0
+  1714  2C            		inc	l		;inc hl
+  1715  225FFA        		ld	(STARTAD),hl
                       	
-  1713                	COLDLP4:
-  1713  78            		ld	a,b		;
-  1714  3D            		dec	a
-  1715  CD0C14        		call	CHGACT
-  1718  CDFB1D        		call	CLS
-  171B  10F6          		djnz	COLDLP4
+  1718                	COLDLP4:
+  1718  78            		ld	a,b		;
+  1719  3D            		dec	a
+  171A  CD0C14        		call	CHGACT
+  171D  CDFB1D        		call	CLS
+  1720  10F6          		djnz	COLDLP4
                       	
-  171D  AF            		xor	a
-  171E  CDED13        		call	CHGDSP
+  1722  AF            		xor	a
+  1723  CDED13        		call	CHGDSP
                       	
                       	;PLAY
-  1721  CDB31B        		call	PLSTOP		;ei
+  1726  CDB31B        		call	PLSTOP		;ei
                       	
-  1724  C33B00        		jp	HOT
+  1729  C33B00        		jp	HOT
                       	
                       	
                       	;analyze an argument
@@ -5047,215 +5051,216 @@
                       	;output: hl=next address, FAC1=numerical value or pointer to string descriptor
                       	;	 (ARGTYP)=0(numeric), 1(string), other(cannot analyze)
                       	;destroy: FAC2,af,bc,de,hl
-  1727                	ARG:
-  1727  E5            		push	hl
-  1728  CD420C        		call	SETZERO		;for first +-
-  172B  E1            		pop	hl
-  172C  AF            		xor	a
-  172D  5F            		ld	e,a
-  172E  D5            		push	de		;e=dummy operator
-  172F  3D            		dec	a
-  1730  3225FF        		ld	(ARGTYP),a	;ff=unknown
-  1733  3265FF        		ld	(OPRTR),a
-  1736                	ARGLP:
-  1736  E5            		push	hl
-  1737  CDCC34        		call	CHKFRE
-  173A  E1            		pop	hl
-  173B                	ARGLP2:
-  173B  CD573F        		call	SKIPSP
-  173E  47            		ld	b,a		;
-  173F  23            		inc	hl
-  1740  224EFF        		ld	(PROGAD),hl
+  172C                	ARG:
+  172C  E5            		push	hl
+  172D  CD420C        		call	SETZERO		;for first +-
+  1730  E1            		pop	hl
+  1731  AF            		xor	a
+  1732  5F            		ld	e,a
+  1733  D5            		push	de		;e=dummy operator
+  1734  3D            		dec	a
+  1735  3225FF        		ld	(ARGTYP),a	;ff=unknown
+  1738  3265FF        		ld	(OPRTR),a
+  173B                	ARGLP:
+  173B  E5            		push	hl
+  173C  CDCC34        		call	CHKFRE
+  173F  E1            		pop	hl
+  1740                	ARGLP2:
+  1740  CD573F        		call	SKIPSP
+  1743  47            		ld	b,a		;
+  1744  23            		inc	hl
+  1745  224EFF        		ld	(PROGAD),hl
                       	
                       	;command, function, operator
-  1743  B7            		or	a
-  1744  FA1B18        		jp	m,ARGCMD
+  1748  B7            		or	a
+  1749  FA2018        		jp	m,ARGCMD
                       	
                       	;previous argument without operator?
-  1747  3A65FF        		ld	a,(OPRTR)
-  174A  B7            		or	a
-  174B  281F          		jr	z,ARGTAIL
+  174C  3A65FF        		ld	a,(OPRTR)
+  174F  B7            		or	a
+  1750  281F          		jr	z,ARGTAIL
                       	;[A-Z]
-  174D  78            		ld	a,b		;
-  174E  D641          		sub	'A'
-  1750  FE1A          		cp	'Z'-'A'+1
-  1752  3847          		jr	c,ARGVAR
+  1752  78            		ld	a,b		;
+  1753  D641          		sub	'A'
+  1755  FE1A          		cp	'Z'-'A'+1
+  1757  3847          		jr	c,ARGVAR
                       	;[0-9&.]
-  1754  D6EF          		sub	'0'-'A'
-  1756  FE0A          		cp	'9'-'0'+1
-  1758  78            		ld	a,b		;
-  1759  382F          		jr	c,ARGNUM
-  175B  FE26          		cp	'&'
-  175D  282B          		jr	z,ARGNUM
-  175F  FE2E          		cp	'.'
-  1761  2827          		jr	z,ARGNUM
+  1759  D6EF          		sub	'0'-'A'
+  175B  FE0A          		cp	'9'-'0'+1
+  175D  78            		ld	a,b		;
+  175E  382F          		jr	c,ARGNUM
+  1760  FE26          		cp	'&'
+  1762  282B          		jr	z,ARGNUM
+  1764  FE2E          		cp	'.'
+  1766  2827          		jr	z,ARGNUM
                       	;others
-  1763  FE22          		cp	22h		;double quotation mark
-  1765  CAED17        		jp	z,ARGSTR
-  1768  FE28          		cp	'('
-  176A  2808          		jr	z,PARL
-  176C                	ARGTAIL:
-  176C  2B            		dec	hl
-  176D  224EFF        		ld	(PROGAD),hl
-  1770  AF            		xor	a
-  1771  C3FA18        		jp	OPR
+  1768  FE22          		cp	22h		;double quotation mark
+  176A  CAF217        		jp	z,ARGSTR
+  176D  FE28          		cp	'('
+  176F  2808          		jr	z,PARL
+  1771                	ARGTAIL:
+  1771  2B            		dec	hl
+  1772  224EFF        		ld	(PROGAD),hl
+  1775  AF            		xor	a
+  1776  C3FA18        		jp	OPR
                       	
-  1774                	PARL:
-  1774  CD5E3F        		call	CHKCLN
-  1777  CA1204        		jp	z,MOERR
-  177A  CD2717        		call	ARG
-  177D  3A25FF        		ld	a,(ARGTYP)
-  1780  FE02          		cp	02h
-  1782  D2DC03        		jp	nc,SNERR
-  1785  CDC40B        		call	CHKRPAR
-  1788  18AC          		jr	ARGLP
+  1779                	PARL:
+  1779  CD5E3F        		call	CHKCLN
+  177C  CA1204        		jp	z,MOERR
+  177F  CD2C17        		call	ARG
+  1782  3A25FF        		ld	a,(ARGTYP)
+  1785  FE02          		cp	02h
+  1787  D2DC03        		jp	nc,SNERR
+  178A  CDC40B        		call	CHKRPAR
+  178D  18AC          		jr	ARGLP
                       	
-  178A                	ARGNUM:
-  178A  CD9317        		call	ARGNCHK
-  178D  2B            		dec	hl
-  178E  CD9839        		call	ATOF
-  1791  18A8          		jr	ARGLP2
+  178F                	ARGNUM:
+  178F  CD9817        		call	ARGNCHK
+  1792  2B            		dec	hl
+  1793  CD9839        		call	ATOF
+  1796  18A8          		jr	ARGLP2
                       	
-  1793                	ARGNCHK:
-  1793  AF            		xor	a
-  1794  3265FF        		ld	(OPRTR),a
-  1797  3225FF        		ld	(ARGTYP),a
-  179A  C9            		ret
+  1798                	ARGNCHK:
+  1798  AF            		xor	a
+  1799  3265FF        		ld	(OPRTR),a
+  179C  3225FF        		ld	(ARGTYP),a
+  179F  C9            		ret
                       	
-  179B                	ARGVAR:
-  179B  E5            		push	hl		;program address
-  179C  CD9D33        		call	GETNAME
-  179F  3A25FF        		ld	a,(ARGTYP)
-  17A2  F5            		push	af		;;
-  17A3  3A65FF        		ld	a,(OPRTR)
-  17A6  F5            		push	af		;;;
-  17A7  EB            		ex	de,hl
-  17A8  CD2539        		call	PUSHF1
-  17AB  EB            		ex	de,hl
+  17A0                	ARGVAR:
+  17A0  E5            		push	hl		;program address
+  17A1  CD9D33        		call	GETNAME
+  17A4  3A25FF        		ld	a,(ARGTYP)
+  17A7  F5            		push	af		;;
+  17A8  3A65FF        		ld	a,(OPRTR)
+  17AB  F5            		push	af		;;;
+  17AC  EB            		ex	de,hl
+  17AD  CD2539        		call	PUSHF1
+  17B0  EB            		ex	de,hl
                       	
-  17AC  C5            		push	bc		;variable name
-  17AD  7E            		ld	a,(hl)
-  17AE  FE28          		cp	'('
-  17B0  280D          		jr	z,ARGVARR
-  17B2  224EFF        		ld	(PROGAD),hl
-  17B5  CDC133        		call	SRCHVAR
-  17B8  3008          		jr	nc,ARGVNC
-  17BA  11AB0E        		ld	de,ZERO
-  17BD  1803          		jr	ARGVNC
-  17BF                	ARGVARR:
-  17BF  CDBF32        		call	GETARR
-  17C2                	ARGVNC:
-  17C2  C1            		pop	bc		;variable name
-  17C3  CD3439        		call	POPF1
-  17C6  F1            		pop	af		;;;
-  17C7  3225FF        		ld	(ARGTYP),a
-  17CA  F1            		pop	af		;;
-  17CB  3265FF        		ld	(OPRTR),a
-  17CE  E1            		pop	hl		;program address
-  17CF  CB79          		bit	7,c
-  17D1  2011          		jr	nz,ARGVSTR
-  17D3                	ARGVNUM:
-  17D3  CD9317        		call	ARGNCHK
-  17D6  EB            		ex	de,hl
-  17D7  1166FF        		ld	de,FAC1
-  17DA  EDA0          		ldi
-  17DC                	ARGVLDIR:
-  17DC  010400        		ld	bc,0004h
-  17DF  EDB0          		ldir
-  17E1  C34819        		jp	ARGNEXT2
+  17B1  C5            		push	bc		;variable name
+  17B2  7E            		ld	a,(hl)
+  17B3  FE28          		cp	'('
+  17B5  280D          		jr	z,ARGVARR
+  17B7  224EFF        		ld	(PROGAD),hl
+  17BA  CDC133        		call	SRCHVAR
+  17BD  3008          		jr	nc,ARGVNC
+  17BF  11AB0E        		ld	de,ZERO
+  17C2  1803          		jr	ARGVNC
+  17C4                	ARGVARR:
+  17C4  CDBF32        		call	GETARR
+  17C7                	ARGVNC:
+  17C7  C1            		pop	bc		;variable name
+  17C8  CD3439        		call	POPF1
+  17CB  F1            		pop	af		;;;
+  17CC  3225FF        		ld	(ARGTYP),a
+  17CF  F1            		pop	af		;;
+  17D0  3265FF        		ld	(OPRTR),a
+  17D3  E1            		pop	hl		;program address
+  17D4  CB79          		bit	7,c
+  17D6  2011          		jr	nz,ARGVSTR
+  17D8                	ARGVNUM:
+  17D8  CD9817        		call	ARGNCHK
+  17DB  EB            		ex	de,hl
+  17DC  1166FF        		ld	de,FAC1
+  17DF  EDA0          		ldi
+  17E1                	ARGVLDIR:
+  17E1  010400        		ld	bc,0004h
+  17E4  EDB0          		ldir
+  17E6  C34819        		jp	ARGNEXT2
                       	
                       	
                       	;string variable
-  17E4                	ARGVSTR:
-  17E4  CD0B18        		call	ARGSCHK
-  17E7  EB            		ex	de,hl
-  17E8  112DFF        		ld	de,STRDSC1
-  17EB  18EF          		jr	ARGVLDIR
+  17E9                	ARGVSTR:
+  17E9  CD1018        		call	ARGSCHK
+  17EC  EB            		ex	de,hl
+  17ED  112DFF        		ld	de,STRDSC1
+  17F0  18EF          		jr	ARGVLDIR
                       	
-  17ED                	ARGSTR:
-  17ED  CD0B18        		call	ARGSCHK
-  17F0  222FFF        		ld	(STRDSC1+2),hl
-  17F3  1E00          		ld	e,00h
-  17F5                	ARGSLP:
-  17F5  7E            		ld	a,(hl)
-  17F6  B7            		or	a
-  17F7  280B          		jr	z,ARGSOK
-  17F9  23            		inc	hl
-  17FA  FE22          		cp	22h		;double quotation mark
-  17FC  2806          		jr	z,ARGSOK
-  17FE  1C            		inc	e
-  17FF  CA0304        		jp	z,LSERR
-  1802  18F1          		jr	ARGSLP
-  1804                	ARGSOK:
-  1804  ED532DFF      		ld	(STRDSC1),de
-  1808  C33B17        		jp	ARGLP2
+  17F2                	ARGSTR:
+  17F2  CD1018        		call	ARGSCHK
+  17F5  222FFF        		ld	(STRDSC1+2),hl
+  17F8  1E00          		ld	e,00h
+  17FA                	ARGSLP:
+  17FA  7E            		ld	a,(hl)
+  17FB  B7            		or	a
+  17FC  280B          		jr	z,ARGSOK
+  17FE  23            		inc	hl
+  17FF  FE22          		cp	22h		;double quotation mark
+  1801  2806          		jr	z,ARGSOK
+  1803  1C            		inc	e
+  1804  CA0304        		jp	z,LSERR
+  1807  18F1          		jr	ARGSLP
+  1809                	ARGSOK:
+  1809  7B            		ld	a,e
+  180A  322DFF        		ld	(STRDSC1),a
+  180D  C34017        		jp	ARGLP2
                       	
                       	;destroy: af,bc
-  180B                	ARGSCHK:
-  180B  AF            		xor	a
-  180C  3265FF        		ld	(OPRTR),a	;a=0
-  180F  3C            		inc	a
-  1810  3225FF        		ld	(ARGTYP),a	;a=1
-  1813  012DFF        		ld	bc,STRDSC1
-  1816  ED4367FF      		ld	(FAC1+1),bc
-  181A  C9            		ret
+  1810                	ARGSCHK:
+  1810  AF            		xor	a
+  1811  3265FF        		ld	(OPRTR),a	;a=0
+  1814  3C            		inc	a
+  1815  3225FF        		ld	(ARGTYP),a	;a=1
+  1818  012DFF        		ld	bc,STRDSC1
+  181B  ED4367FF      		ld	(FAC1+1),bc
+  181F  C9            		ret
                       	
-  181B                	ARGCMD:
-  181B  FEF2          		cp	FNCLAST+1	;0f2h
-  181D  D2DC03        		jp	nc,SNERR
-  1820  D6CA          		sub	PLUS_		;0cah
-  1822  FE0A          		cp	FNC1ST-PLUS_
-  1824  78            		ld	a,b		;
-  1825  DAFA18        		jp	c,OPR		;0cah-0d3h
+  1820                	ARGCMD:
+  1820  FEF2          		cp	FNCLAST+1	;0f2h
+  1822  D2DC03        		jp	nc,SNERR
+  1825  D6CA          		sub	PLUS_		;0cah
+  1827  FE0A          		cp	FNC1ST-PLUS_
+  1829  78            		ld	a,b		;
+  182A  DAFA18        		jp	c,OPR		;0cah-0d3h
                       	
-  1828  3A65FF        		ld	a,(OPRTR)
-  182B  B7            		or	a
-  182C  CA6C17        		jp	z,ARGTAIL
+  182D  3A65FF        		ld	a,(OPRTR)
+  1830  B7            		or	a
+  1831  CA7117        		jp	z,ARGTAIL
                       	
-  182F  78            		ld	a,b		;
-  1830  FEC8          		cp	NOT_		;0c8h
-  1832  CAFA18        		jp	z,OPR
-  1835  FE9F          		cp	SCREEN_		;9fh
-  1837  280D          		jr	z,FNC
-  1839  FEC4          		cp	FN_		;0c4h
-  183B  2809          		jr	z,FNC
-  183D  FEC6          		cp	INKEY_		;0c6h
-  183F  2805          		jr	z,FNC
-  1841  FECA          		cp	PLUS_		;0cah
-  1843  DA6C17        		jp	c,ARGTAIL
+  1834  78            		ld	a,b		;
+  1835  FEC8          		cp	NOT_		;0c8h
+  1837  CAFA18        		jp	z,OPR
+  183A  FE9F          		cp	SCREEN_		;9fh
+  183C  280D          		jr	z,FNC
+  183E  FEC4          		cp	FN_		;0c4h
+  1840  2809          		jr	z,FNC
+  1842  FEC6          		cp	INKEY_		;0c6h
+  1844  2805          		jr	z,FNC
+  1846  FECA          		cp	PLUS_		;0cah
+  1848  DA7117        		jp	c,ARGTAIL
                       	
                       	;	jr	FNC
                       	
                       	;function
-  1846                	FNC:
-  1846  AF            		xor	a
-  1847  3225FF        		ld	(ARGTYP),a
-  184A  78            		ld	a,b		;
-  184B  FEC6          		cp	INKEY_
-  184D  CA6927        		jp	z,F_INKY
-  1850  FEC4          		cp	FN_
-  1852  CAC53E        		jp	z,F_FN
-  1855  FE9F          		cp	SCREEN_
-  1857  CAA43E        		jp	z,F_SCRN
+  184B                	FNC:
+  184B  AF            		xor	a
+  184C  3225FF        		ld	(ARGTYP),a
+  184F  78            		ld	a,b		;
+  1850  FEC6          		cp	INKEY_
+  1852  CA6927        		jp	z,F_INKY
+  1855  FEC4          		cp	FN_
+  1857  CAC53E        		jp	z,F_FN
+  185A  FE9F          		cp	SCREEN_
+  185C  CAA43E        		jp	z,F_SCRN
                       	
-  185A  CDCD18        		call	CALLFNC
-  185D                	FNCRTN:
-  185D  2A4EFF        		ld	hl,(PROGAD)
-  1860                	CLRSTRD:
-  1860  3A25FF        		ld	a,(ARGTYP)
-  1863  B7            		or	a
-  1864  2003          		jr	nz,CLRSTRDNZ
-  1866  322DFF        		ld	(STRDSC1),a	;=0
-  1869                	CLRSTRDNZ:
-  1869  AF            		xor	a
-  186A  3265FF        		ld	(OPRTR),a
-  186D  C33617        		jp	ARGLP
+  185F  CDCD18        		call	CALLFNC
+  1862                	FNCRTN:
+  1862  2A4EFF        		ld	hl,(PROGAD)
+  1865                	CLRSTRD:
+  1865  3A25FF        		ld	a,(ARGTYP)
+  1868  B7            		or	a
+  1869  2003          		jr	nz,CLRSTRDNZ
+  186B  322DFF        		ld	(STRDSC1),a	;=0
+  186E                	CLRSTRDNZ:
+  186E  AF            		xor	a
+  186F  3265FF        		ld	(OPRTR),a
+  1872  C33B17        		jp	ARGLP
                       	
                       	
                       	;set border attribute
                       	;input: a=color code
                       	;destroy: af
-  1870                	_SETBO:	ds	SETBO-_SETBO
+  1875                	_SETBO:	ds	SETBO-_SETBO
   18C3                		org	SETBO
                       	
   18C3  32C6FE        		ld	(BORDERC),a
@@ -5279,7 +5284,7 @@
                       	;SGN()...CHR$()
   18DA  F5            		push	af
   18DB  CDB50B        		call	CHKLPAR
-  18DE  CD2717        		call	ARG
+  18DE  CD2C17        		call	ARG
   18E1  CDC40B        		call	CHKRPAR
   18E4  F1            		pop	af
                       	
@@ -5344,12 +5349,12 @@
   193D  1809          		jr	ARGNEXT2
   193F                	ARGNEXTS:
   193F  CDE819        		call	COPYSTR
-  1942  2A65FF        		ld	hl,(FAC1-1)	;h=length, l=operator
+  1942  2A65FF        		ld	hl,(FAC1-1)	;l=operator
   1945  CBB5          		res	6,l
   1947  E5            		push	hl
   1948                	ARGNEXT2:
   1948  2A4EFF        		ld	hl,(PROGAD)
-  194B  C33617        		jp	ARGLP
+  194B  C33B17        		jp	ARGLP
                       	
                       	
   194E                	CALLOP:
@@ -5376,7 +5381,7 @@
   196B  3ED1          		ld	a,GT_
                       	
   196D                	CALLOPOK:
-  196D  11F200        		ld	de,OPRTBL-(0c8h-80h)*2
+  196D  11F400        		ld	de,OPRTBL-(0c8h-80h)*2
   1970  CD473F        		call	JPTBL
   1973  AF            		xor	a
   1974  3265FF        		ld	(OPRTR),a
@@ -7200,7 +7205,7 @@
   227F                	_JOYTBL:ds	JOYTBL-_JOYTBL
   2286                		org	JOYTBL
                       	;		    u   d   ud  l   ul  dl  udl
-  2286  00010500070806		db	0,  1,  5,  0,  7,  8,  6,  7,
+  2286  00010500070806		db	0,  1,  5,  0,  7,  8,  6,  7
                       	;		r   ur  dr  udr lr  ulr dlr udlr
   228E  03020403000105		db	3,  2,  4,  3,  0,  1,  5,  0
                       	
@@ -7569,10 +7574,10 @@
   2470  C9            		ret
                       	
                       	
-                      	;subtract 4-byte integer from 4byte integer
+                      	;subtract 4-byte integer from 4-byte integer
                       	;input: FAC1(integer),FAC2(integer)
                       	;output: FAC1(integer),f
-                      	;destroy: de,hl
+                      	;destroy: f,de,hl
   2471                	SUBINT4:
   2471  2A66FF        		ld	hl,(FAC1)
   2474  ED5B6DFF      		ld	de,(FAC2)
@@ -7667,7 +7672,7 @@
                       	
                       	
                       	;4-byte integer=0?
-                      	;output: a(4 bytes OR),z
+                      	;output: a(4 bytes OR),z-flag
                       	;destroy: af
   24DE                	CHKINT4:
   24DE  E5            		push	hl
@@ -7829,13 +7834,13 @@
                       	;convert intermediate code to command/function ascii characters
                       	;input: a=code
                       	;output: a=first character, hl=address
-                      	;destroy: f,b,hl
+                      	;destroy: b,f,hl
   25B5                	CNVASC:
-  25B5  212702        		ld	hl,CMDNAME-1
+  25B5  212902        		ld	hl,CMDNAME-1
   25B8  FEC2          		cp	TAB_
   25BA  3805          		jr	c,CNVASCC
                       	;function
-  25BC  21DF02        		ld	hl,FNCNAME-1
+  25BC  21E102        		ld	hl,FNCNAME-1
   25BF  D642          		sub	TAB_-80h
                       	
   25C1                	CNVASCC:
@@ -8000,7 +8005,7 @@
   2681                	STRARG:
   2681  CD5E3F        		call	CHKCLN
   2684  CA1204        		jp	z,MOERR
-  2687  CD2717        		call	ARG
+  2687  CD2C17        		call	ARG
   268A                	STRARG2:
   268A  EB            		ex	de,hl
   268B  CDA70B        		call	CHKSTR
@@ -8198,7 +8203,7 @@
                       	
                       	;INKEY$
   2769                	F_INKY:
-  2769  215D18        		ld	hl,FNCRTN
+  2769  216218        		ld	hl,FNCRTN
   276C  E5            		push	hl
                       	
   276D  CDBC0F        		call	GETCH
@@ -8384,53 +8389,49 @@
                       	
                       	
                       	;insert a character
-                      	;input: a=data (for checking BELL)
                       	;output: hl=VRAM address
                       	;destroy: f,bc,de
   283E                	INSERT:
-  283E  FE07          		cp	07h
-  2840  2005          		jr	nz,INSNZ
-  2842  CD7510        		call	PRTC
-  2845  3E20          		ld	a,' '
-  2847                	INSNZ:
-  2847  F5            		push	af
+  283E  F5            		push	af
                       	
-  2848  2AAAFD        		ld	hl,(CSRAD)
+  283F  2AAAFD        		ld	hl,(CSRAD)
+  2842  CDE628        		call	GETSCRC
+  2845  47            		ld	b,a		;
                       	
-  284B  CDE628        		call	GETSCRC
-  284E  47            		ld	b,a		;
+  2846  23            		inc	hl
+  2847  CD3314        		call	CHKLINE
+  284A  204C          		jr	nz,INSSCRL
                       	
-  284F  23            		inc	hl
-  2850  CD3314        		call	CHKLINE
-  2853  2043          		jr	nz,INSSCRL
+  284C  CD0716        		call	CNVATT1
+  284F  4F            		ld	c,a
                       	
-  2855  CD0716        		call	CNVATT1
-  2858  4F            		ld	c,a
+  2850                	INSLP:
+  2850  CDE628        		call	GETSCRC
+  2853  25            		dec	h
+  2854  25            		dec	h
+  2855  71            		ld	(hl),c
+  2856  24            		inc	h
+  2857  24            		inc	h
                       	
-  2859                	INSLP:
-  2859  CDE628        		call	GETSCRC
-  285C  25            		dec	h
-  285D  25            		dec	h
-  285E  71            		ld	(hl),c
-  285F  24            		inc	h
-  2860  24            		inc	h
+  2858  70            		ld	(hl),b
+  2859  47            		ld	b,a
+  285A  23            		inc	hl
+  285B  CD3314        		call	CHKLINE
+  285E  28F0          		jr	z,INSLP
                       	
-  2861  70            		ld	(hl),b
-  2862  47            		ld	b,a
-  2863  23            		inc	hl
-  2864  CD3314        		call	CHKLINE
-  2867  28F0          		jr	z,INSLP
+  2860  78            		ld	a,b
+  2861  FE20          		cp	' '
+  2863  2033          		jr	nz,INSSCRL
+  2865  F1            		pop	af
+  2866  C9            		ret
                       	
-  2869  78            		ld	a,b
-  286A  FE20          		cp	' '
-  286C  202A          		jr	nz,INSSCRL
-  286E  F1            		pop	af
-  286F  C9            		ret
+  2867                	NOINSTBL:
+  2867  020305060B0C0D		db	02h, 03h, 05h, 06h, 0bh, 0ch, 0dh, 15h, 1ch, 1dh, 1eh, 1fh
                       	
                       	
                       	;clear screen using console parameters
                       	;destroy: af,bc,de,hl
-  2870                	_CTLL:	ds	CTLL-_CTLL
+  2873                	_CTLL:	ds	CTLL-_CTLL
   2874                		org	CTLL
                       	
   2874  CD4911        		call	CTLHOM
@@ -8640,14 +8641,14 @@
                       	
   2967                	SEDLP:
   2967  CDC40F        		call	GETC
-  296A  CD6F29        		call	SEDCMD
+  296A  CD6F29        		call	SEDMAIN
   296D  18F8          		jr	SEDLP
                       	
                       	
-                      	;one line input main routine
-  296F                	SEDCMD:
+                      	;screen edit main routine
+  296F                	SEDMAIN:
   296F  FE20          		cp	20h
-  2971  3842          		jr	c,SEDCTL
+  2971  3836          		jr	c,SEDCTL
                       	
   2973  2AA8FE        		ld	hl,(INSMODE)
   2976  2C            		inc	l
@@ -8691,665 +8692,671 @@
   29A4  C9            		ret
                       	
                       	
-  29A5                	NOINSTBL:
-  29A5  020305060B0C0D		db	02h, 03h, 05h, 06h, 0bh, 0ch, 0dh, 15h, 1ch, 1dh, 1eh, 1fh
-                      	
-  29B1                	DELSTR:
-  29B1  1D201D00      		db	1dh, ' ', 1dh, 00h
+  29A5                	DELSTR:
+  29A5  1D201D00      		db	1dh, ' ', 1dh, 00h
                       	
                       	
                       	;control code
-  29B5                	SEDCTL:
-  29B5  21A529        		ld	hl,NOINSTBL
-  29B8  010C00        		ld	bc,000ch
-  29BB  EDB1          		cpir
-  29BD  2004          		jr	nz,SEDCMDNZ
-  29BF  21A8FE        		ld	hl,INSMODE
-  29C2  70            		ld	(hl),b		;b=0
-  29C3                	SEDCMDNZ:
-  29C3  2AAAFD        		ld	hl,(CSRAD)
+  29A9                	SEDCTL:
+  29A9  216728        		ld	hl,NOINSTBL
+  29AC  010C00        		ld	bc,000ch
+  29AF  EDB1          		cpir
+  29B1  2004          		jr	nz,SEDCTLNZ
+  29B3  21A8FE        		ld	hl,INSMODE
+  29B6  70            		ld	(hl),b		;b=0
+  29B7                	SEDCTLNZ:
+  29B7  2AAAFD        		ld	hl,(CSRAD)
                       	
-  29C6  FE02          		cp	02h
-  29C8  2878          		jr	z,SEDCTLB
-  29CA  FE03          		cp	03h
-  29CC  CAD42A        		jp	z,SEDSTOP
-  29CF  FE05          		cp	05h
-  29D1  285E          		jr	z,SEDCTLE
-  29D3  FE06          		cp	06h
-  29D5  CA642A        		jp	z,SEDCTLF
-  29D8  FE08          		cp	08h
-  29DA  281E          		jr	z,SEDDEL
-  29DC  FE09          		cp	09h
-  29DE  CAB62A        		jp	z,SEDTAB
-  29E1  FE0A          		cp	0ah
-  29E3  CA8F2A        		jp	z,SEDCTLJ
-  29E6  FE0D          		cp	0dh
-  29E8  CAF62A        		jp	z,SEDRET
-  29EB  FE15          		cp	15h
-  29ED  283D          		jr	z,SEDCTLU
-  29EF  FE12          		cp	12h
-  29F1  2088          		jr	nz,SEDPRTC	;14h,1ch,1dh,1eh,1fh
+  29BA  FE02          		cp	02h
+  29BC  287D          		jr	z,SEDCTLB
+  29BE  FE03          		cp	03h
+  29C0  CACD2A        		jp	z,SEDSTOP
+  29C3  FE05          		cp	05h
+  29C5  2863          		jr	z,SEDCTLE
+  29C7  FE06          		cp	06h
+  29C9  CA5D2A        		jp	z,SEDCTLF
+  29CC  FE07          		cp	07h
+  29CE  CA3C2B        		jp	z,SEDBELL
+  29D1  FE08          		cp	08h
+  29D3  281E          		jr	z,SEDDEL
+  29D5  FE09          		cp	09h
+  29D7  CAAF2A        		jp	z,SEDTAB
+  29DA  FE0A          		cp	0ah
+  29DC  CA882A        		jp	z,SEDCTLJ
+  29DF  FE0D          		cp	0dh
+  29E1  CAEF2A        		jp	z,SEDRET
+  29E4  FE15          		cp	15h
+  29E6  283D          		jr	z,SEDCTLU
+  29E8  FE12          		cp	12h
+  29EA  208F          		jr	nz,SEDPRTC	;14h,1ch,1dh,1eh,1fh
                       	
-  29F3                	SEDINS:
-  29F3  21A8FE        		ld	hl,INSMODE
-  29F6  7E            		ld	a,(hl)
-  29F7  2F            		cpl
-  29F8  77            		ld	(hl),a
-  29F9  C9            		ret
+  29EC                	SEDINS:
+  29EC  21A8FE        		ld	hl,INSMODE
+  29EF  7E            		ld	a,(hl)
+  29F0  2F            		cpl
+  29F1  77            		ld	(hl),a
+  29F2  C9            		ret
                       	
                       	
-  29FA                	SEDDEL:
-  29FA  CD3314        		call	CHKLINE
-  29FD  EB            		ex	de,hl
-  29FE  21B129        		ld	hl,DELSTR
-  2A01  2802          		jr	z,SEDDELZ
-  2A03  13            		inc	de
-  2A04  23            		inc	hl
-  2A05                	SEDDELZ:
-  2A05  D5            		push	de		;
-  2A06  CDCF30        		call	PUTS
-  2A09  CD7E29        		call	CHKIPOS2
-  2A0C  D1            		pop	de		;
-  2A0D  62            		ld	h,d
-  2A0E  6B            		ld	l,e
-  2A0F  1B            		dec	de
-  2A10  CD0716        		call	CNVATT1
-  2A13  4F            		ld	c,a
-  2A14                	DELLP:
-  2A14  CDE628        		call	GETSCRC
-  2A17  12            		ld	(de),a
+  29F3                	SEDDEL:
+  29F3  CD3314        		call	CHKLINE
+  29F6  EB            		ex	de,hl
+  29F7  21A529        		ld	hl,DELSTR
+  29FA  2802          		jr	z,SEDDELZ
+  29FC  13            		inc	de
+  29FD  23            		inc	hl
+  29FE                	SEDDELZ:
+  29FE  D5            		push	de		;
+  29FF  CDCF30        		call	PUTS
+  2A02  CD7E29        		call	CHKIPOS2
+  2A05  D1            		pop	de		;
+  2A06  62            		ld	h,d
+  2A07  6B            		ld	l,e
+  2A08  1B            		dec	de
+  2A09  CD0716        		call	CNVATT1
+  2A0C  4F            		ld	c,a
+  2A0D                	DELLP:
+  2A0D  CDE628        		call	GETSCRC
+  2A10  12            		ld	(de),a
                       	
-  2A18  25            		dec	h
-  2A19  25            		dec	h
-  2A1A  71            		ld	(hl),c
-  2A1B  24            		inc	h
-  2A1C  24            		inc	h
+  2A11  25            		dec	h
+  2A12  25            		dec	h
+  2A13  71            		ld	(hl),c
+  2A14  24            		inc	h
+  2A15  24            		inc	h
                       	
-  2A1D  13            		inc	de
-  2A1E  23            		inc	hl
+  2A16  13            		inc	de
+  2A17  23            		inc	hl
                       	
-  2A1F  CD3314        		call	CHKLINE
-  2A22  28F0          		jr	z,DELLP
+  2A18  CD3314        		call	CHKLINE
+  2A1B  28F0          		jr	z,DELLP
                       	
+  2A1D  2B            		dec	hl
+  2A1E  3620          		ld	(hl),' '
+  2A20  25            		dec	h
+  2A21  25            		dec	h
+  2A22  71            		ld	(hl),c
+                      	
+  2A23  C9            		ret
+                      	
+                      	
+  2A24                	CTLULP:
   2A24  2B            		dec	hl
-  2A25  3620          		ld	(hl),' '
-  2A27  25            		dec	h
-  2A28  25            		dec	h
-  2A29  71            		ld	(hl),c
+  2A25                	SEDCTLU:
+  2A25  CD3314        		call	CHKLINE
+  2A28  28FA          		jr	z,CTLULP
                       	
-  2A2A  C9            		ret
-                      	
-                      	
-  2A2B                	CTLULP:
-  2A2B  2B            		dec	hl
-  2A2C                	SEDCTLU:
-  2A2C  CD3314        		call	CHKLINE
-  2A2F  28FA          		jr	z,CTLULP
-                      	
-  2A31                	SEDCTLE:
-  2A31  25            		dec	h
-  2A32  25            		dec	h
-  2A33  CD0716        		call	CNVATT1
-  2A36  77            		ld	(hl),a
-  2A37  24            		inc	h
-  2A38  24            		inc	h
-  2A39  3620          		ld	(hl),' '
-  2A3B  23            		inc	hl
-  2A3C  CD3314        		call	CHKLINE
-  2A3F  28F0          		jr	z,SEDCTLE
-  2A41  C9            		ret
+  2A2A                	SEDCTLE:
+  2A2A  25            		dec	h
+  2A2B  25            		dec	h
+  2A2C  CD0716        		call	CNVATT1
+  2A2F  77            		ld	(hl),a
+  2A30  24            		inc	h
+  2A31  24            		inc	h
+  2A32  3620          		ld	(hl),' '
+  2A34  23            		inc	hl
+  2A35  CD3314        		call	CHKLINE
+  2A38  28F0          		jr	z,SEDCTLE
+  2A3A  C9            		ret
                       	
                       	
-  2A42                	SEDCTLB:
-  2A42  CD532A        		call	CHKCTLB
-  2A45  30FB          		jr	nc,SEDCTLB
-  2A47                	CTLBLP:
-  2A47  CD532A        		call	CHKCTLB
-  2A4A  38FB          		jr	c,CTLBLP
-  2A4C  23            		inc	hl
-  2A4D  CD8129        		call	CHKIPOS
-  2A50  C36D11        		jp	SETCSR
+  2A3B                	SEDCTLB:
+  2A3B  CD4C2A        		call	CHKCTLB
+  2A3E  30FB          		jr	nc,SEDCTLB
+  2A40                	CTLBLP:
+  2A40  CD4C2A        		call	CHKCTLB
+  2A43  38FB          		jr	c,CTLBLP
+  2A45  23            		inc	hl
+  2A46  CD8129        		call	CHKIPOS
+  2A49  C36D11        		jp	SETCSR
                       	
-  2A53                	CHKCTLB:
-  2A53  2B            		dec	hl
-  2A54  54            		ld	d,h
-  2A55  5D            		ld	e,l
-  2A56  CD5011        		call	AD2XY
-  2A59  3AA2FD        		ld	a,(CONSOL1)
-  2A5C  2C            		inc	l
-  2A5D  BD            		cp	l
-  2A5E  3821          		jr	c,CTLBC
-  2A60                	CTLBNC:
-  2A60  F1            		pop	af		;cancel return address
-  2A61  C34C11        		jp	CTLCR
-                      	
-                      	
-  2A64                	SEDCTLF:
-  2A64  CD752A        		call	CHKCTLF
-  2A67  38FB          		jr	c,SEDCTLF
-  2A69                	CTLFLP:
-  2A69  CD752A        		call	CHKCTLF
-  2A6C  30FB          		jr	nc,CTLFLP
-  2A6E  EB            		ex	de,hl
-  2A6F  CD6D11        		call	SETCSR
-  2A72  C37E29        		jp	CHKIPOS2
-                      	
-  2A75                	CHKCTLF:
-  2A75  23            		inc	hl
-  2A76  54            		ld	d,h
-  2A77  5D            		ld	e,l
-  2A78  CD5011        		call	AD2XY
-  2A7B  3AA5FD        		ld	a,(LASTLIN)
-  2A7E  BD            		cp	l
-  2A7F  3807          		jr	c,CTLFC
-  2A81                	CTLBC:
-  2A81  EB            		ex	de,hl
-  2A82  CDE628        		call	GETSCRC
-  2A85  C3CF0B        		jp	ALPNUM2
-                      	
-  2A88                	CTLFC:
-  2A88  6F            		ld	l,a
-  2A89  2620          		ld	h,COLUMNS
-  2A8B  F1            		pop	af		;cancel return address
-  2A8C  C36D11        		jp	SETCSR
+  2A4C                	CHKCTLB:
+  2A4C  2B            		dec	hl
+  2A4D  54            		ld	d,h
+  2A4E  5D            		ld	e,l
+  2A4F  CD5011        		call	AD2XY
+  2A52  3AA2FD        		ld	a,(CONSOL1)
+  2A55  2C            		inc	l
+  2A56  BD            		cp	l
+  2A57  3821          		jr	c,CTLBC
+  2A59                	CTLBNC:
+  2A59  F1            		pop	af		;cancel return address
+  2A5A  C34C11        		jp	CTLCR
                       	
                       	
-  2A8F                	SEDCTLJ:
-  2A8F  3AA8FE        		ld	a,(INSMODE)
-  2A92  B7            		or	a
-  2A93  3E0A          		ld	a,0ah
-  2A95  CA7B29        		jp	z,SEDPRTC
+  2A5D                	SEDCTLF:
+  2A5D  CD6E2A        		call	CHKCTLF
+  2A60  38FB          		jr	c,SEDCTLF
+  2A62                	CTLFLP:
+  2A62  CD6E2A        		call	CHKCTLF
+  2A65  30FB          		jr	nc,CTLFLP
+  2A67  EB            		ex	de,hl
+  2A68  CD6D11        		call	SETCSR
+  2A6B  C37E29        		jp	CHKIPOS2
                       	
-  2A98  2AA8FD        		ld	hl,(CSRY)	;l=y+1, h=x+1
-  2A9B  3E21          		ld	a,COLUMNS+1
-  2A9D  94            		sub	h
-  2A9E  47            		ld	b,a
-  2A9F                	CTLJLP:
-  2A9F  C5            		push	bc
-  2AA0  3E20          		ld	a,' '
-  2AA2  CD3E28        		call	INSERT
-  2AA5  2AAAFD        		ld	hl,(CSRAD)
-  2AA8  77            		ld	(hl),a
-  2AA9  C1            		pop	bc
-  2AAA  10F3          		djnz	CTLJLP
+  2A6E                	CHKCTLF:
+  2A6E  23            		inc	hl
+  2A6F  54            		ld	d,h
+  2A70  5D            		ld	e,l
+  2A71  CD5011        		call	AD2XY
+  2A74  3AA5FD        		ld	a,(LASTLIN)
+  2A77  BD            		cp	l
+  2A78  3807          		jr	c,CTLFC
+  2A7A                	CTLBC:
+  2A7A  EB            		ex	de,hl
+  2A7B  CDE628        		call	GETSCRC
+  2A7E  C3CF0B        		jp	ALPNUM2
                       	
-  2AAC  CD5011        		call	AD2XY
-  2AAF  CD6D11        		call	SETCSR
-  2AB2  7C            		ld	a,h		;>0
-  2AB3  C34F14        		jp	SETLINE
+  2A81                	CTLFC:
+  2A81  6F            		ld	l,a
+  2A82  2620          		ld	h,COLUMNS
+  2A84  F1            		pop	af		;cancel return address
+  2A85  C36D11        		jp	SETCSR
+                      	
+  2A88                	SEDCTLJ:
+  2A88  3AA8FE        		ld	a,(INSMODE)
+  2A8B  B7            		or	a
+  2A8C  3E0A          		ld	a,0ah
+  2A8E  CA7B29        		jp	z,SEDPRTC
+                      	
+  2A91  2AA8FD        		ld	hl,(CSRY)	;l=y+1, h=x+1
+  2A94  3E21          		ld	a,COLUMNS+1
+  2A96  94            		sub	h
+  2A97  47            		ld	b,a
+  2A98                	CTLJLP:
+  2A98  C5            		push	bc
+  2A99  3E20          		ld	a,' '
+  2A9B  CD3E28        		call	INSERT
+  2A9E  2AAAFD        		ld	hl,(CSRAD)
+  2AA1  77            		ld	(hl),a
+  2AA2  C1            		pop	bc
+  2AA3  10F3          		djnz	CTLJLP
+                      	
+  2AA5  CD5011        		call	AD2XY
+  2AA8  CD6D11        		call	SETCSR
+  2AAB  7C            		ld	a,h		;>0
+  2AAC  C34F14        		jp	SETLINE
                       	
                       	
-  2AB6                	SEDTAB:
-  2AB6  3AA9FD        		ld	a,(CSRX)
-  2AB9  D619          		sub	COLUMNS-07h
-  2ABB  DE07          		sbc	a,07h
-  2ABD  C8            		ret	z
-  2ABE  2F            		cpl
-  2ABF  E607          		and	07h
-  2AC1  3C            		inc	a
-  2AC2  47            		ld	b,a
-  2AC3  3AA8FE        		ld	a,(INSMODE)
-  2AC6  E604          		and	04h
-  2AC8  C61C          		add	a,1ch		;1ch(right) or 20h(space)
-  2ACA  4F            		ld	c,a
-  2ACB                	SEDTABLP:
-  2ACB  C5            		push	bc
-  2ACC  79            		ld	a,c
-  2ACD  CD6F29        		call	SEDCMD
-  2AD0  C1            		pop	bc
-  2AD1  10F8          		djnz	SEDTABLP
-  2AD3  C9            		ret
+  2AAF                	SEDTAB:
+  2AAF  3AA9FD        		ld	a,(CSRX)
+  2AB2  D619          		sub	COLUMNS-07h
+  2AB4  DE07          		sbc	a,07h
+  2AB6  C8            		ret	z
+  2AB7  2F            		cpl
+  2AB8  E607          		and	07h
+  2ABA  3C            		inc	a
+  2ABB  47            		ld	b,a
+  2ABC  3AA8FE        		ld	a,(INSMODE)
+  2ABF  E604          		and	04h
+  2AC1  C61C          		add	a,1ch		;1ch(right) or 20h(space)
+  2AC3  4F            		ld	c,a
+  2AC4                	SEDTABLP:
+  2AC4  C5            		push	bc
+  2AC5  79            		ld	a,c
+  2AC6  CD6F29        		call	SEDMAIN
+  2AC9  C1            		pop	bc
+  2ACA  10F8          		djnz	SEDTABLP
+  2ACC  C9            		ret
                       	
                       	
-  2AD4                	SEDSTOP:
-  2AD4  E1            		pop	hl		;cancel return address
-  2AD5  2AA8FD        		ld	hl,(CSRY)
-  2AD8  AF            		xor	a
-  2AD9  67            		ld	h,a
-  2ADA  11B5FD        		ld	de,LINEST-2
-  2ADD  19            		add	hl,de
-  2ADE                	STOPLP:
-  2ADE  23            		inc	hl
-  2ADF  B6            		or	(hl)
-  2AE0  28FC          		jr	z,STOPLP
+  2ACD                	SEDSTOP:
+  2ACD  E1            		pop	hl		;cancel return address
+  2ACE  2AA8FD        		ld	hl,(CSRY)
+  2AD1  AF            		xor	a
+  2AD2  67            		ld	h,a
+  2AD3  11B5FD        		ld	de,LINEST-2
+  2AD6  19            		add	hl,de
+  2AD7                	STOPLP:
+  2AD7  23            		inc	hl
+  2AD8  B6            		or	(hl)
+  2AD9  28FC          		jr	z,STOPLP
                       	
                       	;	or	a
-  2AE2  ED52          		sbc	hl,de
-  2AE4  2D            		dec	l
-  2AE5  CD6D11        		call	SETCSR
-  2AE8  CD3927        		call	PUTNL
+  2ADB  ED52          		sbc	hl,de
+  2ADD  2D            		dec	l
+  2ADE  CD6D11        		call	SETCSR
+  2AE1  CD3927        		call	PUTNL
                       	
-  2AEB  21DAFE        		ld	hl,INPBUF
-  2AEE  AF            		xor	a
-  2AEF  3218FA        		ld	(STOPFLG),a
-  2AF2  77            		ld	(hl),a
-  2AF3  2B            		dec	hl
-  2AF4  37            		scf
-  2AF5  C9            		ret
+  2AE4  21DAFE        		ld	hl,INPBUF
+  2AE7  AF            		xor	a
+  2AE8  3218FA        		ld	(STOPFLG),a
+  2AEB  77            		ld	(hl),a
+  2AEC  2B            		dec	hl
+  2AED  37            		scf
+  2AEE  C9            		ret
                       	
                       	
-  2AF6                	SEDRET:
-  2AF6  F1            		pop	af		;cancel return address
+  2AEF                	SEDRET:
+  2AEF  F1            		pop	af		;cancel return address
                       	
-  2AF7  3AA7FE        		ld	a,(INPTPAG)
-  2AFA  AC            		xor	h		;(CSRAD+1)
-  2AFB  E6F0          		and	0f0h
-  2AFD  201F          		jr	nz,SETLENMAX	;if other page
+  2AF0  3AA7FE        		ld	a,(INPTPAG)
+  2AF3  AC            		xor	h		;(CSRAD+1)
+  2AF4  E6F0          		and	0f0h
+  2AF6  201F          		jr	nz,SETLENMAX	;if other page
                       	
-  2AFF  3AA8FD        		ld	a,(CSRY)
-  2B02  ED5BA4FE      		ld	de,(INPTXY)
-  2B06  BB            		cp	e
-  2B07  2015          		jr	nz,SETLENMAX
+  2AF8  3AA8FD        		ld	a,(CSRY)
+  2AFB  ED5BA4FE      		ld	de,(INPTXY)
+  2AFF  BB            		cp	e
+  2B00  2015          		jr	nz,SETLENMAX
                       	
-  2B09  01B6FD        		ld	bc,LINEST-1
-  2B0C  79            		ld	a,c
-  2B0D  83            		add	a,e		;no carry
-  2B0E  4F            		ld	c,a
-  2B0F  0A            		ld	a,(bc)
-  2B10  B7            		or	a
-  2B11  280B          		jr	z,SETLENMAX	;if connected to next line
-  2B13  0B            		dec	bc
-  2B14  0A            		ld	a,(bc)
-  2B15  B7            		or	a
-  2B16  2806          		jr	z,SETLENMAX	;if connected to previous line
+  2B02  01B6FD        		ld	bc,LINEST-1
+  2B05  79            		ld	a,c
+  2B06  83            		add	a,e		;no carry
+  2B07  4F            		ld	c,a
+  2B08  0A            		ld	a,(bc)
+  2B09  B7            		or	a
+  2B0A  280B          		jr	z,SETLENMAX	;if connected to next line
+  2B0C  0B            		dec	bc
+  2B0D  0A            		ld	a,(bc)
+  2B0E  B7            		or	a
+  2B0F  2806          		jr	z,SETLENMAX	;if connected to previous line
                       	
-  2B18  3AA6FE        		ld	a,(INPTX)	;end position
-  2B1B  92            		sub	d		;(INPTXY+1)
-  2B1C  1802          		jr	SETLEN
+  2B11  3AA6FE        		ld	a,(INPTX)	;end position
+  2B14  92            		sub	d		;(INPTXY+1)
+  2B15  1802          		jr	SETLEN
                       	
-  2B1E                	SETLENMAX:
-  2B1E  3E47          		ld	a,71
-  2B20                	SETLEN:
-  2B20  32A6FE        		ld	(INPTX),a	;length
+  2B17                	SETLENMAX:
+  2B17  3E47          		ld	a,71
+  2B19                	SETLEN:
+  2B19  32A6FE        		ld	(INPTX),a	;length
                       	
-  2B23                	SRETLP:
-  2B23  CD3314        		call	CHKLINE
-  2B26  2B            		dec	hl
-  2B27  28FA          		jr	z,SRETLP
+  2B1C                	SRETLP:
+  2B1C  CD3314        		call	CHKLINE
+  2B1F  2B            		dec	hl
+  2B20  28FA          		jr	z,SRETLP
                       	
-  2B29  23            		inc	hl
-  2B2A  54            		ld	d,h		;
-  2B2B  CD5011        		call	AD2XY
-  2B2E  3AA7FE        		ld	a,(INPTPAG)
-  2B31  AA            		xor	d		;
-  2B32  E6F0          		and	0f0h
-  2B34  2009          		jr	nz,SRETNZ	;if other page
+  2B22  23            		inc	hl
+  2B23  54            		ld	d,h		;
+  2B24  CD5011        		call	AD2XY
+  2B27  3AA7FE        		ld	a,(INPTPAG)
+  2B2A  AA            		xor	d		;
+  2B2B  E6F0          		and	0f0h
+  2B2D  2009          		jr	nz,SRETNZ	;if different page
                       	
-  2B36  ED5BA4FE      		ld	de,(INPTXY)	;initial position
-  2B3A  7D            		ld	a,l
-  2B3B  BB            		cp	e
-  2B3C  2001          		jr	nz,SRETNZ	;if other line
-  2B3E  EB            		ex	de,hl		;if same line
-  2B3F                	SRETNZ:
-  2B3F  B7            		or	a		;reset c-flag
-  2B40  C3CD11        		jp	XY2AD
+  2B2F  ED5BA4FE      		ld	de,(INPTXY)	;initial position
+  2B33  7D            		ld	a,l
+  2B34  BB            		cp	e
+  2B35  2001          		jr	nz,SRETNZ	;if different line
+  2B37  EB            		ex	de,hl		;if same line
+  2B38                	SRETNZ:
+  2B38  B7            		or	a		;reset c-flag
+  2B39  C3CD11        		jp	XY2AD
+                      	
+                      	
+  2B3C                	SEDBELL:
+  2B3C  3AA8FE        		ld	a,(INSMODE)
+  2B3F  B7            		or	a
+  2B40  CACD1B        		jp	z,BELL
+  2B43  3E20          		ld	a,' '
+  2B45  C36F29        		jp	SEDMAIN
                       	
                       	
                       	;x=x+-1
                       	;input: b(bit7=0:increment, bit7=1:decrement), (GRPX3)
                       	;output: hl,(GRPX3)=X, z-flag(1=overflow)
                       	;destroy: af,de
-  2B43                	INCGX:
-  2B43  2AB1FE        		ld	hl,(GRPX3)
-  2B46  CB78          		bit	7,b
-  2B48  2005          		jr	nz,INCGXNZ
-  2B4A  23            		inc	hl
-  2B4B  7C            		ld	a,h
-  2B4C  B5            		or	l
-  2B4D  1803          		jr	INCGXEND
-  2B4F                	INCGXNZ:
-  2B4F  7C            		ld	a,h
-  2B50  B5            		or	l
-  2B51  2B            		dec	hl
-  2B52                	INCGXEND:
-  2B52  22B1FE        		ld	(GRPX3),hl
-  2B55  C9            		ret
+  2B48                	INCGX:
+  2B48  2AB1FE        		ld	hl,(GRPX3)
+  2B4B  CB78          		bit	7,b
+  2B4D  2005          		jr	nz,INCGXNZ
+  2B4F  23            		inc	hl
+  2B50  7C            		ld	a,h
+  2B51  B5            		or	l
+  2B52  1803          		jr	INCGXEND
+  2B54                	INCGXNZ:
+  2B54  7C            		ld	a,h
+  2B55  B5            		or	l
+  2B56  2B            		dec	hl
+  2B57                	INCGXEND:
+  2B57  22B1FE        		ld	(GRPX3),hl
+  2B5A  C9            		ret
                       	
                       	
                       	;y=y+1
                       	;input: (GRPY3)
                       	;output: de=(GRPY3)
                       	;destroy: af
-  2B56                	INCGY:
-  2B56  ED5BB3FE      		ld	de,(GRPY3)
-  2B5A  13            		inc	de
-  2B5B  ED53B3FE      		ld	(GRPY3),de
-  2B5F  C9            		ret
+  2B5B                	INCGY:
+  2B5B  ED5BB3FE      		ld	de,(GRPY3)
+  2B5F  13            		inc	de
+  2B60  ED53B3FE      		ld	(GRPY3),de
+  2B64  C9            		ret
                       	
                       	
                       	;error-=|dx|*2
                       	;input: bc=dx, hl=error
                       	;output: hl=error
                       	;destroy: af
-  2B60                	SUB2DX:
-  2B60  78            		ld	a,b
-  2B61  07            		rlca
-  2B62  3805          		jr	c,SUB2DXNZ
+  2B65                	SUB2DX:
+  2B65  78            		ld	a,b
+  2B66  07            		rlca
+  2B67  3805          		jr	c,SUB2DXNZ
                       	;dx>0
                       	;	or	a
-  2B64  ED42          		sbc	hl,bc
-  2B66  ED42          		sbc	hl,bc
-  2B68  C9            		ret
+  2B69  ED42          		sbc	hl,bc
+  2B6B  ED42          		sbc	hl,bc
+  2B6D  C9            		ret
                       	
                       	;dx<0
-  2B69                	SUB2DXNZ:
-  2B69  09            		add	hl,bc
-  2B6A  09            		add	hl,bc
-  2B6B  C9            		ret
+  2B6E                	SUB2DXNZ:
+  2B6E  09            		add	hl,bc
+  2B6F  09            		add	hl,bc
+  2B70  C9            		ret
                       	
                       	
                       	;x1 <-> x2, y1 <-> y2
                       	;input: bc=x1, de=y1, (GRPX2)=x2, (GRPY2)=y2
                       	;output: (GRPX2)=larger x,(GRPY2)=larger y,(GRPX3)=smaller x,(GRPY3)=smaller y
                       	;destroy: bc,de,hl
-  2B6C                	SORTXY:
-  2B6C  F5            		push	af
-  2B6D  B7            		or	a
-  2B6E  CDBE2B        		call	CHKGXY23
-  2B71  3807          		jr	c,SORTXOK
-  2B73  22AFFE        		ld	(GRPY2),hl
-  2B76  ED53B3FE      		ld	(GRPY3),de
-  2B7A                	SORTXOK:
-  2B7A  2AADFE        		ld	hl,(GRPX2)
-  2B7D  ED5BB1FE      		ld	de,(GRPX3)
-  2B81  E7            		rst	CPHLDE
-  2B82  3817          		jr	c,SORTX
-  2B84  F1            		pop	af
-  2B85  C9            		ret
+  2B71                	SORTXY:
+  2B71  F5            		push	af
+  2B72  B7            		or	a
+  2B73  CDC32B        		call	CHKGXY23
+  2B76  3807          		jr	c,SORTXOK
+  2B78  22AFFE        		ld	(GRPY2),hl
+  2B7B  ED53B3FE      		ld	(GRPY3),de
+  2B7F                	SORTXOK:
+  2B7F  2AADFE        		ld	hl,(GRPX2)
+  2B82  ED5BB1FE      		ld	de,(GRPX3)
+  2B86  E7            		rst	CPHLDE
+  2B87  3817          		jr	c,SORTX
+  2B89  F1            		pop	af
+  2B8A  C9            		ret
                       	
                       	
                       	;(x1,y1) <-> (x2,y2)
                       	;input: bc=x1, de=y1, (GRPX2)=x2, (GRPY2)=y2
                       	;output: (GRPX2),(GRPY2)=larger y with x, (GRPX3),(GRPY3)=small y with x
                       	;destroy: bc,de,hl
-  2B86                	SORTY:
-  2B86  F5            		push	af
-  2B87  37            		scf
-  2B88  CDBE2B        		call	CHKGXY23
-  2B8B  3815          		jr	c,NOSORT
-  2B8D  22AFFE        		ld	(GRPY2),hl
-  2B90  ED53B3FE      		ld	(GRPY3),de
-  2B94  2AADFE        		ld	hl,(GRPX2)
-  2B97  ED5BB1FE      		ld	de,(GRPX3)
-  2B9B                	SORTX:
-  2B9B  ED53ADFE      		ld	(GRPX2),de
-  2B9F  22B1FE        		ld	(GRPX3),hl
-  2BA2                	NOSORT:
-  2BA2  F1            		pop	af
-  2BA3  C9            		ret
+  2B8B                	SORTY:
+  2B8B  F5            		push	af
+  2B8C  37            		scf
+  2B8D  CDC32B        		call	CHKGXY23
+  2B90  3815          		jr	c,NOSORT
+  2B92  22AFFE        		ld	(GRPY2),hl
+  2B95  ED53B3FE      		ld	(GRPY3),de
+  2B99  2AADFE        		ld	hl,(GRPX2)
+  2B9C  ED5BB1FE      		ld	de,(GRPX3)
+  2BA0                	SORTX:
+  2BA0  ED53ADFE      		ld	(GRPX2),de
+  2BA4  22B1FE        		ld	(GRPX3),hl
+  2BA7                	NOSORT:
+  2BA7  F1            		pop	af
+  2BA8  C9            		ret
                       	
                       	
                       	;sort XY and put bc,de,hl
                       	;output: bc=smaller x, de=smaller y, hl=larger y
                       	;destroy: none
-  2BA4                	SORTXY2:
-  2BA4  CD6C2B        		call	SORTXY
-  2BA7  ED4BB1FE      		ld	bc,(GRPX3)	;smaller x, b=0
-  2BAB  ED5BB3FE      		ld	de,(GRPY3)	;smaller y
-  2BAF  2AAFFE        		ld	hl,(GRPY2)	;larger y
-  2BB2  C9            		ret
+  2BA9                	SORTXY2:
+  2BA9  CD712B        		call	SORTXY
+  2BAC  ED4BB1FE      		ld	bc,(GRPX3)	;smaller x, b=0
+  2BB0  ED5BB3FE      		ld	de,(GRPY3)	;smaller y
+  2BB4  2AAFFE        		ld	hl,(GRPY2)	;larger y
+  2BB7  C9            		ret
                       	
                       	
                       	;push (GRPX2),(GRPY2)
                       	;destroy: af,hl
-  2BB3                	PUSHGXY:
-  2BB3  F1            		pop	af		;return address
-  2BB4  2AADFE        		ld	hl,(GRPX2)
-  2BB7  E5            		push	hl
-  2BB8  2AAFFE        		ld	hl,(GRPY2)
-  2BBB  E5            		push	hl
-  2BBC  F5            		push	af		;return address
-  2BBD  C9            		ret
+  2BB8                	PUSHGXY:
+  2BB8  F1            		pop	af		;return address
+  2BB9  2AADFE        		ld	hl,(GRPX2)
+  2BBC  E5            		push	hl
+  2BBD  2AAFFE        		ld	hl,(GRPY2)
+  2BC0  E5            		push	hl
+  2BC1  F5            		push	af		;return address
+  2BC2  C9            		ret
                       	
                       	
                       	;input: bc=x1, de=y1, (GRPX2)=x2, (GRPY2)=y2,
                       	;       c-flag(1=convert to screen mode cordinate)
                       	;output: bc=(GRPX2)=x2, de=(GRPY2)=y2, hl=(GRPY3)=y1, (GRPX3)=x1, z,c(y1>y2?)
                       	;destroy: af
-  2BBE                	CHKGXY23:
-  2BBE  F5            		push	af
-  2BBF  DC7815        		call	c,GXY2SXY
-  2BC2  F1            		pop	af
+  2BC3                	CHKGXY23:
   2BC3  F5            		push	af
-  2BC4  D4ED2B        		call	nc,CHKGXY
+  2BC4  DC7815        		call	c,GXY2SXY
   2BC7  F1            		pop	af
-  2BC8  ED43B1FE      		ld	(GRPX3),bc
-  2BCC  ED53B3FE      		ld	(GRPY3),de
-  2BD0  ED4BADFE      		ld	bc,(GRPX2)
-  2BD4  ED5BAFFE      		ld	de,(GRPY2)
-  2BD8  F5            		push	af
-  2BD9  DC7815        		call	c,GXY2SXY
-  2BDC  F1            		pop	af
-  2BDD  D4ED2B        		call	nc,CHKGXY
-  2BE0  ED43ADFE      		ld	(GRPX2),bc
-  2BE4  ED53AFFE      		ld	(GRPY2),de
+  2BC8  F5            		push	af
+  2BC9  D4F22B        		call	nc,CHKGXY
+  2BCC  F1            		pop	af
+  2BCD  ED43B1FE      		ld	(GRPX3),bc
+  2BD1  ED53B3FE      		ld	(GRPY3),de
+  2BD5  ED4BADFE      		ld	bc,(GRPX2)
+  2BD9  ED5BAFFE      		ld	de,(GRPY2)
+  2BDD  F5            		push	af
+  2BDE  DC7815        		call	c,GXY2SXY
+  2BE1  F1            		pop	af
+  2BE2  D4F22B        		call	nc,CHKGXY
+  2BE5  ED43ADFE      		ld	(GRPX2),bc
+  2BE9  ED53AFFE      		ld	(GRPY2),de
                       	
-  2BE8  2AB3FE        		ld	hl,(GRPY3)
-  2BEB  E7            		rst	CPHLDE
-  2BEC  C9            		ret
+  2BED  2AB3FE        		ld	hl,(GRPY3)
+  2BF0  E7            		rst	CPHLDE
+  2BF1  C9            		ret
                       	
                       	
                       	;check and round graphic coordinates (x,y)
                       	;input: bc=x, de=y
                       	;output: bc=x, de=y
                       	;destroy: af,hl
-  2BED                	CHKGXY:
-  2BED  78            		ld	a,b
-  2BEE  B7            		or	a
-  2BEF  2802          		jr	z,CHKMNS
-  2BF1  0EFF          		ld	c,0ffh
-  2BF3                	CHKMNS:
-  2BF3  B2            		or	d
-  2BF4  FAE503        		jp	m,FCERR
+  2BF2                	CHKGXY:
+  2BF2  78            		ld	a,b
+  2BF3  B7            		or	a
+  2BF4  2802          		jr	z,CHKMNS
+  2BF6  0EFF          		ld	c,0ffh
+  2BF8                	CHKMNS:
+  2BF8  B2            		or	d
+  2BF9  FAE503        		jp	m,FCERR
                       	
-  2BF7  3A92FD        		ld	a,(SCREEN1)
-  2BFA  47            		ld	b,a		;
-  2BFB  0F            		rrca
-  2BFC  2F            		cpl
-  2BFD  21A6FD        		ld	hl,CONSOL3
-  2C00  A6            		and	(hl)
-  2C01  0F            		rrca
-  2C02  21BF00        		ld	hl,191
-  2C05  3003          		jr	nc,NOFKEY
-  2C07  21B300        		ld	hl,191-12
-  2C0A                	NOFKEY:
-  2C0A  E7            		rst	CPHLDE
-  2C0B  3001          		jr	nc,CHKYOK
-  2C0D  EB            		ex	de,hl
-  2C0E                	CHKYOK:
-  2C0E  78            		ld	a,b		;
-  2C0F  3D            		dec	a
-  2C10  280D          		jr	z,ROUNDY2
-  2C12  F2232C        		jp	p,ROUNDX	;screen mode 3,4
+  2BFC  3A92FD        		ld	a,(SCREEN1)
+  2BFF  47            		ld	b,a		;
+  2C00  0F            		rrca
+  2C01  2F            		cpl
+  2C02  21A6FD        		ld	hl,CONSOL3
+  2C05  A6            		and	(hl)
+  2C06  0F            		rrca
+  2C07  21BF00        		ld	hl,191
+  2C0A  3003          		jr	nc,NOFKEY
+  2C0C  21B300        		ld	hl,191-12
+  2C0F                	NOFKEY:
+  2C0F  E7            		rst	CPHLDE
+  2C10  3001          		jr	nc,CHKYOK
+  2C12  EB            		ex	de,hl
+  2C13                	CHKYOK:
+  2C13  78            		ld	a,b		;
+  2C14  3D            		dec	a
+  2C15  280D          		jr	z,ROUNDY2
+  2C17  F2282C        		jp	p,ROUNDX	;screen mode 3,4
                       	
                       	;round off y for screen mode 1
-  2C15                	ROUNDY1:
-  2C15  CD9A15        		call	DIV12
-  2C18  7B            		ld	a,e
-  2C19  87            		add	a,a		;*2
-  2C1A  83            		add	a,e		;*3
-  2C1B  87            		add	a,a		;*6
-  2C1C  87            		add	a,a		;*12
-  2C1D  1803          		jr	ROUNDY2END
+  2C1A                	ROUNDY1:
+  2C1A  CD9A15        		call	DIV12
+  2C1D  7B            		ld	a,e
+  2C1E  87            		add	a,a		;*2
+  2C1F  83            		add	a,e		;*3
+  2C20  87            		add	a,a		;*6
+  2C21  87            		add	a,a		;*12
+  2C22  1803          		jr	ROUNDY2END
                       	
                       	;round off y for screen mode 2
-  2C1F                	ROUNDY2:
-  2C1F  7B            		ld	a,e
-  2C20  E6FC          		and	0fch
-  2C22                	ROUNDY2END:
-  2C22  5F            		ld	e,a
+  2C24                	ROUNDY2:
+  2C24  7B            		ld	a,e
+  2C25  E6FC          		and	0fch
+  2C27                	ROUNDY2END:
+  2C27  5F            		ld	e,a
                       	
-  2C23                	ROUNDX:
-  2C23  04            		inc	b		;
-  2C24  3EF0          		ld	a,0f0h
-  2C26                	ROUNDXLP:
-  2C26  37            		scf
-  2C27  1F            		rra			;f8,fc,fe,ff
-  2C28  10FC          		djnz	ROUNDXLP
+  2C28                	ROUNDX:
+  2C28  04            		inc	b		;
+  2C29  3EF0          		ld	a,0f0h
+  2C2B                	ROUNDXLP:
+  2C2B  37            		scf
+  2C2C  1F            		rra			;f8,fc,fe,ff
+  2C2D  10FC          		djnz	ROUNDXLP
                       	
-  2C2A  A1            		and	c
-  2C2B  4F            		ld	c,a		;b=0
-  2C2C  C9            		ret
+  2C2F  A1            		and	c
+  2C30  4F            		ld	c,a		;b=0
+  2C31  C9            		ret
                       	
                       	
-  2C2D                	PSCOLR:
-  2C2D  C5            		push	bc		;x
-  2C2E  D5            		push	de		;y
-  2C2F  47            		ld	b,a		;color
-  2C30  7E            		ld	a,(hl)
-  2C31  FE2C          		cp	','
-  2C33  78            		ld	a,b		;color
-  2C34  CCE30D        		call	z,INT1INC
-  2C37  D1            		pop	de		;y
-  2C38  C1            		pop	bc		;x
-  2C39  C3C015        		jp	SETATT
+  2C32                	PSCOLR:
+  2C32  C5            		push	bc		;x
+  2C33  D5            		push	de		;y
+  2C34  47            		ld	b,a		;color
+  2C35  7E            		ld	a,(hl)
+  2C36  FE2C          		cp	','
+  2C38  78            		ld	a,b		;color
+  2C39  CCE30D        		call	z,INT1INC
+  2C3C  D1            		pop	de		;y
+  2C3D  C1            		pop	bc		;x
+  2C3E  C3C015        		jp	SETATT
                       	
                       	
                       	;screen mode 2
-  2C3C                	PSET2:
-  2C3C  25            		dec	h
-  2C3D  25            		dec	h
-  2C3E  3AACFE        		ld	a,(ATTDAT)
-  2C41  5E            		ld	e,(hl)		;
-  2C42  B7            		or	a
-  2C43  2004          		jr	nz,PS2NZ1
-  2C45  CB73          		bit	6,e		;
-  2C47  2004          		jr	nz,PS2NZ2
-  2C49                	PS2NZ1:
-  2C49  CD4A0E        		call	GETSPA2NZ
-  2C4C  77            		ld	(hl),a
-  2C4D                	PS2NZ2:
-  2C4D  24            		inc	h
-  2C4E  24            		inc	h
-  2C4F  CB73          		bit	6,e		;
-  2C51  2004          		jr	nz,PS2SEMI	;semi-graphic mode?
-  2C53  CD1F16        		call	GETSP
-  2C56  77            		ld	(hl),a
+  2C41                	PSET2:
+  2C41  25            		dec	h
+  2C42  25            		dec	h
+  2C43  3AACFE        		ld	a,(ATTDAT)
+  2C46  5E            		ld	e,(hl)		;
+  2C47  B7            		or	a
+  2C48  2004          		jr	nz,PS2NZ1
+  2C4A  CB73          		bit	6,e		;
+  2C4C  2004          		jr	nz,PS2NZ2
+  2C4E                	PS2NZ1:
+  2C4E  CD4A0E        		call	GETSPA2NZ
+  2C51  77            		ld	(hl),a
+  2C52                	PS2NZ2:
+  2C52  24            		inc	h
+  2C53  24            		inc	h
+  2C54  CB73          		bit	6,e		;
+  2C56  2004          		jr	nz,PS2SEMI	;semi-graphic mode?
+  2C58  CD1F16        		call	GETSP
+  2C5B  77            		ld	(hl),a
                       	
-  2C57                	PS2SEMI:
-  2C57  7E            		ld	a,(hl)
-  2C58  E63F          		and	3fh
-  2C5A  B2            		or	d
-  2C5B  4F            		ld	c,a		;;
+  2C5C                	PS2SEMI:
+  2C5C  7E            		ld	a,(hl)
+  2C5D  E63F          		and	3fh
+  2C5F  B2            		or	d
+  2C60  4F            		ld	c,a		;;
                       	
-  2C5C  3AACFE        		ld	a,(ATTDAT)
-  2C5F  B7            		or	a
-  2C60  2809          		jr	z,PSET2C0
-  2C62  3D            		dec	a
-  2C63  E603          		and	03h
-  2C65  0F            		rrca
-  2C66  0F            		rrca
-  2C67  81            		add	a,c		;;
-  2C68  77            		ld	(hl),a
-  2C69  E1            		pop	hl
-  2C6A  C9            		ret
+  2C61  3AACFE        		ld	a,(ATTDAT)
+  2C64  B7            		or	a
+  2C65  2809          		jr	z,PSET2C0
+  2C67  3D            		dec	a
+  2C68  E603          		and	03h
+  2C6A  0F            		rrca
+  2C6B  0F            		rrca
+  2C6C  81            		add	a,c		;;
+  2C6D  77            		ld	(hl),a
+  2C6E  E1            		pop	hl
+  2C6F  C9            		ret
                       	
-  2C6B                	PSET2C0:
-  2C6B  7A            		ld	a,d
-  2C6C  2F            		cpl
-  2C6D  A6            		and	(hl)
-  2C6E  77            		ld	(hl),a
-  2C6F  E1            		pop	hl
-  2C70  C9            		ret
+  2C70                	PSET2C0:
+  2C70  7A            		ld	a,d
+  2C71  2F            		cpl
+  2C72  A6            		and	(hl)
+  2C73  77            		ld	(hl),a
+  2C74  E1            		pop	hl
+  2C75  C9            		ret
                       	
                       	
                       	;continued from BFG
-  2C71                	BFG2:
-  2C71  3AB1FE        		ld	a,(GRPX3)	;smaller x
-  2C74  E6F8          		and	0f8h
-  2C76  47            		ld	b,a
-  2C77  3AADFE        		ld	a,(GRPX2)	;larger x
-  2C7A  E6F8          		and	0f8h
-  2C7C  90            		sub	b		;
-  2C7D  0F            		rrca
-  2C7E  0F            		rrca
-  2C7F  0F            		rrca			;int(larger/8)-int(smaller/8)
-  2C80  47            		ld	b,a		;bytes
-  2C81  2003          		jr	nz,BFGLP3	;a=0?
-  2C83  7A            		ld	a,d
-  2C84  A3            		and	e
-  2C85  57            		ld	d,a
+  2C76                	BFG2:
+  2C76  3AB1FE        		ld	a,(GRPX3)	;smaller x
+  2C79  E6F8          		and	0f8h
+  2C7B  47            		ld	b,a
+  2C7C  3AADFE        		ld	a,(GRPX2)	;larger x
+  2C7F  E6F8          		and	0f8h
+  2C81  90            		sub	b		;
+  2C82  0F            		rrca
+  2C83  0F            		rrca
+  2C84  0F            		rrca			;int(larger/8)-int(smaller/8)
+  2C85  47            		ld	b,a		;bytes
+  2C86  2003          		jr	nz,BFGLP3	;a=0?
+  2C88  7A            		ld	a,d
+  2C89  A3            		and	e
+  2C8A  57            		ld	d,a
                       	
-  2C86                	BFGLP3:
+  2C8B                	BFGLP3:
                       	;left part
-  2C86  C5            		push	bc
-  2C87  3AACFE        		ld	a,(ATTDAT)
-  2C8A  AE            		xor	(hl)
-  2C8B  A2            		and	d		;d=left part mask
-  2C8C  AE            		xor	(hl)
-  2C8D  77            		ld	(hl),a
+  2C8B  C5            		push	bc
+  2C8C  3AACFE        		ld	a,(ATTDAT)
+  2C8F  AE            		xor	(hl)
+  2C90  A2            		and	d		;d=left part mask
+  2C91  AE            		xor	(hl)
+  2C92  77            		ld	(hl),a
                       	
-  2C8E  05            		dec	b		;
-  2C8F  FAA22C        		jp	m,BFGNEXT
+  2C93  05            		dec	b		;
+  2C94  FAA72C        		jp	m,BFGNEXT
                       	
                       	;middle part
-  2C92  E5            		push	hl		;VRAM address
-  2C93  3AACFE        		ld	a,(ATTDAT)
-  2C96  2804          		jr	z,BFGRGT	;
-  2C98                	BFGLP4:
-  2C98  23            		inc	hl
-  2C99  77            		ld	(hl),a
-  2C9A  10FC          		djnz	BFGLP4
+  2C97  E5            		push	hl		;VRAM address
+  2C98  3AACFE        		ld	a,(ATTDAT)
+  2C9B  2804          		jr	z,BFGRGT	;
+  2C9D                	BFGLP4:
+  2C9D  23            		inc	hl
+  2C9E  77            		ld	(hl),a
+  2C9F  10FC          		djnz	BFGLP4
                       	
                       	;right part
-  2C9C                	BFGRGT:
-  2C9C  23            		inc	hl
-  2C9D  AE            		xor	(hl)
-  2C9E  A3            		and	e		;e=right part mask
-  2C9F  AE            		xor	(hl)
-  2CA0  77            		ld	(hl),a
-  2CA1  E1            		pop	hl		;VRAM address
+  2CA1                	BFGRGT:
+  2CA1  23            		inc	hl
+  2CA2  AE            		xor	(hl)
+  2CA3  A3            		and	e		;e=right part mask
+  2CA4  AE            		xor	(hl)
+  2CA5  77            		ld	(hl),a
+  2CA6  E1            		pop	hl		;VRAM address
                       	
-  2CA2                	BFGNEXT:
-  2CA2  012000        		ld	bc,0020h
-  2CA5  09            		add	hl,bc
-  2CA6  C1            		pop	bc
-  2CA7  0D            		dec	c
-  2CA8  20DC          		jr	nz,BFGLP3
-  2CAA  C3BA2E        		jp	LINEEND2
+  2CA7                	BFGNEXT:
+  2CA7  012000        		ld	bc,0020h
+  2CAA  09            		add	hl,bc
+  2CAB  C1            		pop	bc
+  2CAC  0D            		dec	c
+  2CAD  20DC          		jr	nz,BFGLP3
+  2CAF  C3BA2E        		jp	LINEEND2
                       	
                       	
                       	;if |dy/dx|<=1
-  2CAD                	SLOPEX:
-  2CAD  23            		inc	hl
+  2CB2                	SLOPEX:
+  2CB2  23            		inc	hl
                       	;	or	a
-  2CAE  ED52          		sbc	hl,de		;error=-|dx|
-  2CB0  D9            		exx			;bc'=dx, de'=dy, hl'=error
-  2CB1                	LINELP2:
-  2CB1  ED4BB1FE      		ld	bc,(GRPX3)
-  2CB5  ED5BB3FE      		ld	de,(GRPY3)
-  2CB9  CD4A2D        		call	PSETSXY
+  2CB3  ED52          		sbc	hl,de		;error=-|dx|
+  2CB5  D9            		exx			;bc'=dx, de'=dy, hl'=error
+  2CB6                	LINELP2:
+  2CB6  ED4BB1FE      		ld	bc,(GRPX3)
+  2CBA  ED5BB3FE      		ld	de,(GRPY3)
+  2CBE  CD4A2D        		call	PSETSXY
                       	
-  2CBC  D9            		exx
-  2CBD  19            		add	hl,de		;error+=dy
-  2CBE  19            		add	hl,de		;error+=dy
-  2CBF  CB7C          		bit	7,h
-  2CC1  2008          		jr	nz,ERRMNS
+  2CC1  D9            		exx
+  2CC2  19            		add	hl,de		;error+=dy
+  2CC3  19            		add	hl,de		;error+=dy
+  2CC4  CB7C          		bit	7,h
+  2CC6  2008          		jr	nz,ERRMNS
                       	
                       	;if error>=0
-  2CC3  CD602B        		call	SUB2DX		;error-=|dx|*2
-  2CC6  D9            		exx
-  2CC7  CD562B        		call	INCGY		;increment Y
-  2CCA  D9            		exx
+  2CC8  CD652B        		call	SUB2DX		;error-=|dx|*2
+  2CCB  D9            		exx
+  2CCC  CD5B2B        		call	INCGY		;increment Y
+  2CCF  D9            		exx
                       	
-  2CCB                	ERRMNS:
-  2CCB  78            		ld	a,b
-  2CCC  D9            		exx
-  2CCD  47            		ld	b,a
-  2CCE  CD432B        		call	INCGX		;increment or decrement X
-  2CD1  CAB82E        		jp	z,LINEEND
+  2CD0                	ERRMNS:
+  2CD0  78            		ld	a,b
+  2CD1  D9            		exx
+  2CD2  47            		ld	b,a
+  2CD3  CD482B        		call	INCGX		;increment or decrement X
+  2CD6  CAB82E        		jp	z,LINEEND
                       	
-  2CD4  EB            		ex	de,hl		;de=X
-  2CD5  2AADFE        		ld	hl,(GRPX2)
-  2CD8  D9            		exx
-  2CD9  CB78          		bit	7,b
-  2CDB  D9            		exx
-  2CDC  2801          		jr	z,LINEZ
-  2CDE  EB            		ex	de,hl		;if dx<0
-  2CDF                	LINEZ:
-  2CDF  E7            		rst	CPHLDE
-  2CE0  30CF          		jr	nc,LINELP2
-  2CE2  C3B82E        		jp	LINEEND
+  2CD9  EB            		ex	de,hl		;de=X
+  2CDA  2AADFE        		ld	hl,(GRPX2)
+  2CDD  D9            		exx
+  2CDE  CB78          		bit	7,b
+  2CE0  D9            		exx
+  2CE1  2801          		jr	z,LINEZ
+  2CE3  EB            		ex	de,hl		;if dx<0
+  2CE4                	LINEZ:
+  2CE4  E7            		rst	CPHLDE
+  2CE5  30CF          		jr	nc,LINELP2
+  2CE7  C3B82E        		jp	LINEEND
                       	
                       	
                       	;get [step](x,y) cordinate
@@ -9358,27 +9365,27 @@
                       	;	 (GRPX1)=(GRPX2),(GRPY1)=(GRPY2)=0-32767
                       	;	 a=next data, hl=next data address, z(, or not)
                       	;destroy: f
-  2CE5                	GETGXY:
-  2CE5  CD573F        		call	SKIPSP
-  2CE8  FEC9          		cp	STEP_
-  2CEA  F5            		push	af		;STEP?
-  2CEB  2001          		jr	nz,GETGXYNZ
-  2CED  23            		inc	hl
-  2CEE                	GETGXYNZ:
-  2CEE  CDB50B        		call	CHKLPAR
-  2CF1  CD1D0E        		call	INTARG2		;bc,de
-  2CF4  CDC40B        		call	CHKRPAR
-  2CF7  F1            		pop	af		;STEP?
-  2CF8  CD132D        		call	SETGXY
-  2CFB  CD573F        		call	SKIPSP
-  2CFE  FE2C          		cp	','
-  2D00  C9            		ret
+  2CEA                	GETGXY:
+  2CEA  CD573F        		call	SKIPSP
+  2CED  FEC9          		cp	STEP_
+  2CEF  F5            		push	af		;STEP?
+  2CF0  2001          		jr	nz,GETGXYNZ
+  2CF2  23            		inc	hl
+  2CF3                	GETGXYNZ:
+  2CF3  CDB50B        		call	CHKLPAR
+  2CF6  CD1D0E        		call	INTARG2		;bc,de
+  2CF9  CDC40B        		call	CHKRPAR
+  2CFC  F1            		pop	af		;STEP?
+  2CFD  CD132D        		call	SETGXY
+  2D00  CD573F        		call	SKIPSP
+  2D03  FE2C          		cp	','
+  2D05  C9            		ret
                       	
                       	
                       	;input: bc=x, de=y, z(0=absolute, 1=relative)
                       	;output: bc=x, de=y, (GRPX1)=(GRPX2)=x, (GRPY1)=(GRPY2)=y
                       	;destroy: f
-  2D01                	_SETGXY:ds	SETGXY-_SETGXY
+  2D06                	_SETGXY:ds	SETGXY-_SETGXY
   2D13                		org	SETGXY
                       	
   2D13  E5            		push	hl
@@ -9415,9 +9422,9 @@
                       	;PSET and PRESET
   2D3F                	PSETRST:
   2D3F  F5            		push	af
-  2D40  CDE52C        		call	GETGXY
+  2D40  CDEA2C        		call	GETGXY
   2D43  F1            		pop	af
-  2D44  CD2D2C        		call	PSCOLR
+  2D44  CD322C        		call	PSCOLR
                       	;	jp	PSET
                       	
                       	
@@ -9434,7 +9441,7 @@
   2D4E  57            		ld	d,a
   2D4F  3A92FD        		ld	a,(SCREEN1)
   2D52  3D            		dec	a
-  2D53  CA3C2C        		jp	z,PSET2
+  2D53  CA412C        		jp	z,PSET2
   2D56  3AACFE        		ld	a,(ATTDAT)
   2D59  FA5F2D        		jp	m,PSET1
                       	
@@ -9451,7 +9458,7 @@
                       	
                       	;POINT() function
   2D62                	F_POIN:
-  2D62  CDE52C        		call	GETGXY
+  2D62  CDEA2C        		call	GETGXY
   2D65  CD733E        		call	POINT
   2D68  C37D0C        		jp	I1TOFA
                       	
@@ -9473,7 +9480,7 @@
   2D81  2808          		jr	z,LINE2P
                       	
   2D83                	LINE1P:
-  2D83  CDE52C        		call	GETGXY
+  2D83  CDEA2C        		call	GETGXY
   2D86  FECB          		cp	MINUS_
   2D88  C2DC03        		jp	nz,SNERR
                       	
@@ -9482,7 +9489,7 @@
   2D8C  D5            		push	de		;y1
                       	
   2D8D  23            		inc	hl
-  2D8E  CDE52C        		call	GETGXY
+  2D8E  CDEA2C        		call	GETGXY
   2D91  ED43ADFE      		ld	(GRPX2),bc	;x2
   2D95  ED53AFFE      		ld	(GRPY2),de	;y2
   2D99  3A93FD        		ld	a,(COLOR1)
@@ -9532,8 +9539,8 @@
   2DE4                		org	LINEBF
                       	
   2DE4  E5            		push	hl
-  2DE5  CDB32B        		call	PUSHGXY
-  2DE8  CDA42B        		call	SORTXY2
+  2DE5  CDB82B        		call	PUSHGXY
+  2DE8  CDA92B        		call	SORTXY2
                       	
   2DEB  3A92FD        		ld	a,(SCREEN1)
   2DEE  FE02          		cp	02h
@@ -9577,7 +9584,7 @@
   2E17  D1            		pop	de		;d=left part mask, e=right part mask
   2E18  C1            		pop	bc		;c=lines
                       	
-  2E19  C3712C        		jp	BFG2
+  2E19  C3762C        		jp	BFG2
                       	
                       	
                       	;by Bresenham's line algorithm
@@ -9587,11 +9594,11 @@
   2E1F                		org	LINE
                       	
   2E1F  E5            		push	hl
-  2E20  CDB32B        		call	PUSHGXY
+  2E20  CDB82B        		call	PUSHGXY
   2E23  D5            		push	de
   2E24  C5            		push	bc
                       	
-  2E25  CD862B        		call	SORTY
+  2E25  CD8B2B        		call	SORTY
   2E28  ED4BB3FE      		ld	bc,(GRPY3)	;start (smaller y)
   2E2C  2AAFFE        		ld	hl,(GRPY2)	;end (larger y)
   2E2F  B7            		or	a
@@ -9605,8 +9612,8 @@
   2E35                		org	LINEB
                       	
   2E35  E5            		push	hl
-  2E36  CDB32B        		call	PUSHGXY
-  2E39  CDA42B        		call	SORTXY2
+  2E36  CDB82B        		call	PUSHGXY
+  2E39  CDA92B        		call	SORTXY2
   2E3C  EB            		ex	de,hl
                       	
                       	;down-up-right-left
@@ -9666,7 +9673,7 @@
   2E8A                	DXMNS:
   2E8A  2B            		dec	hl
   2E8B  19            		add	hl,de
-  2E8C  D2AD2C        		jp	nc,SLOPEX	;if |dy/dx|<=1
+  2E8C  D2B22C        		jp	nc,SLOPEX	;if |dy/dx|<=1
                       	
                       	;if |dy/dx|>1
   2E8F  62            		ld	h,d		;error=dy
@@ -9679,7 +9686,7 @@
   2E9A  CD4A2D        		call	PSETSXY
                       	
   2E9D  D9            		exx
-  2E9E  CD602B        		call	SUB2DX		;error-=|dx|*2
+  2E9E  CD652B        		call	SUB2DX		;error-=|dx|*2
   2EA1  CB7C          		bit	7,h
   2EA3  2809          		jr	z,ERRPLS
                       	
@@ -9689,13 +9696,13 @@
   2EA7  78            		ld	a,b
   2EA8  D9            		exx
   2EA9  47            		ld	b,a
-  2EAA  CD432B        		call	INCGX		;increment or decrement X
+  2EAA  CD482B        		call	INCGX		;increment or decrement X
   2EAD  D9            		exx
                       	;	jr	c,LINEEND
                       	
   2EAE                	ERRPLS:
   2EAE  D9            		exx
-  2EAF  CD562B        		call	INCGY		;increment Y
+  2EAF  CD5B2B        		call	INCGY		;increment Y
   2EB2  2AAFFE        		ld	hl,(GRPY2)
   2EB5  E7            		rst	CPHLDE
   2EB6  30DE          		jr	nc,LINELP1
@@ -9716,7 +9723,7 @@
                       	;PAINT command
   2EC4                	C_PAIN:
   2EC4  CD6B2D        		call	SKIPAT
-  2EC7  CDE52C        		call	GETGXY
+  2EC7  CDEA2C        		call	GETGXY
   2ECA  C5            		push	bc		;X
   2ECB  D5            		push	de		;Y
   2ECC  3A93FD        		ld	a,(COLOR1)
@@ -10585,32 +10592,32 @@
   32ED  2A50FF        		ld	hl,(TMP)
   32F0  E5            		push	hl		;multiplied sizes
   32F1  2A4EFF        		ld	hl,(PROGAD)
-  32F4  CD140E        		call	INT2ARG		;get suffix
+  32F4  CD140E        		call	INT2ARG		;get index
   32F7  E1            		pop	hl		;multiplied sizes
   32F8  2250FF        		ld	(TMP),hl
   32FB  E1            		pop	hl		;array address
-  32FC  D5            		push	de		;suffix
+  32FC  D5            		push	de		;index
   32FD  56            		ld	d,(hl)		;de=size of each dimension
   32FE  2B            		dec	hl
   32FF  5E            		ld	e,(hl)
   3300  2B            		dec	hl
-  3301  E3            		ex	(sp),hl		;push array address, pop suffix
+  3301  E3            		ex	(sp),hl		;push array address, pop index
   3302  E7            		rst	CPHLDE
   3303  D2F103        		jp	nc,BSERR
                       	
   3306  D5            		push	de		;size
   3307  ED5B50FF      		ld	de,(TMP)	;multiplied sizes
-  330B  CDF921        		call	MULINT2		;hl = multiplied sizes * suffix
+  330B  CDF921        		call	MULINT2		;hl = multiplied sizes * index
   330E  C1            		pop	bc		;size
   330F  EB            		ex	de,hl
   3310  E1            		pop	hl		;array address
   3311  E3            		ex	(sp),hl		;push array address, pop pointer
-  3312  19            		add	hl,de		;pointer += multiplied size * suffix
+  3312  19            		add	hl,de		;pointer += multiplied sizes * index
   3313  E5            		push	hl		;pointer
   3314  2A50FF        		ld	hl,(TMP)	;multiplied sizes
   3317  50            		ld	d,b		;size
   3318  59            		ld	e,c
-  3319  CDF921        		call	MULINT2		;hl = multiplied size * size
+  3319  CDF921        		call	MULINT2		;hl = multiplied sizes * size
   331C  2250FF        		ld	(TMP),hl
   331F  E1            		pop	hl		;pointer
   3320  E3            		ex	(sp),hl		;push poniter, pop array address
@@ -10992,8 +10999,8 @@
   34B6  214204        		ld	hl,EDIT
   34B9  E5            		push	hl
                       	
-  34BA                	NEWRESSTK:
                       	;destroy: af,bc,de,hl
+  34BA                	NEWRESSTK:
   34BA  21F934        		ld	hl,RESSTK
   34BD  E5            		push	hl
                       	;	jp	NEW
@@ -11111,12 +11118,12 @@
                       	
   356B  7C            		ld	a,h
   356C  FEFA          		cp	0fah
-  356E  DA0904        		jp	c,CNERR
+  356E  DA0904        		jp	c,CNERR		;cont in program
                       	
   3571  2A54FF        		ld	hl,(STOPAD)
   3574  7C            		ld	a,h
   3575  FEFA          		cp	0fah
-  3577  D24204        		jp	nc,EDIT		;if direct command mode
+  3577  D20904        		jp	nc,CNERR	;stop in direct command mode
                       	
   357A  9F            		sbc	a,a		;c-flag=1
   357B  3255FF        		ld	(STOPAD+1),a	;a=ffh
@@ -11371,7 +11378,7 @@
   36C7                	ADDCHKSGN:
   36C7  7C            		ld	a,h
   36C8  92            		sub	d
-  36C9  47            		ld	b,a		;
+  36C9  47            		ld	b,a		;exponent difference
                       	
   36CA  7D            		ld	a,l
   36CB  F5            		push	af		;sign
@@ -11391,7 +11398,7 @@
   36DF  ED5B6FFF      		ld	de,(FAC2+2)
                       	
   36E3                	ADDFLP1:
-  36E3  78            		ld	a,b
+  36E3  78            		ld	a,b		;exponent difference
   36E4  D608          		sub	08h
   36E6  3818          		jr	c,EXPLT8
   36E8  47            		ld	b,a
@@ -11769,7 +11776,7 @@
   387A  3007          		jr	nc,DIVFNC
   387C  216AFF        		ld	hl,FAC1+4
   387F  35            		dec	(hl)
-  3880  CD383F        		call	SLAF1
+  3880  CD383F        		call	SLAINT4
                       	
   3883                	DIVFNC:
   3883  0620          		ld	b,20h
@@ -11796,7 +11803,7 @@
   38AC  CB12          		rl	d
   38AE  D9            		exx			;
                       	
-  38AF  CD383F        		call	SLAF1
+  38AF  CD383F        		call	SLAINT4
   38B2  10D1          		djnz	DIVFLP
                       	
   38B4  17            		rla			;store c-flag
@@ -12489,7 +12496,7 @@
   3C0D  10F9          		djnz	MULRLP2
                       	
   3C0F                	MULRNC:
-  3C0F  CD383F        		call	SLAF1
+  3C0F  CD383F        		call	SLAINT4
   3C12  0D            		dec	c
   3C13  20DE          		jr	nz,MULRLP1
                       	
@@ -12574,9 +12581,9 @@
   3C88  C3E803        		jp	OVERR		;127<=n<=255
   3C8B                	EXPNZ:
   3C8B  3D            		dec	a
-  3C8C  F0            		ret	p		;-128=<n<=-1
+  3C8C  F0            		ret	p		;-128<=n<=-1
   3C8D                	EXPZERO:
-  3C8D  C3420C        		jp	SETZERO		;-256=<n<=-129
+  3C8D  C3420C        		jp	SETZERO		;-256<=n<=-129
                       	
   3C90                	EXPLARGE:
   3C90  CB7D          		bit	7,l		;(FAC1+3)
@@ -12617,7 +12624,7 @@
   3CCA  CD5239        		call	CPYFAC
   3CCD  CDAF37        		call	MULF		;a'^2
   3CD0  CD5239        		call	CPYFAC		;a'^2
-  3CD3  CD6422        		call	SETPLS1		;y
+  3CD3  CD6422        		call	SETPLS1		;y0
                       	
   3CD6  0E12          		ld	c,12h
   3CD8                	LOGLP:
@@ -12939,7 +12946,7 @@
   3EBB  CDCD11        		call	XY2AD
   3EBE  6E            		ld	l,(hl)
   3EBF  CD7E0C        		call	I1TOF
-  3EC2  C35D18        		jp	FNCRTN
+  3EC2  C36218        		jp	FNCRTN
                       	
                       	
                       	;FN() function
@@ -12983,7 +12990,7 @@
   3EFB  225EFF        		ld	(FNPAR),hl
                       	
   3EFE  EB            		ex	de,hl
-  3EFF  CD2717        		call	ARG
+  3EFF  CD2C17        		call	ARG
                       	
   3F02  E1            		pop	hl		;old FN() parameter
   3F03  225EFF        		ld	(FNPAR),hl
@@ -12996,7 +13003,7 @@
   3F0E  E1            		pop	hl
   3F0F  2263FF        		ld	(FNARG+3),hl
   3F12  E1            		pop	hl		;program address
-  3F13  C36018        		jp	CLRSTRD
+  3F13  C36518        		jp	CLRSTRD
                       	
                       	
                       	;set FAC2 and compare
@@ -13049,7 +13056,7 @@
                       	;input: FAC1
                       	;output: FAC1,c-flag
                       	;destroy: f,hl
-  3F38                	SLAF1:
+  3F38                	SLAINT4:
   3F38  2166FF        		ld	hl,FAC1
   3F3B  CB26          		sla	(hl)
   3F3D  23            		inc	hl
@@ -13116,7 +13123,8 @@
                       	
                       	;check comma or argument
                       	;input: hl=program address
-                      	;output: a=(hl), f(z=1:comma), hl=next address
+                      	;output: a=(hl), z-flag(1=comma), hl=next address
+                      	;destroy: f
   3F69                	CHKCMM:
   3F69  CD5E3F        		call	CHKCLN		;a=(hl)
   3F6C  CA1204        		jp	z,MOERR

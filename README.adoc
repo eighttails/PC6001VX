@@ -810,6 +810,12 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.git master
+* PC-6001互換BASICを0.8.1に更新
+* PC-6001mkII/6601用互換BASICを0.5.2に更新
+* Updated PC-6001 compatible basic ROMs to 0.8.1.
+* Updated PC-6001mk2/6601 compatible basic ROMs to 0.5.2.
+
 .4.2.12 2025/04/06
 * PC6001V 2.1.4ベースに更新
 * デバッガの savemem,loadmem コマンドで小文字のファイル名が使えない問題を修正

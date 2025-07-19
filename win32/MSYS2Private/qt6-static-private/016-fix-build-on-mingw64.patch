@@ -1,0 +1,26 @@
+From 28ebc8452b4205aacbdbb6d1c32ab0da6d6bde56 Mon Sep 17 00:00:00 2001
+From: Kim Kulling <kimkulling@users.noreply.github.com>
+Date: Tue, 10 Dec 2024 23:40:02 +0100
+Subject: [PATCH] Fix: Fix build for mingw10 (#5916)
+
+- closes https://github.com/assimp/assimp/issues/5827
+---
+ code/Common/DefaultIOStream.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/code/Common/DefaultIOStream.cpp b/code/Common/DefaultIOStream.cpp
+index e423eae4f..35bbb67a5 100644
+--- a/code/Common/DefaultIOStream.cpp
++++ b/code/Common/DefaultIOStream.cpp
+@@ -157,9 +157,9 @@ size_t DefaultIOStream::FileSize() const {
+             return 0;
+         mCachedSize = (size_t)(fileStat.st_size);
+ #elif defined _WIN32
+-        struct _stat32 fileStat;
++        struct _stat fileStat;
+         //using fileno + fstat avoids having to handle the filename
+-        int err = _fstat32(_fileno(mFile), &fileStat);
++        int err = _fstat(_fileno(mFile), &fileStat);
+         if (0 != err)
+             return 0;
+         mCachedSize = (size_t)(fileStat.st_size);

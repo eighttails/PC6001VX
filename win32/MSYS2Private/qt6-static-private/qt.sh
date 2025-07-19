@@ -11,6 +11,7 @@ ${MINGW_PACKAGE_PREFIX}-cmake \
 ${MINGW_PACKAGE_PREFIX}-ninja \
 ${MINGW_PACKAGE_PREFIX}-clang \
 ${MINGW_PACKAGE_PREFIX}-clang-tools-extra \
+${MINGW_PACKAGE_PREFIX}-llvm \
 ${MINGW_PACKAGE_PREFIX}-pkgconf \
 ${MINGW_PACKAGE_PREFIX}-python \
 ${MINGW_PACKAGE_PREFIX}-xmlstarlet \
@@ -99,6 +100,11 @@ else
     014-imageformats-transitive-dependencies.patch \
     015-qt6-windeployqt-fixes.patch
 
+  cd qtquick3d/src/3rdparty/assimp/src
+  apply_patch_with_msg \
+    016-fix-build-on-mingw64.patch
+  cd -
+
   local _ARCH_TUNE
   if [[ ${CARCH} == x86_64 ]]; then
     _ARCH_TUNE="-march=nocona -msahf -mtune=generic"
@@ -140,13 +146,11 @@ pushd $QT6_STATIC_BUILD
     -Wno-dev \
     --log-level=STATUS \
     -G "Ninja" \
-    -DCMAKE_BUILD_TYPE=MinSizeRel \
-    -DFEATURE_optimize_size=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DFEATURE_optimize_size=OFF \
     -DBUILD_WITH_PCH=OFF \
     -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a" \
     -DBUILD_SHARED_LIBS=OFF \
-    -DBUILD_qtpdf=OFF \
-    -DBUILD_qtwebengine=OFF \
     -DQT_QMAKE_TARGET_MKSPEC=${_platform} \
     -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
     -DINSTALL_BINDIR=bin \
@@ -206,6 +210,7 @@ pushd $QT6_STATIC_BUILD
     -DPython_EXECUTABLE=${MINGW_PREFIX}/bin/python \
     -DOPENSSL_USE_STATIC_LIBS=ON \
     -DZLIB_USE_STATIC_LIBS=ON \
+    -DBUILD_qtwebengine=OFF \
     $(cygpath -am ../$QT_SOURCE_DIR) 
 
     #カスタマイズポイント

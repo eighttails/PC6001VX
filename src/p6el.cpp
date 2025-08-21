@@ -1143,15 +1143,16 @@ WORD EL6::GetAutoKey( void )
 	
 	// 次の文字を取得
 	WORD dat = (BYTE)ak.Buffer.front();
-	
+	ak.Buffer.erase( ak.Buffer.begin() );
 	// かなチェック
 	if( (dat >= 0x86 && dat <= 0xfd) != ((vm->key->GetKeyIndicator() & KI_KANA) ? true : false) ){
-		dat = 0x12;	// 勝手定義 かなキー
-	}else if( (vm->key->GetKeyIndicator() & KI_KANA) &&
+		// かなキー
+		vm->key->ChangeKana();
+	}
+	if( (vm->key->GetKeyIndicator() & KI_KANA) &&
 	          (((dat >= 0xa6 && dat <= 0xaf) || (dat >= 0xb1 && dat <= 0xdd)) != ((vm->key->GetKeyIndicator() & KI_KKANA) ? true : false)) ){
-		dat = 0x13;	// 勝手定義 かなカナ
-	}else{
-		ak.Buffer.erase( ak.Buffer.begin() );
+		// かなカナ
+		vm->key->ChangeKKana();
 	}
 	
 	

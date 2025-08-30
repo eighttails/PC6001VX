@@ -181,12 +181,7 @@ void EL6::ExecMenu( int id )
 	{
 		auto&& dialog = SystemInfoDialog(reinterpret_cast<RenderView*>(graph->GetWindowHandle()));
 #ifdef ALWAYSFULLSCREEN
-#ifdef Q_OS_ANDROID
-		// Androidの場合はQt::WindowMaximizedを使わないと正しいサイズで描画されない。
-		dialog.setWindowState(Qt::WindowMaximized);
-#else
 		dialog.setWindowState(Qt::WindowFullScreen);
-#endif
 #endif
 		dialog.exec();
 		break;

@@ -354,18 +354,7 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	Q_ASSERT(view);
 
 #ifdef ALWAYSFULLSCREEN
-#ifdef Q_OS_ANDROID
-	// Androidの場合はshowMaximized()を使わないと正しいサイズで描画されない。
-	// https://bugreports.qt.io/browse/QTBUG-110878
-	// また、画面サイズを明示的に与えないと正しいサイズにならない場合がある。
-	MWidget->showMaximized();
-	MWidget->resize(1,1); // 強制的にresizeEvent()を発動させる
-	MWidget->resize(MWidget->screen()->availableSize());
-	// 2回ShowMaximizedを呼ばないと反映されない
-	MWidget->showMaximized();
-#else
 	MWidget->showFullScreen();
-#endif
 #else
 	if (fsflag) {
 		MWidget->setWindowState(MWidget->windowState() | Qt::WindowFullScreen);

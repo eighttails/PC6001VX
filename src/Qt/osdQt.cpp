@@ -1841,12 +1841,7 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 
 		ConfigDialog dialog(ecfg, window);
 #ifdef ALWAYSFULLSCREEN
-#ifdef Q_OS_ANDROID
-		// Androidの場合はQt::WindowMaximizedを使わないと正しいサイズで描画されない。
-		dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
-#else
 		dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
-#endif
 #endif
 		dialog.exec();
 		int ret = dialog.result();

@@ -64,7 +64,7 @@ INCLUDEPATH += src src/Qt src/Qt/babel
 unix:!macx {
     #Configuration for Android
     android {
-        ANDROID_TARGET_SDK_VERSION = 34
+        ANDROID_TARGET_SDK_VERSION = 36
         DEFINES += NOLIBINTL NOSINGLEAPP NOMONITOR NOAVI NOOPENGL ALWAYSFULLSCREEN AUTOSUSPEND
         DEFINES -= QT_NO_DEBUG_OUTPUT USEFILESYSTEM
         #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
@@ -95,7 +95,7 @@ win32 {
     QMAKE_LFLAGS += -static
     LIBS_PRIVATE= -lpthread -lsetupapi -lOleAut32
     PKG_CONFIG = 'pkg-config --static'
-    RC_ICONS += src/win32/PC6001VX.ico    
+    RC_ICONS += src/win32/PC6001VX.ico
 } else {
     DEFINES += __stdcall=
 }

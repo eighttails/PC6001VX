@@ -810,6 +810,12 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.4.2.14 2025/08/30
+* ローマ字入力のリプレイがおかしくなるのを修正
+* (Android)SDKバージョンを36に更新
+* Fixed a case where replays of Roman alphabet inputs may not be reproduced correctly.
+* (Android)Updated SDK Version to 36.
+
 .4.2.13 2025/06/06
 * PC-6001互換BASICを0.8.1に更新
 * PC-6001mkII/6601用互換BASICを0.5.2に更新

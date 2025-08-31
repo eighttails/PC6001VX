@@ -57,8 +57,8 @@ apply_patch_with_msg() {
   done
 }
 
-QT_MAJOR_VERSION=6.8
-QT_MINOR_VERSION=.3
+QT_MAJOR_VERSION=6.9
+QT_MINOR_VERSION=.2
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){
@@ -100,10 +100,10 @@ else
     014-imageformats-transitive-dependencies.patch \
     015-qt6-windeployqt-fixes.patch
 
-  cd qtquick3d/src/3rdparty/assimp/src
-  apply_patch_with_msg \
-    016-fix-build-on-mingw64.patch
-  cd -
+  # cd qtquick3d/src/3rdparty/assimp/src
+  # apply_patch_with_msg \
+  #   016-fix-build-on-mingw64.patch
+  # cd -
 
   local _ARCH_TUNE
   if [[ ${CARCH} == x86_64 ]]; then
@@ -133,7 +133,7 @@ makeQtSourceTree static
 exitOnError
 
 #static版
-QT6_STATIC_BUILD=qt6-static-$MSYSTEM
+QT6_STATIC_BUILD=/c/qt6-static-$MSYSTEM
 rm -rf $QT6_STATIC_BUILD
 mkdir $QT6_STATIC_BUILD
 pushd $QT6_STATIC_BUILD
@@ -211,7 +211,7 @@ pushd $QT6_STATIC_BUILD
     -DOPENSSL_USE_STATIC_LIBS=ON \
     -DZLIB_USE_STATIC_LIBS=ON \
     -DBUILD_qtwebengine=OFF \
-    $(cygpath -am ../$QT_SOURCE_DIR) 
+    $(cygpath -am $EXTLIB/$QT_SOURCE_DIR) 
 
     #カスタマイズポイント
     # -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
@@ -223,13 +223,13 @@ pushd $QT6_STATIC_BUILD
     # -DFEATURE_opengl_desktop=OFF \
     # -DFEATURE_ffmpeg=OFF \
     # 最後のソースパス↓
-    # $(cygpath -am ../$QT_SOURCE_DIR) 
+    # $(cygpath -am $EXTLIB/$QT_SOURCE_DIR) 
 
 #---------------------------------------------------
 
   export PATH=$PWD/bin:$PATH
 
-cp config.summary ../qt6_config_summary_$MSYSTEM.txt
+cp config.summary $EXTLIB/qt6_config_summary_$MSYSTEM.txt
 
 nice -n19 cmake --build .
 exitOnError
@@ -237,10 +237,8 @@ exitOnError
 cmake --install .
 exitOnError
 
-
 popd
-
-# rm -rf $QT6_STATIC_BUILD
+rm -rf $QT6_STATIC_BUILD
 }
 
 

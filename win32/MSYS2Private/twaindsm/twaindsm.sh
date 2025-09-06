@@ -34,7 +34,8 @@ mkdir build
 pushd build
 cmake .. \
 -G"MSYS Makefiles" \
--DCMAKE_INSTALL_PREFIX=$PREFIX 
+-DCMAKE_INSTALL_PREFIX=$PREFIX \
+-DCMAKE_POLICY_VERSION_MINIMUM=3.5 
 exitOnError
 
 makeParallel && make install

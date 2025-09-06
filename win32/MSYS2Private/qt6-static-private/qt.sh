@@ -14,6 +14,7 @@ ${MINGW_PACKAGE_PREFIX}-clang-tools-extra \
 ${MINGW_PACKAGE_PREFIX}-llvm \
 ${MINGW_PACKAGE_PREFIX}-pkgconf \
 ${MINGW_PACKAGE_PREFIX}-python \
+${MINGW_PACKAGE_PREFIX}-protobuf \
 ${MINGW_PACKAGE_PREFIX}-xmlstarlet \
 ${MINGW_PACKAGE_PREFIX}-vulkan-headers \
 ${MINGW_PACKAGE_PREFIX}-dbus \

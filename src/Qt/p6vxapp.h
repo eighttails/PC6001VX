@@ -22,9 +22,9 @@
 #endif
 
 #ifdef NOSINGLEAPP
-typedef QApplication ParentAppClass;
+using ParentAppClass = QApplication;
 #else
-typedef SingleApplication ParentAppClass;
+using ParentAppClass = SingleApplication;
 #endif
 
 class QKeyEvent;

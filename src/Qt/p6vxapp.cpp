@@ -203,7 +203,7 @@ void P6VXApp::startup()
 	}
 
 	// P6VXデフォルト設定
-#ifndef NOOPENGL
+#ifndef NO_HWACCEL
 	setDefaultSetting(keyHwAccel, true);
 #endif
 	setDefaultSetting(keyFixMagnification, false);
@@ -470,7 +470,7 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 	QGraphicsScene* scene = view->scene();
 	scene->clear();
 
-#ifndef NOOPENGL
+#ifndef NO_HWACCEL
 	// ステータスバー非表示またはフルスクリーン、かつTILTモードが有効になっている場合、背景を描く
 	if( (!Cfg->GetValue(CB_DispStatus)|| Cfg->GetValue(CB_FullScreen)) &&
 		#ifndef NOMONITOR

@@ -47,7 +47,8 @@ DEFINES += USEFILESYSTEM
 
 #Other feature control flags.
 #DEFINES += NOSINGLEAPP
-#DEFINES += NOOPENGL
+#DEFINES += NO_HWACCEL
+#DEFINES += USE_RHIWIDGET
 #DEFINES += NOSOUND
 #DEFINES += NOCALLBACK
 #DEFINES += NOLIBINTL
@@ -65,7 +66,7 @@ unix:!macx {
     #Configuration for Android
     android {
         ANDROID_TARGET_SDK_VERSION = 36
-        DEFINES += NOLIBINTL NOSINGLEAPP NOMONITOR NOAVI NOOPENGL ALWAYSFULLSCREEN AUTOSUSPEND
+        DEFINES += NOLIBINTL NOSINGLEAPP NOMONITOR NOAVI NO_HWACCEL ALWAYSFULLSCREEN AUTOSUSPEND
         DEFINES -= QT_NO_DEBUG_OUTPUT USEFILESYSTEM
         #Set "ROM Path in target device" to "CUSTOM_ROM_PATH environment variable on build host"
         debug:DEFINES += CUSTOMROMPATH=\\\"$$(CUSTOM_ROM_PATH)\\\"
@@ -110,7 +111,7 @@ win32 {
     }
 }
 
-!contains(DEFINES, NOOPENGL) {
+!contains(DEFINES, NO_HWACCEL) {
     QT += opengl openglwidgets
 }
 
@@ -122,7 +123,7 @@ win32 {
 
 !contains(DEFINES, NOAVI) {
     win32 {
-        FFMPEG_VER = 7.0.1
+        FFMPEG_VER = 8.0
         packagesExist(libavformat-private$${FFMPEG_VER}) {
             DEFINES += __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
             PKGCONFIG += libavformat-private$${FFMPEG_VER} libavcodec-private$${FFMPEG_VER} libswscale-private$${FFMPEG_VER} \

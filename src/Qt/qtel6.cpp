@@ -475,7 +475,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (cfg->GetValue(CB_DispNTSC)) disp43->setChecked(true);
 	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
 	if (cfg->GetValue(CB_ScanLine)) scanLine->setChecked(true);
-#ifndef NOOPENGL
+#ifndef NO_HWACCEL
 	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
 	if (app->getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
 #endif

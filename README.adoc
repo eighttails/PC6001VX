@@ -810,6 +810,12 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.git master
+* (Linux)AppImage形式の提供を開始
+* (Android)SDKバージョンを36に更新(再修正)
+* (Linux) Started offering of AppImage format.
+* (Android)Updated SDK Version to 36.(Re-fix)
+
 .4.2.14 2025/08/30
 * ローマ字入力のリプレイがおかしくなるのを修正
 * (Android)SDKバージョンを36に更新

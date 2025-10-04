@@ -3,6 +3,8 @@
 SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 PROJECT_DIR=$(readlink -f $SCRIPT_DIR/..)
 cd $PROJECT_DIR
+rm -rf build/appimage 2>/dev/null
+mkdir -p build/appimage
 
 WORKDIR=$(mktemp -d)
 cd $WORKDIR

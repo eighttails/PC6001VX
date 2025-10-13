@@ -284,7 +284,8 @@ void cP6T::Clear( void )
 void cP6T::Rewind( void )
 {
 	PRINTD( P6T2_LOG, "[cP6T][Rewind]\n" );
-	
+	if ( Data.empty() )
+		return;
 	rd = Data.begin();		// 現在の読込みDATAブロック
 	for( auto &i : Data )	// 全DATAブロック巻戻し
 		i.Rewind();

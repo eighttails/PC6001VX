@@ -116,16 +116,17 @@ void cNode::SetMember( NodeType id, const std::string& sstr )
 				val.erase( val.begin() + len + 1, val.end() );
 		}
 		
-		// 値の先頭の'\"'を削除
-		if( val.front() == '\"' ){
-			val.erase( val.front() );
+		if ( !val.empty() ){
+			// 値の先頭の'\"'を削除
+			if( val.front() == '\"' ){
+				val.erase( val.front() );
+			}
+
+			// 値の末尾の'\"'を削除
+			if( val.back() == '\"' ){
+				val.erase( val.back() );
+			}
 		}
-		
-		// 値の末尾の'\"'を削除
-		if( val.back() == '\"' ){
-			val.erase( val.back() );
-		}
-		
 		Value = val;
 		
 		// エントリ ---

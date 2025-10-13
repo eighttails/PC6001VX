@@ -2,11 +2,13 @@
 
 #include <QTimer>
 #include "../keyboard.h"
+#include "../joystick.h"
 #include "../p6vxcommon.h"
 
-KeyStateWatcher::KeyStateWatcher(std::shared_ptr<KEY6> key, QObject *parent)
+KeyStateWatcher::KeyStateWatcher(KEY6 *key, JOY6 *joy, QObject *parent)
 	: QObject(parent)
 	, Key(key)
+	, Joy(joy)
 	, ON_SHIFT(false)
 	, ON_GRAPH(false)
 	, ON_KANA(false)
@@ -59,6 +61,7 @@ void KeyStateWatcher::poll()
 	if(bool(keyStatus & KI_ROMAJI) != this->ON_ROMAJI)	changed = true;
 	this->ON_ROMAJI = bool(keyStatus & KI_ROMAJI);
 
+	// TILT判定(キーボード)
 	auto joyKeyStatus = Key->GetKeyJoy();
 	if (joyKeyStatus & 0b00100000){
 		TiltScreen(TiltDirection::LEFT);
@@ -67,6 +70,17 @@ void KeyStateWatcher::poll()
 	} else {
 		TiltScreen(TiltDirection::NEWTRAL);
 	}
+
+	// TILT判定(ジョイスティック)
+	for (int jno=1; jno>=0; jno--){ // ジョイスティック1を優先
+		auto joystickStatus = Joy->GetJoyState(jno);
+		if (~joystickStatus & 0b00000100){
+			TiltScreen(TiltDirection::LEFT);
+		} else if (~joystickStatus & 0b00001000){
+			TiltScreen(TiltDirection::RIGHT);
+		}
+	}
+
 	UpdateTilt();
 
 	if (changed){

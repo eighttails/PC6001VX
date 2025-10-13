@@ -852,7 +852,7 @@ void P6VXApp::executeEmulation()
 	if (!KeyWatcher.isNull()){
 		KeyWatcher->deleteLater();
 	}
-	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), this);
+	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), P6Core->GetJoystick(), this);
 	MWidget->setKeyStateWatcher(KeyWatcher);
 
 	// 以降、ウィンドウが閉じたらアプリを終了する

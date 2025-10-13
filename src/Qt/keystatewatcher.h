@@ -6,13 +6,14 @@
 #include <memory>
 
 class KEY6;
+class JOY6;
 
 //キーボードの状態を監視し、仮想キーボードに通知する
 class KeyStateWatcher : public QObject
 {
 	Q_OBJECT
 public:
-	explicit KeyStateWatcher(std::shared_ptr<KEY6> key, QObject *parent = nullptr);
+	explicit KeyStateWatcher(KEY6* key, JOY6* joy, QObject *parent = nullptr);
 
 signals:
 	void stateChanged(
@@ -43,7 +44,8 @@ protected slots:
 	void poll();
 
 protected:
-	std::shared_ptr<KEY6> Key;	// 監視対象のキーボード
+	KEY6* Key;	// 監視対象のキーボード
+	JOY6* Joy;	// 監視対象のジョイスティック
 
 	bool ON_SHIFT;	// SHIFT
 	bool ON_CTRL;	// CTRL

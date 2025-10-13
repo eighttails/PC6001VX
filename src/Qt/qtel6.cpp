@@ -578,9 +578,14 @@ int QtEL6::GetSpeedRatio()
 	return this->sche->GetSpeedRatio();
 }
 
-std::shared_ptr<KEY6> QtEL6::GetKeyboard()
+KEY6* QtEL6::GetKeyboard()
 {
-	return vm->key;
+	return vm->key.get();
+}
+
+JOY6* QtEL6::GetJoystick()
+{
+	return this->joy.get();
 }
 
 bool QtEL6::IsMonitor()

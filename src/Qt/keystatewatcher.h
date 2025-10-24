@@ -27,13 +27,13 @@ signals:
 
 public:
 	enum Modifiers {
-		SHIFT	= 0x01,
-		CTRL	= 0x02,
-		GRAPH	= 0x04,
-		KANA	= 0x08,
-		KKANA	= 0x16,
-		CAPS	= 0x32,
-		ROMAJI	= 0x64,
+		SHIFT	= 0b00000001,
+		CTRL	= 0b00000010,
+		GRAPH	= 0b00000100,
+		KANA	= 0b00001000,
+		KKANA	= 0b00010000,
+		CAPS	= 0b00100000,
+		ROMAJI	= 0b01000000,
 	};
 	int GetModifierStatus();
 

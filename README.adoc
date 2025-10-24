@@ -812,9 +812,11 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 == 更新履歴
 .git master
 * TILTモードがジョイスティックに対応していなかったのを修正
+* 英語キーボードでの入力がおかしくなっていたのを修正
 * (Linux)AppImage形式の提供を開始
 * (Android)SDKバージョンを36に更新(再修正)
 * Fixed TILT mode not supporting joystick.
+* Fixed an issue where input on the English keyboard was wrong.
 * (Linux) Started offering of AppImage format.
 * (Android)Updated SDK Version to 36.(Re-fix)
 

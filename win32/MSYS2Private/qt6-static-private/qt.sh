@@ -11,8 +11,10 @@ ${MINGW_PACKAGE_PREFIX}-cmake \
 ${MINGW_PACKAGE_PREFIX}-ninja \
 ${MINGW_PACKAGE_PREFIX}-clang \
 ${MINGW_PACKAGE_PREFIX}-clang-tools-extra \
+${MINGW_PACKAGE_PREFIX}-llvm \
 ${MINGW_PACKAGE_PREFIX}-pkgconf \
 ${MINGW_PACKAGE_PREFIX}-python \
+${MINGW_PACKAGE_PREFIX}-protobuf \
 ${MINGW_PACKAGE_PREFIX}-xmlstarlet \
 ${MINGW_PACKAGE_PREFIX}-vulkan-headers \
 ${MINGW_PACKAGE_PREFIX}-dbus \
@@ -56,8 +58,8 @@ apply_patch_with_msg() {
   done
 }
 
-QT_MAJOR_VERSION=6.8
-QT_MINOR_VERSION=.1
+QT_MAJOR_VERSION=6.9
+QT_MINOR_VERSION=.2
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){
@@ -99,6 +101,11 @@ else
     014-imageformats-transitive-dependencies.patch \
     015-qt6-windeployqt-fixes.patch
 
+  # cd qtquick3d/src/3rdparty/assimp/src
+  # apply_patch_with_msg \
+  #   016-fix-build-on-mingw64.patch
+  # cd -
+
   local _ARCH_TUNE
   if [[ ${CARCH} == x86_64 ]]; then
     _ARCH_TUNE="-march=nocona -msahf -mtune=generic"
@@ -127,7 +134,7 @@ makeQtSourceTree static
 exitOnError
 
 #static版
-QT6_STATIC_BUILD=qt6-static-$MSYSTEM
+QT6_STATIC_BUILD=/c/qt6-static-$MSYSTEM
 rm -rf $QT6_STATIC_BUILD
 mkdir $QT6_STATIC_BUILD
 pushd $QT6_STATIC_BUILD
@@ -140,8 +147,8 @@ pushd $QT6_STATIC_BUILD
     -Wno-dev \
     --log-level=STATUS \
     -G "Ninja" \
-    -DCMAKE_BUILD_TYPE=MinSizeRel \
-    -DFEATURE_optimize_size=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DFEATURE_optimize_size=OFF \
     -DBUILD_WITH_PCH=OFF \
     -DCMAKE_FIND_LIBRARY_SUFFIXES_OVERRIDE=".a" \
     -DBUILD_SHARED_LIBS=OFF \
@@ -192,6 +199,7 @@ pushd $QT6_STATIC_BUILD
     -DFEATURE_sql_odbc=OFF \
     -DFEATURE_zstd=OFF \
     -DFEATURE_wmf=ON \
+    -DFEATURE_ffmpeg=OFF \
     -DQT_BUILD_TESTS=OFF \
     -DQT_BUILD_EXAMPLES=OFF \
     -DOPENSSL_DEPENDENCIES="-lws2_32;-lgdi32;-lcrypt32" \
@@ -203,24 +211,26 @@ pushd $QT6_STATIC_BUILD
     -DPython_EXECUTABLE=${MINGW_PREFIX}/bin/python \
     -DOPENSSL_USE_STATIC_LIBS=ON \
     -DZLIB_USE_STATIC_LIBS=ON \
-    $(cygpath -am ../$QT_SOURCE_DIR) 
+    -DBUILD_qtwebengine=OFF \
+    $(cygpath -am $EXTLIB/$QT_SOURCE_DIR) 
 
     #カスタマイズポイント
-    #-DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
-    #-DCMAKE_BUILD_TYPE=MinSizeRel \
-    #-DFEATURE_optimize_size=ON \
-    #-DBUILD_WITH_PCH=OFF \
-    #-DINPUT_jasper=no \
-    #-DFEATURE_SYSTEM_*=OFF
-    #-DFEATURE_opengl_desktop=OFF \
-    #最後のソースパス↓
-    #$(cygpath -am ../$QT_SOURCE_DIR) 
+    # -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
+    # -DCMAKE_BUILD_TYPE=MinSizeRel \
+    # -DFEATURE_optimize_size=ON \
+    # -DBUILD_WITH_PCH=OFF \
+    # -DINPUT_jasper=no \
+    # -DFEATURE_SYSTEM_*=OFF
+    # -DFEATURE_opengl_desktop=OFF \
+    # -DFEATURE_ffmpeg=OFF \
+    # 最後のソースパス↓
+    # $(cygpath -am $EXTLIB/$QT_SOURCE_DIR) 
 
 #---------------------------------------------------
 
   export PATH=$PWD/bin:$PATH
 
-cp config.summary ../qt6_config_summary_$MSYSTEM.txt
+cp config.summary $EXTLIB/qt6_config_summary_$MSYSTEM.txt
 
 nice -n19 cmake --build .
 exitOnError
@@ -228,10 +238,8 @@ exitOnError
 cmake --install .
 exitOnError
 
-
 popd
-
-# rm -rf $QT6_STATIC_BUILD
+rm -rf $QT6_STATIC_BUILD
 }
 
 

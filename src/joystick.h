@@ -26,6 +26,7 @@ public:
 	
 	bool Connect( int, int );		// ジョイスティック接続
 	int GetID( int );				// インデックス取得
+	void ScanConnect( void );		// ジョイスティックスキャン
 	BYTE GetJoyState( int );		// ジョイスティックの状態取得
 };
 

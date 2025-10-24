@@ -6,6 +6,7 @@ pacman "${PACMAN_INSTALL_OPTS[@]}" \
 $MINGW_PACKAGE_PREFIX-libvorbis \
 $MINGW_PACKAGE_PREFIX-libvpx \
 $MINGW_PACKAGE_PREFIX-yasm \
+$MINGW_PACKAGE_PREFIX-nasm \
 $MINGW_PACKAGE_PREFIX-vulkan-devel \
 2>/dev/null
 
@@ -83,6 +84,6 @@ exitOnError
 
 cd $EXTLIB
 
-build 5 1 4; exitOnError
-build 6 1 1; exitOnError
-build 7 0 1; exitOnError
+build 6 1 3; exitOnError
+build 7 1 1; exitOnError
+build 8 0  ; exitOnError

@@ -630,6 +630,7 @@ EL6::ReturnCode EL6::EventLoop( ReturnCode rc )
 			
 		case EV_JOYDEVICEADDED:
 		case EV_JOYDEVICEREMOVED:
+			joy->ScanConnect();
 			break;
 			
 		case EV_JOYAXISMOTION:
@@ -742,7 +743,8 @@ EL6::ReturnCode EL6::EventLoop( ReturnCode rc )
 				}else if( ext == EXT_DISK ){
 					UI_DiskInsert( 0, fpath );
 				}else if( ext == EXT_ROM1 || ext == EXT_ROM2 ){
-					UI_CartInsert( EXC6005, fpath );
+					// カートリッジ設定済みの場合はカートリッジの種類を変更しないでROMデータのみ変更する
+					UI_CartInsert( cfg->GetValue( CV_ExCartridge ) ? cfg->GetValue( CV_ExCartridge ) : EXC6005, fpath );
 				}else if( ext == EXT_DOKO ){
 					UI_DokoLoad( fpath );
 				}else if( ext == EXT_REPLAY ){
@@ -1141,15 +1143,16 @@ WORD EL6::GetAutoKey( void )
 	
 	// 次の文字を取得
 	WORD dat = (BYTE)ak.Buffer.front();
-	
+	ak.Buffer.erase( ak.Buffer.begin() );
 	// かなチェック
 	if( (dat >= 0x86 && dat <= 0xfd) != ((vm->key->GetKeyIndicator() & KI_KANA) ? true : false) ){
-		dat = 0x12;	// 勝手定義 かなキー
-	}else if( (vm->key->GetKeyIndicator() & KI_KANA) &&
+		// かなキー
+		vm->key->ChangeKana();
+	}
+	if( (vm->key->GetKeyIndicator() & KI_KANA) &&
 	          (((dat >= 0xa6 && dat <= 0xaf) || (dat >= 0xb1 && dat <= 0xdd)) != ((vm->key->GetKeyIndicator() & KI_KKANA) ? true : false)) ){
-		dat = 0x13;	// 勝手定義 かなカナ
-	}else{
-		ak.Buffer.erase( ak.Buffer.begin() );
+		// かなカナ
+		vm->key->ChangeKKana();
 	}
 	
 	
@@ -1449,9 +1452,9 @@ bool EL6::DokoDemoSave( const P6VPATH& path )
 		if( !ak.Buffer.empty() ){
 			ini.SetEntry( "KEY", Stringf( "AKBuf_%02X", nn ), "", strva.c_str() );
 		}
-
+		
 		for( size_t jno = 0; jno < 2; jno++ ){
-			strva = OSD_GetJoyName( joy->GetID( jno ) );
+			strva = joy->GetID( jno ) == -1 ? "" : OSD_GetJoyName( joy->GetID( jno ) );
 			ini.SetEntry( "JOYSTICK", Stringf( "JoyName_%d", jno ), "", strva.c_str() );
 		}
 		
@@ -1533,18 +1536,18 @@ bool EL6::DokoDemoLoad( const P6VPATH& path )
 				strva.erase( strva.begin() );
 			}
 		}
-
+		
 		for( int jno = 0; jno < 2; jno++ ){
 			// ジョイスティックをいったん接続解除
 			joy->Connect( jno, -1 );
 			ini.GetEntry( "JOYSTICK", Stringf( "JoyName_%d", jno ), strva );
 			for( int index = 0; index < OSD_GetJoyNum(); index++ ){
 				if ( OSD_GetJoyName( index ) == strva ){
-					joy->Connect( jno, index );
+					joy->Connect( jno, index + 1 );
 				}
 			}
 		}
-
+		
 		// ディスクドライブ数によってステータスバーサイズ変更
 		if( !staw->Init( -1, vm->disk->GetDrives() ) ){
 			throw Error::GetError();
@@ -2297,9 +2300,29 @@ void EL6::UI_Reset( void )
 	
 	if( !can ){ Stop(); }	// スレッド動いてたら一旦止める
 	
+	// TAPE(LOAD)がマウントされていたら再読込
+	if( vm->cmtl->IsMount() ){
+		P6VPATH cmtfile = vm->cmtl->GetFile();
+		vm->cmtl->Mount( cmtfile );
+	}
+	
+	// ディスクがマウントされていたら再読込
+	for( int i = 0; i < vm->disk->GetDrives(); i++ ){
+		if( vm->disk->IsMount( i ) ){
+			P6VPATH diskfile = vm->disk->GetFile( i );
+			vm->disk->Mount( i, diskfile );
+		}
+	}
+	
 	// システムディスクが入っていたらTAPEのオートスタート無効
 	if( !vm->disk->IsSystem(0) && !vm->disk->IsSystem(1) ){
 		SetAutoStart();
+	}
+	
+	// 拡張ROMがマウントされていたら再読込
+	P6VPATH exrom = vm->mem->GetFile();
+	if( !exrom.empty() ){
+		vm->mem->MountExtRom( exrom );
 	}
 	
 	vm->Reset();
@@ -2682,13 +2705,13 @@ void EL6::ExecMenu( int id )
 	case ID_JOY102:
 	case ID_JOY103:
 	case ID_JOY104:
-	case ID_JOY105:			joy->Connect( 0, id - ID_JOY101 );				break;
+	case ID_JOY105:			joy->Connect( 0, id - ID_JOY100 );				break;
 	case ID_JOY200:																	// ジョイスティック2
 	case ID_JOY201:
 	case ID_JOY202:
 	case ID_JOY203:
 	case ID_JOY204:
-	case ID_JOY205:			joy->Connect( 1, id - ID_JOY201 );				break;
+	case ID_JOY205:			joy->Connect( 1, id - ID_JOY200 );				break;
 	
 	case ID_CONFIG:			UI_Config();									break;	// 環境設定
 	case ID_RESET:			UI_Reset();										break;	// リセット

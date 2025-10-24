@@ -242,7 +242,7 @@ void ConfigDialog::readConfig()
 	ui->checkBoxStatDisp->setChecked(config->GetValue(CB_DispStatus));
 
 	// ハードウェアアクセラレーション
-#ifndef NOOPENGL
+#ifndef NO_HWACCEL
 	ui->checkBoxHwAccel->setChecked(app->getSetting(P6VXApp::keyHwAccel).toBool());
 #else
 	ui->checkBoxHwAccel->setVisible(false);

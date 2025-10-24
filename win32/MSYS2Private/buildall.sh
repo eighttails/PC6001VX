@@ -18,6 +18,9 @@ exitOnError
 ./ffmpeg/ffmpeg.sh
 exitOnError
 
+./twaindsm/twaindsm.sh
+exitOnError
+
 ./gimagereader/gimagereader.sh
 exitOnError
 

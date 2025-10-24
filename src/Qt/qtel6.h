@@ -17,7 +17,8 @@ public:
 	void SetPauseEnable(bool en);
 	int GetSoundReadySize();
 	int GetSpeedRatio();
-	std::shared_ptr<KEY6> GetKeyboard();
+	KEY6 *GetKeyboard();
+	JOY6 *GetJoystick();
 	bool IsMonitor();
 	void SetPaletteTable(QVector<QRgb>& palette, int scanbr);
 

@@ -203,7 +203,7 @@ void P6VXApp::startup()
 	}
 
 	// P6VXデフォルト設定
-#ifndef NOOPENGL
+#ifndef NO_HWACCEL
 	setDefaultSetting(keyHwAccel, true);
 #endif
 	setDefaultSetting(keyFixMagnification, false);
@@ -354,18 +354,7 @@ void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
 	Q_ASSERT(view);
 
 #ifdef ALWAYSFULLSCREEN
-#ifdef Q_OS_ANDROID
-	// Androidの場合はshowMaximized()を使わないと正しいサイズで描画されない。
-	// https://bugreports.qt.io/browse/QTBUG-110878
-	// また、画面サイズを明示的に与えないと正しいサイズにならない場合がある。
-	MWidget->showMaximized();
-	MWidget->resize(1,1); // 強制的にresizeEvent()を発動させる
-	MWidget->resize(MWidget->screen()->availableSize());
-	// 2回ShowMaximizedを呼ばないと反映されない
-	MWidget->showMaximized();
-#else
 	MWidget->showFullScreen();
-#endif
 #else
 	if (fsflag) {
 		MWidget->setWindowState(MWidget->windowState() | Qt::WindowFullScreen);
@@ -481,7 +470,7 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 	QGraphicsScene* scene = view->scene();
 	scene->clear();
 
-#ifndef NOOPENGL
+#ifndef NO_HWACCEL
 	// ステータスバー非表示またはフルスクリーン、かつTILTモードが有効になっている場合、背景を描く
 	if( (!Cfg->GetValue(CB_DispStatus)|| Cfg->GetValue(CB_FullScreen)) &&
 		#ifndef NOMONITOR
@@ -863,7 +852,7 @@ void P6VXApp::executeEmulation()
 	if (!KeyWatcher.isNull()){
 		KeyWatcher->deleteLater();
 	}
-	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), this);
+	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), P6Core->GetJoystick(), this);
 	MWidget->setKeyStateWatcher(KeyWatcher);
 
 	// 以降、ウィンドウが閉じたらアプリを終了する

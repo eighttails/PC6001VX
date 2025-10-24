@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=PC6001VX
+Type=Application
+Categories=Utility
+Comment=NEC PC-6001(a.k.a NEC TREK) emulator
+TryExec=PC6001VX
+Exec=PC6001VX
+Icon=PC-6001_256

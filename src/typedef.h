@@ -77,11 +77,12 @@ using P6VPATH = std::string;
 #define P6V_BIG_ENDIAN	4321
 
 #ifndef BYTEORDER
-#if defined(__hppa__) || \
-    defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
-    (defined(__MIPS__) && defined(__MISPEB__)) || \
-    defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
-    defined(__sparc__)
+#if defined(__ARMEB__) || \
+	defined(__hppa__) || \
+	defined(__m68k__) || defined(mc68000) || defined(_M_M68K) || \
+	(defined(__MIPS__) && defined(__MISPEB__)) || \
+	defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC) || \
+	defined(__sparc__)
 #define BYTEORDER		P6V_BIG_ENDIAN
 #else
 #define BYTEORDER		P6V_LIL_ENDIAN

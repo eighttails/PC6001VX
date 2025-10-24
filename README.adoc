@@ -753,7 +753,7 @@ MSYS2環境上でビルドします。 +
 . https://github.com/msys2/msys2-installer/releases/[こちら]からMSYS2をダウンロードしてインストールしてください。 +
 VC++はサポートしていません。 +
 MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(`pacman -Sy`)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用) +
-https://github.com/msys2/msys2-installer/releases/download/2024-12-08/msys2-x86_64-20241208.exe
+https://github.com/msys2/msys2-installer/releases/download/2025-08-30/msys2-x86_64-20250830.exe
 . MSYS2をインストールしたフォルダのucrt64.exeを実行。 +
 . ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに展開。 +
 . `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
@@ -775,7 +775,7 @@ Debian系のディストリビューションについて解説します。 +
 ディストリビューションやそのバージョンによってはQt6がまだパッケージ化されていない場合があります。その場合はQtの公式インストーラーを利用してください。
 ====
 
-. シェルにて `apt install build-essential libx11-dev mesa-common-dev libopengl-dev libsdl2-dev qtcreator qt6-base-dev qt6-multimedia-dev qt6-5compat-dev libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
+. シェルにて `apt install build-essential libx11-dev mesa-common-dev libopengl-dev libsdl2-dev qtcreator qt6-base-dev qt6-multimedia-dev libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
 . ダウンロードしたPC6001VXのソースを解凍してください。 +
 . PC6001VX.proをQtCreatorで開いてビルドしてください。 +
 . IDEを使わない場合、コマンドラインでは以下の手順でビルドできます。 +
@@ -810,6 +810,32 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.git master
+* TILTモードがジョイスティックに対応していなかったのを修正
+* (Linux)AppImage形式の提供を開始
+* (Android)SDKバージョンを36に更新(再修正)
+* Fixed TILT mode not supporting joystick.
+* (Linux) Started offering of AppImage format.
+* (Android)Updated SDK Version to 36.(Re-fix)
+
+.4.2.14 2025/08/30
+* ローマ字入力のリプレイがおかしくなるのを修正
+* (Android)SDKバージョンを36に更新
+* Fixed a case where replays of Roman alphabet inputs may not be reproduced correctly.
+* (Android)Updated SDK Version to 36.
+
+.4.2.13 2025/06/06
+* PC-6001互換BASICを0.8.1に更新
+* PC-6001mkII/6601用互換BASICを0.5.2に更新
+* Updated PC-6001 compatible basic ROMs to 0.8.1.
+* Updated PC-6001mk2/6601 compatible basic ROMs to 0.5.2.
+
+.4.2.12 2025/04/06
+* PC6001V 2.1.4ベースに更新
+* デバッガの savemem,loadmem コマンドで小文字のファイル名が使えない問題を修正
+* Merged upstream PC6001V version 2.1.4.
+* Fixed an issue where lower case file names could not be used with debugger savemem,loadmem command.
+
 .4.2.11 2025/02/10
 * FM音源再生時にフリーズすることがあるのを修正
 * ジョイスティック設定が保存されないのを修正

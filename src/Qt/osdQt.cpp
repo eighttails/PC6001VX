@@ -1070,16 +1070,15 @@ const std::string OSD_GetJoyName( int index )
 // 引数:	HJOYINFO		ジョイスティック情報へのポインタ
 // 返値:	bool			true:OPEN false:CLOSE
 /////////////////////////////////////////////////////////////////////////////
-bool OSD_OpenedJoy( HJOYINFO joy )
+bool OSD_OpenedJoy( HJOYINFO jinfo )
 {
 #ifndef NOJOYSTICK
 	QMutexLocker lock(&joystickMutex);
-	return SDL_JoystickGetAttached( (SDL_Joystick*)joy ) ? true : false;
+	return jinfo && SDL_JoystickGetAttached( reinterpret_cast<SDL_Joystick*>(jinfo) ) ? true : false;
 #else
 	return false;
 #endif // NOJOYSTICK
 }
-
 
 /////////////////////////////////////////////////////////////////////////////
 // ジョイスティックオープン
@@ -1101,7 +1100,7 @@ HJOYINFO OSD_OpenJoy( int index )
 /////////////////////////////////////////////////////////////////////////////
 // ジョイスティッククローズ
 //
-// 引数:	int				インデックス
+// 引数:	HJOYINFO		ジョイスティック情報へのポインタ
 // 返値:	なし
 /////////////////////////////////////////////////////////////////////////////
 void OSD_CloseJoy( HJOYINFO jinfo )
@@ -1159,17 +1158,19 @@ int OSD_GetJoyAxis( HJOYINFO jinfo, int num )
 	QMutexLocker lock(&joystickMutex);
 	// HAT(デジタルスティック)から値を取得
 	SDL_JoystickUpdate();
-	auto hat = SDL_JoystickGetHat( reinterpret_cast<SDL_Joystick*>(jinfo), 0 );
+	auto hat   = SDL_JoystickGetHat( reinterpret_cast<SDL_Joystick*>(jinfo), 0 );
 	int hatVal = 0;
-	switch (num){
+	switch( num ){
 	case 0:
-		if (hat & SDL_HAT_RIGHT)	hatVal = 32767;
-		if (hat & SDL_HAT_LEFT)		hatVal = -32767;
+		if( hat & SDL_HAT_RIGHT ){ hatVal =  32767; }
+		if( hat & SDL_HAT_LEFT  ){ hatVal = -32767; }
 		break;
-	case 1:;
-		if (hat & SDL_HAT_UP)		hatVal = -32767;
-		if (hat & SDL_HAT_DOWN)		hatVal = 32767;
+
+	case 1:
+		if( hat & SDL_HAT_UP    ){ hatVal = -32767; }
+		if( hat & SDL_HAT_DOWN  ){ hatVal =  32767; }
 		break;
+
 	default:;
 	}
 
@@ -1227,11 +1228,6 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 	}
 
 	QAudioDevice device = QMediaDevices::defaultAudioOutput();
-	if (!device.isFormatSupported(format)) {
-		qWarning()<<"raw audio format not supported by backend, cannot play audio.";
-		format = device.preferredFormat();
-	}
-
 	audioOutput = new AudioOutputWrapper(device, format, callback, obj, samples);
 	audioThread = new QThread(qApp);
 	audioOutput->moveToThread(audioThread);
@@ -1845,12 +1841,7 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 
 		ConfigDialog dialog(ecfg, window);
 #ifdef ALWAYSFULLSCREEN
-#ifdef Q_OS_ANDROID
-		// Androidの場合はQt::WindowMaximizedを使わないと正しいサイズで描画されない。
-		dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
-#else
 		dialog.setWindowState(dialog.windowState() | Qt::WindowFullScreen);
-#endif
 #endif
 		dialog.exec();
 		int ret = dialog.result();

@@ -51,51 +51,51 @@ void EL6::ExecMenu( int id )
 	// 項目ごとの処理
 	switch( id ){
 	case ID_TAPEINSERT:		UI_TapeInsert();						break;	// TAPE 挿入
-	case ID_TAPEEJECT:		TapeUnmount();							break;	// TAPE 排出
-	case ID_TAPEEXPORT:		app->exportSavedTape();					break;	// TAPE エクスポート
+	case ID_TAPEEJECT:		TapeUnmount();						break;	// TAPE 排出
+	case ID_TAPEEXPORT:		app->exportSavedTape();				break;	// TAPE エクスポート
 	case ID_DISKINSERT1:													// DISK 挿入
-	case ID_DISKINSERT2:	UI_DiskInsert( id - ID_DISKINSERT1 );	break;
+	case ID_DISKINSERT2:		UI_DiskInsert( id - ID_DISKINSERT1 );	break;
 	case ID_DISKEJECT1:														// DISK 排出
-	case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );		break;
+	case ID_DISKEJECT2:		DiskUnmount( id - ID_DISKEJECT1 );	break;
 
 	case ID_C6005:			UI_CartInsert     ( EXC6005   );		break;	// 拡張カートリッジ 挿入			(PC-6005	ROMカートリッジ)
 	case ID_C6006:			UI_CartInsert     ( EXC6006   );		break;	// 拡張カートリッジ 挿入			(PC-6006	拡張ROM/RAMカートリッジ)
-	case ID_C6006NR:		UI_CartInsertNoRom( EXC6006   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(PC-6006	拡張ROM/RAMカートリッジ)
+	case ID_C6006NR:			UI_CartInsertNoRom( EXC6006   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(PC-6006	拡張ROM/RAMカートリッジ)
 	case ID_C6001:			UI_CartInsert     ( EXC6001   );		break;	// 拡張カートリッジ 挿入			(PCS-6001R	拡張BASIC)
-	case ID_C660101:		UI_CartInsert     ( EXC660101 );		break;	// 拡張カートリッジ 挿入			(PC-6601-01	拡張漢字ROMカートリッジ)
-	case ID_C6006SR:		UI_CartInsert     ( EXC6006SR );		break;	// 拡張カートリッジ 挿入			(PC-6006SR	拡張64KRAMカートリッジ)
-	case ID_C6007SR:		UI_CartInsert     ( EXC6007SR );		break;	// 拡張カートリッジ 挿入			(PC-6007SR	拡張漢字ROM&RAMカートリッジ)
+	case ID_C660101:			UI_CartInsert     ( EXC660101 );		break;	// 拡張カートリッジ 挿入			(PC-6601-01	拡張漢字ROMカートリッジ)
+	case ID_C6006SR:			UI_CartInsert     ( EXC6006SR );		break;	// 拡張カートリッジ 挿入			(PC-6006SR	拡張64KRAMカートリッジ)
+	case ID_C6007SR:			UI_CartInsert     ( EXC6007SR );		break;	// 拡張カートリッジ 挿入			(PC-6007SR	拡張漢字ROM&RAMカートリッジ)
 	case ID_C6053:			UI_CartInsert     ( EXC6053   );		break;	// 拡張カートリッジ 挿入			(PC-6053    ボイスシンセサイザー)
 	case ID_C60M55:			UI_CartInsert     ( EXC60M55  );		break;	// 拡張カートリッジ 挿入			(PC-60m55   FM音源カートリッジ)
 	case ID_CSOL1:			UI_CartInsert     ( EXCSOL1   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジ)
-	case ID_CSOL1NR:		UI_CartInsertNoRom( EXCSOL1   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジ)
+	case ID_CSOL1NR:			UI_CartInsertNoRom( EXCSOL1   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジ)
 	case ID_CSOL2:			UI_CartInsert     ( EXCSOL2   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジmkⅡ)
-	case ID_CSOL2NR:		UI_CartInsertNoRom( EXCSOL2   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅡ)
+	case ID_CSOL2NR:			UI_CartInsertNoRom( EXCSOL2   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅡ)
 	case ID_CSOL3:			UI_CartInsert     ( EXCSOL3   );		break;	// 拡張カートリッジ 挿入			(戦士のカートリッジmkⅢ)
-	case ID_CSOL3NR:		UI_CartInsertNoRom( EXCSOL3   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅢ)
-	case ID_CARTEJECT:		UI_CartEject();							break;	// 拡張カートリッジ 排出
+	case ID_CSOL3NR:			UI_CartInsertNoRom( EXCSOL3   );		break;	// 拡張カートリッジ 挿入(ROMなし)	(戦士のカートリッジmkⅢ)
+	case ID_CARTEJECT:		UI_CartEject();						break;	// 拡張カートリッジ 排出
 
-	case ID_JOY100:															// ジョイスティック1
+	case ID_JOY100:														// ジョイスティック1
 	case ID_JOY101:
 	case ID_JOY102:
 	case ID_JOY103:
 	case ID_JOY104:
-	case ID_JOY105:			joy->Connect( 0, id - ID_JOY101 );		break;
+	case ID_JOY105:			joy->Connect( 0, id - ID_JOY100 );	break;
 	case ID_JOY200:															// ジョイスティック2
 	case ID_JOY201:
 	case ID_JOY202:
 	case ID_JOY203:
 	case ID_JOY204:
-	case ID_JOY205:			joy->Connect( 1, id - ID_JOY201 );		break;
+	case ID_JOY205:			joy->Connect( 1, id - ID_JOY200 );	break;
 	case ID_CONFIG:			UI_Config();							break;	// 環境設定
-	case ID_RESET:			UI_Reset();								break;	// リセット
-	case ID_RESTART:		UI_Restart();							break;	// 再起動
-	case ID_PAUSE:															// 一時停止
+	case ID_RESET:			UI_Reset();							break;	// リセット
+	case ID_RESTART:			UI_Restart();						break;	// 再起動
+	case ID_PAUSE:														// 一時停止
 		sche->SetPauseEnable(!sche->GetPauseEnable());
 		break;
 	case ID_SPEEDRESET:		Speed = 100;							break;	// 速度調整(リセット)
-	case ID_SPEED50:		Speed = 50;								break;	// 速度調整(50%)
-	case ID_SPEED70:		Speed = 70;								break;	// 速度調整(70%)
+	case ID_SPEED50:			Speed = 50;							break;	// 速度調整(50%)
+	case ID_SPEED70:			Speed = 70;							break;	// 速度調整(70%)
 	case ID_SPEED150:		Speed = 150;							break;	// 速度調整(150%)
 	case ID_SPEED200:		Speed = 200;							break;	// 速度調整(200%)
 	case ID_SPEED300:		Speed = 300;							break;	// 速度調整(300%)
@@ -109,36 +109,36 @@ void EL6::ExecMenu( int id )
 		break;
 	}
 	case ID_SNAPSHOT:		graph->SnapShot( cfg->GetValue(CF_ImgPath) );	break;	// スナップショット取得
-	case ID_DOKOSAVE:		UI_DokoSave();							break;	// どこでもSAVE
-	case ID_DOKOSAVE1:                                                      // どこでもSAVE1
-	case ID_DOKOSAVE2:                                                      // どこでもSAVE2
-	case ID_DOKOSAVE3:                                                      // どこでもSAVE3
+	case ID_DOKOSAVE:		UI_DokoSave();								break;	// どこでもSAVE
+	case ID_DOKOSAVE1:							                                 // どこでもSAVE1
+	case ID_DOKOSAVE2:							                                 // どこでもSAVE2
+	case ID_DOKOSAVE3:							                                 // どこでもSAVE3
 		UI_DokoSave( id - ID_DOKOSAVE );
 		break;
-	case ID_DOKOLOAD:		UI_DokoLoad();							break;	// どこでもLOAD
-	case ID_DOKOLOAD1:                                                      // どこでもLOAD1
-	case ID_DOKOLOAD2:                                                      // どこでもLOAD2
-	case ID_DOKOLOAD3:                                                      // どこでもLOAD3
+	case ID_DOKOLOAD:		UI_DokoLoad();								break;	// どこでもLOAD
+	case ID_DOKOLOAD1:							                                 // どこでもLOAD1
+	case ID_DOKOLOAD2:							                                 // どこでもLOAD2
+	case ID_DOKOLOAD3:							                                 // どこでもLOAD3
 		UI_DokoLoad( id - ID_DOKOLOAD );
 		break;
-	case ID_REPLAYSAVE:		UI_ReplaySave();						break;	// リプレイ保存
-	case ID_REPLAYRESUME:	UI_ReplayResumeSave();					break;	// リプレイ保存再開
-	case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();					break;	// リプレイ中どこでもLOAD
-	case ID_REPLAYROLLBACK:	UI_ReplayRollback();					break;	// リプレイ中どこでもLOADを巻き戻し
-	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();					break;	// リプレイ中どこでもSAVE
-	case ID_REPLAYPLAY:		UI_ReplayPlay();						break;	// リプレイ再生
-	case ID_REPLAYMOVIE:													// リプレイを動画に変換
+	case ID_REPLAYSAVE:		UI_ReplaySave();								break;	// リプレイ保存
+	case ID_REPLAYRESUME:	UI_ReplayResumeSave();						break;	// リプレイ保存再開
+	case ID_REPLAYDOKOLOAD:	UI_ReplayDokoLoad();							break;	// リプレイ中どこでもLOAD
+	case ID_REPLAYROLLBACK:	UI_ReplayRollback();							break;	// リプレイ中どこでもLOADを巻き戻し
+	case ID_REPLAYDOKOSAVE:	UI_ReplayDokoSave();							break;	// リプレイ中どこでもSAVE
+	case ID_REPLAYPLAY:		UI_ReplayPlay();								break;	// リプレイ再生
+	case ID_REPLAYMOVIE:															// リプレイを動画に変換
 		UI_ReplayMovie();
 		OSD_PushEvent(EV_REPLAYMOVIE);
 		break;
 	case ID_AVISAVE:		AVI6::IsAVI() ? UI_AVISaveStop()
 										  : UI_AVISaveStart();		break;	// ビデオキャプチャ
 	case ID_KEYPANEL:		app->toggleKeyPanel();					break;	// キーパネル
-	case ID_VIRTURLKEY:		app->toggleVirtualKeyboard();			break;	// 仮想キーボード
+	case ID_VIRTURLKEY:		app->toggleVirtualKeyboard();				break;	// 仮想キーボード
 	case ID_AUTOTYPE:		UI_AutoType();							break;	// 打込み代行
 	case ID_QUIT:			UI_Quit();								break;	// 終了
-	case ID_NOWAIT:			UI_NoWait();							break;	// Wait有効無効変更
-	case ID_ROMAJI:			UI_Romaji();							break;	// ローマ字入力
+	case ID_NOWAIT:			UI_NoWait();								break;	// Wait有効無効変更
+	case ID_ROMAJI:			UI_Romaji();								break;	// ローマ字入力
 	case ID_TURBO:			UI_TurboTape();							break;	// Turbo TAPE
 	case ID_BOOST:			UI_BoostUp();							break;	// Boost Up
 	case ID_FULLSCRN:
@@ -147,19 +147,19 @@ void EL6::ExecMenu( int id )
 		graph->ResizeScreen();	// スクリーンサイズ変更
 		break;
 	case ID_SCANLINE:		UI_ScanLine();							break;	// スキャンラインモード変更
-	case ID_TILT:                                                           // TILTモード変更
+	case ID_TILT:											                 // TILTモード変更
 	{
 		app->enableTilt(!app->isTiltEnabled());
 		graph->ResizeScreen();	// スクリーンサイズ変更
 		break;
 	}
-	case ID_DISP43:			UI_Disp43();							break;	// 4:3表示変更
+	case ID_DISP43:			UI_Disp43();								break;	// 4:3表示変更
 	case ID_STATUS:			UI_StatusBar();							break;	// ステータスバー表示状態変更
 	case ID_M4MONO:															// MODE4カラー モノクロ
 	case ID_M4RDBL:															// MODE4カラー 赤/青
 	case ID_M4BLRD:															// MODE4カラー 青/赤
 	case ID_M4PKGR:															// MODE4カラー ピンク/緑
-	case ID_M4GRPK:			UI_Mode4Color( id - ID_M4MONO );		break;	// MODE4カラー 緑/ピンク
+	case ID_M4GRPK:			UI_Mode4Color( id - ID_M4MONO );			break;	// MODE4カラー 緑/ピンク
 	case ID_FSKP0:															// フレームスキップ なし
 	case ID_FSKP1:															// フレームスキップ 1
 	case ID_FSKP2:															// フレームスキップ 2
@@ -181,12 +181,7 @@ void EL6::ExecMenu( int id )
 	{
 		auto&& dialog = SystemInfoDialog(reinterpret_cast<RenderView*>(graph->GetWindowHandle()));
 #ifdef ALWAYSFULLSCREEN
-#ifdef Q_OS_ANDROID
-		// Androidの場合はQt::WindowMaximizedを使わないと正しいサイズで描画されない。
-		dialog.setWindowState(Qt::WindowMaximized);
-#else
 		dialog.setWindowState(Qt::WindowFullScreen);
-#endif
 #endif
 		dialog.exec();
 		break;
@@ -194,7 +189,7 @@ void EL6::ExecMenu( int id )
 	case ID_RESETSETTINGS:	app->resetSettings();	break;
 		break;
 #ifndef NOMONITOR	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
-	case ID_MONITOR:		UI_Monitor();						break;	// モニターモード
+	case ID_MONITOR:		UI_Monitor();								break;	// モニターモード
 #endif				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ //
 	case ID_SIZE50:
 		reinterpret_cast<RenderView*>(graph->GetWindowHandle())->resizeWindowByRatio(50);
@@ -439,22 +434,22 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	QMenu* joyMenu2 = joystickMenu->addMenu("2");
 	QActionGroup* joyGroup1 = new QActionGroup(&menu);
 	QActionGroup* joyGroup2 = new QActionGroup(&menu);
+	QAction* noJoy1 = addCommand(joyMenu1, tr("なし"), ID_JOY100, true);
+	QAction* noJoy2 = addCommand(joyMenu2, tr("なし"), ID_JOY200, true);
+	joyGroup1->addAction(noJoy1);
+	joyGroup2->addAction(noJoy2);
+	if (joy->GetID(0) <= 0) noJoy1->setChecked(true);
+	if (joy->GetID(1) <= 0) noJoy2->setChecked(true);
 	for( int i = 0; i < 5; i++ ){
 		if( i < OSD_GetJoyNum() ){
 			QAction* joyAction1 = addCommand(joyMenu1, QString::fromStdString(OSD_GetJoyName( i )), MenuCommand(ID_JOY101 + i), true);
 			QAction* joyAction2 = addCommand(joyMenu2, QString::fromStdString(OSD_GetJoyName( i )), MenuCommand(ID_JOY201 + i), true);
 			joyGroup1->addAction(joyAction1);
 			joyGroup2->addAction(joyAction2);
-			if(joy->GetID(0) == i) joyAction1->setChecked(true);
-			if(joy->GetID(1) == i) joyAction2->setChecked(true);
+			if(joy->GetID(0) == i+1) joyAction1->setChecked(true);
+			if(joy->GetID(1) == i+1) joyAction2->setChecked(true);
 		}
 	}
-	QAction* noJoy1 = addCommand(joyMenu1, tr("なし"), ID_JOY100, true);
-	QAction* noJoy2 = addCommand(joyMenu2, tr("なし"), ID_JOY200, true);
-	joyGroup1->addAction(noJoy1);
-	joyGroup2->addAction(noJoy2);
-	if (joy->GetID(0) < 0) noJoy1->setChecked(true);
-	if (joy->GetID(1) < 0) noJoy2->setChecked(true);
 #endif // NOJOYSTICK
 
 	// 設定メニュー
@@ -480,7 +475,7 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (cfg->GetValue(CB_DispNTSC)) disp43->setChecked(true);
 	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
 	if (cfg->GetValue(CB_ScanLine)) scanLine->setChecked(true);
-#ifndef NOOPENGL
+#ifndef NO_HWACCEL
 	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
 	if (app->getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
 #endif
@@ -583,9 +578,14 @@ int QtEL6::GetSpeedRatio()
 	return this->sche->GetSpeedRatio();
 }
 
-std::shared_ptr<KEY6> QtEL6::GetKeyboard()
+KEY6* QtEL6::GetKeyboard()
 {
-	return vm->key;
+	return vm->key.get();
+}
+
+JOY6* QtEL6::GetJoystick()
+{
+	return this->joy.get();
 }
 
 bool QtEL6::IsMonitor()

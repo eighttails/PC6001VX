@@ -555,13 +555,12 @@ bool VDG6::IsBusReqExec( void ) const
 /////////////////////////////////////////////////////////////////////////////
 WORD VDG6::SRGVramAddr( WORD addr ) const
 {
-//	WORD ad = SRmode && SRBMPage ? 0x8000 : 0x0000;
 	WORD ad = SRBMPage ? 0x8000 : 0x0000;
 	WORD hh = addr        & 0x03ff;	// 10bit有効
 	WORD vv = SRVramAddrY & 0x01ff;	//  9bit有効
 	
-	while( hh >= 320 ) hh -= 320;
-	while( vv >= 204 ) vv -= 204;
+	hh %= 320;
+	vv %= 204;
 	
 	if( hh < 256 ){	// X = 0-255
 		ad += hh       + (vv >> 1) * 256 + 0x1a00;

@@ -1,82 +1,48 @@
 <RCC>
     <qresource prefix="/">
-        <file>res/PC-6601SR.ico</file>
-        <file>res/PC-6601.ico</file>
-        <file>res/PC-6001mk2SR.ico</file>
-        <file>res/PC-6001mk2.ico</file>
         <file>res/PC-6001.ico</file>
-        <file>res/font/fontz12.png</file>
-        <file>res/font/fonth12.png</file>
+        <file>res/PC-6001mk2.ico</file>
+        <file>res/PC-6001mk2SR.ico</file>
+        <file>res/PC-6601.ico</file>
+        <file>res/PC-6601SR.ico</file>
         <file>res/background.png</file>
         <file>res/background60.png</file>
+        <file>res/font/fonth12.png</file>
+        <file>res/font/fontz12.png</file>
+        <file>res/rom/BASICROM.60</file>
+        <file>res/rom/BASICROM.61</file>
+        <file>res/rom/BASICROM.62</file>
+        <file>res/rom/BASICROM.66</file>
+        <file>res/rom/CGROM60.60</file>
+        <file>res/rom/CGROM60.61</file>
+        <file>res/rom/CGROM60.62</file>
+        <file>res/rom/CGROM60.66</file>
+        <file>res/rom/CGROM60m.62</file>
+        <file>res/rom/CGROM66.66</file>
+        <file>res/rom/EXKANJI.ROM</file>
+        <file>res/rom/KANJIROM.62</file>
+        <file>res/rom/KANJIROM.66</file>
+        <file>res/rom/SUBCPU.60</file>
+        <file>res/rom/SUBCPU.61</file>
+        <file>res/rom/SUBCPU.62</file>
+        <file>res/rom/SUBCPU.66</file>
+        <file>res/rom/VOICEROM.62</file>
+        <file>res/rom/VOICEROM.66</file>
+        <file>res/vkey/key_0x01.png</file>
+        <file>res/vkey/key_0x02.png</file>
+        <file>res/vkey/key_0x03.png</file>
+        <file>res/vkey/key_0x04.png</file>
+        <file>res/vkey/key_0x05.png</file>
+        <file>res/vkey/key_0x06.png</file>
+        <file>res/vkey/key_0x07.png</file>
+        <file>res/vkey/key_0x08.png</file>
+        <file>res/vkey/key_0x09.png</file>
         <file>res/vkey/key_0x0a.png</file>
         <file>res/vkey/key_0x0b.png</file>
         <file>res/vkey/key_0x0c.png</file>
         <file>res/vkey/key_0x0d.png</file>
         <file>res/vkey/key_0x0e.png</file>
         <file>res/vkey/key_0x0f.png</file>
-        <file>res/vkey/key_0x01.png</file>
-        <file>res/vkey/key_0x1a.png</file>
-        <file>res/vkey/key_0x1b.png</file>
-        <file>res/vkey/key_0x1c.png</file>
-        <file>res/vkey/key_0x1d.png</file>
-        <file>res/vkey/key_0x1e.png</file>
-        <file>res/vkey/key_0x1f.png</file>
-        <file>res/vkey/key_0x02.png</file>
-        <file>res/vkey/key_0x2a.png</file>
-        <file>res/vkey/key_0x2b.png</file>
-        <file>res/vkey/key_0x2c.png</file>
-        <file>res/vkey/key_0x2d.png</file>
-        <file>res/vkey/key_0x2e.png</file>
-        <file>res/vkey/key_0x2f.png</file>
-        <file>res/vkey/key_0x03.png</file>
-        <file>res/vkey/key_0x3a.png</file>
-        <file>res/vkey/key_0x3b.png</file>
-        <file>res/vkey/key_0x3c.png</file>
-        <file>res/vkey/key_0x3d.png</file>
-        <file>res/vkey/key_0x3e.png</file>
-        <file>res/vkey/key_0x3f.png</file>
-        <file>res/vkey/key_0x04.png</file>
-        <file>res/vkey/key_0x4a.png</file>
-        <file>res/vkey/key_0x4b.png</file>
-        <file>res/vkey/key_0x4c.png</file>
-        <file>res/vkey/key_0x4d.png</file>
-        <file>res/vkey/key_0x4e.png</file>
-        <file>res/vkey/key_0x4f.png</file>
-        <file>res/vkey/key_0x05.png</file>
-        <file>res/vkey/key_0x5a.png</file>
-        <file>res/vkey/key_0x5b.png</file>
-        <file>res/vkey/key_0x5c.png</file>
-        <file>res/vkey/key_0x5d.png</file>
-        <file>res/vkey/key_0x5e.png</file>
-        <file>res/vkey/key_0x5f.png</file>
-        <file>res/vkey/key_0x06.png</file>
-        <file>res/vkey/key_0x6a.png</file>
-        <file>res/vkey/key_0x6b.png</file>
-        <file>res/vkey/key_0x6c.png</file>
-        <file>res/vkey/key_0x6d.png</file>
-        <file>res/vkey/key_0x6e.png</file>
-        <file>res/vkey/key_0x6f.png</file>
-        <file>res/vkey/key_0x07.png</file>
-        <file>res/vkey/key_0x7a.png</file>
-        <file>res/vkey/key_0x7b.png</file>
-        <file>res/vkey/key_0x7c.png</file>
-        <file>res/vkey/key_0x7d.png</file>
-        <file>res/vkey/key_0x7e.png</file>
-        <file>res/vkey/key_0x08.png</file>
-        <file>res/vkey/key_0x8a.png</file>
-        <file>res/vkey/key_0x8b.png</file>
-        <file>res/vkey/key_0x8c.png</file>
-        <file>res/vkey/key_0x8d.png</file>
-        <file>res/vkey/key_0x8e.png</file>
-        <file>res/vkey/key_0x8f.png</file>
-        <file>res/vkey/key_0x09.png</file>
-        <file>res/vkey/key_0x9a.png</file>
-        <file>res/vkey/key_0x9b.png</file>
-        <file>res/vkey/key_0x9c.png</file>
-        <file>res/vkey/key_0x9d.png</file>
-        <file>res/vkey/key_0x9e.png</file>
-        <file>res/vkey/key_0x9f.png</file>
         <file>res/vkey/key_0x10.png</file>
         <file>res/vkey/key_0x11.png</file>
         <file>res/vkey/key_0x12.png</file>
@@ -87,6 +53,12 @@
         <file>res/vkey/key_0x17.png</file>
         <file>res/vkey/key_0x18.png</file>
         <file>res/vkey/key_0x19.png</file>
+        <file>res/vkey/key_0x1a.png</file>
+        <file>res/vkey/key_0x1b.png</file>
+        <file>res/vkey/key_0x1c.png</file>
+        <file>res/vkey/key_0x1d.png</file>
+        <file>res/vkey/key_0x1e.png</file>
+        <file>res/vkey/key_0x1f.png</file>
         <file>res/vkey/key_0x21.png</file>
         <file>res/vkey/key_0x22.png</file>
         <file>res/vkey/key_0x23.png</file>
@@ -96,6 +68,12 @@
         <file>res/vkey/key_0x27.png</file>
         <file>res/vkey/key_0x28.png</file>
         <file>res/vkey/key_0x29.png</file>
+        <file>res/vkey/key_0x2a.png</file>
+        <file>res/vkey/key_0x2b.png</file>
+        <file>res/vkey/key_0x2c.png</file>
+        <file>res/vkey/key_0x2d.png</file>
+        <file>res/vkey/key_0x2e.png</file>
+        <file>res/vkey/key_0x2f.png</file>
         <file>res/vkey/key_0x30.png</file>
         <file>res/vkey/key_0x31.png</file>
         <file>res/vkey/key_0x32.png</file>
@@ -106,6 +84,12 @@
         <file>res/vkey/key_0x37.png</file>
         <file>res/vkey/key_0x38.png</file>
         <file>res/vkey/key_0x39.png</file>
+        <file>res/vkey/key_0x3a.png</file>
+        <file>res/vkey/key_0x3b.png</file>
+        <file>res/vkey/key_0x3c.png</file>
+        <file>res/vkey/key_0x3d.png</file>
+        <file>res/vkey/key_0x3e.png</file>
+        <file>res/vkey/key_0x3f.png</file>
         <file>res/vkey/key_0x40.png</file>
         <file>res/vkey/key_0x41.png</file>
         <file>res/vkey/key_0x42.png</file>
@@ -116,6 +100,12 @@
         <file>res/vkey/key_0x47.png</file>
         <file>res/vkey/key_0x48.png</file>
         <file>res/vkey/key_0x49.png</file>
+        <file>res/vkey/key_0x4a.png</file>
+        <file>res/vkey/key_0x4b.png</file>
+        <file>res/vkey/key_0x4c.png</file>
+        <file>res/vkey/key_0x4d.png</file>
+        <file>res/vkey/key_0x4e.png</file>
+        <file>res/vkey/key_0x4f.png</file>
         <file>res/vkey/key_0x50.png</file>
         <file>res/vkey/key_0x51.png</file>
         <file>res/vkey/key_0x52.png</file>
@@ -126,6 +116,12 @@
         <file>res/vkey/key_0x57.png</file>
         <file>res/vkey/key_0x58.png</file>
         <file>res/vkey/key_0x59.png</file>
+        <file>res/vkey/key_0x5a.png</file>
+        <file>res/vkey/key_0x5b.png</file>
+        <file>res/vkey/key_0x5c.png</file>
+        <file>res/vkey/key_0x5d.png</file>
+        <file>res/vkey/key_0x5e.png</file>
+        <file>res/vkey/key_0x5f.png</file>
         <file>res/vkey/key_0x61.png</file>
         <file>res/vkey/key_0x62.png</file>
         <file>res/vkey/key_0x63.png</file>
@@ -135,6 +131,12 @@
         <file>res/vkey/key_0x67.png</file>
         <file>res/vkey/key_0x68.png</file>
         <file>res/vkey/key_0x69.png</file>
+        <file>res/vkey/key_0x6a.png</file>
+        <file>res/vkey/key_0x6b.png</file>
+        <file>res/vkey/key_0x6c.png</file>
+        <file>res/vkey/key_0x6d.png</file>
+        <file>res/vkey/key_0x6e.png</file>
+        <file>res/vkey/key_0x6f.png</file>
         <file>res/vkey/key_0x70.png</file>
         <file>res/vkey/key_0x71.png</file>
         <file>res/vkey/key_0x72.png</file>
@@ -145,6 +147,11 @@
         <file>res/vkey/key_0x77.png</file>
         <file>res/vkey/key_0x78.png</file>
         <file>res/vkey/key_0x79.png</file>
+        <file>res/vkey/key_0x7a.png</file>
+        <file>res/vkey/key_0x7b.png</file>
+        <file>res/vkey/key_0x7c.png</file>
+        <file>res/vkey/key_0x7d.png</file>
+        <file>res/vkey/key_0x7e.png</file>
         <file>res/vkey/key_0x80.png</file>
         <file>res/vkey/key_0x81.png</file>
         <file>res/vkey/key_0x82.png</file>
@@ -155,6 +162,12 @@
         <file>res/vkey/key_0x87.png</file>
         <file>res/vkey/key_0x88.png</file>
         <file>res/vkey/key_0x89.png</file>
+        <file>res/vkey/key_0x8a.png</file>
+        <file>res/vkey/key_0x8b.png</file>
+        <file>res/vkey/key_0x8c.png</file>
+        <file>res/vkey/key_0x8d.png</file>
+        <file>res/vkey/key_0x8e.png</file>
+        <file>res/vkey/key_0x8f.png</file>
         <file>res/vkey/key_0x91.png</file>
         <file>res/vkey/key_0x92.png</file>
         <file>res/vkey/key_0x93.png</file>
@@ -164,6 +177,12 @@
         <file>res/vkey/key_0x97.png</file>
         <file>res/vkey/key_0x98.png</file>
         <file>res/vkey/key_0x99.png</file>
+        <file>res/vkey/key_0x9a.png</file>
+        <file>res/vkey/key_0x9b.png</file>
+        <file>res/vkey/key_0x9c.png</file>
+        <file>res/vkey/key_0x9d.png</file>
+        <file>res/vkey/key_0x9e.png</file>
+        <file>res/vkey/key_0x9f.png</file>
         <file>res/vkey/key_0xa1.png</file>
         <file>res/vkey/key_0xa2.png</file>
         <file>res/vkey/key_0xa3.png</file>
@@ -278,38 +297,23 @@
         <file>res/vkey/key_ins.png</file>
         <file>res/vkey/key_kana.png</file>
         <file>res/vkey/key_left.png</file>
+        <file>res/vkey/key_load.png</file>
         <file>res/vkey/key_mode.png</file>
         <file>res/vkey/key_page.png</file>
+        <file>res/vkey/key_pause.png</file>
+        <file>res/vkey/key_ret_flat.png</file>
         <file>res/vkey/key_return.png</file>
         <file>res/vkey/key_right.png</file>
+        <file>res/vkey/key_roma.png</file>
+        <file>res/vkey/key_save.png</file>
         <file>res/vkey/key_shift_l.png</file>
         <file>res/vkey/key_shift_r.png</file>
+        <file>res/vkey/key_snapshot.png</file>
         <file>res/vkey/key_space.png</file>
+        <file>res/vkey/key_space_small.png</file>
+        <file>res/vkey/key_stick.png</file>
         <file>res/vkey/key_stop.png</file>
         <file>res/vkey/key_tab.png</file>
         <file>res/vkey/key_up.png</file>
-        <file>res/vkey/key_ret_flat.png</file>
-        <file>res/vkey/key_load.png</file>
-        <file>res/vkey/key_save.png</file>
-        <file>res/vkey/key_space_small.png</file>
-        <file>res/vkey/key_pause.png</file>
-        <file>res/vkey/key_snapshot.png</file>
-        <file>res/vkey/key_stick.png</file>
-        <file>res/rom/BASICROM.60</file>
-        <file>res/rom/BASICROM.62</file>
-        <file>res/rom/CGROM60.60</file>
-        <file>res/rom/CGROM60.62</file>
-        <file>res/rom/BASICROM.66</file>
-        <file>res/rom/CGROM60.66</file>
-        <file>res/rom/CGROM66.66</file>
-        <file>res/rom/KANJIROM.66</file>
-        <file>res/rom/VOICEROM.66</file>
-        <file>res/rom/CGROM60m.62</file>
-        <file>res/rom/KANJIROM.62</file>
-        <file>res/rom/VOICEROM.62</file>
-        <file>res/rom/BASICROM.61</file>
-        <file>res/rom/CGROM60.61</file>
-        <file>res/rom/EXKANJI.ROM</file>
-        <file>res/vkey/key_roma.png</file>
     </qresource>
 </RCC>

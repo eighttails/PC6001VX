@@ -1,10 +1,17 @@
-#ifndef NOOPENGL
-#include <QOpenGLWidget>
-#endif
 #include <QtWidgets>
 #include <QSettings>
 #include <QTapGesture>
 #include <QScopedPointer>
+
+#ifndef NO_HWACCEL
+#ifdef USE_RHIWIDGET
+#include <QRhiWidget>
+using ViewportWidget = QRhiWidget;
+#else
+#include <QOpenGLWidget>
+using ViewportWidget = QOpenGLWidget;
+#endif
+#endif
 
 #include "../osd.h"
 #include "renderview.h"
@@ -21,10 +28,10 @@ RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
 	setStyleSheet( "QGraphicsView { border-style: none; }" );
 
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-#ifndef NOOPENGL
+#ifndef NO_HWACCEL
 	if(!app->isSafeMode() &&
 			app->getSetting(P6VXApp::keyHwAccel).toBool()){
-		setViewport(new QOpenGLWidget(this));
+		setViewport(new ViewportWidget(this));
 		setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 	}
 #endif

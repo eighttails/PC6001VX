@@ -1,4 +1,4 @@
-;sub CPU (uPD8049) program for PC-6001A
+;sub CPU (uPD8049) program for PC-6001
 ; by AKIKAWA, Hisashi  2024
 
 ;This software is redistributable under the LGPLv2.1 or any later version.
@@ -13,7 +13,8 @@
 .equ	AUTO	$25		;for auto repeat
 .equ	RBAUD	$26		;baud rate for reading (1=1200, 2=600)
 .equ	WBAUD	RBAUD+1		;baud rate for writing (1=1200, 2=600)
-.equ	P1VAL	WBAUD+1		;port1 value(bit7-4)
+.equ	P1VAL	WBAUD+1		;port1 value(bit7-4) in key scan mode
+.equ	RSEN	$29		;RS-232C enable (0=disable, 2=enable)
 
 ;constant
 .equ	MODE_KEYRS	0
@@ -52,13 +53,13 @@ INT:
 ;jump table
 CMDJMP:
 	.db	INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, QUERY, INTEND
-	.db	INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND
+	.db	INTEND, INTEND, INTEND, INTEND, RSOPEN, INTEND, INTEND, INTEND
 	.db	INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND
 	.db	INTEND, ROPEN, RCLOSE, INTEND, INTEND, R600, R1200, INTEND
 	.db	INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND
 	.db	INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND
 	.db	INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND, INTEND
-	.db	PUTCMT, WOPEN, WCLOSE, INTEND, INTEND, W600, W1200, INTEND
+	.db	JMPPUTCMT, WOPEN, WCLOSE, INTEND, INTEND, W600, W1200, INTEND
 
 ;$06: game key query
 QUERY:
@@ -70,6 +71,13 @@ INTEND:
 	mov	a,r7
 	retr
 
+;$0c: RS-232C open
+RSOPEN:
+	mov	a,$02
+	mov	r0,RSEN
+	mov	@r0,a
+	jmp	INTEND
+
 ;$19: CMT open for reading
 ROPEN:
 	mov	a,MODE_READ
@@ -77,16 +85,19 @@ ROPEN:
 
 ;$39: CMT open for writing
 WOPEN:
-	mov	r0,MODE
-	mov	a,@r0
-	xrl	a,MODE_WRITE
-	jz	INTEND		;already open
-
 	clr	a
 	mov	t,a
 	orl	p1,$20		;P15=CMT out
 	mov	a,MODE_WRITE
 	jmp	SETMODE
+
+;$38: put to CMT
+JMPPUTCMT:
+	mov	r0,MODE
+	mov	a,@r0
+	xrl	a,MODE_WRITE
+	jnz	INTEND
+	jmp	PUTCMT
 
 ;$3a: CMT close for writing
 WCLOSE:
@@ -122,48 +133,6 @@ SETWBAUD:
 	mov	@r0,a
 	jmp	INTEND
 
-;$38: put to CMT
-PUTCMT:
-	mov	r0,MODE
-	mov	a,@r0
-	xrl	a,MODE_WRITE
-	jnz	INTEND
-
-;start bit
-	call	WAVE1200
-
-PUTCMTLP1:
-	call	CHKSTOP
- 	jnc	PUTCMTSTOP
-
-	jni	PUTCMTDATA	;check #INT=0
-	jmp	PUTCMTLP1
-
-PUTCMTDATA:
-	ins	a,bus
-	mov	r2,a		;data
-
-;data
-	mov	r3,8
-PUTCMTLP2:
-	mov	a,r2		;data
-	rrc	a
-	mov	r2,a		;data
-	call	FSK
-	djnz	r3,PUTCMTLP2
-
-;stop bit
-	call	WAVE2400
-	call	WAVE2400
-	call	WAVE2400
-
-	jmp	INTEND
-
-PUTCMTSTOP:
-	call	WSTOPINT
-	ins	a,bus
-	jmp	INTEND
-
 
 ;initialize
 INIT:
@@ -190,8 +159,8 @@ INITLP:
 	outl	p1,a
 
 	mov	r0,KANA
-;	mov	a,$00		;PC-6001
-	mov	a,$02		;PC-6001A
+	mov	a,$00		;PC-6001
+;	mov	a,$02		;PC-6001A
 	mov	@r0,a
 
 	en	tcnti
@@ -240,12 +209,17 @@ Z80INTLP:
 ;check RS-232C
 RS232C:
 	anl	p1,$ef		;bit4=select key matrix or CMTin/RxRDY
-	in	a,p2
+	in	a,p2		;bit1=#RxRDY
 	orl	p1,$10		;bit4=select key matrix or CMTin/RxRDY
+	cpl	a
+	mov	r0,RSEN
+	anl	a,@r0
 	jb1	RSINT
 	ret
 
 RSINT:
+	clr	a
+	mov	@r0,a
 	mov	a,$04
 ;	jmp	Z80INTNUM
 
@@ -311,7 +285,7 @@ FOUND2:
 	rl	a
 	rl	a
 	add	a,r3
-	mov	r2,a		;Y*8+X
+	mov	r2,a		;(Y-1)*8+X
 
 ;auto repeat
 	mov	a,@r0		;r0=KEY
@@ -359,8 +333,8 @@ NOTKANA:
 ;shift+page switching key
 	mov	r1,KANA
 	mov	a,@r1
-;	xrl	a,$02		;PC-6001
-	orl	a,$02		;PC-6001A
+	xrl	a,$02		;PC-6001
+;	orl	a,$02		;PC-6001A
 	mov	@r1,a
 
 NOTPAGE:
@@ -515,7 +489,7 @@ NOMODOFST:
 	.db	<NOMODTBL1, <NOMODTBL2, <NOMODTBL1, <NOMODTBL3
 
 ;no modifier key
-;input: r2=Y*8+X
+;input: r2=(Y-1)*8+X
 ;output: r3=interrupt number, a=key code
 ;destroy: a,r1
 NOMOD:
@@ -523,13 +497,13 @@ NOMOD:
 	mov	a,@r1
 	add	a,<NOMODOFST
 	movp	a,@a
-	add	a,r2		;Y*8+X+offset
+	add	a,r2		;(Y-1)*8+X+offset
 	movp	a,@a		;key code
 	ret
 
 
 ;check stop key or function key
-;input: r2=Y*8+X
+;input: r2=(Y-1)*8+X
 ;output: r3=interrupt number
 ;destroy: a
 CHKSTPFK:
@@ -632,7 +606,7 @@ CTLOFST:
 	.db	<CTLTBL1, <GRPTBL2, <CTLTBL1, <GRPTBL2
 
 ;with GRAPH key
-;input: r2=Y*8+X
+;input: r2=(Y-1)*8+X
 ;output: r3=interrupt number, a=key code
 ;destroy: r1
 GRAPH:
@@ -645,13 +619,13 @@ GRAPH:
 KANAGRP:
 	add	a,<GRPOFST
 	movp	a,@a
-	add	a,r2		;Y*8+X+offset
+	add	a,r2		;(Y-1)*8+X+offset
 	movp	a,@a		;key code
 	ret
 
 
 ;with CTRL key
-;input: r2=Y*8+X
+;input: r2=(Y-1)*8+X
 ;output: r3=interrupt number, a=key code
 ;destroy: r1
 CTRL:
@@ -659,7 +633,7 @@ CTRL:
 	mov	a,@r1
 	add	a,<CTLOFST
 	movp	a,@a
-	add	a,r2		;Y*8+X+offset
+	add	a,r2		;(Y-1)*8+X+offset
 	movp	a,@a		;key code
 	ret
 
@@ -738,7 +712,7 @@ SFTOFST:
 	.db	<SFTTBL1, <SFTTBL2, <SFTTBL1, <SFTTBL3
 
 ;with SHIFT key
-;input: r2=Y*8+X
+;input: r2=(Y-1)*8+X
 ;output: r3=interrupt number, a=key code
 ;destroy: r1
 SHIFT:
@@ -746,13 +720,51 @@ SHIFT:
 	mov	a,@r1
 	add	a,<SFTOFST
 	movp	a,@a
-	add	a,r2		;Y*8+X+offset
+	add	a,r2		;(Y-1)*8+X+offset
 	movp	a,@a		;key code
 	ret
 
 
 ;page 5
 	.org	$500
+
+;command $38
+PUTCMT:
+;start bit
+	call	WAVE1200
+
+PUTCMTLP1:
+	call	CHKSTOP
+ 	jnc	PUTCMTSTOP
+
+	jni	PUTCMTDATA	;check #INT=0
+	jmp	PUTCMTLP1
+
+PUTCMTDATA:
+	ins	a,bus
+	mov	r2,a		;data
+
+;data
+	mov	r3,8
+PUTCMTLP2:
+	mov	a,r2		;data
+	rrc	a
+	mov	r2,a		;data
+	call	FSK
+	djnz	r3,PUTCMTLP2
+
+;stop bit
+	call	WAVE2400
+	call	WAVE2400
+	call	WAVE2400
+
+	jmp	INTEND
+
+PUTCMTSTOP:
+	call	WSTOPINT
+	ins	a,bus
+	jmp	INTEND
+
 
 ;write 2400Hz header
 WRITE:
@@ -925,14 +937,14 @@ EDGELP1:
 	add	a,-30
 	jc	EDGEERR
 	in	a,p2		;bit3=CMTin
-	anl	a,$08
-	jz	EDGELP1		;wait for CMTin=0
+	cpl	a
+	jb3	EDGELP1		;wait for CMTin=1
 EDGELP2:
 	mov	a,t
 	add	a,-30
 	jc	EDGEERR
 	in	a,p2		;bit3=CMTin
-	jb3	EDGELP2		;wait for CMTin=1
+	jb3	EDGELP2		;wait for CMTin=0
 
 	djnz	r7,EDGELP1
 	ret

@@ -14,6 +14,7 @@ KeyStateWatcher::KeyStateWatcher(KEY6 *key, JOY6 *joy, QObject *parent)
 	, ON_KANA(false)
 	, ON_KKANA(false)
 	, ON_CAPS(false)
+	, ON_ROMAJI(false)
 {
 	auto timer = new QTimer(this);
 	timer->setInterval(1000 / 60);

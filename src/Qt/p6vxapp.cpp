@@ -850,6 +850,7 @@ void P6VXApp::executeEmulation()
 
 	// キーボード状態監視
 	if (!KeyWatcher.isNull()){
+		KeyWatcher->stop();
 		KeyWatcher->deleteLater();
 	}
 	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), P6Core->GetJoystick(), this);

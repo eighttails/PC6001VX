@@ -9,6 +9,7 @@ KeyStateWatcher::KeyStateWatcher(KEY6 *key, JOY6 *joy, QObject *parent)
 	: QObject(parent)
 	, Key(key)
 	, Joy(joy)
+	, Timer(new QTimer(this))
 	, ON_SHIFT(false)
 	, ON_GRAPH(false)
 	, ON_KANA(false)
@@ -16,10 +17,19 @@ KeyStateWatcher::KeyStateWatcher(KEY6 *key, JOY6 *joy, QObject *parent)
 	, ON_CAPS(false)
 	, ON_ROMAJI(false)
 {
-	auto timer = new QTimer(this);
-	timer->setInterval(1000 / 60);
-	connect(timer, SIGNAL(timeout()), this, SLOT(poll()));
-	timer->start();
+	Timer->setInterval(1000 / 60);
+	connect(Timer, SIGNAL(timeout()), this, SLOT(poll()));
+	start();
+}
+
+void KeyStateWatcher::start()
+{
+	Timer->start();
+}
+
+void KeyStateWatcher::stop()
+{
+	Timer->stop();
 }
 
 int KeyStateWatcher::GetModifierStatus()

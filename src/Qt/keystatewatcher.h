@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QTimer>
 #include <memory>
 
 class KEY6;
@@ -14,6 +15,8 @@ class KeyStateWatcher : public QObject
 	Q_OBJECT
 public:
 	explicit KeyStateWatcher(KEY6* key, JOY6* joy, QObject *parent = nullptr);
+	void start();
+	void stop();
 
 signals:
 	void stateChanged(
@@ -56,6 +59,7 @@ protected:
 	bool ON_ROMAJI;	// ローマ字入力
 
 	QMutex mutex;
+	QTimer* Timer;
 };
 
 #endif // KEYSTATEWATCHER_H

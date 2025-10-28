@@ -916,7 +916,7 @@ void P6VXApp::terminateEmulation()
 
 
 
-void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
+void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode, Qt::KeyboardModifiers &modifiers)
 {
 	quint32 nativeKey = ke->nativeScanCode();
 #if 0
@@ -960,21 +960,73 @@ void P6VXApp::handleSpecialKeys(QKeyEvent* ke, int& keyCode)
 
 void P6VXApp::finishKeyEvent(Event &ev)
 {
-	// qDebug() << ev.key.sym << QChar(ev.key.unicode);
+#if 0
+	qDebug() << ev.key.mod
+			 << ev.key.sym
+			 << ev.key.type
+			 << QChar(ev.key.unicode);
+#endif
 
-	// かな、グラフィックキー有効時はキーイベントをそのまま送信
-	auto mod = KeyWatcher->GetModifierStatus();
-	if ( mod & KeyStateWatcher::KANA ||
-		 mod & KeyStateWatcher::KKANA ||
-		 mod & KeyStateWatcher::GRAPH ||
-		 mod & KeyStateWatcher::KANA ) {
-		OSD_PushEvent(ev);
-		return;
+	// イベント時点でのモディファイヤキー状態
+	bool shiftStatus = (ev.key.mod & KVM_SHIFT) ? true : false;
+	bool ctrlStatus = (ev.key.mod & KVM_CTRL) ? true : false;
+
+	static const Event shiftDownEvent =
+		{
+			.key = { EV_KEYDOWN, true, KVC_LSHIFT, KVM_LSHIFT, 0 }
+		};
+	static const Event shiftUpEvent =
+		{
+			.key = { EV_KEYUP, false, KVC_LSHIFT, KVM_LSHIFT, 0 }
+		};
+	static const Event ctrlDownEvent =
+		{
+			.key = { EV_KEYDOWN, true, KVC_LCTRL, KVM_LCTRL, 0 }
+		};
+	static const Event ctrlUpEvent =
+		{
+			.key = { EV_KEYUP, false, KVC_LCTRL, KVM_LCTRL, 0 }
+		};
+
+	// 特殊ファンクションキー(P6VX独自アサイン)
+	// 英語キーボード、省スペースキーボード向けに
+	// ctrl+ファンクションキーで特殊キー入力をサポート
+	if (ctrlStatus){
+		bool specialFuncKey = true;
+		switch (ev.key.sym) {
+		// PAGEキー(Ctrl+F8)
+		case KVC_F8:
+			ev.key.sym = KVC_PAGEUP;		break;
+		// STOPキー(Ctrl+F9)
+		case KVC_F9:
+			ev.key.sym = KVC_END;			break;
+		// MODEキー(Ctrl+F10)
+		case KVC_F10:
+			ev.key.sym = KVC_PAGEDOWN;		break;
+		// CAPSキー(Ctrl+F11)
+		case KVC_F11:
+			ev.key.sym = KVC_SCROLLLOCK;	break;
+		// かなキー(Ctrl+F12)
+		case KVC_F12:
+			ev.key.sym = KVC_PAUSE;			break;
+		default:
+			specialFuncKey = false;
+		}
+		if (specialFuncKey) {
+			// 特殊ファンクションキーに該当した場合は
+			// 一旦ctrlキーを離すイベントを送る
+			OSD_PushEvent(ctrlUpEvent);
+			// 変換後のキーはctrl無しとして送る
+			ev.key.mod = (PCKEYmod)(ev.key.mod & ~KVM_CTRL);
+			OSD_PushEvent(ev);
+			return;
+		}
 	}
 
-	// イベント時点でのシフトキー状態
-	bool shiftStatus = ev.key.mod & KVM_SHIFT;
-
+	// 英語キーボードの場合、@の入力にSHIFTキーが必要なため、
+	// この場合P6エミュ側にSHIFT+@のキーコードを送っても何も入力されない。
+	// 本来意図した文字が入力されるよう、
+	// キーシンボルとモディファイヤキーを修正する。
 	struct FixInfo
 	{
 		PCKEYsym sym;
@@ -1010,19 +1062,17 @@ void P6VXApp::finishKeyEvent(Event &ev)
 		{	QUNI('?'),	{ KVC_SLASH,		true}	},
 	};
 #undef QUNI
-	static const Event shiftDownEvent =
-	{
-		.key = { EV_KEYDOWN, true, KVC_LSHIFT, KVM_LSHIFT, 0 }
-	};
-	static const Event shiftUpEvent =
-	{
-		.key = { EV_KEYUP, false, KVC_LSHIFT, KVM_LSHIFT, 0 }
-	};
 
-	// 英語キーボードの場合、@の入力にSHIFTキーが必要なため、
-	// この場合P6エミュ側にSHIFT+@のキーコードを送っても何も入力されない。
-	// 本来意図した文字が入力されるよう、
-	// キーシンボルとモディファイヤキーを修正する。
+	// かな、グラフィックキー有効時はキーイベントをそのまま送信
+	auto mod = KeyWatcher->GetModifierStatus();
+	if ( mod & KeyStateWatcher::KANA ||
+		mod & KeyStateWatcher::KKANA ||
+		mod & KeyStateWatcher::GRAPH ||
+		mod & KeyStateWatcher::KANA ) {
+		OSD_PushEvent(ev);
+		return;
+	}
+
 	if (fixMap.count(ev.key.unicode)){
 		auto i = fixMap.at(ev.key.unicode);
 		ev.key.sym = i.sym;
@@ -1123,6 +1173,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 
 		// キーコードを特定
 		int keyCode = Qt::Key_unknown;
+		Qt::KeyboardModifiers modifiers = ke->modifiers();
 #ifdef IRREGULAR_KEYBOARD
 		// UMPC内蔵小型キーボードなど、特殊なキーボードの場合
 		// 一般的なキーボードとコードのアンマッチがあるので
@@ -1136,7 +1187,7 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		keyCode = ke->key();
 #endif
 		// 特殊キー対策
-		handleSpecialKeys(ke, keyCode);
+		handleSpecialKeys(ke, keyCode, modifiers);
 
 		// 以下の場合は入力イベントをエミュレータ側に渡さず、Qtに渡す
 		// (メニューやダイアログでキーボードを使えるようにするため)
@@ -1170,13 +1221,13 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		ev.key.state   = event->type() == QEvent::KeyPress ? true : false;
 		ev.key.sym     = OSD_ConvertKeyCode( keyCode );
 		ev.key.mod	   = (PCKEYmod)(
-					( ke->modifiers() & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
-					| ( ke->modifiers() & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )
-					| ( ke->modifiers() & Qt::AltModifier ? KVM_ALT : KVM_NONE )
-					| ( ke->modifiers() & Qt::MetaModifier ? KVM_CTRL : KVM_NONE )
-					| ( ke->modifiers() & Qt::KeypadModifier ? KVM_NUM : KVM_NONE )
+					( modifiers & Qt::ShiftModifier ? KVM_SHIFT : KVM_NONE )
+					| ( modifiers & Qt::ControlModifier ? KVM_CTRL : KVM_NONE )
+					| ( modifiers & Qt::AltModifier ? KVM_ALT : KVM_NONE )
+					| ( modifiers & Qt::MetaModifier ? KVM_CTRL : KVM_NONE )
+					| ( modifiers & Qt::KeypadModifier ? KVM_NUM : KVM_NONE )
 					// CAPSLOCKは検出できない？
-					// | ( ke->modifiers() & Qt::caps ? KVM_NUM : KVM_NONE )
+					// | ( modifiers & Qt::caps ? KVM_NUM : KVM_NONE )
 					);
 		ev.key.unicode = ke->text().utf16()[0];
 		finishKeyEvent(ev);

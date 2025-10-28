@@ -177,7 +177,7 @@ protected:
 	virtual bool notify(QObject *receiver, QEvent *event);
 
 	// 特殊キー対策
-	void handleSpecialKeys(QKeyEvent* ke, int &keyCode);
+	void handleSpecialKeys(QKeyEvent* ke, int &keyCode, Qt::KeyboardModifiers &modifiers);
 	// キーコードのモディファイヤー修正
 	void finishKeyEvent(Event& ev);
 

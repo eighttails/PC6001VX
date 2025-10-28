@@ -456,13 +456,18 @@ PC6001VXが現在動作している環境に関する情報を表示します。
 [options="header"]
 |=================================
 |キー|機能
-|[PageUp]|PAGE(↓↑)
-|[End]|STOP
 |[ALT]|GRAPH
+|[PageUp] +
+[CTRL]+[F8]|PAGE(↓↑)
+|[End] +
+[CTRL]+[F9]|STOP
+|[PageDown] +
+[CTRL]+[F10]|MODE
+|[ScrollLock] +
+[CTRL]+[F11]|CAPS
 |[Pause] +
-[カタカナ/ひらがな]|かな
-|[PageDown]|MODE
-|[ScrollLock]|CAPS
+[カタカナ/ひらがな] +
+[CTRL]+[F12]|かな
 |=================================
 
 .各種機能キー
@@ -813,10 +818,12 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 .git master
 * TILTモードがジョイスティックに対応していなかったのを修正
 * 英語キーボードでの入力がおかしくなっていたのを修正
+* CTRL+ファンクションキーで入力できるキーを追加
 * (Linux)AppImage形式の提供を開始
 * (Android)SDKバージョンを36に更新(再修正)
 * Fixed TILT mode not supporting joystick.
 * Fixed an issue where input on the English keyboard was wrong.
+* Added key assignment that can be entered with CTRL + function keys.
 * (Linux) Started offering of AppImage format.
 * (Android)Updated SDK Version to 36.(Re-fix)
 

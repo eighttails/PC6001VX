@@ -1239,13 +1239,17 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 		OSD_PushEvent(EV_JOYAXISMOTION);
 		break;
 	}
-#ifdef ALWAYSFULLSCREEN
 	case QEvent::ApplicationStateChange:
 		if(P6Core){
-			if(reinterpret_cast<QApplicationStateChangeEvent*>(event)->applicationState()){
+			auto state = reinterpret_cast<QApplicationStateChangeEvent*>(event)->applicationState();
+			switch (state){
+			case Qt::ApplicationActive:
 				P6Core->Start();
-			}else{
+				break;
+			default:;
+#ifdef ALWAYSFULLSCREEN
 				P6Core->Stop();
+#endif
 #ifdef AUTOSUSPEND
 				// 自動サスペンド有効時はここでSAVE
 				P6Core->UI_DokoSave(0);
@@ -1253,7 +1257,6 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 			}
 		}
 		break;
-#endif
 	default:;
 	}
 

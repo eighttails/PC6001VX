@@ -9,13 +9,13 @@ KeyStateWatcher::KeyStateWatcher(KEY6 *key, JOY6 *joy, QObject *parent)
 	: QObject(parent)
 	, Key(key)
 	, Joy(joy)
-	, Timer(new QTimer(this))
 	, ON_SHIFT(false)
 	, ON_GRAPH(false)
 	, ON_KANA(false)
 	, ON_KKANA(false)
 	, ON_CAPS(false)
 	, ON_ROMAJI(false)
+	, Timer(new QTimer(this))
 {
 	Timer->setInterval(1000 / 60);
 	connect(Timer, SIGNAL(timeout()), this, SLOT(poll()));

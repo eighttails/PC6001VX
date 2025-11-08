@@ -159,6 +159,7 @@ void AudioOutputWrapper::start()
 #ifdef Q_OS_ANDROID
 	AudioSink->setBufferSize(44100/30);
 #endif
+	AudioSink->stop(); // 一度stopしたほうが安定する
 	AudioSink->start(AudioBuffer);
 	ExpectedState = QAudio::ActiveState;
 }

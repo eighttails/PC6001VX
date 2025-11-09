@@ -816,14 +816,16 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 
 == 更新履歴
 .git master
+* サウンド出力デバイスの切り替えに対応
+* CTRL+ファンクションキーで入力できるキーを追加
 * TILTモードがジョイスティックに対応していなかったのを修正
 * 英語キーボードでの入力がおかしくなっていたのを修正
-* CTRL+ファンクションキーで入力できるキーを追加
 * (Linux)AppImage形式の提供を開始
 * (Android)SDKバージョンを36に更新(再修正)
+* Supports switching of sound output devices.
+* Added key assignment that can be entered with CTRL + function keys.
 * Fixed TILT mode not supporting joystick.
 * Fixed an issue where input on the English keyboard was wrong.
-* Added key assignment that can be entered with CTRL + function keys.
 * (Linux) Started offering of AppImage format.
 * (Android)Updated SDK Version to 36.(Re-fix)
 

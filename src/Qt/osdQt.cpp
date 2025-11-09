@@ -6,9 +6,6 @@
 
 #include <QtCore>
 #include <QtWidgets>
-#ifndef NOSOUND
-#include <QtMultimedia>
-#endif
 
 #ifndef NOJOYSTICK
 #include <SDL2/SDL.h>
@@ -1218,17 +1215,11 @@ bool OSD_OpenAudio( void* obj, CBF_SND callback, int rate, int samples )
 	// 実行時に出る警告の抑止
 	qRegisterMetaType<QAudio::State>();
 
-	QAudioFormat format;
-	format.setChannelConfig(QAudioFormat::ChannelConfigMono);
-	format.setSampleRate(rate);
-	format.setSampleFormat(QAudioFormat::Int16);
-
 	if(!audioOutput.isNull()){
 		audioOutput->deleteLater();
 	}
 
-	QAudioDevice device = QMediaDevices::defaultAudioOutput();
-	audioOutput = new AudioOutputWrapper(device, format, callback, obj, samples);
+	audioOutput = new AudioOutputWrapper(callback, obj, rate, samples);
 	audioThread = new QThread(qApp);
 	audioOutput->moveToThread(audioThread);
 	audioThread->start();

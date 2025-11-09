@@ -3,6 +3,7 @@
 #include "p6vxapp.h"
 
 #ifndef NOSOUND
+#include <QMediaDevices>
 #include <QAudioSink>
 #include <QBuffer>
 #include <QMutex>
@@ -129,21 +130,32 @@ private:
 };
 
 
-AudioOutputWrapper::AudioOutputWrapper(const QAudioDevice &device,
-									   const QAudioFormat &format,
-									   CBF_SND cbFunc,
-									   void *cbData,
-									   int samples,
-									   QObject *parent)
+AudioOutputWrapper::AudioOutputWrapper(
+	CBF_SND cbFunc,
+	void *cbData,
+	int rate,
+	int samples,
+	QObject *parent)
 	: QObject(parent)
-	, AudioSink(new QAudioSink(device, format, this))
+	, MediaDevices(new QMediaDevices(this))
 	, ExpectedState(QAudio::StoppedState)
 {
-	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, format.bytesPerSample(), this);
+	Format.setChannelConfig(QAudioFormat::ChannelConfigMono);
+	Format.setSampleRate(rate);
+	Format.setSampleFormat(QAudioFormat::Int16);
+
+	initDevice();
+
+	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, Format.bytesPerSample(), this);
+
+	// バッファアンダーランを起こした場合に回復させる
 	QTimer* recoveryTimer = new QTimer(this);
 	connect(recoveryTimer, &QTimer::timeout, this, &AudioOutputWrapper::recoverPlayback);
 	recoveryTimer->setInterval(1000);
 	recoveryTimer->start();
+
+	// サウンドデバイスの挿抜時に出力を切り替える
+	connect(MediaDevices, &QMediaDevices::audioOutputsChanged, this, &AudioOutputWrapper::initDevice);
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()
@@ -188,6 +200,15 @@ void AudioOutputWrapper::stop()
 QAudio::State AudioOutputWrapper::state() const
 {
 	return AudioSink->state();
+}
+
+void AudioOutputWrapper::initDevice()
+{
+	QAudioDevice device = QMediaDevices::defaultAudioOutput();
+	if (!AudioSink.isNull()){
+		AudioSink->deleteLater();
+	}
+	AudioSink = new QAudioSink(device, Format, this);
 }
 
 void AudioOutputWrapper::recoverPlayback()

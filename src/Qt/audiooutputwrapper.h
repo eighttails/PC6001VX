@@ -4,11 +4,13 @@
 #include <QObject>
 #include <QPointer>
 #include <QTimer>
-#include <QAudioDevice>
+#include <QAudio>
 #include <QAudioFormat>
 #include "typedef.h"
 
 class QAudioSink;
+class QMediaDevices;
+
 #ifdef NOCALLBACK
 // コールバックを使わずにAudioSinkにサンプルバッファをPUSHする実装
 // #TODO 現状では、一度バッファアンダーランを起こすと
@@ -63,10 +65,9 @@ class AudioOutputWrapper : public QObject
 {
 	Q_OBJECT
 public:
-	explicit AudioOutputWrapper(const QAudioDevice& device,
-								const QAudioFormat& format,
-								CBF_SND cbFunc,
+	explicit AudioOutputWrapper(CBF_SND cbFunc,
 								void* cbData,
+								int rate,
 								int samples,
 								QObject* parent = nullptr);
 	virtual ~AudioOutputWrapper();
@@ -80,10 +81,14 @@ public slots:
 public:
 	QAudio::State state() const;
 
-private slots:
+protected slots:
+	void initDevice();
 	void recoverPlayback();
+
 private:
-	QAudioSink* AudioSink;
+	QAudioFormat Format;
+	QPointer<QMediaDevices> MediaDevices;
+	QPointer<QAudioSink> AudioSink;
 	QPointer<QIODevice> AudioBuffer;
 	QAudio::State ExpectedState;
 };

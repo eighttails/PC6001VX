@@ -143,9 +143,6 @@ AudioOutputWrapper::AudioOutputWrapper(
 	Format.setChannelConfig(QAudioFormat::ChannelConfigMono);
 	Format.setSampleRate(rate);
 	Format.setSampleFormat(QAudioFormat::Int16);
-
-	initDevice();
-
 	AudioBuffer = new AudioBufferWrapper(cbFunc, cbData, Format.bytesPerSample(), this);
 
 	// バッファアンダーランを起こした場合に回復させる
@@ -156,6 +153,8 @@ AudioOutputWrapper::AudioOutputWrapper(
 
 	// サウンドデバイスの挿抜時に出力を切り替える
 	connect(MediaDevices, &QMediaDevices::audioOutputsChanged, this, &AudioOutputWrapper::initDevice);
+
+	initDevice();
 }
 
 AudioOutputWrapper::~AudioOutputWrapper()
@@ -171,44 +170,60 @@ void AudioOutputWrapper::start()
 #ifdef Q_OS_ANDROID
 	AudioSink->setBufferSize(44100/30);
 #endif
-	AudioSink->stop(); // 一度stopしたほうが安定する
-	AudioSink->start(AudioBuffer);
+	if (!AudioSink.isNull()){
+		AudioSink->start(AudioBuffer);
+	}
 	ExpectedState = QAudio::ActiveState;
 }
 
 
 void AudioOutputWrapper::suspend()
 {
-	AudioSink->suspend();
+	if (!AudioSink.isNull()){
+		AudioSink->suspend();
+	}
 	ExpectedState = QAudio::SuspendedState;
 }
 
 void AudioOutputWrapper::resume()
 {
-	AudioSink->resume();
+	if (!AudioSink.isNull()){
+		AudioSink->resume();
+	}
 	ExpectedState = QAudio::ActiveState;
 }
 
 void AudioOutputWrapper::stop()
 {
-	AudioSink->reset();
-	AudioSink->stop();
-	AudioBuffer->close();
+	if (!AudioSink.isNull()){
+		AudioSink->reset();
+		AudioSink->stop();
+		AudioBuffer->close();
+	}
 	ExpectedState = QAudio::StoppedState;
 }
 
 QAudio::State AudioOutputWrapper::state() const
 {
-	return AudioSink->state();
+	if (!AudioSink.isNull()){
+		return AudioSink->state();
+	} else {
+		return QAudio::StoppedState;
+	}
 }
 
 void AudioOutputWrapper::initDevice()
 {
 	QAudioDevice device = QMediaDevices::defaultAudioOutput();
+	qDebug() << "AudioOutputWrapper::initDevice" << device.description();
+	// オブジェクトは作り直すがあるべき状態は呼び出し前の状態を維持する。
+	auto state = ExpectedState;
 	if (!AudioSink.isNull()){
+		stop();
 		AudioSink->deleteLater();
 	}
 	AudioSink = new QAudioSink(device, Format, this);
+	ExpectedState = state;
 }
 
 void AudioOutputWrapper::recoverPlayback()

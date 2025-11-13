@@ -171,6 +171,7 @@ void AudioOutputWrapper::start()
 	AudioSink->setBufferSize(44100/30);
 #endif
 	if (!AudioSink.isNull()){
+		AudioSink->stop(); // いったん止めたほうが安定する
 		AudioSink->start(AudioBuffer);
 	}
 	ExpectedState = QAudio::ActiveState;

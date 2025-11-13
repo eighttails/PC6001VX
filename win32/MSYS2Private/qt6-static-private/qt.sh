@@ -216,8 +216,6 @@ pushd $QT6_STATIC_BUILD
 
     #カスタマイズポイント
     # -DCMAKE_INSTALL_PREFIX=$(cygpath -am $QT6_STATIC_PREFIX) \
-    # -DCMAKE_BUILD_TYPE=MinSizeRel \
-    # -DFEATURE_optimize_size=ON \
     # -DBUILD_WITH_PCH=OFF \
     # -DINPUT_jasper=no \
     # -DFEATURE_SYSTEM_*=OFF
@@ -234,8 +232,12 @@ cp config.summary $EXTLIB/qt6_config_summary_$MSYSTEM.txt
 
 nice -n19 cmake --build .
 exitOnError
+nice -n19 cmake --build . --target docs
+exitOnError
 
 cmake --install .
+exitOnError
+nice -n19 cmake --build . --target install_docs
 exitOnError
 
 popd

@@ -149,6 +149,23 @@ image::doc/romcrc.png[]
 警告されますが「Yes」をクリックすると以降ROMのCRCチェックをせずに起動するようになります。 +
 ただしこの後の動作は自己責任です。 +
 
+=== コマンドラインオプション
+PC6001VXはコマンドラインオプションをサポートしています。 +
+以下のオプションが使用可能です。 +
+[options="header"]
+|================
+|オプション|引数|説明
+|-s +
+--safemode |(なし)| セーフモード(ハードウェアアクセラレーションを無効)で起動します。
+|-l +
+--loadstate |(どこでもLOADファイル名)| 起動時に任意のどこでもLOADファイルを読み込んで起動します。
+|-v +
+--version |(なし)| バージョン情報を表示します。
+|-h +
+--help |(なし)| ヘルプを表示します。
+
+|================
+
 
 === プラットフォーム固有情報
 ==== Windows
@@ -816,12 +833,14 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 
 == 更新履歴
 .git master
+* 起動時に任意のどこでもLOADファイルを自動的に読み込むコマンドラインオプションを追加
 * サウンド出力デバイスの切り替えに対応
 * CTRL+ファンクションキーで入力できるキーを追加
 * TILTモードがジョイスティックに対応していなかったのを修正
 * 英語キーボードでの入力がおかしくなっていたのを修正
 * (Linux)AppImage形式の提供を開始
 * (Android)SDKバージョンを36に更新(再修正)
+* Added command line option to automatically load any state file at startup.
 * Supports switching of sound output devices.
 * Added key assignment that can be entered with CTRL + function keys.
 * Fixed TILT mode not supporting joystick.

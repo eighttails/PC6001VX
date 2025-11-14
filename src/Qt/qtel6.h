@@ -25,6 +25,7 @@ public:
 	// 親クラスのメソッドをpublicでオーバーライド
 	void UI_DokoSave( int slot );
 	void UI_DokoLoad( int slot, bool ask = false );
+	void UI_DokoLoad( const P6VPATH& path = "" );
 public slots:
 	void UpdateFPS();
 };

@@ -3,6 +3,7 @@
 
 #include <QtWidgets>
 
+#include "pc6001v.h"
 #include "p6vxapp.h"
 
 #ifndef NOJOYSTICK
@@ -16,12 +17,22 @@
 int main( int argc, char *argv[] )
 {
 	P6VXApp app(argc, argv);
+	QCoreApplication::setApplicationName(APPNAME);
+	QCoreApplication::setApplicationVersion(VERSION);
 
 	QCommandLineParser parser;
-	QCommandLineOption safeModeOption(QStringList() << "s" << "safemode", "Safe Mode");
-	parser.addOption(safeModeOption);
+	parser.setApplicationDescription("NEC PC-6001 Emulator");
+	parser.addOptions({
+		{{"s", "safemode"}, "Safe mode(disables hardware acceleration)"},
+		{{"l", "loadstate"}, "Load state <file> at startup.", "file"}
+		});
+	parser.addVersionOption();
+	parser.addHelpOption();
 	parser.process(app);
-	bool safeMode = parser.isSet(safeModeOption);
+	bool safeMode = parser.isSet("safemode");
+	if (parser.isSet("loadstate")){
+		app.setProperty("loadstate", parser.value("loadstate"));
+	}
 	app.enableSafeMode(safeMode);
 
 	QLocale locale;
@@ -74,8 +85,8 @@ int main( int argc, char *argv[] )
 #endif
 	}
 
-	// イベントループが始まったらp6vxapp::startup()を実行
-	QMetaObject::invokeMethod(&app, "startup", Qt::QueuedConnection);
+	// イベントループが始まったらP6VXApp::startup()を実行
+	QMetaObject::invokeMethod(&app, &P6VXApp::startup, Qt::QueuedConnection);
 
 	// 終了処理を予約
 	atexit(OSD_Quit);

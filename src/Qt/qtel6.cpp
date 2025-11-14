@@ -634,3 +634,8 @@ void QtEL6::UI_DokoLoad(int slot, bool ask)
 	EL6::UI_DokoLoad(slot, ask);
 }
 
+void QtEL6::UI_DokoLoad(const P6VPATH& path)
+{
+	EL6::UI_DokoLoad(path);
+}
+

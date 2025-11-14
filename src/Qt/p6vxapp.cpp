@@ -795,6 +795,20 @@ void P6VXApp::executeEmulation()
 		}
 	}
 
+	// スタートアップ時にどこでもLOAから復元するオプション
+	auto loadState = property("loadstate");
+	if (loadState.isValid()){
+		auto loadStatePath = QSTR2P6VPATH(loadState.toString());
+		if (!OSD_FileExist(loadStatePath)){
+			Error::SetError(Error::DokoReadFailed);
+			OSD_Message( P6CoreObj ? P6CoreObj->GetWindowHandle() : nullptr,
+						Error::GetErrorText(), GetText( TERR_ERROR ), OSDR_OK | OSDM_ICONERROR );
+			Error::Clear();
+		}
+		Cfg->SetDokoFile(loadStatePath);
+		Restart = EL6::Dokoload;
+	}
+
 	switch( Restart ){
 	case EL6::Quit:	// 通常起動
 #ifdef AUTOSUSPEND

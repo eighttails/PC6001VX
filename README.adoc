@@ -840,7 +840,7 @@ PAUSEキーを使うか、キーパネルを表示させてかなの切り替え
 * 英語キーボードでの入力がおかしくなっていたのを修正
 * (Linux)AppImage形式の提供を開始
 * (Android)SDKバージョンを36に更新(再修正)
-* Added command line option to automatically load any state file at startup.
+* Added command line option to automatically load arbitrary state file at startup.
 * Supports switching of sound output devices.
 * Added key assignment that can be entered with CTRL + function keys.
 * Fixed TILT mode not supporting joystick.

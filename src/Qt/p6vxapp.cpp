@@ -795,7 +795,7 @@ void P6VXApp::executeEmulation()
 		}
 	}
 
-	// スタートアップ時にどこでもLOAから復元するオプション
+	// スタートアップ時にどこでもSAVEファイルから復元するオプション
 	auto loadState = property("loadstate");
 	if (loadState.isValid()){
 		auto loadStatePath = QSTR2P6VPATH(loadState.toString());

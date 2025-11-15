@@ -807,6 +807,8 @@ void P6VXApp::executeEmulation()
 		}
 		Cfg->SetDokoFile(loadStatePath);
 		Restart = EL6::Dokoload;
+		// スタートアップファイル名をリセット
+		setProperty("loadstate", QVariant());
 	}
 
 	switch( Restart ){
@@ -854,7 +856,13 @@ void P6VXApp::executeEmulation()
 		break;
 	}
 
+	// 前回実行時のエミュレーションコアオブジェクトを破棄、入れ替え
+	if (!KeyWatcher.isNull()){
+		KeyWatcher->stop();
+		KeyWatcher->deleteLater();
+	}
 	if (!P6Core.isNull()){
+		P6Core->Stop();
 		P6Core->deleteLater();
 	}
 	P6Core = P6CoreObj.release();
@@ -863,10 +871,6 @@ void P6VXApp::executeEmulation()
 	P6Core->SetPaletteTable(PaletteTable, Cfg->GetValue( CV_ScanLineBr ));
 
 	// キーボード状態監視
-	if (!KeyWatcher.isNull()){
-		KeyWatcher->stop();
-		KeyWatcher->deleteLater();
-	}
 	KeyWatcher = new KeyStateWatcher(P6Core->GetKeyboard(), P6Core->GetJoystick(), this);
 	MWidget->setKeyStateWatcher(KeyWatcher);
 
@@ -885,9 +889,13 @@ void P6VXApp::postExecuteEmulation()
 	Restart = Adaptor->getReturnCode();
 	Adaptor->setEmulationObj(nullptr);
 
+	// エミュレーションコアオブジェクトを破棄
+	if (!KeyWatcher.isNull()){
+		KeyWatcher->stop();
+		KeyWatcher->deleteLater();
+	}
 	if(!P6Core.isNull()){
 		P6Core->Stop();
-
 #ifdef AUTOSUSPEND
 		// 自動サスペンド有効時はここでSAVE
 		if( Restart == EL6::Quit ){

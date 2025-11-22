@@ -4,6 +4,7 @@
 #include <QTouchEvent>
 #include <QMessageBox>
 #include <QGraphicsColorizeEffect>
+#include <QTimer>
 
 #include "../osd.h"
 
@@ -93,11 +94,14 @@ bool VirtualKeyItem::sceneEvent(QEvent *event)
 		if(touchState & (Qt::TouchPointMoved | Qt::TouchPointStationary)) return true;
 
 		if(touchState & Qt::TouchPointPressed){
+			// 0.2秒だけ色を変える
 			pressEffect->setEnabled(true);
+			QTimer::singleShot(200, pressEffect, std::bind(&QGraphicsColorizeEffect::setEnabled, pressEffect, false));
+			// キーを押すイベントを送る
 			sendKeyEvent(EV_KEYDOWN, true);
 		}
 		else if(touchState & Qt::TouchPointReleased){
-			pressEffect->setEnabled(false);
+			// キーを離すイベントを送る
 			sendKeyEvent(EV_KEYUP, false);
 		}
 		return true;

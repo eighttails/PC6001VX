@@ -155,15 +155,25 @@ static bool AddStream( OutputStream& ost, AVFormatContext* oc, const AVCodec*& c
 	ost.enc = c;
 	c->thread_count   = av_cpu_count();
 
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT( 61, 13, 100 )	// FFmpeg 7.1
+	const enum AVSampleFormat* sample_fmts           = nullptr;
+	const int*                 supported_samplerates = nullptr;
+	avcodec_get_supported_config( nullptr, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr );
+	avcodec_get_supported_config( nullptr, codec, AV_CODEC_CONFIG_SAMPLE_RATE,   0, (const void**)&supported_samplerates, nullptr );
+#else
+	const enum AVSampleFormat* sample_fmts           = codec->sample_fmts;
+	const int*                 supported_samplerates = codec->supported_samplerates;
+#endif
+
 	switch( codec->type ){
 	case AVMEDIA_TYPE_AUDIO:
-		c->sample_fmt  = codec->sample_fmts ? codec->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
+		c->sample_fmt  = sample_fmts ? sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
 		c->bit_rate    = 128000;
 		c->sample_rate = rate;
-		if( codec->supported_samplerates ){
-			c->sample_rate = codec->supported_samplerates[0];
-			for( int i = 0; codec->supported_samplerates[i]; i++ ){
-				if( codec->supported_samplerates[i] == rate ){
+		if( supported_samplerates ){
+			c->sample_rate = supported_samplerates[0];
+			for( int i = 0; supported_samplerates[i]; i++ ){
+				if( supported_samplerates[i] == rate ){
 					c->sample_rate = rate;
 				}
 			}

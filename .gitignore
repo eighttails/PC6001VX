@@ -1,5 +1,6 @@
 *.pro.user*
 build
+build-test/
 .vscode
 .qtcreator
 .qtc_clangd

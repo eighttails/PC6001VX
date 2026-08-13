@@ -8,11 +8,13 @@ ARG GID=1000
 RUN userdel ubuntu 2> /dev/null
 
 RUN apt update
+RUN apt upgrade -y
 RUN apt install -y \
     file \
     wget \
     fuse \
     appstream \
+    cmake \
     build-essential \
     libx11-dev \
     mesa-common-dev \

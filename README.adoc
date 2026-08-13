@@ -779,15 +779,12 @@ https://github.com/msys2/msys2-installer/releases/download/2025-08-30/msys2-x86_
 . MSYS2をインストールしたフォルダのucrt64.exeを実行。 +
 . ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに展開。 +
 . `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
-. `bash ./buildenv.sh` を実行。QtのライブラリとQtCreatorをインストール。 +
-QtCreatorが/ucrt64/bin/qtcreator.exe,Qtスタティック版が/ucrt64/localにインストールされます。 +
-. `bash ./release.sh` を実行すると、PC6001VX_release/PC6001VX_(バージョン)_win_64bitというフォルダにEXEがビルドされます。環境が正しく構築されたかどうかのチェックに使ってください。 +
-. 自分でソースを修正、デバッグをする場合は、PC6001VX.proをQtCreatorで開いて、スタティック版Qtを指定してビルドしてください。キットの構成方法は本書の範囲外としますが、以下の設定を参考にしてください。 +
-注意点としては、キットの環境変数の欄にPKG_CONFIG_PATHの設定が必要です。 +
-+
-image::doc/qtsetting_qt.png[]
-image::doc/qtsetting_kit.png[]
-image::doc/qtsetting_envvar.png[]
+. `bash ./release.sh` を実行。必要なツール(QtCreator, SDL2, asciidoctor)の導入、スタティック版Qt/FFmpegの構築、CMakeによるReleaseビルド、配布フォルダ作成までまとめて行います。 +
+スタティック版Qtは `/ucrt64/local/qt6-static-private` に配置されます。 +
+. `release.sh` の中では `buildrelease.sh` を使って、ルートの `CMakeLists.txt` を Ninja + CMake でReleaseビルドしています。配布用EXEは `PC6001VX_release/PC6001VX_(バージョン)_win_64bit` に出力されます。 +
+. 自分でソースを修正、デバッグをする場合は、ルートにあるCMakeLists.txtをQtCreatorで開いて、MSYS2 UCRT64 + スタティック版Qtを使うキットでビルドしてください。キットの構成方法は本書の範囲外とします。 +
+
+
 
 ==== Linux
 Debian系のディストリビューションについて解説します。 +
@@ -799,13 +796,13 @@ Debian系のディストリビューションについて解説します。 +
 
 . シェルにて `apt install build-essential libx11-dev mesa-common-dev libopengl-dev libsdl2-dev qtcreator qt6-base-dev qt6-multimedia-dev libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
 . ダウンロードしたPC6001VXのソースを解凍してください。 +
-. PC6001VX.proをQtCreatorで開いてビルドしてください。 +
+. QtCreatorでルートのCMakeLists.txtを開いてビルドしてください。 +
 . IDEを使わない場合、コマンドラインでは以下の手順でビルドできます。 +
 [source,bash]
 ----
 cd PC6001VX
-qmake6 PC6001VX.pro
-make
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 ----
 
 ==== Android

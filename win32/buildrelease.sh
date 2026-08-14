@@ -2,7 +2,6 @@
 
 SCRIPT_DIR=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 QTDIR=${MINGW_PREFIX}/local/qt6-static-private
-FFMPEG_DIR=${FFMPEG_DIR:-${MINGW_PREFIX}/local/ffmpeg-private7.1.4}
 
 . $SCRIPT_DIR/buildenv.sh
 . $SCRIPT_DIR/MSYS2Private/qt6-static-private/qt_ffmpeg_config.sh
@@ -26,7 +25,6 @@ cmake -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PREFIX_PATH="$QTDIR" \
     -DQt6_DIR="$QTDIR/lib/cmake/Qt6" \
-    -DFFMPEG_DIR="$FFMPEG_DIR" \
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="$PWD/release" \
     -S "$SCRIPT_DIR/.." \
     -B .

@@ -45,6 +45,10 @@ bool SerchRom( std::shared_ptr<CFG6> &cfg )
 	P6VPATH RomSearch;
 
 	int IniModel = cfg->GetValue(CV_Model);
+    // 初回起動時はモデルがセットされてないので、強制的に初代機に設定
+    if ( IniModel == 0){
+        IniModel = 60;
+    }
 	RomSearch = QSTR2P6VPATH(QString("*.%1").arg( IniModel ));
 	OSD_AddPath( RomSearch, cfg->GetValue(CF_RomPath), RomSearch );
 	if( OSD_FileExist( RomSearch ) ){

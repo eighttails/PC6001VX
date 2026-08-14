@@ -190,22 +190,10 @@ void ConfigDialog::readConfig()
 	const bool CompatibleRomMode = P6VPATH2QSTR(config->GetValue(CF_RomPath)).startsWith(":");
 	ui->checkBoxCompatibleRomMode->setChecked(CompatibleRomMode);
 	if (CompatibleRomMode){
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(60), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(61), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(62), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(66), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(64), false);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(68), false);
 		ui->lineEditFolderRom->setEnabled(false);
 		ui->pushButtonClearFolderRom->setEnabled(false);
 		ui->pushButtonRefFolderRom->setEnabled(false);
 	} else {
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(60), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(61), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(62), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(66), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(64), true);
-		setComboBoxItemEnabled(ui->comboBoxModel, modelIds.indexOf(68), true);
 		ui->lineEditFolderRom->setEnabled(true);
 		ui->pushButtonClearFolderRom->setEnabled(true);
 		ui->pushButtonRefFolderRom->setEnabled(true);

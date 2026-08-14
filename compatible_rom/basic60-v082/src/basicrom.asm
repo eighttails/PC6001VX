@@ -1,5 +1,5 @@
 ;Compatible BASIC for PC-6001
-; by AKIKAWA, Hisashi  2013-2025
+; by AKIKAWA, Hisashi  2013-2026
 
 ;This software is redistributable under the LGPLv2.1 or any later version.
 
@@ -18,14 +18,20 @@ OK	equ	0390h
 EDIT	equ	0442h
 CMDEND	equ	06eah
 INTPRT2	equ	0709h
+ANAMAIN	equ	072ah
+INT2ARG	equ	073ah
 FTOI2	equ	0741h
 PIEND	equ	0955h
 CHKEXTR	equ	0a8fh
 INPT1EX	equ	0a9bh
+CHKNUM	equ	0af9h
 TOUPHL	equ	0beeh
+HEX	equ	0bf8h
+HEX2	equ	0c09h
 ABTOF	equ	0d16h
 INT1INC	equ	0de3h
 INT1ARG	equ	0de4h
+INTARG	equ	0e06h
 IN90H	equ	0e78h
 OUT90H	equ	0e8fh
 INTGRP	equ	0eb0h
@@ -51,6 +57,7 @@ PRTCHXY	equ	1257h
 SCRLUP	equ	1260h
 SCRLDW	equ	12a9h
 PRTFKEY	equ	12b5h
+CHGTXT	equ	137ah
 CHGMOD	equ	1390h
 CHGDSP	equ	13edh
 CHGACT	equ	140ch
@@ -295,6 +302,7 @@ HOOKPED	equ	0ff8ah		;hook for print end
 HOOKERR	equ	0ff8dh		;hook for error
 HOOKEDT	equ	0ff93h		;hook for screen editor
 HOOKCLP	equ	0ff99h		;hook for changing link pointer
+HOOKCMD	equ	0ffa5h		;hook for command execution
 HOOKPRT	equ	0ffaeh		;hook for PRINT# command
 HOOKINP	equ	0ffbah		;hook for INPUT# command
 HOOKRES	equ	0ffc9h		;hook for RESSTK
@@ -335,8 +343,6 @@ FNC1ST	equ	0d4h		;1st function
 USR_	equ	0d7h
 LEFT_	equ	0eah
 MID_	equ	0ech
-STICK_	equ	0efh
-STRIG_	equ	0f0h
 FNCLAST	equ	0f1h		;last function
 
 
@@ -351,7 +357,8 @@ FNCLAST	equ	0f1h		;last function
 ;check parameter
 ; compare (hl) and data at (sp)
 ;input: sp,hl
-;output: a=data, hl=data address, z-flag(a=00h or 3ah), c-flag(a=30h-39h)
+;output: a=data, hl=next address, z-flag(a=00h or 3ah), c-flag(a=30h-39h)
+;destroy: f
 _CHKPAR:ds	CHKPAR-_CHKPAR
 	org	CHKPAR
 
@@ -370,8 +377,7 @@ _CHKPAR:ds	CHKPAR-_CHKPAR
 _ANADAT:ds	ANADAT-_ANADAT
 	org	ANADAT
 
-	call	SKIPSPINC
-	jp	CHKFIG
+	jp	ANAMAIN
 
 
 ;jump hook
@@ -601,7 +607,7 @@ SYSNAME:
 SYSNAME2:
 	db	"Compatible ", 00h
 BASICVER:
-	db	"BASIC Ver.0.8.1", 0dh, 0ah, 00h
+	db	"BASIC Ver.0.8.2", 0dh, 0ah, 00h
 
 PAGEDATA:
 	db	0c0h		;fd91	VRAM address
@@ -863,14 +869,16 @@ EDIT2:
 EDITLP:
 	call	INPTSCR		;hl=INPBUF-1
 	call	c,PLSTOP
-	call	CNVIL
-	ld	hl,INPBUF-1
-	rst	ANADAT		;
-	inc	a
-	dec	a
+	inc	hl
+	ld	a,(hl)
+	or	a
 	jr	z,EDITLP
-	jp	nc,INTPRT	;
-
+	dec	hl
+	push	hl
+	call	CNVIL
+	pop	hl
+	rst	ANADAT
+	jp	nc,INTPRT	;no line number
 
 ;change program
 CHGPRG:
@@ -1365,10 +1373,9 @@ C_FOR:
 
 	call	VARIN
 	call	CHKNUM
-	ld	a,(hl)
-	cp	TO_
-	jp	nz,SNERR
-	call	NARGMOINC
+	rst	CHKPAR
+	db	TO_
+	call	NARGMO
 	ex	de,hl
 	call	PUSHF1		;TO value
 	ex	de,hl
@@ -1415,26 +1422,28 @@ FOROK:
 	ld	a,FOR_		;identifier
 	push	af
 	inc	sp
-	jr	INTPEND
+	jr	CMDRTN
 
-
 ;
 ;
 ;
 ;
-_COMMAND:ds	CMDEND-14-_COMMAND
-	org	CMDEND-14
+_COMMAND:ds	CMDEND-17-_COMMAND
+	org	CMDEND-17
 
 ;execute command
 COMMAND:
+	call	HOOKCMD
 	cp	CMDLAST+1	;abh
 	jp	nc,SNERR
 	ld	de,CMDTBL
 	call	JPTBL
 
-;intepretation end
-INTPEND:
+;return from each command subroutine
+CMDRTN:
 	ld	hl,(PROGAD)
+;	jr	CMDEND
+
 
 ;command end
 _CMDEND:ds	CMDEND-_CMDEND
@@ -1442,14 +1451,13 @@ _CMDEND:ds	CMDEND-_CMDEND
 
 	dec	hl
 	rst	ANADAT
+	jp	nz,SNERR
+	inc	hl
+	or	a
+	jr	nz,INTPRT	;colon
 
-;	call	CHKCLN
-
-	jp	z,INTPRT
-	jp	SNERR
-
-
-RUNLP:
+;line end
+INTPLP1:
 	ld	a,(hl)
 	inc	hl
 	or	(hl)
@@ -1462,6 +1470,7 @@ RUNLP:
 	jp	INTPRT2
 
 
+
 ;0709h: used by PORTOPIA
 _INTPRT2:ds	INTPRT2-_INTPRT2
 	org	INTPRT2
@@ -1471,41 +1480,77 @@ _INTPRT2:ds	INTPRT2-_INTPRT2
 INTPRT:
 	call	CHKSTOP
 	jp	z,STOP1
+INTPLP2:
 	ld	a,(hl)
 	inc	hl
 	ld	(PROGAD),hl
 	or	a
 	jp	m,COMMAND
-	jr	z,RUNLP
+	jr	z,INTPLP1
 	cp	':'
 	jr	z,INTPRT
 	cp	' '
-	jr	z,INTPRT
+	jr	z,INTPLP2
 	dec	hl
 	call	C_LET
-	jr	INTPEND
+	jr	CMDRTN
 
 
-;continued from C_RUN
-;RUN with parameter
-RUNPAR:
-	call	RESSTK
-	ld	hl,(PROGAD)
-	call	C_GOTO
-	ld	h,b
-	ld	l,c
+;skip space and analyze a byte, continued from 0010h
+;input: hl=address-1
+;output: a=data, hl=data address, z-flag(a=00h or 3ah), c-flag(a=30h-39h)
+;destroy: f
+_ANAMAIN:ds	ANAMAIN-_ANAMAIN
+	org	ANAMAIN
+
 	inc	hl
-	jr	RUNLP
+	ld	a,(hl)
+;072c: used by 256 bytes monitor (ASCII 1983/3)
+	cp	' '
+	jr	z,ANAMAIN
+;	jp	CHKFIG
 
 
-;convert float to 2-byte integer for USR() [-32768,32767]
+;analyze for 0010h
+;input: a
+;output: z-flag(1=00h or 3ah), c-flag(1=30h-39h)
+;destroy: f
+CHKFIG:
+	or	a
+	ret	z
+	cp	'0'
+	ccf
+	ret	nc
+	cp	':'
+;	ret	z
+;	cp	'9'+1
+	ret
+
+
+;get a 2-byte integer argument [0,32768)
+;input: hl=program address
+;output: FAC1,de=integer, hl=next address
+;destroy: FAC2,af,bc
+_INT2ARG:ds	INT2ARG-_INT2ARG
+	org	INT2ARG
+
+	call	NARGMO
+	rst	CHKSGN
+	inc	a
+	jr	z,JPFCERR	;<0
+;	jp	FTOI2
+
+
+;convert float to 2-byte integer for USR() [-32768,32768)
 ;input: FAC1
 ;output: de
-;destroy: af,bc,hl
+;destroy: af,bc
 _FTOI2:	ds	FTOI2-_FTOI2
 	org	FTOI2
 
+	push	hl
 	call	FTOI
+	pop	hl
 	ld	a,(FAC1+3)
 	xor	d
 	ret	p
@@ -1515,29 +1560,14 @@ _FTOI2:	ds	FTOI2-_FTOI2
 ;convert float to 1-byte integer [0,255]
 ;input: FAC1
 ;output: e, a(0=ok)
-;destroy: f,bc,de,hl
+;destroy: f,bc,de
 FTOI1:
 	call	FTOI2
 	ld	a,d
 	or	a
 	ret	z
+JPFCERR:
 	jp	FCERR
-
-
-;convert FAC1 and FAC2 to 2-byte integer
-;input: FAC1, FAC2
-;output: hl, de
-;destroy: af,bc,FAC1,FAC2
-F12TOI2:
-	ld	a,(ARGTYP)
-	or	a
-	jp	nz,TMERR
-	call	FTOI2
-	push	de		;
-	call	EXFAC
-	call	FTOI2
-	pop	hl		;
-	ret
 
 
 ;get line number from string (0-65529)
@@ -1560,6 +1590,18 @@ GETLNLP:
 	jr	GETLNLP
 
 
+;continued from C_RUN
+;RUN with parameter
+RUNPAR:
+	call	RESSTK
+	ld	hl,(PROGAD)
+	call	C_GOTO
+	ld	h,b
+	ld	l,c
+	inc	hl
+	jp	INTPLP1
+
+
 ;RUN command
 _C_RUN:	ds	C_RUN-_C_RUN
 	org	C_RUN
@@ -1568,7 +1610,7 @@ _C_RUN:	ds	C_RUN-_C_RUN
 	jr	nz,RUNPAR	;with parameter
 	call	RESSTK
 	ld	hl,(STARTAD)
-	jp	RUNLP
+	jp	INTPLP1
 
 
 ;GOSUB command
@@ -1761,15 +1803,11 @@ C_IF:
 IFOK:
 	ld	a,(FAC1+4)
 	or	a
-	jp	z,C_REM
-;	call	SKIPSPINC
-;	sub	'0'
-;	cp	'9'-'0'+1
+	jp	z,C_REM		;false
 
+;true
 	rst	ANADAT
-
 	jp	c,C_GOTO
-IFEND:
 	pop	af		;cancel return address
 	jp	INTPRT		;skip colon check
 
@@ -1902,9 +1940,7 @@ SPCTAB:
 SPCTABMAIN:
 	push	af		;00=tab
 	call	FNCNUMR
-	push	hl
 	call	FTOI1
-	pop	hl
 	pop	af
 	or	a
 	jr	nz,PRTSPC
@@ -1946,7 +1982,8 @@ PRTEND:
 	ld	(PROGAD),hl
 
 ;print# and input# end
-;destroy: af,hl
+;output: hl=(PROGAD)
+;destroy: af
 _PIEND:	ds	PIEND-_PIEND
 	org	PIEND
 
@@ -1954,6 +1991,7 @@ _PIEND:	ds	PIEND-_PIEND
 	ld	hl,DEVICE
 	ld	a,(hl)
 	ld	(hl),00h
+	ld	hl,(PROGAD)	;for PUCKMEN
 	rlca
 	ret	nc
 	jp	WCLOSE
@@ -2224,6 +2262,68 @@ EXTRA:
 	db	"?Extra ignored", 0dh, 0ah, 00h
 
 
+;get a numerical argument for function
+;input: hl=program address
+;output: FAC1
+;destroy: FAC2,af,bc,de,hl
+FNCNUM:
+	call	CHKLPAR
+FNCNUMR:
+	call	ARG
+	call	CHKRPAR
+	jr	CHKNUM
+
+
+_NARGMOINC:ds	CHKNUM-10-_NARGMOINC
+	org	CHKNUM-10
+
+;get a numerical argument and check result (?MO Error)
+;input: hl=program address-1
+;output: FAC1, hl=next address
+;destroy: af,bc,de,FAC2
+NARGMOINC:
+	inc	hl
+
+;get a numerical argument and check result (?MO Error)
+;input: hl=program address
+;output: FAC1, hl=next address
+;destroy: af,bc,de,FAC2
+NARGMO:
+	call	CHKCLN
+	jp	z,MOERR
+;	call	NUMARG
+;	ret
+
+
+;get a numerical argument and check result
+;input: hl=program address
+;output: FAC1, hl=next address
+;destroy: af,bc,de,FAC2
+NUMARG:
+	call	ARG
+;	call	CHKNUM
+;	ret
+
+
+;check numeric or not
+;destroy: af
+_CHKNUM:ds	CHKNUM-_CHKNUM
+	org	CHKNUM
+
+	db	0e6h		;and 37h, reset c-flag
+
+;0afa
+;check string argument or not
+;destroy: af
+CHKSTR:
+	scf
+	ld	a,(ARGTYP)
+	rla
+	or	a		;parity?
+	ret	pe
+	jp	TMERR
+
+
 ;READ command
 C_READ:
 	call	CHKVAR
@@ -2352,75 +2452,6 @@ INPRDNUM:
 	ret
 
 
-;get a numerical argument for function
-;input: hl=program address
-;output: FAC1
-;destroy: FAC2,af,bc,de,hl
-FNCNUM:
-	call	CHKLPAR
-FNCNUMR:
-	call	ARG
-	call	CHKRPAR
-	jr	CHKNUM
-
-
-;get a numerical argument and check result (?MO Error)
-;input: hl=program address-1
-;output: FAC1, hl=next address
-;destroy: af,bc,de,FAC2
-NARGMOINC:
-	inc	hl
-
-;get a numerical argument and check result (?MO Error)
-;input: hl=program address
-;output: FAC1, hl=next address
-;destroy: af,bc,de,FAC2
-NARGMO:
-	call	CHKCLN
-	jp	z,MOERR
-;	call	NUMARG
-;	ret
-
-
-;get a numerical argument and check result
-;input: hl=program address
-;output: FAC1, hl=next address
-;destroy: af,bc,de,FAC2
-NUMARG:
-	call	ARG
-;	call	CHKNUM
-;	ret
-
-
-;check numeric or not
-;output: z-flag (1=ok)
-;destroy: af
-CHKNUM:
-	ld	a,(ARGTYP)
-	or	a
-	ret	z
-	dec	a
-CHKNERR:
-	jp	z,TMERR
-	jp	SNERR
-
-
-;check string argument or not
-;output: a=length, hl=string descriptor address, z-flag(1=ok)
-;destroy: f
-CHKSTR:
-	ld	a,(ARGTYP)
-	dec	a
-	jr	nz,CHKSERR
-	ld	hl,(FAC1+1)
-	ld	a,(hl)
-	ret
-
-CHKSERR:
-	inc	a
-	jr	CHKNERR
-
-
 ;check (
 ;input: hl=program address
 ;output: hl=next address
@@ -2451,10 +2482,10 @@ SETPRGAD:
 ;alphabet, numeral, or katakana? (case ignored)
 ALPNUM2:
 	cp	0e0h
+	ret	nc
+	cp	0a1h
 	ccf
 	ret	c
-	cp	0a1h
-	ret	nc
 	call	TOUPPER
 ;	call	ALPNUM
 ;	ret
@@ -2470,23 +2501,7 @@ ALPNUM:
 	cp	'A'
 	ccf
 	ret	c
-;	jp	CHKFIG
-
-
-;analyze for 0010h
-;input: a
-;output: z-flag(1=00h or 3ah), c-flag(1=30h-39h)
-;destroy: f
-CHKFIG:
-	or	a
-	ret	z
-	cp	'0'
-	ccf
-	ret	nc
-	cp	':'
-;	ret	z
-;	cp	'9'+1
-	ret
+	jp	CHKFIG
 
 
 ;convert lowercase letter to uppercase letter
@@ -2496,7 +2511,7 @@ CHKFIG:
 _TOUPHL:ds	TOUPHL-_TOUPHL
 	ld	a,(hl)
 
-;0bef: used by 256 bytes monitor
+;0bef: used by 256 bytes monitor (ASCII 1983/3)
 ;input: a=data
 TOUPPER:
 	cp	'z'+1
@@ -2506,6 +2521,91 @@ TOUPPER2:
 	ret	c
 	sub	'a'-'A'
 	ret
+
+
+;convert hexadecimal string to integer
+;input: a='&', hl='&' address
+;output: de=value, hl=next address
+;destroy: af,c
+_HEX:	ds	HEX-_HEX
+	org	HEX
+
+	cp	'&'
+	jp	nz,GETLN
+	call	SKIPSPAINC
+;	jp	z,SNERR
+	or	20h
+	sub	'h'
+	jp	nz,SNERR
+	ld	d,a		;=0
+	ld	e,a		;=0
+;	jp	HEX2
+
+
+;0c09: used by 256 bytes monitor (ASCII 1983/3)
+;input: hl=hex string address-1, de=default value
+;output: de=value, hl=next address
+;destroy: af,c
+_HEX2:	ds	HEX2-_HEX2
+	org	HEX2
+
+	ld	c,05h
+HEXLP:
+	push	de
+	call	SKIPSPAINC
+	pop	de
+	ret	z
+	cp	DEF_		;93h
+	jr	z,HEXDEF
+	sub	'0'
+	cp	'9'-'0'+1
+	jr	c,HEX0F
+	or	20h
+	sub	'a'-'0'
+	cp	'f'-'a'+1
+	ret	nc		;not hex
+	add	a,0ah
+HEX0F:
+	dec	c
+	jp	z,OVERR
+	ex	de,hl
+	add	hl,hl		;*2
+	add	hl,hl		;*4
+	add	hl,hl		;*8
+	add	hl,hl		;*16
+	add	a,l		;no carry
+	ld	l,a
+	ex	de,hl
+	jr	HEXLP
+
+HEXDEF:
+	ld	d,e
+	ld	e,0deh
+	ld	a,0fh
+	jr	HEX0F
+
+
+;increment hl and skip space and check (STREND) for ATOF
+SKIPSPAINC:
+	inc	hl
+
+;skip space and check (STREND) for ATOF
+;input: hl=address
+;output: a=data, hl=data address, z-flag(1=no data)
+;destroy: f,de
+SKIPSPA:
+	ld	de,(STREND)
+	inc	de
+SKIPSPALP:
+	rst	CPHLDE
+	ret	z
+	ld	a,(hl)
+	or	a
+	ret	z
+	cp	' '
+	ret	nz
+	inc	hl
+	jr	SKIPSPALP
 
 
 ;OR operator
@@ -2530,6 +2630,22 @@ O_AND:
 	and	e
 	ld	l,a
 	jp	S2TOF
+
+
+;convert FAC1 and FAC2 to 2-byte integer for OR,AND
+;input: FAC1, FAC2
+;output: hl, de
+;destroy: af,bc,FAC1,FAC2
+F12TOI2:
+	ld	a,(ARGTYP)
+	or	a
+	jp	nz,TMERR
+	call	FTOI2
+	push	de		;
+	call	EXFAC
+	call	FTOI2
+	pop	hl		;
+	ret
 
 
 ;NOT operator
@@ -2664,80 +2780,6 @@ I2TOFZERO:
 	ret
 
 
-;convert float to 2-byte integer [-65535,65535]
-;(round toward minus infinity)
-;input: FAC1
-;output: de
-;destroy: af,bc,hl
-FTOI:
-	ld	de,0000h
-	ld	a,(FAC1+4)
-	or	a
-	ret	z
-	sub	91h
-	jp	nc,FCERR
-	neg
-	ld	b,a
-
-	ld	hl,(FAC1)
-	ld	a,h
-	or	l		;fraction
-
-	ld	hl,(FAC1+2)
-	ld	c,h		;sign
-	set	7,h
-	dec	b
-	jr	z,FTOIZ
-FTOILP:
-	srl	h
-	rr	l
-	jr	nc,FTOINC
-	rla			;a>0
-FTOINC:
-	djnz	FTOILP
-
-FTOIZ:
-	ex	de,hl
-	bit	7,c		;sign
-	ret	z
-
-	neg			;set c-flag if a>0
-	sbc	hl,de
-	ex	de,hl
-	ret
-
-
-;get integer part from float
-;(round toward zero)
-;input: FAC1
-;output: FAC1
-;destroy: af,b,hl
-GETINT:
-	ld	a,(FAC1+4)
-	cp	81h
-	jp	c,SETZERO
-	sub	0a0h
-	ret	nc
-	ld	hl,FAC1
-GETILP1:
-	add	a,08h		;
-	jr	c,GETIC
-	ld	(hl),00h
-	inc	hl
-	jr	GETILP1
-GETIC:
-	ld	b,a
-	inc	b
-	xor	a
-GETILP2:
-	rra
-	scf
-	djnz	GETILP2
-	and	(hl)
-	ld	(hl),a
-	ret
-
-
 ;convert 1-byte signed integer to float
 ;input: b=integer (signed)
 ;output: FAC1
@@ -2816,7 +2858,7 @@ F_POS:
 
 ;CSRLINE function
 F_CSRL:
-	ld	hl,(CSRY)
+	ld	hl,(CSRY)	;l=y+1,h=x+1
 	dec	l
 	jp	I1TOF
 
@@ -2927,37 +2969,25 @@ F_PEEK:
 ;POKE command
 C_POKE:
 	call	INTARG
-	ld	a,(hl)
-	cp	','
-	jp	nz,SNERR
+	rst	CHKPAR
+	db	','
 	push	de		;
-	call	NARGMOINC
-	call	FTOI1
+	call	INT1ARG
 	pop	hl		;
 	ld	(hl),e
 	ret
 
 
-;get a 2-byte integer argument [-65535,65535]
+;get a 2-byte integer argument (-65536,65536)
 ;input: hl=program address
 ;output: FAC1,de=integer, hl=next address
 ;destroy: FAC2,af,bc
-INTARG:
+_INTARG:ds	INTARG-_INTARG
+	org	INTARG
+
 	call	NARGMO
 	push	hl
 	call	FTOI
-	pop	hl
-	ret
-
-
-;get a 2-byte integer argument [-32768,32767]
-;input: hl=program address
-;output: FAC1,de=integer, hl=next address
-;destroy: FAC2,af,bc
-INT2ARG:
-	call	NARGMO
-	push	hl
-	call	FTOI2
 	pop	hl
 	ret
 
@@ -3079,6 +3109,8 @@ _INTKEY:ds	INTKEY-_INTKEY
 
 KEYCOMMON:
 	push	af
+
+;0eb9h: used by ARMORED VEHICLE
 	call	IN90H
 
 ;0ebch: used by SPACE HARRIER
@@ -3155,13 +3187,6 @@ INTGAM:
 	ret
 
 
-STOPKEY:
-	call	HOOKSTP
-	ld	a,03h
-STOPKEY2:
-	call	PUTKBF
-	jr	SETSTOP
-
 RESSTOP:
 	xor	a
 SETSTOP:
@@ -3183,12 +3208,15 @@ _IKPOP:	ds	IKPOP-_IKPOP
 	ret
 
 
-;put into PLAY command buffer
-;input: a=data
-;destroy: f,hl
-PUTPLBF:
-	call	GETPLAD
-	jr	PUTBF
+STOPKEY:
+	call	HOOKSTP
+	ld	a,03h
+STOPKEY2:
+	push	af
+	call	CLRKBF
+	pop	af
+	call	PUTKBF
+	jr	SETSTOP
 
 
 ;put into key buffer
@@ -3197,49 +3225,15 @@ PUTPLBF:
 ;destroy: f,hl
 PUTKBF:
 	ld	hl,KYBFIN
-;	call	PUTBF
-;	ret
+	jp	PUTBF
 
 
-;put characer into buffer
-;input: a=character, hl=buffer control address
-;output: c-flag (1=buffer full)
+;put into PLAY command buffer
+;input: a=data
 ;destroy: f,hl
-PUTBF:
-	push	af
-	ld	a,(hl)		;in
-	inc	a
-	inc	l		;inc hl
-	inc	l		;inc hl
-	inc	l		;inc hl
-	and	(hl)		;size
-	dec	l		;dec hl
-	dec	l		;dec hl
-	cp	(hl)		;out
-	jr	z,BFFULL
-
-	dec	l		;dec hl
-	ld	(hl),a		;in
-	inc	l		;inc hl
-	inc	l		;inc hl
-	inc	l		;inc hl
-	inc	l		;inc hl
-	add	a,(hl)		;address
-	inc	l		;inc hl
-	ld	h,(hl)
-	ld	l,a
-	jr	nc,PTBNC
-	inc	h
-PTBNC:
-	pop	af
-	ld	(hl),a
-	or	a		;reset c-flag
-	ret
-
-BFFULL:
-	pop	af
-	scf
-	ret
+PUTPLBF:
+	call	GETPLAD
+	jp	PUTBF
 
 
 ;interrupt for RS-232C
@@ -3538,16 +3532,9 @@ PRTCEND:
 	ret
 
 
-;print a character in graphic mode (screen mode 3,4)
-;input: a=character
-;destroy: af,hl
-PRT34:
-	ld	hl,(CSRY)
-	call	PRT34XY
-CTLRGT:
-	ld	hl,(CSRAD)
-	inc	hl
-	jr	CHKNL
+PRTCH34:
+	call	PRT34
+	jr	CTLRGT
 
 ;print a character in CRT (no control code)
 ;input: a=character code
@@ -3557,21 +3544,21 @@ _PRTCH:ds	PRTCH-_PRTCH
 
 	ld	hl,(SCREEN1)
 	bit	1,l
-	jr	nz,PRT34	;screen mode 3,4
-
 	ld	hl,(CSRAD)
+	jr	nz,PRTCH34	;screen mode 3,4
+;	jr	z,PRTCH12	;screen mode 1,2
+
+PRTCH12:
 	call	PRT12
 
-;next line?
-CHKNL:
-	ld	(CSRAD),hl
-	ld	hl,CSRX
-	inc	(hl)
+CTLRGT:
+	ld	hl,(CSRY)	;l=y+1,h=x+1
+	inc	h		;x
 	ld	a,(WIDTH)
-	cp	(hl)
-	ret	nc
-CHKNL2:
-	ld	(hl),1
+	cp	h
+	jp	nc,SETCSR
+	ld	a,01h
+	ld	(CSRX),a
 
 	ld	a,(LASTLIN)
 	ld	hl,(CONSOL1)	;l=(CONSOL1)
@@ -3597,16 +3584,17 @@ CTLLF:
 ;scroll
 	push	de
 	ld	d,h		;x+1
-	ld	hl,(CONSOL1-1)	;h=(CONSOL1)
 	jr	SKPPATCH1
 
 
-;10eah: to be patched by iP6/iP6win
+;10eah: patched by iP6/iP6win
 _PATCH1:ds	PATCH1-_PATCH1
 	org	PATCH1
 	db	00h
 
+
 SKPPATCH1:
+	ld	hl,(CONSOL1-1)	;h=(CONSOL1)
 	ld	l,a
 	sbc	a,h		;c-flag=1, (LASTLIN)-(CONSOL1)-1
 	call	nc,SCRLUP
@@ -3624,7 +3612,7 @@ PRTCTL:
 	cp	07h
 	jp	z,BELL
 	sub	0ah
-	jr	z,CTLLF
+	jr	z,CTLLF		;a=0
 	dec	a
 	jr	z,CTLHOM	;0bh
 	dec	a
@@ -3644,15 +3632,20 @@ PRTCTL:
 
 CTLDWN:
 	inc	l
-	jr	CTLUPNZ
+	ld	a,(LASTLIN)
+	cp	l
+	jr	nc,SETCSR
+	ld	l,a
+	jr	SETCSR
 
 CTLLFT:
 	dec	h
 	jr	nz,SETCSR
 	ld	a,(CONSOL1)
 	cp	l
-	ret	nc
+	ret	z
 	dec	l
+	ret	z
 	ld	a,(WIDTH)
 	ld	h,a
 	jr	SETCSR
@@ -3662,13 +3655,7 @@ CTLUP:
 	cp	l
 	ret	z
 	dec	l
-	jr	nz,CTLUPNZ
-	ld	l,01h
-CTLUPNZ:
-	ld	a,(LASTLIN)
-	cp	l
-	jr	nc,SETCSR
-	ld	l,a
+	ret	z
 	jr	SETCSR
 
 CTLGRP:
@@ -3901,14 +3888,12 @@ SCRLG:
 SCRLATT:
 	call	LDIDR
 	pop	bc
-	pop	de
 	pop	hl
 
 ;scroll INPUT prompt position
 ;z=0: up,h=first,l=last
 ;z=1: down,h=last,l=first
 	push	hl
-	push	de
 
 	ld	e,0-01h
 	jr	nz,SCRLIUP
@@ -3933,8 +3918,8 @@ SCRLIUP:
 	add	a,e
 	ld	(INPTXY),a
 SCRLIEND:
-	pop	de
 	pop	hl
+	pop	de
 	ret
 
 
@@ -3961,11 +3946,11 @@ _SCRLUP:ds	SCRLUP-_SCRLUP
 	sub	h		;a=(LASTLIN)-(CONSOL1) < 16
 ;	ret	z
 ;	ret	c
-	push	hl
 
 ;c-flag=0:scroll up, c-flag=1:scroll down
 SCRLUD:
 	push	de
+	push	hl
 	push	bc
 	push	af		;up/down
 
@@ -4035,7 +4020,6 @@ _SCRLDW:ds	SCRLDW-_SCRLDW
 	sub	l
 ;	ret	z
 ;	ret	c
-	push	hl
 	scf			;set c-flag
 	jr	SCRLUD
 
@@ -4216,7 +4200,9 @@ REVEND:
 ;input: none
 ;output: none
 ;destroy: af
-CHGTXT:
+_CHGTXT:ds	CHGTXT-_CHGTXT
+	org	CHGTXT
+
 	ld	a,(SCREEN3)
 	call	CHGACT
 	ld	a,(SCREEN1)
@@ -4506,16 +4492,16 @@ _PRTCHAD:ds	PRTCHAD-_PRTCHAD
 	push	af
 	ld	a,(SCREEN1)
 	cp	02h
-	jr	c,PRTCHXY12
+	jr	c,PRTCHAD12
 
 ;screen mode 3,4
 	call	AD2XY
 	pop	af
 	push	af
-	call	PRT34XY
+	call	PRT34
 	jr	PRTCHADEND
 
-PRTCHXY12:
+PRTCHAD12:
 	pop	af
 	push	af
 	call	PRT12
@@ -4543,9 +4529,9 @@ PRT12:
 
 
 ;print a character in graphic mode (screen mode 3,4)
-;input: a=character code, h=x+1, l=y+1
+;input: a=character code, hl=character VRAM address
 ;destroy af,hl
-PRT34XY:
+PRT34:
 	push	de
 	push	bc
 
@@ -4553,13 +4539,13 @@ PRT34XY:
 	ld	a,(COLOR1)
 	call	SETATT
 
-	call	XY2GAD
+	call	AD2GAD
 
 	ld	a,04h
 	out	(93h),a		;CGROM ON
 
 	ld	b,0ch
-PRT34XYLP:
+PRT34LP:
 	push	de
 	ld	a,(SCREEN1)
 	rrca			;
@@ -4576,7 +4562,7 @@ CALL34END:
 	add	hl,de
 	pop	de
 	inc	e		;inc de
-	djnz	PRT34XYLP
+	djnz	PRT34LP
 
 	ld	a,05h
 	out	(93h),a		;CGROM OFF
@@ -5269,18 +5255,12 @@ _SETBO:	ds	SETBO-_SETBO
 
 
 CALLFNC:
-	cp	STICK_
-	jr	z,STKSTR
-	cp	STRIG_
-	jr	nz,NOTSTKSTR
-STKSTR:
-	dec	hl		;for STICK(),STRIG()
-
-NOTSTKSTR:
+	dec	hl		;LEFT$()...TIME
 	cp	LEFT_
 	jr	nc,SKIPARG
 
 ;SGN()...CHR$()
+	inc	hl
 	push	af
 	call	CHKLPAR
 	call	ARG
@@ -5403,9 +5383,14 @@ CALLOPS:
 ARGHEAD:
 	add	a,d		;d=0?
 	jr	nz,ARGNEXT
+
+ARGEND:
 	pop	hl		;cancel dummy operator
 	ld	hl,(PROGAD)
-	ret
+	ld	a,(ARGTYP)
+	cp	02h
+	ret	c
+	jp	SNERR
 
 ;operator and operator
 OPROPR:
@@ -6114,7 +6099,7 @@ _JOYSTK:ds	JOYSTK-_JOYSTK
 	jr	SKPPATCH2
 
 
-;1cb4h-1cb5h: to be patched by PC6001V/VX/VW
+;1cb4h-1cb5h: patched by PC6001V/VX/VW
 _PATCH2:ds	PATCH2-_PATCH2
 	org	PATCH2
 	db	00h, 00h
@@ -7685,6 +7670,22 @@ CHKINT4:
 	ret
 
 
+;shift left arithmetic for FAC1
+;input: FAC1
+;output: FAC1,c-flag
+;destroy: f,hl
+SLAINT4:
+	ld	hl,FAC1
+	sla	(hl)
+	inc	hl
+	rl	(hl)
+	inc	hl
+	rl	(hl)
+	inc	hl
+	rl	(hl)
+	ret
+
+
 ;convert float to 4-byte integer (>=0)
 ;(round toward zero)
 ;input: FAC1
@@ -7879,18 +7880,63 @@ WAITLP:
 
 ;EXEC command
 C_EXEC:
-	call	NARGMO
-	call	FTOI
+	call	INTARG
 
 ;for compatibility with N60-BASIC
-	ld	hl,(PROGAD)
-	ex	de,hl
-	ld	a,h
-	or	l
+;hl=machine language subroutine address
+;c-flag=1 if address<>0
+;(sp)=return address
+;(sp+2)=program address after exec command
+
+	push	hl		;program address
+	ld	a,d
+	or	e
 	neg			;set c-flag if address<>0
-	push	de
+	ex	de,hl
 	call	JPHL
-	pop	de
+	pop	hl		;program address
+	ld	(PROGAD),hl
+	ret
+
+
+;put characer into buffer
+;input: a=character, hl=buffer control address
+;output: c-flag (1=buffer full)
+;destroy: f,hl
+PUTBF:
+	push	af
+	ld	a,(hl)		;in
+	inc	a
+	inc	l		;inc hl
+	inc	l		;inc hl
+	inc	l		;inc hl
+	and	(hl)		;size
+	dec	l		;dec hl
+	dec	l		;dec hl
+	cp	(hl)		;out
+	jr	z,BFFULL
+
+	dec	l		;dec hl
+	ld	(hl),a		;in
+	inc	l		;inc hl
+	inc	l		;inc hl
+	inc	l		;inc hl
+	inc	l		;inc hl
+	add	a,(hl)		;address
+	inc	l		;inc hl
+	ld	h,(hl)
+	ld	l,a
+	jr	nc,PTBNC
+	inc	h
+PTBNC:
+	pop	af
+	ld	(hl),a
+	or	a		;reset c-flag
+	ret
+
+BFFULL:
+	pop	af
+	scf
 	ret
 
 
@@ -7966,49 +8012,21 @@ ADDSZ2:
 	ret
 
 
-;check string area and call GC if necessary
-;input: a=new string length
-;output: hl=new (STRAD)+1
-;destroy: af,de
-GCCHECK:
-	push	bc
-	ld	d,00h
-	ld	e,a
-	push	de
-	call	CHKSAREA
-	pop	de
-	jr	nc,GCCHECKOK
-	push	de
-	call	GC
-	pop	de
-	call	CHKSAREA
-	jp	c,OSERR
-GCCHECKOK:
-	pop	bc
-	ret
-
-;check string area
-CHKSAREA:
-	ld	hl,(STRAD)
-	or	a
-	sbc	hl,de
-	ld	de,(STACK)
-	rst	CPHLDE
-	ret
-
-
 ;get a string argument
 ;input: hl=program address
-;output: a=length, de=string address, hl=next address, z-flag(1=ok)
+;output: a=length, de=string address, hl=next address
 ;destroy: f,bc,FAC1,FAC2
 STRARG:
 	call	CHKCLN
 	jp	z,MOERR
 	call	ARG
 STRARG2:
-	ex	de,hl
 	call	CHKSTR
+
 ;get string pointer
+	ex	de,hl
+	ld	hl,(FAC1+1)
+	ld	a,(hl)
 	inc	hl
 	inc	hl
 	ld	b,(hl)
@@ -8020,10 +8038,11 @@ STRARG2:
 
 
 ;get string,integer argument for LEFT$(),RIGHT$(),MID$()
-;input: hl=program address
+;input: hl=program address-1
 ;output: STRDSC1, a=length, hl=string address, FAC1,de=integer
 ;destroy: FAC2,f,bc
 ARGSI1:
+	inc	hl
 	call	CHKLPAR
 	call	STRARG
 	push	af
@@ -8253,26 +8272,27 @@ DEVNUM:
 	ld	a,00h
 	ret	nz
 
+	call	NARGMOINC
+	ld	a,(hl)
+	cp	','
+	jp	nz,SNERR
 	inc	hl
-	call	INT2ARG
-	push	hl
-	dec	de
-	ld	hl,0004h
-	add	hl,de
+	ld	(PROGAD),hl
+	call	FTOI2
+
+	ex	de,hl		;
+	dec	hl		;for #0
+	ld	bc,0004h
+	add	hl,bc
 	jp	nc,FCERR
 	ld	a,l
 	inc	a
+	ex	de,hl		;
+
 	cp	03h
-	jr	c,DEVNUMC	;#-2,#-3
+	ret	c		;#-2,#-3
 	and	01h
 	rrca
-DEVNUMC:
-	pop	hl
-	push	af
-	call	CHKCMM
-	jp	nz,SNERR
-	ld	(PROGAD),hl
-	pop	af
 	ret
 
 
@@ -8530,7 +8550,7 @@ NOSCRLU:
 
 
 ;get character from screen
-;input: hl
+;input: hl=VRAM address
 ;output: a
 ;destroy: f
 GETSCRC:
@@ -8632,7 +8652,7 @@ CPIBFLP2:
 ;destroy: af,bc,de
 SCREDIT:
 	call	CUTLINE
-	ld	hl,(CSRY)
+	ld	hl,(CSRY)	;l=y+1,h=x+1
 	ld	(INPTX-1),hl	;h=end position for INPUT command
 	ld	(INPTXY),hl	;initial position for INPUT command
 	ld	a,(CSRAD+1)
@@ -8656,18 +8676,13 @@ SEDMAIN:
 
 SEDPRTC:
 	call	PRTC
-
-CHKIPOS2:
-	ld	hl,(CSRAD)
+;	jp	CHKIPOS
 
 ;check cursor position for input command
-;input: hl=cursor address
-;output: hl=cursor XY, de=cursor address
-;destroy: af
+;output: hl=cursor XY
+;destroy: af,b
 CHKIPOS:
-	ld	d,h
-	ld	e,l
-	call	AD2XY
+	ld	hl,(CSRY)	;l=y+1,h=x+1
 	ld	a,(INPTXY)	;y+1
 	cp	l
 	ret	nz
@@ -8683,7 +8698,9 @@ IPOSNC:
 	ret	c
 
 	ld	a,(INPTPAG)
-	xor	d
+	ld	b,a
+	ld	a,(CSRAD+1)
+	xor	b
 	and	0f0h
 	ret	nz
 
@@ -8700,10 +8717,18 @@ SEDCTL:
 	ld	hl,NOINSTBL
 	ld	bc,000ch
 	cpir
-	jr	nz,SEDCTLNZ
 	ld	hl,INSMODE
+	jr	nz,SEDCTLNZ
 	ld	(hl),b		;b=0
+
 SEDCTLNZ:
+	cp	07h
+	jp	z,SEDBELL
+	cp	09h
+	jp	z,SEDTAB
+	cp	0ah
+	jp	z,SEDCTLJ
+
 	ld	hl,(CSRAD)
 
 	cp	02h
@@ -8714,14 +8739,8 @@ SEDCTLNZ:
 	jr	z,SEDCTLE
 	cp	06h
 	jp	z,SEDCTLF
-	cp	07h
-	jp	z,SEDBELL
 	cp	08h
 	jr	z,SEDDEL
-	cp	09h
-	jp	z,SEDTAB
-	cp	0ah
-	jp	z,SEDCTLJ
 	cp	0dh
 	jp	z,SEDRET
 	cp	15h
@@ -8729,6 +8748,7 @@ SEDCTLNZ:
 	cp	12h
 	jr	nz,SEDPRTC	;14h,1ch,1dh,1eh,1fh
 
+;INS (ctrl-r)
 SEDINS:
 	ld	hl,INSMODE
 	ld	a,(hl)
@@ -8737,6 +8757,7 @@ SEDINS:
 	ret
 
 
+;DEL (ctrl-h)
 SEDDEL:
 	call	CHKLINE
 	ex	de,hl
@@ -8747,7 +8768,7 @@ SEDDEL:
 SEDDELZ:
 	push	de		;
 	call	PUTS
-	call	CHKIPOS2
+	call	CHKIPOS
 	pop	de		;
 	ld	h,d
 	ld	l,e
@@ -8779,12 +8800,14 @@ DELLP:
 	ret
 
 
+;ctrl-u
 CTLULP:
 	dec	hl
 SEDCTLU:
 	call	CHKLINE
 	jr	z,CTLULP
 
+;ctrl-e
 SEDCTLE:
 	dec	h
 	dec	h
@@ -8799,30 +8822,51 @@ SEDCTLE:
 	ret
 
 
+;ctrl-b
 SEDCTLB:
+	ex	de,hl
+	ld	hl,(CSRY)	;l=y+1,h=x+1
+CTLBLP1:
 	call	CHKCTLB
-	jr	nc,SEDCTLB
-CTLBLP:
+	ex	de,hl
+	jr	nc,CTLBLP1
+CTLBLP2:
+	ld	b,h
+	ld	c,l
 	call	CHKCTLB
-	jr	c,CTLBLP
-	inc	hl
-	call	CHKIPOS
+	ex	de,hl
+	jr	c,CTLBLP2
+	ld	h,b
+	ld	l,c
+	jr	CTLFEND
+
+;input: h=x+1, l=y+1, de=VRAM address
+;output: d=new x+1, e=new y+1, hl=new VRAM address,
+;        c-flag(1=alphabet, numeral, or katakana)
+;destroy: af
+CHKCTLB:
+	dec	de
+	dec	h
+	jr	nz,CTLFNC
+
+	ld	a,(CONSOL1)
+	cp	l
+	jr	z,CTLBZ
+	ld	a,l
+	dec	a
+	jr	z,CTLBZ
+
+	ld	hl,(WIDTH-1)	;h=(WIDTH)
+	ld	l,a		;l=l-1
+	jr	CTLFNC
+
+CTLBZ:
+	inc	h
+	pop	af		;cancel return address
 	jp	SETCSR
 
-CHKCTLB:
-	dec	hl
-	ld	d,h
-	ld	e,l
-	call	AD2XY
-	ld	a,(CONSOL1)
-	inc	l
-	cp	l
-	jr	c,CTLBC
-CTLBNC:
-	pop	af		;cancel return address
-	jp	CTLCR
 
-
+;ctrl-f
 SEDCTLF:
 	call	CHKCTLF
 	jr	c,SEDCTLF
@@ -8830,8 +8874,9 @@ CTLFLP:
 	call	CHKCTLF
 	jr	nc,CTLFLP
 	ex	de,hl
+CTLFEND:
 	call	SETCSR
-	jp	CHKIPOS2
+	jp	CHKIPOS
 
 CHKCTLF:
 	inc	hl
@@ -8841,7 +8886,7 @@ CHKCTLF:
 	ld	a,(LASTLIN)
 	cp	l
 	jr	c,CTLFC
-CTLBC:
+CTLFNC:
 	ex	de,hl
 	call	GETSCRC
 	jp	ALPNUM2
@@ -8852,13 +8897,15 @@ CTLFC:
 	pop	af		;cancel return address
 	jp	SETCSR
 
+
+;ctrl-j
 SEDCTLJ:
-	ld	a,(INSMODE)
+	ld	a,(hl)		;(INSMODE)
 	or	a
 	ld	a,0ah
 	jp	z,SEDPRTC
 
-	ld	hl,(CSRY)	;l=y+1, h=x+1
+	ld	hl,(CSRY)	;l=y+1,h=x+1
 	ld	a,COLUMNS+1
 	sub	h
 	ld	b,a
@@ -8877,6 +8924,7 @@ CTLJLP:
 	jp	SETLINE
 
 
+;TAB (ctrl-i)
 SEDTAB:
 	ld	a,(CSRX)
 	sub	COLUMNS-07h
@@ -8886,7 +8934,7 @@ SEDTAB:
 	and	07h
 	inc	a
 	ld	b,a
-	ld	a,(INSMODE)
+	ld	a,(hl)		;(INSMODE)
 	and	04h
 	add	a,1ch		;1ch(right) or 20h(space)
 	ld	c,a
@@ -8899,8 +8947,9 @@ SEDTABLP:
 	ret
 
 
+;STOP (ctrl-c)
 SEDSTOP:
-	pop	hl		;cancel return address
+	pop	af		;cancel return address
 	ld	hl,(CSRY)
 	xor	a
 	ld	h,a
@@ -8926,13 +8975,15 @@ STOPLP:
 	ret
 
 
+;RETURN (ctrl-m)
 SEDRET:
 	pop	af		;cancel return address
 
 	ld	a,(INPTPAG)
 	xor	h		;(CSRAD+1)
 	and	0f0h
-	jr	nz,SETLENMAX	;if other page
+	push	af		;different page?
+	jr	nz,SETLENMAX	;if different page
 
 	ld	a,(CSRY)
 	ld	de,(INPTXY)
@@ -8964,15 +9015,12 @@ SRETLP:
 	call	CHKLINE
 	dec	hl
 	jr	z,SRETLP
-
 	inc	hl
-	ld	d,h		;
-	call	AD2XY
-	ld	a,(INPTPAG)
-	xor	d		;
-	and	0f0h
-	jr	nz,SRETNZ	;if different page
 
+	pop	af		;different page?
+	ret	nz		;if different page
+
+	call	AD2XY
 	ld	de,(INPTXY)	;initial position
 	ld	a,l
 	cp	e
@@ -8983,8 +9031,9 @@ SRETNZ:
 	jp	XY2AD
 
 
+;ctrl-g
 SEDBELL:
-	ld	a,(INSMODE)
+	ld	a,(hl)		;(INSMODE)
 	or	a
 	jp	z,BELL
 	ld	a,' '
@@ -9457,6 +9506,7 @@ PSET1:
 
 ;POINT() function
 F_POIN:
+	inc	hl
 	call	GETGXY
 	call	POINT
 	jp	I1TOFA
@@ -10324,11 +10374,42 @@ GCLP2:
 	jr	GCLP2
 
 
+;check string area and call GC if necessary
+;input: a=new string length
+;output: hl=new (STRAD)+1
+;destroy: af,de
+GCCHECK:
+	push	bc
+	ld	d,00h
+	ld	e,a
+	push	de
+	call	CHKSAREA
+	pop	de
+	jr	nc,GCCHECKOK
+	push	de
+	call	GC
+	pop	de
+	call	CHKSAREA
+	jp	c,OSERR
+GCCHECKOK:
+	pop	bc
+	ret
+
+;check string area
+CHKSAREA:
+	ld	hl,(STRAD)
+	or	a
+	sbc	hl,de
+	ld	de,(STACK)
+	rst	CPHLDE
+	ret
+
+
 ;LEN() function
 F_LEN:
 	call	CHKSTR
-SETI1A:
-	ld	l,a
+	ld	hl,(FAC1+1)
+	ld	l,(hl)
 SETI1:
 	call	I1TOF
 SETTYP0:
@@ -10343,7 +10424,8 @@ F_ASC:
 	or	a
 	jp	z,FCERR
 	ld	a,(de)
-	jr	SETI1A
+	ld	l,a
+	jr	SETI1
 
 
 ;CHR$() function
@@ -10491,8 +10573,6 @@ DIMLP:
 	push	bc		;dimensions
 	call	INT2ARG
 	pop	bc		;dimensions
-	bit	7,d
-	jp	nz,FCERR
 	inc	c
 	jp	z,OMERR		;over 255 dimensions
 	inc	de		;+1
@@ -10514,12 +10594,10 @@ DIMLP:
 
 DIMNEXT:
 	ld	hl,(PROGAD)
-	dec	hl
-	rst	ANADAT
-	ret	z
-	inc	hl
+	call	SKIPSP
 	cp	','
 	ret	nz
+	inc	hl
 	jr	C_DIM
 
 NOTARR:
@@ -10677,13 +10755,6 @@ DIMAUTO:
 AUTOLP1:
 	push	bc		;dimensions
 	call	INT2ARG		;de=size
-;	ld	a,d
-;	or	a
-;	jp	nz,BSERR
-;	ld	a,e
-;	ld	e,0bh		;de=10+1
-;	cp	e
-;	jp	nc,BSERR
 
 	ld	de,000bh
 
@@ -10820,40 +10891,34 @@ MAKEVAR:
 	push	bc		;variable name
 	push	de		;variable address
 
-	ld	de,0006h
-	bit	7,c
-	jr	nz,MAKEVSTR	;numeric=7, string=6
-	inc	e
-MAKEVSTR:
 	ld	hl,(FREEAD)
-	ld	bc,(ARRAD)
+	push	hl		;old (FREEAD)
+	ld	de,(ARRAD)
 	or	a
-	sbc	hl,bc
-	ld	b,h
-	ld	c,l
-
-	ld	hl,(FREEAD)
-
+	sbc	hl,de
+	push	hl		;array size
 	add	hl,de
-	push	de		;numeric=7, string=6
+	call	VARSIZE
+	inc	bc
+	inc	bc		;7(numeric) or 6(string)
+	add	hl,bc
 	call	CHKSTK
-	pop	de		;numeric=7, string=6
 	ld	(FREEAD),hl
+	ex	de,hl		;new (FREEAD)
 	ld	hl,(ARRAD)
-	add	hl,de
+	add	hl,bc
 	ld	(ARRAD),hl
 
+	pop	bc		;array size
+	pop	hl		;old (FREEAD)
 	ld	a,b
 	or	c
 	jr	z,NOLDDR
-	ld	hl,(FREEAD)
-	push	hl		;
-;	or	a
-	sbc	hl,de
-	dec	hl
-	pop	de		;
-	dec	de
+
+	dec	hl		;old (FREEAD)-1
+	dec	de		;new (FREEAD)-1
 	lddr
+
 NOLDDR:
 	pop	hl		;variable address
 	pop	bc		;variable name
@@ -11041,13 +11106,13 @@ CHKSTK:
 
 
 ;reset stack and variables
-;destroy: af,bc,de,hl
+;destroy: af,hl
 _RESSTK:ds	RESSTK-_RESSTK
 	org	RESSTK
 
-	pop	bc		;return address
+	pop	af		;return address
 	ld	sp,(STACK)
-	push	bc		;return address
+	push	af		;return address
 	ld	a,0ffh
 	ld	(STOPAD+1),a
 	ld	hl,(VARAD)
@@ -11107,7 +11172,7 @@ BREAK:
 
 ;END command
 C_END:
-	pop	af		;cancel stack
+	pop	af		;cancel return address
 	jp	EDIT
 
 
@@ -11147,8 +11212,6 @@ _C_CLR:	ds	C_CLR-_C_CLR
 	call	CHKCLN
 	jp	z,RESSTK
 	call	INT2ARG
-	bit	7,d
-	jp	nz,FCERR
 	push	de		;1st parameter
 	ld	de,(STREND)
 	ld	a,(hl)
@@ -11267,7 +11330,7 @@ NEXTCONT:
 	ld	a,FOR_
 	push	af		;identifier
 	inc	sp
-	jp	INTPEND
+	jp	CMDRTN
 
 STEP0:
 	call	CMPF
@@ -11281,7 +11344,7 @@ NEXTEND:
 	ld	hl,(PROGAD)
 	ld	a,(hl)
 	cp	','
-	jp	nz,INTPEND
+	jp	nz,CMDRTN
 	inc	hl
 	ld	b,a		;not variable name
 	jp	NEXTLP
@@ -12009,6 +12072,37 @@ INT:
 	jp	SETADDF
 
 
+;get integer part from float
+;(round toward zero)
+;input: FAC1
+;output: FAC1
+;destroy: af,b,hl
+GETINT:
+	ld	a,(FAC1+4)
+	cp	81h
+	jp	c,SETZERO
+	sub	0a0h
+	ret	nc
+	ld	hl,FAC1
+GETILP1:
+	add	a,08h		;
+	jr	c,GETIC
+	ld	(hl),00h
+	inc	hl
+	jr	GETILP1
+GETIC:
+	ld	b,a
+	inc	b
+	xor	a
+GETILP2:
+	rra
+	scf
+	djnz	GETILP2
+	and	(hl)
+	ld	(hl),a
+	ret
+
+
 ;convert string to float
 ;input: hl=address
 ;output: FAC1, hl=next address
@@ -12022,7 +12116,7 @@ ATOF:
 	or	a
 	ret	m		;reject PLUS_ and MINUS_ in VAL()
 	cp	'&'
-	jp	z,ATOFHEX
+	jr	z,ATOFHEX
 
 	call	ATOIF
 
@@ -12036,6 +12130,13 @@ ATOF:
 	cp	'e'
 	jr	z,ATOFEXP
 	dec	hl
+	ret
+
+ATOFHEX:
+	call	HEX
+	ex	de,hl
+	call	S2TOF
+	ex	de,hl
 	ret
 
 ATOFLP1:
@@ -12126,84 +12227,48 @@ ATOFEND:
 	pop	hl		;address
 	ret
 
-ATOFHEX:
-	call	HEX
-	ex	de,hl
-	call	S2TOF
-	ex	de,hl
-	ret
 
-
-;convert hexadecimal string to integer
-;input: hl="&" address
-;output: de=value, hl=next address
-;destroy: af,c,de
-HEX:
-	call	SKIPSPAINC
-	jp	z,SNERR
-	or	20h
-	sub	'h'		;
-	jp	nz,SNERR
-
-	ld	d,a		;=0
-	ld	e,a		;=0
-	ld	c,05h
-HEXLP:
-	push	de
-	call	SKIPSPAINC
-	pop	de
-	ret	z
-	cp	DEF_		;93h
-	jr	z,HEXDEF
-	sub	'0'
-	cp	'9'-'0'+1
-	jr	c,HEX0F
-	or	20h
-	sub	'a'-'0'
-	cp	'f'-'a'+1
-	ret	nc		;not hex
-	add	a,0ah
-HEX0F:
-	dec	c
-	jp	z,OVERR
-	ex	de,hl
-	add	hl,hl		;*2
-	add	hl,hl		;*4
-	add	hl,hl		;*8
-	add	hl,hl		;*16
-	add	a,l		;no carry
-	ld	l,a
-	ex	de,hl
-	jr	HEXLP
-
-HEXDEF:
-	ld	d,e
-	ld	e,0deh
-	ld	a,0fh
-	jr	HEX0F
-
-
-;increment hl and skip space and check (STREND) for ATOF
-SKIPSPAINC:
-	inc	hl
-
-;skip space and check (STREND) for ATOF
-;input: hl=address
-;output: a=data, hl=data address, z-flag(1=no data)
-;destroy: f,de
-SKIPSPA:
-	ld	de,(STREND)
-	inc	de
-SKIPSPALP:
-	rst	CPHLDE
-	ret	z
-	ld	a,(hl)
+;convert float to 2-byte integer (-65536,65536)
+;(round toward minus infinity)
+;input: FAC1
+;output: de
+;destroy: af,bc,hl
+FTOI:
+	ld	de,0000h
+	ld	a,(FAC1+4)
 	or	a
 	ret	z
-	cp	' '
-	ret	nz
-	inc	hl
-	jr	SKIPSPALP
+	sub	91h
+	jp	nc,FCERR
+	neg
+	ld	b,a
+
+	ld	hl,(FAC1)
+	ld	a,h
+	or	l		;fraction
+
+	ld	hl,(FAC1+2)
+	ld	c,h		;sign
+	set	7,h
+	dec	b
+	jr	z,FTOIZ
+FTOILP:
+	srl	h
+	rr	l
+	jr	nc,FTOINC
+	rla			;a>0
+FTOINC:
+	djnz	FTOILP
+
+FTOIZ:
+	ex	de,hl
+	bit	7,c		;sign
+	ret	z
+
+	neg			;set c-flag if a>0
+	sbc	hl,de
+	ex	de,hl
+	ret
 
 
 ;print "in *****"
@@ -13049,22 +13114,6 @@ CMPFNEG:
 ;FAC1<0, FAC2<0
 	ex	de,hl
 	jr	CMPFPOS
-
-
-;shift left arithmetic for FAC1
-;input: FAC1
-;output: FAC1,c-flag
-;destroy: f,hl
-SLAINT4:
-	ld	hl,FAC1
-	sla	(hl)
-	inc	hl
-	rl	(hl)
-	inc	hl
-	rl	(hl)
-	inc	hl
-	rl	(hl)
-	ret
 
 
 ;jump subroutine in table

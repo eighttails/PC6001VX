@@ -28,6 +28,10 @@
         <file>res/rom/SUBCPU.66</file>
         <file>res/rom/VOICEROM.62</file>
         <file>res/rom/VOICEROM.66</file>
+        <file>res/rom/SYSTEMROM1.64</file>
+        <file>res/rom/SYSTEMROM1.68</file>
+        <file>res/rom/SYSTEMROM2.64</file>
+        <file>res/rom/SYSTEMROM2.68</file>
         <file>res/vkey/key_0x01.png</file>
         <file>res/vkey/key_0x02.png</file>
         <file>res/vkey/key_0x03.png</file>
@@ -315,5 +319,7 @@
         <file>res/vkey/key_stop.png</file>
         <file>res/vkey/key_tab.png</file>
         <file>res/vkey/key_up.png</file>
+        <file>res/rom/CGROM68.64</file>
+        <file>res/rom/CGROM68.68</file>
     </qresource>
 </RCC>

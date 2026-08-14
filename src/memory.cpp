@@ -139,11 +139,17 @@ const std::vector<ROMINFO> VOICE66   = { { "VOICEROM.66",	0x04000,	0x91d078c1 },
 
 // PC-6001mk2SR / PC-6601SR                ROMファイル名	サイズ		CRC32
 const std::vector<ROMINFO> SYSROM164 = { { "SYSTEMROM1.64",	0x10000,	0xb6fc2db2 },
-										 { "SYSTEMROM1.68",	0x10000,	0xb6fc2db2 } };
+										 { "SYSTEMROM1.68",	0x10000,	0xb6fc2db2 },
+										 { "SYSTEMROM1.64",	0x10000,	0          },   // 互換BASIC
+										 { "SYSTEMROM1.68",	0x10000,	0          } }; // 互換BASIC
 const std::vector<ROMINFO> SYSROM264 = { { "SYSTEMROM2.64",	0x10000,	0x55a62a1d },
-										 { "SYSTEMROM2.68",	0x10000,	0x55a62a1d } };
+										 { "SYSTEMROM2.68",	0x10000,	0x55a62a1d },
+										 { "SYSTEMROM1.64",	0x10000,	0          },   // 互換BASIC
+										 { "SYSTEMROM1.68",	0x10000,	0          } }; // 互換BASIC
 const std::vector<ROMINFO> CGROM164  = { { "CGROM68.64",	0x04000,	0x73bc3256 },
-										 { "CGROM68.68",	0x04000,	0x73bc3256 } };
+										 { "CGROM68.68",	0x04000,	0x73bc3256 },
+										 { "CGROM68.64",	0x04000,	0          },   // 互換BASIC
+										 { "CGROM68.68",	0x04000,	0          } }; // 互換BASIC
 
 // 拡張カートリッジ
 const std::vector<ROMINFO> EXBASIC00 = { { "EXBASIC.ROM",	0x02000,	0          } };	// CRCは後で調べる

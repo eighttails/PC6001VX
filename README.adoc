@@ -832,7 +832,11 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 == 更新履歴
 .4.4.0
 * CMakeベースのビルドに移行し、qmake用の.proファイルを廃止
+* PC-6001互換BASICを0.8.2に更新
+* PC-6001mkII/6601用互換BASICを0.5.3に更新。モード6は未対応ですが、モード5までのソフトをバスリクエストOFFにより高速化が可能
 * Migrated to cmake-based build and removed .pro file for qmake.
+* Updated PC-6001 compatible BASIC to 0.8.2 
+* Updated compatible BASIC for PC-6001mkII/6601 to 0.5.3. Basic mode 6 is not supported, but software up to mode 5 can be sped up by turning off bus requests.
 
 .4.3.0 2025/11/23
 * 起動時に任意のどこでもLOADファイルを自動的に読み込むコマンドラインオプションを追加

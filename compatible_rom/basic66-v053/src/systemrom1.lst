@@ -1,0 +1,98 @@
+			  Z80 ASSEMBLER - ZASM VER 1.6
+                      	;simple alternative system ROM 1 file for PC-6001mkIISR/6601SR
+                      	; by AKIKAWA, Hisashi	2022-2026
+                      	
+                      	;This software is redistributable under the LGPLv2.1 or any later version.
+                      	
+                      	
+  0000                		org	0000h
+                      	
+  0000                	BOOT:
+  0000  F3            		di
+                      	
+  0001  210F00        		ld	hl,START
+  0004  1100FF        		ld	de,0ff00h
+  0007  014300        		ld	bc,SYS1END-START
+  000A  EDB0          		ldir
+  000C  C300FF        		jp	0ff00h
+                      	
+                      	
+  000F                	START:
+                      	;memory read/write
+  000F  212BFF        		ld	hl,IOTBL60+0ff00h-START
+  0012  016010        		ld	bc,1060h
+  0015                	IO60LP:
+  0015  EDA3          		outi
+  0017  0C            		inc	c
+  0018  78            		ld	a,b
+  0019  B0            		or	b
+  001A  20F9          		jr	nz,IO60LP
+                      	
+                      	;interrupt
+  001C  3EFE          		ld	a,0feh
+  001E  D3FB          		out	(0fbh),a	;interrupt vector address control
+  0020  3EFF          		ld	a,0ffh
+  0022  D3FA          		out	(0fah),a	;interrupt control (0=enable,1=disable)
+                      					;bit0:sub CPU	DI
+                      					;bit1:joy stick	DI
+                      					;bit2:timer	DI
+                      					;bit3:voice	DI
+                      					;bit4:VRTC	DI
+                      					;bit5:RS-232C	DI
+                      					;bit6:printer	DI
+                      					;bit7:ext int	DI
+                      	
+                      	;interrupt address
+  0024  213BFF        		ld	hl,IOTBLB8+0ff00h-START
+  0027  01B808        		ld	bc,08b8h
+  002A                	IOB8LP:
+  002A  EDA3          		outi
+  002C  0C            		inc	c
+  002D  78            		ld	a,b
+  002E  B0            		or	b
+  002F  20F9          		jr	nz,IOB8LP
+                      	
+                      	
+                      	;display
+  0031  3EFD          		ld	a,0fdh		;CRT controller type
+  0033  D3C8          		out	(0c8h),a
+  0035  3E07          		ld	a,07h		;32x16 text mode
+  0037  D3C1          		out	(0c1h),a
+                      	;	ld	a,04h		;relay off, timer on, VRAM=0000h
+                      	;	out	(0b0h),a
+                      	
+  0039  C7            		rst	00h
+                      	
+                      	;table
+  003A                	IOTBL60:
+  003A  F0            		db	0f0h		;0000-1fff:66-ROM 0000-1fff for reading
+  003B  F2            		db	0f2h		;2000-3fff:66-ROM 2000-3fff for reading
+  003C  F4            		db	0f4h		;4000-5fff:66-ROM 4000-5fff for reading
+  003D  F6            		db	0f6h		;6000-7fff:66-ROM 6000-7fff for reading
+  003E  08            		db	08h		;8000-9fff:internal RAM 8000-9fff for reading
+  003F  0A            		db	0ah		;a000-bfff:internal RAM a000-bfff for reading
+  0040  0C            		db	0ch		;c000-dfff:internal RAM c000-dfff for reading
+  0041  0E            		db	0eh		;e000-ffff:internal RAM e000-ffff for reading
+  0042  00            		db	00h		;0000-1fff:internal RAM 0000-1fff for writing
+  0043  02            		db	02h		;2000-3fff:internal RAM 2000-3fff for writing
+  0044  04            		db	04h		;4000-5fff:internal RAM 4000-5fff for writing
+  0045  06            		db	06h		;6000-7fff:internal RAM 6000-7fff for writing
+  0046  08            		db	08h		;8000-9fff:internal RAM 8000-9fff for writing
+  0047  0A            		db	0ah		;a000-bfff:internal RAM a000-bfff for writing
+  0048  0C            		db	0ch		;c000-dfff:internal RAM c000-dfff for writing
+  0049  0E            		db	0eh		;e000-ffff:internal RAM e000-ffff for writing
+                      	
+  004A                	IOTBLB8:
+  004A  02            		db	02h		;interrupt address (sub CPU)
+  004B  10            		db	10h		;interrupt address (joy stick)
+  004C  06            		db	06h		;interrupt address (timer)
+  004D  20            		db	20h		;interrupt address (voice)
+  004E  22            		db	22h		;interrupt address (VRTC)
+  004F  10            		db	10h		;interrupt address (RS-232C)
+  0050  10            		db	10h		;interrupt address (printer)
+  0051  10            		db	10h		;interrupt address (ext int)
+                      	
+  0052                	SYS1END:
+  0052                		ds	8000h-SYS1END
+  8000                		end
+

@@ -644,10 +644,7 @@ void P6VXApp::enableCompatibleRomMode(std::shared_ptr<CFG6>& config, bool enable
 	if(enable){
 		// 互換ROM使用時の設定
 		auto model = config->GetValue(CV_Model);
-		if (model != 60 && model != 61 && model != 62 && model != 66){
-			config->SetValue(CV_Model, 60);
-		}
-		config->SetValue(CB_CheckCRC, false);
+        config->SetValue(CB_CheckCRC, false);
 		config->SetValue(CF_RomPath, STR2P6VPATH(std::string(":/res/rom")));
 	} else {
 		config->SetValue(CB_CheckCRC, true);

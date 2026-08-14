@@ -20,6 +20,7 @@ if(WIN32)
         )
 
         set(current_path "${seed_path}")
+
         foreach(_range 1 2 3)
             get_filename_component(current_path "${current_path}" DIRECTORY)
             list(APPEND candidates
@@ -54,6 +55,7 @@ if(WIN32)
                 file(STRINGS "${PC6001VX_QT_MULTIMEDIA_PRI}" PC6001VX_QMAKE_LIBDIR_FFMPEG_LINE
                     REGEX "^QMAKE_LIBDIR_FFMPEG = "
                 )
+
                 if(PC6001VX_QMAKE_LIBDIR_FFMPEG_LINE)
                     string(REGEX REPLACE "^QMAKE_LIBDIR_FFMPEG = " "" PC6001VX_QMAKE_LIBDIR_FFMPEG
                         "${PC6001VX_QMAKE_LIBDIR_FFMPEG_LINE}"
@@ -61,6 +63,7 @@ if(WIN32)
                     get_filename_component(PC6001VX_DETECTED_FFMPEG_DIR
                         "${PC6001VX_QMAKE_LIBDIR_FFMPEG}" DIRECTORY
                     )
+
                     if(EXISTS "${PC6001VX_DETECTED_FFMPEG_DIR}")
                         set(FFMPEG_DIR "${PC6001VX_DETECTED_FFMPEG_DIR}" CACHE PATH
                             "Path to FFmpeg installation" FORCE
@@ -76,12 +79,14 @@ if(WIN32)
 
     if(DEFINED FFMPEG_DIR AND NOT FFMPEG_DIR STREQUAL "")
         set(PC6001VX_FFMPEG_PKGCONFIG_DIR "${FFMPEG_DIR}/lib/pkgconfig")
+
         if(EXISTS "${PC6001VX_FFMPEG_PKGCONFIG_DIR}")
             set(PC6001VX_PKG_CONFIG_PATH_CURRENT "$ENV{PKG_CONFIG_PATH}")
             string(FIND ":${PC6001VX_PKG_CONFIG_PATH_CURRENT}:"
                 ":${PC6001VX_FFMPEG_PKGCONFIG_DIR}:"
                 PC6001VX_PKG_CONFIG_PATH_POS
             )
+
             if(PC6001VX_PKG_CONFIG_PATH_POS EQUAL -1)
                 if(PC6001VX_PKG_CONFIG_PATH_CURRENT STREQUAL "")
                     set(ENV{PKG_CONFIG_PATH} "${PC6001VX_FFMPEG_PKGCONFIG_DIR}")
@@ -90,6 +95,7 @@ if(WIN32)
                         "${PC6001VX_FFMPEG_PKGCONFIG_DIR}:${PC6001VX_PKG_CONFIG_PATH_CURRENT}"
                     )
                 endif()
+
                 message(STATUS "Prepended to PKG_CONFIG_PATH for FFmpeg: ${PC6001VX_FFMPEG_PKGCONFIG_DIR}")
             endif()
         endif()
@@ -120,7 +126,6 @@ if(WIN32)
         NO_DEFAULT_PATH
         REQUIRED
     )
-
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
@@ -337,6 +342,14 @@ target_compile_definitions(PC6001VX PRIVATE
 )
 
 if(ANDROID)
+    set(PC6001VX_ANDROID_TARGET_SDK_VERSION "" CACHE STRING
+        "Override Android target SDK version")
+    if(DEFINED QT_USE_ANDROID_TARGET_BUILD_DIR)
+        # Qt 6.11 multi-ABI configure forwards this internal variable under the
+        # wrong name, so consume it here to avoid an unused CLI warning.
+        set(QT_USE_ANDROID_TARGET_BUILD_DIR "${QT_USE_ANDROID_TARGET_BUILD_DIR}")
+    endif()
+
     target_compile_definitions(PC6001VX PRIVATE
         NOLIBINTL
         NOSINGLEAPP
@@ -348,9 +361,17 @@ if(ANDROID)
         CUSTOMROMPATH=\"\"
     )
 
-    set_target_properties(PC6001VX PROPERTIES
+    set(pc6001vx_android_target_properties
         QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android"
     )
+
+    if(NOT PC6001VX_ANDROID_TARGET_SDK_VERSION STREQUAL "")
+        list(APPEND pc6001vx_android_target_properties
+            QT_ANDROID_TARGET_SDK_VERSION "${PC6001VX_ANDROID_TARGET_SDK_VERSION}"
+        )
+    endif()
+
+    set_target_properties(PC6001VX PROPERTIES ${pc6001vx_android_target_properties})
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -365,6 +386,7 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(PC6001VX PRIVATE -Wno-unused-parameter -Wno-unused-variable)
+
     if(ANDROID)
         target_compile_options(PC6001VX PRIVATE -Wno-error=format-security -Wno-format-security)
     endif()
@@ -374,8 +396,10 @@ if(ANDROID)
     target_compile_definitions(PC6001VX PRIVATE NOJOYSTICK NOAVI)
 else()
     find_package(PkgConfig QUIET)
+
     if(PkgConfig_FOUND)
         pkg_check_modules(X11 QUIET x11)
+
         if(X11_FOUND)
             target_compile_definitions(PC6001VX PRIVATE USE_X11)
             target_include_directories(PC6001VX PRIVATE ${X11_INCLUDE_DIRS})
@@ -383,6 +407,7 @@ else()
         endif()
 
         pkg_check_modules(SDL2 QUIET sdl2)
+
         if(SDL2_FOUND)
             target_include_directories(PC6001VX PRIVATE ${SDL2_INCLUDE_DIRS})
             target_link_libraries(PC6001VX PRIVATE ${SDL2_LIBRARIES})
@@ -395,6 +420,7 @@ else()
         pkg_check_modules(LIBSWSCALE QUIET libswscale)
         pkg_check_modules(LIBSWRESAMPLE QUIET libswresample)
         pkg_check_modules(LIBAVUTIL QUIET libavutil)
+
         if(LIBAVFORMAT_FOUND AND LIBAVCODEC_FOUND AND LIBSWSCALE_FOUND AND LIBSWRESAMPLE_FOUND AND LIBAVUTIL_FOUND)
             set(PC6001VX_FFMPEG_LIBRARY_DIRS
                 ${LIBAVFORMAT_LIBRARY_DIRS}
@@ -413,9 +439,11 @@ else()
                 ${LIBSWRESAMPLE_INCLUDE_DIRS}
                 ${LIBAVUTIL_INCLUDE_DIRS}
             )
+
             if(PC6001VX_FFMPEG_LIBRARY_DIRS)
                 target_link_directories(PC6001VX PRIVATE ${PC6001VX_FFMPEG_LIBRARY_DIRS})
             endif()
+
             target_link_libraries(PC6001VX PRIVATE
                 ${LIBAVFORMAT_LIBRARIES}
                 ${LIBAVCODEC_LIBRARIES}
@@ -460,13 +488,13 @@ if(WIN32)
     qt_import_plugins(PC6001VX
         NO_DEFAULT
         INCLUDE_BY_TYPE
-            platforms Qt::QWindowsIntegrationPlugin
-            styles Qt::QModernWindowsStylePlugin
-            networkinformation Qt::QNLMNIPlugin
-            tls Qt::QSchannelBackendPlugin Qt::QTlsBackendOpenSSLPlugin
-            multimedia Qt::QWindowsMediaPlugin
-            imageformats Qt::QGifPlugin Qt::QICNSPlugin Qt::QICOPlugin Qt::QJpegPlugin Qt::QSvgPlugin Qt::QTgaPlugin Qt::QTiffPlugin Qt::QWbmpPlugin Qt::QWebpPlugin
-            iconengines Qt::QSvgIconPlugin
+        platforms Qt::QWindowsIntegrationPlugin
+        styles Qt::QModernWindowsStylePlugin
+        networkinformation Qt::QNLMNIPlugin
+        tls Qt::QSchannelBackendPlugin Qt::QTlsBackendOpenSSLPlugin
+        multimedia Qt::QWindowsMediaPlugin
+        imageformats Qt::QGifPlugin Qt::QICNSPlugin Qt::QICOPlugin Qt::QJpegPlugin Qt::QSvgPlugin Qt::QTgaPlugin Qt::QTiffPlugin Qt::QWbmpPlugin Qt::QWebpPlugin
+        iconengines Qt::QSvgIconPlugin
     )
 
     _qt_internal_generate_win32_rc_file(PC6001VX)
@@ -506,8 +534,8 @@ endif()
 if(TARGET Qt6::lrelease)
     qt_add_translations(PC6001VX
         TS_FILES
-            src/Qt/translation/PC6001VX_en.ts
-            src/Qt/translation/PC6001VX_ru.ts
+        src/Qt/translation/PC6001VX_en.ts
+        src/Qt/translation/PC6001VX_ru.ts
     )
 endif()
 

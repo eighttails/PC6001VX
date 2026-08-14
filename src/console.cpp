@@ -288,7 +288,7 @@ void ZCons::sprintc( const std::string& text )
 			break;
 			
 		default:	// 普通の文字
-			if( std::isprint( str[i] ) ){
+			if( std::isprint( (int)(BYTE)str[i] ) ){
 				PutCharH( str[i] );
 			}else{
 				PutCharZ( ((BYTE)str[i] << 8) | (BYTE)str[i+1] );
@@ -324,7 +324,7 @@ void ZCons::sprintr( const std::string& text )
 	Locate( x - num + 1, y );
 	
 	for( size_t i = max( str.length() - num, 0 ); i < str.length(); i++ ){
-		if( std::isprint( str[i] ) ){
+		if( std::isprint( (int)(BYTE)str[i] ) ){
 			PutCharH( str[i] );
 		}else{
 			PutCharZ( ((BYTE)str[i] << 8) | (BYTE)str[i+1] );

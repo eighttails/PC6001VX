@@ -74,6 +74,27 @@ if(WIN32)
         endforeach()
     endif()
 
+    if(DEFINED FFMPEG_DIR AND NOT FFMPEG_DIR STREQUAL "")
+        set(PC6001VX_FFMPEG_PKGCONFIG_DIR "${FFMPEG_DIR}/lib/pkgconfig")
+        if(EXISTS "${PC6001VX_FFMPEG_PKGCONFIG_DIR}")
+            set(PC6001VX_PKG_CONFIG_PATH_CURRENT "$ENV{PKG_CONFIG_PATH}")
+            string(FIND ":${PC6001VX_PKG_CONFIG_PATH_CURRENT}:"
+                ":${PC6001VX_FFMPEG_PKGCONFIG_DIR}:"
+                PC6001VX_PKG_CONFIG_PATH_POS
+            )
+            if(PC6001VX_PKG_CONFIG_PATH_POS EQUAL -1)
+                if(PC6001VX_PKG_CONFIG_PATH_CURRENT STREQUAL "")
+                    set(ENV{PKG_CONFIG_PATH} "${PC6001VX_FFMPEG_PKGCONFIG_DIR}")
+                else()
+                    set(ENV{PKG_CONFIG_PATH}
+                        "${PC6001VX_FFMPEG_PKGCONFIG_DIR}:${PC6001VX_PKG_CONFIG_PATH_CURRENT}"
+                    )
+                endif()
+                message(STATUS "Prepended to PKG_CONFIG_PATH for FFmpeg: ${PC6001VX_FFMPEG_PKGCONFIG_DIR}")
+            endif()
+        endif()
+    endif()
+
     get_filename_component(PC6001VX_MINGW_BIN_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
     get_filename_component(PC6001VX_MINGW_ROOT_DIR "${PC6001VX_MINGW_BIN_DIR}" DIRECTORY)
     file(GLOB PC6001VX_GCC_LIB_DIR_CANDIDATES LIST_DIRECTORIES TRUE
@@ -375,6 +396,15 @@ else()
         pkg_check_modules(LIBSWRESAMPLE QUIET libswresample)
         pkg_check_modules(LIBAVUTIL QUIET libavutil)
         if(LIBAVFORMAT_FOUND AND LIBAVCODEC_FOUND AND LIBSWSCALE_FOUND AND LIBSWRESAMPLE_FOUND AND LIBAVUTIL_FOUND)
+            set(PC6001VX_FFMPEG_LIBRARY_DIRS
+                ${LIBAVFORMAT_LIBRARY_DIRS}
+                ${LIBAVCODEC_LIBRARY_DIRS}
+                ${LIBSWSCALE_LIBRARY_DIRS}
+                ${LIBSWRESAMPLE_LIBRARY_DIRS}
+                ${LIBAVUTIL_LIBRARY_DIRS}
+            )
+            list(REMOVE_DUPLICATES PC6001VX_FFMPEG_LIBRARY_DIRS)
+
             target_compile_definitions(PC6001VX PRIVATE __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS)
             target_include_directories(PC6001VX PRIVATE
                 ${LIBAVFORMAT_INCLUDE_DIRS}
@@ -383,6 +413,9 @@ else()
                 ${LIBSWRESAMPLE_INCLUDE_DIRS}
                 ${LIBAVUTIL_INCLUDE_DIRS}
             )
+            if(PC6001VX_FFMPEG_LIBRARY_DIRS)
+                target_link_directories(PC6001VX PRIVATE ${PC6001VX_FFMPEG_LIBRARY_DIRS})
+            endif()
             target_link_libraries(PC6001VX PRIVATE
                 ${LIBAVFORMAT_LIBRARIES}
                 ${LIBAVCODEC_LIBRARIES}

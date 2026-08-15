@@ -131,6 +131,15 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+option(NOMONITOR "Disable debug monitor support" OFF)
+option(NOAVI "Disable AVI support" OFF)
+option(NOSOUND "Disable sound" OFF)
+option(NO_HWACCEL "Disable hardware acceleration" OFF)
+set(DELAY_TIMER_MS_DEFAULT 1 CACHE STRING "Default timer resolution in milliseconds")
+option(REPLAYDEBUG_FRAME "Enable replay debug frame" OFF)
+option(REPLAYDEBUG_INST "Enable replay debug instruction" OFF)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
@@ -330,6 +339,38 @@ qt_add_executable(PC6001VX MANUAL_FINALIZATION WIN32
     ${PC6001VX_RESOURCES}
 )
 
+# Apply compile definitions based on CMake options
+# The original source code uses #ifndef NOMONITOR etc., meaning:
+# - When option is ON, the macro should be defined (code excluded)
+# - When option is OFF (default), the macro should NOT be defined (code included)
+if(NOMONITOR)
+    target_compile_definitions(PC6001VX PRIVATE NOMONITOR)
+endif()
+
+if(NOAVI)
+    target_compile_definitions(PC6001VX PRIVATE NOAVI)
+endif()
+
+if(NOSOUND)
+    target_compile_definitions(PC6001VX PRIVATE NOSOUND)
+endif()
+
+if(NO_HWACCEL)
+    target_compile_definitions(PC6001VX PRIVATE NO_HWACCEL)
+endif()
+
+if(DELAY_TIMER_MS_DEFAULT)
+    target_compile_definitions(PC6001VX PRIVATE DELAY_TIMER_MS_DEFAULT=${DELAY_TIMER_MS_DEFAULT})
+endif()
+
+if(REPLAYDEBUG_FRAME)
+    target_compile_definitions(PC6001VX PRIVATE REPLAYDEBUG_FRAME)
+endif()
+
+if(REPLAYDEBUG_INST)
+    target_compile_definitions(PC6001VX PRIVATE REPLAYDEBUG_INST)
+endif()
+
 target_include_directories(PC6001VX PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Qt
@@ -344,6 +385,7 @@ target_compile_definitions(PC6001VX PRIVATE
 if(ANDROID)
     set(PC6001VX_ANDROID_TARGET_SDK_VERSION "" CACHE STRING
         "Override Android target SDK version")
+
     if(DEFINED QT_USE_ANDROID_TARGET_BUILD_DIR)
         # Qt 6.11 multi-ABI configure forwards this internal variable under the
         # wrong name, so consume it here to avoid an unused CLI warning.

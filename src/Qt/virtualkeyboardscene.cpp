@@ -1,9 +1,11 @@
 #include "virtualkeyboardscene.h"
-#include "virtualkeyitem.h"
+
 #include "keystatewatcher.h"
+#include "virtualkeyitem.h"
+#include "virtualstickitem.h"
 
 VirtualKeyboardScene::VirtualKeyboardScene(QObject *parent)
-	: QGraphicsScene(parent)
+	: QObject(parent)
 	, Watcher(nullptr)
 {
 }
@@ -11,13 +13,30 @@ VirtualKeyboardScene::VirtualKeyboardScene(QObject *parent)
 void VirtualKeyboardScene::setKeyStateWatcher(KeyStateWatcher *watcher)
 {
 	Watcher = watcher;
-	foreach (auto item, this->items()) {
-		auto obj = dynamic_cast<VirtualKeyItem*>(item);
-		if(!obj) continue;
+	for (auto item : KeyItems) {
 		// KeyStateWatcherから状態変更通知が来たら仮想キーアイテムに通知する
-		connect(Watcher, SIGNAL(stateChanged(bool,bool,bool,bool,bool,bool,bool)), obj,
+		connect(Watcher, SIGNAL(stateChanged(bool,bool,bool,bool,bool,bool,bool)), item,
 				SLOT(changeStatus(bool,bool,bool,bool,bool,bool,bool)));
 	}
+}
+
+QVariantList VirtualKeyboardScene::items() const
+{
+	QVariantList list;
+	for (auto item : Items) {
+		list.push_back(QVariant::fromValue(item));
+	}
+	return list;
+}
+
+qreal VirtualKeyboardScene::sceneWidth() const
+{
+	return SceneRect.width();
+}
+
+qreal VirtualKeyboardScene::sceneHeight() const
+{
+	return SceneRect.height();
 }
 
 VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
@@ -44,10 +63,20 @@ VirtualKeyItem* VirtualKeyboardScene::createVirtualKeyItem(
 				pixKKana,
 				pixKKanaShift,
 				isAlpha,
-				mouseToggle);
+				mouseToggle,
+				this);
 
-	addItem(item);
+	Items.push_back(item);
+	KeyItems.push_back(item);
+	emit itemsChanged();
 	return item;
+}
+
+void VirtualKeyboardScene::addItem(VirtualStickItem *item)
+{
+	item->setParent(this);
+	Items.push_back(item);
+	emit itemsChanged();
 }
 
 void VirtualKeyboardScene::alignVirtualKeyItems(std::vector<VirtualKeyItem *> list, QPointF coord)
@@ -62,4 +91,25 @@ void VirtualKeyboardScene::alignVirtualKeyItems(std::vector<VirtualKeyItem *> li
 			item->setPos(prev->pos().x() + prev->boundingRect().width(), coord.y());
 		}
 	}
+}
+
+QRectF VirtualKeyboardScene::itemsBoundingRect() const
+{
+	QRectF rect;
+	for (auto item : Items) {
+		if (auto key = qobject_cast<VirtualKeyItem*>(item)) {
+			rect = rect.united(QRectF(key->pos(), key->boundingRect().size()));
+		} else if (auto stick = qobject_cast<VirtualStickItem*>(item)) {
+			rect = rect.united(QRectF(stick->pos(), stick->boundingRect().size()));
+		}
+	}
+	return rect;
+}
+
+void VirtualKeyboardScene::setSceneRect(const QRectF &rect)
+{
+	if (SceneRect == rect) return;
+
+	SceneRect = rect;
+	emit sceneRectChanged();
 }

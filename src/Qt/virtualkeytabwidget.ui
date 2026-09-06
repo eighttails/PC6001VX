@@ -39,13 +39,7 @@
     <item row="0" column="0">
      <widget class="VirtualKeyboardView" name="graphicsViewNormalKeyboard">
       <property name="styleSheet">
-       <string notr="true">QGraphicsView { border-style: none; }</string>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <string notr="true">VirtualKeyboardView { border-style: none; }</string>
       </property>
      </widget>
     </item>
@@ -74,13 +68,7 @@
     <item row="0" column="0">
      <widget class="VirtualKeyboardView" name="graphicsViewSimpleKeyboard">
       <property name="styleSheet">
-       <string notr="true">QGraphicsView { border-style: none; }</string>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
+       <string notr="true">VirtualKeyboardView { border-style: none; }</string>
       </property>
      </widget>
     </item>
@@ -90,7 +78,7 @@
  <customwidgets>
   <customwidget>
    <class>VirtualKeyboardView</class>
-   <extends>QGraphicsView</extends>
+   <extends>QQuickWidget</extends>
    <header>virtualkeyboardview.h</header>
   </customwidget>
  </customwidgets>

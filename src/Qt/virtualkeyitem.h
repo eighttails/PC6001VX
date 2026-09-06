@@ -1,17 +1,26 @@
 #ifndef VIRTUALKEYITEM_H
 #define VIRTUALKEYITEM_H
+
 #include <QObject>
-#include <QGraphicsPixmapItem>
+#include <QPointF>
+#include <QRectF>
+#include <QString>
+#include <QTimer>
+
 #include "../typedef.h"
 #include "../keydef.h"
 #include "../event.h"
 
-class QGraphicsColorizeEffect;
-
-//仮想キーボード用の各キー表示、入力を行うアイテム
-class VirtualKeyItem : public QObject, public QGraphicsPixmapItem
+// 仮想キーボード用の各キー表示、入力を行うアイテム
+class VirtualKeyItem : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(qreal x READ x NOTIFY geometryChanged)
+	Q_PROPERTY(qreal y READ y NOTIFY geometryChanged)
+	Q_PROPERTY(qreal width READ width NOTIFY geometryChanged)
+	Q_PROPERTY(qreal height READ height NOTIFY geometryChanged)
+	Q_PROPERTY(QString imageSource READ imageSource NOTIFY imageSourceChanged)
+	Q_PROPERTY(bool pressed READ pressed NOTIFY pressedChanged)
 public:
 	VirtualKeyItem(PCKEYsym code,
 				   PCKEYmod mod,
@@ -25,6 +34,23 @@ public:
 				   bool isAlpha = false,
 				   bool mouseToggle = false,
 				   QObject *parent = nullptr);
+
+	qreal x() const;
+	qreal y() const;
+	qreal width() const;
+	qreal height() const;
+	QString imageSource() const;
+	bool pressed() const;
+
+	void setPos(const QPointF &pos);
+	void setPos(qreal x, qreal y);
+	QPointF pos() const;
+	QRectF boundingRect() const;
+
+	Q_INVOKABLE void pointerPressed(qreal x, qreal y);
+	Q_INVOKABLE void pointerMoved(qreal x, qreal y);
+	Q_INVOKABLE void pointerReleased(qreal x, qreal y);
+
 public slots:
 	void changeStatus(
 			bool ON_SHIFT,	// SHIFT
@@ -36,28 +62,38 @@ public slots:
 			bool ON_ROMAJI	// ローマ字入力
 			);
 
-	// QGraphicsItem interface
+signals:
+	void geometryChanged();
+	void imageSourceChanged();
+	void pressedChanged();
+
 protected:
-	virtual bool sceneEvent(QEvent *event) override;
-	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 	void sendKeyEvent(EventType type, bool state);
+	void setImageSource(const QString &source);
+	void setPressed(bool pressed);
+	void startKeyRepeat();
+	void stopKeyRepeat();
+	bool isRepeatable() const;
+	static QString pixmapUrl(const QString &name);
 
 	const PCKEYsym Code;			// キーコード
 	const PCKEYmod Mod;				// キーモディファイヤ
-	const QPixmap PixNormal;		// 通常時の画像
-	const QPixmap PixShift;			// SHIFT押下時の画像
-	const QPixmap PixGrph;			// GRPH押下時の画像
-	const QPixmap PixKana;			// かなモード時の画像
-	const QPixmap PixKanaShift;		// かな+SHIFTモード時の画像
-	const QPixmap PixKKana;			// カナモード時の画像
-	const QPixmap PixKKanaShift;	// カナ+SHIFTモード時の画像
+	const QString PixNormal;		// 通常時の画像
+	const QString PixShift;			// SHIFT押下時の画像
+	const QString PixGrph;			// GRPH押下時の画像
+	const QString PixKana;			// かなモード時の画像
+	const QString PixKanaShift;		// かな+SHIFTモード時の画像
+	const QString PixKKana;			// カナモード時の画像
+	const QString PixKKanaShift;	// カナ+SHIFTモード時の画像
 	const bool IsAlpha;				// アルファベットフラグ(CAPS時に大文字小文字が反転)
 	const bool MouseToggle;			// マウス入力時にトグル入力にする(SHIFT,GRPH用)
 	bool ToggleStatus;				// マウス入力時のトグル状態
 
-	QGraphicsColorizeEffect* pressEffect;	// ボタンを押すと色が変わるエフェクト
-	QGraphicsColorizeEffect* romajiEffect;	// ローマ字入力中に色が変わるエフェクト
+	QPointF Position;
+	QSizeF Size;
+	QString CurrentImageSource;
+	bool Pressed;
+	QTimer RepeatTimer;
 };
 
 #endif // VIRTUALKEYITEM_H

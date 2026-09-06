@@ -7,7 +7,7 @@ namespace Ui {
 class VirtualKeyTabWidget;
 }
 class KeyStateWatcher;
-class QGraphicsView;
+class VirtualKeyboardView;
 
 class VirtualKeyTabWidget : public QTabWidget
 {
@@ -26,7 +26,7 @@ protected:
 
 private:
 	Ui::VirtualKeyTabWidget *ui;
-	std::vector<QGraphicsView*> Views;
+	std::vector<VirtualKeyboardView*> Views;
 };
 
 #endif // VIRTUALKEYTABWIDGET_H

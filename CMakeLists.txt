@@ -135,7 +135,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(NOMONITOR "Disable debug monitor support" OFF)
 option(NOAVI "Disable AVI support" OFF)
 option(NOSOUND "Disable sound" OFF)
-option(NO_HWACCEL "Disable hardware acceleration" OFF)
 set(DELAY_TIMER_MS_DEFAULT 1 CACHE STRING "Default timer resolution in milliseconds")
 option(REPLAYDEBUG_FRAME "Enable replay debug frame" OFF)
 option(REPLAYDEBUG_INST "Enable replay debug instruction" OFF)
@@ -144,7 +143,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network Multimedia OpenGL OpenGLWidgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Quick Qml QuickWidgets Network Multimedia)
 find_package(Qt6 COMPONENTS LinguistTools QUIET)
 
 qt_standard_project_setup()
@@ -170,6 +169,7 @@ set(PC6001VX_SOURCES
     src/Qt/p6vxcommon.cpp
     src/Qt/pc6001v.cpp
     src/Qt/qtel6.cpp
+    src/Qt/rendercanvas.cpp
     src/Qt/renderview.cpp
     src/Qt/simplevirtualkeyboardscene.cpp
     src/Qt/systeminfodialog.cpp
@@ -244,6 +244,7 @@ set(PC6001VX_HEADERS
     src/Qt/p6vxapp.h
     src/Qt/qtel6.h
     src/Qt/qtutil.h
+    src/Qt/rendercanvas.h
     src/Qt/renderview.h
     src/Qt/simplevirtualkeyboardscene.h
     src/Qt/systeminfodialog.h
@@ -355,10 +356,6 @@ if(NOSOUND)
     target_compile_definitions(PC6001VX PRIVATE NOSOUND)
 endif()
 
-if(NO_HWACCEL)
-    target_compile_definitions(PC6001VX PRIVATE NO_HWACCEL)
-endif()
-
 if(DELAY_TIMER_MS_DEFAULT)
     target_compile_definitions(PC6001VX PRIVATE DELAY_TIMER_MS_DEFAULT=${DELAY_TIMER_MS_DEFAULT})
 endif()
@@ -397,7 +394,6 @@ if(ANDROID)
         NOSINGLEAPP
         NOMONITOR
         NOAVI
-        NO_HWACCEL
         ALWAYSFULLSCREEN
         AUTOSUSPEND
         CUSTOMROMPATH=\"\"
@@ -515,10 +511,11 @@ target_link_libraries(PC6001VX PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
+    Qt6::Quick
+    Qt6::Qml
+    Qt6::QuickWidgets
     Qt6::Network
     Qt6::Multimedia
-    Qt6::OpenGL
-    Qt6::OpenGLWidgets
     SingleApplication::SingleApplication
 )
 

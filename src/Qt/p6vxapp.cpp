@@ -26,7 +26,6 @@
 
 const QString P6VXApp::keyGeometry				= "window/geometry";
 const QString P6VXApp::keyMaximized				= "window/maximized";
-const QString P6VXApp::keyHwAccel				= "graph/hwAccel";
 const QString P6VXApp::keyFixMagnification		= "graph/fixMagnification";
 const QString P6VXApp::keyMagnification			= "graph/magnification";
 const QString P6VXApp::keyKeyPanelVisible		= "keypalette/visible";
@@ -85,7 +84,6 @@ P6VXApp::P6VXApp(int &argc, char **argv)
 	, TiltEnabled(false)
 	, TiltDir(NEWTRAL)
 	, TiltStep(0)
-	, SafeMode(false)
 {
 	// アプリで定義した型名をシグナルの引数として使えるようにする
 	qRegisterMetaType<HWINDOW>("HWINDOW");
@@ -207,9 +205,6 @@ void P6VXApp::startup()
 	}
 
 	// P6VXデフォルト設定
-#ifndef NO_HWACCEL
-	setDefaultSetting(keyHwAccel, true);
-#endif
 	setDefaultSetting(keyFixMagnification, false);
 	setDefaultSetting(keyMagnification, 1.0);
 	setDefaultSetting(keyKeyPanelVisible, false);
@@ -352,10 +347,11 @@ bool P6VXApp::folderDialog(void *hwnd, char *Result)
 	return true;
 }
 
-void P6VXApp::createWindow(HWINDOW Wh, bool fsflag)
+void P6VXApp::createWindow(HWINDOW Wh, int width, int height, bool fsflag)
 {
 	RenderView* view = reinterpret_cast<RenderView*>(Wh);
 	Q_ASSERT(view);
+	view->setSceneSize(width, height);
 
 #ifdef ALWAYSFULLSCREEN
 	MWidget->showFullScreen();
@@ -392,55 +388,16 @@ void P6VXApp::setWindowIcon(const QIcon &icon)
 
 void P6VXApp::layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image)
 {
-	// QtではSceneRectの幅を返す
-	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(Wh);
+	RenderView* view = reinterpret_cast<RenderView*>(Wh);
 	Q_ASSERT(view);
-	QGraphicsScene* scene = view->scene();
-
-	// 指定座標に生成済みのQPixmapItemが存在するかチェック
-	// (同一座標にビットマップが重なることはないという前提)
-	QGraphicsItem* item = nullptr;
-	QGraphicsPixmapItem* pItem = nullptr;
-	foreach(item, scene->items()){
-		if(item->scenePos() == QPointF(x, y)){
-			// QPixmapItemが見つかったら一旦sceneから除去する
-			// (scene上にある状態で画像を更新すると真っ黒になる場合がある)
-			pItem = dynamic_cast<QGraphicsPixmapItem*>(item);
-			if(pItem) {
-				scene->removeItem(pItem);
-				break;
-			}
-		}
-	}
-
-	if(pItem == nullptr){
-		pItem = new QGraphicsPixmapItem(nullptr);
-		// フィルタリング
-		if(Cfg->GetValue( CB_Filtering )){
-			pItem->setTransformationMode(Qt::SmoothTransformation);
-		}
-	}
-	// QPixmapItemの画像を更新してsceneに追加
-	pItem->setPixmap(QPixmap::fromImage(image));
-	scene->addItem(pItem);
-
-	// アスペクト比に従って縦サイズを調整
-	pItem->resetTransform();
-	QTransform trans;
-	trans.scale(scaleX, scaleY);
-	trans.translate(x, y);
-	pItem->setTransform(trans);
+	view->layoutBitmap(x, y, scaleX, scaleY, image, Cfg->GetValue(CB_Filtering));
 }
 
 void P6VXApp::getWindowImage(HWINDOW Wh, QRect pos, void *pixels)
 {
-	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(Wh);
+	RenderView* view = reinterpret_cast<RenderView*>(Wh);
 	Q_ASSERT(view);
-	QGraphicsScene* scene = view->scene();
-	QImage image(pos.width(), pos.height(), QImage::Format_RGB888);
-
-	QPainter painter(&image);
-	scene->render(&painter, image.rect(), pos);
+	QImage image = view->renderSceneImage(pos);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 	memcpy(pixels, image.bits(), image.sizeInBytes());
 #else
@@ -468,13 +425,10 @@ void P6VXApp::raiseWidget()
 
 void P6VXApp::clearLayout(HWINDOW Wh)
 {
-	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(Wh);
+	RenderView* view = reinterpret_cast<RenderView*>(Wh);
 	Q_ASSERT(view);
-	Q_ASSERT(view->scene());
-	QGraphicsScene* scene = view->scene();
-	scene->clear();
+	view->clearLayout();
 
-#ifndef NO_HWACCEL
 	// ステータスバー非表示またはフルスクリーン、かつTILTモードが有効になっている場合、背景を描く
 	if( (!Cfg->GetValue(CB_DispStatus)|| Cfg->GetValue(CB_FullScreen)) &&
 		#ifndef NOMONITOR
@@ -483,38 +437,35 @@ void P6VXApp::clearLayout(HWINDOW Wh)
 			isTiltEnabled()){
 		// 画面に対する、枠を含めたサイズの比率
 		qreal merginRatio = 1.0;
-		QGraphicsPixmapItem* background = nullptr;
+		QImage background;
 		switch(this->Cfg->GetValue(CV_Model)) {
 		case 60:
 		case 61:
 			// 初代機の場合はPC-6042Kを使う
-			background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background60.png")));
+			background = QImage(":/res/background60.png");
 			merginRatio = 1.45;
 			break;
 		default:
 			// それ以外の場合はPC-60m43を使う
-			background = new QGraphicsPixmapItem(QPixmap::fromImage(QImage(":/res/background.png")));
+			background = QImage(":/res/background.png");
 			merginRatio = 1.1;
 		}
-		background->setTransformationMode(Qt::SmoothTransformation);
-		// 最前面に配置(他のアイテムのZ値はデフォルトの0)
-		background->setZValue(1);
-		QTransform trans;
+		if (background.isNull() || view->sceneWidth() <= 0 || view->sceneHeight() <= 0) return;
+
 		// 画像の拡大倍率
-		qreal ratio = qMax(scene->width() / background->sceneBoundingRect().width(),
-						   scene->height() / background->sceneBoundingRect().height());
+		qreal ratio = qMax(view->sceneWidth() / qreal(background.width()),
+						   view->sceneHeight() / qreal(background.height()));
 		qreal scaleRatio = ratio * merginRatio;
 
-		int scaledWidth = background->sceneBoundingRect().width() * scaleRatio;
-		int scaledHeight = background->sceneBoundingRect().height() * scaleRatio;
+		int scaledWidth = background.width() * scaleRatio;
+		int scaledHeight = background.height() * scaleRatio;
 
 		// 画像のオフセットを計算(枠の分だけ左上に移動)
-		trans.translate(-(scaledWidth - scene->width()) / 2, -(scaledHeight - scene->height()) / 2);
-		trans.scale(ratio * merginRatio, ratio * merginRatio);
-		background->setTransform(trans);
-		scene->addItem(background);
+		const int x = -(scaledWidth - view->sceneWidth()) / 2;
+		const int y = -(scaledHeight - view->sceneHeight()) / 2;
+		// 最前面に配置(他のアイテムのZ値はデフォルトの0)
+		view->layoutBitmap(x, y, scaleRatio, scaleRatio, background, true, 1);
 	}
-#endif
 }
 
 void P6VXApp::showPopupMenu(int x, int y)
@@ -614,18 +565,6 @@ int P6VXApp::getTiltStep()
 {
 	QMutexLocker lock(&PropretyMutex);
 	return TiltStep;
-}
-
-bool P6VXApp::isSafeMode()
-{
-	QMutexLocker lock(&PropretyMutex);
-	return SafeMode;
-}
-
-void P6VXApp::enableSafeMode(bool enable)
-{
-	QMutexLocker lock(&PropretyMutex);
-	SafeMode = enable;
 }
 
 QString P6VXApp::getCustomRomPath()
@@ -1349,4 +1288,3 @@ void P6VXApp::hideMouseCursor()
 {
 	setOverrideCursor(Qt::BlankCursor);
 }
-

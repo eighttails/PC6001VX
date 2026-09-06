@@ -219,13 +219,6 @@ void EL6::ExecMenu( int id )
 		app->setSetting(P6VXApp::keyFixMagnification,
 						!app->getSetting(P6VXApp::keyFixMagnification).toBool());
 		break;
-	case ID_HWACCEL:
-		if(OSD_Message(GetWindowHandle(), QtEL6::tr("設定を反映するには一度終了しますがよろしいですか?").toStdString(), GetText(T_QUITC), OSDM_OK | OSDM_OKCANCEL) == OSDR_OK){
-			app->setSetting(P6VXApp::keyHwAccel,
-							!app->getSetting(P6VXApp::keyHwAccel).toBool());
-			UI_Quit();
-		}
-		break;
 	case ID_FILTERING:
 		cfg->SetValue(CB_Filtering,  cfg->GetValue(CB_Filtering) ? false : true );
 		graph->ResizeScreen();
@@ -475,10 +468,6 @@ void QtEL6::ShowPopupImpl(int x, int y)
 	if (cfg->GetValue(CB_DispNTSC)) disp43->setChecked(true);
 	QAction* scanLine = addCommand(settingsMenu, tr("スキャンライン"), ID_SCANLINE, true);
 	if (cfg->GetValue(CB_ScanLine)) scanLine->setChecked(true);
-#ifndef NO_HWACCEL
-	QAction* hwAccel = addCommand(settingsMenu, tr("ハードウェアアクセラレーション"), ID_HWACCEL, true);
-	if (app->getSetting(P6VXApp::keyHwAccel).toBool()) hwAccel->setChecked(true);
-#endif
 	QAction* filtering = addCommand(settingsMenu, tr("フィルタリング"), ID_FILTERING, true);
 	if (cfg->GetValue(CB_Filtering)) filtering->setChecked(true);
 
@@ -638,4 +627,3 @@ void QtEL6::UI_DokoLoad(const P6VPATH& path)
 {
 	EL6::UI_DokoLoad(path);
 }
-

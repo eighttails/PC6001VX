@@ -49,13 +49,6 @@
         <translation type="vanished">&amp;Screen</translation>
     </message>
     <message>
-        <location filename="../configdialog.ui" line="735"/>
-        <source>ハードウェアアクセラレーション
-(次回起動時に反映)(&amp;H)</source>
-        <translation>&amp;Hardware acceleration
-(applied after restart)</translation>
-    </message>
-    <message>
         <source>モード4カラー(&amp;4)</source>
         <translation type="vanished">Mode&amp;4 color</translation>
     </message>
@@ -123,10 +116,6 @@
     <message>
         <source>ビデオキャプチャ</source>
         <translation type="vanished">Video capture</translation>
-    </message>
-    <message>
-        <source>ハードウェアアクセラレーション(次回起動時に反映)</source>
-        <translation type="vanished">Hardware acceleration(Applied in next startup)</translation>
     </message>
     <message>
         <source>フィルタリング</source>
@@ -599,10 +588,6 @@ cut off fre&amp;quency</translation>
         <location filename="../configdialog.ui" line="215"/>
         <source>内蔵互換ROMを使う(&amp;C)</source>
         <translation>Use builtin &amp;compatible ROM</translation>
-    </message>
-    <message>
-        <source>ハードウェアアクセラレーション(次回起動時に反映)(&amp;H)</source>
-        <translation type="vanished">&amp;Hardware acceleration(Applied in next startup)</translation>
     </message>
     <message>
         <location filename="../configdialog.ui" line="714"/>
@@ -2547,11 +2532,6 @@ Save time and PC6001V version </translation>
         <location filename="../qtel6.cpp" line="481"/>
         <source>スキャンライン</source>
         <translation>Scanline</translation>
-    </message>
-    <message>
-        <location filename="../qtel6.cpp" line="484"/>
-        <source>ハードウェアアクセラレーション</source>
-        <translation>Hardware acceleration</translation>
     </message>
     <message>
         <location filename="../qtel6.cpp" line="487"/>

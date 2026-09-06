@@ -2,45 +2,44 @@
 #include <QSettings>
 #include <QTapGesture>
 #include <QScopedPointer>
-
-#ifndef NO_HWACCEL
-#ifdef USE_RHIWIDGET
-#include <QRhiWidget>
-using ViewportWidget = QRhiWidget;
-#else
-#include <QOpenGLWidget>
-using ViewportWidget = QOpenGLWidget;
-#endif
-#endif
+#include <QQmlError>
+#include <QQmlEngine>
+#include <QQuickItem>
 
 #include "../osd.h"
+#include "rendercanvas.h"
 #include "renderview.h"
 #include "p6vxapp.h"
 
 
-RenderView::RenderView(QGraphicsScene* scene, QWidget *parent)
-	: QGraphicsView(scene, parent)
+RenderView::RenderView(QWidget *parent)
+	: QQuickWidget(parent)
+	, Canvas(nullptr)
 {
-	setSizeIncrement(1, 1);
-	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	setBackgroundBrush(Qt::black);
-	setStyleSheet( "QGraphicsView { border-style: none; }" );
-
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-#ifndef NO_HWACCEL
-	if(!app->isSafeMode() &&
-			app->getSetting(P6VXApp::keyHwAccel).toBool()){
-		setViewport(new ViewportWidget(this));
-		setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+	static bool qmlTypeRegistered = false;
+	if (!qmlTypeRegistered) {
+		qmlRegisterType<RenderCanvas>("PC6001VX", 1, 0, "RenderCanvas");
+		qmlTypeRegistered = true;
 	}
-#endif
+
+	setSizeIncrement(1, 1);
+	setClearColor(Qt::black);
+	setResizeMode(QQuickWidget::SizeRootObjectToView);
+	setSource(QUrl(QStringLiteral("qrc:/qml/RenderScene.qml")));
+	if (status() == QQuickWidget::Error) {
+		for (const QQmlError &error : errors()) {
+			qWarning() << error;
+		}
+	}
+
+	Canvas = rootObject() ? rootObject()->findChild<RenderCanvas*>(QStringLiteral("renderCanvas")) : nullptr;
+	if (!Canvas) {
+		qWarning() << "RenderCanvas was not created.";
+	}
+
 	grabGesture(Qt::TapGesture);
 	setAttribute(Qt::WA_Hover);
 	setAcceptDrops(true);
-
-	// 初回起動時にシーングラフが構築されたらウィンドウサイズを初期化
-	connect(scene, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(initializeSize()));
 }
 
 RenderView::~RenderView()
@@ -50,19 +49,9 @@ RenderView::~RenderView()
 void RenderView::fitContent()
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	const bool fixMag = app->getSetting(P6VXApp::keyFixMagnification).toBool();
-	// ウィンドウ全体に表示されるように表示倍率を調整
-	qreal scaleRatio = fixMag
-			? app->getSetting(P6VXApp::keyMagnification).toReal()
-			: qMin(width() / scene()->width(), height() / scene()->height());
-	resetTransform();
-	centerOn(sceneRect().center());
-	scale(scaleRatio, scaleRatio);
+	if (!app) return;
 
-	// 表示倍率固定の場合は中心に配置
-	if (fixMag){
-		translate((width() - scene()->width()) / 2, (height() - scene()->height()) / 2);
-	}
+	updateRootProperties();
 }
 
 void RenderView::resizeWindowByRatio(int ratio)
@@ -77,7 +66,7 @@ void RenderView::resizeWindowByRatio(int ratio)
 	} else {
 		app->setSetting(P6VXApp::keyFixMagnification, false);
 	}
-	setGeometry(x(), y(), scene()->width() * r, scene()->height() * r);
+	setGeometry(x(), y(), SceneSize.width() * r, SceneSize.height() * r);
 
 	emit resized(size());
 }
@@ -89,6 +78,56 @@ void RenderView::initializeSize()
 	if (!app->hasSetting(P6VXApp::keyGeometry))	{
 		resizeWindowByRatio(int(app->getSetting(P6VXApp::keyMagnification).toReal() * 100));
 	}
+}
+
+int RenderView::sceneWidth() const
+{
+	return SceneSize.width();
+}
+
+int RenderView::sceneHeight() const
+{
+	return SceneSize.height();
+}
+
+void RenderView::setSceneSize(int width, int height)
+{
+	QSize size(width, height);
+	if (SceneSize == size) return;
+
+	SceneSize = size;
+	updateRootProperties();
+	initializeSize();
+}
+
+void RenderView::layoutBitmap(int x, int y, double scaleX, double scaleY, const QImage &image, bool smooth, qreal z)
+{
+	if (!Canvas) return;
+
+	Canvas->addOrUpdateLayer(x, y, scaleX, scaleY, image, smooth, z);
+}
+
+void RenderView::clearLayout()
+{
+	if (!Canvas) return;
+
+	Canvas->clearLayers();
+}
+
+bool RenderView::isFilteringAt(int x, int y) const
+{
+	return Canvas && Canvas->isFilteringAt(x, y);
+}
+
+QImage RenderView::renderSceneImage(const QRect &rect) const
+{
+	if (Canvas) {
+		return Canvas->renderToImage(rect);
+	}
+
+	QImage image(rect.size(), QImage::Format_RGB888);
+	image.fill(Qt::black);
+	return image;
 }
 
 bool RenderView::event(QEvent *event)
@@ -121,21 +160,14 @@ bool RenderView::event(QEvent *event)
 	default:;
 	}
 
-	return QGraphicsView::event(event);
+	return QQuickWidget::event(event);
 }
 
 void RenderView::paintEvent(QPaintEvent *event)
 {
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	fitContent();
-	if(isActiveWindow()){
-		if(app->isTiltEnabled()){
-			// TILTモードの回転
-			const qreal unit = 0.5; // 0.5度単位で回転
-			rotate(unit * app->getTiltStep());
-		}
-	}
-	QGraphicsView::paintEvent(event);
+	updateRootProperties();
+	QQuickWidget::paintEvent(event);
 }
 
 void RenderView::contextMenuEvent(QContextMenuEvent *event)
@@ -227,4 +259,15 @@ void RenderView::dropEvent(QDropEvent *event)
 	}
 }
 
+void RenderView::updateRootProperties()
+{
+	QQuickItem *root = rootObject();
+	if (!root) return;
 
+	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
+	root->setProperty("sceneWidth", SceneSize.width());
+	root->setProperty("sceneHeight", SceneSize.height());
+	root->setProperty("fixMagnification", app ? app->getSetting(P6VXApp::keyFixMagnification).toBool() : false);
+	root->setProperty("magnification", app ? app->getSetting(P6VXApp::keyMagnification).toReal() : 1.0);
+	root->setProperty("tiltAngle", (isActiveWindow() && app && app->isTiltEnabled()) ? 0.5 * app->getTiltStep() : 0.0);
+}

@@ -30,7 +30,6 @@ using ParentAppClass = SingleApplication;
 class QKeyEvent;
 class RenderView;
 class MainWidget;
-class QGraphicsScene;
 class KeyPanel;
 class VirtualKeyTabWidget;
 class KeyStateWatcher;
@@ -43,7 +42,6 @@ public:
 	// 設定用キー
 	static const QString keyGeometry;			// ウィンドウ表示位置
 	static const QString keyMaximized;			// ウィンドウ最大化フラグ
-	static const QString keyHwAccel;			// ハードウェアアクセラレーション(OpenGL/DirectX)有効化フラグ
 	static const QString keyFixMagnification;	// 表示倍率固定フラグ
 	static const QString keyMagnification;		// 表示倍率
 	static const QString keyKeyPanelVisible;		// キーパレット表示有効化
@@ -84,10 +82,6 @@ public:
 	// ステータス関係
 	bool isAVI();
 
-	// セーフモード(一時的にハードウェアアクセラレーションを無効化する)
-	bool isSafeMode();
-	void enableSafeMode(bool enable);
-
 	// デバッグ用に一時的にROMパスを切り替える(主にAndroid用)
 	QString getCustomRomPath();
 	void setCustomRomPath(QString path);
@@ -114,18 +108,18 @@ public slots:
 	bool folderDialog( void *hwnd, char *Result );
 
 	// ウィンドウを生成
-	void createWindow(HWINDOW Wh, bool fsflag );
+	void createWindow(HWINDOW Wh, int width, int height, bool fsflag );
 
 	// アイコンを設定
 	void setWindowIcon(const QIcon &icon);
 
-	// グラフィックをシーンに配置
-	// QGraphicsSceneの操作はメインスレッドでしかできないため、
+	// グラフィックをQMLシーンに配置
+	// QMLシーングラフの操作はメインスレッドでしかできないため、
 	// ここで実装する
 	void layoutBitmap(HWINDOW Wh, int x, int y, double scaleX, double scaleY, QImage image);
 
 	// ウィンドウイメージバイト列でを取得
-	// QGraphicsSceneの操作はメインスレッドでしかできないため、
+	// QMLシーングラフの操作はメインスレッドでしかできないため、
 	// ここで実装する
 	void getWindowImage(HWINDOW Wh, QRect pos, void *pixels);
 
@@ -207,8 +201,6 @@ private:
 	bool TiltEnabled;
 	TiltDirection TiltDir;
 	int TiltStep;
-
-	bool SafeMode;
 
 	QString CustomRomPath;
 };

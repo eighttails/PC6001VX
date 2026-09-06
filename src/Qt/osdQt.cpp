@@ -346,7 +346,7 @@ PCKEYsym OSD_ConvertKeyCode( int scode )
 ////////////////////////////////////////////////////////////////
 void OSD_SetWindowCaption( HWINDOW hwnd, const char *str )
 {
-	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
+	RenderView* view = reinterpret_cast<RenderView*>(hwnd);
 	if(view == nullptr) return;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
@@ -1468,13 +1468,15 @@ bool OSD_CreateWindow( HWINDOW* hwnd, const int w, const int h, const int sw, co
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 
 	RenderView* view = app->getView();
-	QGraphicsScene* scene = view->scene();
-
-	scene->setSceneRect(0, 0, w, h);
 	*hwnd = view;
 
+	Qt::ConnectionType cType = QThread::currentThread() == qApp->thread() ?
+				Qt::DirectConnection : Qt::BlockingQueuedConnection;
 	QMetaObject::invokeMethod(qApp, "createWindow",
+							  cType,
 							  Q_ARG(HWINDOW, *hwnd),
+							  Q_ARG(int, w),
+							  Q_ARG(int, h),
 							  Q_ARG(bool, fsflag));
 
 	return true;
@@ -1501,11 +1503,11 @@ void OSD_DestroyWindow( HWINDOW hwnd )
 /////////////////////////////////////////////////////////////////////////////
 int OSD_GetWindowWidth( HWINDOW hwnd )
 {
-	// QtではSceneRectの幅を返す
-	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
+	// QMLシーンの幅を返す
+	RenderView* view = reinterpret_cast<RenderView*>(hwnd);
 	Q_ASSERT(view);
 
-	return view->scene()->width();
+	return view->sceneWidth();
 }
 
 
@@ -1517,11 +1519,11 @@ int OSD_GetWindowWidth( HWINDOW hwnd )
 /////////////////////////////////////////////////////////////////////////////
 int OSD_GetWindowHeight( HWINDOW hwnd )
 {
-	// QtではSceneRectの高さを返す
-	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
+	// QMLシーンの高さを返す
+	RenderView* view = reinterpret_cast<RenderView*>(hwnd);
 	Q_ASSERT(view);
 
-	return view->scene()->height();
+	return view->sceneHeight();
 }
 
 
@@ -1548,15 +1550,7 @@ bool OSD_IsFullScreen( HWINDOW hwnd )
 bool OSD_IsFiltering( HWINDOW hwnd )
 {
 	RenderView* view = reinterpret_cast<RenderView*>(hwnd);
-	// シーングラフの中のメイン画面(原点に配置)オブジェクトに
-	// フィルタリングがかかっているかどうかで判断
-	QGraphicsPixmapItem* item =
-			dynamic_cast<QGraphicsPixmapItem*>(view->scene()->itemAt(0, 0, QTransform()));
-	if (!item) {
-		return false;
-	}
-	auto mode = item->transformationMode();
-	return mode == Qt::SmoothTransformation;
+	return view && view->isFilteringAt(0, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1779,7 +1773,7 @@ void OSD_SetIcon( HWINDOW hwnd, int model )
 /////////////////////////////////////////////////////////////////////////////
 void OSD_SetWindowCaption( HWINDOW hwnd, const std::string& str )
 {
-	QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
+	RenderView* view = reinterpret_cast<RenderView*>(hwnd);
 	if(view == nullptr) return;
 	auto window = view->parentWidget();
 	QMetaObject::invokeMethod(window, "setWindowTitle",
@@ -1827,7 +1821,7 @@ int OSD_ConfigDialog( HWINDOW hwnd )
 		std::shared_ptr<CFG6> ecfg(new CFG6());
 		if( !ecfg->Init() ) throw Error::IniReadFailed;
 
-		QGraphicsView* view = reinterpret_cast<QGraphicsView*>(hwnd);
+		RenderView* view = reinterpret_cast<RenderView*>(hwnd);
 		auto window = view->parentWidget();
 
 		ConfigDialog dialog(ecfg, window);

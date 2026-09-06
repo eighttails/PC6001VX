@@ -17,11 +17,10 @@ RUN apt install -y \
     cmake \
     build-essential \
     libx11-dev \
-    mesa-common-dev \
-    libopengl-dev \
     libsdl2-dev \
     qtcreator \
     qt6-base-dev \
+    qt6-declarative-dev \
     qt6-multimedia-dev \
     libavformat-dev \
     libavcodec-dev \

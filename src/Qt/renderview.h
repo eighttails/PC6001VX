@@ -1,14 +1,27 @@
 #ifndef RENDERVIEW_H
 #define RENDERVIEW_H
 
-#include <QGraphicsView>
+#include <QImage>
+#include <QQuickWidget>
+#include <QRect>
+#include <QSize>
 
-class RenderView : public QGraphicsView
+class RenderCanvas;
+
+class RenderView : public QQuickWidget
 {
 	Q_OBJECT
 public:
-	explicit RenderView(QGraphicsScene *scene, QWidget *parent = 0);
+	explicit RenderView(QWidget *parent = 0);
 	~RenderView();
+
+	int sceneWidth() const;
+	int sceneHeight() const;
+	void setSceneSize(int width, int height);
+	void layoutBitmap(int x, int y, double scaleX, double scaleY, const QImage &image, bool smooth, qreal z = 0.0);
+	void clearLayout();
+	bool isFilteringAt(int x, int y) const;
+	QImage renderSceneImage(const QRect &rect) const;
 
 signals:
 	void resized(QSize);
@@ -34,6 +47,12 @@ protected:
 	virtual void dragEnterEvent(QDragEnterEvent *event) override;
 	virtual void dragMoveEvent(QDragMoveEvent *event) override;
 	virtual void dropEvent(QDropEvent *event) override;
+
+private:
+	void updateRootProperties();
+
+	QSize SceneSize;
+	RenderCanvas *Canvas;
 };
 
 #endif // RENDERVIEW_H

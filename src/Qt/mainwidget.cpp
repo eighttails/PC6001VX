@@ -21,11 +21,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	layout->setContentsMargins(0, 0, 0, 0 );
 	setLayout(layout);
 
-	// シーングラフ生成
-	QGraphicsScene* Scene = new QGraphicsScene(this);
-
 	// メインウィジェット(エミュレータのメイン画面)
-	MainView = new RenderView(Scene);
+	MainView = new RenderView();
 	layout->addWidget(MainView);
 	connect(MainView, SIGNAL(resized(QSize)), this, SLOT(adjustSizeToChild(QSize)));
 

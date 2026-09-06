@@ -23,17 +23,14 @@ int main( int argc, char *argv[] )
 	QCommandLineParser parser;
 	parser.setApplicationDescription("NEC PC-6001 Emulator");
 	parser.addOptions({
-		{{"s", "safemode"}, "Safe mode(disables hardware acceleration)"},
 		{{"l", "loadstate"}, "Load state <file> at startup.", "file"}
 		});
 	parser.addVersionOption();
 	parser.addHelpOption();
 	parser.process(app);
-	bool safeMode = parser.isSet("safemode");
 	if (parser.isSet("loadstate")){
 		app.setProperty("loadstate", parser.value("loadstate"));
 	}
-	app.enableSafeMode(safeMode);
 
 	QLocale locale;
 	QTranslator myappTranslator;

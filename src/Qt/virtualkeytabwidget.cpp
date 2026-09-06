@@ -3,6 +3,7 @@
 #include "keystatewatcher.h"
 #include "normalvirtualkeyboardscene.h"
 #include "simplevirtualkeyboardscene.h"
+#include "virtualkeyboardview.h"
 
 VirtualKeyTabWidget::VirtualKeyTabWidget(QWidget *parent) :
 	QTabWidget(parent),
@@ -11,8 +12,8 @@ VirtualKeyTabWidget::VirtualKeyTabWidget(QWidget *parent) :
 	ui->setupUi(this);
 	Views.push_back(ui->graphicsViewNormalKeyboard);
 	Views.push_back(ui->graphicsViewSimpleKeyboard);
-	ui->graphicsViewNormalKeyboard->setScene(new NormalVirtualKeyboardScene(this));
-	ui->graphicsViewSimpleKeyboard->setScene(new SimpleVirtualKeyboardScene(this));
+	ui->graphicsViewNormalKeyboard->setKeyboardScene(new NormalVirtualKeyboardScene(this));
+	ui->graphicsViewSimpleKeyboard->setKeyboardScene(new SimpleVirtualKeyboardScene(this));
 }
 
 VirtualKeyTabWidget::~VirtualKeyTabWidget()
@@ -23,25 +24,18 @@ VirtualKeyTabWidget::~VirtualKeyTabWidget()
 void VirtualKeyTabWidget::setKeyStateWatcher(KeyStateWatcher* watcher)
 {
 	for (auto view : Views){
-		dynamic_cast<VirtualKeyboardScene*>(view->scene())->setKeyStateWatcher(watcher);
+		view->setKeyStateWatcher(watcher);
 	}
 }
 
 void VirtualKeyTabWidget::showEvent(QShowEvent *event)
 {
 	QTabWidget::showEvent(event);
-	for (auto view : Views){
-		view->fitInView(view->scene()->sceneRect(), Qt::KeepAspectRatio);
-	}
 }
 
 
 void VirtualKeyTabWidget::resizeEvent(QResizeEvent *event)
 {
 	QTabWidget::resizeEvent(event);
-	for (auto view : Views){
-		view->fitInView(view->scene()->sceneRect(), Qt::KeepAspectRatio);
-	}
 }
-
 

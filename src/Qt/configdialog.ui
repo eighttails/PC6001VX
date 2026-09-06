@@ -730,14 +730,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBoxHwAccel">
-             <property name="text">
-              <string>ハードウェアアクセラレーション
-(次回起動時に反映)(&amp;H)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_14">
              <item>
               <widget class="QLabel" name="labelVirtualKeyPosition">
@@ -3573,7 +3565,6 @@ border-radius: 1;</string>
   <tabstop>checkBoxFiltering</tabstop>
   <tabstop>checkBoxFullscreen</tabstop>
   <tabstop>checkBoxStatDisp</tabstop>
-  <tabstop>checkBoxHwAccel</tabstop>
   <tabstop>comboBoxVirtualKeyPosition</tabstop>
   <tabstop>checkBoxMovieScanline</tabstop>
   <tabstop>spinBoxMovieScanLineBr</tabstop>

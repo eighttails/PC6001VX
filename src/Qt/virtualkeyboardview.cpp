@@ -1,15 +1,65 @@
 #include "virtualkeyboardview.h"
+
 #include "../osd.h"
-#include "p6vxapp.h"
+#include "keystatewatcher.h"
+#include "virtualkeyboardscene.h"
 
 #include <QEvent>
+#include <QQmlContext>
+#include <QQmlError>
 
 VirtualKeyboardView::VirtualKeyboardView(QWidget *parent)
-	: QGraphicsView(parent)
+	: QQuickWidget(parent)
 {
 	setAttribute(Qt::WA_Hover);
+	setClearColor(Qt::black);
+	setResizeMode(QQuickWidget::SizeRootObjectToView);
+	rootContext()->setContextProperty(QStringLiteral("keyboard"), this);
+	setSource(QUrl(QStringLiteral("qrc:/qml/VirtualKeyboard.qml")));
+	if (status() == QQuickWidget::Error) {
+		for (const QQmlError &error : errors()) {
+			qWarning() << error;
+		}
+	}
 }
 
+void VirtualKeyboardView::setKeyboardScene(VirtualKeyboardScene *scene)
+{
+	if (Scene == scene) return;
+
+	if (Scene) {
+		disconnect(Scene, nullptr, this, nullptr);
+	}
+
+	Scene = scene;
+	if (Scene) {
+		connect(Scene, &VirtualKeyboardScene::itemsChanged, this, &VirtualKeyboardView::sceneChanged);
+		connect(Scene, &VirtualKeyboardScene::sceneRectChanged, this, &VirtualKeyboardView::sceneChanged);
+	}
+	emit sceneChanged();
+}
+
+void VirtualKeyboardView::setKeyStateWatcher(KeyStateWatcher *watcher)
+{
+	if (Scene) {
+		Scene->setKeyStateWatcher(watcher);
+	}
+}
+
+QVariantList VirtualKeyboardView::items() const
+{
+	return Scene ? Scene->items() : QVariantList();
+}
+
+qreal VirtualKeyboardView::sceneWidth() const
+{
+	return Scene ? Scene->sceneWidth() : 0;
+}
+
+qreal VirtualKeyboardView::sceneHeight() const
+{
+	return Scene ? Scene->sceneHeight() : 0;
+}
 
 bool VirtualKeyboardView::hasHeightForWidth() const
 {
@@ -18,27 +68,17 @@ bool VirtualKeyboardView::hasHeightForWidth() const
 
 int VirtualKeyboardView::heightForWidth(int width) const
 {
-	if(scene()){
-		auto sceneAspectRatio = scene()->height() / scene()->width();
+	if(sceneWidth() > 0){
+		auto sceneAspectRatio = sceneHeight() / sceneWidth();
 		return int(sceneAspectRatio * width);
 	} else {
 		return width;
 	}
 }
 
-
 bool VirtualKeyboardView::event(QEvent *event)
 {
-	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-
 	switch (event->type()) {
-	case QEvent::Show:
-	case QEvent::Expose:
-	case QEvent::Resize:
-		if(scene()){
-			fitInView(scene()->sceneRect(), Qt::KeepAspectRatio);
-		}
-		break;
 	case QEvent::Enter:
 	case QEvent::HoverMove:
 		OSD_ShowCursor(true);
@@ -48,7 +88,5 @@ bool VirtualKeyboardView::event(QEvent *event)
 		break;
 	default:;
 	}
-	return QGraphicsView::event(event);
+	return QQuickWidget::event(event);
 }
-
-

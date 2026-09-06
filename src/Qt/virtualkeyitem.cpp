@@ -1,11 +1,13 @@
 #include "virtualkeyitem.h"
-#include <QDebug>
-#include <QGraphicsSceneMouseEvent>
-#include <QTouchEvent>
-#include <QMessageBox>
-#include <QGraphicsColorizeEffect>
+
+#include <QImage>
 
 #include "../osd.h"
+
+namespace {
+constexpr int KeyRepeatInitialDelayMs = 960;
+constexpr int KeyRepeatIntervalMs = 66;
+}
 
 VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 							   PCKEYmod mod,
@@ -22,29 +24,113 @@ VirtualKeyItem::VirtualKeyItem(PCKEYsym code,
 	: QObject(parent)
 	, Code(code)
 	, Mod(mod)
-	, PixNormal(QString(":/res/vkey/key_%1.png").arg(pixNormal))
-	, PixShift(QString(":/res/vkey/key_%1.png").arg(pixShift))
-	, PixGrph(QString(":/res/vkey/key_%1.png").arg(pixGrph))
-	, PixKana(QString(":/res/vkey/key_%1.png").arg(pixKana))
-	, PixKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKanaShift))
-	, PixKKana(QString(":/res/vkey/key_%1.png").arg(pixKKana))
-	, PixKKanaShift(QString(":/res/vkey/key_%1.png").arg(pixKKanaShift))
+	, PixNormal(pixmapUrl(pixNormal))
+	, PixShift(pixmapUrl(pixShift))
+	, PixGrph(pixmapUrl(pixGrph))
+	, PixKana(pixmapUrl(pixKana))
+	, PixKanaShift(pixmapUrl(pixKanaShift))
+	, PixKKana(pixmapUrl(pixKKana))
+	, PixKKanaShift(pixmapUrl(pixKKanaShift))
 	, IsAlpha(isAlpha)
 	, MouseToggle(mouseToggle)
 	, ToggleStatus(false)
-	, pressEffect(new QGraphicsColorizeEffect(this))
+	, Size(QImage(QString(":/res/vkey/key_%1.png").arg(pixNormal)).size())
+	, CurrentImageSource(PixNormal)
+	, Pressed(false)
 {
-	setPixmap(PixNormal);
-	setTransformationMode(Qt::SmoothTransformation);
-	setFlags(QGraphicsItem::ItemClipsToShape);
+	RepeatTimer.setSingleShot(false);
+	connect(&RepeatTimer, &QTimer::timeout, this, [this]() {
+		sendKeyEvent(EV_KEYDOWN, true);
+		RepeatTimer.setInterval(KeyRepeatIntervalMs);
+	});
+}
 
-	setAcceptedMouseButtons(Qt::LeftButton);
-	setAcceptTouchEvents(true);
+qreal VirtualKeyItem::x() const
+{
+	return Position.x();
+}
 
-	// ボタンを押すと色が変わるエフェクト
-	pressEffect->setColor(Qt::blue);
-	pressEffect->setEnabled(false);
-	setGraphicsEffect(pressEffect);
+qreal VirtualKeyItem::y() const
+{
+	return Position.y();
+}
+
+qreal VirtualKeyItem::width() const
+{
+	return Size.width();
+}
+
+qreal VirtualKeyItem::height() const
+{
+	return Size.height();
+}
+
+QString VirtualKeyItem::imageSource() const
+{
+	return CurrentImageSource;
+}
+
+bool VirtualKeyItem::pressed() const
+{
+	return Pressed;
+}
+
+void VirtualKeyItem::setPos(const QPointF &pos)
+{
+	if (Position == pos) return;
+
+	Position = pos;
+	emit geometryChanged();
+}
+
+void VirtualKeyItem::setPos(qreal x, qreal y)
+{
+	setPos(QPointF(x, y));
+}
+
+QPointF VirtualKeyItem::pos() const
+{
+	return Position;
+}
+
+QRectF VirtualKeyItem::boundingRect() const
+{
+	return QRectF(QPointF(0, 0), Size);
+}
+
+void VirtualKeyItem::pointerPressed(qreal x, qreal y)
+{
+	Q_UNUSED(x);
+	Q_UNUSED(y);
+
+	// トグルキーの場合はUP，DOWNを交互に送る
+	if (MouseToggle) ToggleStatus = !ToggleStatus;
+	bool state = MouseToggle ? ToggleStatus : true;
+	sendKeyEvent(state ? EV_KEYDOWN : EV_KEYUP, state);
+	setPressed(state);
+	if (state) {
+		startKeyRepeat();
+	} else {
+		stopKeyRepeat();
+	}
+}
+
+void VirtualKeyItem::pointerMoved(qreal x, qreal y)
+{
+	Q_UNUSED(x);
+	Q_UNUSED(y);
+}
+
+void VirtualKeyItem::pointerReleased(qreal x, qreal y)
+{
+	Q_UNUSED(x);
+	Q_UNUSED(y);
+
+	if (!MouseToggle){
+		stopKeyRepeat();
+		setPressed(false);
+		sendKeyEvent(EV_KEYUP, false);
+	}
 }
 
 void VirtualKeyItem::changeStatus(
@@ -56,54 +142,26 @@ void VirtualKeyItem::changeStatus(
 		bool ON_CAPS,
 		bool ON_ROMAJI)
 {
+	Q_UNUSED(ON_CTRL);
+
 	if (ON_KANA && !ON_ROMAJI) {
 		if (ON_KKANA){
-			if(ON_SHIFT)setPixmap(PixKKanaShift);
-			else		setPixmap(PixKKana);
+			if(ON_SHIFT)setImageSource(PixKKanaShift);
+			else		setImageSource(PixKKana);
 		} else {
-			if(ON_SHIFT)setPixmap(PixKanaShift);
-			else		setPixmap(PixKana);
+			if(ON_SHIFT)setImageSource(PixKanaShift);
+			else		setImageSource(PixKana);
 		}
 	} else if (ON_GRAPH) {
-		setPixmap(PixGrph);
+		setImageSource(PixGrph);
 	} else {
 		if (IsAlpha) {
-			if (ON_SHIFT ^ ON_CAPS)	setPixmap(PixShift);
-			else					setPixmap(PixNormal);
+			if (ON_SHIFT ^ ON_CAPS)	setImageSource(PixShift);
+			else					setImageSource(PixNormal);
 		} else {
-			if (ON_SHIFT)	setPixmap(PixShift);
-			else			setPixmap(PixNormal);
+			if (ON_SHIFT)	setImageSource(PixShift);
+			else			setImageSource(PixNormal);
 		}
-	}
-}
-
-bool VirtualKeyItem::sceneEvent(QEvent *event)
-{
-	auto type = event->type();
-	switch (type){
-	case QEvent::TouchBegin:
-	case QEvent::TouchEnd:
-	case QEvent::TouchUpdate:
-	case QEvent::TouchCancel:
-	{
-		auto touchEvent = dynamic_cast<QTouchEvent*>(event);
-		auto touchState = touchEvent->touchPointStates();
-
-		// タッチ中に発生するイベントに対しては何もしない
-		if(touchState & (Qt::TouchPointMoved | Qt::TouchPointStationary)) return true;
-
-		if(touchState & Qt::TouchPointPressed){
-			pressEffect->setEnabled(true);
-			sendKeyEvent(EV_KEYDOWN, true);
-		}
-		else if(touchState & Qt::TouchPointReleased){
-			pressEffect->setEnabled(false);
-			sendKeyEvent(EV_KEYUP, false);
-		}
-		return true;
-	}
-	default:;
-		return QGraphicsPixmapItem::sceneEvent(event);
 	}
 }
 
@@ -119,31 +177,52 @@ void VirtualKeyItem::sendKeyEvent(EventType type, bool state)
 	OSD_PushEvent(ev);
 }
 
-void VirtualKeyItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void VirtualKeyItem::setImageSource(const QString &source)
 {
-	// トグルキーの場合はUP，DOWNを交互に送る
-	if (MouseToggle) ToggleStatus = !ToggleStatus;
-	bool state = MouseToggle ? ToggleStatus : true;
-	sendKeyEvent(state ? EV_KEYDOWN : EV_KEYUP, state);
-	if (MouseToggle){
-		if (state){
-			pressEffect->setEnabled(true);
-		} else {
-			pressEffect->setEnabled(false);
-		}
-	} else {
-		pressEffect->setEnabled(true);
-	}
-	event->accept();
-	qDebug() << "mousePressEvent accepted:" << event->type();
+	if (CurrentImageSource == source) return;
+
+	CurrentImageSource = source;
+	emit imageSourceChanged();
 }
 
-void VirtualKeyItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void VirtualKeyItem::setPressed(bool pressed)
 {
-	if (!MouseToggle){
-		pressEffect->setEnabled(false);
-		sendKeyEvent(EV_KEYUP, false);
+	if (Pressed == pressed) return;
+
+	Pressed = pressed;
+	emit pressedChanged();
+}
+
+void VirtualKeyItem::startKeyRepeat()
+{
+	if (!isRepeatable()) return;
+
+	RepeatTimer.start(KeyRepeatInitialDelayMs);
+}
+
+void VirtualKeyItem::stopKeyRepeat()
+{
+	RepeatTimer.stop();
+}
+
+bool VirtualKeyItem::isRepeatable() const
+{
+	if (MouseToggle) return false;
+
+	switch (Code) {
+	case KVC_MUHENKAN:	// SAVE
+	case KVC_HENKAN:	// LOAD
+	case KVC_F9:		// PAUSE
+	case KVC_F12:		// SNAPSHOT / ROMAJI
+	case KVC_SCROLLLOCK:	// CAPS
+	case KVC_HIRAGANA:	// KANA
+		return false;
+	default:
+		return true;
 	}
-	event->accept();
-	qDebug() << "mouseReleaseEvent accepted:" << event->type();
+}
+
+QString VirtualKeyItem::pixmapUrl(const QString &name)
+{
+	return QString("qrc:/res/vkey/key_%1.png").arg(name);
 }

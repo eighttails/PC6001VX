@@ -155,8 +155,6 @@ PC6001VXはコマンドラインオプションをサポートしています。
 [options="header"]
 |================
 |オプション|引数|説明
-|-s +
---safemode |(なし)| セーフモード(ハードウェアアクセラレーションを無効)で起動します。
 |-l +
 --loadstate |(どこでもLOADファイル名)| 起動時に任意のどこでもLOADファイルを読み込んで起動します。
 |-v +
@@ -173,9 +171,6 @@ PC6001VXはコマンドラインオプションをサポートしています。
 普通にPC6001VX.exeをダブルクリックして起動してください。
 * 起動しない時は +
 ** iniファイルを削除してください。 +
-** それでも起動しない時はsafemode.batを使用してください。 +
-safemode.batでは設定ファイルを削除し、セーフモード(表示のハードウェアアクセラレーションを一時的にオフ)で起動します。 +
-グラフィックボードが古くて画面が表示できない環境の人は、セーフモードで立ち上げて、設定画面からハードウェアアクセラレーションをオフに設定してください。 +
 * 設定、各種ファイル生成場所 +
 exeファイルと同じフォルダにiniファイル、各種フォルダが生成されます。
 
@@ -304,7 +299,7 @@ Androidの場合は他のアプリへの画像の共有になります。 https:
 [WARNING]
 ====
 * AndroidおよびWindows10で動作確認しています。
-* 現時点ではキーリピートに対応していません。
+* キーを押し続けると、実機のキーリピートに近いタイミングで入力を繰り返します。
 * NORMALモードでまともに操作するには最低5インチの画面サイズが必要でしょう。
 * Windows10ではエミュレーターのフルスクリーンをオフにしてタブレットモードに切り替えると自然な表示になります。
 ====
@@ -375,10 +370,6 @@ P6の水平周波数はテレビと同じ15kHzです。 +
 この隙間を再現するのが スキャンラインモード です。 +
 エミュレータでスキャンラインモードを実現するためには実機の倍の画面解像度を必要とします。（実機が 320X200 なら 640X400 以上） +
 当然、表示が重くなるため処理速度が落ちます。 +
-
-** ハードウェアアクセラレーション +
-画面表示にハードウェアアクセラレーション(WindowsではDirectX,それ以外ではOpenGL)を使用する場合チェックします。 +
-デフォルトはオンです。描画に不具合がある場合はオフにしてください。ただしその場合、画面を高倍率で拡大すると処理が重くなります。 +
 
 ** フィルタリング +
 グラフィックの拡大表示、4:3表示に際してフィルタリングを適用します。デフォルトはオンです。 +
@@ -634,10 +625,6 @@ BASICモード1〜4時のスクリーンモード4のにじみ色を選択しま
 ** ステータスバーを表示する +
 ステータスバーを表示します。 +
 
-** ハードウェアアクセラレーション +
-画面表示にハードウェアアクセラレーション(WindowsではDirectX,それ以外ではOpenGL)を使用する場合チェックします。 +
-この設定の変更をした場合はPC6001VXを一度終了して起動しなおしてください。 +
-
 ** 横画面時の仮想キーボード位置 +
 仮想キーボードを表示している状態で画面を横向きにした場合のレイアウトを指定します。 +
 「非表示」に設定すると横画面時のみ仮想キーボードが非表示になります。 +
@@ -794,7 +781,7 @@ Debian系のディストリビューションについて解説します。 +
 ディストリビューションやそのバージョンによってはQt6がまだパッケージ化されていない場合があります。その場合はQtの公式インストーラーを利用してください。
 ====
 
-. シェルにて `apt install build-essential cmake ninja-build libx11-dev mesa-common-dev libopengl-dev libsdl2-dev qtcreator qt6-base-dev qt6-multimedia-dev libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
+. シェルにて `apt install build-essential cmake ninja-build libx11-dev libsdl2-dev qtcreator qt6-base-dev qt6-multimedia-dev qt6-declarative-dev libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
 . ダウンロードしたPC6001VXのソースを解凍してください。 +
 . QtCreatorでルートのCMakeLists.txtを開いてビルドしてください。 +
 . IDEを使わない場合、コマンドラインでは以下の手順でビルドできます。 +
@@ -811,25 +798,24 @@ Qt 6.5.0以上が必要です。
 
 
 == 既知の不具合、制約事項
-* 表示のハードウェアアクセラレーションは、CPU使用率の低下をもたらしますが、フルHDより広い表示領域ではフレームレートの低下を引き起こすことが確認されています。ご使用の環境に合わせて設定してください。
-
-.ハードウェアアクセラレーションのトレードオフ
-[options="header"]
-|=================================
-| ハードウェアアクセラレーション | メリット | デメリット
-|ON | CPU使用率が低下する | 高解像度表示時、動画録画時に表示フレームレートが低下する
-|OFF | 表示フレームレートが低下しにくい | CPU使用率が高くなる
-|=================================
-
 * Windows
 ** Windows11ではカタカナ/ひらがなキーによるかなの切り替えがうまく行かないようです。 +
 PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切り替えを行ってください。
 * Android
 ** スナップショット、テープのエクスポート機能が正常に機能しません。
 ** メニューのテキストの一部が中略されて表示されています。
-** 最近のQtのバグ?により、タッチキーボードのキーを離した判定がうまくできません(マルチタッチの場合に顕著です)。SIMPLEモードでのゲームプレイが実用的でなくなっています。
 
 == 更新履歴
+.git master
+* 画面描画をQGraphicsView/QGraphicsSceneベースからQML/Qt Quickベースに変更
+* 仮想キーボードをQML/Qt Quickベースに変更し、Qt Graphics Scene(QGraphics*クラス)への依存を削除
+* 仮想キーボードのキーリピートに対応
+* QML/Qt Quickへの移行に伴い、ハードウェアアクセラレーション設定とセーフモードを削除
+* Changed screen rendering from QGraphicsView/QGraphicsScene based implementation to QML/Qt Quick based implementation.
+* Changed the virtual keyboard to a QML/Qt Quick based implementation and removed dependency on Qt Graphics Scene (QGraphics* classes).
+* Added key repeat support to the virtual keyboard.
+* Removed the hardware acceleration setting and safe mode along with the migration to QML/Qt Quick.
+
 .4.4.0 2026/08/15
 * CMakeベースのビルドに移行し、qmake用の.proファイルを廃止
 * PC-6001互換BASICを0.8.2に更新
@@ -889,13 +875,7 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 * (Windows) Fixed an issue where the menu may not be displayed when in full screen.
 
 .4.2.9 2024/07/20
-* 表示のハードウェアアクセラレーションが動作していなかったのを修正
-** Androidではパフォーマンスの問題で引き続き無効化
-** 表示のハードウェアアクセラレーションは、CPU使用率の低下をもたらしますが、フルHDより大きい表示領域ではフレームレートの低下を引き起こすことが確認されています。ご使用の環境に合わせて設定してください。
 * サウンド再生の安定性を向上
-* Fixed display hardware acceleration not working.
-** Still disabled on Android due to performance issues.
-** Hardware acceleration of the display results in lower CPU usage, but has been observed to cause lower frame rates for display areas larger than Full HD. Please set according to your environment.
 * Improved stability of sound playback.
 
 .4.2.8 2024/06/23
@@ -1091,11 +1071,9 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 * (Android)Fixed semi-graphic's glitch.
 
 .3.5.3 2020/09/26
-* ハードウェアアクセラレーション使用時に描画がちらつくのを修正
 * システム情報ダイアログを追加
 * (Android)Android SDK 29に対応。
 * (Android)外部ストレージの扱いを改善
-* Fixed screen flicker when using hardware acceleration.
 * Added System Information dialog.
 * (Android)better handling of external storage.
 * (Android)Targetted at Android SDK 29.
@@ -1245,7 +1223,6 @@ QtおよびMSYS2がXPのサポートを落としたため、今回のバージ�
 .2.2 2016/04/24
 * P6V1.24ベースに更新 +
 * ヘルプメニューにオンラインリファレンスへのリンクを入れた。 +
-* (Windows)safemode.batのオプションの書式が間違っていたので修正 +
 * (Windows)環境によって起動しないことがあったので最適化オプションを修正 +
 * (Android)レジュームに失敗することがあるのを修正 +
 * (Android)UIが中華フォントで表示されていたのをMotoyaLMaruで表示するようにした。 +
@@ -1327,7 +1304,6 @@ P6VX固有の機能追加に関する設定を扱いやすくするため、 +
 
 .2.0Beta3 2014/04/10
 * (Windows)グラフィクスタックにANGLE経由のDirectXを使うようにした。 +
-IntelGPUでもハードウェアアクセラレーションが有効になり、軽くなる効果が期待できます。 +
 XPでは正常に動作しない可能性があり、勝手ながら本バージョンからXPは非サポートとします。 +
 起動しない場合は、以下のページからDirectXのランタイムをインストールしてください。 +
 http://www.microsoft.com/ja-jp/download/details.aspx?id=35

@@ -152,7 +152,11 @@ void ConfigDialog::readConfig()
 	// 基本------------------------------------------------------
 	// 機種
 	auto modelId = (config->GetValue(CV_Model));
-	ui->comboBoxModel->setCurrentIndex(modelIds.indexOf(modelId));
+	int modelIndex = modelIds.indexOf(modelId);
+	if (modelIndex < 0) {
+		modelIndex = modelIds.indexOf(60);
+	}
+	ui->comboBoxModel->setCurrentIndex(modelIndex);
 
 	// 拡張カートリッジ
 	auto extCartId = config->GetValue(CV_ExCartridge);
@@ -228,13 +232,6 @@ void ConfigDialog::readConfig()
 
 	// ステータスバー表示状態
 	ui->checkBoxStatDisp->setChecked(config->GetValue(CB_DispStatus));
-
-	// ハードウェアアクセラレーション
-#ifndef NO_HWACCEL
-	ui->checkBoxHwAccel->setChecked(app->getSetting(P6VXApp::keyHwAccel).toBool());
-#else
-	ui->checkBoxHwAccel->setVisible(false);
-#endif
 
 	// 横画面時の仮想キーボード位置
 	ui->comboBoxVirtualKeyPosition->setCurrentIndex(app->getSetting(P6VXApp::keyVirtualKeyPosition).toInt());
@@ -501,10 +498,6 @@ void ConfigDialog::writeConfig()
 	// ステータスバー表示状態
 	config->SetValue(CB_DispStatus, ui->checkBoxStatDisp->isChecked());
 
-	// ハードウェアアクセラレーション
-	app->setSetting(P6VXApp::keyHwAccel, ui->checkBoxHwAccel->isChecked());
-
-	
 	// 横画面時の仮想キーボード位置
 	app->setSetting(P6VXApp::keyVirtualKeyPosition, ui->comboBoxVirtualKeyPosition->currentIndex());
 	

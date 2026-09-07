@@ -3,12 +3,14 @@
 
 #include <QImage>
 #include <QPointF>
-#include <QQuickPaintedItem>
+#include <QQuickItem>
 #include <QRect>
 #include <QRectF>
 #include <QVector>
 
-class RenderCanvas : public QQuickPaintedItem
+class QSGNode;
+
+class RenderCanvas : public QQuickItem
 {
 	Q_OBJECT
 	Q_PROPERTY(int sceneWidth READ sceneWidth WRITE setSceneWidth NOTIFY sceneSizeChanged)
@@ -36,13 +38,12 @@ public:
 	bool isFilteringAt(int x, int y) const;
 	QImage renderToImage(const QRect &rect) const;
 
-	void paint(QPainter *painter) override;
-
 signals:
 	void sceneSizeChanged();
 	void paintBoundsChanged();
 
 private:
+	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;
 	struct Layer {
 		int x = 0;
 		int y = 0;

@@ -1,14 +1,15 @@
 #include "rendercanvas.h"
 
 #include <QPainter>
+#include <QQuickWindow>
+#include <QSGSimpleTextureNode>
 
 #include <algorithm>
 
 RenderCanvas::RenderCanvas(QQuickItem *parent)
-	: QQuickPaintedItem(parent)
+	: QQuickItem(parent)
 {
-	setAntialiasing(false);
-	setOpaquePainting(false);
+	setFlag(ItemHasContents);
 }
 
 int RenderCanvas::sceneWidth() const
@@ -120,9 +121,36 @@ QImage RenderCanvas::renderToImage(const QRect &rect) const
 	return image.copy(rect);
 }
 
-void RenderCanvas::paint(QPainter *painter)
+QSGNode *RenderCanvas::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
-	paintLayers(painter, QPointF(-PaintBounds.left(), -PaintBounds.top()));
+	delete oldNode;
+
+	auto *rootNode = new QSGNode;
+	QVector<const Layer *> sorted;
+	sorted.reserve(Layers.size());
+	for (const Layer &layer : Layers) {
+		if (!layer.image.isNull()) {
+			sorted.push_back(&layer);
+		}
+	}
+	std::stable_sort(sorted.begin(), sorted.end(), [](const Layer *a, const Layer *b) {
+		if (!qFuzzyCompare(a->z, b->z)) return a->z < b->z;
+		return a->order < b->order;
+	});
+
+	for (const Layer *layer : sorted) {
+		auto *textureNode = new QSGSimpleTextureNode;
+		textureNode->setTexture(window()->createTextureFromImage(layer->image));
+		textureNode->setOwnsTexture(true);
+		textureNode->setFiltering(layer->smooth ? QSGTexture::Linear : QSGTexture::Nearest);
+		textureNode->setRect(layer->x - PaintBounds.left(),
+							 layer->y - PaintBounds.top(),
+							 layer->image.width() * layer->scaleX,
+							 layer->image.height() * layer->scaleY);
+		rootNode->appendChildNode(textureNode);
+	}
+
+	return rootNode;
 }
 
 void RenderCanvas::updatePaintBounds()

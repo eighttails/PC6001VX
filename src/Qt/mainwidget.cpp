@@ -34,7 +34,8 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	connect(VKeyWidget, SIGNAL(currentChanged(int)), this, SLOT(virtualKeyTabSelected(int)));
 	adjustSize();
 
-	// ウィンドウ位置とサイズを復元
+	// Androidでは保存済みのウィンドウジオメトリを復元せず、OSが割り当てた表示領域を使う
+#ifndef Q_OS_ANDROID
 	if(app->hasSetting(P6VXApp::keyGeometry)){
 		restoreGeometry(app->getSetting(P6VXApp::keyGeometry).toByteArray());
 	} else {
@@ -51,6 +52,7 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent)
 	if(app->getSetting(P6VXApp::keyMaximized).toBool()){
 		showMaximized();
 	}
+#endif
 }
 
 RenderView *MainWidget::getMainView()
@@ -111,6 +113,10 @@ void MainWidget::updateLayout()
 
 void MainWidget::adjustSizeToChild(QSize size)
 {
+#ifdef Q_OS_ANDROID
+	Q_UNUSED(size);
+	return;
+#else
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	auto state = this->windowState();
 	if (!((state & Qt::WindowFullScreen) | (state & Qt::WindowMaximized))){
@@ -122,6 +128,7 @@ void MainWidget::adjustSizeToChild(QSize size)
 			setGeometry(x(), y(), size.width() * (VKeyWidget->isVisible() ? 2 : 1), size.height());
 		}
 	}
+#endif
 }
 
 void MainWidget::toggleVirtualKeyboard()
@@ -143,9 +150,11 @@ void MainWidget::virtualKeyTabSelected(int index)
 void MainWidget::closeEvent(QCloseEvent *event)
 {
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
-	// ウィンドウ位置とサイズを保存
+	// AndroidではOSがウィンドウサイズを管理する
+#ifndef Q_OS_ANDROID
 	app->setSetting(P6VXApp::keyGeometry, saveGeometry());
 	app->setSetting(P6VXApp::keyMaximized, isMaximized());
+#endif
 	app->setSetting(P6VXApp::keyVirtualKeyVisible, VKeyWidget->isVisible());
 	app->setSetting(P6VXApp::keyVirtualKeyTabIndex, VKeyWidget->currentIndex());
 

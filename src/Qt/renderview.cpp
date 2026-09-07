@@ -73,11 +73,16 @@ void RenderView::resizeWindowByRatio(int ratio)
 
 void RenderView::initializeSize()
 {
+#ifdef Q_OS_ANDROID
+	// Androidでは親ウィンドウの全画面領域をレイアウトに任せる
+	return;
+#else
 	// Geometry設定がなかったらSceneRectサイズに合わせてリサイズ
 	P6VXApp* app = qobject_cast<P6VXApp*>(qApp);
 	if (!app->hasSetting(P6VXApp::keyGeometry))	{
 		resizeWindowByRatio(int(app->getSetting(P6VXApp::keyMagnification).toReal() * 100));
 	}
+#endif
 }
 
 int RenderView::sceneWidth() const

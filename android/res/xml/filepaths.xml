@@ -1,4 +1,6 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-    <files-path name="snapshots" path=".pc6001vx4/img/" />
-    <files-path name="saved_tapes" path=".pc6001vx4/tape/" />
+    <!-- スナップショット/どこでもSAVEはアプリ内部のサンドボックス領域(~/.pc6001vx4)に固定される -->
+    <files-path name="internal_files" path="." />
+    <!-- TAPE(SAVE)ファイルはGenericDataLocation(外部ストレージのアプリ専用領域)に置かれる -->
+    <external-files-path name="external_files" path="." />
 </paths>

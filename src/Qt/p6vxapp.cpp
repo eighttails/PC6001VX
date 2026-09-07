@@ -22,6 +22,7 @@
 #include "keypanel.h"
 #include "keystatewatcher.h"
 #include "p6vxapp.h"
+#include "shareutils.h"
 
 
 const QString P6VXApp::keyGeometry				= "window/geometry";
@@ -605,12 +606,12 @@ void P6VXApp::exportSavedTape()
 		return;
 	}
 //#ifdef Q_OS_ANDROID
-#if 0 // 後で対応 #TODO
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
 	// Androidの場合はインテントで他のアプリに送る
-	ShareUtils util;
-	int req = 0;
-	bool altImpl = false;
-	util.sendFile(QDir::cleanPath(P6VPATH2QSTR(src)), "TAPE(TAPE)", "application/octet-stream", req, altImpl);
+	if( !ShareFile(QDir::cleanPath(P6VPATH2QSTR(src)), "TAPE(TAPE)", "application/octet-stream") ){
+		OSD_Message(P6Core ? P6Core->GetWindowHandle() : nullptr, tr("TAPE(SAVE)ファイルを共有できませんでした。").toStdString(),
+					GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR);
+	}
 #else
 	// エクスポート先を指定
 	P6VPATH dest = QSTR2P6VPATH(QDir::homePath());
@@ -1206,9 +1207,18 @@ bool P6VXApp::notify ( QObject * receiver, QEvent * event )
 			auto state = reinterpret_cast<QApplicationStateChangeEvent*>(event)->applicationState();
 			switch (state){
 			case Qt::ApplicationActive:
+				// 共有シートから戻ってきた場合はここで共有中フラグを解除する
+				SetSharing(false);
 				P6Core->Start();
 				break;
 			default:;
+				// 共有シート(チューザー)表示による非アクティブ化はアプリの中断ではない。
+				// この時点でエミュレーションスレッドはShareFile()を呼び出した
+				// EventLoop()の中を実行中であり、ここでStop()すると自スレッドの
+				// 停止待ちとなって状態が壊れるため、共有中は何もしない
+				if(IsSharing()){
+					break;
+				}
 #ifdef ALWAYSFULLSCREEN
 				P6Core->Stop();
 #endif

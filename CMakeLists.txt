@@ -171,6 +171,7 @@ set(PC6001VX_SOURCES
     src/Qt/qtel6.cpp
     src/Qt/rendercanvas.cpp
     src/Qt/renderview.cpp
+    src/Qt/shareutils.cpp
     src/Qt/simplevirtualkeyboardscene.cpp
     src/Qt/systeminfodialog.cpp
     src/Qt/virtualkeyboardscene.cpp
@@ -246,6 +247,7 @@ set(PC6001VX_HEADERS
     src/Qt/qtutil.h
     src/Qt/rendercanvas.h
     src/Qt/renderview.h
+    src/Qt/shareutils.h
     src/Qt/simplevirtualkeyboardscene.h
     src/Qt/systeminfodialog.h
     src/Qt/virtualkeyboardscene.h
@@ -332,6 +334,10 @@ set(PC6001VX_FORMS
 set(PC6001VX_RESOURCES
     src/Qt/pc6001vx.qrc
 )
+
+if(IOS)
+    list(APPEND PC6001VX_SOURCES src/Qt/shareutils_ios.mm)
+endif()
 
 qt_add_executable(PC6001VX MANUAL_FINALIZATION WIN32
     ${PC6001VX_SOURCES}

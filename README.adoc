@@ -189,6 +189,8 @@ exeファイルと同じフォルダにiniファイル、各種フォルダが�
 アプリケーションメニュー内に登録されたPC6001VXのアイコンをタップすると起動します。 +
 * 設定、各種ファイル生成場所 +
 Androidの場合設定ファイルの生成場所は機種依存になり、一概に言えませんが、通常のファイルマネージャではアクセスできない場所に作成されることが多いようです。具体的な場所は環境設定ダイアログで確認してください。 +
+* ファイルの共有 +
+Androidではアプリのサンドボックス外にファイルを直接書き出すことができません。スナップショットの取得およびTAPE(SAVE)のエクスポートを行うと共有メニューが表示されますので、ファイルマネージャや画像編集アプリなど任意のアプリに送ることができます。 +
 
 == 使い方
 === メニュー
@@ -802,7 +804,6 @@ Qt 6.5.0以上が必要です。
 ** Windows11ではカタカナ/ひらがなキーによるかなの切り替えがうまく行かないようです。 +
 PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切り替えを行ってください。
 * Android
-** スナップショット、テープのエクスポート機能が正常に機能しません。
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
@@ -811,10 +812,12 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 * 仮想キーボードをQML/Qt Quickベースに変更し、Qt Graphics Scene(QGraphics*クラス)への依存を削除
 * 仮想キーボードのキーリピートに対応
 * QML/Qt Quickへの移行に伴い、ハードウェアアクセラレーション設定とセーフモードを削除
+* (Android)Qtの仕様変更により使用できなくなっていた、スナップショットとTAPE(SAVE)のエクスポートを他のアプリに共有する機能を復活
 * Changed screen rendering from QGraphicsView/QGraphicsScene based implementation to QML/Qt Quick based implementation.
 * Changed the virtual keyboard to a QML/Qt Quick based implementation and removed dependency on Qt Graphics Scene (QGraphics* classes).
 * Added key repeat support to the virtual keyboard.
 * Removed the hardware acceleration setting and safe mode along with the migration to QML/Qt Quick.
+* (Android) Restored the ability to share snapshots and TAPE(SAVE) exports with other applications, which had been unavailable due to changes in Qt.
 
 .4.4.0 2026/08/15
 * CMakeベースのビルドに移行し、qmake用の.proファイルを廃止

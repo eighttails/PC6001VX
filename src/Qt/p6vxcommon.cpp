@@ -2,6 +2,7 @@
 #include "../common.h"
 #include "./p6vxcommon.h"
 #include "./p6vxapp.h"
+#include "./shareutils.h"
 
 #include <QVector>
 #include <QImage>
@@ -65,14 +66,10 @@ bool SaveImgData( const P6VPATH& filename, BYTE *pixels, const int bpp, const in
 	auto saveFileFullPath = QDir(saveDir).filePath(saveFileName);
 	image.save(saveFileFullPath);
 
-#ifdef Q_OS_ANDROID
-#if 0 //#TODO
-	// Androidの場合はインテントで他のアプリに送る
-	PlatformShareUtils util;
-	int req = 0;
-	bool altImpl = false;
-	util.sendFile(saveFileFullPath, "Snapshot", "image/png", req, altImpl);
-#endif
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+	// Android/iOSの場合はサンドボックスの外に書き出せないため、
+	// インテント(Android)/アクティビティビュー(iOS)で他のアプリに送る
+	ShareFile(saveFileFullPath, "Snapshot", "image/png");
 #endif
 
 	return true;

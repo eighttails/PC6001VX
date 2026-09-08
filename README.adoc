@@ -807,7 +807,7 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
-.git master
+.4.5.0 2026/09/09
 * 画面描画をQGraphicsView/QGraphicsSceneベースからQML/Qt Quickベースに変更
 * 仮想キーボードをQML/Qt Quickベースに変更し、Qt Graphics Scene(QGraphics*クラス)への依存を削除
 * 仮想キーボードのキーリピートに対応

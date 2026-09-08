@@ -240,6 +240,14 @@ void P6VXApp::startup()
 	MWidget = new MainWidget();
 	KPanel = new KeyPanel(MWidget);
 
+#ifdef ALWAYSFULLSCREEN
+	// エミュレーション開始前にメインウィンドウを表示しておく。
+	// ROM未検出時などにダイアログを先に表示すると、ダイアログ表示中に
+	// レンダリングサーフェスが破棄され、その後の初回表示処理で
+	// 無効なサーフェスに対する描画フラッシュが走ってクラッシュするため。
+	MWidget->showFullScreen();
+#endif
+
 #ifndef NOSINGLEAPP
 	// 二重起動時には既存ウィンドウの方を前面に出す
 	connect(this, &SingleApplication::instanceStarted, this, &P6VXApp::raiseWidget);
@@ -354,12 +362,20 @@ void P6VXApp::createWindow(HWINDOW Wh, int width, int height, bool fsflag)
 	Q_ASSERT(view);
 	view->setSceneSize(width, height);
 
+	// 既に目的の状態で表示されている場合に再度show系を呼ぶと、
+	// プラットフォームによってはウィンドウの再表示処理が同期実行され、
+	// 無効化されたレンダリングサーフェスに対して描画をフラッシュしてクラッシュすることがある
+	// (Androidでファイル選択ダイアログから復帰した直後など)
 #ifdef ALWAYSFULLSCREEN
-	MWidget->showFullScreen();
+	if (!MWidget->isVisible() || !MWidget->isFullScreen()) {
+		MWidget->showFullScreen();
+	}
 #else
 	if (fsflag) {
 		MWidget->setWindowState(MWidget->windowState() | Qt::WindowFullScreen);
-		MWidget->showFullScreen();
+		if (!MWidget->isVisible() || !MWidget->isFullScreen()) {
+			MWidget->showFullScreen();
+		}
 		MWidget->updateLayout();
 	} else {
 		MWidget->setWindowState(MWidget->windowState() & ~Qt::WindowFullScreen);

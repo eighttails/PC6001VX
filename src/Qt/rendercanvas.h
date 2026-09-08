@@ -2,6 +2,7 @@
 #define RENDERCANVAS_H
 
 #include <QImage>
+#include <QMutex>
 #include <QPointF>
 #include <QQuickItem>
 #include <QRect>
@@ -44,6 +45,7 @@ signals:
 
 private:
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) override;
+	void itemChange(ItemChange change, const ItemChangeData &value) override;
 	struct Layer {
 		int x = 0;
 		int y = 0;
@@ -55,6 +57,7 @@ private:
 		int order = 0;
 	};
 
+	// 呼び出し元でLayersMutexをロックしていることが前提
 	void updatePaintBounds();
 	void paintLayers(QPainter *painter, const QPointF &offset = QPointF()) const;
 
@@ -63,6 +66,8 @@ private:
 	QRectF PaintBounds;
 	int NextOrder = 0;
 	QVector<Layer> Layers;
+	// Layersはエミュレーションスレッドからも参照されるため保護する
+	mutable QMutex LayersMutex;
 };
 
 #endif // RENDERCANVAS_H

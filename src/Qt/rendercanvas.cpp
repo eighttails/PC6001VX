@@ -14,92 +14,115 @@ RenderCanvas::RenderCanvas(QQuickItem *parent)
 
 int RenderCanvas::sceneWidth() const
 {
+	QMutexLocker lock(&LayersMutex);
 	return SceneWidth;
 }
 
 void RenderCanvas::setSceneWidth(int width)
 {
-	if (SceneWidth == width) return;
+	{
+		QMutexLocker lock(&LayersMutex);
+		if (SceneWidth == width) return;
 
-	SceneWidth = width;
-	updatePaintBounds();
+		SceneWidth = width;
+		updatePaintBounds();
+	}
 	emit sceneSizeChanged();
 	update();
 }
 
 int RenderCanvas::sceneHeight() const
 {
+	QMutexLocker lock(&LayersMutex);
 	return SceneHeight;
 }
 
 void RenderCanvas::setSceneHeight(int height)
 {
-	if (SceneHeight == height) return;
+	{
+		QMutexLocker lock(&LayersMutex);
+		if (SceneHeight == height) return;
 
-	SceneHeight = height;
-	updatePaintBounds();
+		SceneHeight = height;
+		updatePaintBounds();
+	}
 	emit sceneSizeChanged();
 	update();
 }
 
 qreal RenderCanvas::paintLeft() const
 {
+	QMutexLocker lock(&LayersMutex);
 	return PaintBounds.left();
 }
 
 qreal RenderCanvas::paintTop() const
 {
+	QMutexLocker lock(&LayersMutex);
 	return PaintBounds.top();
 }
 
 qreal RenderCanvas::paintWidth() const
 {
+	QMutexLocker lock(&LayersMutex);
 	return PaintBounds.width();
 }
 
 qreal RenderCanvas::paintHeight() const
 {
+	QMutexLocker lock(&LayersMutex);
 	return PaintBounds.height();
 }
 
 void RenderCanvas::addOrUpdateLayer(int x, int y, double scaleX, double scaleY, const QImage &image, bool smooth, qreal z)
 {
-	for (Layer &layer : Layers) {
-		if (layer.x == x && layer.y == y && qFuzzyCompare(layer.z, z)) {
+	{
+		QMutexLocker lock(&LayersMutex);
+
+		bool updated = false;
+		for (Layer &layer : Layers) {
+			if (layer.x == x && layer.y == y && qFuzzyCompare(layer.z, z)) {
+				layer.scaleX = scaleX;
+				layer.scaleY = scaleY;
+				layer.image = image;
+				layer.smooth = smooth;
+				updated = true;
+				break;
+			}
+		}
+
+		if (!updated) {
+			Layer layer;
+			layer.x = x;
+			layer.y = y;
 			layer.scaleX = scaleX;
 			layer.scaleY = scaleY;
 			layer.image = image;
 			layer.smooth = smooth;
-			updatePaintBounds();
-			update();
-			return;
+			layer.z = z;
+			layer.order = NextOrder++;
+			Layers.push_back(layer);
 		}
-	}
 
-	Layer layer;
-	layer.x = x;
-	layer.y = y;
-	layer.scaleX = scaleX;
-	layer.scaleY = scaleY;
-	layer.image = image;
-	layer.smooth = smooth;
-	layer.z = z;
-	layer.order = NextOrder++;
-	Layers.push_back(layer);
-	updatePaintBounds();
+		updatePaintBounds();
+	}
 	update();
 }
 
 void RenderCanvas::clearLayers()
 {
-	Layers.clear();
-	NextOrder = 0;
-	updatePaintBounds();
+	{
+		QMutexLocker lock(&LayersMutex);
+		Layers.clear();
+		NextOrder = 0;
+		updatePaintBounds();
+	}
 	update();
 }
 
 bool RenderCanvas::isFilteringAt(int x, int y) const
 {
+	QMutexLocker lock(&LayersMutex);
 	for (const Layer &layer : Layers) {
 		const QRectF bounds(layer.x, layer.y, layer.image.width() * layer.scaleX, layer.image.height() * layer.scaleY);
 		if (qFuzzyIsNull(layer.z) && bounds.contains(QPointF(x, y))) {
@@ -111,6 +134,8 @@ bool RenderCanvas::isFilteringAt(int x, int y) const
 
 QImage RenderCanvas::renderToImage(const QRect &rect) const
 {
+	QMutexLocker lock(&LayersMutex);
+
 	QImage image(qMax(SceneWidth, rect.right() + 1), qMax(SceneHeight, rect.bottom() + 1), QImage::Format_RGB888);
 	image.fill(Qt::black);
 
@@ -125,6 +150,15 @@ QSGNode *RenderCanvas::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {
 	delete oldNode;
 
+	QQuickWindow *win = window();
+	if (!win) {
+		// シーングラフが利用できない場合は描画しない
+		// (フォルダ選択ダイアログ表示中など、レンダリングコンテキストが失われている場合)
+		return nullptr;
+	}
+
+	QMutexLocker lock(&LayersMutex);
+
 	auto *rootNode = new QSGNode;
 	QVector<const Layer *> sorted;
 	sorted.reserve(Layers.size());
@@ -138,9 +172,18 @@ QSGNode *RenderCanvas::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		return a->order < b->order;
 	});
 
+	bool textureCreationFailed = false;
 	for (const Layer *layer : sorted) {
+		QSGTexture *texture = win->createTextureFromImage(layer->image);
+		if (!texture) {
+			// グラフィックスコンテキストが無効な状態ではテクスチャを生成できない。
+			// nullptrのままノードを追加するとレンダラーがクラッシュするためスキップする
+			textureCreationFailed = true;
+			continue;
+		}
+
 		auto *textureNode = new QSGSimpleTextureNode;
-		textureNode->setTexture(window()->createTextureFromImage(layer->image));
+		textureNode->setTexture(texture);
 		textureNode->setOwnsTexture(true);
 		textureNode->setFiltering(layer->smooth ? QSGTexture::Linear : QSGTexture::Nearest);
 		textureNode->setRect(layer->x - PaintBounds.left(),
@@ -150,7 +193,22 @@ QSGNode *RenderCanvas::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 		rootNode->appendChildNode(textureNode);
 	}
 
+	if (textureCreationFailed) {
+		// コンテキストが復帰したら描画し直す
+		update();
+	}
+
 	return rootNode;
+}
+
+void RenderCanvas::itemChange(ItemChange change, const ItemChangeData &value)
+{
+	// ウィンドウから切り離される、あるいは再接続される際に描画内容を作り直す
+	if (change == ItemSceneChange) {
+		update();
+	}
+
+	QQuickItem::itemChange(change, value);
 }
 
 void RenderCanvas::updatePaintBounds()
@@ -170,7 +228,10 @@ void RenderCanvas::updatePaintBounds()
 	if (PaintBounds == bounds) return;
 
 	PaintBounds = bounds;
-	emit paintBoundsChanged();
+	// シグナルはミューテックスを保持したまま送出されるため、
+	// 接続先(QMLのプロパティバインディング)からは同一スレッドで
+	// 再帰的にゲッターが呼ばれないよう注意すること
+	QMetaObject::invokeMethod(this, &RenderCanvas::paintBoundsChanged, Qt::QueuedConnection);
 }
 
 void RenderCanvas::paintLayers(QPainter *painter, const QPointF &offset) const

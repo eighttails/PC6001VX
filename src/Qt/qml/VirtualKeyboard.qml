@@ -49,16 +49,30 @@ Item {
                     opacity: modelData.pressed ? 0.35 : 0
                 }
 
-                MouseArea {
-                    anchors.fill: parent
+                // MouseAreaはタッチを合成マウスイベントに変換するため同時に1点しか
+                // 扱えず、複数キーの同時押し(SHIFT+一般キー等)ができない。
+                // TapHandlerはキー(Item)ごとに独立してタッチポイントを追跡できるため
+                // 複数キーの同時押しに対応できる。
+                // マウス/タッチの区別は押下時にのみ判定してlastIsTouchへ保存し、
+                // 解放時はその値を再利用する(解放時点ではpoint.deviceの型情報が
+                // 参照できないことがあるため)。
+                property bool lastIsTouch: false
+
+                TapHandler {
+                    id: tapHandler
                     acceptedButtons: Qt.LeftButton
-                    preventStealing: true
-                    onPressed: mouse => modelData.pointerPressed(mouse.x, mouse.y)
-                    onPositionChanged: mouse => {
-                        if (pressed) modelData.pointerMoved(mouse.x, mouse.y)
+                    acceptedDevices: PointerDevice.AllDevices
+                    gesturePolicy: TapHandler.WithinBounds
+                    onPressedChanged: {
+                        if (pressed) {
+                            keyRoot.lastIsTouch = point.device
+                                && point.device.type !== PointerDevice.Mouse
+                            modelData.pointerPressed(point.position.x, point.position.y, keyRoot.lastIsTouch)
+                        } else {
+                            modelData.pointerReleased(point.position.x, point.position.y, keyRoot.lastIsTouch)
+                        }
                     }
-                    onReleased: mouse => modelData.pointerReleased(mouse.x, mouse.y)
-                    onCanceled: modelData.pointerReleased(0, 0)
+                    onCanceled: modelData.pointerReleased(0, 0, keyRoot.lastIsTouch)
                 }
             }
         }

@@ -47,9 +47,9 @@ public:
 	QPointF pos() const;
 	QRectF boundingRect() const;
 
-	Q_INVOKABLE void pointerPressed(qreal x, qreal y);
+	Q_INVOKABLE void pointerPressed(qreal x, qreal y, bool isTouch = false);
 	Q_INVOKABLE void pointerMoved(qreal x, qreal y);
-	Q_INVOKABLE void pointerReleased(qreal x, qreal y);
+	Q_INVOKABLE void pointerReleased(qreal x, qreal y, bool isTouch = false);
 
 public slots:
 	void changeStatus(

@@ -98,14 +98,16 @@ QRectF VirtualKeyItem::boundingRect() const
 	return QRectF(QPointF(0, 0), Size);
 }
 
-void VirtualKeyItem::pointerPressed(qreal x, qreal y)
+void VirtualKeyItem::pointerPressed(qreal x, qreal y, bool isTouch)
 {
 	Q_UNUSED(x);
 	Q_UNUSED(y);
 
-	// トグルキーの場合はUP，DOWNを交互に送る
-	if (MouseToggle) ToggleStatus = !ToggleStatus;
-	bool state = MouseToggle ? ToggleStatus : true;
+	// タッチ操作の場合は押している間のみONにする(トグルにしない)
+	// マウス操作の場合はトグルキーの場合はUP，DOWNを交互に送る
+	bool useToggle = MouseToggle && !isTouch;
+	if (useToggle) ToggleStatus = !ToggleStatus;
+	bool state = useToggle ? ToggleStatus : true;
 	sendKeyEvent(state ? EV_KEYDOWN : EV_KEYUP, state);
 	setPressed(state);
 	if (state) {
@@ -121,12 +123,13 @@ void VirtualKeyItem::pointerMoved(qreal x, qreal y)
 	Q_UNUSED(y);
 }
 
-void VirtualKeyItem::pointerReleased(qreal x, qreal y)
+void VirtualKeyItem::pointerReleased(qreal x, qreal y, bool isTouch)
 {
 	Q_UNUSED(x);
 	Q_UNUSED(y);
 
-	if (!MouseToggle){
+	bool useToggle = MouseToggle && !isTouch;
+	if (!useToggle){
 		stopKeyRepeat();
 		setPressed(false);
 		sendKeyEvent(EV_KEYUP, false);

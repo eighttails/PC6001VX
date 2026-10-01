@@ -2,6 +2,7 @@
 #define RENDERVIEW_H
 
 #include <QImage>
+#include <QPointer>
 #include <QQuickWidget>
 #include <QRect>
 #include <QSize>
@@ -50,9 +51,12 @@ protected:
 
 private:
 	void updateRootProperties();
+	RenderCanvas *canvas() const;
 
 	QSize SceneSize;
-	RenderCanvas *Canvas;
+	// Qt 6.2ではウィジェットの親変更時にQMLシーンが再生成されるため、
+	// 破棄を検知できるQPointerで保持し、必要に応じて再取得する
+	mutable QPointer<RenderCanvas> Canvas;
 };
 
 #endif // RENDERVIEW_H

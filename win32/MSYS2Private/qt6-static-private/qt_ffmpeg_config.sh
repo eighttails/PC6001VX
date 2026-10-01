@@ -1,3 +1,3 @@
-export FFMPEG_VERSION=9.0.1
+export FFMPEG_VERSION=9.0.2
 export FFMPEG_DIR=$MINGW_PREFIX/local/ffmpeg-private$FFMPEG_VERSION
 

@@ -82,6 +82,9 @@ exitOnError
 
 cd $EXTLIB
 
+build 4 4 8; exitOnError
+build 5 1 10; exitOnError
+build 6 1 6; exitOnError
 build 7 1 5; exitOnError
-build 8 1 2; exitOnError
-build 9 0 1; exitOnError
+build 8 1 3; exitOnError
+build 9 0 2; exitOnError

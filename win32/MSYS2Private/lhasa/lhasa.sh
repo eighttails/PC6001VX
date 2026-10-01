@@ -14,7 +14,7 @@ echo "lhasa is already installed."
 exit 0
 fi
 
-LHASA_VERSION=0.3.1
+LHASA_VERSION=0.6.0
 LHASA_TAG=v$LHASA_VERSION
 LHASA_ARCHIVE=lhasa-$LHASA_VERSION.tar.gz
 LHASA_SRC_DIR=lhasa-$LHASA_VERSION

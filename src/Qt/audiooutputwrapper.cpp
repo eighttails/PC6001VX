@@ -8,6 +8,8 @@
 #include <QBuffer>
 #include <QMutex>
 #include <QDebug>
+#include <QElapsedTimer>
+#include <atomic>
 
 #ifdef NOCALLBACK
 
@@ -104,16 +106,46 @@ public:
 	qint64 bytesAvailable() const override{
 		EL6* el6 = STATIC_CAST(EL6*, CbData);
 		QtEL6* qtel6 = dynamic_cast<QtEL6*>(el6);
-		int bytesAvailable = qtel6->GetSoundReadySize() * BytesPerSample /
+		qint64 bytesAvailable = qtel6->GetSoundReadySize() * BytesPerSample /
 							 ((double)qtel6->GetSpeedRatio() / 100.0);
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+		// Qt 6.4以前のGStreamerバックエンドは実際に用意されている分しか読まないため
+		// 経過時間から再生済み量を推定し、一定量先行して供給する
+		if (Clock.isValid()){
+			const qint64 played = Clock.nsecsElapsed() / 1000 * BytesPerSecond / 1000000;
+			qint64 queued = PushedBytes - played;
+			if (queued < 0){
+				// アンダーランした場合は基準をリセット
+				PushedBytes = played;
+				queued = 0;
+			}
+			const qint64 deficit = (TargetBytes - queued) / BytesPerSample * BytesPerSample;
+			// NOWAIT時などにデータが大量に溜まっても先行しすぎないよう上限を設ける
+			// (GStreamer側のキューに溜まると遅延として残り続けるため)
+			const qint64 limit = qMax<qint64>(0, (TargetBytes * 2 - queued) / BytesPerSample * BytesPerSample);
+			bytesAvailable = qMin(qMax(bytesAvailable, deficit), limit);
+		}
+#endif
 		return bytesAvailable;
 	}
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+	void resetClock(int rate, int latencyMs){
+		BytesPerSecond = qint64(rate) * BytesPerSample;
+		TargetBytes = BytesPerSecond * latencyMs / 1000 / BytesPerSample * BytesPerSample;
+		PushedBytes = 0;
+		Clock.start();
+	}
+#endif
 
 protected:
 	qint64 readData(char *data, qint64 maxlen) override
 	{
 		// オーディオコールバックを呼んでバッファにデータを取り込み
 		CbFunc(CbData, reinterpret_cast<BYTE*>(data), maxlen);
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+		PushedBytes += maxlen;
+#endif
 		return maxlen;
 	}
 
@@ -127,6 +159,12 @@ private:
 	CBF_SND CbFunc;
 	void* CbData;
 	int BytesPerSample;
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+	QElapsedTimer Clock;
+	qint64 BytesPerSecond = 0;
+	qint64 TargetBytes = 0;
+	mutable std::atomic<qint64> PushedBytes{0};
+#endif
 };
 
 
@@ -151,6 +189,20 @@ AudioOutputWrapper::AudioOutputWrapper(
 	recoveryTimer->setInterval(1000);
 	recoveryTimer->start();
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+	// Qt 6.4以前のGStreamerバックエンドはプル方式でもreadyReadシグナルを契機に
+	// データを読み取り、データが無いと待機状態のまま止まるため、定期的に通知する
+	QTimer* readyReadTimer = new QTimer(this);
+	readyReadTimer->setTimerType(Qt::PreciseTimer);
+	connect(readyReadTimer, &QTimer::timeout, this, [this]{
+		if (AudioBuffer && AudioBuffer->isOpen() && AudioBuffer->bytesAvailable() > 0){
+			emit AudioBuffer->readyRead();
+		}
+	});
+	readyReadTimer->setInterval(5);
+	readyReadTimer->start();
+#endif
+
 	// サウンドデバイスの挿抜時に出力を切り替える
 	connect(MediaDevices, &QMediaDevices::audioOutputsChanged, this, &AudioOutputWrapper::initDevice);
 
@@ -164,6 +216,9 @@ AudioOutputWrapper::~AudioOutputWrapper()
 void AudioOutputWrapper::start()
 {
 	AudioBuffer->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+	static_cast<AudioBufferWrapper*>(AudioBuffer.data())->resetClock(Format.sampleRate(), 60);
+#endif
 	if (!AudioSink.isNull()){
 		AudioSink->stop(); // いったん止めたほうが安定する
 		AudioSink->start(AudioBuffer);
@@ -235,6 +290,13 @@ void AudioOutputWrapper::recoverPlayback()
 	// 内部で想定している状態と実際の状態に乖離が現れた場合
 	// 状態を有るべき姿に復元を試みる。
 	auto actualState = state();
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+	// Qt 6.4以前のGStreamerバックエンドは供給が追いつくたびにIdleState(Underrun)になるが
+	// 再生は継続しているため、再起動すると逆に音途切れの原因になる
+	if (actualState == QAudio::IdleState && ExpectedState == QAudio::ActiveState){
+		return;
+	}
+#endif
 	if (actualState != ExpectedState){
 		switch (ExpectedState){
 		case QAudio::ActiveState:

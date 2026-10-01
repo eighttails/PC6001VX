@@ -16,23 +16,27 @@
 namespace {
 const char *graphicsApiName(QSGRendererInterface::GraphicsApi api)
 {
-	switch (api) {
-	case QSGRendererInterface::Unknown:
-		return "Unknown";
-	case QSGRendererInterface::Software:
-		return "Software";
-	case QSGRendererInterface::OpenGL:
-		return "OpenGL";
-	case QSGRendererInterface::Direct3D11:
-		return "Direct3D 11";
-	case QSGRendererInterface::Vulkan:
-		return "Vulkan";
-	case QSGRendererInterface::Metal:
-		return "Metal";
-	case QSGRendererInterface::Null:
-		return "Null";
-	case QSGRendererInterface::Direct3D12:
-		return "Direct3D 12";
+	struct GraphicsApiName {
+		QSGRendererInterface::GraphicsApi api;
+		const char *name;
+	};
+	static constexpr GraphicsApiName names[] = {
+		{ QSGRendererInterface::Unknown, "Unknown" },
+		{ QSGRendererInterface::Software, "Software" },
+		{ QSGRendererInterface::OpenGL, "OpenGL" },
+		{ QSGRendererInterface::Direct3D11, "Direct3D 11" },
+		{ QSGRendererInterface::Vulkan, "Vulkan" },
+		{ QSGRendererInterface::Metal, "Metal" },
+		{ QSGRendererInterface::Null, "Null" },
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+		{ QSGRendererInterface::Direct3D12, "Direct3D 12" },
+#endif
+	};
+
+	for (const auto &entry : names) {
+		if (entry.api == api) {
+			return entry.name;
+		}
 	}
 
 	return "Unknown";
@@ -63,8 +67,7 @@ RenderView::RenderView(QWidget *parent)
 				<< graphicsApiName(quickWindow()->rendererInterface()->graphicsApi());
 	}, Qt::SingleShotConnection);
 
-	Canvas = rootObject() ? rootObject()->findChild<RenderCanvas*>(QStringLiteral("renderCanvas")) : nullptr;
-	if (!Canvas) {
+	if (!canvas()) {
 		qWarning() << "RenderCanvas was not created.";
 	}
 
@@ -136,29 +139,40 @@ void RenderView::setSceneSize(int width, int height)
 	initializeSize();
 }
 
+RenderCanvas *RenderView::canvas() const
+{
+	// QMLオブジェクトの探索はメインスレッドでのみ行う
+	if (Canvas.isNull() && QThread::currentThread() == thread()) {
+		QQuickItem *root = rootObject();
+		Canvas = root ? root->findChild<RenderCanvas*>(QStringLiteral("renderCanvas")) : nullptr;
+	}
+	return Canvas.data();
+}
+
 void RenderView::layoutBitmap(int x, int y, double scaleX, double scaleY, const QImage &image, bool smooth, qreal z)
 {
-	if (!Canvas) return;
-
-	Canvas->addOrUpdateLayer(x, y, scaleX, scaleY, image, smooth, z);
+	if (RenderCanvas *c = canvas()) {
+		c->addOrUpdateLayer(x, y, scaleX, scaleY, image, smooth, z);
+	}
 }
 
 void RenderView::clearLayout()
 {
-	if (!Canvas) return;
-
-	Canvas->clearLayers();
+	if (RenderCanvas *c = canvas()) {
+		c->clearLayers();
+	}
 }
 
 bool RenderView::isFilteringAt(int x, int y) const
 {
-	return Canvas && Canvas->isFilteringAt(x, y);
+	RenderCanvas *c = canvas();
+	return c && c->isFilteringAt(x, y);
 }
 
 QImage RenderView::renderSceneImage(const QRect &rect) const
 {
-	if (Canvas) {
-		return Canvas->renderToImage(rect);
+	if (RenderCanvas *c = canvas()) {
+		return c->renderToImage(rect);
 	}
 
 	QImage image(rect.size(), QImage::Format_RGB888);

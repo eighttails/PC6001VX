@@ -139,14 +139,17 @@ set(DELAY_TIMER_MS_DEFAULT 1 CACHE STRING "Default timer resolution in milliseco
 option(REPLAYDEBUG_FRAME "Enable replay debug frame" OFF)
 option(REPLAYDEBUG_INST "Enable replay debug instruction" OFF)
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Quick Qml QuickWidgets Network Multimedia)
 find_package(Qt6 COMPONENTS LinguistTools QUIET)
 
-qt_standard_project_setup()
+if(Qt6_VERSION VERSION_LESS "6.3.0")
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTOUIC ON)
+else()
+    qt_standard_project_setup()
+endif()
+# qt_standard_project_setup() does not enable AUTORCC
+set(CMAKE_AUTORCC ON)
 
 set(QAPPLICATION_CLASS QApplication)
 set(QT_DEFAULT_MAJOR_VERSION 6)
@@ -212,7 +215,6 @@ set(PC6001VX_SOURCES
     src/keyboard.cpp
     src/memblk.cpp
     src/memory.cpp
-    src/movie.cpp
     src/p6el.cpp
     src/p6t2.cpp
     src/p6vm.cpp
@@ -437,6 +439,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 if(ANDROID)
+    target_sources(PC6001VX PRIVATE src/movie.cpp)
     target_compile_definitions(PC6001VX PRIVATE NOJOYSTICK NOAVI)
 else()
     find_package(PkgConfig QUIET)
@@ -466,6 +469,13 @@ else()
         pkg_check_modules(LIBAVUTIL QUIET libavutil)
 
         if(LIBAVFORMAT_FOUND AND LIBAVCODEC_FOUND AND LIBSWSCALE_FOUND AND LIBSWRESAMPLE_FOUND AND LIBAVUTIL_FOUND)
+            if(LIBAVCODEC_VERSION VERSION_LESS "59")
+                target_sources(PC6001VX PRIVATE src/movie_ffmpeg4.cpp)
+                message(STATUS "Using FFmpeg 4-compatible movie source (libavcodec ${LIBAVCODEC_VERSION})")
+            else()
+                target_sources(PC6001VX PRIVATE src/movie.cpp)
+            endif()
+
             set(PC6001VX_FFMPEG_LIBRARY_DIRS
                 ${LIBAVFORMAT_LIBRARY_DIRS}
                 ${LIBAVCODEC_LIBRARY_DIRS}
@@ -496,9 +506,11 @@ else()
                 ${LIBAVUTIL_LIBRARIES}
             )
         else()
+            target_sources(PC6001VX PRIVATE src/movie.cpp)
             target_compile_definitions(PC6001VX PRIVATE NOAVI)
         endif()
     else()
+        target_sources(PC6001VX PRIVATE src/movie.cpp)
         target_compile_definitions(PC6001VX PRIVATE NOJOYSTICK NOAVI)
     endif()
 endif()

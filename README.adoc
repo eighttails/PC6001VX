@@ -803,15 +803,15 @@ Qt 6.5.0以上が必要です。
 * Windows
 ** Windows11ではカタカナ/ひらがなキーによるかなの切り替えがうまく行かないようです。 +
 PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切り替えを行ってください。
-* Android
-** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
 .4.5.1 2026/10/02
 * (Linux)Ubuntu22.04LTSでビルドが通るように後方互換性を修正
 * (Linux)多言語対応が機能していなかったのを修正
-* (Linux)Fixed backward compatibility so that the build works on Ubuntu22.04LTS. 
-* (Linux)Fixed the issue where multilingual support was not working
+* (Android)メニューのテキストが切り詰められて表示されていたのを修正
+* (Linux) Fixed backward compatibility so that the build works on Ubuntu22.04LTS. 
+* (Linux) Fixed the issue where multilingual support was not working
+* (Android) Fixed an issue where menu text was truncated.
 
 .4.5.0 2026/09/09
 * 画面描画をQGraphicsView/QGraphicsSceneベースからQML/Qt Quickベースに変更

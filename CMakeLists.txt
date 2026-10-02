@@ -166,6 +166,7 @@ set(PC6001VX_SOURCES
     src/Qt/keypanelbutton.cpp
     src/Qt/keystatewatcher.cpp
     src/Qt/mainwidget.cpp
+    src/Qt/menuitemwidthstyle.cpp
     src/Qt/normalvirtualkeyboardscene.cpp
     src/Qt/osdQt.cpp
     src/Qt/p6vxapp.cpp
@@ -243,6 +244,7 @@ set(PC6001VX_HEADERS
     src/Qt/keypanelbutton.h
     src/Qt/keystatewatcher.h
     src/Qt/mainwidget.h
+    src/Qt/menuitemwidthstyle.h
     src/Qt/normalvirtualkeyboardscene.h
     src/Qt/p6vxapp.h
     src/Qt/qtel6.h

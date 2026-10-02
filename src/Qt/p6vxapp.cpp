@@ -158,21 +158,6 @@ void P6VXApp::startup()
 	}
 #endif
 
-#ifdef Q_OS_ANDROID
-	// #TODO
-#if 0
-	// SDカードへのアクセス許可を要求
-	QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
-	if(r == QtAndroid::PermissionResult::Denied) {
-		QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
-		r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
-		if(r == QtAndroid::PermissionResult::Denied) {
-			OSD_Message( P6Core ? P6Core->GetWindowHandle() : nullptr, tr("Storage access denied.")).toStdString(), GetText(TERR_ERROR), OSDM_OK | OSDM_ICONERROR );
-		}
-	}
-#endif
-#endif
-
 	// 設定ファイルフォルダの存在チェック&作成
 	if( !OSD_FileExist( OSD_GetConfigPath() ) ) OSD_CreateFolder( OSD_GetConfigPath() );
 

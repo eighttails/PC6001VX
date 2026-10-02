@@ -5,6 +5,9 @@
 
 #include "pc6001v.h"
 #include "p6vxapp.h"
+#ifdef Q_OS_ANDROID
+#include "menuitemwidthstyle.h"
+#endif
 
 #ifndef NOJOYSTICK
 //SDL使用時にビルドを通すのに必要
@@ -17,6 +20,9 @@
 int main( int argc, char *argv[] )
 {
 	P6VXApp app(argc, argv);
+#ifdef Q_OS_ANDROID
+	app.setStyle(new MenuItemWidthStyle(QStyleFactory::create(app.style()->name())));
+#endif
 	QCoreApplication::setApplicationName(APPNAME);
 	QCoreApplication::setApplicationVersion(VERSION);
 

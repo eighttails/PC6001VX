@@ -807,6 +807,12 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 ** メニューのテキストの一部が中略されて表示されています。
 
 == 更新履歴
+.4.5.1 2026/10/02
+* (Linux)Ubuntu22.04LTSでビルドが通るように後方互換性を修正
+* (Linux)多言語対応が機能していなかったのを修正
+* (Linux)Fixed backward compatibility so that the build works on Ubuntu22.04LTS. 
+* (Linux)Fixed the issue where multilingual support was not working
+
 .4.5.0 2026/09/09
 * 画面描画をQGraphicsView/QGraphicsSceneベースからQML/Qt Quickベースに変更
 * 仮想キーボードをQML/Qt Quickベースに変更し、Qt Graphics Scene(QGraphics*クラス)への依存を削除

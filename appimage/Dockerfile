@@ -20,6 +20,9 @@ RUN apt install -y \
     libx11-dev \
     libsdl2-dev \
     qt6-base-dev \
+    qt6-l10n-tools \
+    qt6-tools-dev \
+    qt6-tools-dev-tools \
     qt6-declarative-dev \
     qt6-multimedia-dev \
     qml6-module-qtquick \

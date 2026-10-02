@@ -140,7 +140,7 @@ option(REPLAYDEBUG_FRAME "Enable replay debug frame" OFF)
 option(REPLAYDEBUG_INST "Enable replay debug instruction" OFF)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Quick Qml QuickWidgets Network Multimedia)
-find_package(Qt6 COMPONENTS LinguistTools QUIET)
+find_package(Qt6 REQUIRED COMPONENTS LinguistTools)
 
 if(Qt6_VERSION VERSION_LESS "6.3.0")
     set(CMAKE_AUTOMOC ON)
@@ -588,13 +588,12 @@ if(WIN32)
     )
 endif()
 
-if(TARGET Qt6::lrelease)
-    qt_add_translations(PC6001VX
-        TS_FILES
-        src/Qt/translation/PC6001VX_en.ts
-        src/Qt/translation/PC6001VX_ru.ts
-    )
-endif()
+qt_add_translations(PC6001VX
+    TS_FILES
+    src/Qt/translation/PC6001VX_en.ts
+    src/Qt/translation/PC6001VX_ru.ts
+    RESOURCE_PREFIX "/i18n"
+)
 
 # babel.cpp is #include-d directly by osdQt.cpp; exclude it from compilation
 set_source_files_properties(src/Qt/babel/babel.cpp PROPERTIES HEADER_FILE_ONLY TRUE)

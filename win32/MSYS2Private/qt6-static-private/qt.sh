@@ -64,8 +64,8 @@ apply_patch_with_msg() {
   done
 }
 
-QT_MAJOR_VERSION=6.11
-QT_MINOR_VERSION=.2
+QT_MAJOR_VERSION=6.12
+QT_MINOR_VERSION=.0
 QT_VERSION=$QT_MAJOR_VERSION$QT_MINOR_VERSION
 
 function makeQtSourceTree(){
@@ -104,8 +104,7 @@ else
     012-Handle-win64-in-dumpcpp-and-MetaObjectGenerator-read.patch \
     013-disable-finding-webp-from-cmake-config-files.patch \
     014-imageformats-transitive-dependencies.patch \
-    015-qt6-windeployqt-fixes.patch \
-    016-fix-build-with-llvm-22.patch
+    015-qt6-windeployqt-fixes.patch 
 
 
   local _ARCH_TUNE

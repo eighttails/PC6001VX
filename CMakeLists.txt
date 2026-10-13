@@ -52,24 +52,31 @@ if(WIN32)
 
         foreach(PC6001VX_QT_MULTIMEDIA_PRI IN LISTS PC6001VX_QT_MULTIMEDIA_PRI_CANDIDATES)
             if(EXISTS "${PC6001VX_QT_MULTIMEDIA_PRI}")
-                file(STRINGS "${PC6001VX_QT_MULTIMEDIA_PRI}" PC6001VX_QMAKE_LIBDIR_FFMPEG_LINE
-                    REGEX "^QMAKE_LIBDIR_FFMPEG = "
+                file(STRINGS "${PC6001VX_QT_MULTIMEDIA_PRI}" PC6001VX_QMAKE_INCDIR_FFMPEG_LINE
+                    REGEX "^QMAKE_INCDIR_FFMPEG = "
                 )
 
-                if(PC6001VX_QMAKE_LIBDIR_FFMPEG_LINE)
-                    string(REGEX REPLACE "^QMAKE_LIBDIR_FFMPEG = " "" PC6001VX_QMAKE_LIBDIR_FFMPEG
-                        "${PC6001VX_QMAKE_LIBDIR_FFMPEG_LINE}"
+                if(PC6001VX_QMAKE_INCDIR_FFMPEG_LINE)
+                    string(REGEX REPLACE "^QMAKE_INCDIR_FFMPEG = " "" PC6001VX_QMAKE_INCDIR_FFMPEG
+                        "${PC6001VX_QMAKE_INCDIR_FFMPEG_LINE}"
                     )
-                    get_filename_component(PC6001VX_DETECTED_FFMPEG_DIR
-                        "${PC6001VX_QMAKE_LIBDIR_FFMPEG}" DIRECTORY
+                    separate_arguments(PC6001VX_QT_FFMPEG_INCLUDE_DIRS
+                        NATIVE_COMMAND "${PC6001VX_QMAKE_INCDIR_FFMPEG}"
                     )
 
-                    if(EXISTS "${PC6001VX_DETECTED_FFMPEG_DIR}")
+                    if(PC6001VX_QT_FFMPEG_INCLUDE_DIRS)
+                        list(GET PC6001VX_QT_FFMPEG_INCLUDE_DIRS 0 PC6001VX_QT_FFMPEG_INCLUDE_DIR)
+                    endif()
+
+                    if(EXISTS "${PC6001VX_QT_FFMPEG_INCLUDE_DIR}/libavcodec/avcodec.h")
+                        get_filename_component(PC6001VX_DETECTED_FFMPEG_DIR
+                            "${PC6001VX_QT_FFMPEG_INCLUDE_DIR}" DIRECTORY
+                        )
                         set(FFMPEG_DIR "${PC6001VX_DETECTED_FFMPEG_DIR}" CACHE PATH
                             "Path to FFmpeg installation" FORCE
                         )
                         list(PREPEND CMAKE_PREFIX_PATH "${FFMPEG_DIR}")
-                        message(STATUS "Auto-detected FFMPEG_DIR from Qt metadata: ${FFMPEG_DIR}")
+                        message(STATUS "Auto-detected FFMPEG_DIR from Qt Multimedia metadata: ${FFMPEG_DIR}")
                         break()
                     endif()
                 endif()
@@ -510,6 +517,7 @@ else()
         else()
             target_sources(PC6001VX PRIVATE src/movie.cpp)
             target_compile_definitions(PC6001VX PRIVATE NOAVI)
+            message(STATUS "AVI support disabled: FFmpeg development libraries were not found")
         endif()
     else()
         target_sources(PC6001VX PRIVATE src/movie.cpp)

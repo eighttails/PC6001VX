@@ -44,6 +44,7 @@ $SCRIPT_DIR/buildrelease.sh "$PWD"
 pushd PC6001VX-build-$MINGW_CHOST/release
 cp -f PC6001VX.exe $WIN_BIN_DIR
 asciidoctor $SCRIPT_DIR/../README.adoc -o $WIN_BIN_DIR/README.html
+asciidoctor $SCRIPT_DIR/../README_J.adoc -o $WIN_BIN_DIR/README_J.html
 popd
 
 zip -r $WIN_BIN_NAME.zip $WIN_BIN_NAME

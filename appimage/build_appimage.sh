@@ -12,6 +12,16 @@ mkdir -p "$WORKDIR/AppDir"
 cmake -S "$PROJECT_DIR" -B "$WORKDIR/build" -DCMAKE_BUILD_TYPE=Release
 cmake --build "$WORKDIR/build" --parallel "$(nproc)"
 
+# オンラインマニュアル(asciidocから生成したHTML)をAppImageに同梱する
+# 画像は:data-uri:によりHTMLに埋め込まれる
+if ! command -v asciidoctor >/dev/null 2>&1; then
+    echo "asciidoctor not found; cannot bundle online manual" >&2
+    exit 1
+fi
+mkdir -p "$WORKDIR/AppDir/usr/share/doc/pc6001vx"
+asciidoctor "$PROJECT_DIR/README.adoc" -o "$WORKDIR/AppDir/usr/share/doc/pc6001vx/README.html"
+asciidoctor "$PROJECT_DIR/README_J.adoc" -o "$WORKDIR/AppDir/usr/share/doc/pc6001vx/README_J.html"
+
 export LINUXDEPLOY_OUTPUT_VERSION=$(cat "$PROJECT_DIR/VERSION.PC6001VX")
 export QML_SOURCES_PATHS="$PROJECT_DIR/src/Qt/qml"
 if ! QMAKE=$(command -v qmake6); then

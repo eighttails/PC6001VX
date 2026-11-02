@@ -1,458 +1,457 @@
-= PC6001VX マニュアル
+= PC6001VX Manual
 eighttails <http://eighttails.seesaa.net>
-:toc-title: 目次
+:toc-title: Contents
 :toc: left
 :numbered:
 :data-uri:
 :icons: font
 
-== はじめに
+== Introduction
 image::doc/overview.png[]
 
-本プログラムは、 http://papicom.net[ゆみたろ様]作のPC-6001エミュレータ
-PC6001VをLinux等で動作するよう改変したものです。 +
-PC6001VXの末尾のXはクロスプラットフォームのXです。(^^; +
-ターゲットはLinuxなどのUNIXライクOSおよびAndroidを想定していますが、移植性の検証としてWindows用バイナリもリリースしています。が、こちらはほとんどおまけです。 +
+This program is a port of PC6001V, a PC-6001 emulator created by http://papicom.net[Yumitaro], modified to run on Linux and other platforms. +
+The X at the end of PC6001VX stands for cross-platform. +
+The targets are UNIX-like OSes such as Linux and Android. As a portability check we also release Windows binaries. +
 
-== 起動方法
-=== 必要なもの
-* ROMファイル +
-エミュレータの動作には原則として、PC-6001シリーズの実機から吸い出したROMファイルが必要になります。 http://p6ers.net/hashi/suidashi.html[こちら]を参考にして実機から吸い出してください。 +
-実機をお持ちでない場合、 http://000.la.coocan.jp/p6/basic.html[秋川様]作成の互換ROMを使うという選択肢もあります。互換ROMはエミュレータのバイナリに内蔵されており、設定で有効化することができます。 +
-互換ROM使用時は初代PC-6001、PC-6001A、PC-6001mk2、PC-6601いずれかに相当する動作になります。PC-6001mk2SR、PC-6601SRも選択可能ですが、BASICモード6には未対応です。モード5までのソフトをバスリクエストOFFによる高速化をしたい場合に選択してください。 +
-必要なROMファイルは以下の通りです。 +
+== Getting Started
+=== Requirements
+* ROM files +
+In principle, the emulator requires ROM files dumped from a real PC-6001 series machine. See http://p6ers.net/hashi/suidashi.html[here] for instructions on how to dump them from real hardware. +
+If you do not own a real machine, another option is to use the compatible ROM created by http://000.la.coocan.jp/p6/basic.html[Akikawa]. The compatible ROM is embedded in the emulator binary and can be enabled in the settings. +
+When using the compatible ROM, the behavior corresponds to the original PC-6001, PC-6001A, PC-6001mk2 or PC-6601. PC-6001mk2SR and PC-6601SR can also be selected, but BASIC mode 6 is not supported. Choose them when you want to speed up software that only uses modes up to 5 by turning bus requests off. +
+The required ROM files are listed below. +
 [WARNING]
-Windows以外ではファイル名の大文字小文字が間違っていると起動しなくなります。ご注意ください。 
+On platforms other than Windows, the emulator will fail to start if the letter case of the file names is wrong. Please be careful. 
 
-** PC-6001の場合
+** PC-6001
 +
 [options="header"]
 |================
-|ファイル名|サイズ|CRC32|対応ROM
-|BASICROM.60|16KB|54C03109|N60-BASICインタプリタROM
-|CGROM60.60|4KB|B0142D32|N60-BASIC用CGROM
+|File name|Size|CRC32|Corresponding ROM
+|BASICROM.60|16KB|54C03109|N60-BASIC interpreter ROM
+|CGROM60.60|4KB|B0142D32|N60-BASIC CGROM
 |================
 
-** PC-6001Aの場合
+** PC-6001A
 +
 [options="header"]
 |================
-|ファイル名|サイズ|CRC32|対応ROM
-|BASICROM.61|16KB|FA8E88D9|N60-BASICインタプリタROM
-|CGROM60.61|4KB|49C21D08|N60-BASIC用CGROM
+|File name|Size|CRC32|Corresponding ROM
+|BASICROM.61|16KB|FA8E88D9|N60-BASIC interpreter ROM
+|CGROM60.61|4KB|49C21D08|N60-BASIC CGROM
 |================
 
-** PC-6001mk2の場合
+** PC-6001mk2
 +
 [options="header"]
 |================
-|ファイル名|サイズ|CRC32|対応ROM
+|File name|Size|CRC32|Corresponding ROM
 |BASICROM.62|32KB|950AC401 +
-D7E61957|N60m-BASICインタプリタROM(*1)
-|CGROM60.62|8KB|81EB5D95|N60-BASIC用CGROM
-|CGROM60m.62(*2)|8KB|3CE48C33|N60m-BASIC用CGROM
-|KANJIROM.62|32KB|20C8F3EB|漢字ROM
-|VOICEROM.62|16KB|49B4F917|音声合成ROM
+D7E61957|N60m-BASIC interpreter ROM(*1)
+|CGROM60.62|8KB|81EB5D95|N60-BASIC CGROM
+|CGROM60m.62(*2)|8KB|3CE48C33|N60m-BASIC CGROM
+|KANJIROM.62|32KB|20C8F3EB|KANJI ROM
+|VOICEROM.62|16KB|49B4F917|Speech synthesis ROM
 |================
-*1 PC-6001mk2の BASICROM.62 は2種類存在することを確認しています。 +
-バージョンはどちらも1.7ですが細かなバグ修正が行われたようです。  +
-*2 ファイル名の60mは小文字であることに注意してください。
+*1 Two different versions of BASICROM.62 for PC-6001mk2 are known to exist. +
+Both are version 1.7, but some minor bug fixes seem to have been made.  +
+*2 Note that the "60m" in the file name is lower case.
 
-** PC-6601の場合
+** PC-6601
 +
 [options="header"]
 |================
-|ファイル名|サイズ|CRC32|対応ROM
-|BASICROM.66|32KB|C0B01772|N66-BASICインタプリタROM
-|CGROM60.66|8KB|D2434F29|N60-BASIC用CGROM
-|CGROM66.66|8KB|3CE48C33|N66-BASIC用CGROM
-|KANJIROM.66|32KB|20C8F3EB|漢字ROM
-|VOICEROM.66|16KB|91D078C1|音声合成ROM
+|File name|Size|CRC32|Corresponding ROM
+|BASICROM.66|32KB|C0B01772|N66-BASIC interpreter ROM
+|CGROM60.66|8KB|D2434F29|N60-BASIC CGROM
+|CGROM66.66|8KB|3CE48C33|N66-BASIC CGROM
+|KANJIROM.66|32KB|20C8F3EB|KANJI ROM
+|VOICEROM.66|16KB|91D078C1|Speech synthesis ROM
 |================
 
-** PC-6001mk2SRの場合
+** PC-6001mk2SR
 +
 [options="header"]
 |================
-|ファイル名|サイズ|CRC32|対応ROM
+|File name|Size|CRC32|Corresponding ROM
 |SYSTEMROM1.64|64KB|B6FC2DB2|N66/N66SR-BASIC ROM
-|SYSTEMROM1.64|64KB|55A62A1D|音声合成、漢字、その他ROM
-|CGROM68.64|16KB|73BC3256|BASIC用CGROM
+|SYSTEMROM1.64|64KB|55A62A1D|Speech synthesis, KANJI and other ROMs
+|CGROM68.64|16KB|73BC3256|BASIC CGROM
 |================
 
-** PC-6601SRの場合
+** PC-6601SR
 +
 [options="header"]
 |================
-|ファイル名|サイズ|CRC32|対応ROM
+|File name|Size|CRC32|Corresponding ROM
 |SYSTEMROM1.68|64KB|B6FC2DB2|N66/N66SR-BASIC ROM
-|SYSTEMROM1.68|64KB|55A62A1D|音声合成、漢字、その他ROM
-|CGROM68.68|16KB|73BC3256|BASIC用CGROM
+|SYSTEMROM1.68|64KB|55A62A1D|Speech synthesis, KANJI and other ROMs
+|CGROM68.68|16KB|73BC3256|BASIC CGROM
 |================
 
-* 拡張カートリッジ
+* Expansion cartridges
 +
-一部の純正拡張カートリッジのROMもシステムROMとして扱います。 +
+ROMs of some genuine expansion cartridges are also treated as system ROMs. +
 
-** PCS-6001R 拡張BASIC
-+
-[options="header"]
-|================
-|ファイル名|サイズ|CRC32|対応ROM
-|EXBASIC.ROM|8KB|TBC|N60拡張BASIC ROM
-|================
-
-** PC-6601-01 拡張漢字ROMカートリッジ
-** PC-6007SR 拡張漢字ROM&RAMカートリッジ
+** PCS-6001R Extended BASIC
 +
 [options="header"]
 |================
-|ファイル名|サイズ|CRC32|対応ROM
-|EXKANJI.ROM|128KB|TBC|拡張漢字ROM
+|File name|Size|CRC32|Corresponding ROM
+|EXBASIC.ROM|8KB|TBC|N60 Extended BASIC ROM
 |================
 
-** (未対応)PC-6053 ボイスシンセサイザ
+** PC-6601-01 Extended KANJI ROM cartridge
+** PC-6007SR Extended KANJI ROM&RAM cartridge
 +
 [options="header"]
 |================
-|ファイル名|サイズ|CRC32|対応ROM
-|EXVOICE.ROM|8KB|TBC|音声合成ROM
+|File name|Size|CRC32|Corresponding ROM
+|EXKANJI.ROM|128KB|TBC|Extended KANJI ROM
+|================
+
+** (Not supported) PC-6053 Voice Synthesizer
++
+[options="header"]
+|================
+|File name|Size|CRC32|Corresponding ROM
+|EXVOICE.ROM|8KB|TBC|Speech synthesis ROM
 |================
 
 
-* WAVファイル +
-mk2以降の場合、音声合成の固定語はWAVファイルとして用意する必要があります。 +
-実機のモード5または6で「talk"f41."」を実行し、その音声をf41.wavの名前で録音して保存してください。 +
-同様にf42~f44.wavも用意します。 +
-WAVファイルのフォーマットですが、作者は44kHzモノラルのWAVで動作確認しています。 +
-WAVファイルがない場合、固定語が再生されません。 +
+* WAV files +
+On mk2 and later models, the fixed words of the speech synthesizer must be provided as WAV files. +
+Run `talk"f41."` on a real machine in mode 5 or 6 and record the audio under the name f41.wav. +
+Prepare f42~f44.wav in the same way. +
+As for the WAV format, the author has verified operation with 44kHz mono WAV files. +
+Without the WAV files, the fixed words will not be played. +
 
-=== 初回起動時の設定
-必要なファイルが揃ったらPC6001VXを起動してください。起動の方法はお使いのOSに合わせたプラットフォーム固有情報を参照してください。 +
-初回起動時には以下のエラーが出ると思います。 +
+=== First-time Setup
+Once the required files are ready, start PC6001VX. For how to launch it, refer to the platform specific information matching your OS. +
+On the first start you should see the following error. +
 
 image::doc/firstboot.png[]
 
-ROMファイルはここで提示されたフォルダ内を探しに行くので、その場所にROMファイルをコピーするか、すでに別の場所にROMファイルを用意していれば、その場所を参照するように設定を変更することができます。設定を変更する場合は「Yes」をクリックしてROMファイルのあるフォルダを指定してください。 +
+The emulator looks for the ROM files inside the folder shown here, so copy the ROM files to that location, or, if your ROM files are already stored somewhere else, you can change the setting to point there. To change the setting, click "Yes" and specify the folder where the ROM files are located. +
 
-ここで「No」をクリックした場合、以下のダイアログが表示されます。 +
+If you click "No" here, the following dialog is shown. +
 
 image::doc/compatiblerom.png[]
 
-ここで「Yes」を選択するとエミュレータのバイナリに内蔵された互換ROMを使って起動します。実機から吸い出したROMをお持ちでない場合はこちらを使ってください。 +
-初期状態ではPC-6001相当の動作になりますが、設定画面でPC-6601相当のROMを選択することもできます。
+Choosing "Yes" here starts the emulator with the compatible ROM built into the binary. Use this if you do not have ROMs dumped from real hardware. +
+By default the emulator behaves like a PC-6001, but you can also select a PC-6601 equivalent ROM in the settings dialog.
 
-指定したROMファイルのCRCが一般に知られているものと合わない場合、以下のメッセージが表示されます。 +
+If the CRC of the specified ROM file does not match the commonly known one, the following message is displayed. +
 
 image::doc/romcrc.png[]
 
-警告されますが「Yes」をクリックすると以降ROMのCRCチェックをせずに起動するようになります。 +
-ただしこの後の動作は自己責任です。 +
+You will be warned, but clicking "Yes" makes the emulator start from then on without checking the ROM CRC. +
+From that point on, however, everything is at your own risk. +
 
-=== コマンドラインオプション
-PC6001VXはコマンドラインオプションをサポートしています。 +
-以下のオプションが使用可能です。 +
+=== Command Line Options
+PC6001VX supports command line options. +
+The following options are available. +
 [options="header"]
 |================
-|オプション|引数|説明
+|Option|Argument|Description
 |-l +
---loadstate |(どこでもLOADファイル名)| 起動時に任意のどこでもLOADファイルを読み込んで起動します。
+--loadstate |(state file name)| Loads the given state file ("どこでもLOAD" file) at startup.
 |-v +
---version |(なし)| バージョン情報を表示します。
+--version |(none)| Show version information.
 |-h +
---help |(なし)| ヘルプを表示します。
+--help |(none)| Show help.
 
 |================
 
 
-=== プラットフォーム固有情報
+=== Platform Specific Information
 ==== Windows
-* 起動方法 +
-普通にPC6001VX.exeをダブルクリックして起動してください。
-* 起動しない時は +
-** iniファイルを削除してください。 +
-* 設定、各種ファイル生成場所 +
-exeファイルと同じフォルダにiniファイル、各種フォルダが生成されます。
+* How to start +
+Simply double-click PC6001VX.exe.
+* If it does not start +
+** Delete the ini file. +
+* Where settings and generated files are stored +
+The ini file and various folders are created in the same folder as the exe file.
 
 [WARNING]
-設定ファイルはPC6001VX Ver.3以前と互換性がありません。 +
-上書きインストールをせずに別フォルダにインストールするか、iniファイルを削除してから起動してください。
+The configuration file is not compatible with PC6001VX Ver.3 and earlier. +
+Install into a different folder instead of overwriting, or delete the ini file before starting.
 
 ==== Linux
-* 起動方法 +
-ソースからビルドして実行してください。ビルドの仕方については開発者情報の章を参照してください。 +
-* 設定、各種ファイル生成場所 +
-~/.pc6001vx4フォルダ以下にiniファイル、各種フォルダが生成されます。 +
+* How to start +
+Build from source and run it. See the developer information chapter for how to build. +
+* Where settings and generated files are stored +
+The ini file and various folders are created under the ~/.pc6001vx4 folder. +
 
 ==== Android
-* 起動方法 +
-アプリケーションメニュー内に登録されたPC6001VXのアイコンをタップすると起動します。 +
-* 設定、各種ファイル生成場所 +
-Androidの場合設定ファイルの生成場所は機種依存になり、一概に言えませんが、通常のファイルマネージャではアクセスできない場所に作成されることが多いようです。具体的な場所は環境設定ダイアログで確認してください。 +
-* ファイルの共有 +
-Androidではアプリのサンドボックス外にファイルを直接書き出すことができません。スナップショットの取得およびTAPE(SAVE)のエクスポートを行うと共有メニューが表示されますので、ファイルマネージャや画像編集アプリなど任意のアプリに送ることができます。 +
+* How to start +
+Tap the PC6001VX icon registered in the application menu. +
+* Where settings and generated files are stored +
+On Android the location of the configuration files depends on the device and cannot be stated in general, but it is usually created in a place normal file managers cannot access. Check the exact location in the preferences dialog. +
+* Sharing files +
+On Android files cannot be written directly outside of the app sandbox. When you take a snapshot or export a TAPE(SAVE) image, a share menu is shown and you can send the file to any app such as a file manager or an image editor. +
 
-== 使い方
-=== メニュー
-エミュレータのメイン画面上でマウスを右クリックするとメニューが表示されます。 +
-Androidではメイン画面上でタップするとメニューが出ます。 +
+== Usage
+=== Menu
+Right-click on the main emulator screen to show the menu. +
+On Android, tap on the main screen to bring up the menu. +
 
 image::doc/menu.png[]
 
-* システム +
-** リセット +
-エミュレータをリセットします。 +
+* System +
+** Reset +
+Resets the emulator. +
 
-** 再起動 +
-エミュレータを再起動します。 +
-設定変更を反映するには再起動が必要です。 +
+** Restart +
+Restarts the emulator. +
+A restart is required to apply configuration changes. +
 
-** 一時停止 +
-エミュレーターを一時停止します。
-** ウェイト無効 +
-エミュレータのウェイトを無効化し、全速力で動かします。 +
+** Pause +
+Pauses the emulator.
+** Disable wait +
+Disables the emulator's wait states and runs it at full speed. +
 
-** スナップショットを取得 +
-現在のエミュレータの画面を画像ファイルとして保存します。 +
-保存先は設定ダイアログの「フォルダ」タブ中の「SnapShot」の項目で設定したフォルダになります。 +
+** Take snapshot +
+Saves the current emulator screen as an image file. +
+The destination is the folder configured under "SnapShot" on the "Folder" tab of the settings dialog. +
 
-** 速度調整 +
-エミュレーターの動作速度を調整します。 +
-メニューにいくつかプリセットが用意されていますが、数値入力で10%から2000%まで指定することができます。 +
+** Speed control +
+Adjusts the emulation speed. +
+Several presets are provided in the menu, and you can also enter a value between 10% and 2000%. +
 
-** どこでもLOAD +
-** どこでもSAVE +
-現在のP6の状態をそっくりそのまま保存して、あとで再開できます。 +
-ノートパソコンのレジュームやサスペンドと呼ばれる機能と同じようなものです。 +
-セーブするためのファイルは任意の名前(.ddr)をつけることができる他、1〜3番のスロットを用意しています。 +
-1番のスロットSAVEデータは(どこでもSAVEフォルダ)/1.ddrとして保存されます。2,3番も同様です。 +
+** State load +
+** State save +
+Saves the entire state of the P6 as-is so you can resume it later. +
+It is similar to the resume/suspend feature of laptops. +
+The save file can have any name (.ddr), and there are also slots 1 to 3. +
+The data of slot 1 is saved as (state save folder)/1.ddr, and likewise for slots 2 and 3. +
 [WARNING]
-この機能はまだまだ未完成です。TAPEやDISKに書き込んでいる最中などは全く考えていませんのでイメージを破壊する可能性が大です。ご注意ください。
+This feature is still far from complete. It does not consider cases such as writing to TAPE or DISK at all, so it may well destroy your images. Be careful.
 [WARNING]
-どこでもSAVEファイルにはメモリの内容が含まれますので著作権者の許可なく配布しないでください。
+State save files contain the contents of memory. Do not distribute them without the copyright holder's permission.
 
-** リプレイ +
-リプレイのメニューはその時の状態により変化します。 +
-*** [通常時] +
-**** 再生 +
-**** 記録 +
-**** 記録再開 +
-以前記録したリプレイの記録終了時にresumeファイルが残っていれば「記録再開」でリプレイの続きを記録停止したところから記録することができます。
-**** リプレイを動画に変換 +
-保存済みのリプレイファイルを動画に変換します。 +
-最初に変換対象のリプレイファイルを選択し、次に動画の保存先を指定します。 +
-するとリプレイを再生しながら動画のエンコードを開始します。リプレイが終了したら自動的に動画のエンコードも終了します。
+** Replay +
+The replay menu changes depending on the current state. +
+*** [Normal] +
+**** Playback +
+**** Record +
+**** Resume recording +
+If a resume file was left when a previously recorded replay ended, "Resume recording" lets you continue recording that replay from where recording stopped.
+**** Convert replay to movie +
+Converts a saved replay file to a movie. +
+First select the replay file to convert, then specify where to save the movie. +
+Then playback of the replay and encoding of the movie start together. When the replay ends, the movie encoding finishes automatically.
 
 
-*** [再生中] +
-**** 再生停止 +
-リプレイの再生を停止します。
+*** [Playing] +
+**** Stop playback +
+Stops replay playback.
 
-*** [記録中] +
-**** 記録停止 +
-記録を停止します。 +
-停止時には途中保存と同じ「(リプレイファイル名).resume」ファイルを残します。 +
+*** [Recording] +
+**** Stop Recording +
+Stops recording. +
+When stopping, a "(replay file name).resume" file is left, just like with a checkpoint. +
 
-**** 途中保存 +
-リプレイの記録中に、その途中の状態を保存することができます。 +
-「(リプレイファイル名).resume」ファイルをリプレイファイル(.ddr)と同じフォルダに残します。 +
+**** Checkpoint +
+While recording a replay, you can save the current point in the recording. +
+A "(replay file name).resume" file is left in the same folder as the replay file (.ddr). +
 
-**** 途中保存から再開 +
-ゲームのリプレイ記録中に失敗した場合など、リプレイの記録を停止せずに「途中保存」した地点に戻ってやり直すことができます。 +
+**** Back to checkpoint +
+If you fail while recording a game replay, you can return to the last "checkpoint" without stopping the replay recording and try again. +
 
-**** 1つ前の途中保存から再開 +
-ゲームのリプレイ記録中に失敗した場合、「途中保存から再開」で戻っても、途中保存の時点で詰んでしまって進めなくなることが時々あります。「途中保存」は5個まで過去の履歴を保存していますので、1つ前の途中保存からやり直すことができます。 +
-これを実行した場合、最新の途中保存は失われます。 +
+**** Back to previous checkpoint +
+If you fail while recording a game replay, sometimes even rewinding with "Back to checkpoint" leaves you stuck at the checkpoint. Up to 5 checkpoints of history are kept, so you can redo from the previous checkpoint. +
+If you use this, the most recent checkpoint is lost. +
 
-** ビデオキャプチャ +
-エミュレータの動作を動画ファイルとして記録します。 +
-記録を終了するにはもう一度このメニュー(「ビデオキャプチャ停止」に変わっています)を選択します。 +
-動画の記録方式はWebM形式です。(MP4形式はライセンス面でリスクがあるため、対応を見送っています。) 世の中ではあまり使われていない形式ですが、YouTubeは正式に対応しています。 +
-動画の記録中は動作速度が極端に落ちるため(作者の環境で1/10くらい)、ゲームをプレイしながら動画にするといった使い方は現時点では無理です。 +
-あらかじめプレイをリプレイとして記録しておき、そのリプレイを再生しながら動画にするといった使い方を想定しています。(動画の記録中にリプレイが終了した場合、その時点で動画の記録も終了します。) +
-マシンの処理速度にかかわらず、出来上がった動画は60FPSになります。 +
+** Video capture +
+Records the emulator's operation as a movie file. +
+To stop recording, select this menu again (it changes to "Stop video capture"). +
+The movie is recorded in WebM format. (MP4 support has been skipped due to licensing risks.) It is not a widely used format, but YouTube supports it officially. +
+During recording the emulation speed drops drastically (about 1/10 on the author's machine), so it is currently impossible to play a game while recording. +
+The intended workflow is to record your play as a replay first, then play back the replay while recording a movie. (If the replay ends during recording, the movie recording ends at that point.) +
+Regardless of the machine's speed, the resulting movie is 60FPS. +
 
-** キーパネル
+** Key panel
 +
 image::doc/keypanel.png[]
-英語キーボードやモバイル機のキーボードで入力できないことが多いキーをボタンで入力できる補助キーパネルを表示します。 +
-ボタンはシフトキーと同時押しでも機能します。シフトキーを押してF1ボタンを押すとF6キーとして機能します。 +
+Shows an auxiliary key panel with buttons for keys that are often impossible to enter on English keyboards or mobile device keyboards. +
+The buttons also work while the shift key is held. Pressing the F1 button while holding shift acts as the F6 key. +
 
-** 仮想キーボード
+** Virtual keyboard
 +
 image::doc/virtualkey.png[]
-タッチスクリーンで利用できる仮想キーボードを表示します。 +
-NORMALタブでは実機のキーボードを模したレイアウト、SIMPLEタブではゲーム用に簡略化したレイアウトを表示します。 +
-仮想キーボード上部のボタンはよく使う機能のショートカットになっています。 +
+Shows a virtual keyboard usable on touch screens. +
+The NORMAL tab shows a layout imitating the real keyboard, and the SIMPLE tab shows a layout simplified for games. +
+The buttons above the virtual keyboard are shortcuts to frequently used functions. +
 *** SAVE +
-どこでもSAVE(1番スロットを使用) +
+State save (uses slot 1) +
 *** ROMA +
-ローマ字入力の切り替え +
-ローマ字入力時はステータスバーに「R」と表示(デフォルトで有効) +
+Toggle Romaji input +
+When Romaji input is on, an "R" is shown in the status bar (enabled by default) +
 *** PAUSE +
-エミュレーターの一時停止 +
+Pause the emulator +
 *** SNP +
-スナップショットの保存 +
-Androidの場合は他のアプリへの画像の共有になります。 https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=ja[X-plore File Manager]などの一部のファイルマネージャーアプリに送るとSDカードに画像を保存できます。 +
+Save a snapshot +
+On Android this shares the image with other apps. Sending it to some file manager apps such as https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=ja[X-plore File Manager] lets you save the image to the SD card. +
 *** LOAD +
-どこでもLOAD(1番スロットを使用) +
+State load (uses slot 1) +
 
 +
 [WARNING]
 ====
-* AndroidおよびWindows10で動作確認しています。
-* キーを押し続けると、実機のキーリピートに近いタイミングで入力を繰り返します。
-* NORMALモードでまともに操作するには最低5インチの画面サイズが必要でしょう。
-* Windows10ではエミュレーターのフルスクリーンをオフにしてタブレットモードに切り替えると自然な表示になります。
+* Verified to work on Android and Windows10.
+* When a key is held down, input repeats at a timing close to the real machine's key repeat.
+* To operate the NORMAL mode properly you probably need a screen of at least 5 inches.
+* On Windows10, turn off emulator fullscreen and switch to tablet mode for a natural look.
 ====
 
-** 打ち込み代行 +
-テキストファイルから自動入力する機能です。 +
-対応しているファイルはtxt2bas仕様準拠です。 +
+** Auto typing +
+This feature types input automatically from a text file. +
+Supported files follow the txt2bas specification. +
 
-** 終了 +
-PC6001VXを終了します。 +
+** Exit +
+Quits PC6001VX. +
 
-* TAPE +
-テープイメージの挿入、取り出しの操作をします。 +
-対応するイメージファイルはP6T形式ですが、P6,CAS形式のファイルもマウントできます。 +
+* Tape +
+Insert and eject tape images. +
+The supported image format is P6T, but P6 and CAS format files can also be mounted. +
 
-** 挿入 +
-テープイメージファイルをマウントします。 +
+** Insert... +
+Mounts a tape image file. +
 
-** 取出 +
-テープイメージファイルを取り出します。 +
+** Eject +
+Ejects the tape image file. +
 
-** TAPE(SAVE)をエクスポート +
-SAVE用のテープイメージはLOAD用途は別のファイルとして保存されますが、そのファイルに任意の名前を付けて任意のフォルダに保存できます。 +
-Androidの場合は他のアプリへのファイルの共有になります。 https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=ja[X-plore File Manager]などの一部のファイルマネージャーアプリに送るとSDカードにTAPEイメージを保存できます。 +
+** Export saved TAPE... +
+The SAVE tape image is stored as a separate file from the LOAD one, and you can save that file under any name in any folder. +
+On Android this shares the file with other apps. Sending it to some file manager apps such as https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=ja[X-plore File Manager] lets you save the TAPE image to the SD card. +
 
-* DISK +
-ディスクイメージの挿入、取り出しの操作をします。 +
-対応するイメージファイルはd88形式です。 +
-ファイル選択の操作はTAPEと同様です。 +
+* Disk +
+Insert and eject disk images. +
+The supported image format is d88. +
+The file selection operation is the same as for TAPE. +
 
-* 拡張ROM +
-拡張ROMの選択を行います。 +
-PC-6006、戦士のカートリッジの場合はカートリッジにインストールされたROMイメージの挿入、取り出しの操作をします。 +
-初代機で32KBの構成にしたい場合は、PC-6006のROMなしを選択してください。 +
-ファイル選択の操作はTAPEと同様です。 +
+* Extended ROM +
+Select an extended ROM. +
+For PC-6006 or Warrior's Cartridge, this inserts/ejects the ROM image installed in the cartridge. +
+If you want a 32KB configuration on the original machine, choose "no ROM" for PC-6006. +
+The file selection operation is the same as for TAPE. +
 
-* ジョイスティック +
-ジョイスティックがつながっている場合、P6のジョイスティック1,2に対する割り当てを設定します。 +
+* Joystick +
+If a joystick is connected, configures the assignment to P6 joystick ports 1 and 2. +
 
-* 設定 +
-** 表示サイズ +
+* Settings +
+** Display size +
 *** 50%~300% +
-表示倍率を変えることができます。 +
+Changes the display magnification. +
 
-*** 倍率を指定 +
-数値を直接入力することで任意の倍率で表示することができます。 +
+*** Specify magnification... +
+You can enter a number directly to display at any magnification. +
 
-*** 倍率を固定 +
-通常はウィドウサイズを変更するとそれに追従して表示倍率が変わるようになっていますが、このチェックボックスをオンにすると、ウィンドウサイズにかかわらず固定のサイズで表示されるようになります。 +
+*** Fix magnification +
+Normally the display magnification follows changes of the window size, but when this checkbox is on, the display size stays fixed regardless of the window size. +
 
-** フルスクリーン +
-フルスクリーンモードに切り替えます。 +
+** Full screen +
+Switches to fullscreen mode. +
 
-** ステータスバー +
-ステータスバーの表示を切り替えます。 +
+** Status bar +
+Toggles the status bar visibility. +
 
-** 4:3表示 +
-一般的にPCのアスペクトレシオ(ドットの縦横比)は1:1です。 +
-それに対してテレビの場合は 1.16:1 で ちょっと縦長なんだそうです。 +
-そのためPC上でそのまま表示すると横長に表示されてしまいます。 +
-そこで横方向を1.16倍に縮めて表示するのが 4:3表示 です。 +
+** 4:3 TV display +
+Generally the aspect ratio of PC pixels is 1:1. +
+On a TV, however, it is 1.16:1, i.e. a bit taller. +
+So displaying it as-is on a PC results in a stretched-wide image. +
+4:3 display shrinks the horizontal direction by a factor of 1.16 to compensate. +
 
-** スキャンライン +
-P6の水平周波数はテレビと同じ15kHzです。 +
-テレビでは走査線を偶数フィールドと奇数フィールドに分け飛び飛びに表示させる インターレース方式 を使っています。 +
-しかしP6を含む一般的なパソコンの場合、ちらつきを抑えるため、偶数走査線と奇数走査線が同じ位置を走査する ノンインターレース方式 を使っています。 +
-この場合、走査線数が半分になるため走査線と走査線の間に隙間が空いたような状態になります。
-この隙間を再現するのが スキャンラインモード です。 +
-エミュレータでスキャンラインモードを実現するためには実機の倍の画面解像度を必要とします。（実機が 320X200 なら 640X400 以上） +
-当然、表示が重くなるため処理速度が落ちます。 +
+** Scanline +
+The horizontal frequency of the P6 is 15kHz, the same as a TV. +
+TVs use an interlace scheme where scan lines are split into even and odd fields and displayed alternately. +
+However, most computers including the P6 use a non-interlace scheme where even and odd scan lines scan the same position, in order to reduce flicker. +
+In this case the number of scan lines is halved, leaving gaps between the scan lines. +
+Scanline mode reproduces these gaps. +
+To achieve scanline mode in an emulator you need twice the screen resolution of the real machine (640x400 or more where the real machine is 320x200). +
+Naturally the display becomes heavier and processing speed drops. +
 
-** フィルタリング +
-グラフィックの拡大表示、4:3表示に際してフィルタリングを適用します。デフォルトはオンです。 +
-非整数倍拡大を自然に見せるための措置ですが、ボケた表示は嫌だという方は下記の手順でカクカク表示にできます。 +
+** Filtering +
+Applies filtering when the graphics are magnified or shown in 4:3. It is on by default. +
+This is meant to make non-integer magnifications look natural, but if you dislike the blurry look, you can get a crisp pixel display by following the steps below. +
 
-. フィルタリングをオフにします。 +
-. 4:3表示をオフにします。 +
-. 表示サイズを整数倍にします。 +
+. Turn filtering off. +
+. Turn 4:3 display off. +
+. Set the display size to an integer multiple. +
 
-** TILTモード +
+** Tilt mode +
 +
 image::doc/tilt.png[]
-3DS版のスペースハリアーに触発されて作ったジョーク機能です。 +
-ジョイスティック、カーソルキーの左右に反応して、画面が傾きます。(笑 +
-フルスクリーン時、またはステータスバー非表示の時はディスプレイ枠が表示されます。初代機の場合はPC-6042、それ以外の場合はPC-60m43が表示されます。 +
+A joke feature inspired by the 3DS version of Space Harrier. +
+The screen tilts in response to the joystick or the left/right cursor keys. (; +
+In fullscreen mode, or when the status bar is hidden, a display frame is shown. The original machine shows a PC-6042, others show a PC-60m43. +
 
-** モード4カラー +
-BASICモード1〜4時のスクリーンモード4のにじみ色を選択します。 +
+** Mode4 color +
+Selects the color bleeding of screen mode 4 in BASIC modes 1-4. +
 
-** フレームスキップ +
-エミュレータのフレームスキップ間隔を指定します。 +
+** Frameskip +
+Specifies the emulator's frameskip interval. +
 
-** ローマ字入力 ⁺
-かなモード時のローマ字入力の有効/無効を切り替えます。 ⁺
+** Romaji input +
+Toggles Romaji input on/off in KANA mode. +
 
-** Turbo Tape +
-TAPEの読込み中はノーウェイトで動作させる機能です。 +
-リレーがONになっている間だけノーウェイトになり、リレーOFFと同時に通常動作に戻ります。 +
-ただ高速動作させるだけなので、タイミングが変わりにくく信頼性が高い反面、遅いマシンでは十分な効果が得られない場合があります。 +
+** Turbo tape +
+Runs without wait states while reading TAPE. +
+It is only unthrottled while the relay is ON and returns to normal speed as soon as the relay turns OFF. +
+Since it simply runs at full speed, timing is less likely to change and it is reliable, but on slow machines it may not produce a sufficient effect. +
 
-** Boost Up +
-TAPEの転送速度は1200ボーですが、これはTAPEという媒体の信頼性の問題とサブCPUの処理能力から決まってくるようです。 +
-メインCPU（Z80）側には余裕があるらしく、待ち時間が結構あります。 +
-そこでBASICのワークエリアを監視し、待ちに入ったら即座に次のデータを送るようにすることで無駄な待ち時間を減らし,効率よく読込めるようになります。 +
-いろいろ試した感じでは N60で9倍, N60mで5倍 程度の効果が得られました。 +
-BASICモードにより限界が異なるのは 内部処理の違いと思われます。 +
-倍率は[設定]-[環境設定]-[その他]で変更することが出来ます。 +
-確実に高速化する反面、タイミングがシビアなソフトでは取りこぼしが発生したりROM内ルーチンを使用しない独自ローダーでは全く使えない場合があります。 +
-万能ではありませんので適宜使い分けてください +
+** Boost up +
+The TAPE transfer rate is 1200 baud, which seems to be determined by the reliability of the TAPE medium and the processing power of the sub CPU. +
+The main CPU (Z80) apparently has headroom and there is quite a lot of waiting. +
+By monitoring the BASIC work area and sending the next data as soon as the machine starts waiting, wasted wait time is reduced and loading becomes efficient. +
+In the author's tests, roughly 9x on N60 and 5x on N60m were achieved. +
+The limit differing by BASIC mode is presumably due to differences in internal processing. +
+The maximum factor can be changed under [Settings]-[Preferences]-[Other]. +
+While it reliably speeds things up, timing-sensitive software may drop data, and custom loaders that do not use ROM routines may not work with it at all. +
+It is not a cure-all, so use it selectively. +
 
-** 環境設定 +
-環境設定ダイアログを表示します。詳細は環境設定の章を参照ください。 +
+** Preferences... +
+Shows the preferences dialog. See the Preferences chapter for details. +
 
-* デバッグ +
-** モニタモード +
+* Debug +
+** Monitor mode +
 +
 image::doc/monitormode.png[]
-デバッグ用にレジスタ、メモリの状態の参照、ステップ実行をできるモードです。 +
-「?」を入力するとヘルプが表示されます。 +
+A mode where you can inspect registers and memory and step through execution for debugging. +
+Type "?" to show the help. +
 
-* ヘルプ  +
-** オンラインヘルプ +
-オンラインヘルプを表示します。 +
-WindowsではローカルのHTML、それ以外ではGitHub上のREADMEを表示します。 +
+* Help  +
+** Online help +
+Shows the online manual. +
+The manual bundled with the app is shown in your browser: on Windows the local HTML file, on AppImage the HTML bundled inside the AppImage; in other environments a locale-specific page on GitHub is shown. +
 
-** バージョン情報 +
+** About... +
 +
 image::doc/about.png[]
-バージョン情報ダイアログを表示します。 +
+Shows the About dialog. +
 
 ** About Qt +
-PC6001VXに組み込んでいるQtのバージョンを表示します。 +
+Shows the version of Qt embedded in PC6001VX. +
 
-** システム情報 +
-PC6001VXが現在動作している環境に関する情報を表示します。(バグ報告用) +
-「Copy」ボタンを押すとテキストをクリップボードにコピーします。 +
+** System Information... +
+Shows information about the environment PC6001VX is currently running on (for bug reports). +
+Pressing the "Copy" button copies the text to the clipboard. +
 
-** 設定初期化 +
-設定を初期状態に戻します。 +
-初期化後は一旦終了するのでもう一度起動してください。
+** Reset settings... +
+Restores the settings to their defaults. +
+The program has to exit after the reset, so start it again afterwards.
 
-=== ローマ字入力
-かな入力時に [ALT]+[F12] でローマ字入力とかな入力を切換えます。(デフォルトでローマ字入力が有効) +
-ひらがな，カタカナ どちらでもOKです。 +
-ローマ字入力が有効な時はステータスバーのかなインジケータに「R」が表示されます。 +
-ローマ字とかなの割当ては概ねGoogle日本語入力に準拠しています。 +
+=== Romaji input
+While in KANA input mode, [ALT]+[F12] switches between Romaji and KANA input. (Romaji input is enabled by default) +
+Either hiragana or katakana is fine. +
+When Romaji input is enabled, an "R" is shown in the kana indicator of the status bar. +
+The Romaji-to-kana mapping mostly follows Google Japanese Input. +
 
-.ローマ字入力時の特殊記号
+.Special symbols in Romaji input
 [options="header"]
 |=================================
-|文字|キー
+|Character|Key
 |ー|-
 |「|[
 |」|]
@@ -461,11 +460,11 @@ PC6001VXが現在動作している環境に関する情報を表示します。
 |・|/
 |=================================
 
-=== キーボードショートカット
-.PC-6001シリーズ特有のキー
+=== Keyboard Shortcuts
+.Keys specific to the PC-6001 series
 [options="header"]
 |=================================
-|キー|機能
+|Key|Function
 |[ALT]|GRAPH
 |[PageUp] +
 [CTRL]+[F8]|PAGE(↓↑)
@@ -476,317 +475,317 @@ PC6001VXが現在動作している環境に関する情報を表示します。
 |[ScrollLock] +
 [CTRL]+[F11]|CAPS
 |[Pause] +
-[カタカナ/ひらがな] +
-[CTRL]+[F12]|かな
+[Katakana/Hiragana] +
+[CTRL]+[F12]|Kana
 |=================================
 
-.各種機能キー
+.Various function keys
 [options="header"]
 |=================================
-| キー | 機能
-|[F6]|モニタモード
-|[ALT]+[F6]|フルスクリーン切替え
-|[F7]|スキャンライン切替え
-|[ALT]+[F7]|4:3表示切替え
-|[F8]|モード4カラー切替え
-|[ALT]+[F8]|ステータスバー表示切替え
-|[F9]|ポーズ （トグル）
-|[ALT]+[F9]|どこでもSAVE(1番スロットを使用) +
-リプレイ記録中は途中保存
-|[F10]|ウェイト （トグル）
-|[ALT]+[F10]|どこでもLOAD(1番スロットを使用) +
-リプレイ記録中は途中保存から再開
-|[F11]|リセット
-|[ALT]+[F11]|再起動
-|[F12]|スナップショット
-|[ALT]+[F12]|ローマ字入力切り替え
-|[無変換]|どこでもSAVE(1番スロットを使用) +
-リプレイ記録中は途中保存
-|[変換]|どこでもLOAD(1番スロットを使用) +
-リプレイ記録中は途中保存から再開
+| Key | Function
+|[F6]|Monitor mode
+|[ALT]+[F6]|Toggle fullscreen
+|[F7]|Toggle scanline
+|[ALT]+[F7]|Toggle 4:3 display
+|[F8]|Toggle mode4 color
+|[ALT]+[F8]|Toggle status bar
+|[F9]|Pause (toggle)
+|[ALT]+[F9]|State save (uses slot 1) +
+Checkpoint while recording a replay
+|[F10]|Wait (toggle)
+|[ALT]+[F10]|State load (uses slot 1) +
+Back to checkpoint while recording a replay
+|[F11]|Reset
+|[ALT]+[F11]|Restart
+|[F12]|Snapshot
+|[ALT]+[F12]|Toggle Romaji input
+|[Muhenkan]|State save (uses slot 1) +
+Checkpoint while recording a replay
+|[Henkan]|State load (uses slot 1) +
+Back to checkpoint while recording a replay
 |=================================
 
-=== マウス操作
-ホイール付きマウスを使用している場合、動作速度の変更が出来ます。 +
-ホイールUPで増速、ホイールDOWNで減速、中ボタンクリックで等速に戻ります。 +
-動作速度の変化量は2倍速までが10%単位、2倍速を超えると100%単位です。 +
+=== Mouse Operations
+If you use a mouse with a wheel, you can change the emulation speed. +
+Wheel up speeds up, wheel down slows down, and clicking the middle button returns to normal speed. +
+The speed changes in steps of 10% up to 2x, and in steps of 100% above 2x. +
 
-.マウスボタン操作
+.Mouse button operations
 [options="header"]
 |=================================
-| 操作 | 機能
-|左ダブルクリック|フルスクリーン表示切り替え
-|右クリック|メニュー表示
-|中クリック|動作速度を等速（100%）に戻す
-|ホイールUP|動作速度を上げる（20倍速まで）
-|ホイールDOWN|動作速度を下げる（0.1倍速まで）
+| Operation | Function
+|Left double-click|Toggle fullscreen
+|Right-click|Show menu
+|Middle click|Reset emulation speed to 100%
+|Wheel up|Increase speed (up to 20x)
+|Wheel down|Decrease speed (down to 0.1x)
 |=================================
 
-なお、Androidでは左クリックしかアプリケーションで拾えないため、マウス操作が異なります。
+Note that on Android only left clicks are delivered to the application, so mouse operations differ.
 
-.マウスボタン操作(Android)
+.Mouse button operations (Android)
 [options="header"]
 |=================================
-| 操作 | 機能
-|左クリック|メニュー表示
+| Operation | Function
+|Left click|Show menu
 |=================================
 
-また、ファイルをメイン画面にドラッグ&ドロップすることにより以下のように機能します。
+Also, dragging & dropping files onto the main screen does the following.
 
-.ドラッグ&ドロップの挙動
+.Drag & drop behavior
 [options="header"]
 |=================================
-|拡張子|説明
-|p6t,p6,cas|TAPEイメージをマウント（LOAD用のみ）
-|d88|DISKイメージをドライブ1にマウント
-|rom,bin|拡張ROMイメージをマウント
-|dds|どこでもSAVEファイルを読込み
-|ddr|リプレイデータファイルを読込み
-|bas,txt|打込み代行ファイルを読込み
+|Extension|Description
+|p6t,p6,cas|Mount tape image (LOAD only)
+|d88|Mount disk image in drive 1
+|rom,bin|Mount extended ROM image
+|dds|Load state save file
+|ddr|Load replay data file
+|bas,txt|Load auto typing file
 |=================================
 
-=== 環境設定
+=== Preferences
 
-メニューの[設定]-[環境設定]を選ぶと、環境設定ダイアログが表示されます。 +
-設定変更を反映するには再起動が必要です。 +
+Choose [Settings]-[Preferences...] from the menu to show the preferences dialog. +
+A restart is required to apply configuration changes. +
 
-* 基本 +
-エミュレーション対象機種とその構成に関する設定です。 +
+* Basic +
+Settings of the emulated model and its configuration. +
 +
 image::doc/setting_basic.png[]
 
-** 機種 +
-エミュレーション対象の機種を選択します。 +
-動作には選択した機種から吸い出したROMが必要です。 +
-互換ROM使用時はPC-6001、PC-6001mk2、PC-6601のいずれかを選択してください。 +
+** Model +
+Selects the model to emulate. +
+Running it requires ROMs dumped from the selected model. +
+When using the compatible ROM, choose PC-6001, PC-6001mk2 or PC-6601. +
 
-** 拡張カートリッジ
-使用する拡張カートリッジの種類を指定します。 +
+** Expansion cartridge
+Specifies the type of expansion cartridge to use. +
 
-** 内蔵互換ROMを使う +
-http://000.la.coocan.jp/misc.html[秋川様]による互換ROMを使用します。 +
-互換ROMはエミュレータのバイナリに埋め込まれており、別途ファイルを用意する必要はありません。 +
+** Use built-in compatible ROM +
+Uses the compatible ROM created by http://000.la.coocan.jp/misc.html[Akikawa]. +
+The compatible ROM is embedded in the emulator binary, so no extra files are needed. +
 +
 [WARNING]
 ====
-互換ROMは純正ROMのすべての機能が実装されているわけではありません。 +
-未実装の機能やCGROMの書体の違いにより、挙動や画面の見た目が純正ROM使用時と異なることがあります。
+The compatible ROM does not implement every feature of the genuine ROM. +
+Due to missing features and differences in the CGROM typefaces, behavior and the appearance of the screen may differ from the genuine ROM.
 ====
 
 ** FDD
-*** 接続数 +
-FDDの接続数を設定します。 +
+*** Number of drives +
+Sets the number of connected FDDs. +
 
-*** FDDアクセスウェイト有効 +
-FDDアクセス時にウェイトを入れるようにします。 +
+*** Enable FDD access wait +
+Makes the emulator insert wait states on FDD access. +
 
 ** KEY
-*** ローマ字入力有効 +
-有効にするとかな入力時にローマ字で入力するようになります。 +
-ローマ字とかなの割当ては概ねGoogle日本語入力に準拠しています。 +
-*** ローマ字入力ウェイト +
-ソフトによっては2文字目以降の入力を取りこぼす場合があります。
-(「か゛」の濁点や「りゃ」の「ゃ」など) +
-その場合はローマ字入力ウェイトの値を増やしてください。 +
-現時点ではポートピア連続殺人事件でこの症状が起きることが判明していますが、ローマ字入力ウェイトを20程度に設定すると解消します。
+*** Enable Romaji input +
+When enabled, you can type in Romaji while in KANA input mode. +
+The Romaji-to-kana mapping mostly follows Google Japanese Input. +
+*** Romaji input wait +
+Depending on the software, input of the second and later characters may be dropped. +
+(the voiced mark of "か゛" or the "ゃ" of "りゃ" etc.) +
+In that case increase the Romaji input wait value. +
+So far this symptom is known to occur in Portopia Serial Murder Case, and it goes away with the Romaji input wait set to about 20.
 
 ** CMT
 *** TurboTape +
-TAPEの読込み中はノーウェイトで動作させる機能です。 +
+Runs without wait states while reading TAPE. +
 
 *** BoostUp +
-テープ読み込み高速化機能の高速化倍率を指定します。 +
+Specifies the maximum speed factor of the tape loading speedup feature. +
 
-*** ストップビット数 +
-テープアクセス時のストップビット数を設定します。 +
+*** Stop bits +
+Sets the number of stop bits used on tape access. +
 
 
-* 画面 +
-画面に関する設定です。 +
+* Screen +
+Screen related settings. +
 +
 image::doc/setting_screen.png[]
 
-** モード4カラー +
-BASICモード1〜4時のスクリーンモード4のにじみ色を選択します。 +
+** Mode4 color +
+Selects the color bleeding of screen mode 4 in BASIC modes 1-4. +
 
-** スキャンラインを表示する +
-走査線と走査線の間の隙間を再現します。 +
+** Show scanline +
+Reproduces the gaps between scan lines. +
 
-** フレームスキップ +
-フレームスキップの間隔を指定します。 +
+** Frameskip +
+Specifies the frameskip interval. +
 
-** 4:3表示 +
-画面の横方向を1.16倍に縮めて画面全体の縦横比が4:3になるように表示します。 +
+** 4:3 display +
+Shrinks the screen horizontally by a factor of 1.16 so that the overall aspect ratio becomes 4:3. +
 
-** フィルタリング +
-画面表示拡大時にフィルタリングをかけてなめらかにします。 +
+** Filtering +
+Applies filtering when the screen is magnified, making it smoother. +
 
-** フルスクリーン +
-フルスクリーンをオンにします。 +
+** Fullscreen +
+Turns fullscreen on. +
 
-** ステータスバーを表示する +
-ステータスバーを表示します。 +
+** Show status bar +
+Shows the status bar. +
 
-** 横画面時の仮想キーボード位置 +
-仮想キーボードを表示している状態で画面を横向きにした場合のレイアウトを指定します。 +
-「非表示」に設定すると横画面時のみ仮想キーボードが非表示になります。 +
-2in1タブレットで物理キーボードと接続する場合は「非表示」がおすすめです。
+** Virtual keyboard position in landscape screen +
+Specifies the layout when the screen is rotated to landscape while the virtual keyboard is shown. +
+Setting it to "Hidden" hides the virtual keyboard in landscape orientation only. +
+For 2in1 tablets with a physical keyboard attached, "Hidden" is recommended.
 
-** ビデオキャプチャ時の設定
-ビデオキャプチャ中は通常の動作時と異なる設定が適用されます。 +
-デフォルトでは +
-*** スキャンラインをオフ(動画の画質を落とさないように) + 
-という設定になっています。 +
+** While capturing video
+Different settings can be applied during video capture than during normal operation. +
+By default +
+*** scanline off (so as not to degrade video quality) + 
+is configured. +
 
-* サウンド +
-サウンドに関する設定です。 +
+* Sound +
+Sound related settings. +
 +
 image::doc/setting_sound.png[]
 
-** マスター音量 +
-サウンド全体の音量を指定します。 +
+** Master volume +
+Specifies the overall volume. +
 
-** PSG、FM音量 +
-** 音声合成音量 +
-** TAPEモニタ音量 +
-各音源ごとの音量を指定します。 +
+** PSG, FM volume +
+** Speech synthesis volume +
+** Tape monitor volume +
+Specifies the volume of each sound source. +
 
 
-* ファイル +
-エミュレータにマウントするファイルを指定します。 +
-ここで指定しておくとエミュレータを再起動してもファイルはマウントされ続けます。開発作業で同じイメージを使い続ける際には設定しておくと便利です。 +
+* File +
+Specifies the files to mount in the emulator. +
+Files specified here stay mounted even after the emulator is restarted. It is handy to configure them when you keep using the same images during development. +
 +
 image::doc/setting_file.png[]
 
-** ファイル
-*** 拡張ROM +
-拡張ROMを使用する場合はそのファイルを指定します。 +
+** Files
+*** Extended ROM +
+If you use an extended ROM, specify its file. +
 
-*** TAPE(LOAD) +
-テープイメージは破損防止のため、読み込み用と書き込み用のファイルを別々に指定するようになっています。 +
-TAPE(LOAD)は読み込み用のテープイメージファイルを指定します。 +
+*** Tape(Load) +
+To prevent corruption, tape images use separate files for reading and writing. +
+Tape(Load) specifies the tape image file used for reading. +
 
-*** TAPE(SAVE) +
-書き込み用のテープイメージファイルを指定します。 +
+*** Tape(Save) +
+Specifies the tape image file used for writing. +
 
-*** DISK1 +
-*** DISK2 +
-それぞれのドライブにマウントするディスクイメージファイルを指定します。 +
+*** Disk1 +
+*** Disk2 +
+Specifies the disk image files mounted in each drive. +
 
-*** プリンタ +
-プリンタに出力した内容を書き出すファイルを指定します。 +
+*** Printer +
+Specifies the file where printer output is written. +
 
 +
 [NOTE]
 ====
-AndroidではTAPE(SAVE)ファイル、プリンタの設定はできません。
+On Android the TAPE(Save) file and printer cannot be configured.
 ====
 
-** フォルダ +
-各種ファイルを探索、保存する際のフォルダを指定します。 +
+** Folder +
+Specifies the folders used when searching for and saving files. +
 
 *** ROM +
-実機から吸い出したROMファイルを配置するフォルダです。 +
+The folder where ROM files dumped from real hardware are placed. +
 +
 [NOTE]
 ====
-互換ROM使用中は設定できません。
+This cannot be configured while using the compatible ROM.
 ====
-*** TAPE +
-テープイメージファイルを開く際に始点となるフォルダです。 +
+*** Tape +
+The starting folder when opening tape image files. +
 
-*** DISK +
-ディスクイメージファイルを開く際に始点となるフォルダです。 +
+*** Disk +
+The starting folder when opening disk image files. +
 
-*** 拡張ROM +
-拡張ROMファイルを開く際に始点となるフォルダです。 +
+*** Extended ROM +
+The starting folder when opening extended ROM files. +
 
 *** SnapShot +
-F12キーで保存したスナップショットの画像ファイルが保存されるフォルダです。 +
+The folder where snapshot image files saved with the F12 key are stored. +
 
 *** WAVE +
-TALK文の固定語を録音したファイルを配置するフォルダです。 +
+The folder where the files recording the fixed words of the TALK statement are placed. +
 
-*** どこでもSAVE +
-どこでもSAVEのファイルを保存するフォルダです。 +
+*** State save +
+The folder where state save files are stored. +
 
 +
 [NOTE]
 ====
-AndroidではROMとWAVE以外のフォルダの設定はできません。
+On Android, folders other than ROM and WAVE cannot be configured.
 ====
 
-* 色 +
-エミュレータ画面に表示する色をカスタマイズできます。 +
-変更したい色をクリックすると色選択ダイアログが表示されるので、任意の色を選んでください。 +
+* Color +
+You can customize the colors shown on the emulator screen. +
+Click a color you want to change to open a color selection dialog, and pick any color. +
 +
 image::doc/setting_color.png[]
 
-* その他 +
-エミュレータの挙動に関する設定です。 +
+* Other +
+Settings about the emulator's behavior. +
 +
 image::doc/setting_other.png[] 
 
-** オーバークロック率 +
-動作速度の倍率を指定します。 +
+** Overclock rate +
+Specifies the speed multiplier. +
 
-** タイマー精度 +
-OSによっては内部の処理速度調整のタイマーの精度が粗く、60FPSが出ない場合があります。 +
-CPUパワーは十分なはずなのに処理速度が実測より遅くなる場合は値を大きくしてください。 +
-デフォルトは1msで、通常は設定を変える必要はありません。 +
+** Timer precision +
+Depending on the OS, the timer used for internal speed adjustment may be too coarse to reach 60FPS. +
+If the measured speed is slower than expected although the CPU power seems sufficient, increase this value. +
+The default is 1ms and normally there is no need to change it. +
 
-** システムROMのCRCチェック有効 +
-起動時にROMのCRCチェックを行います。 +
-CRCチェックが合わなかった場合、起動時に警告が出ます。 +
-何らかの原因によってCRCが一致しなかった場合、または互換ROM使用時はオフにしてください。 +
+** Enable CRC check for the System ROM +
+Performs a ROM CRC check at startup. +
+If the CRC check fails, a warning is shown at startup. +
+Turn this off if the CRC does not match for some reason, or when using the compatible ROM. +
 
-** どこでもLOAD(SLOT)実行時に確認する +
-どこでもLOAD(SLOT)実行時に確認ダイアログが出るようになります。 +
+** Confirm at state load +
+A confirmation dialog is shown when executing state load (SLOT). +
 
-** 終了時に確認する +
-終了時に確認ダイアログが出るようになります。 +
+** Confirm at exit +
+A confirmation dialog is shown when exiting. +
 
-** 終了時にINIファイルを保存する +
-終了時にINIファイルを保存します。 +
-このチェックをオフにすると、メニューから行った設定変更が保存されなくなります。 +
+** Save the INI file when quit +
+Saves the INI file at exit. +
+If this check is off, configuration changes made from the menu are no longer saved. +
 
 
-== 開発者情報
-=== ライセンス
-ライセンスはオリジナルのPC6001Vのライセンスに従い、LGPLとします。 +
-ただし、FMGEN部分に関しては http://retropc.net/cisc/m88/[CISC様]の設定されたライセンスに従います。この部分はフリーウェアにのみ使用を許可されています。
-このプログラムを使用したことによるいかなる損害も作者のeighttailsは責任を持ちません。
+== Developer Information
+=== License
+Following the license of the original PC6001V, this program is licensed under the LGPL. +
+However, the FMGEN part follows the license set by http://retropc.net/cisc/m88/[CISC], which permits its use only in freeware.
+The author eighttails is not responsible for any damages caused by using this program.
 
-=== ビルド方法
+=== How to Build
 ==== Windows
-MSYS2環境上でビルドします。 +
+Build on the MSYS2 environment. +
 
-. https://github.com/msys2/msys2-installer/releases/[こちら]からMSYS2をダウンロードしてインストールしてください。 +
-VC++はサポートしていません。 +
-MSYS2はパッケージのバージョンアップが早く、またバージョンアップによるデグレードが非常に多いため、パッケージのアップデート(`pacman -Sy`)を行わず、バージョンを固定して使うことをおすすめします。作者がビルド、動作を確認しているのは以下のインストーラーで構築した環境です。(64ビット用) +
+. Download and install MSYS2 from https://github.com/msys2/msys2-installer/releases/[here]. +
+VC++ is not supported. +
+MSYS2 packages update quickly and upgrades very often cause regressions, so it is recommended not to update packages (`pacman -Sy`) and to keep the versions fixed. The author has verified building and running with the environment built from the following installer (64-bit). +
 https://github.com/msys2/msys2-installer/releases/download/2025-08-30/msys2-x86_64-20250830.exe
-. MSYS2をインストールしたフォルダのucrt64.exeを実行。 +
-. ダウンロードしたPC6001VXのソースをMSYS上のホームフォルダに展開。 +
-. `cd PC6001VX/win32` を実行し、ソースフォルダのwin32フォルダにカレントを移動。 +
-. `bash ./release.sh` を実行。必要なツール(QtCreator, SDL2, asciidoctor)の導入、スタティック版Qt/FFmpegの構築、CMakeによるReleaseビルド、配布フォルダ作成までまとめて行います。 +
-スタティック版Qtは `/ucrt64/local/qt6-static-private` に配置されます。 +
-. `release.sh` の中では `buildrelease.sh` を使って、ルートの `CMakeLists.txt` を Ninja + CMake でReleaseビルドしています。配布用EXEは `PC6001VX_release/PC6001VX_(バージョン)_win_64bit` に出力されます。 +
-. 自分でソースを修正、デバッグをする場合は、ルートにあるCMakeLists.txtをQtCreatorで開いて、MSYS2 UCRT64 + スタティック版Qtを使うキットでビルドしてください。キットの構成方法は本書の範囲外とします。 +
+. Run ucrt64.exe in the folder where MSYS2 was installed. +
+. Extract the downloaded PC6001VX sources into the home folder on MSYS. +
+. Run `cd PC6001VX/win32` to move the current directory to the win32 folder of the source folder. +
+. Run `bash ./release.sh`. It installs the required tools (QtCreator, SDL2, asciidoctor), builds the static Qt/FFmpeg, does a Release build with CMake and creates the distribution folder, all in one go. +
+The static Qt is placed at `/ucrt64/local/qt6-static-private`. +
+. `release.sh` internally uses `buildrelease.sh` to Release-build the root `CMakeLists.txt` with Ninja + CMake. The distribution EXE is output to `PC6001VX_release/PC6001VX_(version)_win_64bit`. +
+. If you modify and debug the sources yourself, open the root CMakeLists.txt in QtCreator and build with a kit using MSYS2 UCRT64 + the static Qt. How to configure the kit is out of scope of this manual. +
 
 
 
 ==== Linux
-Debian系のディストリビューションについて解説します。 +
-ビルドにはQt6.4.0以上が必要です。 +
+This section covers Debian based distributions. +
+Building requires Qt6.4.0 or above. +
 [NOTE]
 ====
-ディストリビューションやそのバージョンによってはQt6がまだパッケージ化されていない場合があります。その場合はQtの公式インストーラーを利用してください。
+Depending on the distribution and its version, Qt6 may not be packaged yet. In that case use the official Qt installer.
 ====
 
-. シェルにて `apt install build-essential cmake ninja-build libx11-dev libsdl2-dev qtcreator qt6-base-dev qt6-multimedia-dev qt6-declarative-dev libavformat-dev libavcodec-dev libswscale-dev` を実行。 +
-. ダウンロードしたPC6001VXのソースを解凍してください。 +
-. QtCreatorでルートのCMakeLists.txtを開いてビルドしてください。 +
-. IDEを使わない場合、コマンドラインでは以下の手順でビルドできます。 +
+. In your shell run `apt install build-essential cmake ninja-build libx11-dev libsdl2-dev qtcreator qt6-base-dev qt6-multimedia-dev qt6-declarative-dev libavformat-dev libavcodec-dev libswscale-dev`. +
+. Extract the downloaded PC6001VX sources. +
+. Open the root CMakeLists.txt in QtCreator and build. +
+. Without an IDE, you can build from the command line with the following steps. +
 [source,bash]
 ----
 cd PC6001VX
@@ -795,54 +794,35 @@ cmake --build build
 ----
 
 ==== Android
-http://qt-project.org/doc/qtcreator/creator-developing-android.html[こちら] を参考にして環境を構築してください。 +
-Qt 6.5.0以上が必要です。
+Set up the environment following http://qt-project.org/doc/qtcreator/creator-developing-android.html[these instructions]. +
+Qt 6.5.0 or above is required. +
 
 
-== 既知の不具合、制約事項
+== Known Issues and Limitations
 * Windows
-** Windows11ではカタカナ/ひらがなキーによるかなの切り替えがうまく行かないようです。 +
-PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切り替えを行ってください。
+** On Windows11, switching kana with the Katakana/Hiragana key does not seem to work. +
+Use the PAUSE/CTRL+F12 key, or show the key panel to switch kana.
 
-== 更新履歴
-.4.5.1 2026/10/02
-* (Linux)Ubuntu22.04LTSでビルドが通るように後方互換性を修正
-* (Linux)多言語対応が機能していなかったのを修正
-* (Android)メニューのテキストが切り詰められて表示されていたのを修正
-* (Linux) Fixed backward compatibility so that the build works on Ubuntu22.04LTS. 
+== Change Log
+.4.5.1 2026-10-02
+* (Linux) Fixed backward compatibility so that the build works on Ubuntu22.04LTS.
 * (Linux) Fixed the issue where multilingual support was not working
 * (Android) Fixed an issue where menu text was truncated.
 
-.4.5.0 2026/09/09
-* 画面描画をQGraphicsView/QGraphicsSceneベースからQML/Qt Quickベースに変更
-* 仮想キーボードをQML/Qt Quickベースに変更し、Qt Graphics Scene(QGraphics*クラス)への依存を削除
-* 仮想キーボードのキーリピートに対応
-* QML/Qt Quickへの移行に伴い、ハードウェアアクセラレーション設定とセーフモードを削除
-* (Android)Qtの仕様変更により使用できなくなっていた、スナップショットとTAPE(SAVE)のエクスポートを他のアプリに共有する機能を復活
+.4.5.0 2026-09-09
 * Changed screen rendering from QGraphicsView/QGraphicsScene based implementation to QML/Qt Quick based implementation.
 * Changed the virtual keyboard to a QML/Qt Quick based implementation and removed dependency on Qt Graphics Scene (QGraphics* classes).
 * Added key repeat support to the virtual keyboard.
 * Removed the hardware acceleration setting and safe mode along with the migration to QML/Qt Quick.
 * (Android) Restored the ability to share snapshots and TAPE(SAVE) exports with other applications, which had been unavailable due to changes in Qt.
 
-.4.4.0 2026/08/15
-* CMakeベースのビルドに移行し、qmake用の.proファイルを廃止
-* PC-6001互換BASICを0.8.2に更新
-* PC-6001mkII/6601用互換BASICを0.5.3に更新。モード6は未対応ですが、モード5までのソフトをバスリクエストOFFにより高速化が可能
-* FFMpeg9に対応(FFMpeg7,8,9でビルド可能) (thanks to bevanjkay)
+.4.4.0 2026-08-15
 * Migrated to cmake-based build and removed .pro file for qmake.
-* Updated PC-6001 compatible BASIC to 0.8.2 
+* Updated PC-6001 compatible BASIC to 0.8.2
 * Updated compatible BASIC for PC-6001mkII/6601 to 0.5.3. Basic mode 6 is not supported, but software up to mode 5 can be sped up by turning off bus requests.
 * Supported FFMpeg 9 (can be built with FFMpeg 7, 8, 9) (thanks to bevanjkay)
 
-.4.3.0 2025/11/23
-* 起動時に任意のどこでもLOADファイルを自動的に読み込むコマンドラインオプションを追加
-* サウンド出力デバイスの切り替えに対応
-* CTRL+ファンクションキーで入力できるキーを追加
-* TILTモードがジョイスティックに対応していなかったのを修正
-* 英語キーボードでの入力がおかしくなっていたのを修正
-* (Linux)AppImage形式の提供を開始
-* (Android)SDKバージョンを36に更新(再修正)
+.4.3.0 2025-11-23
 * Added command line option to automatically load arbitrary state file at startup.
 * Supports switching of sound output devices.
 * Added key assignment that can be entered with CTRL + function keys.
@@ -851,201 +831,130 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 * (Linux) Started offering of AppImage format.
 * (Android)Updated SDK Version to 36.(Re-fix)
 
-.4.2.14 2025/08/30
-* ローマ字入力のリプレイがおかしくなるのを修正
-* (Android)SDKバージョンを36に更新
+.4.2.14 2025-08-30
 * Fixed a case where replays of Roman alphabet inputs may not be reproduced correctly.
 * (Android)Updated SDK Version to 36.
 
-.4.2.13 2025/06/06
-* PC-6001互換BASICを0.8.1に更新
-* PC-6001mkII/6601用互換BASICを0.5.2に更新
+.4.2.13 2025-06-06
 * Updated PC-6001 compatible basic ROMs to 0.8.1.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.5.2.
 
-.4.2.12 2025/04/06
-* PC6001V 2.1.4ベースに更新
-* デバッガの savemem,loadmem コマンドで小文字のファイル名が使えない問題を修正
+.4.2.12 2025-04-06
 * Merged upstream PC6001V version 2.1.4.
 * Fixed an issue where lower case file names could not be used with debugger savemem,loadmem command.
 
-.4.2.11 2025/02/10
-* FM音源再生時にフリーズすることがあるのを修正
-* ジョイスティック設定が保存されないのを修正
+.4.2.11 2025-02-10
 * Fixed freezes when playing FM synthesizer.
 * Fixed joystick settings not saved.
 
-.4.2.10 2024/12/15
-* ステータスバーが文字化けすることがあるのを修正
-* サウンドが再生されないことがあるのを修正
-* (Windows)フルスクリーン時にメニューが表示されないことがあるのを修正
+.4.2.10 2024-12-15
 * Fixed an issue where the status bar may become garbled.
 * Fixed an issue where sound might not play.
 * (Windows) Fixed an issue where the menu may not be displayed when in full screen.
 
-.4.2.9 2024/07/20
-* サウンド再生の安定性を向上
+.4.2.9 2024-07-20
 * Improved stability of sound playback.
 
-.4.2.8 2024/06/23
-* Qt6.7でビルドすると終了時にフリーズするのを修正
+.4.2.8 2024-06-23
 * Fixed freezing on termination when building with Qt6.7
 
-.4.2.7 2024/06/23
-* PC6001V 2.1.3ベースに更新
-* PC-6001互換BASICを0.8に更新
+.4.2.7 2024-06-23
 * Merged upstream PC6001V version 2.1.3.
 * Updated PC-6001 compatible basic ROMs to 0.8.
 
-.4.2.6 2024/06/10
-* PC-6001mkII/6601用互換BASICを0.5.1に更新
-* FFmpeg7に対応(現時点でバージョン5,6,7でビルド可能)
-* (Android)再起動時に画面レイアウトが破綻することがあるのを修正
+.4.2.6 2024-06-10
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.5.1.
 * Compatible with FFmpeg7 (currently buildable with versions 5, 6, and 7)
 * (Android)Fixed an issue where the screen layout may be corrupted when restarting.
 
-.4.2.5 2023/12/23
-* 仮想キーボードの有効/無効化時に画面レイアウトが更新されないことがあるのを修正
-* タッチ操作時のメニュー出現位置がおかしかったのを修正
+.4.2.5 2023-12-23
 * Fixed screen layout sometimes not updating when enabling/disabling virtual keyboard.
 * Fixed an issue where the menu appearance position during touch operation was incorrect.
 
-.4.2.4 2023/11/15
-* 横画面表示時の仮想キーボードの位置を設定できるようにした。
-* 設定画面をスクロール可能にした(小さい画面用)
+.4.2.4 2023-11-15
 * Virtual keyboard position in landscape screen is now configurable.
 * Made config dialog scrollable.(for small screen)
 
-.4.2.3 2023/10/21
-* 環境に合わせてタイマ精度を変更できるようにした。
+.4.2.3 2023-10-21
 * The timer precision can now be changed to suit the environment.
 
-.4.2.2 2023/10/15
-* CPU使用率の低減
-* (Android)強制終了後の起動時にフリーズする問題への対応
+.4.2.2 2023-10-15
 * Reduced CPU Usage
 * (Android)Fixed:Freezes when starting up after force quit.
 
-.4.2.1 2023/09/23
-* 環境によってデッドロックすることがあるのを修正
-* (Android)ファイル名に「!'()」を含むファイルが開けなかったのを修正
+.4.2.1 2023-09-23
 * Fixed: Deadlock in certain situation.
 * (Android)Fixed: Could not open file whose filename contains "!'()".
 
-.4.2.0 2023/09/08
-* (Android)Android13に対応
-** 制約事項
-*** スナップショット、テープのエクスポート機能が正常に機能しません。
-*** メニューのテキストの一部が中略されて表示されています。
+.4.2.0 2023-09-08
 * (Android)Now works on Android13.
 ** Known Issues
 *** Snapshot and Export tape function doesn't work.
 *** Some menu text is shown omitted.
 
-.4.1.4 2023/08/18
-* PC6001V 2.1.1ベースに更新
-* ローマ字入力関連の設定UIを追加
+.4.1.4 2023-08-18
 * Merged upstream PC6001V version 2.1.1.
 * Added menu and config UI related to Romaji input.
 
-.4.1.3 2023/01/29
-* PC-6001互換BASICを0.7.6に更新
-* ロシア語翻訳を追加
+.4.1.3 2023-01-29
 * Updated PC-6001 compatible basic ROMs to 0.7.6.
 * Added Russian translation.
 
-.4.1.2 2023/01/09
-* PC-6001mkII/6601用互換BASICを0.4.2に更新
-* 「終了時に確認する」にチェックが入っている場合に終了をキャンセルできないのを修正
-* (Windows)カタカナ/ひらがなキー(かな切り替え)が効かなかったのを修正
+.4.1.2 2023-01-09
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.2.
 * Fixed: Could not cancel quiting if "Confirm at exit" is checked.
 * (Windows)Fixed: Katakana/Hiragana key (kana switching) not working.
 
-.4.1.1 2023/01/05
-* (Windows)ファイル名に日本語を含むファイルを開けなかったのを修正
+.4.1.1 2023-01-05
 * (Windows)Fixed issue in opening file with Japanese file name.
 
-.4.1.0 2023/01/01
-* PC6001V 2.0.4ベースに更新
-** ローマ字入力に対応。ALT+F12で切り替えができます。
-* PC-6001mkII/6601用互換BASICを0.4.1に更新
-* リプレイの記録、再生時の不整合を修正
+.4.1.0 2023-01-01
 * Merged upstream PC6001V version 2.0.4.
 ** Introduce Romaji input method for KANA characters. It can be toggled by ALT+F12.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.1.
 * Fixed replay/playback inconsistency.
 
-.4.0.0 2022/12/03
-* 4.0正式版リリース
+.4.0.0 2022-12-03
 * 4.0 final release.
 
-.4.0.0Beta2 2022/08/05
-* PC6001V 2.0.3ベースに更新
-* ムービーを別スレッドでエンコードすることでビデオキャプチャのレスポンスが改善
-* ジョイスティックが使えなかったのを修正
+.4.0.0Beta2 2022-08-05
 * Merged upstream PC6001V version 2.0.3.
 * Endode movie in background thread. This makes better performance of video capturing. 
 * Fixed issue joystick did not work.
 
-.4.0.0Beta1 2022/02/28
-* PC6001V 2.0.2ベースに更新
-* Qt5からQt6に移行。ビルドにはQt6.2以上が必要になります。
+.4.0.0Beta1 2022-02-28
 * Merged upstream PC6001V version 2.0.2.
 * Migrated to Qt6 from Qt5. Now Qt6.2 or higher is required to build.
 
-.3.9.0 2022/06/27
-* PC-6001互換BASICを0.7.5に更新
-* PC-6001mkII/6601用互換BASICを0.4に更新
-* mk2/6601用互換CGROMがセミグラフィックキャラクタを網羅
-* (Windows,64bit)長時間のリプレイファイルが読み込めなくなるのを修正
+.3.9.0 2022-06-27
 * Updated PC-6001 compatible basic ROMs to 0.7.5.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.
 * PC-6001mk2/6601 compatible CGROM now covers semi-graphic characters.
 * (Windows,64bit)Fixed issue in opening long replay file.
 
-.3.8.2 2021/10/10
-* (Windows)OpenGLの代わりにDirectX(ANGLE)版Qtでビルド。Intel GPUにおけるメモリリークを解消。
+.3.8.2 2021-10-10
 * (Windows)Built with DirectX(ANGLE) version of Qt. Fixes memory leak with Intel GPU.
 
-.3.8.1 2021/09/18
-* ファイルのドラッグ&ドロップでクラッシュすることがあるのを修正
+.3.8.1 2021-09-18
 * Fixed crash in drag & drop operation.
 
-.3.8.0 2021/07/25
-* PC-6001互換BASICを0.7.4に更新
-* 互換ROM使用時にPC-6001Aを選択できるようになった。
-* 2回めのビデオキャプチャがおかしくなるのを修正
+.3.8.0 2021-07-25
 * Updated PC-6001 compatible basic ROMs to 0.7.4.
 * PC-6001A(aka NEC TREK) is now available in compatible ROM mode.
 * Fixed issue of 2nd time of video capture operation.
 
-.3.7.2 2021/05/17
-* 設定画面から「入力」タブを削除
-* どこでもSAVE/LOAD時のオブジェクトリークを修正
-* 動画エンコード速度を改善
+.3.7.2 2021-05-17
 * Removed "Input" tab from config dialog.
 * Fixed object leak in state save/load.
 * Improved video capture performance.
 
-.3.7.1 2021/03/19
-* テンキーのEnterが効かなかったのを修正
-* IMEが正しく無効化されていなかったのを修正
-* ジョイスティックがつながっている場合終了時にクラッシュするのを修正
-* SHIFTキーの押下、リリースイベントハンドリングを修正
+.3.7.1 2021-03-19
 * Fixed enter key on numeric keypad was not working.
 * IME is now correctly disabled.
 * Fixed crash on exit if joystick is connected.
 * Better shift key press/release event handling.
 
-.3.7.0 2021/02/13
-* テープやディスクイメージなどをドラッグ&ドロップでマウントできるようにした。
-* ウィンドウのダブルクリックをフルスクリーン表示切り替えに割り当て。
-* ジョイスティックのHATスイッチに対応。Nintendo Switch用のデジタルコントローラーが使用可能になった。
-* ウィンドウの表示倍率が不正確だったのを修正
-* 設定初期化でフリーズするのを修正
-* コンソールフォントを改善モニタモードでひらがな、グラフィックキャラクタが表示可能に。
+.3.7.0 2021-02-13
 * Opening files by drag & drop is now available.
 * Assigned double clicking window to toggle fullscreen.
 * HAT switches on gamepad is now available. You can use digital gamepad or joystick for Nintendo Switch.  
@@ -1053,24 +962,13 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 * Fixed freeze when initialized settings.
 * Improved debug console font. Now you can see Hiragana and graphic characters in memory dump.
 
-.3.6.1 2021/01/09
-* ROMの一部が見つからない場合に互換ROMに切り替えられるようにした。
-* mk2用互換BASICの配置を誤っていたのを修正
-* 下位互換性を向上。Qt5.5以上であればビルドできるようにした。
-* その他軽微なバグ修正
+.3.6.1 2021-01-09
 * Fallback to compatible rom when some of ROM files are missing.
 * Fixed PC-6001mk2/6601 compatible basic ROM's deployment.
 * Improved backward compatibility. Now builable with Qt5.5 or above.
 * Minor bugfixes.
 
-.3.6.0 2020/12/15
-* Androidでジョイスティックが使えるようになった。
-* PC-6001互換BASICを0.7.2に更新
-* PC-6001mkII/6601用互換BASICを0.3.1に更新
-* サンプリングレート設定を削除。
-* 動画エンコード速度を改善
-* スナップショットのファイル命名規則を変更
-* (Android)セミグラフィックの表示が化けていたのを修正
+.3.6.0 2020-12-15
 * Joysticks are available on Android.
 * Updated PC-6001 compatible basic ROMs to 0.7.2.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.1.
@@ -1079,33 +977,20 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 * Changed snapshot file name convention.
 * (Android)Fixed semi-graphic's glitch.
 
-.3.5.3 2020/09/26
-* システム情報ダイアログを追加
-* (Android)Android SDK 29に対応。
-* (Android)外部ストレージの扱いを改善
+.3.5.3 2020-09-26
 * Added System Information dialog.
 * (Android)better handling of external storage.
 * (Android)Targetted at Android SDK 29.
 
-.3.5.2 2020/06/15
-* (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を再度修正
-* (Android)ファイル選択ダイアログでシングルタップでファイル、フォルダを開くようにした。
+.3.5.2 2020-06-15
 * (Android)Fixed file selection dialog to show files in external storage (again). 
 * (Android)Changed file/folder open operation in file selection dialog from double tap to single tap.
 
-.3.5.1 2020/06/14
-* 「設定初期化」メニューを追加
-* (Android)ファイル選択ダイアログで外部ストレージが表示されない問題を修正
+.3.5.1 2020-06-14
 * Added "Reset settings" menu.
 * (Android)Fixed file selection dialog to show files in external storage. 
 
-.3.5.0 2020/06/07
-* PC-6001互換BASICを0.7.1に更新
-* PC-6001mkII/6601用互換BASICを0.3.0に更新
-* 互換ROM使用時にmk2を選べるようにした。
-* 「速度調整」メニューを追加
-* 設定画面の「ファイル」「フォルダ」タブで存在しないファイル、フォルダを赤字で表示するようにした。
-* (Windows) メニューを出してもエミュレータが動き続けてしまうのを修正
+.3.5.0 2020-06-07
 * Updated PC-6001 compatible basic ROMs to 0.7.1.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.0.
 * Enabled PC-6002mk2 model in compatible ROM mode.
@@ -1113,337 +998,303 @@ PAUSE/CTRL+F12キーを使うか、キーパネルを表示させてかなの切
 * In "File" and "Folder" tab on configuration dialog path which does not exist is displayed in red color.
 * (Windows) Fixed issue that emulator continues to work during menu popup.
 
-.3.4.0 2020/03/25
-* TAPE(SAVE)をエクスポートする機能を追加
+.3.4.0 2020-03-25
 * Added "Export saved tape" menu function.
 
-.3.3.2 2019/11/04
-* (Android)画面回転時に表示が乱れるのを修正
+.3.3.2 2019-11-04
 * (Android)Fixed display glitches when screen is rotated.
 
-.3.3.1 2019/10/28
-* 英語キーボードの対応を改善
-* Androidでのマウス操作を変更左クリックでメニュー表示。
-* PC-6601用の互換CGROMを更新トランプマークが正しく表示されるようになった。
+.3.3.1 2019-10-28
 * Works better with English keyboard.
 * Modified mouse operation on Android. LMB is assigned to popup menu.
 * Updated compatible CGROM for PC-6601. Now characters for playng card suit are properly displayed.
 
-.3.3.0 2019/10/09
-* PC-6601用互換ROMをv0.2.2に更新
-* (Android)SNPボタンでスナップショットをシェアできるようになった。
+.3.3.0 2019-10-09
 * Updated compatible ROM for PC-6601 to v0.2.2.
 * (Android)SNP button now works. You can share screenshot to SNS.
 
-.3.2.0 2019/09/14
-* 秋川様による互換ROMを内蔵。ROMファイルがなくても起動可能になった。
-* SRモデルにおけるタイマー割込み間隔を修正(暫定対応)
-* Alt+F9/F10にどこでもSAVE/LOADを割り当て。
-* 「ROMファイルにパッチを当てる」設定を廃止。(ジョイスティック2が使えなくなる不具合があるため)
+.3.2.0 2019-09-14
 * Compatible ROM implemented by AKIKAWA Hisashi is now built in the emulator. Now the emulator is bootable without genuine ROM.
 * Fixed timer interrupt interval on SR models.(temporal fix)
 * Assigned Alt+F9/F10 hotkey to state save/load.
 * Dropped "Patch the ROM" setting.(Because it made JOYSTICK2 unusable.)
 
-.3.1.3 2019/05/05
-* シンプル仮想キーボードの操作性を改善
+.3.1.3 2019-05-05
 * Improved virtual keyboard(simple) operability.
 
-.3.1.2 2019/03/23
-* Windows上でリプレイが正常に記録されない問題への対応。
-* SRモデルを選択時にアプリアイコンが正常に表示されなかったのを修正
-* 細かいバグ修正
+.3.1.2 2019-03-23
 * Fixed issue related to replay recording on Windows.
 * Fixed issue that wrong icon is shown when SR models are chosen.
 * Some minor bug fixes.
 
-.3.1.1 2018/12/31
-* タッチスクリーンでメニューを出すジェスチャをロングタップからシングルタップに変更
-* 細かいバグ修正
+.3.1.1 2018-12-31
 * Changed context menu touch gesture from long tap to single tap.
 * Some minor bug fixes.
 
-.3.1.0 2018/12/15
-* 仮想キーボードの表示サイズを改善
-* 仮想キーボードがマウスで操作できるようになった。
-* エミュレート速度を等速に戻すボタンをマウス中ボタンに変更
-* 「リプレイを動画に変換」メニューを追加
-* 動画エンコード中は音が鳴らないようにした。
+.3.1.0 2018-12-15
 * Better virtual keyboard display size.
 * Virtual Keyboard is now mouse operable.
 * Assigned "reset emulation speed" to middle mouse button.
 * Added "Convert replay to movie" menu.
 * Now audio is muted during encoding movie.
 
-.3.0.0 2018/08/15
-* タッチパネルによる仮想キーボードを実装
-* 「一時停止」「スナップショットを取得」を「システム」メニューに追加
+.3.0.0 2018-08-15
 * Added Virtual Keyboard that works with touch screen.
 * Added "Pause" and "Take snapshot" to "System" menu.
 
-.2.33.0 2018/04/28
-* FFmpeg4.0に対応。
-* 動画のビットレートをYouTube推奨値に変更(ビデオ:4Mbps,音声:128Kbps)。
-* README.htmlに画像を埋め込むようにした。マニュアル用画像が配置されていたdocフォルダはWindows版では配布されなくなります。
+.2.33.0 2018-04-28
 * Support FFMpeg4.0.
 * Changed Video Capture bitrate to YouTube recommended value.(video:4Mbps,audio:128Kbps)
 * Embedded images to README.html. So doc folder is no longer distributed with Windows binary.
 
-.2.32.0 2018/02/17
-* リプレイが正常に再生されないことがあるのを修正
-* ファイル選択ダイアログを開くとマウスカーソルが消える問題を修正
-* Android6.0以降のパーミッションモデルに対応するため、Qt5.10のAPIを利用。Androidでは5.10以上が必要になります。
-
+.2.32.0 2018-02-17
 * Fixed replay glitch.
 * Fixed mouse cursor disappears when opening file select dialog.
 * Make use of Qt 5.10 API to adopt permission model after Android 6.0.(Qt 5.10 is needed to build for Android)
 
-.2.31.1 2017/09/16
-* 依存ライブラリをpkg-configを使ってリンクするようにした。 +
-Windows(MSYS2)でビルドする場合、PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfigの環境変数設定が必要になります。
-
+.2.31.1 2017-09-16
 * Made use of pkg-config to link external libs. +
 Is is necessary to set PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig environment variable to build on Windows(MSYS2).
 
-.2.31.0 2017/08/19
-* ALWAYSFULLSCREENフラグを付加してビルドした場合にファイルダイアログ、設定ダイアログもフルスクリーンになるようにした。(PocketChipなどの低解像度デバイス用) +
-* サウンド周りのメソッド呼び出しがスレッドセーフでなかったのを修正 +
-* ドキュメントをasciidocで書き直した。
-* (Windows)ビルド手順を更新 +
-** 64ビット版がビルドできるようになった。 +
-** MSYS2のバージョンを固定する運用を推奨。 +
-** PATHの設定を不要にした。 +
-* (UNIX)Linux以外のUNIXでビルドできるようにproファイルを修正 +
-* (Windows以外)設定ファイル等のパスの扱いを絶対パスにするようにした。 +
-* (Android)SDカード上のファイルにアクセスできない問題への暫定対応 +
+.2.31.0 2017-08-19
+* When built with the ALWAYSFULLSCREEN flag, file dialogs and the config dialog now become fullscreen too.(for low resolution devices such as PocketChip) +
+* Fixed sound related method calls not being thread safe. +
+* Rewrote the documentation in asciidoc.
+* (Windows)Updated build instructions. +
+** 64-bit builds are now possible. +
+** Recommended to pin the MSYS2 version. +
+** Made setting PATH unnecessary. +
+* (UNIX)Fixed pro files so that it can be built on UNIXes other than Linux. +
+* (non-Windows)Paths of configuration files etc. are now handled as absolute paths. +
+* (Android)Temporary workaround for the issue that files on the SD card could not be accessed. +
 
-.2.30.0 2016/08/27
-* P6V1.25ベースに更新 +
-* 動画記録中にメニューを出そうとすると固まっていたのを修正 +
-* (Windows)MSYS2に同梱のMinGWのバグが取れたので、最新版の6.1を使ってビルドすることにした。 +
-QtおよびMSYS2がXPのサポートを落としたため、今回のバージョンからXPでは動きません。XPでどうしても動かしたいという方は2.21を使ってください。 +
+.2.30.0 2016-08-27
+* Updated to P6V1.25 base. +
+* Fixed a freeze that happened when trying to open the menu during movie recording. +
+* (Windows)A bug in the MinGW bundled with MSYS2 has been fixed, so we now build with the latest version 6.1. +
+Since Qt and MSYS2 dropped support for XP, this version does not run on XP. If you absolutely need to run it on XP, please use 2.21. +
 
-.2.21.0 2016/05/04
-* バージョン番号のスキームを変えました。今後のバージョン番号は(メジャーバージョン).(マイナーバージョン).(バグフィックス)とします。 +
-* モニタモードでブレークポイントにヒットすると固まるのを修正 +
-* (Windows)ビルドオプションを変更もしかしたらXPで動かくかも(無保証) +
-* (Windows)MSYS2に同梱のMinGW5.3があまりに不安定なため、GCC4.9を使ってビルドすることにした。 +
+.2.21.0 2016-05-04
+* Changed the version numbering scheme. Version numbers will henceforth be (major).(minor).(bugfix). +
+* Fixed a freeze when hitting a breakpoint in monitor mode. +
+* (Windows)Changed build options. Maybe it runs on XP now (no warranty). +
+* (Windows)The MinGW5.3 bundled with MSYS2 was too unstable, so we decided to build with GCC4.9. +
 
-.2.2 2016/04/24
-* P6V1.24ベースに更新 +
-* ヘルプメニューにオンラインリファレンスへのリンクを入れた。 +
-* (Windows)環境によって起動しないことがあったので最適化オプションを修正 +
-* (Android)レジュームに失敗することがあるのを修正 +
-* (Android)UIが中華フォントで表示されていたのをMotoyaLMaruで表示するようにした。 +
+.2.2 2016-04-24
+* Updated to P6V1.24 base. +
+* Added a link to the online reference in the help menu. +
+* (Windows)Fixed optimization options since it sometimes failed to start depending on the environment. +
+* (Android)Fixed resume sometimes failing. +
+* (Android)The UI was displayed with a Chinese font; now it is displayed with MotoyaLMaru. +
 
-.2.11 2015/11/11
-* リプレイに「1つ前の途中保存から再開」を追加 +
-* (Linux)WebMのオーディオにOpusを使うディストリビューションの場合クラッシュしてしまうので、強制的にVorbisを使うようにした。 +
-* (Windows)ビルド手順と環境構築スクリプトを修正 +
-自前ビルドライブラリは/mingw32/localに集約。 +
-ビルド環境を作る場合は、一度MSYS2の再インストールから行ってください。 +
+.2.11 2015-11-11
+* Added "Back to previous checkpoint" to replay. +
+* (Linux)On distributions that use Opus for WebM audio the program crashed, so Vorbis is now forced. +
+* (Windows)Fixed build instructions and the environment setup script. +
+Self-built libraries are consolidated under /mingw32/local. +
+When setting up a build environment, please reinstall MSYS2 from scratch. +
 
-.2.1 2015/08/29
-* (Windows)(Linux)ffmpeg/libavを利用したビデオキャプチャ機能を実装 +
+.2.1 2015-08-29
+* (Windows)(Linux)Implemented video capture using ffmpeg/libav. +
 
-.2.01 2015/01/10
-* テープロード中にクラッシュすることがあるのを修正 +
+.2.01 2015-01-10
+* Fixed occasional crashes during tape loading. +
 
 
-.2.0 2014/12/27
-* P6V1.23ベースに更新 +
-* エミュレーション内のイベント処理を若干高速化。遅いマシン上でFPSが若干向上します。 +
-* フレームスキップを自動化 +
-遅いマシン上で動かす場合、設定されているフレームスキップよりさらにフレームを間引き、エミュレーションの等速動作を優先するようにしました。あまりに非力でエミュレーション自体の等速動作をするパワーがない場合、最大で1FPSまでフレームレートが落ちます。 +
-* (Android)署名を付加。「提供元不明のアプリ」の許可が不要になりました。 +
+.2.0 2014-12-27
+* Updated to P6V1.23 base. +
+* Slightly sped up event processing inside the emulation. FPS improves a bit on slow machines. +
+* Automated frameskip. +
+When running on a slow machine, frames are dropped even beyond the configured frameskip in order to prioritize keeping the emulation at full speed. If the machine is so weak that it cannot sustain full-speed emulation at all, the frame rate drops to as low as 1FPS. +
+* (Android)Added an app signature; allowing "Unknown sources" is no longer needed. +
 
-.2.0RC1 2014/10/19
-* P6V1.22リリース版ベースに更新 +
-* 補助キーパネルの実装。 +
-メニューから「キーパネル」を選ぶと、英語キーボードなどで入力しにくいキーをボタンで入力できるツールウィンドウが開きます。 +
-* キーイベントのハンドリングを一部変更 +
-モバイル機、小型特殊キーボードなどで、刻印と違うキーが入力されることが減ると思います。
-記号のたぐいが入力できない場合は、シフトキーと併用してみてください。 +
-P6実機上でシフトキーが必要な文字を入力するには、エミュレーター上でもシフトキーを押して入力する必要があります。 +
-* Androidで終了時にその時の状態を保存するようにした。OSによって殺された場合の挙動は未確認。 +
-* WindyさんのMAC用パッチを取り込み(文字コード関連) +
-* (Windows)(Linux)フルスクリーン時にスクリーンセーバーを抑止するようにした。 +
-* ドキュメントをMarkdownで書き直した。 +
+.2.0RC1 2014-10-19
+* Updated to the released P6V1.22 base. +
+* Implemented the auxiliary key panel. +
+Choosing "Key panel" from the menu opens a tool window with buttons for keys that are hard to enter on e.g. English keyboards. +
+* Changed key event handling in part. +
+On mobile devices and small special keyboards, fewer keys should be input differently from their legends.
+If you cannot enter some symbols, try using them together with the shift key. +
+To enter characters that require the shift key on a real P6, you need to press the shift key in the emulator as well. +
+* On Android the current state is now saved on exit. The behavior when killed by the OS is unverified. +
+* Merged Windy's patch for Mac (character encoding related). +
+* (Windows)(Linux)The screensaver is now suppressed in fullscreen mode. +
+* Rewrote the documentation in Markdown. +
 
-.2.0Beta4 2014/08/15
-* P6V1.22開発版ベースに更新 +
-** FM音源対応(暫定版) +
-** 未実装機能などの制約事項は本家に準じます。 +
-* Androidの対応開始 +
-** 対応OSはAndroid4.0以上、現時点でハードウェアキーボード必須です。 +
-** 初回起動時はMinistroが立ち上がるのでそこからQtをダウンロードしてください。 +
-** エミュレーションメイン画面をタップで長押しするとメニューが出ます。 +
-** 現時点では取り扱い注意の人柱版です。以下のような制約があります。 +
+.2.0Beta4 2014-08-15
+* Updated to a development version of P6V1.22 base. +
+** FM sound synthesis support(preview) +
+** Limitations such as unimplemented features follow the upstream project. +
+* Started Android support. +
+** Requires Android 4.0 or above, and a hardware keyboard is mandatory at this point. +
+** On the first start Ministro is launched; download Qt from there. +
+** Long-pressing the tap on the emulation main screen brings up the menu. +
+** At this point this is a handle-with-care beta. The following limitations apply. +
 
-** 【Android対応の制約事項】 +
-*** キーボードによっては入力できないキーがあります。 +
-例えばASUSのTransformerシリーズのドックキーボードではファンクションキーがなく入力できません。 +
-*** アプリがバックグラウンドに回った際、OSに勝手に終了させられることがあります。 +
-終了時に自動的にどこでもSAVEするように対応する予定ですが、まだ未実装です。 +
-*** バックグラウンドに回った場合、エミュレーションは一時停止しますが、裏でCPUパワーとバッテリを消費してしまいます。 +
-終了する際はメニューかタスクリストから終了してください。 +
-*** GUIが中華っぽいフォントで表示されてしまいます。 +
-*** 音が出たり出なかったりします。 +
-Androidのシステムサウンド設定をいじっていると復活することがあるようです。
+** [Limitations of Android support] +
+*** Some keys cannot be input depending on the keyboard. +
+For example, the dock keyboard of the ASUS Transformer series has no function keys, so they cannot be input. +
+*** When the app goes to the background, the OS may kill it arbitrarily. +
+There are plans to save state automatically on exit, but it is not implemented yet. +
+*** When backgrounded, the emulation pauses but still consumes CPU power and battery behind the scenes. +
+Quit from the menu or the task list when exiting. +
+*** The GUI is displayed with a Chinese-looking font. +
+*** Sound may or may not play. +
+It seems it sometimes comes back after tinkering with Android's system sound settings.
 
-* iniファイルを2つに分けた +
-P6VX固有の機能追加に関する設定を扱いやすくするため、 +
-本家P6Vと共通の設定はpc6001v.ini,P6VX固有の設定をpc6001vx.iniに分離しました。 +
-エラーが出る場合、iniファイルを一度削除してください。 +
+* Split the ini file in two. +
+To make the settings for PC6VX specific features easier to handle, +
+settings shared with the upstream P6V are in pc6001v.ini and PC6VX specific settings are in pc6001vx.ini. +
+If you get errors, delete the ini files once. +
 
-* ドットカクカク表示対応 +
-** 一部の方から要望のあった、ドットのカクカク表示に対応しました。 +
-** 以下の手順をで設定するとドットがカクカク表示になります。 +
-. メニューの設定→4:3表示をオフ +
-. メニューの設定→フィルタリングをオフ +
-. メニューの設定→表示サイズから整数倍の倍率を指定 +
-. メニューの設定→表示サイズ→倍率を固定をオン +
+* Support for crisp pixel display. +
+** Implemented the crisp pixel display that had been requested by some users. +
+** Configure the following steps to get a crisp pixel display. +
+. Settings menu -> turn 4:3 display off +
+. Settings menu -> turn filtering off +
+. Settings menu -> Display size -> choose an integer magnification +
+. Settings menu -> Display size -> turn "Fix magnification" on +
 
-* ウィンドウサイズ、表示サイズを設定ファイルに記憶するようにした。 +
-* TALK文の固定語再生を実装(今まで未実装でしたすみません) +
-** waveフォルダにf41.wav~f44.wavを配置してください。 +
-** 作者は44kHzモノラルのWAVで動作確認しています。 +
-* リプレイ関係のバグをいくつか修正 +
-* CRC違いのROMで起動しようとした際にクラッシュすることがあるのを修正 +
+* Window size and display size are now remembered in the settings file. +
+* Implemented playback of the fixed words of the TALK statement(it was unimplemented until now, sorry) +
+** Place f41.wav~f44.wav in the wave folder. +
+** The author has verified operation with 44kHz mono WAV files. +
+* Fixed several replay related bugs. +
+* Fixed occasional crashes when trying to start with a ROM whose CRC does not match. +
 
-.2.0Beta3 2014/04/10
-* (Windows)グラフィクスタックにANGLE経由のDirectXを使うようにした。 +
-XPでは正常に動作しない可能性があり、勝手ながら本バージョンからXPは非サポートとします。 +
-起動しない場合は、以下のページからDirectXのランタイムをインストールしてください。 +
+.2.0Beta3 2014-04-10
+* (Windows)The graphics stack now uses DirectX via ANGLE. +
+It may not work properly on XP, and regrettably XP is unsupported from this version. +
+If it does not start, install the DirectX runtime from the page below. +
 http://www.microsoft.com/ja-jp/download/details.aspx?id=35
 
 * Merged English translation.(Thanks Anna Wu!) +
 When display language of OS is not Japanese, GUI of PC6001VX is displayed in English. +
-* リプレイ関連機能強化 +
-** リプレイ記録中に途中保存することができるようになった。 +
-リプレイメニューから「途中保存」「途中保存から再開」を選択することでリプレイを記録しながらプレイのやり直しができます。 +
-途中保存ファイルはリプレイファイルと同一フォルダにresume.ddsというファイル名で保存されます。 +
-複数リプレイファイルを同一フォルダに置く場合は注意が必要です。 +
-また、途中保存ファイルは記録停止時にも保存されます。 +
-リプレイ記録開始時に「記録再開...」を選んで既存のリプレイファイルを選択すると記録停止した時点からリプレイを追記することができます。 +
-リプレイファイルが完成したらresume.ddsファイルは不要ですので削除して結構です。 +
-* 【リプレイに関する既知の問題、制約事項】 +
-** オートスタートが設定されているテープイメージを使っていると途中保存が正しく行われません。 +
-** シフトキー、ALTキー(GRPH)の入力を伴うリプレイは正しく再生されないようです。 +
-このへんは本家では修正済みのようなのでリリースされ次第マージします。 +
-** リプレイ記録中にマウスホイールで速度変更をすると再生が正しく行われません。 +
-** 途中ディスク、テープに書き込むするリプレイはイメージを破損するおそれがあります。 +
-* どこでもSAVE/LOADにショートカットキー割り当て +
-無変換/変換キーでスロットの1番を使ってどこでもSAVE/LOADを行います。リプレイ記録中は途中保存/途中保存から再開になります。 +
-* 本家P6Vに実装済みだった、マウスホイールでスピード調整する機能を実装。 +
-* リプレイ再生中にTILTの動きを再現するようになった。 +
-* ウィンドウモードでもTILTするようになった。 +
-** ステータスバーを非表示にするとディスプレイ枠が表示されます。 +
+* Improved replay related features. +
+** Checkpoints can now be saved while recording a replay. +
+By choosing "Checkpoint"/"Back to checkpoint" from the replay menu you can retry your play while still recording the replay. +
+The checkpoint file is saved in the same folder as the replay file under the name resume.dds. +
+Care is needed if you place multiple replay files in the same folder. +
+Also, the checkpoint file is saved when recording is stopped. +
+If you choose "Resume recording..." when starting a replay recording and select an existing replay file, the replay can be appended from the point where recording stopped. +
+Once the replay file is complete, resume.dds is no longer needed and can be deleted. +
+* [Known issues and limitations of replay] +
+** If you use a tape image with autostart configured, checkpoints are not saved correctly. +
+** Replays involving the shift key or the ALT(GRPH) key do not seem to play back correctly. +
+These appear to be fixed upstream, and will be merged once released. +
+** Changing speed with the mouse wheel during replay recording makes playback incorrect. +
+** Replays that write to disk or tape midway may damage the images. +
+* Assigned shortcut keys to state save/load. +
+The Muhenkan/Henkan keys perform state save/load using slot 1. While recording a replay they act as checkpoint/back to checkpoint. +
+* Implemented speed control with the mouse wheel, which was already implemented in upstream P6V. +
+* TILT motion is now reproduced during replay playback. +
+* TILT now works in window mode too. +
+** Hiding the status bar shows the display frame. +
 
-.2.0Beta2 2014/01/22
-バグ修正
+.2.0Beta2 2014-01-22
+Bug fixes
 
-* どこでもLOAD時にクラッシュするのを修正 +
-* サンプリングレートを22050Hzにしていると落ちるのを修正 +
-* サウンドのマスターボリュームを変えてしまう問題は解消していませんが、とりあえず右クリックしただけで音量がデフォルトに戻ってしまうのを修正 +
-* フルスクリーン時に表示される幅1ピクセルの謎の枠を表示されないようにした。 +
-* 起動時のウィンドウのサイズ計算をちょっと修正 +
+* Fixed crash on state load. +
+* Fixed a crash when the sampling rate was set to 22050Hz. +
+* The issue of changing the sound master volume is not resolved yet, but for now fixed the volume being reset to default just by right-clicking. +
+* The mysterious 1-pixel-wide frame shown in fullscreen mode is no longer displayed. +
+* Slightly fixed the startup window size calculation. +
 
-.2.0Beta1 2014/01/15
-* P6V1.21開発版ベースに更新 +
-SR対応(暫定版)、PC-6001Aに対応 +
-SR対応の制約事項(FM音源に未対応など)は本家に準じます。 +
-* TILTモードの改良 +
-初代機、6001A選択時はモニター枠としてPC-6042Kが表示されるようにした。 +
-キーボードでもTILTモードが使えるようにした。 +
+.2.0Beta1 2014-01-15
+* Updated to a development version of P6V1.21 base. +
+SR support(preview), PC-6001A support added. +
+Limitations of SR support (such as no FM sound support) follow the upstream project. +
+* Improved TILT mode. +
+When the original model or 6001A is selected, a PC-6042K monitor frame is shown. +
+TILT mode can now also be used with the keyboard. +
 
-.2.0Alpha3 2013/08/18
-* P6V1.19ベースに更新 +
-* OpenGLの機能チェックを改善 +
-Windows上でのIntelGPUなど、QtでOpenGLを使うための機能要件を満たさない場合、
-自動的にソフトウェアレンダリングになります。 +
-* 設定ダイアログを、より小さな画面に収まるようにレイアウトを修正 +
-* 「=」が入力できないのを修正 +
-* 「カタカナ/ひらがな」キーをかなキーにマップした(X11でPAUSEが効きにくい対策) +
-* ウィンドウ最大化時にモニタモードやスキャンラインなど、ウィンドウサイズが変わる操作をした場合に表示倍率が維持されないのを修正
-* TILTモード中にモニタモードに入った場合ディスプレイ枠を消すようにした。 +
-* 再起動時にジョイスティックが使えなくなるのを修正 +
-* (Windows)ビルドにQt5.1を使用 +
+.2.0Alpha3 2013-08-18
+* Updated to P6V1.19 base. +
+* Improved OpenGL capability checks. +
+On setups that do not meet the requirements of using OpenGL with Qt, such as Intel GPUs on Windows, +
+software rendering is used automatically. +
+* Fixed the layout of the config dialog so it fits on smaller screens. +
+* Fixed "=" not being inputtable. +
+* Mapped the "Katakana/Hiragana" key to the kana key(a workaround for PAUSE being hard to use on X11). +
+* Fixed the display magnification not being preserved when changing window size (monitor mode, scanline etc.) while the window is maximized.
+* The display frame is now hidden when entering monitor mode during TILT mode. +
+* Fixed joystick becoming unusable after restart. +
+* (Windows)Built with Qt5.1. +
 
-.2.0Alpha2 2013/05/25(オフ会記念リリース)
-* TILTモードにディスプレイの枠が表示されるようになった(フルスクリーン時のみ)
-Hashiさん、MORIANさん、THANKS! +
-他、主にバグ修正
-* 遅いマシンでフリーズすることがあるのを修正(スケジューラのウェイト計算ミス) +
-* 設定画面でキーボード入力が効かないのを修正 +
-* 4:3表示の際、画面下にゴミが出ているのを修正 +
-* メニュー表示中に右クリックすると二重にメニューが表示されてしまうのを修正 +
-* スナップショット保存が動いていなかったのを修正 +
-* (Windows)初回起動時のROMフォルダ選択ダイアログで「いいえ」を選択すると +
-GUIが暴走するのを修正 +
+.2.0Alpha2 2013-05-25(Offline meetup anniversary release)
+* A display frame is now shown in TILT mode(fullscreen only).
+Thanks Hashi, MORIAN! +
+Other mainly bug fixes.
+* Fixed freezes on slow machines(miscalculation of the scheduler's wait). +
+* Fixed keyboard input not working in the config dialog. +
+* Fixed garbage shown at the bottom of the screen in 4:3 display. +
+* Fixed a double menu being shown when right-clicking while the menu is open. +
+* Fixed snapshot saving not working. +
+* (Windows)Fixed a runaway GUI when choosing "No" +
+ in the ROM folder selection dialog on first start. +
 
-.2.0Alpha 2013/05/07
-* SDLで行われていたグラフィック描画、イベント処理、キー入力、サウンド出力をQt5に移行。
-これにより、バージョン1.0系列の既知の不具合は解消。 +
-ただし新たな不具合も発生(汗 +
-* グラフィックの描画にQtを使用 +
-QtとOpenGLを用いた無段階の拡大縮小が可能になっています。 +
-また、4:3表示もQt側で引き伸ばしを行うことで自然な表示になっています。 +
-また、環境設定の色数設定はなくなりました。 +
-内部処理は256色、描画はディスプレイの色深度で固定になります。 +
-* ジョイスティック入力のみSDL2を使用。 +
-proファイルにて、DEFINES+=NOJOYSTICKと指定すると、 +
-ジョイスティックサポートが外れる代わりに、Qt5のみで全てビルド可能。 +
-* ZLib,libPNGが不要になった。 +
-* TILTモードの追加 +
-3DS版のスペースハリアーに触発されて作ったジョーク機能です。 +
-ジョイスティックの左右に反応して、画面が傾きます。(笑 +
-キーリピートの関係でカーソルキーには対応できませんでした。すみません。 +
-一応スペハリを想定して作っていますが、オリオンでもなかなか良い感じに酔えます。 +
-その他、クエスト、バンダル、AX-9、アステロイドチューブ、プラズマラインなど、3D視点のゲームでお楽しみください。(ジョイスティックに対応してればの話ですが) +
-Qtではグラフィックの拡大縮小回転が簡単に行えるので、そのデモンストレーションでもあります。 +
-* フォントファイルはバイナリに埋め込んだリソースから直接読むようにした。 +
-fontフォルダを作らなくなった。 +
-* 従来M+Outlineから生成していたフォントファイルをM+Bitmapベースに切り替えた。 +
-だいぶ見やすくなったと思います。 +
-* スケジューラーのウェイト計算方法を変えた。 +
-CPU使用率も下がって、サウンドのバッファアンダーフローによるプチノイズもだいぶ減ったと思います。 +
-
-
-.1.01 2013/01/02
-* P6V1.17ベースに更新 +
-本家に取り込まれた色にじみコードを再取り込み。にじみSet1に対応。 +
-* 右クリックメニューに「終了」がなかったのを修正(汗 +
-
-.1.0 2012/11/30
-* P6V1.16ベースに更新 +
-* 新色にじみ方式(通称J方式)のにじみカラー出力を実装 +
-* 初回起動時にROMフォルダを指定できるようにした。 +
-* 二重起動防止にQtSingleApplicationを使用。ロックファイルを作らなくなった。 +
-* スレッド処理にTLS(スレッド局所記憶)を使わないようにした。 +
-* ステータスバー、モニタモード用の半角英数フォントを手作業でちまちま修正した。 +
-多少見やすくなったと思います。 +
-* (Windows)ライブラリを可能な限りスタティックリンクにした。 +
-* (Windows)ゆみたろさんのパッチを当ててSDLをビルド。今までサボってましたすみません。 +
-* (非Windows)TAPE,DISKなどのフォルダのデフォルト設定を空白にした。 +
-明示的に設定しない場合、ホームフォルダから探しにいきます。 +
-
-.1.0β2 2012/03/09
-バグ修正
-
-* CRCが合わないROMを使用している場合、警告を出した上でCRCチェックを無効にできるようにした。 +
-* ボリュームの設定が全てマスターに反映されてしまうのを修正 +
-* スキャンライン輝度が常に1として保存されてしまうのを修正 +
-
-.1.0β 2012/02/06
-* 初リリース。 P6V1.13ベース +
+.2.0Alpha 2013-05-07
+* Migrated graphics rendering, event handling, key input and sound output from SDL to Qt5.
+With this, the known issues of the 1.0 series are resolved. +
+However, new issues have appeared (; +
+* Qt is used for graphics rendering. +
+Continuous scaling is possible using Qt and OpenGL. +
+Also, 4:3 display is now stretched on the Qt side, resulting in a natural look. +
+The color depth setting in preferences is gone. +
+Internal processing is fixed at 256 colors and rendering uses the display's color depth. +
+* SDL2 is used only for joystick input. +
+By specifying DEFINES+=NOJOYSTICK in the pro file, +
+joystick support is dropped but everything can be built with Qt5 alone. +
+* ZLib and libPNG are no longer needed. +
+* Added TILT mode. +
+A joke feature made after being inspired by the 3DS version of Space Harrier. +
+The screen tilts in response to the joystick left/right. (; +
+Due to key repeat issues, the cursor keys could not be supported. Sorry. +
+It is made with Space Harrier in mind, but you can get pleasantly dizzy with Orion too. +
+Also enjoy it with 3D-perspective games such as Quest, Vandar, AX-9, Asteroid Tube and Plasma Line. (as long as they support the joystick, anyway) +
+Since Qt makes scaling and rotating graphics easy, this doubles as a demonstration of that. +
+* Font files are now read directly from resources embedded in the binary. +
+The font folder is no longer created. +
+* Switched the font files from the previous M+Outline generated ones to M+Bitmap based ones. +
+They should be quite a bit more readable. +
+* Changed the way the scheduler computes waits. +
+CPU usage should be lower, and pop noise from sound buffer underflows should be much reduced. +
 
 
-== 謝辞
-* オリジナルのPC6001Vを製作され、移植を快諾してくださったゆみたろ様、
-* Mac版を通じ、移植の障害を取り除いてくれていたであろうWindy様、
-* Qtについて勉強する機会を提供してくださった関東Qt勉強会および元NOKIAのエンジニアの皆様、
-* 互換BASICを開発し本体同梱可能なLGPLで配布してくださった秋川様、
-* 互換ROMのCGROMの元になった美咲フォント、k8x12フォント作者の門真なむ様、
- 
-そしてP6コミュニティの皆様に厚く感謝申し上げます。
+.1.01 2013-01-02
+* Updated to P6V1.17 base. +
+Re-merged the color bleeding code that was adopted upstream. Supports bleeding Set1. +
+* Fixed the context menu having no "Exit" item (; +
+
+.1.0 2012-11-30
+* Updated to P6V1.16 base. +
+* Implemented color bleed output of the new bleeding scheme (a.k.a. J scheme). +
+* You can now specify the ROM folder on first start. +
+* Uses QtSingleApplication to prevent double launch. No lock file is created anymore. +
+* Thread processing no longer uses TLS(thread local storage). +
+* Hand-tuned the half-width alphanumeric font used for the status bar and monitor mode, bit by bit. +
+It should be somewhat more readable. +
+* (Windows)Libraries are statically linked as much as possible. +
+* (Windows)Built SDL with Yumitaro's patch applied. Sorry for having slacked off until now. +
+* (non-Windows)The default settings of folders such as TAPE and DISK are now blank. +
+If not configured explicitly, the home folder is searched. +
+
+.1.0β2 2012-03-09
+Bug fixes
+
+* When using a ROM whose CRC does not match, a warning is shown and the CRC check can now be disabled. +
+* Fixed volume settings all being applied to the master. +
+* Fixed scanline brightness always being saved as 1. +
+
+.1.0β 2012-02-06
+* First release. Based on P6V1.13. +
+
+
+== Acknowledgments
+* Yumitaro, who created the original PC6001V and gladly granted permission for the port,
+* Windy, who, through the Mac version, presumably removed many obstacles to the port,
+* The Kanto Qt Study Group and the former NOKIA engineers who gave me the opportunity to learn Qt,
+* Akikawa, who developed the compatible BASIC and distributed it under the LGPL so it can be bundled with this program,
+* Namu Kadoma, author of the Misaki font and the k8x12 font which the compatible ROM's CGROM is based on,
+
+and I would like to express my deepest thanks to everyone in the P6 community.

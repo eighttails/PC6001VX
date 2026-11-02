@@ -37,7 +37,8 @@ RUN apt install -y \
     libvulkan-dev \
     libavformat-dev \
     libavcodec-dev \
-    libswscale-dev
+    libswscale-dev \
+    asciidoctor
 
 RUN groupadd -g $GID $GROUPNAME
 RUN useradd -m -s /bin/bash -u $UID -g $GID $USERNAME

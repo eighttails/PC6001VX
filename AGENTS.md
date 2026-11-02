@@ -15,6 +15,9 @@ PC6001VX is a C++17 Qt 6 application. The primary desktop UI code lives under `s
 - Do not remove or overwrite user changes.
 - Avoid committing secrets, credentials, local paths, or machine-specific configuration.
 - Update documentation when it is directly affected by the change.
+- Maintain the documentation in Japanese and English at the same time. The manual exists as a
+  paired set: `README_J.adoc` (Japanese) and `README.adoc` (English). Any change to one,
+  including change log entries, must be reflected in the other within the same change.
 
 ## Language and Responses
 

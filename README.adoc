@@ -299,10 +299,10 @@ State load (uses slot 1) +
 +
 [WARNING]
 ====
-* Verified to work on Android and Windows10.
+* Verified to work on Android and Windows11.
 * When a key is held down, input repeats at a timing close to the real machine's key repeat.
 * To operate the NORMAL mode properly you probably need a screen of at least 5 inches.
-* On Windows10, turn off emulator fullscreen and switch to tablet mode for a natural look.
+* On Windows11, turn off emulator fullscreen and switch to tablet mode for a natural look.
 ====
 
 ** Auto typing +
@@ -763,7 +763,7 @@ Build on the MSYS2 environment. +
 . Download and install MSYS2 from https://github.com/msys2/msys2-installer/releases/[here]. +
 VC++ is not supported. +
 MSYS2 packages update quickly and upgrades very often cause regressions, so it is recommended not to update packages (`pacman -Sy`) and to keep the versions fixed. The author has verified building and running with the environment built from the following installer (64-bit). +
-https://github.com/msys2/msys2-installer/releases/download/2025-08-30/msys2-x86_64-20250830.exe
+https://github.com/msys2/msys2-installer/releases/download/2026-03-22/msys2-base-x86_64-20260322.sfx.exe
 . Run ucrt64.exe in the folder where MSYS2 was installed. +
 . Extract the downloaded PC6001VX sources into the home folder on MSYS. +
 . Run `cd PC6001VX/win32` to move the current directory to the win32 folder of the source folder. +
@@ -804,25 +804,31 @@ Qt 6.5.0 or above is required. +
 Use the PAUSE/CTRL+F12 key, or show the key panel to switch kana.
 
 == Change Log
-.4.5.1 2026-10-02
+.4.6.0 2026/11/02
+* Separated the manual into a Japanese version (README_J.adoc) and an English version (README.adoc).
+* The online help now follows the UI language: the Japanese manual is shown when the language is Japanese, and the English manual otherwise.
+* (Windows) Bundle the English HTML manual along with the Japanese one.
+* (Linux) The AppImage now bundles the online manual HTML (Japanese and English) and shows the local manual in the browser instead of GitHub.
+
+.4.5.1 2026/10/02
 * (Linux) Fixed backward compatibility so that the build works on Ubuntu22.04LTS.
 * (Linux) Fixed the issue where multilingual support was not working
 * (Android) Fixed an issue where menu text was truncated.
 
-.4.5.0 2026-09-09
+.4.5.0 2026/09/09
 * Changed screen rendering from QGraphicsView/QGraphicsScene based implementation to QML/Qt Quick based implementation.
 * Changed the virtual keyboard to a QML/Qt Quick based implementation and removed dependency on Qt Graphics Scene (QGraphics* classes).
 * Added key repeat support to the virtual keyboard.
 * Removed the hardware acceleration setting and safe mode along with the migration to QML/Qt Quick.
 * (Android) Restored the ability to share snapshots and TAPE(SAVE) exports with other applications, which had been unavailable due to changes in Qt.
 
-.4.4.0 2026-08-15
+.4.4.0 2026/08/15
 * Migrated to cmake-based build and removed .pro file for qmake.
 * Updated PC-6001 compatible BASIC to 0.8.2
 * Updated compatible BASIC for PC-6001mkII/6601 to 0.5.3. Basic mode 6 is not supported, but software up to mode 5 can be sped up by turning off bus requests.
 * Supported FFMpeg 9 (can be built with FFMpeg 7, 8, 9) (thanks to bevanjkay)
 
-.4.3.0 2025-11-23
+.4.3.0 2025/11/23
 * Added command line option to automatically load arbitrary state file at startup.
 * Supports switching of sound output devices.
 * Added key assignment that can be entered with CTRL + function keys.
@@ -831,130 +837,130 @@ Use the PAUSE/CTRL+F12 key, or show the key panel to switch kana.
 * (Linux) Started offering of AppImage format.
 * (Android)Updated SDK Version to 36.(Re-fix)
 
-.4.2.14 2025-08-30
+.4.2.14 2025/08/30
 * Fixed a case where replays of Roman alphabet inputs may not be reproduced correctly.
 * (Android)Updated SDK Version to 36.
 
-.4.2.13 2025-06-06
+.4.2.13 2025/06/06
 * Updated PC-6001 compatible basic ROMs to 0.8.1.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.5.2.
 
-.4.2.12 2025-04-06
+.4.2.12 2025/04/06
 * Merged upstream PC6001V version 2.1.4.
 * Fixed an issue where lower case file names could not be used with debugger savemem,loadmem command.
 
-.4.2.11 2025-02-10
+.4.2.11 2025/02/10
 * Fixed freezes when playing FM synthesizer.
 * Fixed joystick settings not saved.
 
-.4.2.10 2024-12-15
+.4.2.10 2024/12/15
 * Fixed an issue where the status bar may become garbled.
 * Fixed an issue where sound might not play.
 * (Windows) Fixed an issue where the menu may not be displayed when in full screen.
 
-.4.2.9 2024-07-20
+.4.2.9 2024/07/20
 * Improved stability of sound playback.
 
-.4.2.8 2024-06-23
+.4.2.8 2024/06/23
 * Fixed freezing on termination when building with Qt6.7
 
-.4.2.7 2024-06-23
+.4.2.7 2024/06/23
 * Merged upstream PC6001V version 2.1.3.
 * Updated PC-6001 compatible basic ROMs to 0.8.
 
-.4.2.6 2024-06-10
+.4.2.6 2024/06/10
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.5.1.
 * Compatible with FFmpeg7 (currently buildable with versions 5, 6, and 7)
 * (Android)Fixed an issue where the screen layout may be corrupted when restarting.
 
-.4.2.5 2023-12-23
+.4.2.5 2023/12/23
 * Fixed screen layout sometimes not updating when enabling/disabling virtual keyboard.
 * Fixed an issue where the menu appearance position during touch operation was incorrect.
 
-.4.2.4 2023-11-15
+.4.2.4 2023/11/15
 * Virtual keyboard position in landscape screen is now configurable.
 * Made config dialog scrollable.(for small screen)
 
-.4.2.3 2023-10-21
+.4.2.3 2023/10/21
 * The timer precision can now be changed to suit the environment.
 
-.4.2.2 2023-10-15
+.4.2.2 2023/10/15
 * Reduced CPU Usage
 * (Android)Fixed:Freezes when starting up after force quit.
 
-.4.2.1 2023-09-23
+.4.2.1 2023/09/23
 * Fixed: Deadlock in certain situation.
 * (Android)Fixed: Could not open file whose filename contains "!'()".
 
-.4.2.0 2023-09-08
+.4.2.0 2023/09/08
 * (Android)Now works on Android13.
 ** Known Issues
 *** Snapshot and Export tape function doesn't work.
 *** Some menu text is shown omitted.
 
-.4.1.4 2023-08-18
+.4.1.4 2023/08/18
 * Merged upstream PC6001V version 2.1.1.
 * Added menu and config UI related to Romaji input.
 
-.4.1.3 2023-01-29
+.4.1.3 2023/01/29
 * Updated PC-6001 compatible basic ROMs to 0.7.6.
 * Added Russian translation.
 
-.4.1.2 2023-01-09
+.4.1.2 2023/01/09
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.2.
 * Fixed: Could not cancel quiting if "Confirm at exit" is checked.
 * (Windows)Fixed: Katakana/Hiragana key (kana switching) not working.
 
-.4.1.1 2023-01-05
+.4.1.1 2023/01/05
 * (Windows)Fixed issue in opening file with Japanese file name.
 
-.4.1.0 2023-01-01
+.4.1.0 2023/01/01
 * Merged upstream PC6001V version 2.0.4.
 ** Introduce Romaji input method for KANA characters. It can be toggled by ALT+F12.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.1.
 * Fixed replay/playback inconsistency.
 
-.4.0.0 2022-12-03
+.4.0.0 2022/12/03
 * 4.0 final release.
 
-.4.0.0Beta2 2022-08-05
+.4.0.0Beta2 2022/08/05
 * Merged upstream PC6001V version 2.0.3.
 * Endode movie in background thread. This makes better performance of video capturing. 
 * Fixed issue joystick did not work.
 
-.4.0.0Beta1 2022-02-28
+.4.0.0Beta1 2022/02/28
 * Merged upstream PC6001V version 2.0.2.
 * Migrated to Qt6 from Qt5. Now Qt6.2 or higher is required to build.
 
-.3.9.0 2022-06-27
+.3.9.0 2022/06/27
 * Updated PC-6001 compatible basic ROMs to 0.7.5.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.4.
 * PC-6001mk2/6601 compatible CGROM now covers semi-graphic characters.
 * (Windows,64bit)Fixed issue in opening long replay file.
 
-.3.8.2 2021-10-10
+.3.8.2 2021/10/10
 * (Windows)Built with DirectX(ANGLE) version of Qt. Fixes memory leak with Intel GPU.
 
-.3.8.1 2021-09-18
+.3.8.1 2021/09/18
 * Fixed crash in drag & drop operation.
 
-.3.8.0 2021-07-25
+.3.8.0 2021/07/25
 * Updated PC-6001 compatible basic ROMs to 0.7.4.
 * PC-6001A(aka NEC TREK) is now available in compatible ROM mode.
 * Fixed issue of 2nd time of video capture operation.
 
-.3.7.2 2021-05-17
+.3.7.2 2021/05/17
 * Removed "Input" tab from config dialog.
 * Fixed object leak in state save/load.
 * Improved video capture performance.
 
-.3.7.1 2021-03-19
+.3.7.1 2021/03/19
 * Fixed enter key on numeric keypad was not working.
 * IME is now correctly disabled.
 * Fixed crash on exit if joystick is connected.
 * Better shift key press/release event handling.
 
-.3.7.0 2021-02-13
+.3.7.0 2021/02/13
 * Opening files by drag & drop is now available.
 * Assigned double clicking window to toggle fullscreen.
 * HAT switches on gamepad is now available. You can use digital gamepad or joystick for Nintendo Switch.  
@@ -962,13 +968,13 @@ Use the PAUSE/CTRL+F12 key, or show the key panel to switch kana.
 * Fixed freeze when initialized settings.
 * Improved debug console font. Now you can see Hiragana and graphic characters in memory dump.
 
-.3.6.1 2021-01-09
+.3.6.1 2021/01/09
 * Fallback to compatible rom when some of ROM files are missing.
 * Fixed PC-6001mk2/6601 compatible basic ROM's deployment.
 * Improved backward compatibility. Now builable with Qt5.5 or above.
 * Minor bugfixes.
 
-.3.6.0 2020-12-15
+.3.6.0 2020/12/15
 * Joysticks are available on Android.
 * Updated PC-6001 compatible basic ROMs to 0.7.2.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.1.
@@ -977,20 +983,20 @@ Use the PAUSE/CTRL+F12 key, or show the key panel to switch kana.
 * Changed snapshot file name convention.
 * (Android)Fixed semi-graphic's glitch.
 
-.3.5.3 2020-09-26
+.3.5.3 2020/09/26
 * Added System Information dialog.
 * (Android)better handling of external storage.
 * (Android)Targetted at Android SDK 29.
 
-.3.5.2 2020-06-15
+.3.5.2 2020/06/15
 * (Android)Fixed file selection dialog to show files in external storage (again). 
 * (Android)Changed file/folder open operation in file selection dialog from double tap to single tap.
 
-.3.5.1 2020-06-14
+.3.5.1 2020/06/14
 * Added "Reset settings" menu.
 * (Android)Fixed file selection dialog to show files in external storage. 
 
-.3.5.0 2020-06-07
+.3.5.0 2020/06/07
 * Updated PC-6001 compatible basic ROMs to 0.7.1.
 * Updated PC-6001mk2/6601 compatible basic ROMs to 0.3.0.
 * Enabled PC-6002mk2 model in compatible ROM mode.
@@ -998,65 +1004,65 @@ Use the PAUSE/CTRL+F12 key, or show the key panel to switch kana.
 * In "File" and "Folder" tab on configuration dialog path which does not exist is displayed in red color.
 * (Windows) Fixed issue that emulator continues to work during menu popup.
 
-.3.4.0 2020-03-25
+.3.4.0 2020/03/25
 * Added "Export saved tape" menu function.
 
-.3.3.2 2019-11-04
+.3.3.2 2019/11/04
 * (Android)Fixed display glitches when screen is rotated.
 
-.3.3.1 2019-10-28
+.3.3.1 2019/10/28
 * Works better with English keyboard.
 * Modified mouse operation on Android. LMB is assigned to popup menu.
 * Updated compatible CGROM for PC-6601. Now characters for playng card suit are properly displayed.
 
-.3.3.0 2019-10-09
+.3.3.0 2019/10/09
 * Updated compatible ROM for PC-6601 to v0.2.2.
 * (Android)SNP button now works. You can share screenshot to SNS.
 
-.3.2.0 2019-09-14
+.3.2.0 2019/09/14
 * Compatible ROM implemented by AKIKAWA Hisashi is now built in the emulator. Now the emulator is bootable without genuine ROM.
 * Fixed timer interrupt interval on SR models.(temporal fix)
 * Assigned Alt+F9/F10 hotkey to state save/load.
 * Dropped "Patch the ROM" setting.(Because it made JOYSTICK2 unusable.)
 
-.3.1.3 2019-05-05
+.3.1.3 2019/05/05
 * Improved virtual keyboard(simple) operability.
 
-.3.1.2 2019-03-23
+.3.1.2 2019/03/23
 * Fixed issue related to replay recording on Windows.
 * Fixed issue that wrong icon is shown when SR models are chosen.
 * Some minor bug fixes.
 
-.3.1.1 2018-12-31
+.3.1.1 2018/12/31
 * Changed context menu touch gesture from long tap to single tap.
 * Some minor bug fixes.
 
-.3.1.0 2018-12-15
+.3.1.0 2018/12/15
 * Better virtual keyboard display size.
 * Virtual Keyboard is now mouse operable.
 * Assigned "reset emulation speed" to middle mouse button.
 * Added "Convert replay to movie" menu.
 * Now audio is muted during encoding movie.
 
-.3.0.0 2018-08-15
+.3.0.0 2018/08/15
 * Added Virtual Keyboard that works with touch screen.
 * Added "Pause" and "Take snapshot" to "System" menu.
 
-.2.33.0 2018-04-28
+.2.33.0 2018/04/28
 * Support FFMpeg4.0.
 * Changed Video Capture bitrate to YouTube recommended value.(video:4Mbps,audio:128Kbps)
 * Embedded images to README.html. So doc folder is no longer distributed with Windows binary.
 
-.2.32.0 2018-02-17
+.2.32.0 2018/02/17
 * Fixed replay glitch.
 * Fixed mouse cursor disappears when opening file select dialog.
 * Make use of Qt 5.10 API to adopt permission model after Android 6.0.(Qt 5.10 is needed to build for Android)
 
-.2.31.1 2017-09-16
+.2.31.1 2017/09/16
 * Made use of pkg-config to link external libs. +
 Is is necessary to set PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig environment variable to build on Windows(MSYS2).
 
-.2.31.0 2017-08-19
+.2.31.0 2017/08/19
 * When built with the ALWAYSFULLSCREEN flag, file dialogs and the config dialog now become fullscreen too.(for low resolution devices such as PocketChip) +
 * Fixed sound related method calls not being thread safe. +
 * Rewrote the documentation in asciidoc.
@@ -1068,47 +1074,47 @@ Is is necessary to set PKG_CONFIG_PATH=$MINGW_PREFIX/local/lib/pkgconfig environ
 * (non-Windows)Paths of configuration files etc. are now handled as absolute paths. +
 * (Android)Temporary workaround for the issue that files on the SD card could not be accessed. +
 
-.2.30.0 2016-08-27
+.2.30.0 2016/08/27
 * Updated to P6V1.25 base. +
 * Fixed a freeze that happened when trying to open the menu during movie recording. +
 * (Windows)A bug in the MinGW bundled with MSYS2 has been fixed, so we now build with the latest version 6.1. +
 Since Qt and MSYS2 dropped support for XP, this version does not run on XP. If you absolutely need to run it on XP, please use 2.21. +
 
-.2.21.0 2016-05-04
+.2.21.0 2016/05/04
 * Changed the version numbering scheme. Version numbers will henceforth be (major).(minor).(bugfix). +
 * Fixed a freeze when hitting a breakpoint in monitor mode. +
 * (Windows)Changed build options. Maybe it runs on XP now (no warranty). +
 * (Windows)The MinGW5.3 bundled with MSYS2 was too unstable, so we decided to build with GCC4.9. +
 
-.2.2 2016-04-24
+.2.2 2016/04/24
 * Updated to P6V1.24 base. +
 * Added a link to the online reference in the help menu. +
 * (Windows)Fixed optimization options since it sometimes failed to start depending on the environment. +
 * (Android)Fixed resume sometimes failing. +
 * (Android)The UI was displayed with a Chinese font; now it is displayed with MotoyaLMaru. +
 
-.2.11 2015-11-11
+.2.11 2015/11/11
 * Added "Back to previous checkpoint" to replay. +
 * (Linux)On distributions that use Opus for WebM audio the program crashed, so Vorbis is now forced. +
 * (Windows)Fixed build instructions and the environment setup script. +
 Self-built libraries are consolidated under /mingw32/local. +
 When setting up a build environment, please reinstall MSYS2 from scratch. +
 
-.2.1 2015-08-29
+.2.1 2015/08/29
 * (Windows)(Linux)Implemented video capture using ffmpeg/libav. +
 
-.2.01 2015-01-10
+.2.01 2015/01/10
 * Fixed occasional crashes during tape loading. +
 
 
-.2.0 2014-12-27
+.2.0 2014/12/27
 * Updated to P6V1.23 base. +
 * Slightly sped up event processing inside the emulation. FPS improves a bit on slow machines. +
 * Automated frameskip. +
 When running on a slow machine, frames are dropped even beyond the configured frameskip in order to prioritize keeping the emulation at full speed. If the machine is so weak that it cannot sustain full-speed emulation at all, the frame rate drops to as low as 1FPS. +
 * (Android)Added an app signature; allowing "Unknown sources" is no longer needed. +
 
-.2.0RC1 2014-10-19
+.2.0RC1 2014/10/19
 * Updated to the released P6V1.22 base. +
 * Implemented the auxiliary key panel. +
 Choosing "Key panel" from the menu opens a tool window with buttons for keys that are hard to enter on e.g. English keyboards. +
@@ -1121,7 +1127,7 @@ To enter characters that require the shift key on a real P6, you need to press t
 * (Windows)(Linux)The screensaver is now suppressed in fullscreen mode. +
 * Rewrote the documentation in Markdown. +
 
-.2.0Beta4 2014-08-15
+.2.0Beta4 2014/08/15
 * Updated to a development version of P6V1.22 base. +
 ** FM sound synthesis support(preview) +
 ** Limitations such as unimplemented features follow the upstream project. +
@@ -1162,7 +1168,7 @@ If you get errors, delete the ini files once. +
 * Fixed several replay related bugs. +
 * Fixed occasional crashes when trying to start with a ROM whose CRC does not match. +
 
-.2.0Beta3 2014-04-10
+.2.0Beta3 2014/04/10
 * (Windows)The graphics stack now uses DirectX via ANGLE. +
 It may not work properly on XP, and regrettably XP is unsupported from this version. +
 If it does not start, install the DirectX runtime from the page below. +
@@ -1191,7 +1197,7 @@ The Muhenkan/Henkan keys perform state save/load using slot 1. While recording a
 * TILT now works in window mode too. +
 ** Hiding the status bar shows the display frame. +
 
-.2.0Beta2 2014-01-22
+.2.0Beta2 2014/01/22
 Bug fixes
 
 * Fixed crash on state load. +
@@ -1200,7 +1206,7 @@ Bug fixes
 * The mysterious 1-pixel-wide frame shown in fullscreen mode is no longer displayed. +
 * Slightly fixed the startup window size calculation. +
 
-.2.0Beta1 2014-01-15
+.2.0Beta1 2014/01/15
 * Updated to a development version of P6V1.21 base. +
 SR support(preview), PC-6001A support added. +
 Limitations of SR support (such as no FM sound support) follow the upstream project. +
@@ -1208,7 +1214,7 @@ Limitations of SR support (such as no FM sound support) follow the upstream proj
 When the original model or 6001A is selected, a PC-6042K monitor frame is shown. +
 TILT mode can now also be used with the keyboard. +
 
-.2.0Alpha3 2013-08-18
+.2.0Alpha3 2013/08/18
 * Updated to P6V1.19 base. +
 * Improved OpenGL capability checks. +
 On setups that do not meet the requirements of using OpenGL with Qt, such as Intel GPUs on Windows, +
@@ -1221,7 +1227,7 @@ software rendering is used automatically. +
 * Fixed joystick becoming unusable after restart. +
 * (Windows)Built with Qt5.1. +
 
-.2.0Alpha2 2013-05-25(Offline meetup anniversary release)
+.2.0Alpha2 2013/05/25(Offline meetup anniversary release)
 * A display frame is now shown in TILT mode(fullscreen only).
 Thanks Hashi, MORIAN! +
 Other mainly bug fixes.
@@ -1233,7 +1239,7 @@ Other mainly bug fixes.
 * (Windows)Fixed a runaway GUI when choosing "No" +
  in the ROM folder selection dialog on first start. +
 
-.2.0Alpha 2013-05-07
+.2.0Alpha 2013/05/07
 * Migrated graphics rendering, event handling, key input and sound output from SDL to Qt5.
 With this, the known issues of the 1.0 series are resolved. +
 However, new issues have appeared (; +
@@ -1261,12 +1267,12 @@ They should be quite a bit more readable. +
 CPU usage should be lower, and pop noise from sound buffer underflows should be much reduced. +
 
 
-.1.01 2013-01-02
+.1.01 2013/01/02
 * Updated to P6V1.17 base. +
 Re-merged the color bleeding code that was adopted upstream. Supports bleeding Set1. +
 * Fixed the context menu having no "Exit" item (; +
 
-.1.0 2012-11-30
+.1.0 2012/11/30
 * Updated to P6V1.16 base. +
 * Implemented color bleed output of the new bleeding scheme (a.k.a. J scheme). +
 * You can now specify the ROM folder on first start. +
@@ -1279,14 +1285,14 @@ It should be somewhat more readable. +
 * (non-Windows)The default settings of folders such as TAPE and DISK are now blank. +
 If not configured explicitly, the home folder is searched. +
 
-.1.0β2 2012-03-09
+.1.0β2 2012/03/09
 Bug fixes
 
 * When using a ROM whose CRC does not match, a warning is shown and the CRC check can now be disabled. +
 * Fixed volume settings all being applied to the master. +
 * Fixed scanline brightness always being saved as 1. +
 
-.1.0β 2012-02-06
+.1.0β 2012/02/06
 * First release. Based on P6V1.13. +
 
 
